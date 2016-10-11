@@ -18,8 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import java.util.List;
+
 import se.inera.intyg.common.security.common.service.AuthenticationLogger;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 /**
  * Service that writes messages to the monitoring log.
@@ -33,19 +38,20 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logMailMissingAddress(String unitHsaId, String reason);
 
-    void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, String amne);
+    void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, Amne amne,
+            List<String> frageIds);
 
-    void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
+    void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne);
 
-    void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
+    void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne, String origin);
 
-    void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
+    void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne, String origin);
 
     void logIntygRead(String intygsId, String intygsTyp);
 
     void logIntygPrintPdf(String intygsId, String intygsTyp);
 
-    void logIntygSigned(String intygsId, String userHsaId, String authScheme);
+    void logIntygSigned(String intygsId, String userHsaId, String authScheme, String origin, RelationKod relationCode);
 
     void logIntygRegistered(String intygsId, String intygsTyp);
 
@@ -54,6 +60,12 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logIntygRevoked(String intygsId, String hsaId);
 
     void logIntygCopied(String copyIntygsId, String originalIntygId);
+
+    void logIntygCopiedRenewal(String copyIntygsId, String originalIntygId);
+
+    void logIntygCopiedReplacement(String copyIntygsId, String originalIntygId);
+
+    void logIntygCopiedCompletion(String copyIntygsId, String originalIntygId);
 
     void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId, String userHsaId);
 
@@ -73,7 +85,12 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logNotificationSent(String hanType, String unitId);
 
-    void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, String subject);
+    void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer);
 
-    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, String subject);
+    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, String origin, boolean isAnswer);
+
+    void logIntegratedOtherUnit(String intygsId, String intygsTyp, String unitId);
+
+    void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String caregiverId, String unitId);
+
 }

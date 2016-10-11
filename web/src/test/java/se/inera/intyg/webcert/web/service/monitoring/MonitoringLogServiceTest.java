@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import se.inera.intyg.common.security.common.model.UserOriginType;
 
 /**
  * Unit test to assure that the monitoring log produces relevant messages.
@@ -74,7 +75,7 @@ public class MonitoringLogServiceTest {
     @Test
     public void testThatMonitoringLogProducesLogMessage() {
 
-        monitoringLogService.logUserLogin("ABC123", "test-scheme");
+        monitoringLogService.logUserLogin("ABC123", "test-scheme", UserOriginType.NORMAL.name());
 
         verify(mockAppender).doAppend(captorLoggingEvent.capture());
 
@@ -83,12 +84,10 @@ public class MonitoringLogServiceTest {
         assertThat(loggingEvent.getLevel(), equalTo(Level.INFO));
 
         // assert that messages contains log event message and args
-        assertThat(loggingEvent.getFormattedMessage(),
-                containsString("USER_LOGIN"));
-        assertThat(loggingEvent.getFormattedMessage(),
-                containsString("ABC123"));
-        assertThat(loggingEvent.getFormattedMessage(),
-                containsString("test-scheme"));
+        assertThat(loggingEvent.getFormattedMessage(), containsString("USER_LOGIN"));
+        assertThat(loggingEvent.getFormattedMessage(), containsString("ABC123"));
+        assertThat(loggingEvent.getFormattedMessage(), containsString("test-scheme"));
+        assertThat(loggingEvent.getFormattedMessage(), containsString(UserOriginType.NORMAL.name()));
     }
 
 }

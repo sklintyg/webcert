@@ -299,7 +299,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.getSenasteHandelse());
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
         verify(repo).save(any(Arende.class));
-        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyString(), anyBoolean());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_CARE);
     }
@@ -391,7 +391,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.getSenasteHandelse());
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
         verify(repo, times(2)).save(any(Arende.class));
-        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyString(), anyBoolean());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
     }
@@ -547,7 +547,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.getSvar());
         assertNotNull(result.getSenasteHandelse());
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
-        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), anyString());
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyString(), anyBoolean());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);

@@ -19,8 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import java.util.Arrays;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -33,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
-import se.inera.intyg.common.security.common.service.Feature;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
