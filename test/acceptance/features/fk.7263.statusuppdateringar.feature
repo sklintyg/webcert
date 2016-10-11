@@ -7,7 +7,7 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på intygsutkastet via djupintegrationslänk
 
-@skicka-till-fk
+@skicka-till-fk @HAN11
 Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet. Totalt: "1"
 
@@ -88,8 +88,7 @@ Scenario: Statusuppdateringar vid komplettering med nytt intyg
    Och jag väljer att svara med ett nytt intyg
    Så ska jag se kompletteringsfrågan på utkast-sidan
 
-   När jag signerar intyget
-   Och jag skickar intyget till Försäkringskassan
+   När jag signerar och skickar kompletteringen
    Så ska statusuppdatering "HAN1" skickas till vårdsystemet. Totalt: "1"
    Och ska intygets status vara "Intyget är signerat"
    Och ska 1 statusuppdatering "HAN9" skickas för det ursprungliga intyget

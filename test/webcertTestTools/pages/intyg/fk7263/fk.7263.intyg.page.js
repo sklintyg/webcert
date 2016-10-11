@@ -135,7 +135,7 @@ var Fk7263Intyg = BaseIntyg._extend({
         };
 
         this.question = {
-            newQuestionButton: element(by.id('askQuestionBtn')),
+            newQuestionButton: element(by.id('askArendeBtn')),
             text: element(by.id('newQuestionText')),
             topic: element(by.id('new-question-topic')),
             kontakt: element(by.cssContainingText('option', 'Kontakt')),

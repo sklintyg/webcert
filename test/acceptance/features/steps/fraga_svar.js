@@ -42,48 +42,48 @@ module.exports = function() {
 
         var fragaText = 'En ' + amne + '-fråga ' + testdataHelper.generateTestGuid();
 
-        if (isSMIIntyg) {
+        // if (isSMIIntyg) {
 
-            lisuUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
-            lisuUtkastPage.arendeQuestion.text.sendKeys(fragaText);
-            lisuUtkastPage.selectQuestionTopic(amne);
+        lisuUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
+        lisuUtkastPage.arendeQuestion.text.sendKeys(fragaText);
+        lisuUtkastPage.selectQuestionTopic(amne);
 
-            lisuUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
+        lisuUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
 
-            lisuUtkastPage.arendePanel.getAttribute('id').then(function(result) {
-                var element = result.split('-');
-                var splitIndex = element[0].length + element[1].length + 2;
-                var fragaId = result.substr(splitIndex, result.length);
+        lisuUtkastPage.arendePanel.getAttribute('id').then(function(result) {
+            var element = result.split('-');
+            var splitIndex = element[0].length + element[1].length + 2;
+            var fragaId = result.substr(splitIndex, result.length);
 
-                global.meddelanden.push({
-                    typ: 'Fråga',
-                    amne: helpers.subjectCodes[amne],
-                    id: fragaId,
-                    text: fragaText
-                });
-
-                logger.debug('Frågans ID: ' + fragaId);
-            }).then(callback);
-
-        } else {
-            fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
-            fkIntygPage.question.text.sendKeys(fragaText);
-            fkIntygPage.selectQuestionTopic(amne);
-
-            fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
-
-            fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
-                var fragaId = result.split('-')[1];
-                global.meddelanden.push({
-                    typ: 'Fråga',
-                    amne: amne,
-                    id: fragaId,
-                    text: fragaText
-                });
-                logger.debug('Frågans ID: ' + fragaId);
-                callback();
+            global.meddelanden.push({
+                typ: 'Fråga',
+                amne: helpers.subjectCodes[amne],
+                id: fragaId,
+                text: fragaText
             });
-        }
+
+            logger.debug('Frågans ID: ' + fragaId);
+        }).then(callback);
+
+        // } else {
+        //     fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
+        //     fkIntygPage.question.text.sendKeys(fragaText);
+        //     fkIntygPage.selectQuestionTopic(amne);
+
+        //     fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
+
+        //     fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
+        //         var fragaId = result.split('-')[1];
+        //         global.meddelanden.push({
+        //             typ: 'Fråga',
+        //             amne: amne,
+        //             id: fragaId,
+        //             text: fragaText
+        //         });
+        //         logger.debug('Frågans ID: ' + fragaId);
+        //         callback();
+        //     });
+        // }
 
     });
 
