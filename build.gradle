@@ -1,4 +1,7 @@
 ext {
+    commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
+    typerVersion = System.properties['typerVersion'] ?: '0-SNAPSHOT'
+
     springVersion = "4.2.2.RELEASE"
     springSecurityVersion = "4.0.3.RELEASE"
     activeMqVersion = "5.13.4"
@@ -15,16 +18,11 @@ ext {
 }
 
 allprojects {
+    group = 'se.inera.intyg.webcert'
+    version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
+
     apply plugin: 'maven'
     apply plugin: 'org.ajoberstar.grgit'
-
-    def baseVersion = '5.0.'
-    def commonBaseVersion = '3.0.'
-
-    group = 'se.inera.intyg.webcert'
-    version = System.env.BUILD_NUMBER != null ? baseVersion + System.env.BUILD_NUMBER : '0-SNAPSHOT'
-    rootProject.ext.commonVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : "${commonBaseVersion}+"
-    rootProject.ext.typerVersion = (version == '0-SNAPSHOT') ? '0-SNAPSHOT' : "${commonBaseVersion}+"
 }
 
 subprojects {
