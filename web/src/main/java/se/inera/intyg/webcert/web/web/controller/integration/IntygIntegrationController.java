@@ -54,6 +54,9 @@ import java.util.Map;
  * Controller to enable an external user to access certificates directly from a
  * link in an external patient care system.
  *
+ * Please note that the vardenhet selection and auth validation is handled by
+ * {@link se.inera.intyg.webcert.web.auth.IntegrationEnhetFilter}.
+ *
  * @author bensam
  */
 @Path("/intyg")
@@ -72,7 +75,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_PATIENT_POSTORT = "postort";
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
     private static final String PARAM_REFERENCE = "ref";
-    private static final String PARAM_ENHET = "enhet";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -106,10 +108,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference,
-            @QueryParam(PARAM_ENHET) String enhet) {
+            @QueryParam(PARAM_REFERENCE) String reference) {
         return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress,
-                postnummer, postort, coherentJournaling, reference, enhet);
+                postnummer, postort, coherentJournaling, reference);
     }
     // CHECKSTYLE:OFF ParameterNumber
 
@@ -135,8 +136,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference,
-            @QueryParam(PARAM_ENHET) String enhet) {
+            @QueryParam(PARAM_REFERENCE) String reference) {
 
         super.validateRedirectToIntyg(intygId);
 

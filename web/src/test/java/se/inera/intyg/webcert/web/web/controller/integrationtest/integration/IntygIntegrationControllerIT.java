@@ -203,4 +203,28 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042").then()
                 .header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
     }
+
+    /**
+     * Verify that request without enhet is redirected to unit selection page.
+     */
+    @Test
+    public void testUserIsRedirectedToUnitSelectionPageWhenNoEnhetIsSpecified() {
+        RestAssured.sessionId = getAuthSession(ASA_ANDERSSON);
+
+        String utkastId = createUtkast("luse", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsId", utkastId);
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
+        queryParams.put("responsibleHospName", "HrDoktor");
+
+
+        given().redirects().follow(false).and().pathParam("intygsId", utkastId).expect().statusCode(HttpServletResponse.SC_MOVED_TEMPORARILY).when()
+                .get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x").then()
+                .header(HttpHeaders.LOCATION, endsWith("#/integration-enhetsval"));
+    }
 }
