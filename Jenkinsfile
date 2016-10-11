@@ -51,7 +51,7 @@ stage('integration tests') {
     node {
         try {
             withEnv(javaEnv()) {
-                sh './gradlew restAssuredTest -DbaseUrl=https://webcert.inera.nordicmedtest.se/web/ --stacktrace'
+                sh './gradlew restAssuredTest -DbaseUrl="http://webcert.inera.nordicmedtest.se/" --stacktrace'
             }
 
             wrap([$class: 'Xvfb']) {
