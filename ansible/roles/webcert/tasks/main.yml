@@ -11,15 +11,14 @@
   file: state=absent  path={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
   when: repo == "snapshots"
 
-
 - name: download intygstjanst-liquibase-runner-{{ version }}.zip
   get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
            dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
-  when: deploy_from_repo
+  when: deploy_from_repo|bool
 
 - name: copy webcert-liquibase-runner-{{ version }}.zip
-  copy: src={{ inventory_dir }}/../tools/liquibase-runner/build/distributions/webcert-liquibase-runner.zip dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
-  when: not deploy_from_repo
+  copy: src={{ inventory_dir }}/../tools/liquibase-runner/build/distributions/webcert-liquibase-runner-{{ version }}.zip dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
+  when: not deploy_from_repo|bool
 
 - name: Unzip webcert-liquibase-runner-{{ version }}.zip
   command: unzip -od {{ releases_folder }} {{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
@@ -41,11 +40,11 @@
   get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r={{ repo }}&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
            dest={{ releases_folder }}/webcert-web-{{ version }}.war
            timeout=120
-  when: deploy_from_repo
+  when: deploy_from_repo|bool
 
 - name: Copy webcert-web-{{ version }}.war from THIS machine when not deploying from remote repo
-  copy: src={{ inventory_dir }}/../web/target/webcert.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
-  when: not deploy_from_repo
+  copy: src={{ inventory_dir }}/../web/build/distributions/webcert-web-{{ version }}.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
+  when: not deploy_from_repo|bool
 
 - name: Remove old version of unpacked ROOT war
   file: state=absent
@@ -65,11 +64,11 @@
 - name: Download log-sender-{{ version }}.war
   get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r={{ repo }}&g=se.inera.intyg.webcert&a=log-sender&v={{ version }}&p=war
            dest={{ releases_folder }}/log-sender-{{ version }}.war
-  when: deploy_from_repo
-  #https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
+  when: deploy_from_repo|bool
+
 - name: copy log-sender-{{ version }}.war
-  copy: src={{ inventory_dir }}/../log-sender/target/log-sender.war dest={{ releases_folder }}/log-sender-{{ version }}.war
-  when: not deploy_from_repo
+  copy: src={{ inventory_dir }}/../log-sender/target/log-sender-{{ version }}.war dest={{ releases_folder }}/log-sender-{{ version }}.war
+  when: not deploy_from_repo|bool
 
 - name: remove old version of unpacked log-sender war
   file: state=absent
