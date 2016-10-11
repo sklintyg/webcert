@@ -57,13 +57,16 @@ stage('integration tests') {
         try {
             wrap([$class: 'Xvfb']) {
                 withEnv(javaEnv()) {
-                    sh "./gradlew restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/"
+                    sh "./gradlew restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/ \
+                        -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
 
                     sh "./gradlew fitnesseTest -Dgeb.env=firefoxRemote -Dweb.baseUrl=https://webcert.inera.nordicmedtest.se/ \
                         -DbaseUrl=https://webcert.inera.nordicmedtest.se/ -Dlogsender.baseUrl=https://webcert.inera.nordicmedtest.se/log-sender/ \
-                        -Dcertificate.baseUrl=https://intygstjanst.inera.nordicmedtest.se/inera-certificate/ -PfileOutput"
+                        -Dcertificate.baseUrl=https://intygstjanst.inera.nordicmedtest.se/inera-certificate/ -PfileOutput \
+                        -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
 
-                    sh "./gradlew protractorTests -Dprotractor.env=build-server"
+                    sh "./gradlew protractorTests -Dprotractor.env=build-server \
+                        -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
                 }
             }
         } catch (e) {

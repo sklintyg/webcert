@@ -6,10 +6,6 @@ ext {
 
 apply plugin: 'scala'
 
-repositories {
-    mavenCentral()
-}
-
 sourceSets {
     performanceTests {
         scala {
@@ -34,4 +30,8 @@ dependencies {
     testCompile group: 'io.gatling', name: 'gatling-app', version: gatlingVersion
     testCompile group: 'io.gatling', name: 'gatling-recorder', version: gatlingVersion
     testCompile group: 'io.gatling.highcharts', name: 'gatling-charts-highcharts', version: gatlingVersion
+}
+
+repositories {
+    mavenCentral()
 }
