@@ -150,7 +150,7 @@ module.exports = function() {
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
-        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-success', ' Svara')).sendKeys(protractor.Key.SPACE)
+        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-success', 'Svara')).sendKeys(protractor.Key.SPACE)
             .then(function() {
                 return fkIntygPage.komplettera.dialog.svaraMedTextKnapp.sendKeys(protractor.Key.SPACE);
             })
@@ -158,7 +158,7 @@ module.exports = function() {
                 return browser.sleep(2000); // Sleep pga animation
             })
             .then(function() {
-                return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar);
+                return kompletteringsFraga.element(by.model('arendeSvar.meddelande')).sendKeys(textSvar);
 
             })
             .then(function() {
@@ -172,7 +172,7 @@ module.exports = function() {
         return svaraPaKomplettering
             .then(function() {
                 logger.info('Kontrollerar att fråga är märkt som hanterad..');
-                expect(kompletteringsFraga.element(by.css('.qa-block-handled')).getText()).to.eventually.contain(textSvar)
+                expect(kompletteringsFraga.element(by.css('.arende-block-handled')).getText()).to.eventually.contain(textSvar)
                     .then(function(value) {
                         logger.info('OK - textsvar = ' + value);
                     }, function(reason) {
