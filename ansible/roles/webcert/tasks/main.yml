@@ -43,7 +43,7 @@
   when: deploy_from_repo|bool
 
 - name: Copy webcert-web-{{ version }}.war from THIS machine when not deploying from remote repo
-  copy: src={{ inventory_dir }}/../web/build/distributions/webcert-web-{{ version }}.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
+  copy: src={{ inventory_dir }}/../web/build/libs/webcert-web-{{ version }}.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
   when: not deploy_from_repo|bool
 
 - name: Remove old version of unpacked ROOT war
@@ -67,7 +67,7 @@
   when: deploy_from_repo|bool
 
 - name: copy log-sender-{{ version }}.war
-  copy: src={{ inventory_dir }}/../log-sender/target/log-sender-{{ version }}.war dest={{ releases_folder }}/log-sender-{{ version }}.war
+  copy: src={{ inventory_dir }}/../log-sender/build/libs/log-sender-{{ version }}.war dest={{ releases_folder }}/log-sender-{{ version }}.war
   when: not deploy_from_repo|bool
 
 - name: remove old version of unpacked log-sender war
