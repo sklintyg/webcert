@@ -140,7 +140,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text) {
-        return expect(fkIntygPage.komplettera.dialog.modal.getText()).to.eventually.contain(text);
+        return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(text);
     });
 
 
