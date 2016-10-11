@@ -18,7 +18,7 @@ sourceSets {
     }
 }
 
-task gatling(dependsOn: 'compileTestScala') << {
+task gatling(dependsOn: 'build') << {
     javaexec {
         main = 'io.gatling.app.Gatling'
         classpath = sourceSets.test.output + sourceSets.test.runtimeClasspath
