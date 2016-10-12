@@ -465,7 +465,7 @@ public class ArendeServiceImpl implements ArendeService {
     private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent) throws WebCertServiceException {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
-                webcertUserService.getUser().getOrigin(), arende.getSvarPaId() != null);
+                arende.getSvarPaId() != null);
 
         updateRelated(arende);
 

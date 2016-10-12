@@ -43,15 +43,15 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne);
 
-    void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne, String origin);
+    void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne);
 
-    void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne, String origin);
+    void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne);
 
     void logIntygRead(String intygsId, String intygsTyp);
 
     void logIntygPrintPdf(String intygsId, String intygsTyp);
 
-    void logIntygSigned(String intygsId, String userHsaId, String authScheme, String origin, RelationKod relationCode);
+    void logIntygSigned(String intygsId, String userHsaId, String authScheme, RelationKod relationCode);
 
     void logIntygRegistered(String intygsId, String intygsTyp);
 
@@ -87,7 +87,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer);
 
-    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, String origin, boolean isAnswer);
+    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, boolean isAnswer);
 
     void logIntegratedOtherUnit(String intygsId, String intygsTyp, String unitId);
 

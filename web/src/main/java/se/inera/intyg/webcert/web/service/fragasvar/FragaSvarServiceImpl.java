@@ -271,8 +271,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         monitoringService.logAnswerSent(saved.getExternReferens(), saved.getInternReferens(),
-                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardAktorHsaId(), saved.getAmne(),
-                user.getOrigin());
+                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardAktorHsaId(), saved.getAmne());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_ANSWER_FROM_CARE);
@@ -366,8 +365,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         monitoringService.logQuestionSent(fraga.getExternReferens(), fraga.getInternReferens(),
-                (fraga.getIntygsReferens() == null) ? null : fraga.getIntygsReferens().getIntygsId(), fraga.getVardAktorHsaId(), fraga.getAmne(),
-                user.getOrigin());
+                (fraga.getIntygsReferens() == null) ? null : fraga.getIntygsReferens().getIntygsId(), fraga.getVardAktorHsaId(), fraga.getAmne());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_QUESTION_FROM_CARE);

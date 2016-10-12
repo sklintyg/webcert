@@ -29,11 +29,10 @@ import ch.qos.logback.classic.PatternLayout;
  */
 public class PatternLayoutWithUserContext extends PatternLayout {
     static {
-        PatternLayout.defaultConverterMap.put(
-                "user", UserConverter.class.getName());
-        PatternLayout.defaultConverterMap.put(
-                "session", SessionConverter.class.getName());
-        PatternLayout.defaultConverterMap.put(
-                "selectedCareUnit", UserSelectedCareUnitConverter.class.getName());
+        PatternLayout.defaultConverterMap.put("user", UserConverter.class.getName());
+        PatternLayout.defaultConverterMap.put("session", SessionConverter.class.getName());
+        PatternLayout.defaultConverterMap.put("selectedCareUnit", UserSelectedCareUnitConverter.class.getName());
+        PatternLayout.defaultConverterMap.put("origin", OriginConverter.class.getName());
+        PatternLayout.defaultConverterMap.put("role", RoleConverter.class.getName());
     }
 }

@@ -105,9 +105,9 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogAnswerSent() {
-        logService.logAnswerSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE, ORIGIN);
+        logService.logAnswerSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
-                "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING' with origin 'NORMAL'");
+                "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
@@ -166,16 +166,16 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogIntygSigned() {
-        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME, ORIGIN, null);
+        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME, null);
         verifyLog(Level.INFO,
-                "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' with origin 'NORMAL' and relation code 'NO RELATION'");
+                "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'NO RELATION'");
     }
 
     @Test
     public void shouldLogIntygSignedWithRelation() {
-        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME, ORIGIN, RelationKod.KOMPLT);
+        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME, RelationKod.KOMPLT);
         verifyLog(Level.INFO,
-                "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' with origin 'NORMAL' and relation code 'KOMPLT'");
+                "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'KOMPLT'");
     }
 
     @Test
@@ -246,16 +246,16 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogQuestionSent() {
-        logService.logQuestionSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE, ORIGIN);
+        logService.logQuestionSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
-                "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING' with origin 'NORMAL'");
+                "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogQuestionSentWhenParametersAllNull() {
-        logService.logQuestionSent(null, null, null, null, null, null);
+        logService.logQuestionSent(null, null, null, null, null);
         verifyLog(Level.INFO,
-                "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE' with origin 'null'");
+                "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
     }
 
     @Test
