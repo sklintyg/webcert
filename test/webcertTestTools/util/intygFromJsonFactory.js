@@ -129,6 +129,9 @@ module.exports = {
         };
     },
     defaultLuaena: function() {
+
+        templateJsonObjLuaena.id = guid();
+
         return {
             id: templateJsonObjLuaena.id,
             document: JSON.stringify(templateJsonObjLuaena),
