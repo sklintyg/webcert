@@ -4,7 +4,7 @@ apply plugin: 'com.moowork.grunt'
 apply plugin: 'com.moowork.node'
 
 grunt {
-    colors = System.properties['gruntColors'] ?: true
+    colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
 }
 
 node {
