@@ -19,16 +19,14 @@
 package se.inera.intyg.webcert.web.service.monitoring;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.Arrays;
+
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +35,17 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MonitoringLogServiceImplTest {
 
     private static final String INTYGS_ID = "INTYGS_ID";
     private static final String ENHET = "ENHET";
+    private static final String VARDGIVARE = "VARDGIVARE";
     private static final String COPY_INTYGS_ID = "COPY_INTYGS_ID";
     private static final String ORGINAL_INTYG_ID = "ORGINAL_INTYG_ID";
     private static final String INTYGS_TYP = "INTYGS_TYP";
@@ -58,10 +60,9 @@ public class MonitoringLogServiceImplTest {
     private static final String FRAGESTALLARE = "FRAGESTALLARE";
     private static final String EXTERN_REFERENS = "EXTERN_REFERENS";
     private static final long INTERN_REFERENS = 97;
-    private static final String AMNE = "AMNE";
-    private static final String UNIT_HSA_ID = "UNIT_HSA_ID";
-    private static final String USER_HSA_ID = "USER_HSA_ID";
+    private static final Amne AMNE = Amne.ARBETSTIDSFORLAGGNING;
     private static final String PERSON_ID = "PERSON_ID";
+    private static final String ORIGIN = "NORMAL";
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -88,7 +89,7 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogAnswerReceived() {
         logService.logAnswerReceived(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
-                "ANSWER_RECEIVED Received answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+                "ANSWER_RECEIVED Received answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     private void verifyLog(Level logLevel, String logMessage) {
@@ -106,13 +107,31 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogAnswerSent() {
         logService.logAnswerSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
-                "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+                "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogIntygCopied() {
         logService.logIntygCopied(COPY_INTYGS_ID, ORGINAL_INTYG_ID);
         verifyLog(Level.INFO, "INTYG_COPIED Utkast 'COPY_INTYGS_ID' created as a copy of 'ORGINAL_INTYG_ID'");
+    }
+
+    @Test
+    public void shouldLogIntygCopiedRenewal() {
+        logService.logIntygCopiedRenewal(COPY_INTYGS_ID, ORGINAL_INTYG_ID);
+        verifyLog(Level.INFO, "INTYG_COPIED_RENEWAL Utkast 'COPY_INTYGS_ID' created as a renewal copy of 'ORGINAL_INTYG_ID'");
+    }
+
+    @Test
+    public void shouldLogIntygCopiedReplacement() {
+        logService.logIntygCopiedReplacement(COPY_INTYGS_ID, ORGINAL_INTYG_ID);
+        verifyLog(Level.INFO, "INTYG_COPIED_REPLACEMENT Utkast 'COPY_INTYGS_ID' created as a replacement copy of 'ORGINAL_INTYG_ID'");
+    }
+
+    @Test
+    public void shouldLogIntygCopiedCompletion() {
+        logService.logIntygCopiedCompletion(COPY_INTYGS_ID, ORGINAL_INTYG_ID);
+        verifyLog(Level.INFO, "INTYG_COPIED_COMPLETION Utkast 'COPY_INTYGS_ID' created as a completion copy of 'ORGINAL_INTYG_ID'");
     }
 
     @Test
@@ -147,8 +166,16 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogIntygSigned() {
-        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME);
-        verifyLog(Level.INFO, "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME'");
+        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME, null);
+        verifyLog(Level.INFO,
+                "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'NO RELATION'");
+    }
+
+    @Test
+    public void shouldLogIntygSignedWithRelation() {
+        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME, RelationKod.KOMPLT);
+        verifyLog(Level.INFO,
+                "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'KOMPLT'");
     }
 
     @Test
@@ -197,29 +224,44 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogQuestionReceived() {
-        logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE);
+        logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE, null);
         verifyLog(Level.INFO,
-                "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+                "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
+    }
+
+    @Test
+    public void shouldLogQuestionReceivedCompletion() {
+        logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, Amne.KOMPLETTERING_AV_LAKARINTYG,
+                Arrays.asList("KOMP1", "KOMP2"));
+        verifyLog(Level.INFO,
+                "QUESTION_RECEIVED_COMPLETION Received completion question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with completion for questions 'KOMP1,KOMP2'");
+    }
+
+    @Test
+    public void shouldLogQuestionReceivedCompletionWrongSubject() {
+        logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE, Arrays.asList("KOMP1", "KOMP2"));
+        verifyLog(Level.INFO,
+                "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogQuestionSent() {
         logService.logQuestionSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
-                "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+                "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogQuestionSentWhenParametersAllNull() {
         logService.logQuestionSent(null, null, null, null, null);
         verifyLog(Level.INFO,
-                "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'null'");
+                "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
     }
 
     @Test
     public void shouldLogUserLogin() {
-        logService.logUserLogin(HSA_ID, AUTH_SCHEME);
-        verifyLog(Level.INFO, "USER_LOGIN Login user 'HSA_ID' using scheme 'AUTH_SCHEME'");
+        logService.logUserLogin(HSA_ID, AUTH_SCHEME, UserOriginType.NORMAL.name());
+        verifyLog(Level.INFO, "USER_LOGIN Login user 'HSA_ID' using scheme 'AUTH_SCHEME' with origin 'NORMAL'");
     }
 
     @Test
@@ -242,8 +284,8 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogUtkastCreated() {
-        logService.logUtkastCreated(INTYGS_ID, INTYGS_TYP, UNIT_HSA_ID, USER_HSA_ID);
-        verifyLog(Level.INFO, "UTKAST_CREATED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' created by 'USER_HSA_ID' on unit 'UNIT_HSA_ID'");
+        logService.logUtkastCreated(INTYGS_ID, INTYGS_TYP, ENHET, HSA_ID);
+        verifyLog(Level.INFO, "UTKAST_CREATED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' created by 'HSA_ID' on unit 'ENHET'");
     }
 
     @Test
@@ -268,5 +310,17 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogUtkastRead() {
         logService.logUtkastRead(INTYGS_ID, INTYGS_TYP);
         verifyLog(Level.INFO, "UTKAST_READ Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was read");
+    }
+
+    @Test
+    public void shouldLogIntegratedOtherUnit() {
+        logService.logIntegratedOtherUnit(INTYGS_ID, INTYGS_TYP, ENHET);
+        verifyLog(Level.INFO, "LOGIN_OTHER_UNIT Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other unit 'ENHET'");
+    }
+
+    @Test
+    public void shouldLogIntegratedOtherCaregiver() {
+        logService.logIntegratedOtherCaregiver(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET);
+        verifyLog(Level.INFO, "LOGIN_OTHER_CAREGIVER Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other caregiver 'VARDGIVARE' unit 'ENHET'");
     }
 }

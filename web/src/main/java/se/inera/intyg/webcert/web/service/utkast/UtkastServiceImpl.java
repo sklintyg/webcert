@@ -216,8 +216,8 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional(readOnly = true)
-    public Utkast getDraft(String intygId, boolean coherentJournaling) {
-        Utkast utkast = getIntygAsDraft(intygId);
+    public Utkast getDraft(String intygId, String intygType, boolean coherentJournaling) {
+        Utkast utkast = getIntygAsDraft(intygId, intygType);
         if (utkast != null) {
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast, coherentJournaling);
             if (!coherentJournaling) {
@@ -434,14 +434,14 @@ public class UtkastServiceImpl implements UtkastService {
         return new CreateNewDraftHolder(request.getIntygId(), request.getHosPerson(), request.getPatient());
     }
 
-    private Utkast getIntygAsDraft(String intygsId) {
+    private Utkast getIntygAsDraft(String intygsId, String intygType) {
 
         LOG.debug("Fetching utkast '{}'", intygsId);
 
-        Utkast utkast = utkastRepository.findOne(intygsId);
+        Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, intygType);
 
         if (utkast == null) {
-            LOG.warn("Utkast '{}' was not found", intygsId);
+            LOG.warn("Utkast '{}' of type {} was not found", intygsId, intygType);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Utkast could not be found");
         }
 

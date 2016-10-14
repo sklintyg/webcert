@@ -42,48 +42,48 @@ module.exports = function() {
 
         var fragaText = 'En ' + amne + '-fråga ' + testdataHelper.generateTestGuid();
 
-        if (isSMIIntyg) {
+        // if (isSMIIntyg) {
 
-            lisuUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
-            lisuUtkastPage.arendeQuestion.text.sendKeys(fragaText);
-            lisuUtkastPage.selectQuestionTopic(amne);
+        lisuUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
+        lisuUtkastPage.arendeQuestion.text.sendKeys(fragaText);
+        lisuUtkastPage.selectQuestionTopic(amne);
 
-            lisuUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
+        lisuUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
 
-            lisuUtkastPage.arendePanel.getAttribute('id').then(function(result) {
-                var element = result.split('-');
-                var splitIndex = element[0].length + element[1].length + 2;
-                var fragaId = result.substr(splitIndex, result.length);
+        lisuUtkastPage.arendePanel.getAttribute('id').then(function(result) {
+            var element = result.split('-');
+            var splitIndex = element[0].length + element[1].length + 2;
+            var fragaId = result.substr(splitIndex, result.length);
 
-                global.meddelanden.push({
-                    typ: 'Fråga',
-                    amne: helpers.subjectCodes[amne],
-                    id: fragaId,
-                    text: fragaText
-                });
-
-                logger.debug('Frågans ID: ' + fragaId);
-            }).then(callback);
-
-        } else {
-            fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
-            fkIntygPage.question.text.sendKeys(fragaText);
-            fkIntygPage.selectQuestionTopic(amne);
-
-            fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
-
-            fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
-                var fragaId = result.split('-')[1];
-                global.meddelanden.push({
-                    typ: 'Fråga',
-                    amne: amne,
-                    id: fragaId,
-                    text: fragaText
-                });
-                logger.debug('Frågans ID: ' + fragaId);
-                callback();
+            global.meddelanden.push({
+                typ: 'Fråga',
+                amne: helpers.subjectCodes[amne],
+                id: fragaId,
+                text: fragaText
             });
-        }
+
+            logger.debug('Frågans ID: ' + fragaId);
+        }).then(callback);
+
+        // } else {
+        //     fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
+        //     fkIntygPage.question.text.sendKeys(fragaText);
+        //     fkIntygPage.selectQuestionTopic(amne);
+
+        //     fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
+
+        //     fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
+        //         var fragaId = result.split('-')[1];
+        //         global.meddelanden.push({
+        //             typ: 'Fråga',
+        //             amne: amne,
+        //             id: fragaId,
+        //             text: fragaText
+        //         });
+        //         logger.debug('Frågans ID: ' + fragaId);
+        //         callback();
+        //     });
+        // }
 
     });
 
@@ -131,16 +131,16 @@ module.exports = function() {
     });
 
     this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
-        var answerWithIntygBtn = element(by.id('answerWithIntygBtn-' + global.intyg.messages[0].id));
-
-        return answerWithIntygBtn.sendKeys(protractor.Key.SPACE).then(function() {
-            return expect(element(by.cssContainingText('.btn', 'Svara med nytt intyg')).isDisplayed()).to.eventually.not.be.ok;
+        return fkIntygPage.svaraMedNyttIntyg(global.intyg.messages[0].id).then(function() {
+            browser.sleep(3000).then(function() {
+                return expect(element(by.cssContainingText('.btn', 'Svara med nytt intyg')).isPresent()).to.become(false);
+            });
         });
 
     });
 
     this.Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text) {
-        return expect(fkIntygPage.komplettera.dialog.modal.getText()).to.eventually.contain(text);
+        return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(text);
     });
 
 
@@ -150,7 +150,7 @@ module.exports = function() {
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
-        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-success', ' Svara')).sendKeys(protractor.Key.SPACE)
+        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-success', 'Svara')).sendKeys(protractor.Key.SPACE)
             .then(function() {
                 return fkIntygPage.komplettera.dialog.svaraMedTextKnapp.sendKeys(protractor.Key.SPACE);
             })
@@ -158,7 +158,7 @@ module.exports = function() {
                 return browser.sleep(2000); // Sleep pga animation
             })
             .then(function() {
-                return kompletteringsFraga.element(by.model('qa.svarsText')).sendKeys(textSvar);
+                return kompletteringsFraga.element(by.model('arendeSvar.meddelande')).sendKeys(textSvar);
 
             })
             .then(function() {
@@ -172,7 +172,7 @@ module.exports = function() {
         return svaraPaKomplettering
             .then(function() {
                 logger.info('Kontrollerar att fråga är märkt som hanterad..');
-                expect(kompletteringsFraga.element(by.css('.qa-block-handled')).getText()).to.eventually.contain(textSvar)
+                expect(kompletteringsFraga.element(by.css('.arende-block-handled')).getText()).to.eventually.contain(textSvar)
                     .then(function(value) {
                         logger.info('OK - textsvar = ' + value);
                     }, function(reason) {

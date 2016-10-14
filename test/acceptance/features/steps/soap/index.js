@@ -151,5 +151,7 @@ module.exports = {
             '</urn:ReceiveMedicalCertificateAnswer>';
     },
     SendMessageToCare: require('./SendMessageToCare').SendMessageToCare,
-    CreateDraftCertificateV2: require('./CreateDraftV2').CreateDraftCertificateV2
+    CreateDraftCertificateV2: require('./CreateDraftV2').CreateDraftCertificateV2,
+    RegisterMedicalCertificate: require('./RegisterMedicalCertificate').RegisterMedicalCertificate,
+    SendMedicalCertificate: require('./SendMedicalCertificate').SendMedicalCertificate
 };

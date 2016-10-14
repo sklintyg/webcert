@@ -78,10 +78,10 @@
           <h1>Välkommen till Webcert</h1>
           <p>
             Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och
-            kommunicera med Försäkringskassan om läkarintyg FK&nbsp;7263. För närvarande stödjer tjänsten följande
-            intyg:
+            kommunicera med Försäkringskassan. För närvarande stödjer tjänsten följande intyg:
           <ul style="margin-bottom:30px">
             <li>Läkarintyg FK 7263</li>
+            <li>Läkarutlåtande för sjukersättning</li>
             <li>Transportstyrelsens läkarintyg</li>
             <li>Transportstyrelsens läkarintyg, diabetes</li>
           </ul>

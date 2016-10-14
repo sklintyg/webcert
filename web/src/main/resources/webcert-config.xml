@@ -98,11 +98,8 @@
     <bean id="UtkastBootstrapBean" class="se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean" />
   </beans>
 
-  <beans profile="!dev">
-    <util:properties id="webcertFeatures" location="classpath:/features.properties" />
-  </beans>
-  <beans profile="dev">
-    <util:properties id="webcertFeatures" location="classpath:/features.properties,classpath:/features-dev.properties" />
+  <beans>
+    <util:properties id="webcertFeatures" location="${feature.global.file}"/>
   </beans>
 
   <beans>

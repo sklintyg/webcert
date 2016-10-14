@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PatientParameter;
 
@@ -54,6 +55,9 @@ import java.util.Map;
  * Controller to enable an external user to access certificates directly from a
  * link in an external patient care system.
  *
+ * Please note that the vardenhet selection and auth validation is handled by
+ * {@link se.inera.intyg.webcert.web.auth.IntegrationEnhetFilter}.
+ *
  * @author bensam
  */
 @Path("/intyg")
@@ -72,7 +76,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_PATIENT_POSTORT = "postort";
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
     private static final String PARAM_REFERENCE = "ref";
-    private static final String PARAM_ENHET = "enhet";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -86,6 +89,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Autowired
     private UtkastRepository utkastRepository;
 
+    @Autowired
+    private MonitoringLogService monitoringLog;
     /**
      * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
      * the certificate.
@@ -106,10 +111,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference,
-            @QueryParam(PARAM_ENHET) String enhet) {
+            @QueryParam(PARAM_REFERENCE) String reference) {
         return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress,
-                postnummer, postort, coherentJournaling, reference, enhet);
+                postnummer, postort, coherentJournaling, reference);
     }
     // CHECKSTYLE:OFF ParameterNumber
 
@@ -135,8 +139,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference,
-            @QueryParam(PARAM_ENHET) String enhet) {
+            @QueryParam(PARAM_REFERENCE) String reference) {
 
         super.validateRedirectToIntyg(intygId);
 
@@ -149,26 +152,23 @@ public class IntygIntegrationController extends BaseIntegrationController {
             isUtkast = true;
         }
 
+        // If intygstyp can't be established, default to FK7263 to be backwards compatible
         if (typ == null) {
             typ = utkast != null ? utkast.getIntygsTyp() : Fk7263EntryPoint.MODULE_ID;
         }
 
+        // Monitoring log the usage of coherentJournaling
+        if (coherentJournaling) {
+            if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
+                monitoringLog.logIntegratedOtherCaregiver(intygId, typ, utkast.getVardgivarId(), utkast.getEnhetsId());
+            } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
+                monitoringLog.logIntegratedOtherUnit(intygId, typ, utkast.getEnhetsId());
+            }
+        }
+
+        // If the type doesn't equals to FK7263 then verify the required query-parameters
         if (!typ.equals(Fk7263EntryPoint.MODULE_ID)) {
-            if (StringUtils.isBlank(fornamn)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'fornamn'");
-            }
-            if (StringUtils.isBlank(efternamn)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'efternamn'");
-            }
-            if (StringUtils.isBlank(postadress)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'postadress'");
-            }
-            if (StringUtils.isBlank(postnummer)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'postnummer'");
-            }
-            if (StringUtils.isBlank(postort)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter 'postort'");
-            }
+            verifyQueryStrings(fornamn, efternamn, postadress, postnummer, postort);
         }
 
         if (!StringUtils.isBlank(reference)) {
@@ -178,8 +178,21 @@ public class IntygIntegrationController extends BaseIntegrationController {
         PatientParameter patientDetails = new PatientParameter(fornamn, efternamn, mellannamn, postadress, postnummer, postort);
 
         LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, typ, coherentJournaling);
-        return buildRedirectResponse(uriInfo, typ, intygId, alternatePatientSSn, responsibleHospName,
-                patientDetails, isUtkast, coherentJournaling);
+        return buildRedirectResponse(uriInfo, typ, intygId, alternatePatientSSn, responsibleHospName, patientDetails, isUtkast, coherentJournaling);
+    }
+
+    private void verifyQueryStrings(String fornamn, String efternamn, String postadress, String postnummer, String postort) {
+        verifyQueryString(PARAM_PATIENT_FORNAMN, fornamn);
+        verifyQueryString(PARAM_PATIENT_EFTERNAMN, efternamn);
+        verifyQueryString(PARAM_PATIENT_POSTADRESS, postadress);
+        verifyQueryString(PARAM_PATIENT_POSTNUMMER, postnummer);
+        verifyQueryString(PARAM_PATIENT_POSTORT, postort);
+    }
+
+    private void verifyQueryString(String queryStringName, String queryStringValue) {
+        if (StringUtils.isBlank(queryStringValue)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter '" + queryStringName + "'");
+        }
     }
     // CHECKSTYLE:OFF ParameterNumber
 

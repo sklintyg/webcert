@@ -51,6 +51,7 @@ module.exports = {
         return text;
     },
     dateFormat: function(date) {
+        console.log(date.toISOString());
         var d = date.toISOString().slice(0, 10).replace(/-/g, '-');
         return d;
     },

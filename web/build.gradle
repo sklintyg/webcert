@@ -5,11 +5,11 @@ apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'com.moowork.grunt'
 apply plugin: 'com.moowork.node'
 
-def webappOutputDir = 'build/apps/';
-def webappTestOutputDir = 'build/karma/';
+def webappOutputDir = 'build/apps/'
+def webappTestOutputDir = 'build/karma/'
 
 grunt {
-    colors = true
+    colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
 }
 
 node {
@@ -29,7 +29,11 @@ task jsTests(type: NodeTask, dependsOn: npmInstall) {
     outputs.dir(webappTestOutputDir)
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test', '--outputDir=' + webappTestOutputDir, '--skip-coverage=' + (!project.hasProperty('runSonar'))]
+    doFirst {
+        args = ['test',
+                "--outputDir=${webappTestOutputDir}",
+                '--skip-coverage=' + !gradle.taskGraph.allTasks.any{it.name == 'sonarcube'}]
+    }
 }
 
 test.dependsOn(jsTests)
@@ -43,7 +47,7 @@ task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
     outputs.dir(webappOutputDir)
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['default', '--outputDir=' + webappOutputDir]
+    args = ['default', "--outputDir=${webappOutputDir}"]
 }
 
 war.dependsOn(jsInclude)
@@ -68,23 +72,20 @@ gretty {
 
     contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
 
-    def useMinifiedJavaScript = false;
-    if (System.properties['webcert.useMinifiedJavaScript'] != null) {
-        useMinifiedJavaScript = System.properties['webcert.useMinifiedJavaScript'];
-    }
+    def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
 
     jvmArgs = [
-            "-Dcatalina.base=${buildDir}/catalina.base",
-            "-Dspring.profiles.active=dev",
-            "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
-            "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-            "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
-            "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-            "-Dwebcert.useMinifiedJavaScript=" + useMinifiedJavaScript,
-            "-Dh2.tcp.port=9094",
-            "-Dh2.web.port=9090",
-            "-Djetty.port=9088"
-    ]
+        "-Dcatalina.base=${buildDir}/catalina.base",
+        "-Dspring.profiles.active=dev",
+        "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
+        "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
+        "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
+        "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
+        "-Dwebcert.useMinifiedJavaScript=${minified}",
+        "-Dh2.tcp.port=9094",
+        "-Dh2.web.port=9090",
+        "-Djetty.port=9088"
+        ]
 
     extraResourceBase webappOutputDir
 }
@@ -160,6 +161,10 @@ dependencies {
         exclude(module: 'jsr311-api')
     }
 
+    compileOnly 'javax.servlet:servlet-api:2.5'
+    compileOnly 'com.google.auto.value:auto-value:1.1'
+    compileOnly 'org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1'
+
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
     testCompile 'javax.servlet:javax.servlet-api:3.1.0'
@@ -170,10 +175,6 @@ dependencies {
     testCompile 'org.antlr:ST4:4.0.8'
 
     testRuntime "com.h2database:h2:${h2Version}"
-
-    providedCompile 'javax.servlet:servlet-api:2.5'
-    providedCompile 'com.google.auto.value:auto-value:1.1'
-    providedCompile 'org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1'
 
     gretty "org.apache.activemq:activemq-client:${activeMqVersion}"
     gretty "org.apache.activemq:activemq-broker:${activeMqVersion}"

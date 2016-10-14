@@ -17,8 +17,12 @@ fitnesse {
             "webcert.web.baseUrl": System.properties['web.baseUrl'] ?: "http://localhost:9088/",
             "webcert.baseUrl"    : System.properties['baseUrl'] ?: "http://localhost:9088/",
             "logsender.baseUrl"  : System.properties['logsender.baseUrl'] ?: "http://localhost:9097/log-sender/",
-            "certificate.baseUrl": System.properties['certificat.baseUrl'] ?: "http://localhost:8080/inera-certificate/"
+            "certificate.baseUrl": System.properties['certificate.baseUrl'] ?: "http://localhost:8080/inera-certificate/"
     ]
+}
+
+sonarqube {
+    skipProject = true
 }
 
 dependencies {
@@ -38,6 +42,7 @@ dependencies {
 
     compile "com.jayway.awaitility:awaitility:1.4.0"
 
+    fitnesse "com.jayway.awaitility:awaitility:1.4.0"
     fitnesse "se.inera.intyg.common:common-specifications:${commonVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-support:${seleniumVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-firefox-driver:${seleniumVersion}"

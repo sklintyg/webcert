@@ -59,13 +59,14 @@ module.exports = function() {
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id + '?fornamn=TODO';
             }
         } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
-            url = process.env.WEBCERT_URL + '/webcert/web/user/certificate/' + global.intyg.id + '/questions';
+            url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';
 
         } else if (intygstyp === 'intyget' && origin === undefined) {
             if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
             } else {
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
+
             }
         } else {
             logger.error('Okänd parameter origin: ' + origin + ', intygstyp: ' + intygstyp);
@@ -74,10 +75,19 @@ module.exports = function() {
         return browser.get(url).then(function() {
             console.log('Går till url: ' + url);
             if (!isSMIIntyg) { // om djupintegration v1 så kommer det fram uppdragsval
-                return element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link')).click().then(function() {
-                    return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
-                        return helpers.fetchMessageIds(intyg.typ);
-                    });
+                var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
+                enhetSelectorLink.isPresent().then(function(isPresent) {
+                    if (isPresent) {
+                        return enhetSelectorLink.click().then(function() {
+                            return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                                return helpers.fetchMessageIds(intyg.typ);
+                            });
+                        });
+                    } else {
+                        return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                            return helpers.fetchMessageIds(intyg.typ);
+                        });
+                    }
 
                 });
             } else {

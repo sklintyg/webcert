@@ -214,7 +214,7 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
 
-        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(), user.getAuthenticationScheme());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(), user.getAuthenticationScheme(), utkast.getRelationKod());
 
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
@@ -275,8 +275,7 @@ public class SignaturServiceImpl implements SignaturService {
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
         // Audit signing
-        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(),
-                user.getAuthenticationScheme());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(), user.getAuthenticationScheme(), utkast.getRelationKod());
 
         // Notify stakeholders when a draft has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
@@ -312,7 +311,8 @@ public class SignaturServiceImpl implements SignaturService {
         return utkast;
     }
 
-    /** Update utkast with "senast sparad av" information.
+    /**
+     * Update utkast with "senast sparad av" information.
      */
     private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
         VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
@@ -323,7 +323,8 @@ public class SignaturServiceImpl implements SignaturService {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
             Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
             String updatedInternal = moduleApi
-                    .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson), signeringstid);
+                    .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),
+                            signeringstid);
             utkast.setModel(updatedInternal);
         } catch (ModuleException | ModuleNotFoundException | IOException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);

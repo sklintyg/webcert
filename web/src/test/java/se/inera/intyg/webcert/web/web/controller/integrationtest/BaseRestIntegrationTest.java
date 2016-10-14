@@ -65,6 +65,13 @@ public abstract class BaseRestIntegrationTest {
 
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
             "TSTNMT2321000156-1039").lakare(true).build();
+
+    /**
+     * Has multiple vardenheter.
+     */
+    protected static FakeCredentials ASA_ANDERSSON = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
+            "IFV1239877878-1046").lakare(true).build();
+
     protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
     protected static final String DEFAULT_INTYGSTYP = "fk7263";
 

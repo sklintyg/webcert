@@ -10,9 +10,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
-
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +22,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.common.integration.hsa.model.Mottagning;
+import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -33,27 +39,34 @@ public class RelationServiceImplTest {
     private static final String INTYGID_3 = "intyg3";
     private static final String INTYGID_4 = "intyg4";
     private static final String INTYGID_5 = "intyg5";
+    private static final String UNIT_1 = "unit1";
+    private static final String UNIT_2 = "unit2";
 
     private static LocalDateTime date = LocalDateTime.parse("2016-01-01T00:00");
 
     // PLEASE NOTE: Ordering matters here in this segment
-    private static final Utkast UTKAST_1 = createUtkast(INTYGID_1, null, null);
-    private static final Utkast UTKAST_2 = createUtkast(INTYGID_2, INTYGID_1, RelationKod.FRLANG);
-    private static final Utkast UTKAST_3 = createUtkast(INTYGID_3, INTYGID_2, RelationKod.KOMPLT);
-    private static final Utkast UTKAST_4 = createUtkast(INTYGID_4, INTYGID_3, RelationKod.ERSATT);
-    private static final Utkast UTKAST_5 = createUtkast(INTYGID_5, INTYGID_3, RelationKod.KOMPLT);
+    private static final Utkast UTKAST_1 = createUtkast(INTYGID_1, null, null, UNIT_2);
+    private static final Utkast UTKAST_2 = createUtkast(INTYGID_2, INTYGID_1, RelationKod.FRLANG, UNIT_1);
+    private static final Utkast UTKAST_3 = createUtkast(INTYGID_3, INTYGID_2, RelationKod.KOMPLT, UNIT_1);
+    private static final Utkast UTKAST_4 = createUtkast(INTYGID_4, INTYGID_3, RelationKod.ERSATT, UNIT_1);
+    private static final Utkast UTKAST_5 = createUtkast(INTYGID_5, INTYGID_3, RelationKod.KOMPLT, UNIT_2);
 
     @Mock
     private UtkastRepository utkastRepo;
+
+    @Mock
+    private WebCertUserService userService;
 
     @InjectMocks
     private RelationServiceImpl relationService;
 
     @Before
     public void setup() {
-        /* This is setup as following:
+        /*
+         * This is setup as following:
          * Utkast 1 -- Utkast 2 -- Utkast 3 -- Utkast 4
-         *                                  \- Utkast 5 */
+         *                                  \- Utkast 5
+         */
         when(utkastRepo.findOne(eq(INTYGID_5))).thenReturn(UTKAST_5);
         when(utkastRepo.findOne(eq(INTYGID_4))).thenReturn(UTKAST_4);
         when(utkastRepo.findOne(eq(INTYGID_3))).thenReturn(UTKAST_3);
@@ -61,6 +74,7 @@ public class RelationServiceImplTest {
         when(utkastRepo.findOne(eq(INTYGID_1))).thenReturn(UTKAST_1);
         when(utkastRepo.findAllByRelationIntygsId(eq(INTYGID_3))).thenReturn(Arrays.asList(UTKAST_4, UTKAST_5));
         when(utkastRepo.findAllByRelationIntygsId(eq(INTYGID_4))).thenReturn(new ArrayList<>());
+        when(userService.getUser()).thenReturn(createUser(UNIT_1, UNIT_2));
     }
 
     @Test
@@ -143,14 +157,40 @@ public class RelationServiceImplTest {
         assertFalse(relationService.getRelations("doesNotExist").isPresent());
     }
 
-    private static Utkast createUtkast(String intygid, String parent, RelationKod kod) {
+    @Test
+    public void testWrongUnit() {
+        when(userService.getUser()).thenReturn(createUser("anotherUnit"));
+        assertEquals(1, relationService.getRelations(INTYGID_4).get().size());
+    }
+
+    @Test
+    public void testWrongSubunit() {
+        when(userService.getUser()).thenReturn(createUser(UNIT_1));
+        List<RelationItem> list = relationService.getRelations(INTYGID_3).get();
+        assertEquals(3, list.size());
+        assertEquals(INTYGID_4, list.get(0).getIntygsId());
+        assertEquals(INTYGID_3, list.get(1).getIntygsId());
+        assertEquals(INTYGID_2, list.get(2).getIntygsId());
+    }
+
+    private static Utkast createUtkast(String intygid, String parent, RelationKod kod, String unitId) {
         Utkast res = new Utkast();
         res.setIntygsId(intygid);
         res.setRelationIntygsId(parent);
         res.setRelationKod(kod);
         res.setStatus(UtkastStatus.SIGNED);
         res.setSignatur(new Signatur(date, "", intygid, "", "", ""));
+        res.setEnhetsId(unitId);
         date = date.plusDays(1);
         return res;
+    }
+
+    private WebCertUser createUser(String unitHsaId, String... subunitHsaId) {
+        WebCertUser user = new WebCertUser();
+        Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setId(unitHsaId);
+        vardenhet.setMottagningar(Stream.of(subunitHsaId).map(str -> new Mottagning(str, "")).collect(Collectors.toList()));
+        user.setValdVardenhet(vardenhet);
+        return user;
     }
 }

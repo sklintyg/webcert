@@ -615,6 +615,7 @@ class SvaraOchFraga extends ExceptionHandlingFixture {
 
 
     boolean svarArBorta(String id) {
+        sleep(500)
         def result
         Browser.drive {
             waitFor{

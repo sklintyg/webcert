@@ -115,7 +115,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             moduleMap = mep.getModuleFeatures();
 
             if ((moduleMap == null) || moduleMap.isEmpty()) {
-                LOG.warn("Module {} did not expose any features! All features this of module will be disabled!", moduleId);
+                LOG.warn("Module {} did not expose any features! All features of this module will be disabled!", moduleId);
                 moduleMap = Collections.emptyMap();
             }
 

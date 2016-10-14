@@ -16,63 +16,58 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals pages, wcTestTools*/
+/*globals pages, wcTestTools,logger,browser,protractor*/
 
 'use strict';
 
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var testdataHelper = wcTestTools.helpers.testdata;
-var helpers = require('./helpers.js');
 
+var startDate = new Date(); //today
+startDate.setDate(startDate.getDate() + Math.floor(Math.random() * 50));
 var date;
 var key;
 var digit;
 
 var pattern = /\d{4}\-\d{2}\-\d{2}/g;
 
-function storeDate(tmpDate) {
-    date = tmpDate;
-}
-
-function storeDigit(tmpDigit) {
-    digit = tmpDigit;
-}
-
-function storeKey(tmpKey) {
-    key = tmpKey;
-}
-
 module.exports = function() {
 
-    this.Given(/^jag fyller i ett from datum$/, function(callback) {
-        helpers.getRandomNedsattKey().then(function(nedsattKey) {
-            storeKey(nedsattKey);
-            fkUtkastPage.nedsatt[nedsattKey].from.sendKeys(testdataHelper.dateFormat(new Date()));
-        }).then(callback);
+    this.Given(/^jag fyller i ett from datum$/, function() {
+        key = testdataHelper.shuffle(['med25', 'med50', 'med75', 'med100'])[0];
+        var start = testdataHelper.dateFormat(startDate);
+        logger.info('Startdatum: ' + start);
+        return fkUtkastPage.nedsatt[key].from.sendKeys(start);
     });
 
 
-    this.Given(/^jag fyller i kortkommando som till och med datum$/, function(callback) {
-        helpers.getRandomDigit(999).then(function(randomDigit) {
-            storeDigit(randomDigit);
+    this.Given(/^jag fyller i kortkommando som till och med datum$/, function() {
+        digit = Math.floor(Math.random() * 999);
+        var shortcode = 'd' + digit;
+        logger.info('Kortkommando:' + shortcode);
 
-            fkUtkastPage.nedsatt[key].tom.sendKeys('d' + randomDigit).then(function() {
-                fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys(testdataHelper.dateFormat(new Date()));
-                fkUtkastPage.nedsatt[key].tom.getAttribute('value').then(function(date) {
-                    storeDate(date);
-                }).then(callback);
+        return fkUtkastPage.nedsatt[key].tom.sendKeys(shortcode).then(function() {
+            return fkUtkastPage.nedsatt[key].tom.sendKeys(protractor.Key.TAB).then(function() {
+                return browser.sleep(1000).then(function() {
+                    return fkUtkastPage.nedsatt[key].tom.getAttribute('value').then(function(dateValue) {
+                        date = dateValue;
+                    });
+                });
             });
         });
     });
 
     this.Given(/^ska till och med datum räknas ut automatiskt$/, function() {
+        console.log(date);
         var result = pattern.test(date);
-
         if (result) {
             var futureDate = new Date();
-            futureDate.setDate(futureDate.getDate() + digit);
+            futureDate.setDate(startDate.getDate() + (digit - 1)); // -1 eftersom from-dagen räknas med 
             var formattedFutureDate = testdataHelper.dateFormat(futureDate);
+            logger.info('Jämför ' + date + ' med ' + formattedFutureDate + '..');
             expect(date).to.equal(formattedFutureDate);
+        } else {
+            throw 'Felaktigt datumformat, ' + date;
         }
     });
 };

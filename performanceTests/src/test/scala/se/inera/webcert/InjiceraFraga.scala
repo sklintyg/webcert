@@ -1,4 +1,4 @@
-package se.inera.webcert 
+package se.inera.webcert
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
@@ -6,26 +6,23 @@ import scala.concurrent.duration._
 
 class InjiceraFraga extends Simulation {
 
-	val intyg = csv("intyg.csv").queue
-	val baseUrl = System.getProperty("baseUrl", "http://localhost:8080" )
+  val intyg = csv("intyg.csv").queue
+  val baseUrl = System.getProperty("baseUrl", "http://localhost:8080")
 
-	val httpConf = http
-			.baseURL(baseUrl)
-			.acceptHeader("*/*")
-			.acceptEncodingHeader("gzip,deflate")
+  val httpConf = http
+    .baseURL(baseUrl)
+    .acceptHeader("*/*")
+    .acceptEncodingHeader("gzip,deflate")
 
+  val headers_json = Map(
+    "Content-Type" -> """application/json""")
 
-	val headers_json = Map(
-			"Content-Type" -> """application/json"""
-	)
-
-
-	val scn = scenario("InjiceraFraga")
-		.feed(intyg)
-		.exec(http("Inject a question")
-					.post("/testability/questions")
-					.headers(headers_json)
-					.body(StringBody("""{"amne":"OVRIGT",
+  val scn = scenario("InjiceraFraga")
+    .feed(intyg)
+    .exec(http("Inject a question")
+      .post("/testability/questions")
+      .headers(headers_json)
+      .body(StringBody("""{"amne":"OVRIGT",
  "externReferens":"FK-${intygsId}",
  "frageSigneringsDatum":"2012-12-22T21:00:00.000",
  "frageSkickadDatum":"2013-01-01",
@@ -44,12 +41,11 @@ class InjiceraFraga extends Simulation {
 	       "vardgivarnamn" : "Landstinget Blekinge",
 	       "hsaId":"${vardPersonId}",
 	       "namn":"${vardPersonNamn}"}}"""))
-		.check(jsonPath("$.internReferens").saveAs("internReferens"))
-			)
-		.exec { session =>
-		  println(session("internReferens"))
-		  session
-		}
+      .check(jsonPath("$.internReferens").saveAs("internReferens")))
+    .exec { session =>
+      println(session("internReferens"))
+      session
+    }
 
-	setUp(scn.inject(atOnceUsers(1)).protocols(httpConf))
+  setUp(scn.inject(atOnceUsers(1)).protocols(httpConf))
 }

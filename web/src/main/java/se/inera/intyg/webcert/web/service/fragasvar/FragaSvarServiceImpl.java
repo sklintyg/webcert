@@ -119,11 +119,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         validateAcceptsQuestions(fragaSvar);
 
         monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
-                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()),
-                fragaSvar.getExternReferens(),
-                fragaSvar.getInternReferens(),
-                fragaSvar.getVardAktorHsaId(),
-                ((fragaSvar.getAmne() == null) ? null : fragaSvar.getAmne().toString()));
+                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()), fragaSvar.getExternReferens(),
+                fragaSvar.getInternReferens(), fragaSvar.getVardAktorHsaId(), fragaSvar.getAmne(),
+                fragaSvar.getKompletteringar().stream().map(Komplettering::getFalt).collect(Collectors.toList()));
 
         // persist the question
         return fragaSvarRepository.save(fragaSvar);
@@ -148,11 +146,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarSkickadDatum(LocalDateTime.now());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        monitoringService.logAnswerReceived(fragaSvar.getExternReferens(),
-                fragaSvar.getInternReferens(),
-                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()),
-                fragaSvar.getVardAktorHsaId(),
-                ((fragaSvar.getAmne() == null) ? null : fragaSvar.getAmne().toString()));
+        monitoringService.logAnswerReceived(fragaSvar.getExternReferens(), fragaSvar.getInternReferens(),
+                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()), fragaSvar.getVardAktorHsaId(),
+                fragaSvar.getAmne());
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -274,14 +270,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logAnswerSent(saved.getExternReferens(),
-                saved.getInternReferens(),
-                ((saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId()),
-                saved.getVardAktorHsaId(),
-                ((saved.getAmne() == null) ? null : saved.getAmne().toString()));
+        monitoringService.logAnswerSent(saved.getExternReferens(), saved.getInternReferens(),
+                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardAktorHsaId(), saved.getAmne());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_ANSWER_FROM_CARE);
+
+        // Implement Business Rule FS-045
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
+            closeCompletionsAsHandled(fragaSvar.getIntygsReferens().getIntygsId());
+        }
 
         return saved;
     }
@@ -366,11 +364,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logQuestionSent(fraga.getExternReferens(),
-                fraga.getInternReferens(),
-                ((fraga.getIntygsReferens() == null) ? null : fraga.getIntygsReferens().getIntygsId()),
-                fraga.getVardAktorHsaId(),
-                ((fraga.getAmne() == null) ? null : fraga.getAmne().toString()));
+        monitoringService.logQuestionSent(fraga.getExternReferens(), fraga.getInternReferens(),
+                (fraga.getIntygsReferens() == null) ? null : fraga.getIntygsReferens().getIntygsId(), fraga.getVardAktorHsaId(), fraga.getAmne());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_QUESTION_FROM_CARE);

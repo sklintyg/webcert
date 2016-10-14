@@ -135,7 +135,7 @@ var Fk7263Intyg = BaseIntyg._extend({
         };
 
         this.question = {
-            newQuestionButton: element(by.id('askQuestionBtn')),
+            newQuestionButton: element(by.id('askArendeBtn')),
             text: element(by.id('newQuestionText')),
             topic: element(by.id('new-question-topic')),
             kontakt: element(by.cssContainingText('option', 'Kontakt')),
@@ -145,7 +145,7 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.intygStatus = element(by.id('intyg-vy-laddad'));
         this.komplettera = {
             dialog: {
-                //modal: element(by.id('komplettering-dialog')),
+                modal: element(by.id('komplettering-modal-dialog')),
                 modalDialogHeader: element(by.id('komplettering-modal-dialog')),
                 svaraMedNyttIntygKnapp: element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button')),
                 svaraMedTextKnapp: element(by.id('komplettering-modal-dialog-answerWithMessage-button')),

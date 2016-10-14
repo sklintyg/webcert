@@ -29,4 +29,6 @@ public interface UtkastRepository extends JpaRepository<Utkast, String>, UtkastR
 
     List<Utkast> findAllByRelationIntygsId(String relationIntygsId);
 
+    Utkast findOneByIntygsIdAndIntygsTyp(String intygsId, String intygsTyp);
+
 }

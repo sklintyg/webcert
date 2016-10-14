@@ -94,24 +94,31 @@ module.exports = function() {
     });
 
 
-    this.Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$/, function(field, callback) {
+    this.Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$/, function(field) {
         console.log('Fältet som ändras är: ' + field);
 
         if (field === 'sjukskrivningsperiod') {
             browser.ignoreSynchronization = true;
-            fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
-                fkUtkastPage.nedsatt.med25.tom.sendKeys('2017-01-02').then(function() {
+            return fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
+                return fkUtkastPage.nedsatt.med25.tom.sendKeys('2017-01-02').then(function() {
                     browser.ignoreSynchronization = false;
-                    callback();
                 });
             });
         } else if (field === 'arbetsförmåga') {
-            fkUtkastPage.nedsatt.med25.checkbox.sendKeys(protractor.Key.SPACE).then(callback);
+            return fkUtkastPage.nedsatt.med25.checkbox.sendKeys(protractor.Key.SPACE);
         } else if (field === 'diagnoskod') {
             var diagnosKod = td.values.fk.getRandomDiagnoskod();
-            fkUtkastPage.diagnosKod.sendKeys(diagnosKod).then(callback);
+
+            var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+            if (isSMIIntyg) {
+                return lisuUtkastPage.angeDiagnosKoder([diagnosKod]);
+            } else {
+                return fkUtkastPage.angeDiagnosKod(diagnosKod);
+            }
+
+
         } else {
-            callback(null, 'pending');
+            throw ('Fält saknas i steg-funktion');
         }
 
 

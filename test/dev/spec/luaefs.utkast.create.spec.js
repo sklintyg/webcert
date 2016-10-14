@@ -22,8 +22,8 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
-var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
+var UtkastPage = wcTestTools.pages.intyg.luae_fs.utkast;
+var IntygPage = wcTestTools.pages.intyg.luae_fs.intyg;
 
 describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
 

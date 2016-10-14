@@ -120,6 +120,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
+            monitoringService.logIntygCopied(savedUtkast.getIntygsId(), originalIntygId);
+
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
@@ -150,6 +152,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             CopyUtkastBuilderResponse builderResponse = buildCompletionUtkastBuilderResponse(copyRequest, originalIntygId, true);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+
+            monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
 
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
@@ -182,6 +186,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
+            monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
+
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
@@ -209,6 +215,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
+            monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
+
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
@@ -223,8 +231,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse) {
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
-
-        monitoringService.logIntygCopied(savedUtkast.getIntygsId(), originalIntygId);
 
         // notify
         notificationService.sendNotificationForDraftCreated(savedUtkast, userService.getUser().getReference());
@@ -242,9 +248,11 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false, copyRequest.isCoherentJournaling());
+            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false,
+                    copyRequest.isCoherentJournaling());
         } else {
-            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false, copyRequest.isCoherentJournaling());
+            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
+                    copyRequest.isCoherentJournaling());
         }
 
         return builderResponse;
@@ -287,9 +295,11 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, copyRequest.isCoherentJournaling());
+            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
+                    copyRequest.isCoherentJournaling());
         } else {
-            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, copyRequest.isCoherentJournaling());
+            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true,
+                    copyRequest.isCoherentJournaling());
         }
 
         return builderResponse;

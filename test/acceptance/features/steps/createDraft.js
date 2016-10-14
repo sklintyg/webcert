@@ -62,39 +62,12 @@ function sendCreateDraft(url, body, callback) {
 
 
 module.exports = function() {
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)"$/, function(intygstyp, callback) {
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)"( med samordningsnummer)?$/, function(intygstyp, samordningsnummer, callback) {
         global.intyg.typ = intygstyp;
         global.person.id = testdataHelpers.shuffle(testvalues.patienter)[0];
-        var body, path;
-        var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
-        if (isSMIIntyg) {
-            path = '/services/create-draft-certificate/v2.0?wsdl';
-            body = soapMessageBodies.CreateDraftCertificateV2(
-                global.person.id,
-                global.user,
-                intygstyp
-            );
-
-        } else {
-            path = '/services/create-draft-certificate/v1.0?wsdl';
-            body = soapMessageBodies.CreateDraftCertificate(
-                global.person.id,
-                global.user.hsaId,
-                global.user.fornamn + '' + global.user.efternamn,
-                global.user.enhetId,
-                'Enhetsnamn'
-            );
+        if (samordningsnummer) {
+            global.person.id = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0].nummer;
         }
-        console.log(body);
-        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
-        url = url.replace('https', 'http');
-
-        sendCreateDraft(url, body, callback);
-    });
-
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)" med samordningsnummer$/, function(intygstyp, callback) {
-        global.intyg.typ = intygstyp;
-        global.person.id = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0].nummer;
         var body, path;
         var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
         if (isSMIIntyg) {

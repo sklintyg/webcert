@@ -43,8 +43,7 @@ import se.inera.intyg.intygstyper.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
@@ -129,7 +128,8 @@ public class ArendeServiceImpl implements ArendeService {
 
         updateRelated(arende);
 
-        monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getRubrik());
+        monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
+                arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()), arende.getSvarPaId() != null);
 
         Arende saved = arendeRepository.save(arende);
 
@@ -198,6 +198,10 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
+        // Implement Business Rule FS-045
+        if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())) {
+            closeCompletionsAsHandled(svarPaMeddelande.getIntygsId(), svarPaMeddelande.getIntygTyp());
+        }
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved,
                 arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId));
     }
@@ -460,7 +464,8 @@ public class ArendeServiceImpl implements ArendeService {
 
     private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent) throws WebCertServiceException {
         Arende saved = arendeRepository.save(arende);
-        monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getRubrik());
+        monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
+                arende.getSvarPaId() != null);
 
         updateRelated(arende);
 

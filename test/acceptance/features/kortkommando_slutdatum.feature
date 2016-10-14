@@ -1,5 +1,5 @@
 # language: sv
-@kortkommando
+@kortkommando @notReady
 Egenskap: Kortkommandon för slutdatum 
 
 Bakgrund: Jag befinner mig på webcerts förstasida

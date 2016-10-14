@@ -89,7 +89,7 @@ function writeNewIntyg(typ, status) {
                     promiseArr.push(fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE));
                     promiseArr.push(fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
                 }
-                promiseArr.push(loginHelpers.logInAsUserRole(userObj, standardUser.roleName));
+                promiseArr.push(loginHelpers.logInAsUser(userObj));
                 return Promise.all(promiseArr);
             });
         });

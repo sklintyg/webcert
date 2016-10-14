@@ -234,15 +234,6 @@ module.exports = {
         status: 'ANDRAT'
     }],
 
-    getRandomDigit: function(digit) {
-        return Promise.resolve(Math.floor(Math.random() * digit));
-    },
-
-    getRandomNedsattKey: function() {
-        var nedsatt = ['med25', 'med50', 'med75', 'med100'];
-        return Promise.resolve(nedsatt[Math.floor(Math.random() * 3)]);
-    },
-
     diffDays: function(dateFrom, dateTo) {
         var fromEl = dateFrom.split('-');
         var toEl = dateTo.split('-');

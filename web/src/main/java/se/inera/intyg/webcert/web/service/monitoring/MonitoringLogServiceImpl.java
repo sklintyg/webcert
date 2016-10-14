@@ -18,13 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.logging.HashUtility;
 import se.inera.intyg.common.util.logging.LogMarkers;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 @Service
 public class MonitoringLogServiceImpl implements MonitoringLogService {
@@ -44,8 +52,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logUserLogin(String userHsaId, String authScheme) {
-        logEvent(MonitoringEvent.USER_LOGIN, userHsaId, authScheme);
+    public void logUserLogin(String userHsaId, String authScheme, String origin) {
+        logEvent(MonitoringEvent.USER_LOGIN, userHsaId, authScheme, origin);
     }
 
     @Override
@@ -69,23 +77,29 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, String amne) {
-        logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, amne);
+    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, Amne amne,
+            List<String> frageIds) {
+        if (KOMPLETTERING_AV_LAKARINTYG == amne) {
+            logEvent(MonitoringEvent.QUESTION_RECEIVED_COMPLETION, fragestallare, externReferens, internReferens, intygsId, enhet,
+                    StringUtils.join(frageIds, ","));
+        } else {
+            logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, amne != null ? amne.name() : "NO AMNE");
+        }
     }
 
     @Override
-    public void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
-        logEvent(MonitoringEvent.ANSWER_RECEIVED, externReferens, internReferens, intygsId, enhet, amne);
+    public void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne) {
+        logEvent(MonitoringEvent.ANSWER_RECEIVED, externReferens, internReferens, intygsId, enhet, amne != null ? amne.name() : "NO AMNE");
     }
 
     @Override
-    public void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
-        logEvent(MonitoringEvent.QUESTION_SENT, externReferens, internReferens, intygsId, enhet, amne);
+    public void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne) {
+        logEvent(MonitoringEvent.QUESTION_SENT, externReferens, internReferens, intygsId, enhet, amne != null ? amne.name() : "NO AMNE");
     }
 
     @Override
-    public void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
-        logEvent(MonitoringEvent.ANSWER_SENT, externReferens, internReferens, intygsId, enhet, amne);
+    public void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne) {
+        logEvent(MonitoringEvent.ANSWER_SENT, externReferens, internReferens, intygsId, enhet, amne != null ? amne.name() : "NO AMNE");
     }
 
     @Override
@@ -99,8 +113,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logIntygSigned(String intygsId, String userHsaId, String authScheme) {
-        logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, userHsaId, authScheme);
+    public void logIntygSigned(String intygsId, String userHsaId, String authScheme, RelationKod relationCode) {
+        logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, userHsaId, authScheme, relationCode != null ? relationCode.name() : "NO RELATION");
     }
 
     @Override
@@ -121,6 +135,21 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logIntygCopied(String copyIntygsId, String originalIntygId) {
         logEvent(MonitoringEvent.INTYG_COPIED, copyIntygsId, originalIntygId);
+    }
+
+    @Override
+    public void logIntygCopiedRenewal(String copyIntygsId, String originalIntygId) {
+        logEvent(MonitoringEvent.INTYG_COPIED_RENEWAL, copyIntygsId, originalIntygId);
+    }
+
+    @Override
+    public void logIntygCopiedReplacement(String copyIntygsId, String originalIntygId) {
+        logEvent(MonitoringEvent.INTYG_COPIED_REPLACEMENT, copyIntygsId, originalIntygId);
+    }
+
+    @Override
+    public void logIntygCopiedCompletion(String copyIntygsId, String originalIntygId) {
+        logEvent(MonitoringEvent.INTYG_COPIED_COMPLETION, copyIntygsId, originalIntygId);
     }
 
     @Override
@@ -169,13 +198,33 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, String subject) {
-        logEvent(MonitoringEvent.ARENDE_RECEIVED, subject, intygsId, intygsTyp, unitHsaId);
+    public void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer) {
+        if (ArendeAmne.KOMPLT == amne) {
+            logEvent(MonitoringEvent.MEDICINSKT_ARENDE_RECEIVED, intygsId, intygsTyp, unitHsaId, frageIds);
+        } else if (isAnswer) {
+            logEvent(MonitoringEvent.ARENDE_RECEIVED_ANSWER, amne != null ? amne.name() : "NO AMNE", intygsId, intygsTyp, unitHsaId);
+        } else {
+            logEvent(MonitoringEvent.ARENDE_RECEIVED_QUESTION, amne != null ? amne.name() : "NO AMNE", intygsId, intygsTyp, unitHsaId);
+        }
     }
 
     @Override
-    public void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, String subject) {
-        logEvent(MonitoringEvent.ARENDE_CREATED, subject, intygsId, intygsTyp, unitHsaId);
+    public void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, boolean isAnswer) {
+        if (isAnswer) {
+            logEvent(MonitoringEvent.ARENDE_CREATED_ANSWER, amne != null ? amne.name() : "NO AMNE", intygsId, intygsTyp, unitHsaId);
+        } else {
+            logEvent(MonitoringEvent.ARENDE_CREATED_QUESTION, amne != null ? amne.name() : "NO AMNE", intygsId, intygsTyp, unitHsaId);
+        }
+    }
+
+    @Override
+    public void logIntegratedOtherUnit(String intygsId, String intygsTyp, String unitId) {
+        logEvent(MonitoringEvent.LOGIN_OTHER_UNIT, intygsId, intygsTyp, unitId);
+    }
+
+    @Override
+    public void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String caregiverId, String unitId) {
+        logEvent(MonitoringEvent.LOGIN_OTHER_CAREGIVER, intygsId, intygsTyp, caregiverId, unitId);
     }
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
@@ -189,22 +238,31 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private enum MonitoringEvent {
         MAIL_SENT("Mail sent to unit '{}' for {}"),
         MAIL_MISSING_ADDRESS("Mail sent to admin on behalf of unit '{}' for {}"),
-        USER_LOGIN("Login user '{}' using scheme '{}'"),
+        USER_LOGIN("Login user '{}' using scheme '{}' with origin '{}'"),
         USER_LOGOUT("Logout user '{}' using scheme '{}'"),
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),
-        QUESTION_RECEIVED("Received question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
-        ANSWER_RECEIVED("Received answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
-        QUESTION_SENT("Sent question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
-        ANSWER_SENT("Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        QUESTION_RECEIVED(
+                "Received question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        QUESTION_RECEIVED_COMPLETION(
+                "Received completion question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with completion for questions '{}'"),
+        ANSWER_RECEIVED(
+                "Received answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        QUESTION_SENT(
+                "Sent question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        ANSWER_SENT(
+                "Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
         INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF"),
-        INTYG_SIGNED("Intyg '{}' signed by '{}' using scheme '{}'"),
+        INTYG_SIGNED("Intyg '{}' signed by '{}' using scheme '{}' and relation code '{}'"),
         INTYG_REGISTERED("Intyg '{}' of type '{}' registered with Intygstjänsten"),
         INTYG_SENT("Intyg '{}' sent to recipient '{}'"),
         INTYG_REVOKED("Intyg '{}' revoked by '{}'"),
         INTYG_COPIED("Utkast '{}' created as a copy of '{}'"),
+        INTYG_COPIED_RENEWAL("Utkast '{}' created as a renewal copy of '{}'"),
+        INTYG_COPIED_REPLACEMENT("Utkast '{}' created as a replacement copy of '{}'"),
+        INTYG_COPIED_COMPLETION("Utkast '{}' created as a completion copy of '{}'"),
         UTKAST_READ("Utkast '{}' of type '{}' was read"),
         UTKAST_CREATED("Utkast '{}' of type '{}' created by '{}' on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
@@ -214,8 +272,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'"),
-        ARENDE_RECEIVED("Received arende with subject '{}' for '{}' of type '{}' for unit '{}'"),
-        ARENDE_CREATED("Created arende with subject '{}' for '{}' of type '{}' for unit '{}'");
+        ARENDE_RECEIVED_ANSWER("Received arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
+        ARENDE_RECEIVED_QUESTION("Received arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
+        MEDICINSKT_ARENDE_RECEIVED("Received medicinskt arende for '{}' of type '{}' for unit '{}' on questions '{}'"),
+        ARENDE_CREATED_QUESTION("Created arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
+        ARENDE_CREATED_ANSWER("Created arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
+        LOGIN_OTHER_UNIT("Viewed intyg '{}' of type '{}' on other unit '{}'"),
+        LOGIN_OTHER_CAREGIVER("Viewed intyg '{}' of type '{}' on other caregiver '{}' unit '{}'");
 
         private final String msg;
 

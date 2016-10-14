@@ -25,7 +25,9 @@ module.exports.CreateDraftCertificateV2 = function(pnr, user, intygstyp) {
     };
     var typCode = shortcodes[intygstyp];
 
-
+    if (user.enhetId === 'TSTNMT2321000156-102R') {
+        throw 'Enhet TSTNMT2321000156-102R är reserverad för djupintegration v1';
+    }
 
     return '<urn1:CreateDraftCertificate' +
         ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"' +
