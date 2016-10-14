@@ -100,7 +100,7 @@ describe('luae_na attic tests', function() {
             UtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
             UtkastPage.showMissingInfoButtonClick(true);
 
-            expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.getAttribute('value')).toBe('string:HABILITERING');
+            expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.ui-select-match-text')).getText()).toBe('Underlag från habiliteringen');
             expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).datum.getAttribute('value')).toBe('2016-04-26');
             expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).information.getAttribute('value')).toBe('vårdgivare');
             expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);

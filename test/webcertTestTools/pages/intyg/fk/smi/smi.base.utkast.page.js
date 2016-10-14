@@ -92,7 +92,6 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                     information: element(by.id('underlag-' + index + '-hamtasFran'))
                 };
             },
-            laggTillUnderlagKnapp: element(by.id('laggTillUnderlag'))
 
             /*
             underlagRow: function(index) {
@@ -114,7 +113,6 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
         this.diagnos = {
-            laggTillDiagnosKnapp: element(by.id('laggTillDiagnos')),
             diagnosRow: function(index) {
                 return {
                     kod: element(by.id('diagnoseCode-' + index))
@@ -177,18 +175,12 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var utredningarElement = this.andraMedicinskaUtredningar;
 
         var fillIn = function fillInUtr(val, index) {
-
-            var laggTillUnderlag;
-            if (index !== 0) {
-                laggTillUnderlag = utredningarElement.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE);
-            }
-
             var row = utredningarElement.underlagRow(index);
 
             return Promise.all([
-                laggTillUnderlag,
                 sendKeysWithBackspaceFix(row.datum, val.datum),
-                row.underlag.element(by.cssContainingText('option', val.underlag)).click(),
+                row.underlag.click(),
+                row.underlag.element(by.cssContainingText('div', val.underlag)).click(),
                 row.information.sendKeys(val.infoOmUtredningen)
             ]);
         };

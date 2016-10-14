@@ -34,6 +34,7 @@
 <title><spring:message code="application.name" /></title>
 
 <!-- bower:css -->
+<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
 <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
 <!-- endbower -->
 <link rel="stylesheet" href="/web/webjars/common/webcert/css/inera-webcert.css">
@@ -59,6 +60,7 @@
     <script type="text/javascript" src="/bower_components/api-check/dist/api-check.js"></script>
     <script type="text/javascript" src="/bower_components/angular-formly/dist/formly.js"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script type="text/javascript" src="/bower_components/angular-ui-select/dist/select.js"></script>
     <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
     <!-- endbower -->

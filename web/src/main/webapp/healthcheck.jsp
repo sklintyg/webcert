@@ -28,6 +28,7 @@
 <meta name="ROBOTS" content="nofollow, noindex" />
 
 <!-- bower:css -->
+<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
 <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
 <!-- endbower -->
 </head>
