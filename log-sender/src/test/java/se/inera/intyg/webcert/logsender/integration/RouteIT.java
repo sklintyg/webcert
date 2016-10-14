@@ -76,9 +76,9 @@ import com.google.common.base.Throwables;
 @BootstrapWith(CamelTestContextBootstrapper.class)
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class}) // Suppresses warning
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class RouteIntegrationTest {
+public class RouteIT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RouteIntegrationTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RouteIT.class);
 
     private static final int SECONDS_TO_WAIT = 5;
 

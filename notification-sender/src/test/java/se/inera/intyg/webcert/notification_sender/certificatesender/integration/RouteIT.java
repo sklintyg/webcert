@@ -53,7 +53,7 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.services.moc
 @TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class }) // Suppresses warning
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class RouteIntegrationTest {
+public class RouteIT {
 
     private static final int SECONDS_TO_WAIT = 20;
 

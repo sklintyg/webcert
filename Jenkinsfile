@@ -12,7 +12,7 @@ stage('checkout') {
 
 stage('build') {
     node {
-        shgradle "--refresh-dependencies clean build sonarqube -PcodeQuality -DgruntColors=false \
+        shgradle "--refresh-dependencies clean camelTest build sonarqube -PcodeQuality -DgruntColors=false \
                   -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
     }
 }

@@ -1,5 +1,14 @@
 description = 'Webcert (Notification Sender)'
 
+test {
+    exclude '**/*IT*'
+}
+
+task camelTest(type: Test) {
+    outputs.upToDateWhen { false }
+    include '**/*IT*'
+}
+
 dependencies {
   compile project(':webcert-common')
 
@@ -26,9 +35,7 @@ dependencies {
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"
   testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
-  testCompile("org.dbunit:dbunit:2.4.9") {
-    exclude(module: "junit")
-  }
+  testCompile "org.dbunit:dbunit:2.4.9"
 
   testRuntime "com.h2database:h2:${h2Version}"
 }

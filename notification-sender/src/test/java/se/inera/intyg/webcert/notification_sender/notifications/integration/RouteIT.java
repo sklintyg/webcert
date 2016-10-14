@@ -77,7 +77,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.Vardgivare;
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class RouteIntegrationTest {
+public class RouteIT {
 
     private static final int SECONDS_TO_WAIT = 20;
     private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";

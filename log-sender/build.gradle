@@ -2,6 +2,15 @@ description = 'Webcert (Log Sender)'
 
 apply plugin: 'war'
 
+test {
+    exclude '**/*IT*'
+}
+
+task camelTest(type: Test) {
+    outputs.upToDateWhen { false }
+    include '**/*IT*'
+}
+
 dependencies {
   compile project(':webcert-common')
 
