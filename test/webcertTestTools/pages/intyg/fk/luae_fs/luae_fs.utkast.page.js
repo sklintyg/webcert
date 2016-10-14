@@ -49,17 +49,14 @@ var LuaefsUtkast = FkBaseUtkast._extend({
                     datum: element(by.id('underlag-' + index + '-datum')),
                     information: element(by.id('underlag-' + index + '-hamtasFran'))
                 };
-            },
-            laggTillUnderlagKnapp: element(by.id('laggTillUnderlag'))
+            }
         };
 
         this.diagnos = {
-            laggTillDiagnosKnapp: element(by.id('laggTillDiagnos')),
             diagnosRow: function(index) {
                 return {
                     kod: element(by.id('diagnoseCode-' + index))
                 };
-
             }
         };
 
@@ -112,9 +109,6 @@ var LuaefsUtkast = FkBaseUtkast._extend({
         }
         //Ange diagnoser
         for (var i = 0; i < diagnoser.length; i++) {
-            if (i !== 0) {
-                promiseArr.push(this.diagnos.laggTillDiagnosKnapp.click());
-            }
             var row = this.diagnos.diagnosRow(i);
             promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sendEnterToElement(row.kod)));
 
@@ -123,26 +117,17 @@ var LuaefsUtkast = FkBaseUtkast._extend({
 
     },
 
-    taBortDiagnos: function(index) {
-        return element(by.id('diagnos-' + index + '-remove')).click();
-    },
-
     angeAndraMedicinskaUtredningar: function(utredningar) {
         var utredningarElement = this.andraMedicinskaUtredningar;
 
         var fillIn = function fillInUtr(val, index) {
 
-            var laggTillUnderlag;
-            if (index !== 0) {
-                laggTillUnderlag = utredningarElement.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE);
-            }
-
             var row = utredningarElement.underlagRow(index);
 
             return Promise.all([
-                laggTillUnderlag,
                 sendKeysWithBackspaceFix(row.datum, val.datum),
-                row.underlag.element(by.cssContainingText('option', val.underlag)).click(),
+                row.underlag.click(),
+                row.underlag.element(by.cssContainingText('div', val.underlag)).click(),
                 row.information.sendKeys(val.infoOmUtredningen)
             ]);
         };
@@ -157,14 +142,6 @@ var LuaefsUtkast = FkBaseUtkast._extend({
         } else {
             return utredningarElement.finns.NEJ.sendKeys(protractor.Key.SPACE);
         }
-    },
-
-    clickCreateUnderlag: function() {
-        return this.andraMedicinskaUtredningar.laggTillUnderlagKnapp.sendKeys(protractor.Key.SPACE);
-    },
-
-    clickRemoveUnderlag: function(index) {
-        return element(by.id('underlag-' + index + '-remove')).sendKeys(protractor.Key.SPACE);
     },
 
     angeUnderlagFinns: function(underlag) {

@@ -100,7 +100,7 @@ describe('Luse attic tests', function() {
             LuseUtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
             LuseUtkastPage.showMissingInfoButtonClick(true);
 
-            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.getAttribute('value')).toBe('string:HABILITERING');
+            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.ui-select-match-text')).getText()).toBe('Underlag från habiliteringen');
             expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).datum.getAttribute('value')).toBe('2016-04-07');
             expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).information.getAttribute('value')).toBe('Information om utredning.');
             expect(LuseUtkastPage.getMissingInfoMessagesCount()).toBe(0);

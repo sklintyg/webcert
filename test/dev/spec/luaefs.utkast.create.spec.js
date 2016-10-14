@@ -95,16 +95,6 @@ describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
                 infoOmUtredningen: 'Hämtas hos posten'
             }];
             UtkastPage.angeAndraMedicinskaUtredningar(utredningar);
-
-            expect(UtkastPage.getNumberOfUnderlag()).toBe(1);
-        });
-
-        it('Lägg till ytterligare ett annat underlag, ta bort igen.', function() {
-            UtkastPage.clickCreateUnderlag();
-            expect(UtkastPage.getNumberOfUnderlag()).toBe(2);
-
-            UtkastPage.clickRemoveUnderlag(1);
-            expect(UtkastPage.getNumberOfUnderlag()).toBe(1);
         });
 
         it('Ange diagnoser', function() {
@@ -118,11 +108,6 @@ describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
                 }]
             };
             UtkastPage.angeDiagnos(diagnosObj);
-
-            expect(UtkastPage.getNumberOfDiagnosRows()).toBe(3);
-
-            UtkastPage.taBortDiagnos(1);
-            expect(UtkastPage.getNumberOfDiagnosRows()).toBe(2);
         });
 
         it('Ange funktionsnedsättningar', function() {
