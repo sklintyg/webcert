@@ -19,35 +19,35 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-
-import javax.persistence.OptimisticLockException;
-
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.Role;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.*;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -60,6 +60,25 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -339,6 +358,48 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
         draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
+    }
+
+    @Test
+    public void testSaveUpdatesChangedPatientName() throws Exception {
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList());
+
+        WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+        grunddata.setSkapadAv(new HoSPersonal());
+        grunddata.setPatient(buildPatient("19121212-1212", "Tolvan", "Tolvansson"));
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+
+        utkast.setPatientFornamn("Inte Tolvan");
+        utkast.setPatientEfternamn("Inte Tolvansson");
+
+        // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
+        utkast = spy(utkast);
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(userService.getUser()).thenReturn(user);
+        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+
+        draftService.saveAndValidateDraft(request, false);
+
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(utkast).setPatientFornamn("Tolvan");
+        verify(utkast).setPatientEfternamn("Tolvansson");
+        verify(utkast, times(0)).setPatientPersonnummer(any(Personnummer.class));
+    }
+
+    private Patient buildPatient(String pnr, String fornamn, String efternamn) {
+        Patient p = new Patient();
+        p.setPersonId(new Personnummer(pnr));
+        p.setFornamn(fornamn);
+        p.setEfternamn(efternamn);
+        return p;
     }
 
     private SaveAndValidateDraftRequest buildSaveAndValidateRequest(Utkast utkast) {

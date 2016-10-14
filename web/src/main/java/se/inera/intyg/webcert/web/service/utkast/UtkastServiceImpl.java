@@ -19,30 +19,33 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.io.IOException;
-import java.util.*;
-
-import javax.persistence.OptimisticLockException;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.services.texts.IntygTextsService;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.*;
+import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
@@ -56,8 +59,21 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -322,7 +338,7 @@ public class UtkastServiceImpl implements UtkastService {
         String persistedJson = utkast.getModel();
 
         // Update draft with user information
-        updateWithUser(utkast, draftAsJson);
+        updateUtkastModel(utkast, draftAsJson);
 
         // Is draft valid?
         DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
@@ -563,22 +579,50 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
-    private void updateWithUser(Utkast utkast, String modelJson) {
+    private void updateUtkastModel(Utkast utkast, String modelJson) {
         WebCertUser user = webCertUserService.getUser();
 
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-            Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(modelJson).getGrundData().getSkapadAv().getVardenhet();
+            GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson).getGrundData();
+            Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
             HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
             String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
             utkast.setModel(updatedInternal);
+
+            updatePatientNameFromModel(utkast, grundData.getPatient());
+
         } catch (ModuleException | ModuleNotFoundException | IOException e) {
             if (e.getCause() != null && e.getCause().getCause() != null) {
                 // This error message is helpful when debugging save problems.
                 LOG.debug(e.getCause().getCause().getMessage());
             }
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
+        }
+    }
+
+    /**
+     * See INTYG-3077 - when autosaving we make sure that the columns for fornamn, mellannamn and efternamn match
+     * whatever
+     * values that are present in the actual utkast model.
+     *
+     * In the rare occurance that a patient has a name change after the initial utkast was created - e.g. the utkast
+     * was continued on at a subsequent date - this method makes sure that the three "metadata" 'name' columns in the INTYG
+     * table reflects the actual model.
+     */
+    private void updatePatientNameFromModel(Utkast utkast, Patient patient) {
+        if (patient == null) {
+            return;
+        }
+        if (utkast.getPatientFornamn() != null && !utkast.getPatientFornamn().equals(patient.getFornamn())) {
+            utkast.setPatientFornamn(patient.getFornamn());
+        }
+        if (utkast.getPatientMellannamn() != null && !utkast.getPatientMellannamn().equals(patient.getMellannamn())) {
+            utkast.setPatientMellannamn(patient.getMellannamn());
+        }
+        if (utkast.getPatientEfternamn() != null && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
+            utkast.setPatientEfternamn(patient.getEfternamn());
         }
     }
 
