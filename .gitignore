@@ -26,3 +26,4 @@ web/src/test/coverage/
 build
 .gradle
 node-v*
+typings/
