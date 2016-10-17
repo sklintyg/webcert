@@ -27,3 +27,4 @@ build
 .gradle
 node-v*
 typings/
+reports/

@@ -12,14 +12,25 @@ fitnesse {
     if (project.hasProperty("fileOutput")) outputFormat = "xml&includehtml"
 
     extraProperties = [
-            "fitnesse.working"   : "src/test/fitnesse",
-            "geb.env"            : System.properties['geb.env'] ?: "chrome",
-            "webcert.web.baseUrl": System.properties['web.baseUrl'] ?: "http://localhost:9088/",
-            "webcert.baseUrl"    : System.properties['baseUrl'] ?: "http://localhost:9088/",
-            "logsender.baseUrl"  : System.properties['logsender.baseUrl'] ?: "http://localhost:9097/log-sender/",
-            "certificate.baseUrl": System.properties['certificate.baseUrl'] ?: "http://localhost:8080/inera-certificate/"
-    ]
+        "fitnesse.working"   : "src/test/fitnesse",
+        "geb.env"            : System.properties['geb.env'] ?: "chrome",
+        "webcert.web.baseUrl": System.properties['web.baseUrl'] ?: "http://localhost:9088/",
+        "webcert.baseUrl"    : System.properties['baseUrl'] ?: "http://localhost:9088/",
+        "logsender.baseUrl"  : System.properties['logsender.baseUrl'] ?: "http://localhost:9097/log-sender/",
+        "certificate.baseUrl": System.properties['certificate.baseUrl'] ?: "http://localhost:8080/inera-certificate/"
+        ]
 }
+
+task saveFitnesseReport(type: Copy) {
+    from projectDir
+    into "$projectDir/reports"
+    include 'fitnesse-results.*'
+    eachFile { details ->
+        details.path += "." + new Date().getTime()
+    }
+}
+
+fitnesseTest.finalizedBy saveFitnesseReport
 
 sonarqube {
     skipProject = true
