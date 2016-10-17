@@ -22,17 +22,19 @@ package se.inera.intyg.webcert.web.integration.v2.validator;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.TypAvIntyg;
@@ -46,11 +48,15 @@ public class CreateDraftCertificateValidatorImplTest {
     @Mock
     private IntygModuleRegistry moduleRegistry;
 
+    @Mock
+    private WebcertFeatureService featureService;
+
     @InjectMocks
     private CreateDraftCertificateValidatorImpl validator;
 
     @Before
     public void setup() {
+        when(featureService.isModuleFeatureActive(eq(WebcertFeature.HANTERA_INTYGSUTKAST.getName()), eq(CODE.toLowerCase()))).thenReturn(Boolean.TRUE);
         when(moduleRegistry.moduleExists(CODE.toLowerCase())).thenReturn(Boolean.TRUE);
         when(moduleRegistry.getModuleIdFromExternalId(anyString())).thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     }
@@ -125,6 +131,13 @@ public class CreateDraftCertificateValidatorImplTest {
     @Test
     public void testValidateHoSPersonalEnhetsnamnMissing() {
         ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "fornamn", "fullständigt namn", null, true));
+        assertTrue(result.hasErrors());
+    }
+
+    @Test
+    public void testValidateFeatureNotActive() {
+        when(featureService.isModuleFeatureActive(eq(WebcertFeature.HANTERA_INTYGSUTKAST.getName()), eq(CODE.toLowerCase()))).thenReturn(false);
+        ResultValidator result = validator.validate(buildIntyg(CODE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 

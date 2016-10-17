@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.integration.v2.validator;
 
+import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.HANTERA_INTYGSUTKAST;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Patient;
@@ -36,6 +39,9 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private WebcertFeatureService featureService;
 
     @Override
     public ResultValidator validate(Intyg intyg) {
@@ -51,7 +57,8 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     private void validateTypAvIntyg(TypAvIntyg typAvIntygType, ResultValidator errors) {
         String intygsTyp = typAvIntygType.getCode();
 
-        if (!moduleRegistry.moduleExists(moduleRegistry.getModuleIdFromExternalId(intygsTyp))) {
+        String moduleId = moduleRegistry.getModuleIdFromExternalId(intygsTyp);
+        if (!moduleRegistry.moduleExists(moduleId) || !featureService.isModuleFeatureActive(HANTERA_INTYGSUTKAST.getName(), moduleId)) {
             errors.addError("Intyg {0} is not supported", intygsTyp);
         }
     }
