@@ -10,32 +10,32 @@ task camelTest(type: Test) {
 }
 
 dependencies {
-  compile project(':webcert-common')
+    compile project(':webcert-common')
 
-  compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${healthcondSchemasVersion}"
+    compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${healthcondSchemasVersion}"
 
-  compile ("se.inera.intyg.intygstyper:fk7263:${typerVersion}") {
-    exclude(module: 'insuranceprocess-healthreporting-schemas')
-    exclude(module: 'fk-vardgivare-sjukvard-schemas')
-    exclude(module: 'ServiceContracts_itintegration_monitoring')
-  }
+    compile ("se.inera.intyg.intygstyper:fk7263:${typerVersion}") {
+        exclude(module: 'insuranceprocess-healthreporting-schemas')
+        exclude(module: 'fk-vardgivare-sjukvard-schemas')
+        exclude(module: 'ServiceContracts_itintegration_monitoring')
+    }
 
-  compile "org.springframework:spring-jms:${springVersion}"
-  compile "org.apache.camel:camel-spring:${camelVersion}"
-  compile "org.apache.camel:camel-core:${camelVersion}"
-  compile "org.apache.camel:camel-cxf:${camelVersion}"
-  compile "org.apache.camel:camel-jms:${camelVersion}"
-  compile "org.apache.camel:camel-jackson:${camelVersion}"
-  compile "org.apache.camel:camel-jaxb:${camelVersion}"
-  compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
+    compile "org.springframework:spring-jms:${springVersion}"
+    compile "org.apache.camel:camel-spring:${camelVersion}"
+    compile "org.apache.camel:camel-core:${camelVersion}"
+    compile "org.apache.camel:camel-cxf:${camelVersion}"
+    compile "org.apache.camel:camel-jms:${camelVersion}"
+    compile "org.apache.camel:camel-jackson:${camelVersion}"
+    compile "org.apache.camel:camel-jaxb:${camelVersion}"
+    compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
 
-  testCompile "com.jayway.awaitility:awaitility:1.4.0"
-  testCompile "org.kubek2k:springockito:1.0.8"
-  testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
-  testCompile "org.springframework:spring-test:${springVersion}"
-  testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"
-  testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
-  testCompile "org.dbunit:dbunit:2.4.9"
+    testCompile "com.jayway.awaitility:awaitility:1.4.0"
+    testCompile "org.kubek2k:springockito:1.0.8"
+    testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
+    testCompile "org.springframework:spring-test:${springVersion}"
+    testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"
+    testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
+    testCompile "org.dbunit:dbunit:2.4.9"
 
-  testRuntime "com.h2database:h2:${h2Version}"
+    testRuntime "com.h2database:h2:${h2Version}"
 }
