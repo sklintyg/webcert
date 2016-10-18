@@ -18,6 +18,8 @@
  */
 
 'use strict';
+// var testdataHelper = wcTestTools.helpers.testdata;
+var today = new Date();
 
 module.exports = {
     CreateDraftCertificate: function(personId, doctorHsa, doctorName, unitHsa, unitName) {
@@ -64,9 +66,9 @@ module.exports = {
             '    <urn:amne>' + amne + '</urn:amne>' +
             '    <urn:fraga>' +
             '      <urn1:meddelandeText>NMT simulerar FK</urn1:meddelandeText>' +
-            '      <urn1:signeringsTidpunkt>2014-11-28T10:18:10</urn1:signeringsTidpunkt>' +
+            '      <urn1:signeringsTidpunkt>' + today.toISOString() + '</urn1:signeringsTidpunkt>' +
             '    </urn:fraga>' +
-            '    <urn:avsantTidpunkt>2014-11-28T10:18:10</urn:avsantTidpunkt>' +
+            '    <urn:avsantTidpunkt>' + today.toISOString() + '</urn:avsantTidpunkt>' +
             '    <urn:fkKontaktInfo>' +
             '      <urn1:kontakt>Automatiska tester</urn1:kontakt>' +
             '    </urn:fkKontaktInfo>' +
@@ -89,10 +91,10 @@ module.exports = {
             '      <urn1:falt>Test</urn1:falt>' +
             '      <urn1:text>' + meddelande + '</urn1:text>' +
             '    </urn:fkKomplettering>' +
-            '    <urn:fkSistaDatumForSvar>2015-01-28</urn:fkSistaDatumForSvar>' +
+            '    <urn:fkSistaDatumForSvar>2017-01-28</urn:fkSistaDatumForSvar>' +
             '    <urn:lakarutlatande>' +
             '      <urn1:lakarutlatande-id>' + intygsId + '</urn1:lakarutlatande-id>' +
-            '      <urn1:signeringsTidpunkt>2014-11-28T10:18:10</urn1:signeringsTidpunkt>' +
+            '      <urn1:signeringsTidpunkt>' + today.toISOString() + '</urn1:signeringsTidpunkt>' +
             '      <urn1:patient>' +
             '        <urn2:person-id extension="' + personId + '" root="1.2.752.129.2.1.3.1"/>' +
             '        <urn2:fullstandigtNamn>Lars Persson</urn2:fullstandigtNamn>' +

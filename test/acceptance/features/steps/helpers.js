@@ -138,7 +138,8 @@ module.exports = {
         'Avstämningsmöte': 'Avstamningsmote',
         'Kontakt': 'Kontakt',
         'Arbetstidsförläggning': 'Arbetstidsforlaggning',
-        'Påminnelse': 'Paminnelse'
+        'Påminnelse': 'Paminnelse',
+        'Komplettering': 'Komplettering_av_lakarintyg'
     },
     getSubjectFromCode: function(value, isFK7263) {
         var subjectCodes = this.subjectCodes;

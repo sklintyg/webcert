@@ -35,6 +35,7 @@ module.exports = {
         'valjUtkastType': require('./sokSkrivIntyg/sokSkrivValjUtkastType.page.js'),
         'visaIntyg': require('./sokSkrivIntyg/sokSkrivValjIntyg.page.js')
     },
+    fragorOchSvar: require('./fragorOchSvar.js'),
     'intyg': {
         fk: {
             '7263': {
@@ -52,7 +53,7 @@ module.exports = {
         },
         lisu: {
             utkast: require(intygPath + 'fk/smi/lisu/lisu.utkast.page.js')
-                //intyg: require(intygPath + 'lisu.intyg.page.js')
+            //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
         luae_fs: {
             utkast: require(intygPath + 'fk/luae_fs/luae_fs.utkast.page.js'),

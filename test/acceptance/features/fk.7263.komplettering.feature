@@ -16,7 +16,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    Och jag skickar intyget till Försäkringskassan
    Så ska intygets status vara "Intyget är signerat"
 
-   När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
+   När Försäkringskassan ställer en "Komplettering" fråga om intyget
    Och jag går in på intyget
    Och jag väljer att svara med ett nytt intyg
    Så ska jag se kompletteringsfrågan på utkast-sidan
@@ -27,7 +27,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
 @textsvar
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
-   När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
+   När Försäkringskassan ställer en "Komplettering" fråga om intyget
    Och jag går in på intyget
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska kunna svara med textmeddelande

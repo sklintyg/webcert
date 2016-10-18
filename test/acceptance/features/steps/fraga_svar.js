@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, browser, protractor, logger, JSON, wcTestTools*/
+/* globals pages, intyg, browser, protractor, logger, JSON, wcTestTools, Promise, person*/
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -260,6 +260,7 @@ module.exports = function() {
 
         var url;
         var body;
+        var amneCode = helpers.subjectCodes[amne];
 
         var isSMIIntyg;
         if (intyg && intyg.typ) {
@@ -267,8 +268,6 @@ module.exports = function() {
         }
 
         if (isSMIIntyg) {
-            var amneCode = helpers.subjectCodes[amne];
-
             body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
             console.log(body);
             var path = '/send-message-to-care/v1.0?wsdl';
@@ -302,6 +301,7 @@ module.exports = function() {
                 }
             });
         } else {
+            amneCode = helpers.subjectCodesFK7263[amne];
             url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
             url = url.replace('https', 'http');
 
@@ -310,19 +310,26 @@ module.exports = function() {
                 global.user,
                 'Enhetsnamn',
                 global.intyg.id,
-                amne,
+                amneCode,
                 'nytt meddelande: ' + global.intyg.guidcheck);
+            console.log(body);
             soap.createClient(url, function(err, client) {
                 if (err) {
                     callback(err);
                 }
 
-                client.ReceiveMedicalCertificateQuestion(body, function(err, result, body) {
+                client.ReceiveMedicalCertificateQuestion(body, function(err, result, resBody) {
                     global.meddelanden.push({
                         typ: 'Fråga',
                         amne: amne
                     });
-                    callback(err);
+                    var resultcode = result.result.resultCode;
+                    if (resultcode !== 'OK') {
+                        logger.info(result);
+                        callback('ResultCode: ' + resultcode + '\n' + resBody);
+                    } else {
+                        callback(err);
+                    }
                 });
             });
         }
@@ -412,5 +419,80 @@ module.exports = function() {
         }
         return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).sendKeys(protractor.Key.SPACE);
     });
+
+
+    this.Given(/^jag går till sidan Frågor och svar$/, function() {
+        return pages.fragorOchSvar.get();
+    });
+
+
+
+    var matchingQARow;
+    this.Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
+
+        logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
+        return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
+            return row.all(by.css('td')).getText().then(function(text) {
+                console.log(text);
+
+                var hasPersonnummer = (text.indexOf(person.id) > -1);
+                var hasAtgard = (text.indexOf(atgard) > -1);
+                return hasAtgard && hasPersonnummer;
+            });
+        }).then(function(rows) {
+            matchingQARow = rows[0];
+            if (inte) {
+                return expect(rows.length).to.equal(0);
+            } else {
+                return expect(rows).to.have.length.above(0);
+            }
+
+
+        });
+    });
+
+    var buttonId;
+    this.Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function() {
+        var btn = matchingQARow.element(by.cssContainingText('button', 'Visa'));
+        return btn.getAttribute('id').then(function(id) {
+            logger.info('knapp-id: ' + id);
+            buttonId = id;
+            return btn.sendKeys(protractor.Key.SPACE);
+        });
+    });
+
+    this.Given(/^jag lämnar intygssidan$/, function() {
+        return fkIntygPage.backBtn.click();
+    });
+
+    this.Given(/^ska jag få dialogen "([^"]*)"$/, function(text) {
+        return expect(element(by.cssContainingText('.modal-dialog', text)).isPresent()).to.eventually.be.ok;
+    });
+
+    this.Given(/^jag väljer valet att markera som hanterade$/, function() {
+        return element(by.cssContainingText('button', 'Hanterade')).sendKeys(protractor.Key.SPACE);
+    });
+
+    this.Given(/^ska den tidigare raden inte finnas kvar i tabellen för Frågor och svar$/, function() {
+        return expect(element(by.id(buttonId)).isPresent()).to.eventually.not.be.ok;
+    });
+
+    this.Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
+        var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
+        showFilter.isPresent().then(function(isPresent) {
+            if (isPresent) {
+                return showFilter.sendKeys(protractor.Key.SPACE);
+            } else {
+                return Promise.resolve('Filter visas redan');
+            }
+        }).then(function() {
+            return pages.fragorOchSvar.atgardSelect.element(by.cssContainingText('option', atgard))
+                .sendKeys(protractor.Key.SPACE).then(function() {
+                    return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
+                });
+        });
+    });
+
+
 
 };
