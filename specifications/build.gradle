@@ -9,7 +9,9 @@ fitnesse {
     workingDir = "src/test/fitnesse"
     wikiStartPage = "WebCert.AutomatiseradeTester"
 
-    if (project.hasProperty("fileOutput")) outputFormat = "xml&includehtml"
+    if (project.hasProperty('fileOutput')) {
+        outputFormat = project.getProperty('outputFormat') != null ? project.getProperty('outputFormat') : "xml&includehtml"
+    }
 
     extraProperties = [
         "fitnesse.working"   : "src/test/fitnesse",
