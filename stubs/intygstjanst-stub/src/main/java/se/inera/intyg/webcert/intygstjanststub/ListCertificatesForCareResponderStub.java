@@ -28,7 +28,7 @@ import javax.xml.bind.JAXB;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.v2.ResultTypeUtil;
+import se.inera.intyg.intygstyper.fkparent.support.ResultTypeUtil;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.intygstyper.fkparent.model.converter.CertificateStateHolderConverter;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubLatencyAware;

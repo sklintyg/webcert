@@ -134,7 +134,6 @@ dependencies {
     compile "se.inera.intyg.intygstyper:luae_na:${typerVersion}"
     compile "se.inera.intyg.intygstyper:luae_fs:${typerVersion}"
     compile("se.inera.intyg.intygstyper:fk7263:${typerVersion}") {
-        exclude(module: "insuranceprocess-healthreporting-schemas")
         exclude(module: "fk-vardgivare-sjukvard-schemas")
         exclude(module: "ServiceContracts_itintegration_monitoring")
     }

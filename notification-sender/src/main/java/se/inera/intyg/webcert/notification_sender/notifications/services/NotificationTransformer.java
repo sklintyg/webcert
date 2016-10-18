@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.converter.CertificateStatusUpdateForCareTypeConverter;
+import se.inera.intyg.intygstyper.fk7263.schemas.clinicalprocess.healthcond.certificate.converter.CertificateStatusUpdateForCareTypeConverter;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
