@@ -48,11 +48,24 @@ stage('protractor') {
 stage('fitnesse') {
     node {
         wrap([$class: 'Xvfb']) {
-            shgradle "fitnesseTest -PfileOutput -Dgeb.env=firefoxRemote -Dweb.baseUrl=https://webcert.inera.nordicmedtest.se/ \
+            shgradle "fitnesseTest -PfileOutput -PoutputFormat=html -Dgeb.env=firefoxRemote -Dweb.baseUrl=https://webcert.inera.nordicmedtest.se/ \
                       -DbaseUrl=https://webcert.inera.nordicmedtest.se/ -Dlogsender.baseUrl=https://webcert.inera.nordicmedtest.se/log-sender/ \
                       -Dcertificate.baseUrl=https://intygstjanst.inera.nordicmedtest.se/inera-certificate/ \
                       -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
         }
+    }
+}
+
+stage('publish html reports') {
+    node {
+	publishHTML([
+		     allowMissing: false,
+		     alwaysLinkToLastBuild: false,
+		     keepAll: true,
+		     reportDir: 'specifications/',
+		     reportFiles: 'fitnesse-results.html',
+		     reportName: 'Fitnesse results'
+		    ])
     }
 }
 
