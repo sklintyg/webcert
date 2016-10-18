@@ -14,12 +14,6 @@ dependencies {
 
     compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${healthcondSchemasVersion}"
 
-    compile ("se.inera.intyg.intygstyper:fk7263:${typerVersion}") {
-        exclude(module: 'insuranceprocess-healthreporting-schemas')
-        exclude(module: 'fk-vardgivare-sjukvard-schemas')
-        exclude(module: 'ServiceContracts_itintegration_monitoring')
-    }
-
     compile "org.springframework:spring-jms:${springVersion}"
     compile "org.apache.camel:camel-spring:${camelVersion}"
     compile "org.apache.camel:camel-core:${camelVersion}"

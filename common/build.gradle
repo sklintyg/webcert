@@ -7,9 +7,5 @@ dependencies {
     compile "se.inera.intyg.intygstyper:fk-parent:${typerVersion}"
 
     compile "commons-io:commons-io:2.4"
-    compile("org.springframework.security:spring-security-config:${springSecurityVersion}") {
-        exclude(module: 'spring-core')
-        exclude(module: 'spring-aop')
-        exclude(module: 'spring-beans')
-    }
+    compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
 }
