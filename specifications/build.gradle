@@ -10,7 +10,7 @@ fitnesse {
     wikiStartPage = "WebCert.AutomatiseradeTester"
 
     if (project.hasProperty('fileOutput')) {
-        outputFormat = project.hasProperty('outputFormat') ? project.getProperty('outputFormat') : "xml&includehtml"
+        outputFormat = project.findProperty('outputFormat') ?: "xml&includehtml"
     }
 
     extraProperties = [
