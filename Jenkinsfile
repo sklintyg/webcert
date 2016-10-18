@@ -66,6 +66,14 @@ stage('publish html reports') {
 		     reportFiles: 'fitnesse-results.html',
 		     reportName: 'Fitnesse results'
 		    ])
+	publishHTML([
+    		     allowMissing: false,
+		     alwaysLinkToLastBuild: false,
+		     keepAll: true,
+		     reportDir: 'test/dev/report',
+		     reportFiles: 'index.html',
+		     reportName: 'Protractor results'
+		    ]])
     }
 }
 
