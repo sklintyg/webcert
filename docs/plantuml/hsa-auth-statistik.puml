@@ -1,0 +1,34 @@
+@startuml
+title HSA-integration vid inloggning
+Browser -> Statistik: SAML biljett för autentiserad anv.
+activate Statistik
+Statistik -> Statistik: Läs ut hsaId ur SAML-biljetten
+
+|||
+Statistik -> HSA: **inf:dir:emp:GetEmployeeIncludingProtectedPerson**
+activate HSA
+HSA --> Statistik: List<PersonInformationType>
+deactivate HSA
+Statistik -> HSA: **inf:dir:authmgmt:GetCredentialsForPersonIncludingProtectedPerson**
+activate HSA
+HSA --> Statistik: List<CredentialInformationType> (Medarbetaruppdr.)
+deactivate HSA
+|||
+
+loop each CredentialInformationType
+Statistik -> Statistik: Filtrera på medarbetaruppdrag 'Statistik' samt läs ut systemRoles
+Statistik -> Statistik: Bygg upp listan över vårdenheter användaren har behörighet till
+end
+loop each SystemRole
+Statistik -> Statistik: Ta reda på om användaren är 'Processledare'
+end
+|||
+
+Statistik -> Statistik: Extrahera personens namn ur PersonInformationType
+
+
+Statistik -> Statistik: Skapa User principal
+
+Statistik --> Browser: Begärd resurs
+deactivate Statistik
+@enduml

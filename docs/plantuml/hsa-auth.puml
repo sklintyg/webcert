@@ -1,0 +1,47 @@
+@startuml
+title HSA-integration vid inloggning
+Browser -> Rehabstöd: SAML biljett för autentiserad anv.
+activate Rehabstöd
+Rehabstöd -> Rehabstöd: Läs ut hsaId ur SAML-biljetten
+
+|||
+Rehabstöd -> HSA: **inf:dir:emp:GetEmployeeIncludingProtectedPerson**
+activate HSA
+HSA --> Rehabstöd: List<PersonInformationType>
+deactivate HSA
+loop each PersonInformationType
+Rehabstöd -> Rehabstöd: Läs ut Specialiseringar, Leg. yrkesgrupper, Befattningar, Titel
+end
+|||
+Rehabstöd -> HSA: **inf:dir:authmgmt:GetCredentialsForPersonIncludingProtectedPerson**
+activate HSA
+HSA --> Rehabstöd: List<CredentialInformationType> (Medarbetaruppdr.)
+deactivate HSA
+|||
+loop each vårdenhet på medarbetaruppdrag (CredentialInformationType)
+Rehabstöd -> HSA: **inf:dir:org:GetUnit**
+activate HSA
+HSA --> Rehabstöd: UnitType (Adressuppgifter)
+deactivate HSA
+Rehabstöd -> Rehabstöd: Konstruera vårdenhet
+Rehabstöd -> HSA: **inf:dir:org:GetHealthCareUnitMembers**
+activate HSA
+HSA --> Rehabstöd: List<HealthCareUnitMemberType> (Mottagningar)
+deactivate HSA
+loop each mottagning på enhet
+Rehabstöd -> Rehabstöd: Konstruera mottagning
+
+
+end
+
+end
+
+alt Ej befattning Läkare
+Rehabstöd -> Rehabstöd: Läs ut hsaSystemRole ur SAML-biljetten
+Rehabstöd -> Rehabstöd: Verifiera har hsaSystemRole INTYG;Rehab-[Vårdenhet HsaID]
+end
+|||
+
+Rehabstöd --> Browser: Begärd resurs
+deactivate Rehabstöd
+@enduml

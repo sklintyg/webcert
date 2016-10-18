@@ -1,0 +1,46 @@
+@startuml
+title LogSender @ Webcert 4.1 / Rehabstöd 1.0
+actor Webcert
+entity JMS.log.queue
+Webcert -> JMS.log.queue: PdlLogMessage
+
+
+group Camel aggregation route
+
+SplitProcessor /-- JMS.log.queue: PdlLogMessage
+activate SplitProcessor
+alt when > 1 PdlResources in the PdlLogMessage
+SplitProcessor -> SplitProcessor: Split into \nN new PdlLogMessages
+end
+SplitProcessor -> AggregateProcessor: PdlLogMessage
+deactivate SplitProcessor
+activate AggregateProcessor
+AggregateProcessor -> AggregateProcessor: Aggregate 50
+
+entity JMS.log.aggregated.queue
+
+ end
+AggregateProcessor -> JMS.log.aggregated.queue: List<PdlLogMessage>
+deactivate AggregateProcessor
+
+group Camel sender route
+JMS.log.aggregated.queue --/ LogSenderProcessor
+activate LogSenderProcessor
+LogSenderProcessor -> LogSenderProcessor: Transform\ninto\nehr:LogType
+
+end
+
+LogSenderProcessor -> EhrLogSender: Send using SOAP
+activate EhrLogSender
+EhrLogSender -> Loggtjänsten: LogRequest
+Loggtjänsten --> EhrLogSender: LogResponse
+
+EhrLogSender --> LogSenderProcessor: LogResponse
+deactivate EhrLogSender
+
+alt If send failed
+   LogSenderProcessor --/ JMS.log.aggregated.queue: Requeue batch
+end
+deactivate LogSenderProcessor
+
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+Browser -> Webcert: Signera intyg
+Webcert -> GRP: Autentiseringsbegäran
+GRP --> Webcert: Referensnummer
+GRP --/ MobiltBankIDApp: Påbörja autentisering
+Användaren --/ MobiltBankIDApp: Börjar signeringen
+
+loop tills signerad, fel eller avbruten
+Webcert -> GRP: Poll var 3:e sekund
+GRP --> Webcert: Statuskod
+end
+Användaren --/ MobiltBankIDApp: Färdig med signeringen
+MobiltBankIDApp --/ GRP: Signering färdig
+
+GRP -> Webcert: Digital signatur
+Webcert -> Webcert: Validerar signatur
+Webcert -> Webcert: Lagrar signatur
+Webcert -> Browser: Signering klar
+@enduml
