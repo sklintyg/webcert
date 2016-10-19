@@ -31,13 +31,13 @@ var LuseUtkast = BaseSmiUtkast._extend({
         this.diagnosgrund = element(by.id('diagnosgrund'));
         this.nyBedomningDiagnosgrundNo = element(by.id('nyBedomningDiagnosgrundNo'));
         this.funktionsnedsattning = {
-            intellektuell: element(by.id('funktionsnedsattningIntellektuell')),
-            kommunikation: element(by.id('funktionsnedsattningKommunikation')),
-            koncentration: element(by.id('funktionsnedsattningKoncentration')),
-            annanPsykisk: element(by.id('funktionsnedsattningPsykisk')),
-            synHorselTal: element(by.id('funktionsnedsattningSynHorselTal')),
-            balansKoordination: element(by.id('funktionsnedsattningBalansKoordination')),
-            annanKroppslig: element(by.id('funktionsnedsattningAnnan'))
+            intellektuell: element(by.id('form_funktionsnedsattningIntellektuell')),
+            kommunikation: element(by.id('form_funktionsnedsattningKommunikation')),
+            koncentration: element(by.id('form_funktionsnedsattningKoncentration')),
+            annanPsykisk: element(by.id('form_funktionsnedsattningPsykisk')),
+            synHorselTal: element(by.id('form_funktionsnedsattningSynHorselTal')),
+            balansKoordination: element(by.id('form_funktionsnedsattningBalansKoordination')),
+            annanKroppslig: element(by.id('form_funktionsnedsattningAnnan'))
         };
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
 
