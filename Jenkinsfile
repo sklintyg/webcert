@@ -12,8 +12,13 @@ stage('checkout') {
 
 stage('build') {
     node {
-        shgradle "--refresh-dependencies clean camelTest build sonarqube -PcodeQuality -DgruntColors=false \
+        try {
+            shgradle "--refresh-dependencies clean build camelTest testReport sonarqube -PcodeQuality -DgruntColors=false \
                   -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
+        } finally {
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
+                reportFiles: 'index.html', reportName: 'JUnit results'
+        }
     }
 }
 
@@ -32,7 +37,7 @@ stage('restAssured') {
             shgradle "restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/ \
                   -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
         } finally {
-            publishHTML allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
                 reportFiles: 'index.html', reportName: 'RestAssured results'
         }
     }
@@ -46,7 +51,7 @@ stage('protractor') {
                       -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
             }
         } finally {
-            publishHTML allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'test/dev/report', \
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/dev/report', \
                 reportFiles: 'index.html', reportName: 'Protractor results'
         }
     }
@@ -62,7 +67,7 @@ stage('fitnesse') {
                       -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
             }
         } finally {
-            publishHTML allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'specifications/', \
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'specifications/', \
                 reportFiles: 'fitnesse-results.html', reportName: 'Fitnesse results'
         }
     }

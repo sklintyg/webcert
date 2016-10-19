@@ -166,6 +166,11 @@ task tagRelease {
     }
 }
 
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/allTests")
+    reportOn subprojects*.test // Include the results from the 'test' task in all subprojects
+}
+
 apply plugin: "org.sonarqube"
 
 sonarqube {
