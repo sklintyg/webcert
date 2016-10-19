@@ -1,6 +1,6 @@
-angular.module('showcase').controller('showcase.ArendeCtrl',
-    [ '$scope', 'common.ArendenViewStateService', '$httpBackend',
-        function($scope, ArendenViewStateService, $httpBackend) {
+angular.module('showcase').controller('showcase.ArendeListCtrl',
+    [ '$scope', 'common.ArendeListViewStateService', '$httpBackend',
+        function($scope, ArendeListViewStateService, $httpBackend) {
             'use strict';
 
 
@@ -37,7 +37,8 @@ angular.module('showcase').controller('showcase.ArendeCtrl',
                             "vardgivarnamn":"WebCert-Vårdgivare1",
                             "timestamp":"2016-06-08T15:50:02.596",
                             "arendeType":"FRAGA"
-                        }
+                        },
+                        svar:{}
                     },
                     "kompletteringar":[
 
@@ -74,7 +75,8 @@ angular.module('showcase').controller('showcase.ArendeCtrl',
                             "vardgivarnamn":"WebCert-Vårdgivare1",
                             "timestamp":"2016-06-08T15:50:02.596",
                             "arendeType":"FRAGA"
-                        }
+                        },
+                        svar:{}
                     },
                     "kompletteringar":[
 
@@ -106,7 +108,7 @@ angular.module('showcase').controller('showcase.ArendeCtrl',
                 "arendeType":"FRAGA"
             }});
 
-            ArendenViewStateService.intyg = {
+            ArendeListViewStateService.intyg = {
                 "typ": "luae_fs",
                 "id": "0000001",
                 "textVersion": "1",
@@ -144,5 +146,5 @@ angular.module('showcase').controller('showcase.ArendeCtrl',
                 }
             };
 
-            $scope.viewState = ArendenViewStateService;
+            $scope.viewState = ArendeListViewStateService;
         }]);

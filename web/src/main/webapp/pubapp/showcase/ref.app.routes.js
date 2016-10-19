@@ -27,7 +27,7 @@ angular.module('showcase').config(function($stateProvider, $urlRouterProvider, $
         views: {
             'content@': {
                 templateUrl: templateRoot + 'views/arendehantering.html',
-                controller: 'showcase.ArendeCtrl'
+                controller: 'showcase.ArendeListCtrl'
             }
         }
     }).
