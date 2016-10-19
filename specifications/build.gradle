@@ -23,17 +23,6 @@ fitnesse {
         ]
 }
 
-task saveFitnesseReport(type: Copy) {
-    from projectDir
-    into "$projectDir/reports"
-    include 'fitnesse-results.*'
-    eachFile { details ->
-        details.path += "." + new Date().getTime()
-    }
-}
-
-fitnesseTest.finalizedBy saveFitnesseReport
-
 sonarqube {
     skipProject = true
 }
