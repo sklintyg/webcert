@@ -98,13 +98,13 @@ task restAssuredTest(type: Test) {
 
 war.dependsOn createVersionPropertyFile
 
-// TODO: This is required to make the Schematron implementation pick up Saxon instead of Xalan.
-// See if there is a less drastic solution.
 configurations {
+    buildtools
+    // TODO: This is required to make the Schematron implementation pick up Saxon instead of Xalan.
+    // See if there is a less drastic solution.
     runtime {
         exclude group: 'xalan', module: 'xalan'
     }
-    buildtools
 }
 
 dependencies {
@@ -120,7 +120,7 @@ dependencies {
     compile project(':mail-stub')
 
     compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
-    compile 'se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.3'
+    compile "se.funktionstjanster.grp:funktionstjanster-grp-schemas:1.0.3"
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.3"
 
     compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
@@ -140,33 +140,25 @@ dependencies {
     compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-taglibs:${springSecurityVersion}"
-    compile 'org.springframework.security.extensions:spring-security-saml2-core:1.0.1.RELEASE'
+    compile "org.springframework.security.extensions:spring-security-saml2-core:1.0.1.RELEASE"
 
-    compile('org.opensaml:opensaml:2.5.3') {
-        exclude(module: 'openws')
-    }
-    compile('org.opensaml:openws:1.4.2-1') {
-        exclude(module: 'xmltooling')
-    }
-    compile('org.opensaml:xmltooling:1.3.2') {
-        exclude(module: 'xml-apis')
-    }
-    compile('io.swagger:swagger-jaxrs:1.5.4') {
-        exclude(module: 'jsr311-api')
-    }
+    compile "org.opensaml:opensaml:2.5.3"
+    compile "org.opensaml:openws:1.4.2-1"
+    compile "org.opensaml:xmltooling:1.3.2"
+    compile "io.swagger:swagger-jaxrs:1.5.4"
 
-    compileOnly 'javax.servlet:servlet-api:2.5'
-    compileOnly 'com.google.auto.value:auto-value:1.1'
-    compileOnly 'org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1'
+    compileOnly "javax.servlet:servlet-api:2.5"
+    compileOnly "com.google.auto.value:auto-value:1.1"
+    compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1"
 
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
-    testCompile 'javax.servlet:javax.servlet-api:3.1.0'
-    testCompile 'org.kubek2k:springockito:1.0.8'
-    testCompile 'xmlunit:xmlunit:1.4'
-    testCompile 'com.jayway.restassured:rest-assured:2.8.0'
-    testCompile 'com.jayway.restassured:json-schema-validator:2.8.0'
-    testCompile 'org.antlr:ST4:4.0.8'
+    testCompile "javax.servlet:javax.servlet-api:3.1.0"
+    testCompile "org.kubek2k:springockito:1.0.8"
+    testCompile "xmlunit:xmlunit:1.4"
+    testCompile "com.jayway.restassured:rest-assured:2.8.0"
+    testCompile "com.jayway.restassured:json-schema-validator:2.8.0"
+    testCompile "org.antlr:ST4:4.0.8"
 
     testRuntime "com.h2database:h2:${h2Version}"
 

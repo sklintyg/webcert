@@ -19,9 +19,7 @@ dependencies {
   compile "se.inera.intyg.common:log-messages:${commonVersion}"
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
   compile "se.inera.intyg.common:logging-util:${commonVersion}"
-  compile("se.inera.intyg.common:integration-util:${commonVersion}") {
-    exclude(module: "logging-util")
-  }
+  compile "se.inera.intyg.common:integration-util:${commonVersion}"
 
   compile "org.springframework:spring-web:${springVersion}"
   compile "org.springframework:spring-tx:${springVersion}"
