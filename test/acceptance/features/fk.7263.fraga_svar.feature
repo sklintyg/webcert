@@ -12,7 +12,7 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
 
 @avstammningsmote
 Scenario: Avstämningsmöte
-   När Försäkringskassan ställer en "Avstämningsmöte" fråga om intyget
+   När Försäkringskassan ställer en "Avstamningsmote" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
 
    Och jag går in på intygsutkastet via djupintegrationslänk
@@ -21,7 +21,7 @@ Scenario: Avstämningsmöte
 
 @paminnelse
 Scenario: Påminnelse
-   När Försäkringskassan ställer en "Påminnelse" fråga om intyget
+   När Försäkringskassan ställer en "Paminnelse" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
 
    Och jag går in på intygsutkastet via djupintegrationslänk
@@ -39,7 +39,7 @@ Scenario: Kontakt
 
 @arbetstidsforlaggnings
 Scenario: Arbetstidsförläggning
-   När Försäkringskassan ställer en "Arbetstidsförläggning" fråga om intyget
+   När Försäkringskassan ställer en "Arbetstidsforlaggning" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
 
    Och jag går in på intygsutkastet via djupintegrationslänk

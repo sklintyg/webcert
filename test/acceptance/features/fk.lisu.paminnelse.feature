@@ -12,7 +12,7 @@ Scenario: Påminnelse
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
 
-   Och Försäkringskassan ställer en "Komplettering" fråga om intyget
-   Och Försäkringskassan ställer en "Paminnelse" fråga om intyget
+   Och Försäkringskassan ställer en "KOMPLT" fråga om intyget
+   Och Försäkringskassan ställer en "PAMINN" fråga om intyget
    Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "2"
    Och ska jag se påminnelsen på intygssidan

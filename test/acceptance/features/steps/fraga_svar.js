@@ -260,7 +260,7 @@ module.exports = function() {
 
         var url;
         var body;
-        var amneCode = helpers.subjectCodes[amne];
+        var amneCode = amne;
 
         var isSMIIntyg;
         if (intyg && intyg.typ) {
@@ -301,7 +301,7 @@ module.exports = function() {
                 }
             });
         } else {
-            amneCode = helpers.subjectCodesFK7263[amne];
+            amneCode = amne; //helpers.subjectCodesFK7263[amne];
             url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
             url = url.replace('https', 'http');
 

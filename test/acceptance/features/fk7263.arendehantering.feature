@@ -12,8 +12,8 @@ Bakgrund: Jag har skickat ett intyg till försäkringskassan
 
 @ej-hanterad
 Scenario: Hantera fråga dialog
-   När Försäkringskassan ställer en "Avstämningsmöte" fråga om intyget
-   Och Försäkringskassan ställer en "Påminnelse" fråga om intyget
+   När Försäkringskassan ställer en "Avstämningsmote" fråga om intyget
+   Och Försäkringskassan ställer en "Paminnelse" fråga om intyget
    Och jag går till sidan Frågor och svar
    Och jag väljer åtgärden "Visa alla ej hanterade"
    Så ska det finnas en rad med texten "Markera som hanterad" för frågan
