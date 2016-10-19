@@ -43,5 +43,10 @@
         <property name="database" value="MYSQL" />
       </bean>
     </property>
+    <property name="jpaProperties">
+      <props>
+        <prop key="hibernate.id.new_generator_mappings">false</prop>
+      </props>
+    </property>
   </bean>
 </beans>
