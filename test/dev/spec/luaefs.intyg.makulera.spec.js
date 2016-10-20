@@ -62,7 +62,7 @@ describe('Validera makulering av luae_fs Intyg', function() {
             // A small artificial wait so Intygstjänsten kan process the revoke, it's async.
             browser.sleep(500);
             expect(isIntygRevoked(intygsId)).toBeTruthy();
-
+            expect(IntygPage.copyBtn.isDisplayed()).toBeTruthy();
         });
 
     });
