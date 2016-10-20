@@ -93,7 +93,7 @@
                  global.user.enhetId,
                  global.user.enhetId,
                  global.intyg.id);
-             console.log(body);
+             //console.log(body);
              soap.createClient(url, function(err, client) {
                  if (err) {
                      callback(err);
