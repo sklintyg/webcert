@@ -21,10 +21,10 @@
  * Controller for logic related to listing questions and answers
  */
 angular.module('webcert').controller('webcert.UnhandledQACtrl',
-    ['$rootScope', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
+    ['$rootScope', '$cookies', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
         'common.fragaSvarCommonService', 'webcert.QuestionAnswer', 'common.ArendeProxy',
         'common.ArendeVidarebefordraHelper',
-        function($rootScope, $filter, $location, $log, $scope, $timeout, $window, dialogService,
+        function($rootScope, $cookies, $filter, $location, $log, $scope, $timeout, $window, dialogService,
             fragaSvarCommonService, QuestionAnswer, ArendeProxy, ArendeVidarebefordraHelper) {
             'use strict';
 
@@ -169,6 +169,8 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
             function getQA() {
                 $scope.widgetState.activeErrorMessageKey = null;
 
+                $cookies.putObject('enhetsId', enhetId);
+
                 var preparedQuery = prepareFilterQuery(enhetId, $scope.filterQuery);
                 $scope.filterQuery = preparedQuery;
 
@@ -215,15 +217,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 });
             }
 
-            function selectVantarPaByValue(vantaValue) {
-                for (var count = 0; count < $scope.statusList.length; count++) {
-                    if ($scope.statusList[count].value === vantaValue) {
-                        return $scope.statusList[count];
-                    }
-                }
-                return $scope.statusList[0];
-            }
-
             function resetFilterForm() {
                 $scope.filterQuery = angular.copy(defaultQuery);
                 $scope.filterForm.vantarPaSelector = $scope.statusList[1];
@@ -268,15 +261,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 } else {
                     $scope.filterForm.changedTo = $scope.filterQuery.changedTo;
                 }
-            }
-
-            function selectLakareByHsaId(hsaId) {
-                for (var count = 0; count < $scope.lakareList.length; count++) {
-                    if ($scope.lakareList[count].hsaId === hsaId) {
-                        return $scope.lakareList[count];
-                    }
-                }
-                return $scope.lakareList[0];
             }
 
             function initLakareList(unitId) {
@@ -400,6 +384,13 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 $log.debug('ActiveUnit is now:' + unit.id);
                 $scope.activeUnit = unit;
 
+                // If we change enhet then we probably don't want the same filter criterias
+                if ($cookies.getObject('enhetsId') && $cookies.getObject('enhetsId') !== unit.id) {
+                    resetFilterForm();
+                }
+
+                // Set unit id (reset search form resets it)
+                $cookies.putObject('enhetsId', unit.id);
                 enhetId = unit.id;
 
                 $scope.widgetState.filteredYet = false; // so proper info message is displayed if no items are found
