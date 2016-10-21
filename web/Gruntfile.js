@@ -40,7 +40,7 @@ module.exports = function(grunt) {
     var TEST_DIR = 'src/test/js/';
     var DEST_DIR = (grunt.option('outputDir') || 'build/apps') +  '/app/';
     var TEST_OUTPUT_DIR = (grunt.option('outputDir') || 'build/karma/');
-    var SKIP_COVERAGE = grunt.option('skip-coverage') || 'true';
+    var RUN_COVERAGE = grunt.option('run-coverage') || 'true';
 
     var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
@@ -149,7 +149,7 @@ module.exports = function(grunt) {
             ci: {
                 configFile: 'karma.conf.ci.js',
                 client: {
-                    args: ['--skip-coverage=' + SKIP_COVERAGE]
+                    args: ['--run-coverage=' + RUN_COVERAGE]
                 },
                 coverageReporter: {
                     type : 'lcovonly',
@@ -388,10 +388,10 @@ module.exports = function(grunt) {
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
      * that webcert depends on*/
-    grunt.registerTask('default', ['jshint', 'bower', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
-    grunt.registerTask('lint', ['jshint', 'csslint']);
-    grunt.registerTask('test', ['karma:ci']);
-    grunt.registerTask('test:watch', ['karma:watch']);
+    grunt.registerTask('default', [ 'bower', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist' ]);
+    grunt.registerTask('lint', [ 'jshint' ]);
+    grunt.registerTask('test', [ 'karma:ci' ]);
+    grunt.registerTask('test:watch', [ 'karma:watch' ]);
     // frontend only dev ===============================================================================================
     grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'generateModuleDeps', 'watch' ]);
 };

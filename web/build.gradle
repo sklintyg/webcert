@@ -29,11 +29,7 @@ task jsTests(type: NodeTask, dependsOn: npmInstall) {
     outputs.dir(webappTestOutputDir)
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    doFirst {
-        args = ['test',
-                "--outputDir=${webappTestOutputDir}",
-                '--skip-coverage=' + !gradle.taskGraph.allTasks.any{it.name == 'sonarcube'}]
-    }
+    args = ['test', "--outputDir=${webappTestOutputDir}", '--run-coverage=' + (project.findProperty('codeCoverage') != null ? 'true' : '') ]
 }
 
 test.dependsOn(jsTests)
@@ -51,6 +47,16 @@ task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
 }
 
 war.dependsOn(jsInclude)
+
+task jsCodeQuality(type: NodeTask, dependsOn: [npmInstall]) {
+    outputs.upToDateWhen { false }
+
+    script = file('node_modules/grunt-cli/bin/grunt')
+    args = ['lint']
+}
+
+checkstyleMain.dependsOn(jsCodeQuality)
+jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
 
 war {
     from("${buildDir}/apps")
