@@ -438,7 +438,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
             draftValidation.addMessage(new se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage(
-                    validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage()));
+                    validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage(), validationMsg.getDynamicKey()));
         }
 
         LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());
