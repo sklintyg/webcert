@@ -122,7 +122,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         signeraUtkastWithTestabilityApi(intygsId);
 
         RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
-        revokeParam.setRevokeMessage("Makulera!");
+        revokeParam.setMessage("Makulera!");
+        revokeParam.setReason("FELAKTIGT_INTYG");
         given().contentType(ContentType.JSON).body(revokeParam).expect().statusCode(200)
                 .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
@@ -142,7 +143,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         changeRoleTo(AuthoritiesConstants.ROLE_ADMIN);
 
         RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
-        revokeParam.setRevokeMessage("Makulera!");
+        revokeParam.setMessage("Makulera!");
+        revokeParam.setReason("FELAKTIGT_INTYG");
         given().contentType(ContentType.JSON).body(revokeParam)
                 .expect().statusCode(500)
                 .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
@@ -373,7 +375,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         signeraUtkastWithTestabilityApi(intygsId);
 
         RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
-        revokeParam.setRevokeMessage("Makulera!");
+        revokeParam.setMessage("Makulera!");
+        revokeParam.setReason("FELAKTIGT_INTYG");
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));

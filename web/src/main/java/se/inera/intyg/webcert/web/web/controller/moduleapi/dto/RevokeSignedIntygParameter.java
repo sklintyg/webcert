@@ -19,20 +19,34 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class RevokeSignedIntygParameter {
 
-    private String revokeMessage;
+    private String reason;
+    private String message;
 
     public RevokeSignedIntygParameter() {
-
     }
 
-    public String getRevokeMessage() {
-        return revokeMessage;
+    public boolean isValid() {
+        return StringUtils.isNotBlank(reason);
     }
 
-    public void setRevokeMessage(String revokeMessage) {
-        this.revokeMessage = revokeMessage;
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }

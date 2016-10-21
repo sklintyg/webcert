@@ -128,8 +128,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logIntygRevoked(String intygsId, String userHsaId) {
-        logEvent(MonitoringEvent.INTYG_REVOKED, intygsId, userHsaId);
+    public void logIntygRevoked(String intygsId, String userHsaId, String reason) {
+        logEvent(MonitoringEvent.INTYG_REVOKED, intygsId, userHsaId, reason);
     }
 
     @Override
@@ -258,7 +258,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         INTYG_SIGNED("Intyg '{}' signed by '{}' using scheme '{}' and relation code '{}'"),
         INTYG_REGISTERED("Intyg '{}' of type '{}' registered with Intygstjänsten"),
         INTYG_SENT("Intyg '{}' sent to recipient '{}'"),
-        INTYG_REVOKED("Intyg '{}' revoked by '{}'"),
+        INTYG_REVOKED("Intyg '{}' revoked by '{}' reason '{}'"),
         INTYG_COPIED("Utkast '{}' created as a copy of '{}'"),
         INTYG_COPIED_RENEWAL("Utkast '{}' created as a renewal copy of '{}'"),
         INTYG_COPIED_REPLACEMENT("Utkast '{}' created as a replacement copy of '{}'"),

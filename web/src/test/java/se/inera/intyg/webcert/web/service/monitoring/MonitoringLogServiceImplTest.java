@@ -62,7 +62,6 @@ public class MonitoringLogServiceImplTest {
     private static final long INTERN_REFERENS = 97;
     private static final Amne AMNE = Amne.ARBETSTIDSFORLAGGNING;
     private static final String PERSON_ID = "PERSON_ID";
-    private static final String ORIGIN = "NORMAL";
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -154,8 +153,8 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogIntygRevoked() {
-        logService.logIntygRevoked(INTYGS_ID, HSA_ID);
-        verifyLog(Level.INFO, "INTYG_REVOKED Intyg 'INTYGS_ID' revoked by 'HSA_ID'");
+        logService.logIntygRevoked(INTYGS_ID, HSA_ID, REASON);
+        verifyLog(Level.INFO, "INTYG_REVOKED Intyg 'INTYGS_ID' revoked by 'HSA_ID' reason 'REASON'");
     }
 
     @Test
