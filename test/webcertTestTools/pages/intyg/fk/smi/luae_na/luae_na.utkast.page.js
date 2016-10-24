@@ -31,23 +31,9 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
         this.diagnosgrund = element(by.id('diagnosgrund'));
         this.nyBedomningDiagnosgrundNo = element(by.id('nyBedomningDiagnosgrundNo'));
-        this.funktionsnedsattning = {
-            intellektuell: element(by.id('funktionsnedsattningIntellektuell')),
-            kommunikation: element(by.id('funktionsnedsattningKommunikation')),
-            koncentration: element(by.id('funktionsnedsattningKoncentration')),
-            annanPsykisk: element(by.id('funktionsnedsattningPsykisk')),
-            synHorselTal: element(by.id('funktionsnedsattningSynHorselTal')),
-            balansKoordination: element(by.id('funktionsnedsattningBalansKoordination')),
-            annanKroppslig: element(by.id('funktionsnedsattningAnnan'))
-        };
+
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
 
-        this.medicinskBehandling = {
-            avslutad: element(by.id('avslutadBehandling')),
-            pagaende: element(by.id('pagaendeBehandling')),
-            planerad: element(by.id('planeradBehandling')),
-            substansintag: element(by.id('substansintag'))
-        };
         this.medicinskaForutsattningar = {
             utecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
             trotsBegransningar: element(by.id('formagaTrotsBegransning')),
