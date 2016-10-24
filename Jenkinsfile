@@ -6,6 +6,7 @@ def typerVersion = "3.1.+"
 
 stage('checkout') {
     node {
+        git url: "https://github.com/sklintyg/webcert.git"
         util.run { checkout scm }
     }
 }
