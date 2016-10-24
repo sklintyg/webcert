@@ -4,17 +4,39 @@ ext {
 
     springVersion = "4.2.2.RELEASE"
     springSecurityVersion = "4.0.3.RELEASE"
+    springDataJpaVersion = "1.9.0.RELEASE"
     activeMqVersion = "5.13.4"
     camelVersion = "2.16.0"
     hamcrestVersion = "1.3"
     cxfVersion = "3.1.3"
-    ppSchemasVersion = "1.0.3"
-    ppTermsSchemasVersion = "1.0.3"
-    healthcondSchemasVersion = "2.0.RC6.1"
-    healthreportingSchemasVersion = "3.1.0.3"
+    
+    ppSchemasVersion = "1.0.4"
+    ppTermsSchemasVersion = "1.0.4"
+    rivtaItintegrationSchemasVersion = "1.0.0.4"
+    healthcondSchemasVersion = "2.0.RC6.2"
+    healthreportingSchemasVersion = "3.1.0.4"
+    insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
+    ehrLogstoreSchemasVersion = "1.2.4"
+    rivtaResidentMasterSchemasVersion = "1.1.3.5"
+    
     mysqlVersion = "5.1.39"
     h2Version = "1.3.176"
     liquibaseVersion = "3.3.5"
+    
+    awaitilityVersion = "1.4.0"
+    seleniumVersion = "2.52.0"
+    jadiraUserTypeVersion = "5.0.0.GA"
+    commonsIoVersion = "2.4"
+    geronimoJmsVersion = "1.1.1"
+    servletApiVersion = "2.5"
+    springockitoVersion = "1.0.8"
+    javaxWsRsApiVersion = "2.0.1"
+    xmlUnitVersion = "1.4"
+    
+    aspectJWeaverVersion = "1.7.1"
+    javaxMailVersion = "1.4"
+    dbUnitVersion = "2.4.9"
+    ehCacheVersion = "2.10.0"
 }
 
 allprojects {
