@@ -70,7 +70,15 @@ function checkAndSendTextToForm(checkboxEL, textEL, text) {
                 });
         });
     });
+}
 
+function sendTextToForm(textEL, text) {
+    return textEL.sendKeys(text)
+        .then(function() {
+            console.log('OK - Angav: ' + text);
+        }, function(reason) {
+            throw ('FEL - Angav: ' + text + ' ' + reason);
+        });
 }
 
 var BaseSmiUtkast = FkBaseUtkast._extend({
@@ -245,13 +253,13 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeFunktionsnedsattning: function(nedsattning) {
         var fn = this.funktionsnedsattning;
         return Promise.all([
-            checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell),
-            checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation),
-            checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration),
-            checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk),
-            checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal),
-            checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination),
-            checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan)
+            sendTextToForm(fn.intellektuell.text, nedsattning.intellektuell),
+            sendTextToForm(fn.kommunikation.text, nedsattning.kommunikation),
+            sendTextToForm(fn.koncentration.text, nedsattning.koncentration),
+            sendTextToForm(fn.annanPsykisk.text, nedsattning.psykisk),
+            sendTextToForm(fn.synHorselTal.text, nedsattning.synHorselTal),
+            sendTextToForm(fn.balansKoordination.text, nedsattning.balansKoordination),
+            sendTextToForm(fn.annanKroppslig.text, nedsattning.annan)
         ]);
     },
 
@@ -351,10 +359,10 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
         return Promise.all([
-            checkAndSendTextToForm(mb.avslutad.checkbox, mb.avslutad.text, behandling.avslutad),
-            checkAndSendTextToForm(mb.pagaende.checkbox, mb.pagaende.text, behandling.pagaende),
-            checkAndSendTextToForm(mb.planerad.checkbox, mb.planerad.text, behandling.planerad),
-            checkAndSendTextToForm(mb.substansintag.checkbox, mb.substansintag.text, behandling.substansintag)
+            sendTextToForm(mb.avslutad.text, behandling.avslutad),
+            sendTextToForm(mb.pagaende.text, behandling.pagaende),
+            sendTextToForm(mb.planerad.text, behandling.planerad),
+            sendTextToForm(mb.substansintag.text, behandling.substansintag)
         ]);
     },
     getTillaggsfraga: function(i) {
