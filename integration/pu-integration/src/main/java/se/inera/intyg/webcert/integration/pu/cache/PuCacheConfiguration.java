@@ -21,7 +21,7 @@ public class PuCacheConfiguration {
 
     public static final String PERSON_CACHE_NAME = "personCache";
 
-    private Duration defaultPersonCacheExpiry = Duration.ONE_MINUTE;
+    private Duration defaultPersonCacheExpiry = Duration.ONE_HOUR;
 
     @Autowired
     private SpringCacheManager cacheManager;
