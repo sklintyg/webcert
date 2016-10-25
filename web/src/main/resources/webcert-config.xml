@@ -34,7 +34,9 @@
   <import resource="classpath:/hsa-services-config.xml" />
   <import resource="classpath:/fmb-services-config.xml" />
   <import resource="classpath:/pu-services-config.xml" />
+  <import resource="classpath:/pu-ignite-config.xml" />
   <import resource="classpath:/pp-services-config.xml" />
+  <import resource="classpath:/common-cache-metrics.xml" />
   <import resource="jms-config.xml" />
   <import resource="ws-config.xml" />
   <import resource="mail-config.xml" />

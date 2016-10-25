@@ -8,6 +8,8 @@ dependencies {
   runtime "org.springframework:spring-context-support:${springVersion}"
   runtime "net.sf.ehcache:ehcache:${ehCacheVersion}"
 
+  compile "se.inera.intyg.common:common-cache-core:0-SNAPSHOT"
+
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }

@@ -82,7 +82,7 @@ gretty {
 
     jvmArgs = [
         "-Dcatalina.base=${buildDir}/catalina.base",
-        "-Dspring.profiles.active=dev",
+        "-Dspring.profiles.active=dev,caching-enabled",
         "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
         "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
         "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
@@ -131,6 +131,7 @@ dependencies {
 
     compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
     compile "se.inera.intyg.common:security-siths:${commonVersion}"
+    compile "se.inera.intyg.common:common-cache-metrics:0-SNAPSHOT" //${commonVersion}"
 
     compile "se.inera.intyg.intygstyper:ts-bas:${typerVersion}"
     compile "se.inera.intyg.intygstyper:ts-diabetes:${typerVersion}"

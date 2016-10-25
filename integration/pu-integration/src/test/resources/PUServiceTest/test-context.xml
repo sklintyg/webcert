@@ -22,6 +22,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <cache:annotation-driven/>
+    <bean class="se.inera.intyg.common.cache.core.BasicCacheConfiguration">
+        <property name="igniteIpAddresses" value="127.0.0.1:47500..47509"/>
+        <property name="cacheExpirySeconds" value="5"/>
+    </bean>
 
     <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
     <bean class="se.inera.intyg.webcert.integration.pu.stub.PUBootstrapBean"/>
@@ -31,7 +36,8 @@
 
     <bean class="se.inera.intyg.webcert.integration.pu.stub.LookupResidentForFullProfileWsStub"/>
 
-    <!-- TODO: this import should be expressed in a way that doesn't use gradle's specific file structure -->
+    <!-- TODO: this import should be expressed in a way that doesn't use gradle's specific file structure
     <import resource="../../../resources/main/pu-cache-config.xml" />
+     -->
 
 </beans>
