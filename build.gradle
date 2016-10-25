@@ -39,6 +39,24 @@ ext {
     ehCacheVersion = "2.10.0"
 
     mockitoVersion = "1.9.0"
+    
+    jsonSchemaValidatorVersion = "2.8.0"
+    restassuredVersion = "2.8.0"
+    servletApiVersion = "3.1.0" 
+    springockitoVersion = "1.0.8"
+    xmlUnitVersion = "1.4" 
+    stAntlr4Version = "4.0.8"
+    opensamlVersion = "2.5.3"
+    openWsVersion = "1.4.2-1"
+    xmlToolingVersion = "1.3.2"
+    jaxrsVersion = "1.5.4"
+    luceneAnalyzersCommonVersion = "4.10.2"
+    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
+    funktionstjansterGrpSchemasVersion = "1.0.3"
+    saml2CoreVersion = "1.0.1.RELEASE" 
+    servletApiVersion = "2.5"
+    autovalueVersion = "1.1"
+    geronimoJmsVersion = "1.1.1"
 }
 
 allprojects {
