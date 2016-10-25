@@ -37,6 +37,8 @@ ext {
     javaxMailVersion = "1.4"
     dbUnitVersion = "2.4.9"
     ehCacheVersion = "2.10.0"
+
+    mockitoVersion = "1.9.0"
 }
 
 allprojects {
@@ -149,8 +151,8 @@ subprojects {
     dependencies {
         buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
 
-        testCompile 'junit:junit:4.12'
-        testCompile 'org.mockito:mockito-core:1.9.0'
+        testCompile 'junit:junit:4.+'
+        testCompile "org.mockito:mockito-core:${mockitoVersion}"
     }
 
     repositories {
