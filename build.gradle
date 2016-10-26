@@ -222,7 +222,6 @@ sonarqube {
         property "sonar.projectName", "Webcert"
         property "sonar.projectKey", "webcert"
         property "sonar.host.url", System.properties['sonarUrl'] ?: "https://build-inera.nordicmedtest.se/sonar"
-        ext.sonarPassword = System.properties['sonarPassword']
         property "sonar.test.exclusions", "src/test/**"
         property "sonar.exclusions", [
             "**/stub/**",
