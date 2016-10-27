@@ -143,8 +143,18 @@ module.exports = function() {
             } else if (field === 'funktionsnedsattning') {
                 intyg.funktionsnedsattning = {};
                 intyg.funktionsnedsattning.intellektuell = helpers.randomTextString();
-                console.log(intyg);
-                luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys(intyg.funktionsnedsattning.intellektuell).then(callback);
+
+                luseUtkastPage.funktionsnedsattning.intellektuell.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
+                    browser.sleep(1000).then(function() {
+                        luseUtkastPage.funktionsnedsattning.intellektuell.text.sendKeys(intyg.funktionsnedsattning.intellektuell)
+                            .then(function() {
+                                console.log('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
+                                callback();
+                            }, function(reason) {
+                                throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
+                            });
+                    });
+                });
             } else {
                 callback(null, 'pending');
             }
