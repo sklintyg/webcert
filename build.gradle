@@ -9,7 +9,7 @@ ext {
     camelVersion = "2.16.0"
     hamcrestVersion = "1.3"
     cxfVersion = "3.1.3"
-    
+
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
     rivtaItintegrationSchemasVersion = "1.0.0.4"
@@ -18,11 +18,11 @@ ext {
     insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
     ehrLogstoreSchemasVersion = "1.2.4"
     rivtaResidentMasterSchemasVersion = "1.1.3.5"
-    
+
     mysqlVersion = "5.1.39"
     h2Version = "1.3.176"
     liquibaseVersion = "3.3.5"
-    
+
     awaitilityVersion = "1.4.0"
     seleniumVersion = "2.52.0"
     jadiraUserTypeVersion = "5.0.0.GA"
@@ -32,19 +32,19 @@ ext {
     springockitoVersion = "1.0.8"
     javaxWsRsApiVersion = "2.0.1"
     xmlUnitVersion = "1.4"
-    
+
     aspectJWeaverVersion = "1.7.1"
     javaxMailVersion = "1.4"
     dbUnitVersion = "2.4.9"
     ehCacheVersion = "2.10.0"
 
     mockitoVersion = "1.9.0"
-    
+
     jsonSchemaValidatorVersion = "2.8.0"
     restassuredVersion = "2.8.0"
-    servletApiVersion = "3.1.0" 
+    servletApiVersion = "3.1.0"
     springockitoVersion = "1.0.8"
-    xmlUnitVersion = "1.4" 
+    xmlUnitVersion = "1.4"
     stAntlr4Version = "4.0.8"
     opensamlVersion = "2.5.3"
     openWsVersion = "1.4.2-1"
@@ -53,7 +53,7 @@ ext {
     luceneAnalyzersCommonVersion = "4.10.2"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
     funktionstjansterGrpSchemasVersion = "1.0.3"
-    saml2CoreVersion = "1.0.1.RELEASE" 
+    saml2CoreVersion = "1.0.1.RELEASE"
     servletApiVersion = "2.5"
     autovalueVersion = "1.1"
     geronimoJmsVersion = "1.1.1"
@@ -119,6 +119,7 @@ subprojects {
     checkstyleMain.onlyIf { project.hasProperty('codeQuality') }
     checkstyleMain.dependsOn unzipBuildTools
     checkstyleMain.source = "src/main/java"
+    checkstyleMain.ignoreFailures = false
     checkstyleTest.enabled = false
 
     apply plugin: 'jacoco'
