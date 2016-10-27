@@ -125,7 +125,7 @@ public class HealthCheckApiController extends AbstractApiController {
         try {
             CacheStatistics data = cacheStatisticsService.get().getCacheStatistics();
             return Response.ok(objectMapper.writeValueAsString(data)).build();
-        } catch(Exception jpe) {
+        } catch (Exception jpe) {
             return Response.serverError().entity(jpe.getMessage()).build();
         }
     }
