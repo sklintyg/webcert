@@ -228,6 +228,22 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.LOGIN_OTHER_CAREGIVER, intygsId, intygsTyp, caregiverId, unitId);
     }
 
+    @Override
+    public void logRevokedPrinted(String intygsId) {
+        logEvent(MonitoringEvent.REVOKED_PRINTED, intygsId);
+    }
+
+    @Override
+    public void logDiagnoskodverkChanged(String intygsId) {
+        logEvent(MonitoringEvent.DIAGNOSKODVERK_CHANGED, intygsId);
+    }
+
+    @Override
+    public void logScreenResolution(String width, String height) {
+        logEvent(MonitoringEvent.SCREEN_RESOLUTION, width, height);
+
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -279,7 +295,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         ARENDE_CREATED_QUESTION("Created arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         ARENDE_CREATED_ANSWER("Created arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         LOGIN_OTHER_UNIT("Viewed intyg '{}' of type '{}' on other unit '{}'"),
-        LOGIN_OTHER_CAREGIVER("Viewed intyg '{}' of type '{}' on other caregiver '{}' unit '{}'");
+        LOGIN_OTHER_CAREGIVER("Viewed intyg '{}' of type '{}' on other caregiver '{}' unit '{}'"),
+        REVOKED_PRINTED("Revoked intyg '{}' printed"),
+        DIAGNOSKODVERK_CHANGED("Diagnoskodverk changed for utkast '{}'"),
+        SCREEN_RESOLUTION("Width '{}', height '{}'");
 
         private final String msg;
 

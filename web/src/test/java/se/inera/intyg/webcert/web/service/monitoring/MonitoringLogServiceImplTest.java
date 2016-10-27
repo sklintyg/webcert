@@ -323,4 +323,22 @@ public class MonitoringLogServiceImplTest {
         logService.logIntegratedOtherCaregiver(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET);
         verifyLog(Level.INFO, "LOGIN_OTHER_CAREGIVER Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other caregiver 'VARDGIVARE' unit 'ENHET'");
     }
+
+    @Test
+    public void shouldLogScreenResolution() {
+        logService.logScreenResolution("WIDTH", "HEIGHT");
+        verifyLog(Level.INFO, "SCREEN_RESOLUTION Width 'WIDTH', height 'HEIGHT'");
+    }
+
+    @Test
+    public void shouldLogRevokedPrinted() {
+        logService.logRevokedPrinted(INTYGS_ID);
+        verifyLog(Level.INFO, "REVOKED_PRINTED Revoked intyg 'INTYGS_ID' printed");
+    }
+
+    @Test
+    public void shouldLogDiagnoskodverkChanged() {
+        logService.logDiagnoskodverkChanged(INTYGS_ID);
+        verifyLog(Level.INFO, "DIAGNOSKODVERK_CHANGED Diagnoskodverk changed for utkast 'INTYGS_ID'");
+    }
 }

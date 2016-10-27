@@ -93,4 +93,10 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String caregiverId, String unitId);
 
+    void logRevokedPrinted(String intygsId);
+
+    void logDiagnoskodverkChanged(String intygsId);
+
+    void logScreenResolution(String width, String height);
+
 }
