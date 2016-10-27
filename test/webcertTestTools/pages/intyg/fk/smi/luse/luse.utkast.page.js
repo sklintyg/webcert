@@ -17,10 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise*/
+/*globals element,by, Promise,browser,protractor*/
 'use strict';
 
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
+
+function checkAndSendTextToForm(checkboxEL, textEL, text) {
+    return checkboxEL.sendKeys(protractor.Key.SPACE).then(function() {
+        return browser.sleep(1000).then(function() {
+            return textEL.sendKeys(text)
+                .then(function() {
+                    console.log('OK - Angav: ' + text);
+                }, function(reason) {
+                    throw ('FEL - Angav: ' + text + ' ' + reason);
+                });
+        });
+    });
+}
 
 var LuseUtkast = BaseSmiUtkast._extend({
     init: function init() {
@@ -74,6 +87,27 @@ var LuseUtkast = BaseSmiUtkast._extend({
         return Promise.all([
             this.medicinskaForutsattningar.utecklasOverTid.sendKeys(forutsattningar.utecklasOverTid),
             this.medicinskaForutsattningar.trotsBegransningar.sendKeys(forutsattningar.trotsBegransningar)
+        ]);
+    },
+    angeFunktionsnedsattning: function(nedsattning) {
+        var fn = this.funktionsnedsattning;
+        return Promise.all([
+            checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell),
+            checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation),
+            checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration),
+            checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk),
+            checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal),
+            checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination),
+            checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan)
+        ]);
+    },
+    angeMedicinskBehandling: function(behandling) {
+        var mb = this.medicinskBehandling;
+        return Promise.all([
+            checkAndSendTextToForm(mb.avslutad.checkbox, mb.avslutad.text, behandling.avslutad),
+            checkAndSendTextToForm(mb.pagaende.checkbox, mb.pagaende.text, behandling.pagaende),
+            checkAndSendTextToForm(mb.planerad.checkbox, mb.planerad.text, behandling.planerad),
+            checkAndSendTextToForm(mb.substansintag.checkbox, mb.substansintag.text, behandling.substansintag)
         ]);
     },
 

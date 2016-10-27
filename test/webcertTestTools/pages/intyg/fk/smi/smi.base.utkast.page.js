@@ -59,19 +59,6 @@ function getTextarea(el) {
     return el.element(by.css('textarea'));
 }
 
-function checkAndSendTextToForm(checkboxEL, textEL, text) {
-    return checkboxEL.sendKeys(protractor.Key.SPACE).then(function() {
-        return browser.sleep(1000).then(function() {
-            return textEL.sendKeys(text)
-                .then(function() {
-                    console.log('OK - Angav: ' + text);
-                }, function(reason) {
-                    throw ('FEL - Angav: ' + text + ' ' + reason);
-                });
-        });
-    });
-}
-
 function sendTextToForm(textEL, text) {
     return textEL.sendKeys(text)
         .then(function() {
