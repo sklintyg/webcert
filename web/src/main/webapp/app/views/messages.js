@@ -70,7 +70,7 @@ angular.module('webcert').constant('webcert.messages', {
         'intygtypes.fk7263.typename': 'Läkarintyg FK 7263',
         'intygtypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
         'intygtypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
-        'intygtypes.lisu.typename': 'Läkarintyg för sjukpenning utökat',
+        'intygtypes.lisu.typename': 'Läkarintyg för sjukpenning',
         'intygtypes.luse.typename': 'Läkarutlåtande för sjukersättning',
         'intygtypes.luae_na.typename': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
         'intygtypes.luae_fs.typename': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
