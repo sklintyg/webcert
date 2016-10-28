@@ -72,16 +72,13 @@ function checkAndSendTextToForm(checkboxEL, textEL, text) {
     });
 }
 
-function sendTextToForm(textEL, checkBoxId, text) {
-    return element(by.id(checkBoxId)).sendKeys(protractor.Key.SPACE).then(function() {
-        return browser.sleep(2000).then(function() {
-            return textEL.sendKeys(text).then(function() {
-                console.log('OK - Angav: ' + text);
-            }, function(reason) {
-                throw ('FEL - Angav: ' + text + ' ' + reason);
-            });
+function sendTextToForm(textEL, text) {
+    return textEL.sendKeys(text)
+        .then(function() {
+            console.log('OK - Angav: ' + text);
+        }, function(reason) {
+            throw ('FEL - Angav: ' + text + ' ' + reason);
         });
-    });
 }
 
 var BaseSmiUtkast = FkBaseUtkast._extend({
@@ -90,8 +87,6 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
 
         this.at = element(by.css('.edit-form'));
-
-        this.nameAddressChangedMsg = element(by.id('intyg-djupintegration-name-and-address-changed'));
 
         this.togglerelatedIntygList = element(by.id('toggleShowRelatedIntyg'));
         this.relatedIntygList = {
@@ -258,13 +253,14 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeFunktionsnedsattning: function(nedsattning) {
         var fn = this.funktionsnedsattning;
         return Promise.all([
-            sendTextToForm(fn.intellektuell.text, 'formly_1_check-multi-text_funktionsnedsattningIntellektuell_0', nedsattning.intellektuell),
-            sendTextToForm(fn.kommunikation.text, 'formly_1_check-multi-text_funktionsnedsattningKommunikation_1', nedsattning.kommunikation),
-            sendTextToForm(fn.koncentration.text, 'formly_1_check-multi-text_funktionsnedsattningKoncentration_2', nedsattning.koncentration),
-            sendTextToForm(fn.annanPsykisk.text, 'formly_1_check-multi-text_funktionsnedsattningPsykisk_3', nedsattning.psykisk),
-            sendTextToForm(fn.synHorselTal.text, 'formly_1_check-multi-text_funktionsnedsattningSynHorselTal_4', nedsattning.synHorselTal),
-            sendTextToForm(fn.balansKoordination.text, 'formly_1_check-multi-text_funktionsnedsattningBalansKoordination_5', nedsattning.balansKoordination),
-            sendTextToForm(fn.annanKroppslig.text, 'formly_1_check-multi-text_funktionsnedsattningAnnan_6', nedsattning.annan)
+            sendTextToForm(fn.intellektuell.text, nedsattning.intellektuell),
+            sendTextToForm(fn.kommunikation.text, nedsattning.kommunikation),
+            sendTextToForm(fn.koncentration.text, nedsattning.koncentration),
+            sendTextToForm(fn.annanPsykisk.text, nedsattning.psykisk),
+            sendTextToForm(fn.synHorselTal.text, nedsattning.synHorselTal),
+            sendTextToForm(fn.balansKoordination.text, nedsattning.balansKoordination),
+            sendTextToForm(fn.annanKroppslig.text, nedsattning.annan)
+
         ]);
     },
 
@@ -364,10 +360,11 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
         return Promise.all([
-            sendTextToForm(mb.avslutad.text, 'formly_1_check-multi-text_avslutadBehandling_0', behandling.avslutad),
-            sendTextToForm(mb.pagaende.text, 'formly_1_check-multi-text_pagaendeBehandling_1', behandling.pagaende),
-            sendTextToForm(mb.planerad.text, 'formly_1_check-multi-text_planeradBehandling_2', behandling.planerad),
-            sendTextToForm(mb.substansintag.text, 'formly_1_check-multi-text_substansintag_3', behandling.substansintag)
+            sendTextToForm(mb.avslutad.text, behandling.avslutad),
+            sendTextToForm(mb.pagaende.text, behandling.pagaende),
+            sendTextToForm(mb.planerad.text, behandling.planerad),
+            sendTextToForm(mb.substansintag.text, behandling.substansintag)
+
         ]);
     },
     getTillaggsfraga: function(i) {
