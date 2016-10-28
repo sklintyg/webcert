@@ -36,6 +36,10 @@ module.exports = function() {
         return browser.get(link);
     });
 
+    this.Given(/^jag ändrar enhet till "([^"]*)"$/, function(enhet) {
+        return (global.user.enhetId = enhet);
+    });
+
     this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin) {
         var url;
         var isSMIIntyg;
