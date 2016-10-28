@@ -332,13 +332,13 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogRevokedPrinted() {
-        logService.logRevokedPrinted(INTYGS_ID);
-        verifyLog(Level.INFO, "REVOKED_PRINTED Revoked intyg 'INTYGS_ID' printed");
+        logService.logRevokedPrint(INTYGS_ID, INTYGS_TYP);
+        verifyLog(Level.INFO, "REVOKED_PRINT Revoked intyg 'INTYGS_ID' of type 'INTYGS_TYP' printed");
     }
 
     @Test
     public void shouldLogDiagnoskodverkChanged() {
-        logService.logDiagnoskodverkChanged(INTYGS_ID);
-        verifyLog(Level.INFO, "DIAGNOSKODVERK_CHANGED Diagnoskodverk changed for utkast 'INTYGS_ID'");
+        logService.logDiagnoskodverkChanged(INTYGS_ID, INTYGS_TYP);
+        verifyLog(Level.INFO, "DIAGNOSKODVERK_CHANGED Diagnoskodverk changed for utkast 'INTYGS_ID' of type 'INTYGS_TYP'");
     }
 }

@@ -25,6 +25,7 @@ import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.HEIGHT;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_ID;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_TYPE;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 
 import javax.ws.rs.*;
@@ -73,10 +74,7 @@ public class JsLogApiController extends AbstractApiController {
             monitoringService.logScreenResolution(request.getInfo().get(WIDTH), request.getInfo().get(HEIGHT));
             break;
         case DIAGNOSKODVERK_CHANGED:
-            monitoringService.logDiagnoskodverkChanged(request.getInfo().get(INTYG_ID));
-            break;
-        case REVOKED_PRINTED:
-            monitoringService.logRevokedPrinted(request.getInfo().get(INTYG_ID));
+            monitoringService.logDiagnoskodverkChanged(request.getInfo().get(INTYG_ID), request.getInfo().get(INTYG_TYPE));
             break;
         default:
             return status(Status.BAD_REQUEST).build();

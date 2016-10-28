@@ -7,8 +7,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_ID;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_TYPE;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.DIAGNOSKODVERK_CHANGED;
-import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.REVOKED_PRINTED;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.SCREEN_RESOLUTION;
 
 import java.util.HashMap;
@@ -45,9 +45,6 @@ public class JsLogApiControllerTest {
         request.setEvent(DIAGNOSKODVERK_CHANGED);
         assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(request).getStatus());
 
-        request.setEvent(REVOKED_PRINTED);
-        assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(request).getStatus());
-
         request.setEvent(SCREEN_RESOLUTION);
         assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(request).getStatus());
     }
@@ -74,32 +71,15 @@ public class JsLogApiControllerTest {
     }
 
     @Test
-    public void testMonitoringRevokedPrinted() {
-        final String intygId = "intygId";
-
-        MonitoringRequest request = new MonitoringRequest();
-        request.setEvent(REVOKED_PRINTED);
-        Map<String, String> extraInfo = new HashMap<>();
-        extraInfo.put(INTYG_ID, intygId);
-        request.setInfo(extraInfo);
-
-        Response response = controller.monitoring(request);
-
-        assertNotNull(response);
-        assertEquals(OK.getStatusCode(), response.getStatus());
-
-        verify(monLog).logRevokedPrinted(intygId);
-        verifyNoMoreInteractions(monLog);
-    }
-
-    @Test
     public void testMonitoringDiagnoskodverkChanged() {
         final String intygId = "intygId";
+        final String intygType = "intygType";
 
         MonitoringRequest request = new MonitoringRequest();
         request.setEvent(DIAGNOSKODVERK_CHANGED);
         Map<String, String> extraInfo = new HashMap<>();
         extraInfo.put(INTYG_ID, intygId);
+        extraInfo.put(INTYG_TYPE, intygType);
         request.setInfo(extraInfo);
 
         Response response = controller.monitoring(request);
@@ -107,7 +87,7 @@ public class JsLogApiControllerTest {
         assertNotNull(response);
         assertEquals(OK.getStatusCode(), response.getStatus());
 
-        verify(monLog).logDiagnoskodverkChanged(intygId);
+        verify(monLog).logDiagnoskodverkChanged(intygId, intygType);
         verifyNoMoreInteractions(monLog);
     }
 
