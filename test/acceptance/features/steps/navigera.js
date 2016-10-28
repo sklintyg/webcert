@@ -102,4 +102,53 @@ module.exports = function() {
 
         });
     });
+
+    this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn och adress$/, function() {
+        var url;
+        var isSMIIntyg;
+        if (intyg && intyg.typ) {
+            isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        }
+        if (isSMIIntyg) {
+            url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+            url = url + '?';
+            url += 'fornamn=test-arparn&';
+            url += 'efternamn=arparnsson&';
+            url += 'postadress=Langgatan%2012&';
+            url += 'postnummer=990%2090&';
+            url += 'postort=Simrishamn&';
+            url += 'ref=testref&';
+            url += 'enhet=' + global.user.enhetId;
+
+        } else {
+            //EN WORKAROUND med parameter TILLS INTYG 2711 är LÖST
+            url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id + '?fornamn=TODO';
+        }
+
+        return browser.get(url).then(function() {
+            console.log('Går till url: ' + url);
+            if (!isSMIIntyg) { // om djupintegration v1 så kommer det fram uppdragsval
+                var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
+                enhetSelectorLink.isPresent().then(function(isPresent) {
+                    if (isPresent) {
+                        return enhetSelectorLink.click().then(function() {
+                            return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                                return helpers.fetchMessageIds(intyg.typ);
+                            });
+                        });
+                    } else {
+                        return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                            return helpers.fetchMessageIds(intyg.typ);
+                        });
+                    }
+
+                });
+            } else {
+                return helpers.fetchMessageIds(intyg.typ);
+            }
+
+
+
+        });
+    });
 };

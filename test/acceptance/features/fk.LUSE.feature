@@ -43,14 +43,3 @@ Scenario: Samtida användare ska generera felmeddelande
 	När jag går in på att skapa ett "Läkarutlåtande för sjukersättning" intyg
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
-
-@adressbyte @namnbyte
-Scenario: Som integrerad användare vill jag veta om patienten bytt namn eller adress
-	När jag går in på att skapa ett "Läkarutlåtande för sjukersättning" intyg
-	Och jag fyller i alla nödvändiga fält för intyget
-	Och jag signerar intyget
-
-	När att jag är inloggad som djupintegrerad läkare
-	Och jag ändrar enhet till "TSTNMT2321000156-105F"
-	Och jag går in på intygsutkastet via djupintegrationslänk
-	Så ska meddelande visas att man ska "Observera att patientens namn och adress har ändrats sedan det här intyget utfärdades."
