@@ -27,9 +27,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
-import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -245,7 +245,7 @@ public class CopyCompletionUtkastBuilderTest {
 
     @Test
     public void testPopulateCompletionFromOriginalDecoratesWithReferensId() throws Exception {
-        final String intygsTyp = "lisu";
+        final String intygsTyp = "lisjp";
         final String meddelandeId = "meddelandeId";
         final String referensId = UUID.randomUUID().toString();
         Arende arende = new Arende();
