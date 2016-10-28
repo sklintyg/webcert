@@ -88,6 +88,8 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         this.at = element(by.css('.edit-form'));
 
+        this.nameAddressChangedMsg = element(by.id('intyg-djupintegration-name-and-address-changed'));
+
         this.togglerelatedIntygList = element(by.id('toggleShowRelatedIntyg'));
         this.relatedIntygList = {
             isDisplayed: function() {
