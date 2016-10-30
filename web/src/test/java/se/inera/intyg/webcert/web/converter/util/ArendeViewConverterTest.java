@@ -31,7 +31,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants;
-import se.inera.intyg.intygstyper.lisu.model.internal.LisuUtlatande;
+import se.inera.intyg.intygstyper.lisjp.model.internal.LisjpUtlatande;
 import se.inera.intyg.intygstyper.luse.model.internal.LuseUtlatande;
 import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
@@ -198,10 +198,10 @@ public class ArendeViewConverterTest {
         assertEquals(january, result.get(3).getSenasteHandelse());
     }
 
-    private LisuUtlatande buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
+    private LisjpUtlatande buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
             String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
 
-        LisuUtlatande.Builder template = LisuUtlatande.builder();
+        LisjpUtlatande.Builder template = LisjpUtlatande.builder();
 
         template.setId(intygsId);
         GrundData grundData = buildGrundData(enhetsId, enhetsNamn, patientPersonId, skapadavPersonId, timeStamp);

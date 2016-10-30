@@ -136,7 +136,7 @@ dependencies {
     compile "se.inera.intyg.intygstyper:ts-bas:${typerVersion}"
     compile "se.inera.intyg.intygstyper:ts-diabetes:${typerVersion}"
     compile "se.inera.intyg.intygstyper:luse:${typerVersion}"
-    compile "se.inera.intyg.intygstyper:lisu:${typerVersion}"
+    compile "se.inera.intyg.intygstyper:lisjp:${typerVersion}"
     compile "se.inera.intyg.intygstyper:luae_na:${typerVersion}"
     compile "se.inera.intyg.intygstyper:luae_fs:${typerVersion}"
 
