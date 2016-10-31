@@ -24,6 +24,7 @@ module.exports = {
         '7263': require('./fk.7263.js'),
         LUSE: require('./fk.LUSE.js'),
         LISU: require('./fk.LISU.js'),
+        LISJP: require('./fk.LISU.js'),
         LUAE_FS: require('./fk.LUAE_FS.js'),
         LUAE_NA: require('./fk.LUAE_NA.js')
     },

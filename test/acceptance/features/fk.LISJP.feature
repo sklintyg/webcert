@@ -1,12 +1,10 @@
 # language: sv
-@sjukpenning @lisu @smoke
+@sjukpenning @lisjp @smoke
 Egenskap: Hantera Läkarintyg för sjukpenning utökat
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
-	När jag går in på en patient
 
-@notReady
 Scenario: Skapa och signera ett intyg
 	När jag går in på en patient
 	Och jag går in på att skapa ett "Läkarintyg för sjukpenning utökat" intyg

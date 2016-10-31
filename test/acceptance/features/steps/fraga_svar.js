@@ -23,7 +23,7 @@
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
 // var fkUtkastPage = pages.intyg.fk['7263'].utkast;
-var lisuUtkastPage = pages.intyg.lisu.utkast;
+var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
@@ -44,13 +44,13 @@ module.exports = function() {
 
         // if (isSMIIntyg) {
 
-        lisuUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
-        lisuUtkastPage.arendeQuestion.text.sendKeys(fragaText);
-        lisuUtkastPage.selectQuestionTopic(amne);
+        lisjpUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
+        lisjpUtkastPage.arendeQuestion.text.sendKeys(fragaText);
+        lisjpUtkastPage.selectQuestionTopic(amne);
 
-        lisuUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
+        lisjpUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
 
-        lisuUtkastPage.arendePanel.getAttribute('id').then(function(result) {
+        lisjpUtkastPage.arendePanel.getAttribute('id').then(function(result) {
             var element = result.split('-');
             var splitIndex = element[0].length + element[1].length + 2;
             var fragaId = result.substr(splitIndex, result.length);

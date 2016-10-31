@@ -121,7 +121,7 @@ module.exports = {
 
         //     } else if (typ === 'Läkarintyg för sjukpenning utökat') {
         //         //intygObj = intygFromJsonFactory.defaultLisu();
-        //         throw ('TODO: Skapa LISU via REST');
+        //         throw ('TODO: Skapa LISJP via REST');
         //     }
         //     var intygDoc = JSON.parse(intygObj.document);
         //     intygDoc.grundData.patient.personId = person.id;

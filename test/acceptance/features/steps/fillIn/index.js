@@ -35,7 +35,7 @@ module.exports = {
                 case 'Läkarutlåtande för sjukersättning':
                     return require('./fk.LUSE.js').fillIn(intyg);
                 case 'Läkarintyg för sjukpenning utökat':
-                    return require('./fk.lisu.js').fillIn(intyg);
+                    return require('./fk.lisjp.js').fillIn(intyg);
                 default:
                     throw 'Intyg.typ odefinierad.';
             }

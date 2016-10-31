@@ -1,5 +1,5 @@
 # language: sv
-@paminnelse @lisu
+@paminnelse @lisjp
 Egenskap: Som läkare vill jag att påminnelser syns tydligt och leder mig till ursprungsfrågan
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.

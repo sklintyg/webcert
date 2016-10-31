@@ -22,7 +22,7 @@
 'use strict';
 
 // var helpers = require('./helpers.js');
-// var lusePage = pages.intyg.lisu.intyg;
+// var lusePage = pages.intyg.lisjp.intyg;
 
 module.exports = {
     checkValues: function(intyg, callback) {
