@@ -3,7 +3,6 @@ description = 'Webcert (Web)'
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'com.moowork.grunt'
-apply plugin: 'com.moowork.node'
 
 def webappOutputDir = 'build/apps/'
 def webappTestOutputDir = 'build/karma/'

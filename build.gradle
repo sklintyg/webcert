@@ -2,6 +2,16 @@ ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
     typerVersion = System.properties['typerVersion'] ?: '0-SNAPSHOT'
 
+    ppSchemasVersion = "1.0.4"
+    ppTermsSchemasVersion = "1.0.4"
+    rivtaItintegrationSchemasVersion = "1.0.0.4"
+    healthcondSchemasVersion = "2.0.RC6.2"
+    healthreportingSchemasVersion = "3.1.0.4"
+    insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
+    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
+    funktionstjansterGrpSchemasVersion = "1.0.3"
+    ehrLogstoreSchemasVersion = "1.2.4"
+    rivtaResidentMasterSchemasVersion = "1.1.3.5"
     springVersion = "4.2.2.RELEASE"
     springSecurityVersion = "4.0.3.RELEASE"
     springDataJpaVersion = "1.9.0.RELEASE"
@@ -9,37 +19,6 @@ ext {
     camelVersion = "2.16.0"
     hamcrestVersion = "1.3"
     cxfVersion = "3.1.3"
-
-    ppSchemasVersion = "1.0.4"
-    ppTermsSchemasVersion = "1.0.4"
-    rivtaItintegrationSchemasVersion = "1.0.0.4"
-    healthcondSchemasVersion = "2.0.RC6.2"
-    healthreportingSchemasVersion = "3.1.0.4"
-    insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
-    ehrLogstoreSchemasVersion = "1.2.4"
-    rivtaResidentMasterSchemasVersion = "1.1.3.5"
-
-    mysqlVersion = "5.1.39"
-    h2Version = "1.3.176"
-    liquibaseVersion = "3.3.5"
-
-    awaitilityVersion = "1.4.0"
-    seleniumVersion = "2.52.0"
-    jadiraUserTypeVersion = "5.0.0.GA"
-    commonsIoVersion = "2.4"
-    geronimoJmsVersion = "1.1.1"
-    servletApiVersion = "2.5"
-    springockitoVersion = "1.0.8"
-    javaxWsRsApiVersion = "2.0.1"
-    xmlUnitVersion = "1.4"
-
-    aspectJWeaverVersion = "1.7.1"
-    javaxMailVersion = "1.4"
-    dbUnitVersion = "2.4.9"
-    ehCacheVersion = "2.10.0"
-
-    mockitoVersion = "1.9.0"
-
     jsonSchemaValidatorVersion = "2.8.0"
     restassuredVersion = "2.8.0"
     servletApiVersion = "3.1.0"
@@ -51,18 +30,35 @@ ext {
     xmlToolingVersion = "1.3.2"
     jaxrsVersion = "1.5.4"
     luceneAnalyzersCommonVersion = "4.10.2"
-    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
-    funktionstjansterGrpSchemasVersion = "1.0.3"
     saml2CoreVersion = "1.0.1.RELEASE"
     servletApiVersion = "2.5"
     autovalueVersion = "1.1"
     geronimoJmsVersion = "1.1.1"
+    awaitilityVersion = "1.4.0"
+    seleniumVersion = "2.52.0"
+    jadiraUserTypeVersion = "5.0.0.GA"
+    commonsIoVersion = "2.4"
+    geronimoJmsVersion = "1.1.1"
+    servletApiVersion = "2.5"
+    springockitoVersion = "1.0.8"
+    javaxWsRsApiVersion = "2.0.1"
+    xmlUnitVersion = "1.4"
+    aspectJWeaverVersion = "1.7.1"
+    javaxMailVersion = "1.4"
+    dbUnitVersion = "2.4.9"
+    ehCacheVersion = "2.10.0"
+    liquibaseVersion = "3.3.5"
+
+    mockitoVersion = "1.9.0"
+    mysqlVersion = "5.1.39"
+    h2Version = "1.3.176"
 }
 
 allprojects {
     group = 'se.inera.intyg.webcert'
     version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
 
+    apply plugin: 'inera-intyg'
     apply plugin: 'maven'
     apply plugin: 'org.ajoberstar.grgit'
 }
@@ -73,32 +69,7 @@ subprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    task createVersionPropertyFile(dependsOn: processResources) {
-        def propertyFile = "${buildDir}/resources/main/version.properties"
-        def projectVersion = rootProject.version
-        def gitCommit = grgit.head().id
-        def gitBranch = grgit.branch.getCurrent().getName()
-        def buildNumber = System.env.BUILD_NUMBER
-
-        inputs.property("project.version", projectVersion)
-        inputs.property("gitCommit", gitCommit)
-        inputs.property("gitBranch", gitBranch)
-        inputs.property("buildNumber", buildNumber)
-        outputs.file(propertyFile)
-
-        doLast {
-            ant.touch(file: propertyFile, mkdirs: "true")
-            ant.propertyfile(file: propertyFile) {
-                entry(key: 'project.version', default: projectVersion)
-                entry(key: 'gitCommit', default: gitCommit)
-                entry(key: 'gitBranch', default: gitBranch)
-                entry(key: 'buildNumber', default: buildNumber)
-                entry(key: 'buildTime', default: new Date())
-            }
-        }
-    }
-
-    jar.dependsOn(createVersionPropertyFile)
+    task createVersionPropertyFile(type: VersionPropertyFileTask)
 
     task unzipBuildTools(type: Copy) {
         description 'Extracts common-build-tools'
@@ -183,37 +154,9 @@ subprojects {
 
 }
 
-String findResolvedVersion(Project project, String groupName) {
-    String version
-    project.configurations.find {
-        it.name == 'compile'
-    }.resolvedConfiguration.getFirstLevelModuleDependencies().find {
-        if (it.moduleGroup == groupName) {
-            version = it.moduleVersion
-            return true
-        }
-        return false
-    }
-    return version
-}
-
-task tagRelease {
-    description = 'Tags the current head with the projects version.'
-    doLast {
-        def grgit = org.ajoberstar.grgit.Grgit.open(creds: new org.ajoberstar.grgit.Credentials(System.properties['githubUser'],
-                                                                                                System.properties['githubPassword']))
-        grgit.tag.add {
-            name = "v" + version
-            message = "Release of ${version}"
-        }
-        grgit.push(tags: true)
-    }
-}
-
-task testReport(type: TestReport) {
-    destinationDir = file("$buildDir/reports/allTests")
-    reportOn subprojects*.test // Include the results from the 'test' task in all subprojects
-}
+task tagRelease(type: TagReleaseTask)
+                      
+task testReport(type: SharedTestReportTask)
 
 apply plugin: "org.sonarqube"
 
@@ -239,12 +182,13 @@ sonarqube {
 
 buildscript {
     dependencies {
-        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.1"
-        classpath 'org.ajoberstar:gradle-git:1.5.1'
+        classpath 'se.inera.intyg:gradle-intyg-plugin:1.0.+'
         classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0.+'
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.+"
+        classpath 'org.ajoberstar:gradle-git:1.+'
         classpath 'org.akhikhl.gretty:gretty:+'
-        classpath 'com.moowork.gradle:gradle-node-plugin:0.12'
-        classpath 'com.moowork.gradle:gradle-grunt-plugin:0.12'
+        classpath 'com.moowork.gradle:gradle-node-plugin:0.+'
+        classpath 'com.moowork.gradle:gradle-grunt-plugin:0.+'
     }
 
     repositories {
