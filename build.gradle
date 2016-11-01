@@ -107,32 +107,18 @@ subprojects {
         }
     }
 
-    uploadArchives {
-        repositories.mavenDeployer {
-            pom.whenConfigured { pom ->
-                pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.common' }.each {
-                    it.version = findResolvedVersion(project, 'se.inera.intyg.common')
-                }
-                pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each {
-                    it.version = findResolvedVersion(project, 'se.inera.intyg.intygstyper')
-                }
-            }
-            repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
-                authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
-            }
+    uploadArchives.repositories.mavenDeployer {
+        repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
+            authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
         }
     }
 
-    install {
-        repositories.mavenInstaller {
-            pom.whenConfigured { pom ->
-                pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.common' }.each {
-                    it.version = findResolvedVersion(project, 'se.inera.intyg.common')
-                }
-                pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.intygstyper' }.each {
-                    it.version = findResolvedVersion(project, 'se.inera.intyg.intygstyper')
-                }
-            }
+    [install.repositories.mavenInstaller, uploadArchives.repositories.mavenDeployer]*.pom*.whenConfigured { pom ->
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common'}.each {
+            it.version = findResolvedVersion(project, 'se.inera.intyg.common')
+        }
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper'}.each {
+            it.version = findResolvedVersion(project, 'se.inera.intyg.intygstyper')
         }
     }
 
@@ -150,14 +136,13 @@ subprojects {
     repositories {
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
 
 }
 
 task tagRelease(type: TagReleaseTask)
-                      
+
 task testReport(type: SharedTestReportTask)
 
 apply plugin: "org.sonarqube"
@@ -169,15 +154,8 @@ sonarqube {
         property "sonar.projectKey", "webcert"
         property "sonar.host.url", System.properties['sonarUrl'] ?: "https://build-inera.nordicmedtest.se/sonar"
         property "sonar.test.exclusions", "src/test/**"
-        property "sonar.exclusions", [
-            "**/stub/**",
-            "**/exception/**",
-            "**/*Exception*.java",
-            "**/*Fake*.java",
-            "**/templates.js",
-            "**/vendor/**",
-            "**/swagger-ui/**"
-            ]
+        property "sonar.exclusions", ["**/stub/**", "**/exception/**", "**/*Exception*.java", "**/*Fake*.java",
+                                      "**/templates.js", "**/vendor/**", "**/swagger-ui/**"]
         property "sonar.javascript.lcov.reportPath", "build/karma/lcov.info"
     }
 }
@@ -196,7 +174,6 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/snapshots/" }
         maven { url "https://plugins.gradle.org/m2/" }
     }
 }
