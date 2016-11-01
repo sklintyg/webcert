@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2016 Inera AB (http://www.inera.se)
+
+    This file is part of rehabstod (https://github.com/sklintyg/rehabstod).
+
+    rehabstod is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    rehabstod is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+  <cache:annotation-driven cache-manager="cacheManager"/>
+
+  <beans profile="caching-enabled,prod">
+    <bean class="se.inera.intyg.common.cache.core.BasicCacheConfiguration"/>
+    <bean class="se.inera.intyg.webcert.integration.pu.cache.PuCacheConfiguration" />
+  </beans>
+  <beans profile="!caching-enabled">
+    <bean id="cacheManager" class="org.springframework.cache.support.NoOpCacheManager"/>
+  </beans>
+</beans>

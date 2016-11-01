@@ -61,7 +61,7 @@ Scenario: Statusuppdateringar vid fråga från vården
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
     Och jag går in på intygsutkastet via djupintegrationslänk
-    Och jag skickar en fråga med ämnet "KONTKT" till Försäkringskassan
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
     Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
 
@@ -91,7 +91,7 @@ Scenario: Statusuppdateringar vid hantering av fråga från vården
     Och jag skickar intyget till Försäkringskassan
 
     Och jag går in på intygsutkastet via djupintegrationslänk
-    Och jag skickar en fråga med ämnet "KONTKT" till Försäkringskassan
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
 
     När jag markerar frågan från vården som hanterad
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"

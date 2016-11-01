@@ -23,13 +23,13 @@ dependencies {
     compile "org.apache.camel:camel-jaxb:${camelVersion}"
     compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
 
-    testCompile "com.jayway.awaitility:awaitility:1.4.0"
-    testCompile "org.kubek2k:springockito:1.0.8"
+    testCompile "com.jayway.awaitility:awaitility:${awaitilityVersion}"
+    testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
     testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"
     testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
-    testCompile "org.dbunit:dbunit:2.4.9"
+    testCompile "org.dbunit:dbunit:${dbUnitVersion}"
 
     testRuntime "com.h2database:h2:${h2Version}"
 }

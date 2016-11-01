@@ -1,7 +1,6 @@
 description = 'Webcert (Protactor Tests)'
 
 apply plugin: 'com.moowork.grunt'
-apply plugin: 'com.moowork.node'
 
 grunt {
     colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true

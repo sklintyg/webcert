@@ -38,6 +38,48 @@ function sendEnterToElement(el) {
     };
 }
 
+var intellektuellForm = element(by.id('form_funktionsnedsattningIntellektuell'));
+var kommunikationForm = element(by.id('form_funktionsnedsattningKommunikation'));
+var koncentrationForm = element(by.id('form_funktionsnedsattningKoncentration'));
+var psykiskForm = element(by.id('form_funktionsnedsattningPsykisk'));
+var horselTalForm = element(by.id('form_funktionsnedsattningSynHorselTal'));
+var balansForm = element(by.id('form_funktionsnedsattningBalansKoordination'));
+var annanForm = element(by.id('form_funktionsnedsattningAnnan'));
+
+var avslutadForm = element(by.id('form_avslutadBehandling'));
+var planeradForm = element(by.id('form_planeradBehandling'));
+var pagaendeForm = element(by.id('form_pagaendeBehandling'));
+var substansintagForm = element(by.id('form_substansintag'));
+
+function getCheckbox(el) {
+    return el.element(by.css('input'));
+}
+
+function getTextarea(el) {
+    return el.element(by.css('textarea'));
+}
+
+function checkAndSendTextToForm(checkboxEL, textEL, text) {
+    return checkboxEL.sendKeys(protractor.Key.SPACE).then(function() {
+        return browser.sleep(1000).then(function() {
+            return textEL.sendKeys(text)
+                .then(function() {
+                    console.log('OK - Angav: ' + text);
+                }, function(reason) {
+                    throw ('FEL - Angav: ' + text + ' ' + reason);
+                });
+        });
+    });
+}
+
+function sendTextToForm(textEL, text) {
+    return textEL.sendKeys(text)
+        .then(function() {
+            console.log('OK - Angav: ' + text);
+        }, function(reason) {
+            throw ('FEL - Angav: ' + text + ' ' + reason);
+        });
+}
 
 var BaseSmiUtkast = FkBaseUtkast._extend({
     init: function init() {
@@ -45,6 +87,8 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
 
         this.at = element(by.css('.edit-form'));
+
+        this.nameAddressChangedMsg = element(by.id('intyg-djupintegration-name-and-address-changed'));
 
         this.togglerelatedIntygList = element(by.id('toggleShowRelatedIntyg'));
         this.relatedIntygList = {
@@ -74,11 +118,66 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         this.diagnoseCode = element(by.id('diagnoseCode-0'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
-        this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
-        this.planeradBehandling = element(by.id('planeradBehandling'));
         this.ovrigt = element(by.id('ovrigt'));
         this.tillaggsfragor0svar = this.getTillaggsfraga(0);
         this.tillaggsfragor1svar = this.getTillaggsfraga(1);
+
+        this.funktionsnedsattning = {
+            intellektuell: {
+                checkbox: getCheckbox(intellektuellForm),
+                text: getTextarea(intellektuellForm)
+
+            },
+            kommunikation: {
+                checkbox: getCheckbox(kommunikationForm),
+                text: getTextarea(kommunikationForm)
+            },
+
+            koncentration: {
+                checkbox: getCheckbox(koncentrationForm),
+                text: getTextarea(koncentrationForm)
+            },
+
+            annanPsykisk: {
+                checkbox: getCheckbox(psykiskForm),
+                text: getTextarea(psykiskForm)
+            },
+
+            synHorselTal: {
+                checkbox: getCheckbox(horselTalForm),
+                text: getTextarea(horselTalForm)
+
+            },
+
+            balansKoordination: {
+                checkbox: getCheckbox(balansForm),
+                text: getTextarea(balansForm)
+            },
+
+            annanKroppslig: {
+                checkbox: getCheckbox(annanForm),
+                text: getTextarea(annanForm)
+            }
+        };
+
+        this.medicinskBehandling = {
+            avslutad: {
+                checkbox: getCheckbox(avslutadForm),
+                text: getTextarea(avslutadForm)
+            },
+            pagaende: {
+                checkbox: getCheckbox(pagaendeForm),
+                text: getTextarea(pagaendeForm)
+            },
+            planerad: {
+                checkbox: getCheckbox(planeradForm),
+                text: getTextarea(planeradForm)
+            },
+            substansintag: {
+                checkbox: getCheckbox(substansintagForm),
+                text: getTextarea(substansintagForm)
+            }
+        };
 
         this.andraMedicinskaUtredningar = {
             finns: {
@@ -91,24 +190,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                     datum: element(by.id('underlag-' + index + '-datum')),
                     information: element(by.id('underlag-' + index + '-hamtasFran'))
                 };
-            },
-
-            /*
-            underlagRow: function(index) {
-                index = index + 1; //skip header-row
-                var row = element.all(by.css('tr.underlagRow')).get(index);
-                var rowTds = row.all(by.css('td'));
-                return {
-                    // underlag: row.element(by.css('[name="andraUnderlag"]')),
-                    // datum: row.element(by.id('underlag-' + (index - 1) + '-datum')),
-                    // information: row.element(by.id('underlag-' + (index - 1) + '-hamtasFran'))
-                    underlag: row.element(by.css('[name="andraUnderlag"]')),
-                    datum: rowTds.get(1).element(by.css('input')),
-                    information: rowTds.get(2).element(by.css('input'))
-                };
-            },
-            laggTillUnderlagKnapp: element(by.cssContainingText('button', 'ytterligare underlag'))
-*/
+            }
         };
 
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
@@ -169,6 +251,19 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         return Promise.all(promiseArr);
 
+    },
+    angeFunktionsnedsattning: function(nedsattning) {
+        var fn = this.funktionsnedsattning;
+        return Promise.all([
+            sendTextToForm(fn.intellektuell.text, nedsattning.intellektuell),
+            sendTextToForm(fn.kommunikation.text, nedsattning.kommunikation),
+            sendTextToForm(fn.koncentration.text, nedsattning.koncentration),
+            sendTextToForm(fn.annanPsykisk.text, nedsattning.psykisk),
+            sendTextToForm(fn.synHorselTal.text, nedsattning.synHorselTal),
+            sendTextToForm(fn.balansKoordination.text, nedsattning.balansKoordination),
+            sendTextToForm(fn.annanKroppslig.text, nedsattning.annan)
+
+        ]);
     },
 
     angeAndraMedicinskaUtredningar: function(utredningar) {
@@ -263,6 +358,16 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             return Promise.all(promiseArr);
         }
 
+    },
+    angeMedicinskBehandling: function(behandling) {
+        var mb = this.medicinskBehandling;
+        return Promise.all([
+            sendTextToForm(mb.avslutad.text, behandling.avslutad),
+            sendTextToForm(mb.pagaende.text, behandling.pagaende),
+            sendTextToForm(mb.planerad.text, behandling.planerad),
+            sendTextToForm(mb.substansintag.text, behandling.substansintag)
+
+        ]);
     },
     getTillaggsfraga: function(i) {
         return element(by.id('tillaggsfragor[' + i + '].svar'));

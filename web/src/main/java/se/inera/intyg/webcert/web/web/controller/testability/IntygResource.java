@@ -88,7 +88,7 @@ public class IntygResource {
      * used in production code.
      *
      * @param intygsTyp
-     *            SIT-intyg: luae_fs, luae_na, luse, lisu
+     *            SIT-intyg: luae_fs, luae_na, luse, lisjp
      * @return
      */
     @GET

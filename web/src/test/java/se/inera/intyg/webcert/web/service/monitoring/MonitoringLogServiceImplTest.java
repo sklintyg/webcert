@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.service.monitoring;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -321,5 +322,23 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogIntegratedOtherCaregiver() {
         logService.logIntegratedOtherCaregiver(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET);
         verifyLog(Level.INFO, "LOGIN_OTHER_CAREGIVER Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other caregiver 'VARDGIVARE' unit 'ENHET'");
+    }
+
+    @Test
+    public void shouldLogScreenResolution() {
+        logService.logScreenResolution("WIDTH", "HEIGHT");
+        verifyLog(Level.INFO, "SCREEN_RESOLUTION Width 'WIDTH', height 'HEIGHT'");
+    }
+
+    @Test
+    public void shouldLogRevokedPrinted() {
+        logService.logRevokedPrint(INTYGS_ID, INTYGS_TYP);
+        verifyLog(Level.INFO, "REVOKED_PRINT Revoked intyg 'INTYGS_ID' of type 'INTYGS_TYP' printed");
+    }
+
+    @Test
+    public void shouldLogDiagnoskodverkChanged() {
+        logService.logDiagnoskodverkChanged(INTYGS_ID, INTYGS_TYP);
+        verifyLog(Level.INFO, "DIAGNOSKODVERK_CHANGED Diagnoskodverk changed for utkast 'INTYGS_ID' of type 'INTYGS_TYP'");
     }
 }

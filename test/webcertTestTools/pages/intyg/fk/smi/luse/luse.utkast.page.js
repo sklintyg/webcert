@@ -17,10 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise*/
+/*globals element,by, Promise,browser,protractor*/
 'use strict';
 
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
+
+function checkAndSendTextToForm(checkboxEL, textEL, text) {
+    return checkboxEL.sendKeys(protractor.Key.SPACE).then(function() {
+        return browser.sleep(1000).then(function() {
+            return textEL.sendKeys(text)
+                .then(function() {
+                    console.log('OK - Angav: ' + text);
+                }, function(reason) {
+                    throw ('FEL - Angav: ' + text + ' ' + reason);
+                });
+        });
+    });
+}
 
 var LuseUtkast = BaseSmiUtkast._extend({
     init: function init() {
@@ -30,23 +43,9 @@ var LuseUtkast = BaseSmiUtkast._extend({
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
         this.diagnosgrund = element(by.id('diagnosgrund'));
         this.nyBedomningDiagnosgrundNo = element(by.id('nyBedomningDiagnosgrundNo'));
-        this.funktionsnedsattning = {
-            intellektuell: element(by.id('form_funktionsnedsattningIntellektuell')),
-            kommunikation: element(by.id('form_funktionsnedsattningKommunikation')),
-            koncentration: element(by.id('form_funktionsnedsattningKoncentration')),
-            annanPsykisk: element(by.id('form_funktionsnedsattningPsykisk')),
-            synHorselTal: element(by.id('form_funktionsnedsattningSynHorselTal')),
-            balansKoordination: element(by.id('form_funktionsnedsattningBalansKoordination')),
-            annanKroppslig: element(by.id('form_funktionsnedsattningAnnan'))
-        };
+
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
 
-        this.medicinskBehandling = {
-            avslutad: element(by.id('avslutadBehandling')),
-            pagaende: element(by.id('pagaendeBehandling')),
-            planerad: element(by.id('planeradBehandling')),
-            substansintag: element(by.id('substansintag'))
-        };
         this.medicinskaForutsattningar = {
             utecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
             trotsBegransningar: element(by.id('formagaTrotsBegransning'))
@@ -80,33 +79,35 @@ var LuseUtkast = BaseSmiUtkast._extend({
             }
         };
     },
-    angeFunktionsnedsattning: function(nedsattning) {
-        return Promise.all([
-            this.funktionsnedsattning.intellektuell.sendKeys(nedsattning.intellektuell),
-            this.funktionsnedsattning.kommunikation.sendKeys(nedsattning.kommunikation),
-            this.funktionsnedsattning.koncentration.sendKeys(nedsattning.koncentration),
-            this.funktionsnedsattning.annanPsykisk.sendKeys(nedsattning.psykisk),
-            this.funktionsnedsattning.synHorselTal.sendKeys(nedsattning.synHorselTal),
-            this.funktionsnedsattning.balansKoordination.sendKeys(nedsattning.balansKoordination),
-            this.funktionsnedsattning.annanKroppslig.sendKeys(nedsattning.annan)
-        ]);
-    },
     angeAktivitetsbegransning: function(aktivitetsbegransning) {
         return this.aktivitetsbegransning.sendKeys(aktivitetsbegransning);
-    },
-    angeMedicinskBehandling: function(behandling) {
-        return Promise.all([
-            this.medicinskBehandling.avslutad.sendKeys(behandling.avslutad),
-            this.medicinskBehandling.pagaende.sendKeys(behandling.pagaende),
-            this.medicinskBehandling.planerad.sendKeys(behandling.planerad),
-            this.medicinskBehandling.substansintag.sendKeys(behandling.substansintag)
-        ]);
     },
 
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([
             this.medicinskaForutsattningar.utecklasOverTid.sendKeys(forutsattningar.utecklasOverTid),
             this.medicinskaForutsattningar.trotsBegransningar.sendKeys(forutsattningar.trotsBegransningar)
+        ]);
+    },
+    angeFunktionsnedsattning: function(nedsattning) {
+        var fn = this.funktionsnedsattning;
+        return Promise.all([
+            checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell),
+            checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation),
+            checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration),
+            checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk),
+            checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal),
+            checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination),
+            checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan)
+        ]);
+    },
+    angeMedicinskBehandling: function(behandling) {
+        var mb = this.medicinskBehandling;
+        return Promise.all([
+            checkAndSendTextToForm(mb.avslutad.checkbox, mb.avslutad.text, behandling.avslutad),
+            checkAndSendTextToForm(mb.pagaende.checkbox, mb.pagaende.text, behandling.pagaende),
+            checkAndSendTextToForm(mb.planerad.checkbox, mb.planerad.text, behandling.planerad),
+            checkAndSendTextToForm(mb.substansintag.checkbox, mb.substansintag.text, behandling.substansintag)
         ]);
     },
 

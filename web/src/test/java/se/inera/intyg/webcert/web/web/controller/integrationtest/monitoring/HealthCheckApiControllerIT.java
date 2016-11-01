@@ -28,7 +28,7 @@ import static com.jayway.restassured.RestAssured.given;
 /**
  * Created by marced on 02/06/16.
  */
-public class HelpCheckApiControllerIT extends BaseRestIntegrationTest {
+public class HealthCheckApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testHealthCheckPing() {
 

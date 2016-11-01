@@ -5,13 +5,15 @@ apply plugin: 'application'
 mainClassName = "liquibase.integration.commandline.Main"
 applicationDefaultJvmArgs = ["-Dfile.encoding=utf8"]
 
-startScripts << {
-    def webcertPersistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
+startScripts {
+    doLast {
+        def webcertPersistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
 
-    unixScript.text = unixScript.text.replaceAll(/"\$@"$/,
+        unixScript.text = unixScript.text.replaceAll(/"\$@"$/,
             "--driver=com.mysql.jdbc.Driver --classpath=lib/${webcertPersistenceDependency} --changeLogFile=changelog/changelog.xml \"\\\$@\"")
-    windowsScript.text = windowsScript.text.replaceAll(/%CMD_LINE_ARGS%/,
+        windowsScript.text = windowsScript.text.replaceAll(/%CMD_LINE_ARGS%/,
             "--driver=com.mysql.jdbc.Driver --classpath=lib/${webcertPersistenceDependency} --changeLogFile=changelog/changelog.xml %CMD_LINE_ARGS%")
+    }
 }
 
 artifacts {

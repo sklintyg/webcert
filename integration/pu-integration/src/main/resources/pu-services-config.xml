@@ -26,7 +26,7 @@
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
         http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
 
-  <import resource="pu-cache-config.xml" />
+  <!-- <import resource="pu-cache-config.xml" />   -->
 
   <jaxws:client id="puClient"
     serviceClass="se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface"

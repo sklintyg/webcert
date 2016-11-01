@@ -149,8 +149,8 @@
     });
 
     // Inject language resources
-    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel', 'formlyConfig', 'webcert.messages',
-        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, formlyConfig, wcMessages) {
+    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel', 'formlyConfig', 'webcert.messages', 'common.MonitoringLogService',
+        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, formlyConfig, wcMessages, MonitoringLogService) {
 
             // Configure formly to use default hide directive.
             // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
@@ -223,6 +223,10 @@
                 $log.debug('--- $viewContentLoaded, rendered : ' + $window.rendered);
             });
 
+            // INTYG-3069
+            // Once per session we want to log relevant information about the users environment.
+            // As of now this is limited to screen resolution.
+            MonitoringLogService.screenResolution($window.innerWidth, $window.innerHeight);
         }]);
 
 

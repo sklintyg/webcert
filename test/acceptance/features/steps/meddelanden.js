@@ -30,7 +30,7 @@ module.exports = function() {
     this.Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
-        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, helpers.subjectCodes[amne]);
+        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne) + ' ' + global.intyg.guidcheck, amne);
         console.log(body);
         var path = '/send-message-to-care/v1.0?wsdl';
         var url = process.env.INTYGTJANST_URL + path;

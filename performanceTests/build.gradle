@@ -14,15 +14,17 @@ sourceSets {
     }
 }
 
-task gatling(dependsOn: 'build') << {
-    javaexec {
-        main = 'io.gatling.app.Gatling'
-        classpath = sourceSets.test.output + sourceSets.test.runtimeClasspath
-        jvmArgs "-DbaseUrl=$gatlingBaseUrl"
-        args    '-sf', sourceSets.test.output,              //source folder
-                '-bf', sourceSets.test.output.classesDir,   //target folder where gatling will compile the simulation
-                '-s' , "se.inera.webcert.$simulation",      //The simulation to run
-                '-rf', 'build/reports/gatling'              //place to put the report
+task gatling(dependsOn: 'build') {
+    doLast {
+        javaexec {
+            main = 'io.gatling.app.Gatling'
+            classpath = sourceSets.test.output + sourceSets.test.runtimeClasspath
+            jvmArgs "-DbaseUrl=$gatlingBaseUrl"
+            args    '-sf', sourceSets.test.output,              //source folder
+            '-bf', sourceSets.test.output.classesDir,   //target folder where gatling will compile the simulation
+            '-s' , "se.inera.webcert.$simulation",      //The simulation to run
+            '-rf', 'build/reports/gatling'              //place to put the report
+        }
     }
 }
 
