@@ -143,10 +143,8 @@ dependencies {
     compile "org.springframework:spring-webmvc:${springVersion}"
     compile "org.apache.lucene:lucene-analyzers-common:${luceneAnalyzersCommonVersion}"
 
-    compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-taglibs:${springSecurityVersion}"
-    compile "org.springframework.security.extensions:spring-security-saml2-core:${saml2CoreVersion}"
 
     compile "org.opensaml:opensaml:${opensamlVersion}"
     compile "org.opensaml:openws:${openWsVersion}"
@@ -156,7 +154,6 @@ dependencies {
     }
 
     compileOnly "javax.servlet:servlet-api:${servletApiVersion}"
-    compileOnly "com.google.auto.value:auto-value:${autovalueVersion}"
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"

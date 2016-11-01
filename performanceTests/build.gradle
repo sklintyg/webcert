@@ -29,9 +29,9 @@ task gatling(dependsOn: 'build') {
 }
 
 dependencies {
-    testCompile group: 'io.gatling', name: 'gatling-app', version: gatlingVersion
-    testCompile group: 'io.gatling', name: 'gatling-recorder', version: gatlingVersion
-    testCompile group: 'io.gatling.highcharts', name: 'gatling-charts-highcharts', version: gatlingVersion
+    testCompile "io.gatling:gatling-app:${gatlingVersion}"
+    testCompile "io.gatling:gatling-recorder:${gatlingVersion}"
+    testCompile "io.gatling.highcharts:gatling-charts-highcharts:${gatlingVersion}"
 }
 
 repositories {

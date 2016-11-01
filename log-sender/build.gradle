@@ -14,19 +14,15 @@ task camelTest(type: Test) {
 dependencies {
   compile project(':webcert-common')
 
-  compile 'se.riv.ehr.logstore:ehr-logstore-schemas:${ehrLogstoreSchemasVersion}'
-
   compile "se.inera.intyg.common:log-messages:${commonVersion}"
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
   compile "se.inera.intyg.common:logging-util:${commonVersion}"
   compile "se.inera.intyg.common:integration-util:${commonVersion}"
 
   compile "org.springframework:spring-web:${springVersion}"
-  compile "org.springframework:spring-tx:${springVersion}"
   compile "org.springframework:spring-jms:${springVersion}"
   compile "org.apache.camel:camel-spring:${camelVersion}"
   compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
-  compile "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
   compile "javax.ws.rs:javax.ws.rs-api:${javaxWsRsApiVersion}"
 
   compileOnly "javax.servlet:servlet-api:${servletApiVersion}"

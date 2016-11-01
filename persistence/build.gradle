@@ -8,9 +8,8 @@ jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 dependencies {
   compile project(':webcert-common')
 
-  compile "org.springframework:spring-tx:${springVersion}"
   compile "org.springframework:spring-orm:${springVersion}"
-  compile "org.springframework.data:spring-data-jpa:${springDataJpaVersion}"
+  compile "org.springframework.data:spring-data-jpa:${springDataVersion}"
   compile "org.liquibase:liquibase-core:${liquibaseVersion}"
   compile "org.jadira.usertype:usertype.extended:${jadiraUserTypeVersion}"
 

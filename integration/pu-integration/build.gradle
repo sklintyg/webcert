@@ -4,11 +4,10 @@ dependencies {
   compile "se.riv.population.residentmaster:population-residentmaster-schemas:${rivtaResidentMasterSchemasVersion}"
 
   compile "se.inera.intyg.common:common-support:${commonVersion}"
+  compile "se.inera.intyg.common:common-cache-core:${commonVersion}"
 
   runtime "org.springframework:spring-context-support:${springVersion}"
   runtime "net.sf.ehcache:ehcache:${ehCacheVersion}"
-
-  compile "se.inera.intyg.common:common-cache-core:${commonVersion}"
 
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"

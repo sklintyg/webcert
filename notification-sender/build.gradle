@@ -12,7 +12,7 @@ task camelTest(type: Test) {
 dependencies {
     compile project(':webcert-common')
 
-    compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${healthcondSchemasVersion}"
+    compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
     compile "org.springframework:spring-jms:${springVersion}"
     compile "org.apache.camel:camel-spring:${camelVersion}"
