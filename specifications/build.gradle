@@ -1,4 +1,4 @@
-description = 'Intyg Common (FitNesse fixturer)'
+description = 'Intyg Common (FitNesse-fixturer)'
 
 apply plugin: 'groovy'
 
@@ -9,18 +9,18 @@ sonarqube {
 dependencies {
     compile project(':integration-util')
 
-    compile "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessVersion}"
-    compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringVersion}"
-    compile "se.inera.intyg.insuranceprocess.healthreporting:intyg-insuranceprocess-healthreporting-schemas:${intygInsuranceprocessVersion}"
-    compile "se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:${intygTransportstyrelsenVersion}"
+    compile "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
+    compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
+    compile "se.inera.intyg.insuranceprocess.healthreporting:intyg-insuranceprocess-healthreporting-schemas:${intygInsuranceprocessSchemasVersion}"
+    compile "se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:${intygTransportstyrelsenSchemasVersion}"
 
-    compile "org.apache.activemq:activemq-client:5.13.0"
-    compile "javax.jms:jms-api:1.1-rev-1"
-    compile "org.codehaus.groovy:groovy-all:2.4.7"
-    compile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1"
-    compile "org.fitnesse:fitnesse:20150814"
-    compile "org.gebish:geb-core:0.10.0"
-    compile "org.seleniumhq.selenium:selenium-server:2.52.0"
-    compile "org.skyscreamer:jsonassert:1.2.0"
-    compile "org.apache.commons:commons-dbcp2:2.0"
+    compile "org.apache.activemq:activemq-client:${activeMqClientVersion}"
+    compile "javax.jms:jms-api:${jmsApiVersion}"
+    compile "org.codehaus.groovy:groovy-all:${groovyVersion}"
+    compile "org.codehaus.groovy.modules.http-builder:http-builder:${httpBuilderVersion}"
+    compile "org.fitnesse:fitnesse:${fitnesseVersion}"
+    compile "org.gebish:geb-core:${gebCoreVersion}"
+    compile "org.seleniumhq.selenium:selenium-server:${seleniumServerVersion}"
+    compile "org.skyscreamer:jsonassert:${jsonAssertVersion}"
+    compile "org.apache.commons:commons-dbcp2:${commonsDbcp2Version}"
 }
