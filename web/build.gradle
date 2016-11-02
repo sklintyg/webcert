@@ -54,7 +54,7 @@ task jsCodeQuality(type: NodeTask, dependsOn: [npmInstall]) {
     args = ['lint']
 }
 
-checkstyleMain.dependsOn(jsCodeQuality)
+checkstyleMain.dependsOn jsCodeQuality
 jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
 
 war {
@@ -80,17 +80,17 @@ gretty {
     def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
 
     jvmArgs = [
-        "-Dcatalina.base=${buildDir}/catalina.base",
-        "-Dspring.profiles.active=dev,caching-enabled",
-        "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
-        "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-        "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
-        "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-        "-Dwebcert.useMinifiedJavaScript=${minified}",
-        "-Dh2.tcp.port=9094",
-        "-Dh2.web.port=9090",
-        "-Djetty.port=9088"
-        ]
+               "-Dcatalina.base=${buildDir}/catalina.base",
+               "-Dspring.profiles.active=dev,caching-enabled",
+               "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
+               "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
+               "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
+               "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
+               "-Dwebcert.useMinifiedJavaScript=${minified}",
+               "-Dh2.tcp.port=9094",
+               "-Dh2.web.port=9090",
+               "-Djetty.port=9088"
+               ]
 
     extraResourceBase webappOutputDir
 }
@@ -141,11 +141,9 @@ dependencies {
 
     compile "org.springframework:spring-web:${springVersion}"
     compile "org.springframework:spring-webmvc:${springVersion}"
-    compile "org.apache.lucene:lucene-analyzers-common:${luceneAnalyzersCommonVersion}"
-
     compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-taglibs:${springSecurityVersion}"
-
+    compile "org.apache.lucene:lucene-analyzers-common:${luceneAnalyzersCommonVersion}"
     compile "org.opensaml:opensaml:${opensamlVersion}"
     compile "org.opensaml:openws:${openWsVersion}"
     compile "org.opensaml:xmltooling:${xmlToolingVersion}"
