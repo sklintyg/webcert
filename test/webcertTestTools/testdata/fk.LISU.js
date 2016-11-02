@@ -66,30 +66,68 @@ function getRandomArbetstidsforlaggning(arbetsformaga) {
 }
 
 function getRandomAtgarder() {
-    var atgarder = [
-        'Arbetsträning',
-        'Arbetsanspassning',
-        'Söka nytt arbete',
-        'Besök på arbetsplatsen',
-        'Ergonomisk bedömning',
-        'Hjälpmedel',
-        'Konflikthantering',
-        'Kontakt med företagshälsovård',
-        'Omfördelning av arbetsuppgifter',
-        'Övrigt'
-    ];
+    var atgarder = [{
+        namn: 'Arbetsträning',
+        beskrivning: 'aaa',
+        key: 'ARBETSTRANING'
+    }, {
+        namn: 'Arbetsanspassning',
+        beskrivning: 'aaa',
+        key: 'ARBETSANPASSNING'
+    }, {
+        namn: 'Söka nytt arbete',
+        beskrivning: 'aaa',
+        key: 'SOKA_NYTT_ARBETE'
+    }, {
+        namn: 'Besök på arbetsplatsen',
+        beskrivning: 'aaa',
+        key: 'BESOK_ARBETSPLATS'
+    }, {
+        namn: 'Ergonomisk bedömning',
+        beskrivning: 'aaa',
+        key: 'ERGONOMISK'
+    }, {
+        namn: 'Hjälpmedel',
+        beskrivning: 'aaa',
+        key: 'HJALPMEDEL'
+    }, {
+        namn: 'Konflikthantering',
+        beskrivning: 'aaa',
+        key: 'KONFLIKTHANTERING'
+    }, {
+        namn: 'Kontakt med företagshälsovård',
+        beskrivning: 'aaa',
+        key: 'KONTAKT_FHV'
+    }, {
+        namn: 'Omfördelning av arbetsuppgifter',
+        beskrivning: 'aaa',
+        key: 'OMFORDELNING'
+    }, {
+        namn: 'Övrigt',
+        beskrivning: 'aaa',
+        key: 'OVRIGA_ATGARDER'
+    }];
     var randomLength = Math.floor(Math.random() * atgarder.length) + 1;
 
     // 33% chans för inte aktuellt
+    return shuffle([
+        [{
+            namn: 'Inte aktuellt'
+        }], shuffle(atgarder).slice(0, randomLength),
+        shuffle(atgarder).slice(0, randomLength)
+    ])[0];
+}
+
+function getRandomPrognosForArbetsformaga() {
     return shuffle([{
-        atgarder: ['Inte aktuellt'],
-        varforInteBeskrivning: testdataHelper.randomTextString()
+        name: 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning.'
     }, {
-        atgarder: shuffle(atgarder).slice(0, randomLength),
-        varforBeskrivning: testdataHelper.randomTextString()
+        name: 'Patienten kommer med stor sannolikhet inte att kunna återgå helt i nuvarande sysselsättning inom 12 månader.'
     }, {
-        atgarder: shuffle(atgarder).slice(0, randomLength),
-        varforBeskrivning: testdataHelper.randomTextString()
+        name: 'Återgång i nuvarande sysselsättning är oklar.'
+    }, {
+        name: 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning inom',
+        within: shuffle(['1 månad', '2 månader', '3 månader'])[0]
     }])[0];
 }
 
@@ -98,7 +136,7 @@ module.exports = {
         var arbetsformaga = fkValues.getRandomArbetsformaga();
         return {
             id: intygsID,
-            typ: 'Läkarintyg för sjukpenning utökat',
+            typ: 'Läkarintyg för sjukpenning',
 
             nuvarandeArbeteBeskrivning: testdataHelper.randomTextString(),
             baseratPa: {
@@ -122,7 +160,8 @@ module.exports = {
             resorTillArbete: shuffle([true, false])[0],
             goraTrotsSjukdom: testdataHelper.randomTextString(),
             sannolikhetAtergangTillArbete: getRandomSannolikhetAtergang(),
-            atgarder: getRandomAtgarder()
+            atgarder: getRandomAtgarder(),
+            prognosForArbetsformaga: getRandomPrognosForArbetsformaga()
         };
     }
 };

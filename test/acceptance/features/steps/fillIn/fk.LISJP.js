@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, browser, protractor, logger, Promise */
+/* globals pages, browser, logger, Promise */
 
 'use strict';
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
@@ -91,17 +91,17 @@ module.exports = {
         }));
 
         //Förmåga trots begränsning
-        promiseArr.push(lisjpUtkastPage.sjukskrivning.formagaTrotsBegransningBeskrivning.sendKeys(intyg.goraTrotsSjukdom).then(function() {
-            logger.info('OK - formagaTrotsBegransningBeskrivning');
-        }, function(reason) {
-            throw ('FEL, formagaTrotsBegransningBeskrivning,' + reason);
-        }));
+        // promiseArr.push(lisjpUtkastPage.sjukskrivning.formagaTrotsBegransningBeskrivning.sendKeys(intyg.goraTrotsSjukdom).then(function() {
+        //     logger.info('OK - formagaTrotsBegransningBeskrivning');
+        // }, function(reason) {
+        //     throw ('FEL, formagaTrotsBegransningBeskrivning,' + reason);
+        // }));
 
         //Prognos
-        promiseArr.push(lisjpUtkastPage.sjukskrivning.prognos.typ['1'].sendKeys(protractor.Key.SPACE).then(function() {
-            logger.info('OK - prognos');
+        promiseArr.push(lisjpUtkastPage.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
+            logger.info('OK - prognosForArbetsformaga');
         }, function(reason) {
-            throw ('FEL, prognos,' + reason);
+            throw ('FEL, prognosForArbetsformaga,' + reason);
         }));
 
         // Åtgärd

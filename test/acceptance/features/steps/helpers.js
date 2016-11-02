@@ -32,7 +32,7 @@ module.exports = {
             return testdata.fk['7263'].getRandom(id);
         } else if (typ === 'Läkarutlåtande för sjukersättning') {
             return testdata.fk.LUSE.getRandom(id);
-        } else if (typ === 'Läkarintyg för sjukpenning utökat') {
+        } else if (typ === 'Läkarintyg för sjukpenning') {
             return testdata.fk.LISJP.getRandom(id);
         }
     },
@@ -118,7 +118,7 @@ module.exports = {
         return null;
     },
     smiIntyg: {
-        'LISJP': 'Läkarintyg för sjukpenning utökat',
+        'LISJP': 'Läkarintyg för sjukpenning',
         'LUSE': 'Läkarutlåtande för sjukersättning',
         'FK7263': 'Läkarintyg FK 7263'
     },

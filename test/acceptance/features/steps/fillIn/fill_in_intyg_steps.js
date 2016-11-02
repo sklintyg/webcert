@@ -33,7 +33,7 @@ var td = wcTestTools.testdata;
 module.exports = function() {
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function() {
         if (!global.intyg.typ) {
-            throw 'Intyg.typ odefinierad.';
+            throw 'intyg.typ odefinierad.';
         } else {
             global.intyg = generateIntygByType(intyg.typ, intyg.id);
             console.log(intyg);

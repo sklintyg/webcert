@@ -20,7 +20,7 @@
 'use strict';
 module.exports.CreateDraftCertificateV2 = function(pnr, user, intygstyp) {
     var shortcodes = {
-        'Läkarintyg för sjukpenning utökat': 'LISJP',
+        'Läkarintyg för sjukpenning': 'LISJP',
         'Läkarutlåtande för sjukersättning': 'LUSE'
     };
     var typCode = shortcodes[intygstyp];

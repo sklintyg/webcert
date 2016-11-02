@@ -51,7 +51,7 @@ module.exports = {
             return fk7263CheckValues(intyg);
         } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
             return fkLUSECheckValues(intyg);
-        } else if (intyg.typ === 'Läkarintyg för sjukpenning utökat') {
+        } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
             return fkLISJPCheckValues(intyg);
         } else {
             throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
