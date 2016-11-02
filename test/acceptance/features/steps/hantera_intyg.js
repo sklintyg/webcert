@@ -122,16 +122,12 @@ module.exports = function() {
     });
 
     this.Given(/^ska det finnas en referens till gamla intyget$/, function() {
-        return browser.sleep(2000).then(function() {
+        return browser.sleep(3000).then(function() {
             return element(by.id('toggleShowRelatedIntyg')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
                 return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
                     return browser.getCurrentUrl().then(function(text) {
-                        var makuleratIntygId = text.split('/').slice(-1)[0];
-                        makuleratIntygId = makuleratIntygId.split('?')[0];
-                        var currentIntyg = intyg.id;
-                        intyg.id = makuleratIntygId;
-                        logger.info('(%s === %s) => %s', currentIntyg, makuleratIntygId, (currentIntyg === makuleratIntygId));
-                        return expect(currentIntyg).to.equal(makuleratIntygId);
+                        logger.info('(%s contain %s) => %s', text, intyg.id, (text.indexOf(intyg.id) !== -1 ? true : false));
+                        return expect(text).to.contain(intyg.id);
                     });
                 });
 

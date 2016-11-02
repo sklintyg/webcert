@@ -10,9 +10,9 @@ dependencies {
 
   compile "org.springframework:spring-tx:${springVersion}"
   compile "org.springframework:spring-orm:${springVersion}"
-  compile "org.springframework.data:spring-data-jpa:1.9.0.RELEASE"
+  compile "org.springframework.data:spring-data-jpa:${springDataJpaVersion}"
   compile "org.liquibase:liquibase-core:${liquibaseVersion}"
-  compile 'org.jadira.usertype:usertype.extended:5.0.0.GA'
+  compile "org.jadira.usertype:usertype.extended:${jadiraUserTypeVersion}"
 
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"

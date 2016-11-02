@@ -27,7 +27,7 @@ var generateIntygByType = require('../helpers.js').generateIntygByType;
 var helpers = require('../helpers');
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
-var lisuUtkastPage = wcTestTools.pages.intyg.lisu.utkast;
+var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var td = wcTestTools.testdata;
 
 module.exports = function() {
@@ -111,7 +111,7 @@ module.exports = function() {
 
             var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
             if (isSMIIntyg) {
-                return lisuUtkastPage.angeDiagnosKoder([diagnosKod]);
+                return lisjpUtkastPage.angeDiagnosKoder([diagnosKod]);
             } else {
                 return fkUtkastPage.angeDiagnosKod(diagnosKod);
             }
@@ -143,26 +143,36 @@ module.exports = function() {
             } else if (field === 'funktionsnedsattning') {
                 intyg.funktionsnedsattning = {};
                 intyg.funktionsnedsattning.intellektuell = helpers.randomTextString();
-                console.log(intyg);
-                luseUtkastPage.funktionsnedsattning.intellektuell.sendKeys(intyg.funktionsnedsattning.intellektuell).then(callback);
+
+                luseUtkastPage.funktionsnedsattning.intellektuell.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
+                    browser.sleep(1000).then(function() {
+                        luseUtkastPage.funktionsnedsattning.intellektuell.text.sendKeys(intyg.funktionsnedsattning.intellektuell)
+                            .then(function() {
+                                console.log('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
+                                callback();
+                            }, function(reason) {
+                                throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
+                            });
+                    });
+                });
             } else {
                 callback(null, 'pending');
             }
 
-        } else if (intygShortcode === 'LISU') {
+        } else if (intygShortcode === 'LISJP') {
             field = helpers.randomPageField(isSMIIntyg, intygShortcode);
             console.log('Fältet som ändras är: ' + field);
 
             if (field === 'aktivitetsbegransning') {
                 intyg.aktivitetsbegransning = helpers.randomTextString();
-                lisuUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+                lisjpUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
             } else if (field === 'funktionsnedsattning') {
                 intyg.funktionsnedsattning = helpers.randomTextString();
-                lisuUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
+                lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
             } else if (field === 'sysselsattning') {
-                lisuUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE).then(callback);
+                lisjpUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE).then(callback);
                 intyg.nuvarandeArbeteBeskrivning = helpers.randomTextString();
-                lisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning).then(callback);
+                lisjpUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning).then(callback);
             } else {
                 callback(null, 'pending');
             }

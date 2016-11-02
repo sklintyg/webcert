@@ -52,7 +52,7 @@ knownIntygstyper:
   - &ki010 fk7263
   - &ki020 ts-bas
   - &ki030 ts-diabetes
-  - &ki040 lisu
+  - &ki040 lisjp
   - &ki050 luse
   - &ki060 luae_na
   - &ki070 luae_fs
@@ -95,7 +95,7 @@ requestOrigins:
     name: *kro020
     intygstyper:
       - *ki010 # fk7263
-      - *ki040 # lisu
+      - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
@@ -153,7 +153,7 @@ privileges:
     desc: Besvara fråga om komplettering
     intygstyper:
       - *ki010 # fk7263
-      - *ki040 # lisu
+      - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
@@ -197,7 +197,7 @@ privileges:
     desc: Svara med nytt intyg
     intygstyper:
       - *ki010 # fk7263
-      - *ki040 # lisu
+      - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs

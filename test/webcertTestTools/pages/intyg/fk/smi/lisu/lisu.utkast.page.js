@@ -62,10 +62,6 @@ var LisuUtkast = BaseSmiUtkast._extend({
             funktionsnedsattning: element(by.id('funktionsnedsattning')),
             aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
         };
-        this.behandling = {
-            pagaendeBehandling: element(by.id('pagaendeBehandling')),
-            planeradBehandling: element(by.id('planeradBehandling'))
-        };
         this.sjukskrivning = {
             100: {
                 fran: element(by.id('sjukskrivningar-1-from')),

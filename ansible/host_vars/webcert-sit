@@ -1,5 +1,5 @@
 # Spring profiles
-profiles: test,wc-security-dev,wc-eid-stub,wc-hsa-stub,wc-pp-stub,wc-pu-stub,wc-fk-stub,wc-loggtjanst-stub,wc-mail-stub,wc-notificationsender-stub
+profiles: test,wc-security-dev,wc-eid-stub,wc-hsa-stub,wc-pp-stub,wc-pu-stub,wc-fk-stub,wc-loggtjanst-stub,wc-mail-stub,wc-notificationsender-stub,caching-enabled
 
 # Configuration repository
 environment_name: "sit"

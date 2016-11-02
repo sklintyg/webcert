@@ -58,7 +58,7 @@ module.exports = function(grunt) {
         'ts-bas':      { base: 'intygstyper/ts/ts-bas' },
         'ts-diabetes': { base: 'intygstyper/ts/ts-diabetes' },
         'luse':        { base: 'intygstyper/fk/luse', angularModule:'luse' },
-        'lisu':        { base: 'intygstyper/fk/lisu', angularModule:'lisu' },
+        'lisjp':       { base: 'intygstyper/fk/lisjp', angularModule:'lisjp' },
         'luae_na':     { base: 'intygstyper/fk/luae_na', angularModule:'luae_na' },
         'luae_fs':     { base: 'intygstyper/fk/luae_fs', angularModule:'luae_fs' }
     };

@@ -68,7 +68,7 @@ describe('verify luse\'s print buttons', function() {
         expect(element(by.id('intyg-header-dropdown-select-pdf-type')).isPresent()).toBeFalsy();
     });
 
-    it('verify the normal print button is not displayed', function() {
+    it('verify the normal print button is displayed', function() {
         expect(element(by.id('downloadprint')).isDisplayed()).toBeTruthy();
     });
 

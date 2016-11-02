@@ -17,21 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* globals logger, Promise */
+
 'use strict';
 
+// var helpers = require('./helpers.js');
+// var lusePage = pages.intyg.lisjp.intyg;
+
 module.exports = {
-    fk: {
-        '7263': require('./fk.7263.js'),
-        LUSE: require('./fk.LUSE.js'),
-        LISU: require('./fk.LISU.js'),
-        LISJP: require('./fk.LISU.js'),
-        LUAE_FS: require('./fk.LUAE_FS.js'),
-        LUAE_NA: require('./fk.LUAE_NA.js')
-    },
-    ts: {
-        bas: require('./ts.bas.js'),
-        diabetes: require('./ts.diabetes.js')
-    },
-    values: require('./testvalues.js'),
-    fmb: require('./diagnoskoderFMB.js')
+    checkValues: function(intyg, callback) {
+        logger.info('-- Kontrollerar Läkarintyg för sjukpenning utökat --');
+        logger.warn('intyg med typ: ' + intyg.typ + 'saknar funktioner för kontroll av data');
+        return Promise.all([ //kommer snart
+        ]);
+    }
 };

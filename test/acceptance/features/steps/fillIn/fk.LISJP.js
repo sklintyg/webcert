@@ -20,7 +20,7 @@
 /* globals pages, browser, protractor, logger, Promise */
 
 'use strict';
-var lisuUtkastPage = pages.intyg.lisu.utkast;
+var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 
 module.exports = {
     fillIn: function(intyg) {
@@ -29,47 +29,47 @@ module.exports = {
         var promiseArr = [];
 
         //Baserat på
-        promiseArr.push(lisuUtkastPage.angeBaserasPa(intyg.baseratPa).then(function() {
+        promiseArr.push(lisjpUtkastPage.angeBaserasPa(intyg.baseratPa).then(function() {
             logger.info('OK - angeBaserasPa');
         }, function(reason) {
             throw ('FEL, angeBaserasPa,' + reason);
         }));
 
         // Sysselsättning
-        promiseArr.push(lisuUtkastPage.angeSysselsattning(intyg.sysselsattning).then(function() {
+        promiseArr.push(lisjpUtkastPage.angeSysselsattning(intyg.sysselsattning).then(function() {
             logger.info('OK - angeSysselsattning');
         }, function(reason) {
             throw ('FEL, angeSysselsattning,' + reason);
         }));
 
         // Diagnos
-        promiseArr.push(lisuUtkastPage.angeDiagnos(intyg.diagnos).then(function() {
+        promiseArr.push(lisjpUtkastPage.angeDiagnos(intyg.diagnos).then(function() {
             logger.info('OK - angeDiagnos');
         }, function(reason) {
             throw ('FEL, angeDiagnos,' + reason);
         }));
 
         // Konsekvenser för patient
-        promiseArr.push(lisuUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.funktionsnedsattning).then(function() {
+        promiseArr.push(lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.funktionsnedsattning).then(function() {
             logger.info('OK - konsekvenser funktionsnedsattning');
         }, function(reason) {
             throw ('FEL, konsekvenser funktionsnedsattning, ' + reason);
         }));
-        promiseArr.push(lisuUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(function() {
+        promiseArr.push(lisjpUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(function() {
             logger.info('OK - konsekvenser aktivitetsbegransning');
         }, function(reason) {
             throw ('FEL, konsekvenser aktivitetsbegransning,' + reason);
         }));
 
         // Bedöming Arbetsförmåga
-        promiseArr.push(lisuUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function() {
+        promiseArr.push(lisjpUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function() {
             logger.info('OK - angeArbetsformaga');
         }, function(reason) {
             throw ('FEL, angeArbetsformaga,' + reason);
         }));
 
         //Arbetstidsförläggning
-        promiseArr.push(lisuUtkastPage.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
+        promiseArr.push(lisjpUtkastPage.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
             logger.info('OK - angeArbetstidsforlaggning');
         }, function(reason) {
             throw ('FEL, angeArbetstidsforlaggning,' + reason);
@@ -77,35 +77,35 @@ module.exports = {
 
 
         //Trots FMB
-        promiseArr.push(lisuUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning.sendKeys(intyg.arbetsformagaFMB).then(function() {
+        promiseArr.push(lisjpUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning.sendKeys(intyg.arbetsformagaFMB).then(function() {
             logger.info('OK - ange FMB');
         }, function(reason) {
             throw ('FEL, ange FMB,' + reason);
         }));
 
         //Resor till arbete
-        promiseArr.push(lisuUtkastPage.angeResorTillArbete(intyg.resorTillArbete).then(function() {
+        promiseArr.push(lisjpUtkastPage.angeResorTillArbete(intyg.resorTillArbete).then(function() {
             logger.info('OK - angeResorTillArbete');
         }, function(reason) {
             throw ('FEL, angeResorTillArbete,' + reason);
         }));
 
         //Förmåga trots begränsning
-        promiseArr.push(lisuUtkastPage.sjukskrivning.formagaTrotsBegransningBeskrivning.sendKeys(intyg.goraTrotsSjukdom).then(function() {
+        promiseArr.push(lisjpUtkastPage.sjukskrivning.formagaTrotsBegransningBeskrivning.sendKeys(intyg.goraTrotsSjukdom).then(function() {
             logger.info('OK - formagaTrotsBegransningBeskrivning');
         }, function(reason) {
             throw ('FEL, formagaTrotsBegransningBeskrivning,' + reason);
         }));
 
         //Prognos
-        promiseArr.push(lisuUtkastPage.sjukskrivning.prognos.typ['1'].sendKeys(protractor.Key.SPACE).then(function() {
+        promiseArr.push(lisjpUtkastPage.sjukskrivning.prognos.typ['1'].sendKeys(protractor.Key.SPACE).then(function() {
             logger.info('OK - prognos');
         }, function(reason) {
             throw ('FEL, prognos,' + reason);
         }));
 
         // Åtgärd
-        promiseArr.push(lisuUtkastPage.angeAtgarder(intyg.atgarder).then(function() {
+        promiseArr.push(lisjpUtkastPage.angeAtgarder(intyg.atgarder).then(function() {
             logger.info('OK - angeAtgarder');
         }, function(reason) {
             throw ('FEL, angeAtgarder,' + reason);

@@ -36,8 +36,6 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
 
         this.diagnoseCode = element(by.id('diagnoseCode'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
-        this.pagaendeBehandling = element(by.id('pagaendeBehandling'));
-        this.planeradBehandling = element(by.id('planeradBehandling'));
         this.ovrigt = element(by.id('ovrigt'));
         this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
         this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));

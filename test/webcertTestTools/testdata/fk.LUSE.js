@@ -61,20 +61,20 @@ module.exports = {
 
             funktionsnedsattning: {
                 //funktionsnedsattningar
-                intellektuell: shuffle(fkValues.funktionsnedsattningar)[0],
-                kommunikation: shuffle(fkValues.funktionsnedsattningar)[0],
-                koncentration: shuffle(fkValues.funktionsnedsattningar)[0],
-                psykisk: shuffle(fkValues.funktionsnedsattningar)[0],
-                synHorselTal: shuffle(fkValues.funktionsnedsattningar)[0],
-                balansKoordination: shuffle(fkValues.funktionsnedsattningar)[0],
-                annan: shuffle(fkValues.funktionsnedsattningar)[0]
+                intellektuell: 'Intelektuell funktionsnedsättningstext',
+                kommunikation: 'kommunikation funktionsnedsättningstext',
+                koncentration: 'koncentration funktionsnedsättningstext',
+                psykisk: 'psykisk funktionsnedsättningstext',
+                synHorselTal: 'synHorselTal funktionsnedsättningstext',
+                balansKoordination: 'balansKoordination funktionsnedsättningstext',
+                annan: 'annan funktionsnedsättningstext'
             },
             aktivitetsbegransning: testdataHelper.randomTextString(),
             medicinskbehandling: {
-                avslutad: shuffle(fkValues.medicinskaBehandlingar)[0],
-                pagaende: shuffle(fkValues.medicinskaBehandlingar)[0],
-                planerad: shuffle(fkValues.medicinskaBehandlingar)[0],
-                substansintag: shuffle(fkValues.mediciner)[0]
+                avslutad: 'avslutad behandlings-text',
+                pagaende: 'pagaende behandlings-text',
+                planerad: 'planerad behandlings-text',
+                substansintag: 'substansintag behandlings-text'
             },
             medicinskaForutsattningar: {
                 utecklasOverTid: testdataHelper.randomTextString(),

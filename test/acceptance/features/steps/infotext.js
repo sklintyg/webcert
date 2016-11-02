@@ -16,19 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/* globals logger, Promise */
+/* globals pages */
 
 'use strict';
 
-// var helpers = require('./helpers.js');
-// var lusePage = pages.intyg.lisu.intyg;
+var luseUtkastPage = pages.intyg.luse.utkast;
 
-module.exports = {
-    checkValues: function(intyg, callback) {
-        logger.info('-- Kontrollerar Läkarintyg för sjukpenning utökat --');
-        logger.warn('intyg med typ: ' + intyg.typ + 'saknar funktioner för kontroll av data');
-        return Promise.all([ //kommer snart
-        ]);
-    }
+module.exports = function() {
+
+    this.Given(/^ska meddelande visas att man ska "([^"]*)"$/, function(meddelandetext) {
+        return luseUtkastPage.nameAddressChangedMsg.isPresent().then(function() {
+            return expect(luseUtkastPage.nameAddressChangedMsg.getText()).to.eventually.contain(meddelandetext);
+        });
+    });
+
 };

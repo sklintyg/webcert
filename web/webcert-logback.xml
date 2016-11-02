@@ -103,17 +103,7 @@
 
   <logger name="se.inera.intyg.webcert" level="info" />
 
-  <logger name="se.inera.intyg.intygstyper.fk7263" level="info" />
-
-  <logger name="se.inera.intyg.intygstyper.ts_bas" level="info" />
-
-  <logger name="se.inera.intyg.intygstyper.ts_diabetes" level="info" />
-
-  <logger name="se.inera.certificate.modules.fkparent" level="info" />
-
-  <logger name="se.inera.certificate.modules.lisu" level="info" />
-
-  <logger name="se.inera.certificate.modules.luse" level="info" />
+  <logger name="se.inera.intyg.intygstyper" level="info" />
 
   <logger name="org.apache.camel" level="error" />
 

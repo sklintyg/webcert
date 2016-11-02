@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2016 Inera AB (http://www.inera.se)
  *
@@ -30,6 +31,7 @@ describe('Create and Sign luae_na utkast', function() {
     var utkastId = null, data = null;
 
     beforeAll(function() {
+        browser.ignoreSynchronization = false;
         specHelper.login();
         specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga');
     });
