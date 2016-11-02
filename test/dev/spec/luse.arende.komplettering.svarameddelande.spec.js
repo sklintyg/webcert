@@ -89,12 +89,12 @@ describe('arende on luse intyg', function() {
             expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
         });
 
-        it('click svara med meddelande', function() {
+        xit('click svara med meddelande', function() {
             LuseIntygPage.kompletteraMedMeddelandeButton.click();
             expect(LuseIntygPage.getAnswerButton(meddelandeId).isDisplayed()).toBeTruthy();
         });
 
-        it('push answer button and make sure answered arende is now in the handled list', function() {
+        xit('push answer button and make sure answered arende is now in the handled list', function() {
             LuseIntygPage.getAnswerBox(meddelandeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
             LuseIntygPage.getAnswerButton(meddelandeId).sendKeys(protractor.Key.SPACE).then(function() {
                 var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = handled list
