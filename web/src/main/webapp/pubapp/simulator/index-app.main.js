@@ -51,7 +51,7 @@ var DEFAULT_QUESTION = {
     rubrik: 'Komplettering',
     skickatTidpunkt: '2016-07-13T17:23:00',
     skickatAv: 'FKASSA',
-    amne: 'ARBTID',
+    amne: 'AVSTMN',
     meddelande: '',
     paminnelseMeddelandeId: '',
     svarPa: {

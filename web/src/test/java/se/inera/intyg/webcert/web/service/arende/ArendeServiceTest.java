@@ -505,7 +505,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         komplt2.setPatientPersonId("191212121212");
         Arende otherSubject = buildArende(UUID.randomUUID().toString(), null);
         otherSubject.setStatus(Status.PENDING_INTERNAL_ACTION);
-        otherSubject.setAmne(ArendeAmne.ARBTID);
+        otherSubject.setAmne(ArendeAmne.AVSTMN);
         otherSubject.setPatientPersonId("191212121212");
         when(repo.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
         when(repo.findByIntygsId(INTYG_ID)).thenReturn(Arrays.asList(fraga, komplt1, otherSubject, komplt2));

@@ -61,7 +61,7 @@ fdescribe('webcert intyg', function() {
                     return arendeOptions.meddelandeId;
                 }
 
-                createArende({meddelande:'Hur är det med arbetstiden?', amne:'ARBTID', status:'PENDING_INTERNAL_ACTION'});
+                createArende({meddelande:'Hur är det med arbetstiden?', amne:'AVSTMN', status:'PENDING_INTERNAL_ACTION'});
                 createArende({meddelande:'Vi behöver prata.', amne:'AVSTMN', status:'PENDING_INTERNAL_ACTION'});
                 createArende({meddelande:'Vi behöver kontakt.', amne:'KONTKT', status:'PENDING_INTERNAL_ACTION'});
                 createArende({meddelande:'Övriga frågor?', amne:'OVRIGT', status:'PENDING_INTERNAL_ACTION'});

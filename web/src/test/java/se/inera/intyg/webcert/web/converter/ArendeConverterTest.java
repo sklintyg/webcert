@@ -6,13 +6,13 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.ws.WebServiceException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -44,7 +44,7 @@ public class ArendeConverterTest {
 
     @Test
     public void testConvertArende() {
-        final ArendeAmne amneskod = ArendeAmne.ARBTID;
+        final ArendeAmne amneskod = ArendeAmne.AVSTMN;
         final String intygId = "intygId";
         final String kontaktInfo = "kontaktInfo";
         final String skickatAv = "FKASSA";

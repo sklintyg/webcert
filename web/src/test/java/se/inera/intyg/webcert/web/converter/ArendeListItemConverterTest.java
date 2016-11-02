@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
+
 import org.junit.Test;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -27,7 +28,7 @@ public class ArendeListItemConverterTest {
         final String signeratAv = "signeratAv";
         final String enhetsnamn = "enhetsnamn";
         final String vardgivarnamn = "vardgivarnamn";
-        final Amne amne = Amne.ARBETSTIDSFORLAGGNING;
+        final Amne amne = Amne.AVSTAMNINGSMOTE;
         final boolean vidarebefordrad = false;
         final Status status = Status.PENDING_INTERNAL_ACTION;
 
@@ -45,9 +46,20 @@ public class ArendeListItemConverterTest {
         assertEquals(signeratAv, arende.getSigneratAvNamn());
         assertEquals(enhetsnamn, arende.getEnhetsnamn());
         assertEquals(vardgivarnamn, arende.getVardgivarnamn());
-        assertEquals(ArendeAmne.fromAmne(amne).get().name(), arende.getAmne());
+        assertEquals(ArendeAmne.AVSTMN.name(), arende.getAmne());
         assertEquals(vidarebefordrad, arende.isVidarebefordrad());
         assertEquals(status, arende.getStatus());
+    }
+
+    @Test
+    public void testConvertFragaSvarWithoutCorrespondingArendeAmne() {
+        final Amne amne = Amne.ARBETSTIDSFORLAGGNING;
+        FragaSvar fs = createFragaSvar("fragestallare", "intygId", "intygTyp", "patientId", (long) 13, LocalDateTime.now(), "signeratAv",
+                "enhetsnamn", "vardgivarnamn", amne, false, Status.PENDING_INTERNAL_ACTION);
+        ArendeListItem arende = ArendeListItemConverter.convert(fs);
+
+        assertNotNull(arende);
+        assertEquals(amne.name(), arende.getAmne());
     }
 
     @Test
