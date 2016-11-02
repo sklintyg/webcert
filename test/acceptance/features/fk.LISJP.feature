@@ -4,10 +4,10 @@ Egenskap: Hantera Läkarintyg för sjukpenning
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
+	När jag går in på en patient
 
 Scenario: Skapa och signera ett intyg
-	När jag går in på en patient
-	Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
+	När jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget
