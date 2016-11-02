@@ -11,6 +11,7 @@ stage('checkout') {
     }
 }
 
+
 stage('build') {
     node {
         try {
@@ -19,6 +20,18 @@ stage('build') {
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
                  reportFiles: 'index.html', reportName: 'JUnit results'
+        }
+    }
+}
+
+stage('deployit') {
+    node {
+    sh git clone https://github.com/sklintyg/intygstjanst.git 
+    
+    util.run {
+            ansiblePlaybook extraVars: [version: INTYGSTJANST_VERSION, ansible_ssh_port: "22", deploy_from_repo: "true"],  \
+                 installation: 'ansible-yum', inventory: 'intygstjanst/ansible/hosts_test_webcert', playbook: 'intygstjanst/ansible/deploy.yml'
+            util.waitForServer('http://172.16.1.15:8080/inera-certificate/version.jsp')
         }
     }
 }
