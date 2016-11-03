@@ -191,7 +191,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         List<DraftValidationMessage> validationMessages = draftValidation.getMessages();
 
         for (DraftValidationMessage validationMessage : validationMessages) {
-            responseEntity.addMessage(validationMessage.getField(), validationMessage.getType(), validationMessage.getMessage());
+            responseEntity.addMessage(validationMessage.getField(), validationMessage.getType(), validationMessage.getMessage(), validationMessage.getDynamicKey());
         }
 
         return responseEntity;

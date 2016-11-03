@@ -71,7 +71,7 @@ var LuseUtkast = BaseSmiUtkast._extend({
             },
             annat: {
                 beskrivning: element(by.id('annatGrundForMUBeskrivning')),
-                checkbox: element(by.id('formly_1_date_annatGrundForMU_4')),
+                checkbox: element(by.id('form_annatGrundForMU')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
             },
             kannedomOmPatient: {

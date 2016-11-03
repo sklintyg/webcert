@@ -54,8 +54,8 @@ public class SaveDraftResponse {
         this.messages = messages;
     }
 
-    public void addMessage(String field, ValidationMessageType type, String message) {
-        messages.add(new SaveDraftValidationMessage(field, type, message));
+    public void addMessage(String field, ValidationMessageType type, String message, String dynamicKey) {
+        messages.add(new SaveDraftValidationMessage(field, type, message, dynamicKey));
     }
 
     public long getVersion() {

@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import se.inera.intyg.common.support.modules.support.api.dto.InvalidPersonNummerException;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.support.validate.ValidatorUtils;
+import se.inera.intyg.common.support.validate.ValidatorUtil;
 
 public final class PersonnummerChecksumValidator {
 
@@ -70,7 +70,7 @@ public final class PersonnummerChecksumValidator {
      *            ResultValidator that validation messages are added to.
      */
     private static void checkChecksum(String pnr, String dateString, String nnn, int mod10, ResultValidator errors) {
-        if (ValidatorUtils.calculateMod10(dateString.substring(2) + nnn) != mod10) {
+        if (ValidatorUtil.calculateMod10(dateString.substring(2) + nnn) != mod10) {
             errors.addError(String.format("The checksum digit in SSN '%s' is invalid", pnr));
         }
     }
