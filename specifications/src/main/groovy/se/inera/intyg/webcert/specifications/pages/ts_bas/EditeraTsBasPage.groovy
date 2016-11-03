@@ -55,7 +55,7 @@ class EditeraTsBasPage extends AbstractEditCertPage {
         bedomning { name -> module BedomningModule, form: form }
 
         // Intygsvalidering
-        valideringPatient(required: false){$("div[data-validation-section='patientadress']") }
+        valideringPatient(required: false){$("div[data-validation-section='patient']") }
         valideringIntygAvser(required: false){$("div[data-validation-section='intygavser']") }
         valideringIdentitet(required: false){$("div[data-validation-section='identitet']") }
         valideringSyn(required: false){$("div[data-validation-section='syn']") }
