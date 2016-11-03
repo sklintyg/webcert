@@ -53,17 +53,17 @@ module.exports = {
         },
         lisu: {
             utkast: require(intygPath + 'fk/smi/lisu/lisu.utkast.page.js')
-                //intyg: require(intygPath + 'lisu.intyg.page.js')
+            //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
         lisjp: {
             utkast: require(intygPath + 'fk/smi/lisu/lisu.utkast.page.js')
-                //intyg: require(intygPath + 'lisu.intyg.page.js')
+            //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
         luae_fs: {
             utkast: require(intygPath + 'fk/luae_fs/luae_fs.utkast.page.js'),
             intyg: require(intygPath + 'fk/luae_fs/luae_fs.intyg.page.js')
         },
-        luaena: {
+        luae_na: {
             utkast: require(intygPath + 'fk/smi/luae_na/luae_na.utkast.page.js'),
             intyg: require(intygPath + 'fk/smi/luae_na/luae_na.intyg.page.js')
         },
