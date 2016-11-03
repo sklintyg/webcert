@@ -34,6 +34,8 @@ module.exports = {
             return testdata.fk.LUSE.getRandom(id);
         } else if (typ === 'Läkarintyg för sjukpenning') {
             return testdata.fk.LISJP.getRandom(id);
+        } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+            return testdata.fk.LUAE_NA.getRandom(id);
         }
     },
     fetchMessageIds: function(intygtyp) {
