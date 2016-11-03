@@ -119,19 +119,16 @@ function getRandomAtgarder() {
 }
 
 function getRandomPrognosForArbetsformaga() {
-    return shuffle([
-        // {
-        //     name: 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning.'
-        // }, {
-        //     name: 'Patienten kommer med stor sannolikhet inte att kunna återgå helt i nuvarande sysselsättning inom 12 månader.'
-        // }, {
-        //     name: 'Återgång i nuvarande sysselsättning är oklar.'
-        // }, 
-        {
-            name: 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning inom',
-            within: shuffle(['1 månad', '2 månader', '3 månader'])[0]
-        }
-    ])[0];
+    return shuffle([{
+        name: 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning.'
+    }, {
+        name: 'Patienten kommer med stor sannolikhet inte att kunna återgå helt i nuvarande sysselsättning inom 12 månader.'
+    }, {
+        name: 'Återgång i nuvarande sysselsättning är oklar.'
+    }, {
+        name: 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning inom',
+        within: shuffle(['1 månad', '2 månader', '3 månader'])[0]
+    }])[0];
 }
 
 module.exports = {
