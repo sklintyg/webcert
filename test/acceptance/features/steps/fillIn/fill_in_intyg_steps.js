@@ -170,9 +170,9 @@ module.exports = function() {
                 intyg.funktionsnedsattning = helpers.randomTextString();
                 lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
             } else if (field === 'sysselsattning') {
-                lisjpUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE).then(callback);
-                intyg.nuvarandeArbeteBeskrivning = helpers.randomTextString();
-                lisjpUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning).then(callback);
+                lisjpUtkastPage.angeSysselsattning({
+                    typ: 'Arbetssökande'
+                }).then(callback());
             } else {
                 callback(null, 'pending');
             }

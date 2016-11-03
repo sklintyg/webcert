@@ -106,7 +106,8 @@ var LisuUtkast = BaseSmiUtkast._extend({
             // }
             prognos: {
                 form: element(by.id('form_prognos')),
-                inom: element(by.id('prognosDagarTillArbete-3-typ'))
+                inom: element(by.id('prognosDagarTillArbete-3-typ')),
+                select: element(by.css('#prognosDagarTillArbete-3-typ > div.ui-select-match > span'))
             }
         };
         this.atgarder = {
@@ -245,10 +246,12 @@ var LisuUtkast = BaseSmiUtkast._extend({
             var promisesArr = [];
 
             for (var i = 0; i < atgarder.length; i++) {
-                promisesArr.push(
-                    element(by.id('arbetslivsinriktadeAtgarder-' + atgarder[i].key + '-description'))
-                    .sendKeys(atgarder[i].beskrivning)
-                );
+                if (atgarder[i].beskrivning) {
+                    promisesArr.push(
+                        element(by.id('arbetslivsinriktadeAtgarder-' + atgarder[i].key + '-description'))
+                        .sendKeys(atgarder[i].beskrivning)
+                    );
+                }
             }
             return Promise.all(promisesArr);
         };
@@ -279,7 +282,10 @@ var LisuUtkast = BaseSmiUtkast._extend({
         var prognosEL = this.sjukskrivning.prognos;
         return prognosEL.form.element(by.cssContainingText('label', prognos.name)).sendKeys(protractor.Key.SPACE).then(function() {
             if (prognos.within) {
-                return prognosEL.inom.sendKeys(prognos.within);
+
+                return prognosEL.select.click().then(function() {
+                    return prognosEL.inom.element(by.cssContainingText('span', prognos.within)).click();
+                });
             } else {
                 return Promise.resolve();
             }
