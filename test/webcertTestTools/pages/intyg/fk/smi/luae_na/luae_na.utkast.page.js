@@ -68,29 +68,8 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
             }
         };
     },
-    angeFunktionsnedsattning: function(nedsattning) {
-        var fn = this.funktionsnedsattning;
-        return Promise.all([
-            fn.intellektuell.text.sendKeys(nedsattning.intellektuell),
-            fn.kommunikation.text.sendKeys(nedsattning.kommunikation),
-            fn.koncentration.text.sendKeys(nedsattning.koncentration),
-            fn.annanPsykisk.text.sendKeys(nedsattning.psykisk),
-            fn.synHorselTal.text.sendKeys(nedsattning.synHorselTal),
-            fn.balansKoordination.text.sendKeys(nedsattning.balansKoordination),
-            fn.annanKroppslig.text.sendKeys(nedsattning.annan)
-        ]);
-    },
     angeAktivitetsbegransning: function(aktivitetsbegransning) {
         return this.aktivitetsbegransning.sendKeys(aktivitetsbegransning);
-    },
-    angeMedicinskBehandling: function(behandling) {
-        var mb = this.medicinskBehandling;
-        return Promise.all([
-            mb.avslutad.text.sendKeys(behandling.avslutad),
-            mb.pagaende.text.sendKeys(behandling.pagaende),
-            mb.planerad.text.sendKeys(behandling.planerad),
-            mb.substansintag.text.sendKeys(behandling.substansintag)
-        ]);
     },
 
     angeMedicinskaForutsattningar: function(forutsattningar) {
