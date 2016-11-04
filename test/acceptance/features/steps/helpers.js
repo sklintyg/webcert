@@ -174,6 +174,8 @@ module.exports = {
                 return this.pageField[intygAbbrev][index];
             } else if (intygAbbrev === 'LUSE') {
                 return this.pageField[intygAbbrev][index];
+            } else if (intygAbbrev === 'LUAE_NA') {
+                return this.pageField[intygAbbrev][index];
             }
         } else {
             return this.pageField.FK7263[index];
@@ -182,6 +184,7 @@ module.exports = {
     pageField: {
         'LISJP': ['aktivitetsbegransning', 'sysselsattning', 'funktionsnedsattning'],
         'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
+        'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'FK7263': ['diagnoskod', 'arbetsförmåga', 'sjukskrivningsperiod']
     },
     getUserObj: function(userKey) {

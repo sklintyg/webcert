@@ -177,6 +177,24 @@ module.exports = function() {
                 callback(null, 'pending');
             }
 
+        } else if (intygShortcode === 'LUAE_NA') {
+            field = helpers.randomPageField(isSMIIntyg, intygShortcode);
+            console.log('Fältet som ändras är: ' + field);
+
+            if (field === 'aktivitetsbegransning') {
+                intyg.aktivitetsbegransning = helpers.randomTextString();
+                lisjpUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            } else if (field === 'funktionsnedsattning') {
+                intyg.funktionsnedsattning = helpers.randomTextString();
+                lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
+            } else if (field === 'sysselsattning') {
+                lisjpUtkastPage.angeSysselsattning({
+                    typ: 'Arbetssökande'
+                }).then(callback());
+            } else {
+                callback(null, 'pending');
+            }
+
         } else {
             callback(null, 'pending');
         }
