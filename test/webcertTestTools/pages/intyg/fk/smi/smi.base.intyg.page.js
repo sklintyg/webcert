@@ -40,6 +40,12 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
         this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
+        this.patientAdress = {
+            postadress: element(by.id('patient_postadress')),
+            postnummer: element(by.id('patient_postnummer')),
+            postort: element(by.id('patient_postort'))
+        };
+
         this.baseratPa = {
             minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),

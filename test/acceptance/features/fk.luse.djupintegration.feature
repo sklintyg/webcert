@@ -15,14 +15,18 @@ Scenario: Informera om patienten har bytt namn
     Så ska ett info-meddelande visa "Observera att patientens namn har ändrats sedan det här intyget utfärdades."
 
 
-@adressbyte
-Scenario: Informera om patienten har bytt adress
+@adressbyte @nyttIntyg
+Scenario: Informera om patienten har bytt adress och använd address på nya intyg
 	När att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning"
 	Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag går in på intygsutkastet via djupintegrationslänk med annan adress
     Så ska ett info-meddelande visa "Observera att patientens adress har ändrats sedan det här intyget utfärdades."
+
+    När jag kopierar intyget
+    Och jag signerar intyget
+    Så ska intyget visa den nya addressen
 
 @namnbyte @adressbyte
 Scenario: Informera om patienten har bytt namn och address
