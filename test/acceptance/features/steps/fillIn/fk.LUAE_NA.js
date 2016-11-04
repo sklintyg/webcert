@@ -20,7 +20,7 @@
 /* globals pages, browser, Promise, logger, JSON */
 
 'use strict';
-var luaenaUtkastPage = pages.intyg.luaena.utkast;
+var luaenaUtkastPage = pages.intyg.luaeNA.utkast;
 module.exports = {
     fillIn: function(intyg) {
         logger.info('intyg.typ:' + intyg.typ);

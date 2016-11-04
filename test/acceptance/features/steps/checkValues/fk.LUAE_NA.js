@@ -21,7 +21,7 @@
 
 'use strict';
 
-var luaenaPage = pages.intyg.luaena.intyg;
+var luaenaPage = pages.intyg.luaeNA.intyg;
 var testdataHelper = wcTestTools.helpers.testdata;
 
 

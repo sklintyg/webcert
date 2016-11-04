@@ -26,7 +26,7 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
-var IntygPage = wcTestTools.pages.intyg.luae_na.intyg;
+var IntygPage = wcTestTools.pages.intyg.luaeNA.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 

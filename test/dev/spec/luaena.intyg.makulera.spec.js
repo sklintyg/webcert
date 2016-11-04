@@ -22,7 +22,7 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var IntygPage = wcTestTools.pages.intyg.luae_na.intyg;
+var IntygPage = wcTestTools.pages.intyg.luaeNA.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 

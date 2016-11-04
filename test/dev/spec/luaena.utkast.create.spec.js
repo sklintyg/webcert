@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2016 Inera AB (http://www.inera.se)
  *
@@ -23,12 +22,13 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var UtkastPage = wcTestTools.pages.intyg.luae_na.utkast;
-var IntygPage = wcTestTools.pages.intyg.luae_na.intyg;
+var UtkastPage = wcTestTools.pages.intyg.luaeNA.utkast;
+var IntygPage = wcTestTools.pages.intyg.luaeNA.intyg;
 
 describe('Create and Sign luae_na utkast', function() {
 
-    var utkastId = null, data = null;
+    var utkastId = null,
+        data = null;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -36,7 +36,7 @@ describe('Create and Sign luae_na utkast', function() {
         specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga');
     });
 
-    describe('Skapa luae_na', function(){
+    describe('Skapa luae_na', function() {
 
         describe('Fyll i intyget', function() {
 

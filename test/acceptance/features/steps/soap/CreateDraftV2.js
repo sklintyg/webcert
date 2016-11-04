@@ -20,7 +20,6 @@
 
 
 'use strict';
-var testdataHelpers = wcTestTools.helpers.testdata;
 module.exports.CreateDraftCertificateV2 = function(pnr, user, intygstyp) {
     var shortcodes = {
         'Läkarintyg för sjukpenning': 'LISJP',
