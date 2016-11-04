@@ -68,28 +68,30 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
             }
         };
     },
-    //angeFunktionsnedsattning: function(nedsattning) {
-    //    return Promise.all([
-    //        this.funktionsnedsattning.intellektuell.sendKeys(nedsattning.intellektuell),
-    //        this.funktionsnedsattning.kommunikation.sendKeys(nedsattning.kommunikation),
-    //        this.funktionsnedsattning.koncentration.sendKeys(nedsattning.koncentration),
-    //        this.funktionsnedsattning.annanPsykisk.sendKeys(nedsattning.psykisk),
-    //        this.funktionsnedsattning.synHorselTal.sendKeys(nedsattning.synHorselTal),
-    //        this.funktionsnedsattning.balansKoordination.sendKeys(nedsattning.balansKoordination),
-    //        this.funktionsnedsattning.annanKroppslig.sendKeys(nedsattning.annan)
-    //    ]);
-    //},
+    angeFunktionsnedsattning: function(nedsattning) {
+        var fn = this.funktionsnedsattning;
+        return Promise.all([
+            fn.intellektuell.text.sendKeys(nedsattning.intellektuell),
+            fn.kommunikation.text.sendKeys(nedsattning.kommunikation),
+            fn.koncentration.text.sendKeys(nedsattning.koncentration),
+            fn.annanPsykisk.text.sendKeys(nedsattning.psykisk),
+            fn.synHorselTal.text.sendKeys(nedsattning.synHorselTal),
+            fn.balansKoordination.text.sendKeys(nedsattning.balansKoordination),
+            fn.annanKroppslig.text.sendKeys(nedsattning.annan)
+        ]);
+    },
     angeAktivitetsbegransning: function(aktivitetsbegransning) {
         return this.aktivitetsbegransning.sendKeys(aktivitetsbegransning);
     },
-    //angeMedicinskBehandling: function(behandling) {
-    //    return Promise.all([
-    //        this.medicinskBehandling.avslutad.sendKeys(behandling.avslutad),
-    //        this.medicinskBehandling.pagaende.sendKeys(behandling.pagaende),
-    //        this.medicinskBehandling.planerad.sendKeys(behandling.planerad),
-    //        this.medicinskBehandling.substansintag.sendKeys(behandling.substansintag)
-    //    ]);
-    //},
+    angeMedicinskBehandling: function(behandling) {
+        var mb = this.medicinskBehandling;
+        return Promise.all([
+            mb.avslutad.text.sendKeys(behandling.avslutad),
+            mb.pagaende.text.sendKeys(behandling.pagaende),
+            mb.planerad.text.sendKeys(behandling.planerad),
+            mb.substansintag.text.sendKeys(behandling.substansintag)
+        ]);
+    },
 
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([
