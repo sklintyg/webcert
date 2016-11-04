@@ -27,7 +27,7 @@ import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.Platform
 
 waiting {
-    timeout = 10
+    timeout = 30
     retryInterval = 0.1
 }
 
