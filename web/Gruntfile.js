@@ -194,7 +194,7 @@ module.exports = function(grunt) {
             //Watch for file changes in these scss-files that
             //we want to reprocess so that we are able to reload
             //them for the browser in dev mode,
-            'css': {
+            css: {
                 files: buildListForAllModules(function(module) {
                     return __dirname + module.src + '/**/*.scss';
                 }).concat([__dirname + CSS_COMMON_SRC_DIR + '/**/*.scss']),
