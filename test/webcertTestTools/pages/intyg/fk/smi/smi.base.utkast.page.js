@@ -90,10 +90,10 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         this.nameAddressChangedMsg = element(by.id('intyg-djupintegration-name-and-address-changed'));
 
-        this.togglerelatedIntygList = element(by.id('toggleShowRelatedIntyg'));
+        this.togglerelatedIntygList = element(by.id('wc-intyg-relations-button'));
         this.relatedIntygList = {
-            isDisplayed: function() {
-                return element(by.id('intygRelations')).isDisplayed();
+            isPresent: function() {
+                return element(by.id('intygRelations')).isPresent();
             },
             rows: function() {
                 return element.all(by.css('#intygRelations tr'));

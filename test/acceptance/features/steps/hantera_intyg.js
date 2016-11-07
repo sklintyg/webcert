@@ -123,7 +123,7 @@ module.exports = function() {
 
     this.Given(/^ska det finnas en referens till gamla intyget$/, function() {
         return browser.sleep(3000).then(function() {
-            return element(by.id('toggleShowRelatedIntyg')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
+            return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
                 return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
                     return browser.getCurrentUrl().then(function(text) {
                         logger.info('(%s contain %s) => %s', text, intyg.id, (text.indexOf(intyg.id) !== -1 ? true : false));
