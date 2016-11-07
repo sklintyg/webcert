@@ -18,6 +18,7 @@ subprojects {
 
     checkstyle {
         config = resources.text.fromFile("${buildDir}/build-tools/checkstyle/checkstyle.xml")
+        configProperties = ['package_name': 'webcert']
         ignoreFailures = false
         showViolations = true
     }
