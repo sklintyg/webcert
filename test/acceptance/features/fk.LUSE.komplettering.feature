@@ -25,7 +25,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    Så jag ska se den data jag angett för intyget
 
 # Scenario: Ska kunna besvara komplettering med textmeddelande
-#    När jag går in på ett "Läkarintyg för sjukpenning utökat" med status "Mottaget"
+#    När jag går in på ett "Läkarintyg för sjukpenning" med status "Mottaget"
 #    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
 #    Och jag går in på intyget
 #    Så ska jag se kompletteringsfrågan på intygs-sidan

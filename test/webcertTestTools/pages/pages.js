@@ -59,11 +59,11 @@ module.exports = {
             utkast: require(intygPath + 'fk/smi/lisu/lisu.utkast.page.js')
             //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
-        luae_fs: {
+        luaeFS: {
             utkast: require(intygPath + 'fk/luae_fs/luae_fs.utkast.page.js'),
             intyg: require(intygPath + 'fk/luae_fs/luae_fs.intyg.page.js')
         },
-        luae_na: {
+        luaeNA: {
             utkast: require(intygPath + 'fk/smi/luae_na/luae_na.utkast.page.js'),
             intyg: require(intygPath + 'fk/smi/luae_na/luae_na.intyg.page.js')
         },

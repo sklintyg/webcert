@@ -167,6 +167,9 @@ module.exports = function() {
             .then(function() {
                 return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
 
+            })
+            .then(function() {
+                return browser.sleep(1000); // Sleep pga animation
             });
 
         return svaraPaKomplettering

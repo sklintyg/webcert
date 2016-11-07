@@ -25,7 +25,7 @@
 
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
-var UtkastPage = wcTestTools.pages.intyg.luae_na.utkast;
+var UtkastPage = wcTestTools.pages.intyg.luaeNA.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
@@ -37,7 +37,7 @@ describe('luae_na attic tests', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
 
-        testdataHelper.createUtkast('luae_na').then(function(response){
+        testdataHelper.createUtkast('luae_na').then(function(response) {
             var utkast = response.body;
             intygsId = utkast.intygsId;
 
@@ -47,8 +47,7 @@ describe('luae_na attic tests', function() {
                 personnr: utkast.patientPersonnummer
             }).document);
 
-            testdataHelper.saveUtkast('luae_na', intygsId, utkast.version, utkastData, function(){
-            });
+            testdataHelper.saveUtkast('luae_na', intygsId, utkast.version, utkastData, function() {});
         });
     });
 
@@ -56,7 +55,7 @@ describe('luae_na attic tests', function() {
         testdataHelper.deleteUtkast(intygsId);
     });
 
-    it('should load utkast', function () {
+    it('should load utkast', function() {
         UtkastPage.get(intygsId);
         UtkastPage.showMissingInfoButtonClick();
 
@@ -77,7 +76,7 @@ describe('luae_na attic tests', function() {
             expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
 
-        it ('should restore annatBeskrivning if annat is specified again', function() {
+        it('should restore annatBeskrivning if annat is specified again', function() {
             UtkastPage.baseratPa.annat.datum.sendKeys('2016-12-12');
             UtkastPage.showMissingInfoButtonClick(true);
 

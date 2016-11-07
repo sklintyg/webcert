@@ -16,18 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* globals pages */
+/* globals logger */
 
 'use strict';
 
-var luseUtkastPage = pages.intyg.luse.utkast;
+// var luseUtkastPage = pages.intyg.luse.utkast;
 
 module.exports = function() {
 
-    this.Given(/^ska meddelande visas att man ska "([^"]*)"$/, function(meddelandetext) {
-        return luseUtkastPage.nameAddressChangedMsg.isPresent().then(function() {
-            return expect(luseUtkastPage.nameAddressChangedMsg.getText()).to.eventually.contain(meddelandetext);
+    this.Given(/^ska ett info\-meddelande visa "([^"]*)"$/, function(text) {
+        var alerts = element.all(by.css('.alert-info')).map(function(elm, index) {
+            return elm.getText();
         });
+
+        return alerts.then(function(alertTexts) {
+            var joinedTexts = alertTexts.join('\n');
+            logger.info('Hittade info-meddelanden: ' + joinedTexts);
+            return expect(joinedTexts).to.include(text);
+        });
+
+
     });
 
+    this.Given(/^ska ett varning\-meddelande visa "([^"]*)"$/, function(text) {
+        var alerts = element.all(by.css('.alert-warning')).map(function(elm, index) {
+            return elm.getText();
+        });
+
+        return alerts.then(function(alertTexts) {
+            var joinedTexts = alertTexts.join('\n');
+            logger.info('Hittade varning-meddelanden: ' + joinedTexts);
+            return expect(joinedTexts).to.include(text);
+        });
+
+
+    });
 };

@@ -26,7 +26,7 @@
 
 module.exports = {
     checkValues: function(intyg, callback) {
-        logger.info('-- Kontrollerar Läkarintyg för sjukpenning utökat --');
+        logger.info('-- Kontrollerar Läkarintyg för sjukpenning --');
         logger.warn('intyg med typ: ' + intyg.typ + 'saknar funktioner för kontroll av data');
         return Promise.all([ //kommer snart
         ]);

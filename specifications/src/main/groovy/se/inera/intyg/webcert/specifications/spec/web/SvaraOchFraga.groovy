@@ -116,7 +116,7 @@ class SvaraOchFraga extends ExceptionHandlingFixture {
     def fragaMedTextVisasIListanMedOhanteradeFragor(String text) {
         boolean result
         Browser.drive {
-            waitFor(20.0) {
+            waitFor {
                 result = page.unhandledQAPanelWithText(text)?.isDisplayed()
             }
         }
@@ -134,7 +134,7 @@ class SvaraOchFraga extends ExceptionHandlingFixture {
     boolean fragaVisasIListanMedHanteradeFragor(String id) {
         boolean result
         Browser.drive {
-            waitFor(20.0) {
+            waitFor {
                 result = page.handledQAPanel(id)?.isDisplayed()
             }
         }
@@ -247,9 +247,6 @@ class SvaraOchFraga extends ExceptionHandlingFixture {
 
     void skickaFragaMedAmne(String fraga, String amne) {
         Browser.drive {
-            if (amne == "ARBETSTIDSFORLAGGNING") {
-                amne = "ARBTID"
-            }
             if (amne == "AVSTAMNINGSMOTE") {
                 amne = "AVSTMN"
             }

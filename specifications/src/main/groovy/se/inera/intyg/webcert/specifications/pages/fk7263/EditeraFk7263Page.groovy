@@ -68,15 +68,15 @@ class EditeraFk7263Page extends AbstractEditCertPage {
         datepicker(required: false) { $("div[ng-switch='datepickerMode']") }
 
         // Intygsvalidering
-        valideringIntygBaseratPa(required: false) { $("#validationMessages_intygbaseratpa") }
-        valideringDiagnos(required: false) { $("#validationMessages_diagnos") }
-        valideringFunktionsnedsattning(required: false) { $("#validationMessages_funktionsnedsattning") }
-        valideringAktivitetsbegransning(required: false) { $("#validationMessages_aktivitetsbegransning") }
-        valideringSysselsattning(required: false) { $("#validationMessages_sysselsattning") }
-        valideringArbetsformaga(required: false) { $("#validationMessages_arbetsformaga") }
-        valideringPrognos(required: false) { $("#validationMessages_prognos") }
-        valideringRekommendationer(required: false) { $("#validationMessages_rekommendationer") }
-        valideringVardperson(required: false) { $("#validationMessages_vardperson")}
+        valideringIntygBaseratPa(required: false) { $("div[data-validation-section='intygbaseratpa']") }
+        valideringDiagnos(required: false) { $("div[data-validation-section='diagnos']") }
+        valideringFunktionsnedsattning(required: false) { $("div[data-validation-section='funktionsnedsattning']") }
+        valideringAktivitetsbegransning(required: false) { $("div[data-validation-section='aktivitetsbegransning']") }
+        valideringSysselsattning(required: false) { $("div[data-validation-section='sysselsattning']") }
+        valideringArbetsformaga(required: false) { $("div[data-validation-section='nedsattning']") }
+        valideringPrognos(required: false) { $("div[data-validation-section='prognos']") }
+        valideringRekommendationer(required: false) { $("div[data-validation-section='rekommendationer']") }
+        valideringVardperson(required: false) { $("div[data-validation-section='vardperson']")}
 
     }
 

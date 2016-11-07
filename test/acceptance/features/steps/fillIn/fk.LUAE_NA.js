@@ -20,7 +20,7 @@
 /* globals pages, browser, Promise, logger, JSON */
 
 'use strict';
-var luseUtkastPage = pages.intyg.luse.utkast;
+var luaenaUtkastPage = pages.intyg.luaeNA.utkast;
 module.exports = {
     fillIn: function(intyg) {
         logger.info('intyg.typ:' + intyg.typ);
@@ -30,7 +30,7 @@ module.exports = {
         browser.ignoreSynchronization = true;
 
         //Baserat på
-        promiseArr.push(luseUtkastPage.angeBaseratPa(intyg.baseratPa)
+        promiseArr.push(luaenaUtkastPage.angeBaseratPa(intyg.baseratPa)
             .then(function(value) {
                 logger.info('Baseras på: ' + JSON.stringify(intyg.baseratPa));
             }, function(reason) {
@@ -40,7 +40,7 @@ module.exports = {
 
 
         //Andra medicinska utredningar
-        promiseArr.push(luseUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
+        promiseArr.push(luaenaUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
             .then(function(value) {
                 logger.info('Andra medicinska utredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
             }, function(reason) {
@@ -49,7 +49,7 @@ module.exports = {
         );
 
         //Sjukdomsförlopp
-        promiseArr.push(luseUtkastPage.angeSjukdomsforlopp(intyg.sjukdomsForlopp)
+        promiseArr.push(luaenaUtkastPage.angeSjukdomsforlopp(intyg.sjukdomsForlopp)
             .then(function(value) {
                 logger.info('Sjukdomsförlopp: ' + JSON.stringify(intyg.sjukdomsForlopp));
             }, function(reason) {
@@ -59,7 +59,7 @@ module.exports = {
 
         //Diagnoser
         browser.ignoreSynchronization = false;
-        promiseArr.push(luseUtkastPage.angeDiagnos(intyg.diagnos)
+        promiseArr.push(luaenaUtkastPage.angeDiagnos(intyg.diagnos)
             .then(function(value) {
                 logger.info('Diagnos: ' + JSON.stringify(intyg.diagnos));
             }, function(reason) {
@@ -69,7 +69,7 @@ module.exports = {
         browser.ignoreSynchronization = true;
 
         //Funktionsnedsättning
-        promiseArr.push(luseUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
+        promiseArr.push(luaenaUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
             .then(function(value) {
                 logger.info('Funktionsnedsättning: ' + JSON.stringify(intyg.funktionsnedsattning));
             }, function(reason) {
@@ -78,7 +78,7 @@ module.exports = {
         );
 
         //aktivitetsbegränsning
-        promiseArr.push(luseUtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning)
+        promiseArr.push(luaenaUtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning)
             .then(function(value) {
                 logger.info('Aktivitetsbegränsning: ' + JSON.stringify(intyg.aktivitetsbegransning));
             }, function(reason) {
@@ -87,7 +87,7 @@ module.exports = {
         );
 
         //Medicinsk behandling
-        promiseArr.push(luseUtkastPage.angeMedicinskBehandling(intyg.medicinskbehandling)
+        promiseArr.push(luaenaUtkastPage.angeMedicinskBehandling(intyg.medicinskbehandling)
             .then(function(value) {
                 logger.info('Medicinsk behandling: ' + JSON.stringify(intyg.medicinskbehandling));
             }, function(reason) {
@@ -96,7 +96,7 @@ module.exports = {
         );
 
         //Medicinska förutsättningar
-        promiseArr.push(luseUtkastPage.angeMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
+        promiseArr.push(luaenaUtkastPage.angeMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
             .then(function(value) {
                 logger.info('Medicinska förutsättningar: ' + JSON.stringify(intyg.medicinskaForutsattningar));
             }, function(reason) {
@@ -105,7 +105,7 @@ module.exports = {
         );
 
         //Övriga upplysningar
-        promiseArr.push(luseUtkastPage.angeOvrigaUpplysningar(intyg.ovrigt)
+        promiseArr.push(luaenaUtkastPage.angeOvrigaUpplysningar(intyg.ovrigt)
             .then(function(value) {
                 logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.ovrigt));
             }, function(reason) {
@@ -114,20 +114,11 @@ module.exports = {
         );
 
         //Kontakt med FK
-        promiseArr.push(luseUtkastPage.angeKontaktMedFK(intyg.kontaktMedFk)
+        promiseArr.push(luaenaUtkastPage.angeKontaktMedFK(intyg.kontaktMedFk)
             .then(function(value) {
                 logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.kontaktMedFk));
             }, function(reason) {
                 return Promise.reject('FEL, Övriga upplysningar: ' + reason);
-            })
-        );
-
-        //Tilläggsfrågor - TODO: Finns detta kvar?
-        promiseArr.push(luseUtkastPage.angeTillaggsfragor(intyg.tillaggsfragor)
-            .then(function(value) {
-                logger.info('Tilläggsfrågor: ' + JSON.stringify(intyg.tillaggsfragor));
-            }, function(reason) {
-                return Promise.reject('FEL, Tilläggsfrågor: ' + reason);
             })
         );
 

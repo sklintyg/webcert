@@ -33,7 +33,7 @@ var td = wcTestTools.testdata;
 module.exports = function() {
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function() {
         if (!global.intyg.typ) {
-            throw 'Intyg.typ odefinierad.';
+            throw 'intyg.typ odefinierad.';
         } else {
             global.intyg = generateIntygByType(intyg.typ, intyg.id);
             console.log(intyg);
@@ -170,9 +170,27 @@ module.exports = function() {
                 intyg.funktionsnedsattning = helpers.randomTextString();
                 lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
             } else if (field === 'sysselsattning') {
-                lisjpUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE).then(callback);
-                intyg.nuvarandeArbeteBeskrivning = helpers.randomTextString();
-                lisjpUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.sendKeys(intyg.nuvarandeArbeteBeskrivning).then(callback);
+                lisjpUtkastPage.angeSysselsattning({
+                    typ: 'Arbetssökande'
+                }).then(callback());
+            } else {
+                callback(null, 'pending');
+            }
+
+        } else if (intygShortcode === 'LUAE_NA') {
+            field = helpers.randomPageField(isSMIIntyg, intygShortcode);
+            console.log('Fältet som ändras är: ' + field);
+
+            if (field === 'aktivitetsbegransning') {
+                intyg.aktivitetsbegransning = helpers.randomTextString();
+                lisjpUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            } else if (field === 'funktionsnedsattning') {
+                intyg.funktionsnedsattning = helpers.randomTextString();
+                lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
+            } else if (field === 'sysselsattning') {
+                lisjpUtkastPage.angeSysselsattning({
+                    typ: 'Arbetssökande'
+                }).then(callback());
             } else {
                 callback(null, 'pending');
             }

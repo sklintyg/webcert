@@ -15,7 +15,7 @@ Scenariomall: Visas vid rätt fält för <intygKod>
 Exempel:
   |intygKod | 	intyg 								| 
   |FK7263	|  	"Läkarintyg FK 7263" 				| 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 
 Scenariomall: FMB information för treställig diagnoskod ska visas vid rätt fält då koden inte har egen FMB info när <intygKod> skapas
@@ -26,7 +26,7 @@ Scenariomall: FMB information för treställig diagnoskod ska visas vid rätt f�
 Exempel:
   |intygKod | 	intyg 								| 
   |FK7263	|  	"Läkarintyg FK 7263" 				| 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 Scenariomall: Ska inte visas för alla diagnoskoder då man skapar <intygKod>
 	När jag går in på att skapa ett <intyg> intyg
@@ -36,4 +36,4 @@ Scenariomall: Ska inte visas för alla diagnoskoder då man skapar <intygKod>
 Exempel:
   |intygKod | 	intyg 								| 
   |FK7263	|  	"Läkarintyg FK 7263" 				| 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 

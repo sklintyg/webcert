@@ -21,7 +21,7 @@ Scenariomall: Skapa <intygKod> intyg
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 @öppna
 Scenariomall: Öppna <intygKod>-intyg
@@ -31,7 +31,7 @@ Scenariomall: Öppna <intygKod>-intyg
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 
 @signera
@@ -44,7 +44,7 @@ Scenariomall: Signera <intygKod> intyg
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 @skicka @utskrift
 Scenariomall: Skicka <intygKod> intyg till mottagare
@@ -55,7 +55,7 @@ Scenariomall: Skicka <intygKod> intyg till mottagare
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 @skriv-ut @utskrift @notReady
 Scenariomall: Skriv ut <intygtyp> intyg
@@ -66,7 +66,7 @@ Scenariomall: Skriv ut <intygtyp> intyg
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 @radera
 Scenariomall: Radera <intygKod> utkast
@@ -77,7 +77,7 @@ Scenariomall: Radera <intygKod> utkast
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 
 @makulera
@@ -89,7 +89,7 @@ Scenariomall: Makulera <intygKod> intyg
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 @kopiera
 Scenariomall: Kopiera <intygKod> intyg
@@ -101,4 +101,4 @@ Scenariomall: Kopiera <intygKod> intyg
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning utökat" | 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 

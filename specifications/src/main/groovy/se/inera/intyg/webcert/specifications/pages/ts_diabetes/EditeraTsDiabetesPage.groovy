@@ -43,14 +43,14 @@ class EditeraTsDiabetesPage extends AbstractEditCertPage {
         specialist { $("#specialist") }
 
         // Intygsvalidering
-        valideringPatient(required: false){$("#validationMessages_patient") }
-        valideringIntygAvser(required: false){$("#validationMessages_intygavser") }
-        valideringIdentitet(required: false){$("#validationMessages_identitet") }
-        valideringDiabetes(required: false){$("#validationMessages_diabetes") }
-        valideringHypoglykemier(required: false){$("#validationMessages_hypoglykemier") }
-        valideringSyn(required: false){$("#validationMessages_syn") }
-        valideringBedomning(required: false){$("#validationMessages_bedomning") }
-        valideringVardEnhet(required: false){$("#validationMessages_vardenhet") }
+        valideringPatient(required: false){$("div[data-validation-section='patient']") }
+        valideringIntygAvser(required: false){$("div[data-validation-section='intygavser']") }
+        valideringIdentitet(required: false){$("div[data-validation-section='identitet']") }
+        valideringDiabetes(required: false){$("div[data-validation-section='diabetes']") }
+        valideringHypoglykemier(required: false){$("div[data-validation-section='hypoglykemier']") }
+        valideringSyn(required: false){$("div[data-validation-section='syn']") }
+        valideringBedomning(required: false){$("div[data-validation-section='bedomning']") }
+        valideringVardEnhet(required: false){$("div[data-validation-section='vardenhet']") }
     }
 }
 

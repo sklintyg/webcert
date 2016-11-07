@@ -59,7 +59,7 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
             },
             annat: {
                 beskrivning: element(by.id('annatGrundForMUBeskrivning')),
-                checkbox: element(by.id('formly_1_date_annatGrundForMU_4')),
+                checkbox: element(by.id('form_annatGrundForMU')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
             },
             kannedomOmPatient: {
@@ -68,28 +68,9 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
             }
         };
     },
-    //angeFunktionsnedsattning: function(nedsattning) {
-    //    return Promise.all([
-    //        this.funktionsnedsattning.intellektuell.sendKeys(nedsattning.intellektuell),
-    //        this.funktionsnedsattning.kommunikation.sendKeys(nedsattning.kommunikation),
-    //        this.funktionsnedsattning.koncentration.sendKeys(nedsattning.koncentration),
-    //        this.funktionsnedsattning.annanPsykisk.sendKeys(nedsattning.psykisk),
-    //        this.funktionsnedsattning.synHorselTal.sendKeys(nedsattning.synHorselTal),
-    //        this.funktionsnedsattning.balansKoordination.sendKeys(nedsattning.balansKoordination),
-    //        this.funktionsnedsattning.annanKroppslig.sendKeys(nedsattning.annan)
-    //    ]);
-    //},
     angeAktivitetsbegransning: function(aktivitetsbegransning) {
         return this.aktivitetsbegransning.sendKeys(aktivitetsbegransning);
     },
-    //angeMedicinskBehandling: function(behandling) {
-    //    return Promise.all([
-    //        this.medicinskBehandling.avslutad.sendKeys(behandling.avslutad),
-    //        this.medicinskBehandling.pagaende.sendKeys(behandling.pagaende),
-    //        this.medicinskBehandling.planerad.sendKeys(behandling.planerad),
-    //        this.medicinskBehandling.substansintag.sendKeys(behandling.substansintag)
-    //    ]);
-    //},
 
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([

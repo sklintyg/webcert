@@ -1,10 +1,10 @@
 # language: sv
-@paminnelse @lisjp
+@paminnelse @luaena
 Egenskap: Som läkare vill jag att påminnelser syns tydligt och leder mig till ursprungsfrågan
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
-   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
+   Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga"
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 Scenario: Påminnelse

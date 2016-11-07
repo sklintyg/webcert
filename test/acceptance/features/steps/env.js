@@ -20,6 +20,22 @@
 /* globals browser, logger */
 'use strict';
 
+
+function checkConsoleErrors(cb) {
+    browser.manage().logs().get('browser').then(function(browserLog) {
+        if (browserLog.length) {
+            browserLog.forEach(function(log) {
+                var error = log.level.value > 900;
+                if (error) {
+                    console.log(log);
+                    throw ('KONSOL -> ' + log.level.name + ': ' + log.message);
+                }
+                cb();
+            });
+        }
+    });
+}
+
 module.exports = function() {
     this.setDefaultTimeout(200 * 1000);
 
@@ -57,27 +73,14 @@ module.exports = function() {
 
                 var decodedImage = new Buffer(png, 'base64').toString('binary');
                 scenario.attach(decodedImage, 'image/png', function(err) {
-                    callback(err);
+                    checkConsoleErrors(callback);
                 });
 
             });
 
         } else {
-            callback();
+            checkConsoleErrors(callback);
         }
-        // else {
-
-        //     if (process.env.DATABASE_PASSWORD && rensaBortIntyg) {
-
-        //         // Bortkommenterad pga att vi behöver några intyg att arbeta med.
-        //         // Vi kan aktivera denna funktion sen när vi löst problemet med att skapa 
-        //         // nya intyg då de behövs
-
-        //         // require('./dbActions').removeCert(global.intyg.id, callback);
-        //     } else {
-        //         logger.info('Behåller skapat testintyg');
-        //     }
-        // }
 
     });
 
@@ -86,5 +89,9 @@ module.exports = function() {
             global.scenario.attach(level + ': ' + msg);
         }
     });
+
+
+
+
 
 };

@@ -17,12 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals protractor, wcTestTools, browser, intyg, logger */
+/*globals protractor, wcTestTools, browser, intyg, logger,person */
 
 'use strict';
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var helpers = require('./helpers');
 var testdataHelpers = wcTestTools.helpers.testdata;
+var testdata = wcTestTools.testdata;
+var testpatienter = testdata.values.patienter;
 
 module.exports = function() {
 
@@ -42,33 +44,62 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn och adress$/, function() {
+        person.fornamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
+        person.efternamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];
+        person.adress = {
+            postadress: 'Västra storgatan 20',
+            postort: 'Karlstad',
+            postnummer: '66130'
+
+        };
         return gotoIntyg('intygsutkastet', ' via djupintegrationslänk');
     });
+    this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn$/, function() {
+        person.fornamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
+        person.efternamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];
+        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk');
+    });
+    this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annan adress$/, function() {
+        person.adress = {
+            postadress: 'Västra storgatan 20',
+            postort: 'Karlstad',
+            postnummer: '66130'
+
+        };
+        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk');
+    });
+
+    this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer$/, function() {
+        person.id = testdataHelpers.shuffle(testpatienter)[0];
+        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', 'alternatePatientSSn=' + person.id);
+    });
+
+    this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer$/, function() {
+        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', 'alternatePatientSSn=3243342');
+    });
+
 
     this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin) {
         return gotoIntyg(intygstyp, origin);
     });
 
-    function gotoIntyg(intygstyp, origin) {
+    function gotoIntyg(intygstyp, origin, addToUrl) {
         var url;
         var isSMIIntyg;
         if (intyg && intyg.typ) {
             isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         }
         if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
-
-            var fnamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
-            var enamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];
             if (isSMIIntyg) {
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
                 url = url + '?';
-                url += 'fornamn=' + fnamn + '&';
-                url += 'efternamn=' + enamn + '&';
-                url += 'postadress=Langgatan%2012&';
-                url += 'postnummer=990%2090&';
-                url += 'postort=Simrishamn&';
+                url += 'fornamn=' + encodeURIComponent(person.fornamn) + '&';
+                url += 'efternamn=' + encodeURIComponent(person.efternamn) + '&';
+                url += 'postadress=' + encodeURIComponent(person.adress.postadress) + '&';
+                url += 'postnummer=' + encodeURIComponent(person.adress.postnummer) + '&';
+                url += 'postort=' + encodeURIComponent(person.adress.postort) + '&';
                 url += 'ref=testref&';
-                url += 'enhet=' + global.user.enhetId;
+                url += 'enhet=' + global.user.enhetId + '&';
 
             } else {
                 //EN WORKAROUND med parameter TILLS INTYG 2711 är LÖST
@@ -86,6 +117,10 @@ module.exports = function() {
             }
         } else {
             logger.error('Okänd parameter origin: ' + origin + ', intygstyp: ' + intygstyp);
+        }
+
+        if (addToUrl) {
+            url += addToUrl;
         }
 
         return browser.get(url).then(function() {
