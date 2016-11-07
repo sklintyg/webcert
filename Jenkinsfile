@@ -11,7 +11,6 @@ stage('checkout') {
     }
 }
 
-
 stage('build') {
     node {
         try {
@@ -19,19 +18,7 @@ stage('build') {
                   -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
-                 reportFiles: 'index.html', reportName: 'JUnit results'
-        }
-    }
-}
-
-stage('deployit') {
-    node {
-    sh git clone https://github.com/sklintyg/intygstjanst.git 
-    
-    util.run {
-            ansiblePlaybook extraVars: [version: INTYGSTJANST_VERSION, ansible_ssh_port: "22", deploy_from_repo: "true"],  \
-                 installation: 'ansible-yum', inventory: 'intygstjanst/ansible/hosts_test_webcert', playbook: 'intygstjanst/ansible/deploy.yml'
-            util.waitForServer('http://172.16.1.15:8080/inera-certificate/version.jsp')
+                reportFiles: 'index.html', reportName: 'JUnit results'
         }
     }
 }
@@ -40,7 +27,7 @@ stage('deploy') {
     node {
         util.run {
             ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
-                 installation: 'ansible-yum', inventory: 'ansible/hosts_test', playbook: 'ansible/deploy.yml'
+                installation: 'ansible-yum', inventory: 'ansible/hosts_test', playbook: 'ansible/deploy.yml'
             util.waitForServer('https://webcert.inera.nordicmedtest.se/version.jsp')
         }
     }
@@ -53,7 +40,7 @@ stage('restAssured') {
                   -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
-                 reportFiles: 'index.html', reportName: 'RestAssured results'
+                reportFiles: 'index.html', reportName: 'RestAssured results'
         }
     }
 }
@@ -67,7 +54,7 @@ stage('protractor') {
             }
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/dev/report', \
-                 reportFiles: 'index.html', reportName: 'Protractor results'
+                reportFiles: 'index.html', reportName: 'Protractor results'
         }
     }
 }
@@ -83,7 +70,7 @@ stage('fitnesse') {
             }
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'specifications/', \
-                 reportFiles: 'fitnesse-results.html', reportName: 'Fitnesse results'
+                reportFiles: 'fitnesse-results.html', reportName: 'Fitnesse results'
         }
     }
 }
