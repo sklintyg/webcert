@@ -106,7 +106,7 @@ Om intyget inte grundas på en personlig undersökning ska du förklara under �
 	<text id="FRG_6.HLP">Ange vilken eller vilka sjukdomar som orsakar nedsatt arbetsförmåga. Den sjukdom som påverkar arbetsförmågan mest anges först. Diagnoskoden anges alltid med så många positioner som möjligt.
 
 Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan anges dessa under ”övriga upplysningar”.</text>
-
+	<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
 	<!--
 	===============================================
 	KATEGORI 4: Sjukdomens konsekvenser
@@ -176,8 +176,8 @@ Ange även om det finns någon typ av aktivitet som patienten bör undvika på g
 	<text id="KV_FKMU_0007.TRETTIO_DGR.RBK">1 månad.</text>
 	<text id="KV_FKMU_0007.SEXTIO_DGR.RBK">2 månader.</text>
 	<text id="KV_FKMU_0007.NITTIO_DGR.RBK">3 månader.</text>
-	<text id="KV_FKMU_0007.HUNDRAATTIO_DGR.RBK">6 månader.</text>
-	<text id="KV_FKMU_0007.TREHUNDRASEXTIOFEM.RBK">12 månader.</text>
+	<text id="KV_FKMU_0007.HUNDRAATTIO_DAGAR.RBK">6 månader.</text>
+	<text id="KV_FKMU_0007.TREHUNDRASEXTIOFEM_DAGAR.RBK">12 månader.</text>
 
 	<!--
 	===============================================
@@ -186,7 +186,7 @@ Ange även om det finns någon typ av aktivitet som patienten bör undvika på g
 	-->
 	<text id="KAT_7.RBK">Åtgärder</text>
 	<text id="FRG_40.RBK">Här kan du ange åtgärder som du tror skulle göra det lättare för patienten att återgå i arbete</text>
-	<text id="DFR_44.2.RBK">Här kan du ange fler åtgärder. Du kan också beskriva hur åtgärderna kan underlätta återgång i arbete.</text>
+	<text id="FRG_44.RBK">Här kan du ange fler åtgärder. Du kan också beskriva hur åtgärderna kan underlätta återgång i arbete.</text>
 
 	<!-- Text och hjälptext för typ av underlag ur kodverk -->
 	<text id="KV_FKMU_0004.EJ_AKTUELLT.RBK">Inte aktuellt</text>
@@ -217,6 +217,6 @@ Ange även om det finns någon typ av aktivitet som patienten bör undvika på g
 	<text id="KAT_9.RBK">Kontakt</text>
 	<text id="FRG_26.RBK">Kontakt med Försäkringskassan</text>
 	<text id="FRG_26.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
-	<text id="DFR_26.1.RBK">Jag önskar att Försökringskassan kontaktar mig.</text>
+	<text id="DFR_26.1.RBK">Jag önskar att Försäkringskassan kontaktar mig.</text>
 	<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt.</text>
 </texter>
