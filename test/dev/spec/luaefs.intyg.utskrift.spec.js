@@ -26,7 +26,7 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
-var IntygPage = wcTestTools.pages.intyg.luae_fs.intyg;
+var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
 describe('verify luaefs\' print buttons', function() {
 

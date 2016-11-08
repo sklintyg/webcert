@@ -44,7 +44,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
 
     private static final String LUAE_FS = "LUAE_FS";
     private static final String LUAE_NA = "LUAE_NA";
-    private static final String LISU = "LISU";
+    private static final String LISJP = "LISJP";
     private static final String LUSE = "LUSE";
     private static final String TS_BAS = "TSTRK1007";
     private static final String TS_DIABETES = "TSTRK1031";
@@ -158,9 +158,9 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testCreateLisuDraft() throws IOException {
+    public void testCreateLisjpDraft() throws IOException {
 
-        given().body(createRequestBody(LISU, DEFAULT_LAKARE_HSAID))
+        given().body(createRequestBody(LISJP, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()
@@ -169,7 +169,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
                 .body("result.resultCode", is(ResultCodeType.OK.value()))
                 .body("intygs-id.extension.size()", is(1));
 
-        testMatchesSchemaForType(LISU);
+        testMatchesSchemaForType(LISJP);
     }
 
     private void testMatchesSchemaForType(String type) throws IOException {
@@ -219,7 +219,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftFailsWithValidationErrorWhenIssuerHasNoMiUOnUnit() {
 
-        given().body(createRequestBody(LISU, OTHER_LAKARE_HSAID))
+        given().body(createRequestBody(LISJP, OTHER_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V2_0)
                 .then()

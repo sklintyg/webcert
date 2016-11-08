@@ -175,6 +175,12 @@ public class IntygModuleApiController extends AbstractApiController {
     public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             RevokeSignedIntygParameter param) {
         validateRevokeAuthority(intygsTyp);
+
+        if (!param.isValid()) {
+            LOG.warn("Request to revoke '{}' is not valid", intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+        }
+
         IntygServiceResult result = revokeIntyg(intygsTyp, intygsId, param);
         return Response.ok(result).build();
     }
@@ -197,7 +203,7 @@ public class IntygModuleApiController extends AbstractApiController {
         validateRevokeAuthority(intygsTyp);
         validateCopyAuthority(intygsTyp);
 
-        if (!revokeReplaceRequest.getCopyIntygRequest().isValid()) {
+        if (!revokeReplaceRequest.getCopyIntygRequest().isValid() || !revokeReplaceRequest.getRevokeSignedIntygParameter().isValid()) {
             LOG.warn("Request to revoke and replace '{}' is not valid", intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
@@ -386,8 +392,7 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     private IntygServiceResult revokeIntyg(String intygsTyp, String intygsId, RevokeSignedIntygParameter param) {
-        String revokeMessage = (param != null) ? param.getRevokeMessage() : null;
-        return intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
+        return intygService.revokeIntyg(intygsId, intygsTyp, param.getMessage(), param.getReason());
     }
 
     private CopyIntygResponse copyIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId) {

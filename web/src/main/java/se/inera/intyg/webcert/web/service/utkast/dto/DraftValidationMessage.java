@@ -29,15 +29,18 @@ public class DraftValidationMessage {
 
     private String message;
 
+    private String dynamicKey;
+
     public DraftValidationMessage() {
 
     }
 
-    public DraftValidationMessage(String field, ValidationMessageType type, String message) {
+    public DraftValidationMessage(String field, ValidationMessageType type, String message, String dynamicKey) {
         super();
         this.field = field;
         this.type = type;
         this.message = message;
+        this.dynamicKey = dynamicKey;
     }
 
     public String getField() {
@@ -54,6 +57,10 @@ public class DraftValidationMessage {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getDynamicKey() {
+        return dynamicKey;
     }
 
     public void setMessage(String message) {

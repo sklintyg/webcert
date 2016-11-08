@@ -20,7 +20,7 @@
 
 'use strict';
 var luseUtkastPage = pages.intyg.luse.utkast;
-var lisuUtkastPage = pages.intyg.lisu.utkast;
+var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var helpers = require('./helpers');
 var testdata = wcTestTools.testdata;
@@ -50,7 +50,7 @@ module.exports = function() {
         setDiagnos(diagnos);
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
-            return lisuUtkastPage.angeDiagnosKoder([diagnos]);
+            return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
         } else {
             return fkUtkastPage.angeDiagnosKod(diagnos.kod);
         }
@@ -61,7 +61,7 @@ module.exports = function() {
         setDiagnos(diagnos);
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
-            return lisuUtkastPage.angeDiagnosKoder([diagnos]);
+            return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
         } else {
             return fkUtkastPage.angeDiagnosKod(diagnos.kod);
         }
@@ -124,7 +124,7 @@ module.exports = function() {
         setDiagnos(diagnos);
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
-            return lisuUtkastPage.angeDiagnosKoder([diagnos]);
+            return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
         } else {
             return fkUtkastPage.angeDiagnosKod(diagnos.kod);
         }

@@ -115,7 +115,8 @@ public class UtkastServiceImpl implements UtkastService {
     public int countFilterIntyg(UtkastFilter filter) {
 
         // Get intygstyper from write privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
         return utkastRepository.countFilterIntyg(filter, intygsTyper);
     }
@@ -205,7 +206,8 @@ public class UtkastServiceImpl implements UtkastService {
     public List<Utkast> filterIntyg(UtkastFilter filter) {
 
         // Get intygstyper from write privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
         // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
         if (intygsTyper.isEmpty()) {
@@ -214,18 +216,6 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Get a list of drafts
         List<Utkast> utkastList = utkastRepository.filterIntyg(filter, intygsTyper);
-
-        // If there are intygstyper in the set, then user is only granted access to
-        // view intyg of intygstyper that are in the set.
-/*
-        Iterator<Utkast> i = utkastList.iterator();
-        while (i.hasNext()) {
-            Utkast utkast = i.next();
-            if (!intygsTyper.contains(utkast.getIntygsTyp())) {
-                i.remove();
-            }
-        }
-*/
 
         return utkastList;
     }
@@ -276,7 +266,8 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         // Get intygstyper from write privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
         List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES, intygsTyper);
         for (Object[] resultArr : countResults) {
@@ -300,7 +291,11 @@ public class UtkastServiceImpl implements UtkastService {
         logService.logPrintIntygAsDraft(logRequest);
 
         // Log print to monitoring log
-        monitoringService.logUtkastPrint(utkast.getIntygsId(), utkast.getIntygsTyp());
+        if (utkast.getAterkalladDatum() == null) {
+            monitoringService.logUtkastPrint(utkast.getIntygsId(), utkast.getIntygsTyp());
+        } else {
+            monitoringService.logRevokedPrint(utkast.getIntygsId(), utkast.getIntygsTyp());
+        }
     }
 
     @Override
@@ -438,7 +433,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
             draftValidation.addMessage(new se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage(
-                    validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage()));
+                    validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage(), validationMsg.getDynamicKey()));
         }
 
         LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());
@@ -604,12 +599,11 @@ public class UtkastServiceImpl implements UtkastService {
 
     /**
      * See INTYG-3077 - when autosaving we make sure that the columns for fornamn, mellannamn and efternamn match
-     * whatever
-     * values that are present in the actual utkast model.
+     * whatever values that are present in the actual utkast model.
      *
      * In the rare occurance that a patient has a name change after the initial utkast was created - e.g. the utkast
-     * was continued on at a subsequent date - this method makes sure that the three "metadata" 'name' columns in the INTYG
-     * table reflects the actual model.
+     * was continued on at a subsequent date - this method makes sure that the three "metadata" 'name' columns in the
+     * INTYG table reflects the actual model.
      */
     private void updatePatientNameFromModel(Utkast utkast, Patient patient) {
         if (patient == null) {

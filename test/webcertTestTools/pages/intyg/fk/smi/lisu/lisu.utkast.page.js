@@ -47,7 +47,7 @@ var LisuUtkast = BaseSmiUtkast._extend({
             }
         };
         this.sysselsattning = {
-            form: element(by.id('form_sysselsattning_typ')),
+            form: element(by.id('form_sysselsattning')),
             typ: {
                 nuvarandeArbete: element(by.id('sysselsattning.typ-1')),
                 arbetssokande: element(by.id('sysselsattning.typ-2')),
@@ -62,26 +62,22 @@ var LisuUtkast = BaseSmiUtkast._extend({
             funktionsnedsattning: element(by.id('funktionsnedsattning')),
             aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
         };
-        this.behandling = {
-            pagaendeBehandling: element(by.id('pagaendeBehandling')),
-            planeradBehandling: element(by.id('planeradBehandling'))
-        };
         this.sjukskrivning = {
             100: {
-                fran: element(by.id('sjukskrivningar-1-from')),
-                till: element(by.id('sjukskrivningar-1-tom'))
+                fran: element(by.id('sjukskrivningar-HELT_NEDSATT-from')),
+                till: element(by.id('sjukskrivningar-HELT_NEDSATT-tom'))
             },
             75: {
-                fran: element(by.id('sjukskrivningar-2-from')),
-                till: element(by.id('sjukskrivningar-2-tom'))
+                fran: element(by.id('sjukskrivningar-TRE_FJARDEDEL-from')),
+                till: element(by.id('sjukskrivningar-TRE_FJARDEDEL-tom'))
             },
             50: {
-                fran: element(by.id('sjukskrivningar-3-from')),
-                till: element(by.id('sjukskrivningar-3-tom'))
+                fran: element(by.id('sjukskrivningar-HALFTEN-from')),
+                till: element(by.id('sjukskrivningar-HALFTEN-tom'))
             },
             25: {
-                fran: element(by.id('sjukskrivningar-4-from')),
-                till: element(by.id('sjukskrivningar-4-tom'))
+                fran: element(by.id('sjukskrivningar-EN_FJARDEDEL-from')),
+                till: element(by.id('sjukskrivningar-EN_FJARDEDEL-tom'))
             },
             forsakringsmedicinsktBeslutsstodBeskrivning: element(by.id('forsakringsmedicinsktBeslutsstod')),
             arbetstidsforlaggning: {
@@ -94,19 +90,24 @@ var LisuUtkast = BaseSmiUtkast._extend({
                 ja: element(by.id('arbetsresorYes'))
             },
             formagaTrotsBegransningBeskrivning: element(by.id('formagaTrotsBegransning')),
+            // prognos: {
+            //     typ: {
+            //         1: element(by.id('prognos.typ-1')),
+            //         3: element(by.id('prognos.typ-3')),
+            //         4: element(by.id('prognos.typ-4')),
+            //         5: element(by.id('prognos.typ-5'))
+            //     },
+            //     dagarTillArbete: {
+            //         30: element(by.id('prognos.dagarTillArbete-1')),
+            //         60: element(by.id('prognos.dagarTillArbete-2')),
+            //         90: element(by.id('prognos.dagarTillArbete-3')),
+            //         180: element(by.id('prognos.dagarTillArbete-4'))
+            //     }
+            // }
             prognos: {
-                typ: {
-                    1: element(by.id('prognos.typ-1')),
-                    3: element(by.id('prognos.typ-3')),
-                    4: element(by.id('prognos.typ-4')),
-                    5: element(by.id('prognos.typ-5'))
-                },
-                dagarTillArbete: {
-                    30: element(by.id('prognos.dagarTillArbete-1')),
-                    60: element(by.id('prognos.dagarTillArbete-2')),
-                    90: element(by.id('prognos.dagarTillArbete-3')),
-                    180: element(by.id('prognos.dagarTillArbete-4'))
-                }
+                form: element(by.id('form_prognos')),
+                inom: element(by.id('prognosDagarTillArbete-3-typ')),
+                select: element(by.css('#prognosDagarTillArbete-3-typ > div.ui-select-match > span'))
             }
         };
         this.atgarder = {
@@ -241,19 +242,26 @@ var LisuUtkast = BaseSmiUtkast._extend({
     },
     angeAtgarder: function(atgarder) {
         var atgarderEL = this.atgarder;
-        var fillInVarfor = function() {
-            if (atgarder.varforInteBeskrivning) {
-                return atgarderEL.ejAktuelltBeskrivning.sendKeys(atgarder.varforInteBeskrivning);
+        var fillInAtgardBeskrivningar = function(atgarder) {
+            var promisesArr = [];
 
-            } else if (atgarder.varforBeskrivning) {
-                return atgarderEL.aktuelltBeskrivning.sendKeys(atgarder.varforBeskrivning);
-            } else {
-                return Promise.reject('Åtgärdsbeskrivning saknas');
+            for (var i = 0; i < atgarder.length; i++) {
+                if (atgarder[i].beskrivning) {
+                    promisesArr.push(
+                        element(by.id('arbetslivsinriktadeAtgarder-' + atgarder[i].key + '-description'))
+                        .sendKeys(atgarder[i].beskrivning)
+                    );
+                }
             }
+            return Promise.all(promisesArr);
         };
 
-        return pageHelpers.clickAll(atgarderEL.labels, atgarder.atgarder).then(function() {
-            return fillInVarfor();
+        var atgarderNamn = atgarder.map(function(obj) {
+            return obj.namn;
+        });
+
+        return pageHelpers.clickAll(atgarderEL.labels, atgarderNamn).then(function() {
+            return fillInAtgardBeskrivningar(atgarder);
         });
     },
     angeSysselsattning: function(sysselsattning) {
@@ -269,7 +277,22 @@ var LisuUtkast = BaseSmiUtkast._extend({
                     return Promise.resolve();
                 }
             });
+    },
+    angePrognosForArbetsformaga: function(prognos) {
+        var prognosEL = this.sjukskrivning.prognos;
+        return prognosEL.form.element(by.cssContainingText('label', prognos.name)).sendKeys(protractor.Key.SPACE).then(function() {
+            if (prognos.within) {
+
+                return prognosEL.select.click().then(function() {
+                    return prognosEL.inom.element(by.cssContainingText('span', prognos.within)).click();
+                });
+            } else {
+                return Promise.resolve();
+            }
+        });
+
     }
+
 });
 
 module.exports = new LisuUtkast();

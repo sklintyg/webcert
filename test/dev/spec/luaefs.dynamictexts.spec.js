@@ -23,8 +23,8 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var textHelper = wcTestTools.helpers.fkTextHelper;
-var UtkastPage = wcTestTools.pages.intyg.luae_fs.utkast;
-var IntygPage = wcTestTools.pages.intyg.luae_fs.intyg;
+var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
+var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
 

@@ -24,7 +24,7 @@
     "request": "^2.65.0",
     "soap": "^0.16.0",
     "time-grunt": "^1.3.0",
-    "webcert-testtools": "latest",
+    "webcert-testtools": "1.0.118",
     "winston": "^2.2.0",
     "xml2js": "^0.4.4"
   },

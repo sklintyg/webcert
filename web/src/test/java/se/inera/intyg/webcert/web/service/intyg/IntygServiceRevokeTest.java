@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,8 +50,10 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     private static final String REVOKE_MSG = "This is revoked";
+    private static final String REVOKE_REASON = "FELAKTIGT_INTYG";
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
+    private static final String HSA_ID = "AAA";
 
     private static final String INTYG_ID = "123";
 
@@ -83,7 +86,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
 
         // do the call
-        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
 
         // verify that services were called
         verify(arendeService).closeAllNonClosed(INTYG_ID);
@@ -92,6 +95,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(intygRepository).save(any(Utkast.class));
         verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK));
         verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
+        verify(monitoringService).logIntygRevoked(INTYG_ID, HSA_ID, REVOKE_REASON);
 
         assertEquals(IntygServiceResult.OK, res);
     }
@@ -102,17 +106,18 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(new IntygModuleFacadeException(""));
         // Do the call
         try {
-            intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
-        } catch (Exception e) {
+            intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
+        } finally {
             verifyZeroInteractions(certificateSenderService);
             verify(intygRepository, times(0)).save(any(Utkast.class));
-            throw e;
+            verifyZeroInteractions(notificationService);
+            verifyZeroInteractions(logService);
         }
     }
 
     private HoSPersonal buildHosPerson() {
         HoSPersonal person = new HoSPersonal();
-        person.setPersonId("AAA");
+        person.setPersonId(HSA_ID);
         person.setFullstandigtNamn("Dr Dengroth");
         return person;
     }

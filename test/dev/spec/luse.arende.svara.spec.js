@@ -33,7 +33,7 @@ var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 describe('answer arende on luse intyg', function() {
 
     var intygId;
-    var meddelandeId = 'luse-arende-arbtid';
+    var meddelandeId = 'luse-arende-avstmn';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -51,7 +51,7 @@ describe('answer arende on luse intyg', function() {
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
             restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                'ARBTID', 'PENDING_INTERNAL_ACTION');
+                'AVSTMN', 'PENDING_INTERNAL_ACTION');
         });
 
     });

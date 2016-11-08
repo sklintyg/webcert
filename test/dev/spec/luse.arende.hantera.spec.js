@@ -31,7 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('answer arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
-    var arendeId = 'luse-arende-arbtid-hantera';
+    var arendeId = 'luse-arende-avstmn-hantera';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -45,7 +45,7 @@ describe('answer arende on luse intyg', function() {
         restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
             restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
-                'ARBTID', 'PENDING_EXTERNAL_ACTION');
+                'AVSTMN', 'PENDING_EXTERNAL_ACTION');
         });
     });
 

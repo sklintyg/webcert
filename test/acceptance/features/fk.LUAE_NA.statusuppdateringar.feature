@@ -1,10 +1,10 @@
 # language: sv
-@statusuppdateringar @lisu
-Egenskap: Statusuppdateringar för LISU
+@statusuppdateringar @luaena
+Egenskap: Statusuppdateringar för LUAE_NA
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
-   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning utökat"
+   Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga"
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @skicka-till-fk
@@ -51,7 +51,6 @@ Scenario: Statusuppdateringar vid fråga från FK
     Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
 
-
 @fråga-till-fk
 Scenario: Statusuppdateringar vid fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
@@ -61,7 +60,7 @@ Scenario: Statusuppdateringar vid fråga från vården
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
     Och jag går in på intygsutkastet via djupintegrationslänk
-    Och jag skickar en fråga med ämnet "KONTKT" till Försäkringskassan
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
     Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
 
@@ -91,7 +90,7 @@ Scenario: Statusuppdateringar vid hantering av fråga från vården
     Och jag skickar intyget till Försäkringskassan
 
     Och jag går in på intygsutkastet via djupintegrationslänk
-    Och jag skickar en fråga med ämnet "KONTKT" till Försäkringskassan
+    Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
 
     När jag markerar frågan från vården som hanterad
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"

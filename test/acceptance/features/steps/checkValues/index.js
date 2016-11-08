@@ -20,7 +20,8 @@
 
 var fk7263CheckValues = require('./fk.7263.js').checkValues;
 var fkLUSECheckValues = require('./fk.LUSE.js').checkValues;
-var fkLISUCheckValues = require('./fk.LISU.js').checkValues;
+var fkLISJPCheckValues = require('./fk.LISJP.js').checkValues;
+var fkLUAENACheckValues = require('./fk.LUAE_NA.js').checkValues;
 
 var tsCommonCheckValues = require('./ts.common.js').checkValues;
 var tsBasCheckValues = require('./ts.bas.js').checkValues;
@@ -30,7 +31,7 @@ module.exports = {
     fk: {
         '7263': fk7263CheckValues,
         'LUSE': fkLUSECheckValues,
-        'LISU': fkLISUCheckValues
+        'LISJP': fkLISJPCheckValues
     },
     ts: {
         common: tsCommonCheckValues,
@@ -51,8 +52,10 @@ module.exports = {
             return fk7263CheckValues(intyg);
         } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
             return fkLUSECheckValues(intyg);
-        } else if (intyg.typ === 'Läkarintyg för sjukpenning utökat') {
-            return fkLISUCheckValues(intyg);
+        } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
+            return fkLISJPCheckValues(intyg);
+        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+            return fkLUAENACheckValues(intyg);
         } else {
             throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
         }

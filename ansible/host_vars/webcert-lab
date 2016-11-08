@@ -2,7 +2,7 @@
 # file: host_vars/intygstjanst-test
 
 # Spring profiles
-profiles: test,wc-all-stubs,wc-security-test,testability-api
+profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled
 
 # Configuration repository
 environment_name: "lab"

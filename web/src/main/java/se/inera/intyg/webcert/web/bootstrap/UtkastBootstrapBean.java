@@ -69,7 +69,7 @@ public class UtkastBootstrapBean {
     private CustomObjectMapper mapper = new CustomObjectMapper();
 
     private List<Amne> fsAmnen = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE, Amne.KONTAKT, Amne.OVRIGT);
-    private List<ArendeAmne> arendeAmnen = Arrays.asList(ArendeAmne.ARBTID, ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT);
+    private List<ArendeAmne> arendeAmnen = Arrays.asList(ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT);
     private Random rand = new Random();
 
     public static final Logger LOG = LoggerFactory.getLogger(UtkastBootstrapBean.class);

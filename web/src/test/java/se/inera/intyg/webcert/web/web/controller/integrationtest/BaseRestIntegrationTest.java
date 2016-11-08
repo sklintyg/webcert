@@ -352,7 +352,7 @@ public abstract class BaseRestIntegrationTest {
     private Arende createTestArendeQuestion(String typ, String intygId, String personnummer) {
         LocalDateTime now = LocalDateTime.now();
         Arende arende = new Arende();
-        arende.setAmne(ArendeAmne.ARBTID);
+        arende.setAmne(ArendeAmne.AVSTMN);
         arende.setMeddelande(DEFAULT_FRAGE_TEXT);
         arende.setIntygsId(intygId);
         arende.setPatientPersonId(personnummer);

@@ -24,7 +24,6 @@ import java.util.Optional;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 public enum ArendeAmne {
-    ARBTID("Arbetstidsförläggning"),
     AVSTMN("Avstämningsmöte"),
     KONTKT("Kontakt"),
     OVRIGT("Övrigt"),
@@ -49,8 +48,6 @@ public enum ArendeAmne {
             return Optional.of(AVSTMN);
         case KONTAKT:
             return Optional.of(KONTKT);
-        case ARBETSTIDSFORLAGGNING:
-            return Optional.of(ARBTID);
         case PAMINNELSE:
             return Optional.of(PAMINN);
         case OVRIGT:

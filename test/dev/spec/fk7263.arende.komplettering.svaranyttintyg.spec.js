@@ -94,12 +94,12 @@ describe('arende on fk7263 intyg', function() {
 
     describe('show related intyg', function() {
         it('should not be visible as default', function() {
-            expect(Fk7263UtkastPage.relatedIntygList.isDisplayed()).toBeFalsy();
+            expect(Fk7263UtkastPage.relatedIntygList.isPresent()).toBeFalsy();
         });
 
         it('should become visible when toggled', function() {
             Fk7263UtkastPage.togglerelatedIntygList.click();
-            expect(Fk7263UtkastPage.relatedIntygList.isDisplayed()).toBeTruthy();
+            expect(Fk7263UtkastPage.relatedIntygList.isPresent()).toBeTruthy();
             expect(Fk7263UtkastPage.relatedIntygList.rows().count()).toBe(3);
             expect(Fk7263UtkastPage.relatedIntygList.row(2).visa.getText()).toBe('Visas nu');
             expect(Fk7263UtkastPage.relatedIntygList.row(2).relation.getText()).toBe('Kompletterar');

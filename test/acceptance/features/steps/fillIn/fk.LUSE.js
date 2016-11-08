@@ -122,7 +122,7 @@ module.exports = {
             })
         );
 
-        //Tilläggsfrågor
+        //Tilläggsfrågor - TODO: Finns detta kvar?
         promiseArr.push(luseUtkastPage.angeTillaggsfragor(intyg.tillaggsfragor)
             .then(function(value) {
                 logger.info('Tilläggsfrågor: ' + JSON.stringify(intyg.tillaggsfragor));

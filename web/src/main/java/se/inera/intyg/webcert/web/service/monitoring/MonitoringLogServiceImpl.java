@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.service.monitoring;
 
 import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
@@ -128,8 +129,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logIntygRevoked(String intygsId, String userHsaId) {
-        logEvent(MonitoringEvent.INTYG_REVOKED, intygsId, userHsaId);
+    public void logIntygRevoked(String intygsId, String userHsaId, String reason) {
+        logEvent(MonitoringEvent.INTYG_REVOKED, intygsId, userHsaId, reason);
     }
 
     @Override
@@ -227,6 +228,21 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.LOGIN_OTHER_CAREGIVER, intygsId, intygsTyp, caregiverId, unitId);
     }
 
+    @Override
+    public void logDiagnoskodverkChanged(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.DIAGNOSKODVERK_CHANGED, intygsId, intygsTyp);
+    }
+
+    @Override
+    public void logScreenResolution(String width, String height) {
+        logEvent(MonitoringEvent.SCREEN_RESOLUTION, width, height);
+    }
+
+    @Override
+    public void logRevokedPrint(String intygsId, String intygsType) {
+        logEvent(MonitoringEvent.REVOKED_PRINT, intygsId, intygsType);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -258,7 +274,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         INTYG_SIGNED("Intyg '{}' signed by '{}' using scheme '{}' and relation code '{}'"),
         INTYG_REGISTERED("Intyg '{}' of type '{}' registered with Intygstjänsten"),
         INTYG_SENT("Intyg '{}' sent to recipient '{}'"),
-        INTYG_REVOKED("Intyg '{}' revoked by '{}'"),
+        INTYG_REVOKED("Intyg '{}' revoked by '{}' reason '{}'"),
         INTYG_COPIED("Utkast '{}' created as a copy of '{}'"),
         INTYG_COPIED_RENEWAL("Utkast '{}' created as a renewal copy of '{}'"),
         INTYG_COPIED_REPLACEMENT("Utkast '{}' created as a replacement copy of '{}'"),
@@ -278,7 +294,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         ARENDE_CREATED_QUESTION("Created arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         ARENDE_CREATED_ANSWER("Created arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         LOGIN_OTHER_UNIT("Viewed intyg '{}' of type '{}' on other unit '{}'"),
-        LOGIN_OTHER_CAREGIVER("Viewed intyg '{}' of type '{}' on other caregiver '{}' unit '{}'");
+        LOGIN_OTHER_CAREGIVER("Viewed intyg '{}' of type '{}' on other caregiver '{}' unit '{}'"),
+        REVOKED_PRINT("Revoked intyg '{}' of type '{}' printed"),
+        DIAGNOSKODVERK_CHANGED("Diagnoskodverk changed for utkast '{}' of type '{}'"),
+        SCREEN_RESOLUTION("Width '{}', height '{}'");
 
         private final String msg;
 

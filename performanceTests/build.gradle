@@ -14,22 +14,24 @@ sourceSets {
     }
 }
 
-task gatling(dependsOn: 'build') << {
-    javaexec {
-        main = 'io.gatling.app.Gatling'
-        classpath = sourceSets.test.output + sourceSets.test.runtimeClasspath
-        jvmArgs "-DbaseUrl=$gatlingBaseUrl"
-        args    '-sf', sourceSets.test.output,              //source folder
-                '-bf', sourceSets.test.output.classesDir,   //target folder where gatling will compile the simulation
-                '-s' , "se.inera.webcert.$simulation",      //The simulation to run
-                '-rf', 'build/reports/gatling'              //place to put the report
+task gatling(dependsOn: 'build') {
+    doLast {
+        javaexec {
+            main = 'io.gatling.app.Gatling'
+            classpath = sourceSets.test.output + sourceSets.test.runtimeClasspath
+            jvmArgs "-DbaseUrl=$gatlingBaseUrl"
+            args    '-sf', sourceSets.test.output,              //source folder
+            '-bf', sourceSets.test.output.classesDir,   //target folder where gatling will compile the simulation
+            '-s' , "se.inera.webcert.$simulation",      //The simulation to run
+            '-rf', 'build/reports/gatling'              //place to put the report
+        }
     }
 }
 
 dependencies {
-    testCompile group: 'io.gatling', name: 'gatling-app', version: gatlingVersion
-    testCompile group: 'io.gatling', name: 'gatling-recorder', version: gatlingVersion
-    testCompile group: 'io.gatling.highcharts', name: 'gatling-charts-highcharts', version: gatlingVersion
+    testCompile "io.gatling:gatling-app:${gatlingVersion}"
+    testCompile "io.gatling:gatling-recorder:${gatlingVersion}"
+    testCompile "io.gatling.highcharts:gatling-charts-highcharts:${gatlingVersion}"
 }
 
 repositories {

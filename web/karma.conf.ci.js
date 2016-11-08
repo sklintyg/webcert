@@ -23,11 +23,11 @@ var baseConfig = require('./karma.conf.js');
 var runCoverage = false;
 process.argv.forEach(function(a) {
     'use strict';
-    if (a.indexOf('--skip-coverage') === 0) {
+    if (a.indexOf('--run-coverage') === 0) {
         var s = a.split('=');
         if (s.length === 2) {
             var value = s[1].trim();
-            if (value === 'false') {
+            if (value === 'true') {
                 runCoverage = true;
             }
         }

@@ -76,7 +76,6 @@ public class ArendeServiceImpl implements ArendeService {
             TsDiabetesEntryPoint.MODULE_ID);
 
     private static final List<ArendeAmne> VALID_VARD_AMNEN = Arrays.asList(
-            ArendeAmne.ARBTID,
             ArendeAmne.AVSTMN,
             ArendeAmne.KONTKT,
             ArendeAmne.OVRIGT);

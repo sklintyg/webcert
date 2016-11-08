@@ -64,6 +64,32 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^jag makulerar intyget och ersätter med nytt intyg$/, function(callback) {
+
+        browser.getCurrentUrl().then(function(text) {
+            intyg.id = text.split('/').slice(-1)[0];
+            intyg.id = intyg.id.split('?')[0];
+        });
+
+        fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+
+        browser.sleep(2000).then(function() { // fix för animering
+            var reason = helpers.makuleraReason[Math.floor(Math.random() * 3)];
+            fkIntygPage.getReason(reason).then(function(radioBthEl) {
+                radioBthEl.sendKeys(protractor.Key.SPACE).then(function() {
+                    fkIntygPage.getReason(reason + 'Clarification').then(function(txtEl) {
+                        txtEl.sendKeys(helpers.randomTextString()).then(function() {
+                            fkIntygPage.getReason('dialogErsatt').then(function(dialogMakuleraEl) {
+                                dialogMakuleraEl.sendKeys(protractor.Key.SPACE).then(callback);
+                            });
+
+                        });
+                    });
+                });
+            });
+        });
+    });
+
     this.Given(/^jag kopierar intyget$/, function() {
         return fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
             return fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE)
@@ -93,6 +119,20 @@ module.exports = function() {
         } else {
             return fkIntygPage.skrivUtFullstandigtIntyg();
         }
+    });
+
+    this.Given(/^ska det finnas en referens till gamla intyget$/, function() {
+        return browser.sleep(3000).then(function() {
+            return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
+                return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
+                    return browser.getCurrentUrl().then(function(text) {
+                        logger.info('(%s contain %s) => %s', text, intyg.id, (text.indexOf(intyg.id) !== -1 ? true : false));
+                        return expect(text).to.contain(intyg.id);
+                    });
+                });
+
+            });
+        });
     });
 
 };

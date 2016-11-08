@@ -57,7 +57,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logIntygSent(String intygsId, String recipient);
 
-    void logIntygRevoked(String intygsId, String hsaId);
+    void logIntygRevoked(String intygsId, String hsaId, String reason);
 
     void logIntygCopied(String copyIntygsId, String originalIntygId);
 
@@ -92,5 +92,11 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logIntegratedOtherUnit(String intygsId, String intygsTyp, String unitId);
 
     void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String caregiverId, String unitId);
+
+    void logDiagnoskodverkChanged(String intygsId, String intygsTyp);
+
+    void logScreenResolution(String width, String height);
+
+    void logRevokedPrint(String intygsId, String intygsTyp);
 
 }

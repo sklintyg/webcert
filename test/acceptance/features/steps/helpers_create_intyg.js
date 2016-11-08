@@ -119,9 +119,9 @@ module.exports = {
         //     } else if (typ === 'Läkarutlåtande för sjukersättning') {
         //         intygObj = intygFromJsonFactory.defaultLuse();
 
-        //     } else if (typ === 'Läkarintyg för sjukpenning utökat') {
+        //     } else if (typ === 'Läkarintyg för sjukpenning') {
         //         //intygObj = intygFromJsonFactory.defaultLisu();
-        //         throw ('TODO: Skapa LISU via REST');
+        //         throw ('TODO: Skapa LISJP via REST');
         //     }
         //     var intygDoc = JSON.parse(intygObj.document);
         //     intygDoc.grundData.patient.personId = person.id;

@@ -22,7 +22,7 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var IntygPage = wcTestTools.pages.intyg.luae_fs.intyg;
+var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
@@ -34,7 +34,7 @@ var EC = protractor.ExpectedConditions;
 xdescribe('fragasvar.intygstyp.filtrering', function() {
 
     var intygsId;
-    var arendeId = 'luaefs-arende-arbtid';
+    var arendeId = 'luaefs-arende-avstmn';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -72,7 +72,7 @@ xdescribe('fragasvar.intygstyp.filtrering', function() {
 
         it('Skapa ärende på intyget', function() {
             testdataHelper.createArendeFromTemplate('luae_fs', intygsId, arendeId, 'Hur är det med arbetstiden?',
-                'ARBTID', 'PENDING_INTERNAL_ACTION');
+                'AVSTMN', 'PENDING_INTERNAL_ACTION');
         });
 
         it('Klicka på tabben för Fråga/svar', function() {

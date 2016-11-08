@@ -6,6 +6,7 @@ def typerVersion = "3.1.+"
 
 stage('checkout') {
     node {
+        git url: "https://github.com/sklintyg/webcert.git", branch: GIT_BRANCH
         util.run { checkout scm }
     }
 }
@@ -13,11 +14,12 @@ stage('checkout') {
 stage('build') {
     node {
         try {
-            shgradle "--refresh-dependencies clean build camelTest testReport sonarqube -PcodeQuality -DgruntColors=false \
+            shgradle "--refresh-dependencies clean build camelTest testReport sonarqube -PcodeQuality -PcodeCoverage -DgruntColors=false \
                   -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
                 reportFiles: 'index.html', reportName: 'JUnit results'
+
         }
     }
 }
@@ -27,6 +29,7 @@ stage('deploy') {
         util.run {
             ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
                 installation: 'ansible-yum', inventory: 'ansible/hosts_test', playbook: 'ansible/deploy.yml'
+            util.waitForServer('https://webcert.inera.nordicmedtest.se/version.jsp')
         }
     }
 }
@@ -63,7 +66,7 @@ stage('fitnesse') {
             wrap([$class: 'Xvfb']) {
                 shgradle "fitnesseTest -PfileOutput -PoutputFormat=html -Dgeb.env=firefoxRemote -Dweb.baseUrl=https://webcert.inera.nordicmedtest.se/ \
                       -DbaseUrl=https://webcert.inera.nordicmedtest.se/ -Dlogsender.baseUrl=https://webcert.inera.nordicmedtest.se/log-sender/ \
-                      -Dcertificate.baseUrl=https://intygstjanst.inera.nordicmedtest.se/inera-certificate/ \
+                      -Dcertificate.baseUrl=http://localhost:18008/inera-certificate/ \
                       -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
             }
         } finally {

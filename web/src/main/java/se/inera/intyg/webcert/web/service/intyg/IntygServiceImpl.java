@@ -292,7 +292,7 @@ public class IntygServiceImpl implements IntygService {
      * @see se.inera.intyg.webcert.web.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
      */
     @Override
-    public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage) {
+    public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage, String reason) {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
         IntygContentHolder intyg = getIntygData(intygsId, intygsTyp, false);
         verifyEnhetsAuth(intyg.getUtlatande(), true);
@@ -306,7 +306,7 @@ public class IntygServiceImpl implements IntygService {
         try {
             certificateSenderService.revokeCertificate(intygsId, modelFacade.getRevokeCertificateRequest(intygsTyp, intyg.getUtlatande(),
                     IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp);
-            whenSuccessfulRevoke(intyg.getUtlatande());
+            whenSuccessfulRevoke(intyg.getUtlatande(), reason);
             return IntygServiceResult.OK;
         } catch (CertificateSenderException | ModuleException | IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e.getMessage());
@@ -467,11 +467,11 @@ public class IntygServiceImpl implements IntygService {
      * Send a notification message to stakeholders informing that
      * a question related to a revoked certificate has been closed.
      */
-    private IntygServiceResult whenSuccessfulRevoke(Utlatande intyg) {
+    private IntygServiceResult whenSuccessfulRevoke(Utlatande intyg, String reason) {
         String intygsId = intyg.getId();
 
         String hsaId = webCertUserService.getUser().getHsaId();
-        monitoringService.logIntygRevoked(intygsId, hsaId);
+        monitoringService.logIntygRevoked(intygsId, hsaId, reason);
 
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);

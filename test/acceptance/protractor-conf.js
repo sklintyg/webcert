@@ -68,6 +68,7 @@ exports.config = {
         global.wcTestTools = wcTestTools;
         global.testdata = wcTestTools.testdata;
         global.pages = wcTestTools.pages;
+        global.person = {};
 
         browser.ignoreSynchronization = false;
         browser.baseUrl = process.env.WEBCERT_URL;
@@ -92,6 +93,16 @@ exports.config = {
 
         //Strunta i om servern inte kan bekräfta dess identitet
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+        // Disable animations so e2e tests run more quickly
+        // var disableNgAnimate = function() {
+        //     angular.module('disableNgAnimate', []).run(['$animate',
+        //         function($animate) {
+        //             $animate.enabled(false);
+        //         }
+        //     ]);
+        // };
+        // browser.addMockModule('disableNgAnimate', disableNgAnimate);
     }
 };
 

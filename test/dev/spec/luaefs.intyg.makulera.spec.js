@@ -22,7 +22,7 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var IntygPage = wcTestTools.pages.intyg.luae_fs.intyg;
+var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var restUtil = wcTestTools.restUtil;
@@ -62,7 +62,7 @@ describe('Validera makulering av luae_fs Intyg', function() {
             // A small artificial wait so Intygstjänsten kan process the revoke, it's async.
             browser.sleep(500);
             expect(isIntygRevoked(intygsId)).toBeTruthy();
-
+            expect(IntygPage.copyBtn.isDisplayed()).toBeTruthy();
         });
 
     });

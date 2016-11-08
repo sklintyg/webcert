@@ -168,9 +168,10 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
             function getQA() {
                 $scope.widgetState.activeErrorMessageKey = null;
+
                 $cookies.putObject('enhetsId', enhetId);
+
                 var preparedQuery = prepareFilterQuery(enhetId, $scope.filterQuery);
-                $cookies.putObject('savedFilterQuery', preparedQuery);
                 $scope.filterQuery = preparedQuery;
 
                 QuestionAnswer.getQA(preparedQuery, function(successData) {
@@ -216,17 +217,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 });
             }
 
-            function selectVantarPaByValue(vantaValue) {
-                for (var count = 0; count < $scope.statusList.length; count++) {
-                    if ($scope.statusList[count].value === vantaValue) {
-                        return $scope.statusList[count];
-                    }
-                }
-                return $scope.statusList[0];
-            }
-
             function resetFilterForm() {
-                $cookies.remove('savedFilterQuery');
                 $scope.filterQuery = angular.copy(defaultQuery);
                 $scope.filterForm.vantarPaSelector = $scope.statusList[1];
                 $scope.filterForm.lakareSelector = $scope.lakareList[0];
@@ -237,64 +228,39 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
             }
 
             function loadSearchForm() {
+                resetFilterForm(); // Set default state for filter form
 
-                // Check if cookie exists
-                if ($cookies.getObject('savedFilterQuery') === undefined) {
-                    resetFilterForm(); // Set default state for filter form
+                // If we saved an old query where we had fetched more load everything up to that page
+                if ($scope.filterQuery.startFrom > 0) {
+                    $scope.filterQuery.pageSize = $scope.filterQuery.startFrom + $scope.filterQuery.pageSize;
+                    $scope.filterQuery.savedStartFrom = $scope.filterQuery.startFrom;
+                    $scope.filterQuery.startFrom = 0;
+                }
+
+                if ($scope.filterQuery.questionFromFK === false && $scope.filterQuery.questionFromWC === false) {
+                    $scope.filterForm.questionFrom = 'default';
+                } else if ($scope.filterQuery.questionFromFK) {
+                    $scope.filterForm.questionFrom = 'FK';
                 } else {
-
-                    // Load filter from cookie
-                    $scope.filterQuery = $cookies.getObject('savedFilterQuery');
-
-                    // If we saved an old query where we had fetched more load everything up to that page
-                    if ($scope.filterQuery.startFrom > 0) {
-                        $scope.filterQuery.pageSize = $scope.filterQuery.startFrom + $scope.filterQuery.pageSize;
-                        $scope.filterQuery.savedStartFrom = $scope.filterQuery.startFrom;
-                        $scope.filterQuery.startFrom = 0;
-                    }
-
-                    if ($scope.filterQuery.questionFromFK === false &&
-                        $scope.filterQuery.questionFromWC === false) {
-                        $scope.filterForm.questionFrom = 'default';
-                    } else if ($scope.filterQuery.questionFromFK) {
-                        $scope.filterForm.questionFrom = 'FK';
-                    } else {
-                        $scope.filterForm.questionFrom = 'WC';
-                    }
-
-                    if ($scope.filterQuery.vidarebefordrad === undefined) {
-                        $scope.filterForm.vidarebefordrad = 'default';
-                    } else {
-                        $scope.filterForm.vidarebefordrad = $scope.filterQuery.vidarebefordrad;
-                    }
-
-                    if ($scope.filterForm.vantarPaSelector) {
-                        $scope.filterForm.vantarPaSelector = selectVantarPaByValue($cookies
-                            .getObject('savedFilterQuery').vantarPa);
-                    } else {
-                        $scope.filterForm.vantarPaSelector = $scope.statusList[1];
-                    }
-
-                    if ($scope.filterQuery.changedFrom === undefined) {
-                        $scope.filterForm.changedFrom = undefined;
-                    } else {
-                        $scope.filterForm.changedFrom = $scope.filterQuery.changedFrom;
-                    }
-                    if ($scope.filterQuery.changedTo === undefined) {
-                        $scope.filterForm.changedTo = undefined;
-                    } else {
-                        $scope.filterForm.changedTo = $scope.filterQuery.changedTo;
-                    }
+                    $scope.filterForm.questionFrom = 'WC';
                 }
-            }
 
-            function selectLakareByHsaId(hsaId) {
-                for (var count = 0; count < $scope.lakareList.length; count++) {
-                    if ($scope.lakareList[count].hsaId === hsaId) {
-                        return $scope.lakareList[count];
-                    }
+                if ($scope.filterQuery.vidarebefordrad === undefined) {
+                    $scope.filterForm.vidarebefordrad = 'default';
+                } else {
+                    $scope.filterForm.vidarebefordrad = $scope.filterQuery.vidarebefordrad;
                 }
-                return $scope.lakareList[0];
+
+                if ($scope.filterQuery.changedFrom === undefined) {
+                    $scope.filterForm.changedFrom = undefined;
+                } else {
+                    $scope.filterForm.changedFrom = $scope.filterQuery.changedFrom;
+                }
+                if ($scope.filterQuery.changedTo === undefined) {
+                    $scope.filterForm.changedTo = undefined;
+                } else {
+                    $scope.filterForm.changedTo = $scope.filterQuery.changedTo;
+                }
             }
 
             function initLakareList(unitId) {
@@ -306,14 +272,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     $scope.lakareList = list;
                     if (list && (list.length > 0)) {
                         $scope.lakareList.unshift($scope.lakareListEmptyChoice);
-
-                        if ($cookies.getObject('savedFilterQuery') &&
-                            $cookies.getObject('savedFilterQuery').lakareSelector) {
-                            $scope.filterQuery.lakareSelector = selectLakareByHsaId($cookies
-                                .getObject('savedFilterQuery').lakareSelector.hsaId);
-                        } else {
-                            $scope.lakareSelector = $scope.lakareList[0];
-                        }
+                        $scope.lakareSelector = $scope.lakareList[0];
                     }
                 }, function() {
                     $scope.widgetState.loadingLakares = false;
@@ -444,6 +403,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 $log.debug('on qa-filter-select-care-unit ---------------');
             });
 
-            // Load filter form from cookie if available (for first page load)
+            // Load filter form (first page load)
             loadSearchForm();
         }]);

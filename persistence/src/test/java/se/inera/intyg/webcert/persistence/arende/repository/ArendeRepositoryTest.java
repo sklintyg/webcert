@@ -392,7 +392,7 @@ public class ArendeRepositoryTest {
     @Test
     public void testFilterArendeSvarFranVarden() {
         final String enhet = "enhet";
-        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3), ArendeAmne.ARBTID));
+        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3), ArendeAmne.AVSTMN));
         repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
                 ArendeAmne.KOMPLT));
         repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
@@ -400,7 +400,7 @@ public class ArendeRepositoryTest {
         repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
                 ArendeAmne.AVSTMN));
         repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
-                ArendeAmne.ARBTID));
+                ArendeAmne.AVSTMN));
         repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3),
                 ArendeAmne.KONTKT));
 
@@ -587,10 +587,10 @@ public class ArendeRepositoryTest {
         List<Object[]> res = repo.countUnhandledGroupedByEnhetIdsAndIntygstyper(enhetsIds, intygsTyper);
         assertNotNull(res);
         assertEquals(2, res.size());
-        assertEquals("enhet1", (String) res.get(0)[0]);
-        assertEquals(new Long(3), (Long) res.get(0)[1]);
-        assertEquals("enhet2", (String) res.get(1)[0]);
-        assertEquals(new Long(1), (Long) res.get(1)[1]);
+        assertEquals("enhet1", res.get(0)[0]);
+        assertEquals(new Long(3), res.get(0)[1]);
+        assertEquals("enhet2", res.get(1)[0]);
+        assertEquals(new Long(1), res.get(1)[1]);
     }
 
     private Arende buildArende() {

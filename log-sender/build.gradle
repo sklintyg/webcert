@@ -14,28 +14,24 @@ task camelTest(type: Test) {
 dependencies {
   compile project(':webcert-common')
 
-  compile 'se.riv.ehr.logstore:ehr-logstore-schemas:1.2.3'
-
   compile "se.inera.intyg.common:log-messages:${commonVersion}"
   compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
   compile "se.inera.intyg.common:logging-util:${commonVersion}"
   compile "se.inera.intyg.common:integration-util:${commonVersion}"
 
   compile "org.springframework:spring-web:${springVersion}"
-  compile "org.springframework:spring-tx:${springVersion}"
   compile "org.springframework:spring-jms:${springVersion}"
   compile "org.apache.camel:camel-spring:${camelVersion}"
   compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
-  compile "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
-  compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
+  compile "javax.ws.rs:javax.ws.rs-api:${javaxWsRsApiVersion}"
 
-  compileOnly "javax.servlet:servlet-api:2.5"
-  compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:1.1.1"
+  compileOnly "javax.servlet:servlet-api:${servletApiVersion}"
+  compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
-  testCompile "org.kubek2k:springockito:1.0.8"
+  testCompile "org.kubek2k:springockito:${springockitoVersion}"
   testCompile "org.springframework:spring-test:${springVersion}"
-  testCompile "xmlunit:xmlunit:1.4"
-  testCompile "com.jayway.awaitility:awaitility:1.4.0"
+  testCompile "xmlunit:xmlunit:${xmlUnitVersion}"
+  testCompile "com.jayway.awaitility:awaitility:${awaitilityVersion}"
   testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
   testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
   testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"

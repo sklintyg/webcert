@@ -40,7 +40,7 @@ module.exports = function(grunt) {
     var TEST_DIR = 'src/test/js/';
     var DEST_DIR = (grunt.option('outputDir') || 'build/apps') +  '/app/';
     var TEST_OUTPUT_DIR = (grunt.option('outputDir') || 'build/karma/');
-    var SKIP_COVERAGE = grunt.option('skip-coverage') || 'true';
+    var RUN_COVERAGE = grunt.option('run-coverage') !== undefined ? grunt.option('run-coverage') : false;
 
     var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
@@ -58,7 +58,7 @@ module.exports = function(grunt) {
         'ts-bas':      { base: 'intygstyper/ts/ts-bas' },
         'ts-diabetes': { base: 'intygstyper/ts/ts-diabetes' },
         'luse':        { base: 'intygstyper/fk/luse', angularModule:'luse' },
-        'lisu':        { base: 'intygstyper/fk/lisu', angularModule:'lisu' },
+        'lisjp':       { base: 'intygstyper/fk/lisjp', angularModule:'lisjp' },
         'luae_na':     { base: 'intygstyper/fk/luae_na', angularModule:'luae_na' },
         'luae_fs':     { base: 'intygstyper/fk/luae_fs', angularModule:'luae_fs' }
     };
@@ -149,7 +149,7 @@ module.exports = function(grunt) {
             ci: {
                 configFile: 'karma.conf.ci.js',
                 client: {
-                    args: ['--skip-coverage=' + SKIP_COVERAGE]
+                    args: ['--run-coverage=' + RUN_COVERAGE]
                 },
                 coverageReporter: {
                     type : 'lcovonly',
@@ -194,7 +194,7 @@ module.exports = function(grunt) {
             //Watch for file changes in these scss-files that
             //we want to reprocess so that we are able to reload
             //them for the browser in dev mode,
-            'css': {
+            css: {
                 files: buildListForAllModules(function(module) {
                     return __dirname + module.src + '/**/*.scss';
                 }).concat([__dirname + CSS_COMMON_SRC_DIR + '/**/*.scss']),
@@ -388,10 +388,10 @@ module.exports = function(grunt) {
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
      * that webcert depends on*/
-    grunt.registerTask('default', ['jshint', 'bower', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist']);
-    grunt.registerTask('lint', ['jshint', 'csslint']);
-    grunt.registerTask('test', ['karma:ci']);
-    grunt.registerTask('test:watch', ['karma:watch']);
+    grunt.registerTask('default', [ 'bower', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist' ]);
+    grunt.registerTask('lint', [ 'jshint' ]);
+    grunt.registerTask('test', [ 'karma:ci' ]);
+    grunt.registerTask('test:watch', [ 'karma:watch' ]);
     // frontend only dev ===============================================================================================
     grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'generateModuleDeps', 'watch' ]);
 };

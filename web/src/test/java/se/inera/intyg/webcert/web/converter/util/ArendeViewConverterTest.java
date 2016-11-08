@@ -31,7 +31,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.intygstyper.fkparent.model.converter.RespConstants;
-import se.inera.intyg.intygstyper.lisu.model.internal.LisuUtlatande;
+import se.inera.intyg.intygstyper.lisjp.model.internal.LisjpUtlatande;
 import se.inera.intyg.intygstyper.luse.model.internal.LuseUtlatande;
 import se.inera.intyg.webcert.persistence.arende.model.*;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
@@ -97,7 +97,7 @@ public class ArendeViewConverterTest {
 
     @Test
     public void convertToJson() throws JsonGenerationException, JsonMappingException, IOException{
-        Arende arende = buildArende("lisu");
+        Arende arende = buildArende("lisjp");
         StringWriter jsonWriter = new StringWriter();
         CustomObjectMapper objectMapper = new CustomObjectMapper();
         objectMapper.writeValue(jsonWriter, arende);
@@ -105,12 +105,12 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertToArendeForLisu() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisuUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+    public void testConvertToArendeForLisjp() throws ModuleNotFoundException {
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
                 SKAPADAV_PERSON_ID,
                 LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
 
-        ArendeView result = converter.convert(buildArende("lisu"));
+        ArendeView result = converter.convert(buildArende("lisjp"));
 
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1,
                 result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -198,10 +198,10 @@ public class ArendeViewConverterTest {
         assertEquals(january, result.get(3).getSenasteHandelse());
     }
 
-    private LisuUtlatande buildLisuUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
+    private LisjpUtlatande buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
             String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
 
-        LisuUtlatande.Builder template = LisuUtlatande.builder();
+        LisjpUtlatande.Builder template = LisjpUtlatande.builder();
 
         template.setId(intygsId);
         GrundData grundData = buildGrundData(enhetsId, enhetsNamn, patientPersonId, skapadavPersonId, timeStamp);

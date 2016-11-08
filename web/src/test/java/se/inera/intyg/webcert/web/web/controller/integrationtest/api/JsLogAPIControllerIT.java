@@ -19,12 +19,20 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import org.junit.Test;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
 import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.http.ContentType.JSON;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.HEIGHT;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.SCREEN_RESOLUTION;
+
+import java.util.HashMap;
+
+import org.junit.Test;
+
+import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Created by marced on 01/12/15.
@@ -36,9 +44,29 @@ public class JsLogAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().contentType(ContentType.JSON).and().body("rest-api-integrationtest-message").
-                expect().statusCode(200).when().post("api/jslog/debug");
+        given().contentType(JSON).and().body("rest-api-integrationtest-message").expect().statusCode(200).when().post("api/jslog/debug");
     }
 
+    @Test
+    public void testPostMonitoringLogInvalidRequest() {
 
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        given().contentType(JSON).and().body(new MonitoringRequest()).expect().statusCode(400).when().post("api/jslog/monitoring");
+    }
+
+    @Test
+    public void testPostMonitoringLog() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        MonitoringRequest request = new MonitoringRequest();
+        request.setEvent(SCREEN_RESOLUTION);
+        HashMap<String, String> info = new HashMap<>();
+        info.put(HEIGHT, "1080");
+        info.put(WIDTH, "1920");
+        request.setInfo(info);
+
+        given().contentType(JSON).and().body(request).expect().statusCode(200).when().post("api/jslog/monitoring");
+    }
 }

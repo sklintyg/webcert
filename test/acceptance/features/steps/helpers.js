@@ -32,8 +32,10 @@ module.exports = {
             return testdata.fk['7263'].getRandom(id);
         } else if (typ === 'Läkarutlåtande för sjukersättning') {
             return testdata.fk.LUSE.getRandom(id);
-        } else if (typ === 'Läkarintyg för sjukpenning utökat') {
-            return testdata.fk.LISU.getRandom(id);
+        } else if (typ === 'Läkarintyg för sjukpenning') {
+            return testdata.fk.LISJP.getRandom(id);
+        } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+            return testdata.fk.LUAE_NA.getRandom(id);
         }
     },
     fetchMessageIds: function(intygtyp) {
@@ -107,7 +109,7 @@ module.exports = {
     },
     // whichSMIIntyg: function(intygsType) {
     //     var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
-    //     return (intygsType) ? (intygsType.match(regex) ? (intygsType === this.smiIntyg.LISU ? this.getSMIAbbrev(this.smiIntyg.LISU) : this.getSMIAbbrev(this.smiIntyg.LUSE)) : false) : false;
+    //     return (intygsType) ? (intygsType.match(regex) ? (intygsType === this.smiIntyg.LISJP ? this.getSMIAbbrev(this.smiIntyg.LISJP) : this.getSMIAbbrev(this.smiIntyg.LUSE)) : false) : false;
     // },
     getAbbrev: function(value) {
         for (var key in this.smiIntyg) {
@@ -118,8 +120,9 @@ module.exports = {
         return null;
     },
     smiIntyg: {
-        'LISU': 'Läkarintyg för sjukpenning utökat',
+        'LISJP': 'Läkarintyg för sjukpenning',
         'LUSE': 'Läkarutlåtande för sjukersättning',
+        'LUAE_NA': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
         'FK7263': 'Läkarintyg FK 7263'
     },
     isSMIIntyg: function(intygsType) {
@@ -167,9 +170,11 @@ module.exports = {
     randomPageField: function(isSMIIntyg, intygAbbrev) {
         var index = Math.floor(Math.random() * 3);
         if (isSMIIntyg) {
-            if (intygAbbrev === 'LISU') {
+            if (intygAbbrev === 'LISJP') {
                 return this.pageField[intygAbbrev][index];
             } else if (intygAbbrev === 'LUSE') {
+                return this.pageField[intygAbbrev][index];
+            } else if (intygAbbrev === 'LUAE_NA') {
                 return this.pageField[intygAbbrev][index];
             }
         } else {
@@ -177,8 +182,9 @@ module.exports = {
         }
     },
     pageField: {
-        'LISU': ['aktivitetsbegransning', 'sysselsattning', 'funktionsnedsattning'],
+        'LISJP': ['aktivitetsbegransning', 'sysselsattning', 'funktionsnedsattning'],
         'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
+        'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'FK7263': ['diagnoskod', 'arbetsförmåga', 'sjukskrivningsperiod']
     },
     getUserObj: function(userKey) {

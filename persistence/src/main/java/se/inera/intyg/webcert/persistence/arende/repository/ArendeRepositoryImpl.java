@@ -121,8 +121,7 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
                 break;
             case SVAR_FRAN_VARDEN:
                 Predicate careReplyAmnePred = builder.or(builder.equal(root.get("amne"), ArendeAmne.OVRIGT),
-                        builder.equal(root.get("amne"), ArendeAmne.ARBTID), builder.equal(root.get("amne"), ArendeAmne.AVSTMN),
-                        builder.equal(root.get("amne"), ArendeAmne.KONTKT));
+                        builder.equal(root.get("amne"), ArendeAmne.AVSTMN), builder.equal(root.get("amne"), ArendeAmne.KONTKT));
                 pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION), careReplyAmnePred);
                 break;
             case SVAR_FRAN_FK:

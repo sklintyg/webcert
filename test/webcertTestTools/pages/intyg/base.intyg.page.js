@@ -44,6 +44,7 @@ var BaseIntyg = JClass._extend({
             statusRevokeInprogress: element(by.id('certificate-revoked-it-message-text')),
             statusRevoked: element(by.id('certificate-is-revoked-message-text'))
         };
+        this.patientNamnOchPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.skicka = {
             knapp: element(by.id('sendBtn')),
             dialogKnapp: element(by.id('button1send-dialog')),
