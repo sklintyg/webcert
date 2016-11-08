@@ -107,7 +107,7 @@ module.exports = function() {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
             hsaId: 'TSTNMT2321000156-105H',
-            enhetId: 'TSTNMT2321000156-105F',
+            enhetId: 'TSTNMT2321000156-108F',
             origin: 'UTHOPP'
         };
         return logInAsUserRole(userObj, 'Läkare');

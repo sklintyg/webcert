@@ -17,10 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global Promise,logger*/
+/*global Promise*/
 'use strict';
 
+//var htmlToText = require('html-to-text');
 var Imap = require('imap');
+var MailParser = require('mailparser').MailParser;
+
+
 
 var imap = new Imap({
     user: 'intyg.test@gmail.com',
@@ -30,36 +34,85 @@ var imap = new Imap({
     tls: true
 });
 
+
 function openInbox(cb) {
     imap.openBox('INBOX', true, cb);
 }
 
+function parseMail(buffer) {
+    return new Promise(function(resolve, reject) {
+        var mailparser = new MailParser();
+        mailparser.on('end', function(mailObject) {
+            //console.log(mailObject);
+            resolve(mailObject.html);
+        });
+        mailparser.write(buffer);
+        mailparser.end();
+    });
+}
+
 module.exports = {
-    countRecentMailsWithSubjectAndBody: function(mailHeader, mailBody) {
+    readRecentMails: function() {
         return new Promise(function(resolve, reject) {
             imap.once('ready', function() {
                 openInbox(function(err, box) {
                     if (err) {
-                        reject(err);
+                        throw err;
                     }
-
+                    // var bufferCache = '';
                     var now = new Date();
                     var date5MinAgo = new Date(now.getTime() + 5 * 60000);
-                    imap.search(['UNSEEN', ['SINCE', date5MinAgo.toISOString()],
-                        ['HEADER', 'SUBJECT', mailHeader],
-                        ['BODY', mailBody]
-                    ], function(err, results) {
+                    var mailArray = [];
+                    imap.search(['UNSEEN', ['SINCE', date5MinAgo.toISOString()]],
+                        function(err, results) {
+                            if (err) {
+                                reject(err);
+                                console.log('you are already up to date');
+                            }
+                            var f = imap.fetch(results, {
+                                bodies: ''
+                            });
+                            f.on('message', function(msg, seqno) {
+                                console.log('Message #%d', seqno);
+                                var buffer = '';
+                                msg.on('body', function(stream, info) {
 
-                        if (err) {
-                            throw err;
+                                    //console.log(prefix + 'Body');
+
+                                    stream.on('data', function(chunk) {
+                                        buffer += chunk.toString('utf8');
+                                    });
+
+                                    stream.once('end', function() {
+                                        mailArray.push(buffer);
+                                    });
+                                });
+                                msg.once('attributes', function(attrs) {
+                                    //console.log(prefix + 'Attributes: %s', inspect(attrs, false, 8));
+                                });
+                                msg.once('end', function() {
+                                    //console.log(prefix + 'Finished');
+
+                                });
+                            });
+                            f.once('error', function(err) {
+                                console.log('Fetch error: ' + err);
+                                reject(err);
+
+                            });
+                            f.once('end', function() {
+                                console.log('Done fetching all messages!');
+                                var promiseArr = [];
+                                for (var i = 0; i < mailArray.length; i++) {
+                                    promiseArr.push(parseMail(mailArray[i]));
+                                }
+                                resolve(Promise.all(promiseArr));
+                            });
                         }
+                    );
 
-                        logger.info(results);
-                        resolve(results.length);
-                    });
                 });
             });
-
             imap.once('error', function(err) {
                 console.log('imap.once error');
                 reject(err);
@@ -72,8 +125,8 @@ module.exports = {
             });
 
             imap.connect();
+
         });
     }
-
 
 };

@@ -1,0 +1,32 @@
+Delivered-To: intyg.test@gmail.com
+Received: by 10.103.132.14 with SMTP id g14csp902443vsd;
+        Sun, 6 Nov 2016 23:05:10 -0800 (PST)
+X-Received: by 10.25.25.6 with SMTP id 6mr2520962lfz.54.1478502310549;
+        Sun, 06 Nov 2016 23:05:10 -0800 (PST)
+Return-Path: <noreply-webcert@nordicmedtest.se>
+Received: from mail.nordicmedtest.org ([87.238.57.180])
+        by mx.google.com with ESMTP id e9si15066539lji.62.2016.11.06.23.05.10
+        for <intyg.test@gmail.com>;
+        Sun, 06 Nov 2016 23:05:10 -0800 (PST)
+Received-SPF: neutral (google.com: 87.238.57.180 is neither permitted nor denied by best guess record for domain of noreply-webcert@nordicmedtest.se) client-ip=87.238.57.180;
+Authentication-Results: mx.google.com;
+       spf=neutral (google.com: 87.238.57.180 is neither permitted nor denied by best guess record for domain of noreply-webcert@nordicmedtest.se) smtp.mailfrom=noreply-webcert@nordicmedtest.se
+Received: from T-CentOS-7-0-64 (webcert.ip30.nordicmedtest.se [10.1.1.15])
+	by mail.nordicmedtest.org (Postfix) with ESMTP id 3450A10E
+	for <intyg.test@gmail.com>; Mon,  7 Nov 2016 08:05:10 +0100 (CET)
+Date: Mon, 7 Nov 2016 08:05:10 +0100 (CET)
+From: noreply-webcert@nordicmedtest.se
+To: intyg.test@gmail.com
+Message-ID: <2050055337.91478502310202.JavaMail.inera-tomcat@T-CentOS-7-0-64>
+Subject: =?UTF-8?Q?F=C3=B6rs=C3=A4kringskassan_har_st=C3=A4llt?=
+ =?UTF-8?Q?_en_fr=C3=A5ga_ang=C3=A5ende_ett_intyg?=
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<p>nmt_vg1_Rehab har f=C3=A5tt en fr=C3=A5ga fr=C3=A5n F=C3=B6rs=C3=A4kring=
+skassan ang=C3=A5ende ett intyg.<br><a href=3D"https://webcert.ip30.nordicm=
+edtest.sjunet.org/webcert/web/user/certificate/3160b800-1d95-a6a5-c109-95b6=
+4d4ffb22/questions?enhet=3DTSTNMT2321000156-105F">L=C3=A4s och besvara fr=
+=C3=A5gan i Webcert</a></p><p>OBS! S=C3=A4tt i ditt SITHS-kort innan du kli=
+ckar p=C3=A5 l=C3=A4nken.</p>

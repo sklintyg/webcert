@@ -17,14 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg*/
+/*global intyg, browser, user*/
 
 'use strict';
 var mail = require('./mail');
 
 module.exports = function() {
+
     this.Given(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
-        var mailLink = 'http://webcert.ip30.nordicmedtest.se/webcert/web/user/certificate/' + intyg.id + '/questions';
-        return mail.countRecentMailsWithSubjectAndBody(amne, mailLink).should.eventually.equal(1);
+        console.log('intygsid:' + intyg.id);
+        //var mailLink = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/' + intyg.id + '/questions?enhet';
+        var textToSearchFor = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/' + intyg.id + '/questions?enhet=' + user.enhetId;
+        //user.enhetId;
+        //var mailLink = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/d5d28ab6-9907-d12b-cc93-52b5400e70c5/questions?enhet=TSTNMT2321000156-105F';
+        //svar mailLink = 'nmt_vg1_Rehab har fått en fråga från Försäkringskassan angående ett intyg.';
+        console.log(textToSearchFor);
+        return browser.sleep(30000).then(function() {
+            return mail.readRecentMails()
+                .then(function(mailArr) {
+                    console.log(mailArr);
+                    return mailArr.join(',');
+                })
+                .should.eventually.contain(textToSearchFor);
+        });
+
     });
 };
