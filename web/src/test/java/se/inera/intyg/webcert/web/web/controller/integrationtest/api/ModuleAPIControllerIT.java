@@ -19,15 +19,17 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import com.jayway.restassured.RestAssured;
-import org.junit.Test;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
+
+import org.junit.Test;
+
+import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Simple test to verify that the modules-map api andpoint responds according to jsonSchema
@@ -46,5 +48,14 @@ public class ModuleAPIControllerIT extends BaseRestIntegrationTest {
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-module-map-response-schema.json")).
                 body("", hasSize(greaterThan(0))).
                 body("id", hasItems("fk7263", "ts-bas", "ts-diabetes"));
+    }
+
+    @Test
+    public void testGetActiveModules() {
+        given().expect().statusCode(200).when().get("api/modules/active").
+            then().
+            body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-module-map-response-schema.json")).
+            body("", hasSize(greaterThan(0))).
+            body("id", hasItems("fk7263", "ts-bas", "ts-diabetes"));
     }
 }

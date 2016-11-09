@@ -19,16 +19,19 @@
 
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import java.util.stream.Collectors;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 /**
  * Controller managing module wiring.
@@ -40,6 +43,9 @@ public class ModuleApiController extends AbstractApiController {
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
+    @Autowired
+    private WebcertFeatureService featureService;
+
     /**
      * Serving module configuration for Angular bootstrapping.
      *
@@ -50,5 +56,14 @@ public class ModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getModulesMap() {
         return Response.ok(moduleRegistry.listAllModules()).build();
+    }
+
+    @GET
+    @Path("/active")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getActiveModules() {
+        return Response.ok(moduleRegistry.listAllModules().stream()
+                .filter(i -> featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, i.getId()))
+                .collect(Collectors.toList())).build();
     }
 }

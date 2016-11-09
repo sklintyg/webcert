@@ -2,55 +2,10 @@
   <div class="row" id="about-webcert-intyg">
     <div class="col-md-12 webcert-col webcert-col-single">
       <div wc-about>
-        <h3 wc-authority feature="hanteraIntygsutkast" intygstyp="fk7263">
-          Läkarintyg FK 7263 </h3>
-        <p wc-authority feature="hanteraIntygsutkast" intygstyp="fk7263">
-          Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till sjukpenning. Av intyget
-          ska det framgå hur sjukdomen påverkar patientens arbetsförmåga och hur länge patienten behöver vara
-          sjukskriven.</p>
-        <h3 wc-authority feature="hanteraIntygsutkast" intygstyp="luse">Läkarutlåtande för sjukersättning</h3>
-        <p wc-authority feature="hanteraIntygsutkast" intygstyp="luse">
-          Vad är sjukersättning?
-          Sjukersättning är en ersättning för personer mellan 30 och 64 år som har nedsatt arbetsförmåga på grund av sjukdom,
-          skada eller funktionsnedsättning. Beroende på hur mycket arbetsförmågan är nedsatt kan man få en fjärdedels, halv,
-          tre fjärdedels eller hel sjukersättning. Man kan få sjukersättning om Försäkringskassan bedömer att arbetsförmågan
-          är nedsatt med minst 25 procent för all överskådlig framtid och att alla rehabiliteringsmöjligheter bedöms uttömda.</p>          
-        <h3 wc-authority feature="hanteraIntygsutkast" intygstyp="lisjp">Läkarintyg för sjukpenning</h3>
-        <p wc-authority feature="hanteraIntygsutkast" intygstyp="lisjp">
-          Vad är sjukpenning?
-          Sjukpenning är en ersättning för personer som arbetar i Sverige och har en nedsatt arbetsförmåga på grund av sjukdom.
-          Beroende på hur mycket arbetsförmågan är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukpenning.
-          Andra förmåner som detta läkarintyg används till;
-          Om du stänger av patienten enligt smittskyddslagen ska du även använda detta intyg.
-          Om din patient får ersättning aktivitetsstöd eller utvecklingsersättning för deltagande i arbetsmaknadspolitiskt program
-          ska du även använda detta intyg.</p>
-        <h3 wc-authority feature="hanteraIntygsutkast" intygstyp="luae_na">Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga</h3>
-        <p wc-authority feature="hanteraIntygsutkast" intygstyp="luae_na">
-          Vad är aktivitetsersättning vid nedsatt arbetsförmåga?
-          Aktivitetsersättning vid nedsatt arbetsförmåga är en tidsbegränsad ersättning för unga personer som har nedsatt
-          arbetsförmåga på grund av sjukdom, skada eller funktionsnedsättning.
-          Man kan få ersättningen från juli månad det år man fyller 19 år fram till och med månaden innan man fyller 30 år.
-          Beroende på hur mycket arbetsförmågan är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel
-          aktivitetsersättning</p>
-        <h3 wc-authority feature="hanteraIntygsutkast" intygstyp="luae_fs">Läkarutlåtande för aktivitetsersättning vid förlängd skolgång</h3>
-        <p wc-authority feature="hanteraIntygsutkast" intygstyp="luae_fs">
-          Vad är aktivitetsersättning vid förlängd skolgång?
-          Aktivitetsersättning vid förlängd skolgång är en ersättning för unga personer, som på grund av funktionsnedsättning
-          måste förlänga sin skolgång för att slutföra grundskola eller gymnasium. Det är möjligt att ansöka om ersättning
-          även om studietiden är kortare än ett år. Man kan få ersättningen från juli månad det år man fyller 19 år fram till
-          och med månaden innan man fyller 30 år. Ersättningen betalas alltid ut som hel ersättning, även om studierna till
-          följd av funktionsnedsättningen måste bedrivas på deltid.</p>
-        <h3 wc-authority feature="hanteraIntygsutkast" intygstyp="ts-bas">Transportstyrelsens läkarintyg</h3>
-        <p wc-authority feature="hanteraIntygsutkast" intygstyp="ts-bas">
-          Transportstyrelsens läkarintyg ska användas vid förlängd giltighet av högre körkortsbehörighet från 45 år,
-          ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation.
-          Transportstyrelsens läkarintyg kan även användas när Transportstyrelsen i annat fall begärt
-          ett allmänt läkarintyg avseende lämplighet att inneha körkort.</p>
-        <h3 wc-authority feature="hanteraIntygsutkast" intygstyp="ts-diabetes">Transportstyrelsens läkarintyg, diabetes</h3>
-        <p wc-authority feature="hanteraIntygsutkast" intygstyp="ts-diabetes">
-          Transportstyrelsens läkarintyg, diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens
-          specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125)
-          och allmänna råd om medicinska krav för innehav av körkort m.m.</p>
+        <div ng-repeat="type in intygTypes" wc-authority feature="hanteraIntygsutkast" intygstyp="{{type.id}}">
+          <h3>{{type.label}}</h3>
+          <div ng-bind-html="getDetailedDescription(type.id)"></div>
+        </div>
       </div>
     </div>
   </div>
