@@ -23,18 +23,37 @@ var testdataHelper = require('./../helpers/testdataHelper.js');
 var shuffle = testdataHelper.shuffle;
 var fkValues = require('./testvalues.js').fk;
 
+var today = testdataHelper.dateFormat(new Date());
+
 module.exports = {
     getRandom: function(intygsID) {
         return {
-            intygId: intygsID,
-            typ: 'Läkarintyg för aktivitetsersättning förlängd skolgång',
+            id: intygsID,
+            typ: 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+
+            baseratPa: {
+                minUndersokningAvPatienten: today,
+                journaluppgifter: today,
+                anhorigsBeskrivning: today,
+                annat: today,
+                annatBeskrivning: testdataHelper.randomTextString(),
+                personligKannedom: today
+            },
+            andraMedicinskaUtredningar: fkValues.getRandomMedicinskaUtredningar(),
 
             diagnos: {
-                kod: shuffle(fkValues.ICD10)[0],
-                bakgrund: testdataHelper.randomTextString()
+                diagnoser: [{
+                    kod: shuffle(fkValues.ICD10)[0],
+                    bakgrund: testdataHelper.randomTextString()
+                }],
             },
-            funktionsnedsattningDebut: testdataHelper.randomTextString(),
-            funktionsnedsattningPaverkan: testdataHelper.randomTextString()
+            funktionsnedsattning: {
+                //funktionsnedsattningar
+                funktionsnedsattningDebut: testdataHelper.randomTextString(),
+                funktionsnedsattningPaverkan: testdataHelper.randomTextString()
+            },
+            ovrigt: testdataHelper.randomTextString(),
+            kontaktMedFk: testdataHelper.randomTrueFalse(),
         };
     }
 };

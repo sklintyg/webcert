@@ -36,6 +36,8 @@ module.exports = {
             return testdata.fk.LISJP.getRandom(id);
         } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
             return testdata.fk.LUAE_NA.getRandom(id);
+        } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+            return testdata.fk.LUAE_FS.getRandom(id);
         }
     },
     fetchMessageIds: function(intygtyp) {

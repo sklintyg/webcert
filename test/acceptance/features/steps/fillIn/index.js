@@ -38,6 +38,8 @@ module.exports = {
                     return require('./fk.LISJP.js').fillIn(intyg);
                 case 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga':
                     return require('./fk.LUAE_NA.js').fillIn(intyg);
+                case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
+                    return require('./fk.LUAE_FS.js').fillIn(intyg);
                 default:
                     throw 'Intyg.typ odefinierad.';
             }
