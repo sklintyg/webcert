@@ -138,12 +138,6 @@ module.exports = {
             throw ('FEL, fillInBedomning,' + reason);
         }));
 
-        promiseArr.push(tsBasUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
-            logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
-        }, function(reason) {
-            throw ('FEL, angeEnhetAdress,' + reason);
-        }));
-
         return Promise.all(promiseArr)
             .then(function(value) {
                 browser.ignoreSynchronization = false;

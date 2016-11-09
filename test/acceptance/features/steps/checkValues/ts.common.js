@@ -30,16 +30,6 @@ function checkPatientadress(adressObj) {
         expect(tsBasIntygPage.patientAdress.postort.getText()).to.eventually.contain(adressObj.postort)
     ]);
 }
-
-function checkEnhetAdress(adressObj) {
-    return Promise.all([
-        expect(tsBasIntygPage.enhetsAdress.postAdress.getText()).to.eventually.contain(adressObj.postadress),
-        expect(tsBasIntygPage.enhetsAdress.postNummer.getText()).to.eventually.contain(adressObj.postnummer),
-        expect(tsBasIntygPage.enhetsAdress.postOrt.getText()).to.eventually.contain(adressObj.postort),
-        expect(tsBasIntygPage.enhetsAdress.enhetsTelefon.getText()).to.eventually.contain(adressObj.telefon)
-    ]);
-}
-
 module.exports = {
     checkValues: function(intyg) {
         logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
@@ -58,13 +48,6 @@ module.exports = {
         }, function(reason) {
             throw ('FEL - checkPatientadress: ' + reason);
         }));
-
-        promiseArr.push(checkEnhetAdress(global.user.enhetsAdress).then(function(value) {
-            logger.info('OK - checkEnhetAdress = ' + value);
-        }, function(reason) {
-            throw ('FEL - checkEnhetAdress: ' + reason);
-        }));
-
 
         promiseArr.push(expect(tsBasIntygPage.intygetAvser.getText()).to.eventually.contain(selectedTypes).then(function(value) {
             logger.info('OK - Körkortstyper = ' + value);

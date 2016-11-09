@@ -32,6 +32,12 @@ var FkBaseIntyg = BaseIntyg._extend({
         init._super.call(this);
 
         this.at = element(by.id('viewCertAndQA'));
+        this.enhetsAdress = {
+            postAdress: element(by.id('vardperson_postadress')),
+            postNummer: element(by.id('vardperson_postnummer')),
+            postOrt: element(by.id('vardperson_postort')),
+            enhetsTelefon: element(by.id('vardperson_telefonnummer'))
+        };
 
     },
 

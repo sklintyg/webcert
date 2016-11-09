@@ -39,7 +39,7 @@ var BaseUtkast = JClass._extend({
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
         this.patientNamnPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande'));
-        this.enhetsAdress = {
+        this.enhetensAdress = {
             postAdress: element(by.id('clinicInfoPostalAddress')),
             postNummer: element(by.id('clinicInfoPostalCode')),
             postOrt: element(by.id('clinicInfoPostalCity')),
@@ -90,10 +90,10 @@ var BaseUtkast = JClass._extend({
     },
     angeEnhetAdress: function(adressObj) {
         return Promise.all([
-            this.enhetsAdress.postAdress.clear().sendKeys(adressObj.postadress),
-            this.enhetsAdress.postNummer.clear().sendKeys(adressObj.postnummer),
-            this.enhetsAdress.postOrt.clear().sendKeys(adressObj.postort),
-            this.enhetsAdress.enhetsTelefon.clear().sendKeys(adressObj.telefon)
+            this.enhetensAdress.postAdress.clear().sendKeys(adressObj.postadress),
+            this.enhetensAdress.postNummer.clear().sendKeys(adressObj.postnummer),
+            this.enhetensAdress.postOrt.clear().sendKeys(adressObj.postort),
+            this.enhetensAdress.enhetsTelefon.clear().sendKeys(adressObj.telefon)
         ]);
 
 

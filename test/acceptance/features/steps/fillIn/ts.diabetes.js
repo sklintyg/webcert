@@ -81,12 +81,6 @@ module.exports = {
                 logger.info('OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
             }, function(reason) {
                 throw ('FEL, fillInBedomning,' + reason);
-            }),
-
-            tsdUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
-                logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
-            }, function(reason) {
-                throw ('FEL, angeEnhetAdress,' + reason);
             })
         ]);
     }

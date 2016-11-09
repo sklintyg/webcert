@@ -213,6 +213,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         this.ovrigt = element(by.id('ovrigt'));
         this.kontaktMedFK = element(by.id('form_kontaktMedFk')).element(by.css('input'));
         this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
+
         //enhetsadress lika för alla SMI-intyg
         this.enhetensAdress = {
             postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
@@ -363,7 +364,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var mb = this.medicinskBehandling;
         return Promise.all([
             checkAndSendTextToForm(mb.avslutad.checkbox, mb.avslutad.text, behandling.avslutad),
-            checkAndSendTextToForm(mb.pagaende.checkbox ,mb.pagaende.text, behandling.pagaende),
+            checkAndSendTextToForm(mb.pagaende.checkbox, mb.pagaende.text, behandling.pagaende),
             checkAndSendTextToForm(mb.planerad.checkbox, mb.planerad.text, behandling.planerad),
             checkAndSendTextToForm(mb.substansintag.checkbox, mb.substansintag.text, behandling.substansintag)
         ]);
