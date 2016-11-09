@@ -39,6 +39,24 @@ subprojects {
             destinationFile = file("$buildDir/jacoco/test.exec")
         }
     }
+
+    apply plugin: 'com.github.hierynomus.license'
+
+    license {
+        ext.project_name = "sklintyg"
+        ext.project_url = "https://github.com/sklintyg"
+        ext.year = Calendar.getInstance().get(Calendar.YEAR)
+        strictCheck true
+        header file("${buildDir}/build-tools/license/header.txt")
+        mapping("java","SLASHSTAR_STYLE")
+        include "**/*.java"
+    }
+
+    licenseFormatMain.dependsOn unzipBuildTools
+    licenseFormatTest.dependsOn unzipBuildTools
+
+    licenseMain.onlyIf { project.hasProperty('codeQuality') }
+    licenseTest.onlyIf { project.hasProperty('codeQuality') }
 }
 
 apply plugin: "org.sonarqube"
