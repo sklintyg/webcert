@@ -12,7 +12,7 @@
     "build-server": {
         "WEBCERT_URL": "https://webcert.inera.nordicmedtest.se/",
         "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se",
-        "INTYGTJANST_URL": "https://webcert.inera.nordicmedtest.se:18008/inera-certificate"
+        "INTYGTJANST_URL": "https://webcert.inera.nordicmedtest.se/inera-certificate"
     },
     "qa": {
         "WEBCERT_URL": "https://verifiering.webcert.intygstjanster.se/"
