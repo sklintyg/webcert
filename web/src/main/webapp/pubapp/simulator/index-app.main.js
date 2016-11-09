@@ -70,6 +70,30 @@ var DEFAULT_QUESTION = {
     sistaDatumForSvar: ''
 };
 
+var LEGACY_QUESTION = {
+    amne: '',
+    externReferens: '',
+    frageText: '',
+    rubrik: '',
+    kompletteringar : [
+        {
+            falt : "Fält 8b",
+            text : "Vänligen ändra 'längst till och med (år, månad, dag)' till den 23e december."
+        }
+    ],
+    signeringsTidpunkt: '',
+    avsantTidpunkt: '',
+    intygsId: '',
+    patientId: '',
+    patientNamn: '',
+    hsaId: '',
+    hsaNamn: '',
+    enhetsnamn: '',
+    enhetsId: '',
+    vardgivarnamn: '',
+    vardgivarId: ''
+};
+
 angular.module('rhsIndexApp')
     .controller('IndexController', ['$scope', '$http', function($scope, $http) {
         'use strict';
@@ -85,6 +109,12 @@ angular.module('rhsIndexApp')
                     url: '/testability/arendetest/enhet/' + $scope.selectedEnhet
                 }).then(function successCallback(response) {
                     $scope.raderingsResultat = response.data;
+                });
+
+                // Remove legacy questions as well.
+                $http({
+                    method: 'DELETE',
+                    url: '/testability/questions/enhet/' + $scope.selectedEnhet
                 });
             }
         };
@@ -103,6 +133,15 @@ angular.module('rhsIndexApp')
                 instans: ''
             };
 
+            $scope.q.kompletteringar.push(kompl);
+        };
+
+        $scope.addLegacy = function() {
+            var kompl = {
+                    text: 'Detta är kompletteringstexten...',
+                    frageId: '1'
+            };
+            
             $scope.q.kompletteringar.push(kompl);
         };
 
@@ -126,27 +165,52 @@ angular.module('rhsIndexApp')
         };
 
         $scope.openForm = function(intyg) {
-            $http({
-                method: 'GET',
-                url: '/testability/intyg/questions/' + intyg.intygsTyp
-            }).then(function successCallback(response) {
-                $scope.questions = response.data;
-            });
+            $scope.formToDisplay = '';
 
-            $http({
-                method: 'GET',
-                url: '/testability/arendetest/intyg/' + intyg.intygsId
-            }).then(function successCallback(response) {
-                $scope.pendingActionQuestions = response.data;
-            });
+            if (intyg.intygsTyp === 'fk7263') {
+                $scope.formToDisplay = 'fragaSvar';
+                $scope.q = LEGACY_QUESTION;
 
-            $scope.q.meddelandeId = guid();
-            $scope.q.intygsId = intyg.intygsId;
-            $scope.q.patientPersonId = intyg.patientPersonnummer.replace('-', '');
-            $scope.q.enhetsId = intyg.enhetsId;
-            $scope.q.svarPa = {};
+                $scope.q.signeringsTidpunkt = intyg.signatur.signeringsDatum;
+                $scope.q.avsantTidpunkt = moment().format('YYYY-MM-DDTHH:mm:ss');
+                $scope.q.externReferens = guid();
+                $scope.q.intygsId = intyg.intygsId;
+                $scope.q.patientId = intyg.patientPersonnummer;
+                $scope.q.patientNamn = intyg.patientEfternamn;
+                $scope.q.hsaId = intyg.skapadAv.hsaId;
+                $scope.q.hsaNamn = intyg.skapadAv.namn;
+                $scope.q.enhetsnamn = intyg.enhetsNamn;
+                $scope.q.enhetsId = intyg.enhetsId;
+                $scope.q.vardgivarId = intyg.vardgivarId;
+                $scope.q.vardgivarnamn = intyg.vardgivarNamn;
 
-            $scope.resultat = '';
+            } else if (intyg.intygsTyp === 'ts-bas' || intyg.intygsTyp === 'ts-diabetes') {
+                $scope.formToDisplay = undefined;
+            } 
+            else {
+                $scope.formToDisplay = 'arende';
+                $http({
+                    method: 'GET',
+                    url: '/testability/intyg/questions/' + intyg.intygsTyp
+                }).then(function successCallback(response) {
+                    $scope.questions = response.data;
+                });
+
+                $http({
+                    method: 'GET',
+                    url: '/testability/arendetest/intyg/' + intyg.intygsId
+                }).then(function successCallback(response) {
+                    $scope.pendingActionQuestions = response.data;
+                });
+
+                $scope.q.meddelandeId = guid();
+                $scope.q.intygsId = intyg.intygsId;
+                $scope.q.patientPersonId = intyg.patientPersonnummer.replace('-', '');
+                $scope.q.enhetsId = intyg.enhetsId;
+                $scope.q.svarPa = {};
+
+                $scope.resultat = '';
+            }
         };
 
         $scope.typeClicked = function() {
@@ -244,6 +308,84 @@ angular.module('rhsIndexApp')
             $http({
                 method: 'POST',
                 url: '/services/send-message-to-care/v1.0',
+                data: msg
+            }).then(function successCallback(response) {
+
+                if (response.status === 200) {
+                    var startIdx = response.data.indexOf('result>');
+                    var endIdx = response.data.substring(startIdx+7, response.data.length).indexOf('result>');
+                    $scope.resultat = response.data.substring(startIdx+7, startIdx+7 + endIdx-2);
+                    $scope.q.meddelandeId = guid();
+                } else {
+                    $scope.resultat = '"Servern svarade med HTTP ' + response.status + ' ' + response.statusText + '. Det betyder att någonting gick fel.';
+                }
+
+            });
+        };
+
+        $scope.sendLegacyQuestion = function(q) {
+
+            var kompletteringsMarkup = '';
+            if (q.amne === 'Komplettering_av_lakarintyg') {
+                for(var a = 0; a < q.kompletteringar.length; a++) {
+                    var kpl = q.kompletteringar[a];
+                    kompletteringsMarkup += 
+                        '<urn:fkKomplettering> \
+                            <urn1:falt>' + kpl.falt + '</urn1:falt> \
+                            <urn1:text>' + kpl.text + '</urn1:text> \
+                        </urn:fkKomplettering>';
+                }
+            };
+            var msg =
+                '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">\
+            <soapenv:Header>\
+               <add:To>FK12323234</add:To>\
+            </soapenv:Header>\
+            <soapenv:Body>\
+               <urn:ReceiveMedicalCertificateQuestion>\
+                  <urn:Question>\
+                     <urn:fkReferens-id>' + q.externReferens + '</urn:fkReferens-id>\
+                     <urn:amne>' + q.amne + '</urn:amne>\
+                     <urn:fraga>\
+                        <urn1:meddelandeText>' + q.frageText +'</urn1:meddelandeText>\
+                        <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>\
+                     </urn:fraga>\
+                      <urn:avsantTidpunkt>'+ q.avsantTidpunkt +'</urn:avsantTidpunkt>\
+                     <urn:fkKontaktInfo>\
+                        <urn1:kontakt>Kontaktperson på FK</urn1:kontakt>\
+                     </urn:fkKontaktInfo>\
+                     <urn:adressVard>\
+                        <urn1:hosPersonal>\
+                           <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="' + q.hsaID + '"/>\
+                           <urn2:fullstandigtNamn>' + q.hsaNamn + '</urn2:fullstandigtNamn>\
+                           <urn2:enhet>\
+                              <urn2:enhets-id root="1.2.752.129.2.1.4.1" extension="' + q.enhetsId + '"/>\
+                              <urn2:enhetsnamn>' + q.enhetsnamn +'</urn2:enhetsnamn>\
+                              <urn2:vardgivare>\
+                                 <urn2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="' + q.vardgivarId + '"/>\
+                                 <urn2:vardgivarnamn>'+ q.vardgivarnamn +'</urn2:vardgivarnamn>\
+                              </urn2:vardgivare>\
+                           </urn2:enhet>\
+                        </urn1:hosPersonal>\
+                     </urn:adressVard>\
+                     <urn:fkMeddelanderubrik>' + q.rubrik + '</urn:fkMeddelanderubrik>\
+                     ' + kompletteringsMarkup + '\
+                     <urn:lakarutlatande>\
+                        <urn1:lakarutlatande-id>' + q.intygsId + '</urn1:lakarutlatande-id>\
+                        <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>\
+                        <urn1:patient>\
+                           <urn2:person-id root="1.2.752.129.2.1.3.1" extension="' + q.patientId + '"/>\
+                           <urn2:fullstandigtNamn>' + q.patientNamn + '</urn2:fullstandigtNamn>' + 
+                        '</urn1:patient>\
+                     </urn:lakarutlatande>\
+                 </urn:Question>\
+               </urn:ReceiveMedicalCertificateQuestion>\
+            </soapenv:Body>\
+         </soapenv:Envelope>';
+
+            $http({
+                method: 'POST',
+                url: '/services/receive-question/v1.0',
                 data: msg
             }).then(function successCallback(response) {
 
