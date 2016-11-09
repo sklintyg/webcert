@@ -28,7 +28,10 @@ var helpers = require('./helpers.js');
 module.exports = function() {
     this.Given(/^jag signerar intyget$/, function() {
         return browser.sleep(2000).then(function() { // fix för nåt med animering?
-            return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+            return expect(fkUtkastPage.sparatOchKomplettMeddelande.isDisplayed()).to.eventually.equal(true)
+                .then(function() {
+                    return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+                });
         });
     });
 

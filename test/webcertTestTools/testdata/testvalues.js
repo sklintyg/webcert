@@ -22,24 +22,44 @@ var shuffle = require('./../helpers/testdataHelper.js').shuffle;
 module.exports = {
     ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js'),
-    patienter: [
-        '19000119-9801',
-        '19000717-9815',
-        '19000128-9818'
-    ],
+    patienter: [{
+        id: '19000119-9801',
+        adress: {
+            postadress: 'Västra storgatan 10',
+            postort: 'Karlstad',
+            postnummer: '66130'
+
+        }
+    }, {
+        id: '19000717-9815',
+        adress: {
+            postadress: 'Östra storgatan 20',
+            postort: 'Lönneberga',
+            postnummer: '90027'
+
+        }
+    }, {
+        id: '19000128-9818',
+        adress: {
+            postadress: 'Norra storgatan 30',
+            postort: 'Katthult',
+            postnummer: '10000'
+
+        }
+    }],
     patienterMedSamordningsnummer: [{
-        nummer: '19440178-6530',
+        id: '19440178-6530',
         namn: '',
         efternamn: ''
     }],
     patienterMedSamordningsnummerEjPU: [{
-        nummer: '20081063-2398 ',
+        id: '20081063-2398 ',
         namn: '',
         efternamn: ''
     }],
 
     patienterMedSekretessmarkering: [{
-        nummer: '19420119-9124',
+        id: '19420119-9124',
         namn: '',
         efternamn: ''
     }],

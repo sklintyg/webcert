@@ -78,6 +78,21 @@ var BaseIntyg = JClass._extend({
         this.statusNameChanged = element(by.id('intyg-djupintegration-name-changed'));
         this.statusAddressChanged = element(by.id('intyg-djupintegration-address-changed'));
         this.statusNameAndAddressChanged = element(by.id('intyg-djupintegration-name-and-address-changed'));
+
+        this.patientAdress = {
+            postadress: element(by.id('patientpostadress')),
+            postnummer: element(by.id('patientpostnummer')),
+            postort: element(by.id('patientpostort'))
+        };
+
+        this.enhetsAdress = {
+            postAdress: element(by.id('vardenhet_postadress')),
+            postNummer: element(by.id('vardenhet_postnummer')),
+            postOrt: element(by.id('vardenhet_postort')),
+            enhetsTelefon: element(by.id('vardenhet_telefonnummer'))
+        };
+
+
     },
     get: function(intygId) {
         browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, pages, JSON, browser, Promise */
+/* globals logger, pages, JSON, browser, Promise,person */
 
 
 var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
@@ -28,6 +28,13 @@ module.exports = {
         'use strict';
 
         return Promise.all([
+
+            tsdUtkastPage.fillInPatientAdress(person.adress).then(function() {
+                logger.info('OK - fillInPatientAdress :' + JSON.stringify(person.adress));
+            }, function(reason) {
+                throw ('FEL, fillInPatientAdress,' + reason);
+            }),
+
             //Ange körkortstyper
             tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper).then(function() {
                 logger.info('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
@@ -53,11 +60,6 @@ module.exports = {
                 browser.ignoreSynchronization = true;
             },
 
-            //Ange postadress osv
-            browser.element(by.id('patientPostadress')).sendKeys('Postadress 1'),
-            browser.element(by.id('patientPostnummer')).sendKeys('66130'),
-            browser.element(by.id('patientPostort')).sendKeys('postort'),
-
             //Ange allmänt
             tsdUtkastPage.fillInAllmant(intyg.allmant).then(function() {
                 logger.info('OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
@@ -79,6 +81,12 @@ module.exports = {
                 logger.info('OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
             }, function(reason) {
                 throw ('FEL, fillInBedomning,' + reason);
+            }),
+
+            tsdUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
+                logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
+            }, function(reason) {
+                throw ('FEL, angeEnhetAdress,' + reason);
             })
         ]);
     }

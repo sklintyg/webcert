@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, pages, browser, JSON, Promise */
+/* globals logger, pages, browser, JSON, Promise,person */
 
 
 var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
@@ -55,12 +55,13 @@ module.exports = {
             throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
         }));
 
-        browser.ignoreSynchronization = true;
+        promiseArr.push(tsBasUtkastPage.fillInPatientAdress(person.adress).then(function() {
+            logger.info('OK - fillInPatientAdress :' + JSON.stringify(person.adress));
+        }, function(reason) {
+            throw ('FEL, fillInPatientAdress,' + reason);
+        }));
 
-        //Ange postadress osv
-        promiseArr.push(browser.element(by.id('patientPostadress')).sendKeys('Postadress 1'));
-        promiseArr.push(browser.element(by.id('patientPostnummer')).sendKeys('66130'));
-        promiseArr.push(browser.element(by.id('patientPostort')).sendKeys('postort'));
+        browser.ignoreSynchronization = true;
 
         // Synfunktioner
         promiseArr.push(tsBasUtkastPage.fillInSynfunktioner(intyg).then(function() {
@@ -135,6 +136,12 @@ module.exports = {
             logger.info('OK - fillInBedomning');
         }, function(reason) {
             throw ('FEL, fillInBedomning,' + reason);
+        }));
+
+        promiseArr.push(tsBasUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
+            logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
+        }, function(reason) {
+            throw ('FEL, angeEnhetAdress,' + reason);
         }));
 
         return Promise.all(promiseArr)

@@ -36,25 +36,25 @@ var helpers = require('../helpers.js');
 
 // webcertBase.flikarsokSkrivIntyg
 
-function gotoPatient(pnr) { //förutsätter  att personen finns i PU-tjänsten
-    person.id = pnr;
+function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänsten
+    global.person = patient;
 
     if (global.user.origin !== 'DJUPINTEGRATION') {
         element(by.id('menu-skrivintyg')).click();
         browser.sleep(1000);
     }
-    sokSkrivIntygPage.selectPersonnummer(pnr);
-    logger.info('Går in på patient ' + pnr);
+    sokSkrivIntygPage.selectPersonnummer(person.id);
+    logger.info('Går in på patient ' + person.id);
     //Patientuppgifter visas
     var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
-    return expect(patientUppgifter.getText()).to.eventually.contain(pnr);
+    return expect(patientUppgifter.getText()).to.eventually.contain(person.id);
 }
 
-function gotoPerson(pnr, callback) { //förutsätter inte att personen finns i PU-tjänsten
-    person.id = pnr;
+function gotoPerson(patient, callback) { //förutsätter inte att personen finns i PU-tjänsten
+    global.person = patient;
 
-    sokSkrivIntygPage.selectPersonnummer(pnr);
-    logger.info('Går in på patient ' + pnr);
+    sokSkrivIntygPage.selectPersonnummer(person.id);
+    logger.info('Går in på patient ' + person.id);
     callback();
 }
 
@@ -72,13 +72,13 @@ module.exports = function() {
     });
 
     this.Given(/^jag matar in personnummer som inte finns i PUtjänsten$/, function(callback) {
-        return gotoPerson(testdata.values.patienterMedSamordningsnummerEjPU[0].nummer, callback); //personnummret finns inte med i PU-tjänsten
+        return gotoPerson(testdata.values.patienterMedSamordningsnummerEjPU[0], callback); //personnummret finns inte med i PU-tjänsten
     });
 
 
     this.Given(/^jag går in på en patient med sekretessmarkering$/, function() {
         var patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
-        return gotoPatient(patient.nummer);
+        return gotoPatient(patient);
     });
 
     this.Given(/^jag går in på en patient$/, function() {

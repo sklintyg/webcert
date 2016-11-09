@@ -18,7 +18,6 @@ Scenario: Informera om patienten har bytt namn
     Och jag signerar intyget
     Så ska intyget visa det nya namnet
 
-
 @adressbyte @nyttIntyg
 Scenario: Informera om patienten har bytt adress och använd address på nya intyg
 	När att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning"
@@ -54,7 +53,6 @@ Scenario: Informera om patienten har fått ett nytt personnummer och använd nyt
     Och jag signerar intyget
     Så ska intyget visa det nya personnummret
 
-
 @reservnummer
 Scenario: Informera om patienten har fått ett reservnummer
 	När att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning" med samordningsnummer
@@ -62,4 +60,4 @@ Scenario: Informera om patienten har fått ett reservnummer
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer
-    Så ska ett varning-meddelande visa "Patienten har ett samordningsnummer kopllat till ett reservnummer"
+    Så ska ett varning-meddelande visa "Patienten har samordningsnummer kopplat till reservnummer"
