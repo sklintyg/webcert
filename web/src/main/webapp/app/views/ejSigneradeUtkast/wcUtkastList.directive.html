@@ -30,9 +30,7 @@
              ng-change="onNotifyChange(intyg)" />
       <span ng-if="intyg.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
     </td>
-    <td class="unbreakable"><span message
-                                  key="intygtypes.{{intyg.intygType}}.typename"></span>
-    </td>
+    <td class="unbreakable">{{getTypeName(intyg.intygType)}}</td>
     <td><span message key="intyg.status.{{intyg.status}}"></span></td>
     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'shortDate'}}</td>
     <td class="unbreakable">{{intyg.patientId}}</td>

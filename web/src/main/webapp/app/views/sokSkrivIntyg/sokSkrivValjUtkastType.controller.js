@@ -144,6 +144,16 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 }
             };
 
+            //Use loaded module metadata to look up name for a intygsType
+            $scope.getTypeName = function(intygsType) {
+                var intygTypes = IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
+                    return (intygType.id === intygsType);
+                });
+                if (intygTypes && intygTypes.length > 0) {
+                    return intygTypes[0].label;
+                }
+            };
+
             $scope.createDraft = function() {
 
                 var createDraftRequestPayload = {

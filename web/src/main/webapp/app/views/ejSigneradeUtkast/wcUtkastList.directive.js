@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').directive('wcUtkastList',
-    [ '$state', 'common.UtkastNotifyService',
-        function($state, utkastNotifyService) {
+    [ '$state', 'common.UtkastNotifyService', 'webcert.UtkastProxy',
+        function($state, utkastNotifyService, UtkastProxy) {
             'use strict';
 
             return {
@@ -30,6 +30,16 @@ angular.module('webcert').directive('wcUtkastList',
                 },
                 templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList.directive.html',
                 controller: function($scope) {
+
+                    $scope.getTypeName = function(intygsType) {
+                        var name;
+                        UtkastProxy.getUtkastType(intygsType, function(intygType) {
+                            if (intygType) {
+                                name = intygType.label;
+                            }
+                        });
+                        return name;
+                    };
 
                     $scope.openIntyg = function(intyg) {
                         $state.go(intyg.intygType + '-edit', {

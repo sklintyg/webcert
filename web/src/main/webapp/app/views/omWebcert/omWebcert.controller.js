@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').controller('webcert.AboutWebcertCtrl',
-    ['$rootScope', '$scope', '$log', '$http', 'common.fragaSvarCommonService',
-        function($rootScope, $scope, $log, $http, fragaSvarCommonService) {
+    ['$rootScope', '$scope', '$log', 'common.fragaSvarCommonService', 'webcert.UtkastProxy',
+        function($rootScope, $scope, $log, fragaSvarCommonService, UtkastProxy) {
             'use strict';
 
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
@@ -28,22 +28,21 @@ angular.module('webcert').controller('webcert.AboutWebcertCtrl',
             $scope.$on('$destroy', unbindLocationChange);
 
             function loadIntygTypes() {
-                if (!$scope.intygTypes || $scope.intygTypes.length < 1) {
-                    $scope.intygTypes = [];
-                    $http.get('/api/modules/map').success(function(data) {
-                        $scope.intygTypes = data;
-                    });
-                }
+                $scope.intygTypes = [];
+                UtkastProxy.getUtkastTypesCachedUnfiltered(function(types) {
+                    $scope.intygTypes = types;
+                });
             }
             loadIntygTypes();
 
             $scope.getDetailedDescription = function(intygsType) {
-                var intygTypes = $scope.intygTypes.filter(function(intygType) {
-                    return (intygType.id === intygsType);
+                var desc;
+                UtkastProxy.getUtkastType(intygsType, function(intygType) {
+                    if (intygType) {
+                        desc = intygType.detailedDescription;
+                    }
                 });
-                if (intygTypes && intygTypes.length > 0) {
-                    return intygTypes[0].detailedDescription;
-                }
+                return desc;
             };
         }]
 );

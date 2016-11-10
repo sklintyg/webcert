@@ -25,6 +25,8 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             authorityService, featureService, messageService, statService, UserModel) {
             'use strict';
 
+            var cachedIntygTypes = null;
+
             /**
              * createUtkast
              * @param createDraftRequestPayload
@@ -43,6 +45,28 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                     $log.error('error ' + status);
                     onError(data);
                 });
+            }
+
+            /**
+             * Load list of all certificates types
+             */
+            function _getUtkastTypesCachedUnfiltered(onSuccess, onError) {
+                if (cachedIntygTypes !== null) {
+                    $log.debug('returning cached response');
+                    onSuccess(cachedIntygTypes);
+                } else {
+                    var restPath = '/api/modules/map';
+                    $http.get(restPath).success(function(data) {
+                        $log.debug('got data:', data);
+                        cachedIntygTypes = data;
+                        onSuccess(data);
+                    }).error(function(data, status) {
+                        $log.error('error ' + status);
+                        if (onError) {
+                            onError();
+                        }
+                    });
+                }
             }
 
             /**
@@ -80,11 +104,11 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             }
 
             /**
-             * Get intyg type data
+             * Get intyg type data cached
              */
             function _getUtkastType(intygType, onSuccess) {
 
-                _getUtkastTypes(function(types) {
+                _getUtkastTypesCachedUnfiltered(function(types) {
 
                     var intygTypeMeta = {};
                     for (var i = 0; i < types.length; i++) {
@@ -146,6 +170,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             // Return public API for the service
             return {
                 createUtkast: _createUtkast,
+                getUtkastTypesCachedUnfiltered: _getUtkastTypesCachedUnfiltered,
                 getUtkastTypes: _getUtkastTypes,
                 getUtkastType: _getUtkastType,
                 getUtkastList: _getUtkastList,
