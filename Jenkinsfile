@@ -36,21 +36,21 @@ stage('restAssured') {
     }
 }
 
+stage('protractor') {
+    node {
+        wrap([$class: 'Xvfb']) {
+            shgradle "protractorTests -Dprotractor.env=build-server \
+                      -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
+        }
+    }
+}
+
 stage('fitnesse') {
     node {
         wrap([$class: 'Xvfb']) {
             shgradle "fitnesseTest -PfileOutput -Dgeb.env=firefoxRemote -Dweb.baseUrl=https://webcert.inera.nordicmedtest.se/ \
                       -DbaseUrl=https://webcert.inera.nordicmedtest.se/ -Dlogsender.baseUrl=https://webcert.inera.nordicmedtest.se/log-sender/ \
                       -Dcertificate.baseUrl=https://intygstjanst.inera.nordicmedtest.se/inera-certificate/ \
-                      -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
-        }
-    }
-}
-
-stage('protractor') {
-    node {
-        wrap([$class: 'Xvfb']) {
-            shgradle "protractorTests -Dprotractor.env=build-server \
                       -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
         }
     }
