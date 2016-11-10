@@ -20,7 +20,7 @@ stage('build') {
 stage('deploy') {
     node {
         util.run {
-            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"],  \
+            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false", config_version: "webcert-5.0.0-RC5"],  \
                  installation: 'ansible-yum',  \
                  inventory: 'ansible/hosts_test',  \
                  playbook: 'ansible/deploy.yml',  \
