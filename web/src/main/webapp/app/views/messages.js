@@ -133,7 +133,7 @@ angular.module('webcert').constant('webcert.messages', {
         //Fraga/Svar
         'th.label.qa-forwarded': 'Vidarebefordrad',
         'th.help.qa-forwarded': 'Markera om fråga-svar är vidarebefordrat till den som ska hantera det.',
-        'th.label.qa-action': 'Åtgärd',
+        'th.label.qa-action': 'Att åtgärda',
         'th.help.qa-action': 'Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.',
         'th.label.qa-sender': 'Avsändare',
         'th.help.qa-sender': 'Vem som initierade frågan.',
