@@ -4,7 +4,7 @@
       <div wc-about>
         <div ng-repeat="type in intygTypes" wc-authority feature="hanteraIntygsutkast" intygstyp="{{type.id}}">
           <h3>{{type.label}}</h3>
-          <div ng-bind-html="getDetailedDescription(type.id)" class="multiline"></div>
+          <div ng-bind-html="getDetailedDescription(type)" class="multiline"></div>
         </div>
       </div>
     </div>

@@ -36,13 +36,7 @@ angular.module('webcert').controller('webcert.AboutWebcertCtrl',
             loadIntygTypes();
 
             $scope.getDetailedDescription = function(intygsType) {
-                var desc;
-                UtkastProxy.getUtkastType(intygsType, function(intygType) {
-                    if (intygType) {
-                        desc = intygType.detailedDescription;
-                    }
-                });
-                return desc;
+                return intygsType.detailedDescription;
             };
         }]
 );
