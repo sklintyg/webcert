@@ -68,14 +68,38 @@ module.exports = function() {
         };
         return logInAsUserRole(userObj, 'Vårdadministratör');
     });
-    this.Given(/^att jag är inloggad som läkare( som inte accepterat kakor)?$/, function(inteAccepteratKakor) {
+
+    this.Given(/^att jag är inloggad som läkare som inte accepterat kakor$/, function() {
         var userObj = {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
             hsaId: 'TSTNMT2321000156-105H',
             enhetId: 'TSTNMT2321000156-105F'
         };
-        return logInAsUserRole(userObj, 'Läkare', inteAccepteratKakor);
+        return logInAsUserRole(userObj, 'Läkare', true);
+    });
+    this.Given(/^att jag är inloggad som läkare( "([^"]*)")?$/, function(hasLakarnamn, lakarNamn) {
+
+
+        var userObj = {
+            fornamn: 'Erik',
+            efternamn: 'Nilsson',
+            hsaId: 'TSTNMT2321000156-105H',
+            enhetId: 'TSTNMT2321000156-105F'
+        };
+
+        if (lakarNamn) {
+            userObj.enhetId = 'TSTNMT2321000156-1003';
+            userObj.fornamn = lakarNamn.split(' ')[0];
+            userObj.efternamn = lakarNamn.split(' ')[1];
+
+            if (lakarNamn && lakarNamn === 'Åsa Svensson') {
+                userObj.hsaId = 'TSTNMT2321000156-100L';
+
+            }
+        }
+
+        return logInAsUserRole(userObj, 'Läkare');
     });
 
     this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function() {
