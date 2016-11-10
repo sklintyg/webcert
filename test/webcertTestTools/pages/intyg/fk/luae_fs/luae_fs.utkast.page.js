@@ -140,9 +140,6 @@ var LuaefsUtkast = FkBaseUtkast._extend({
     angeDiagnosKoder: function(diagnoser) {
         var promiseArr = [];
         for (var i = 0; i < diagnoser.length; i++) {
-            if (i !== 0) {
-                promiseArr.push(this.diagnos.laggTillDiagnosKnapp.sendKeys(protractor.Key.SPACE));
-            }
             var row = this.diagnos.diagnosRow(i);
             promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sendEnterToElement(row.kod)));
 

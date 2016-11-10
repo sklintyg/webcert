@@ -111,8 +111,8 @@ describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
         });
 
         it('Ange funktionsnedsättningar', function() {
-            UtkastPage.funktionsnedsattningDebut.sendKeys('Komplex tango på skoldansen, knäfraktur.');
-            UtkastPage.funktionsnedsattningPaverkan.sendKeys(
+            UtkastPage.funktionsnedsattning.debut.sendKeys('Komplex tango på skoldansen, knäfraktur.');
+            UtkastPage.funktionsnedsattning.paverkan.sendKeys(
                 'Dansen funkar inte längre, svårt att fullfölja baletten.');
         });
 
