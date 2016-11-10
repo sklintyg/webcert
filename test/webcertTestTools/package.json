@@ -1,6 +1,6 @@
 {
     "name": "webcert-testtools",
-    "version": "1.0.122",
+    "version": "1.0.123",
     "description": "",
     "main": "webcertTestTools.js",
     "scripts": {

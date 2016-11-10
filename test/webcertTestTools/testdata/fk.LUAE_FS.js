@@ -49,8 +49,8 @@ module.exports = {
             },
             funktionsnedsattning: {
                 //funktionsnedsattningar
-                funktionsnedsattningDebut: testdataHelper.randomTextString(),
-                funktionsnedsattningPaverkan: testdataHelper.randomTextString()
+                debut: testdataHelper.randomTextString(),
+                paverkan: testdataHelper.randomTextString()
             },
             ovrigt: testdataHelper.randomTextString(),
             kontaktMedFk: testdataHelper.randomTrueFalse(),

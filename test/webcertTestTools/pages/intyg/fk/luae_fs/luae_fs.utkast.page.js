@@ -188,8 +188,8 @@ var LuaefsUtkast = FkBaseUtkast._extend({
         var fn = this.funktionsnedsattning;
 
         var promisesArr = [];
-        promisesArr.push(fn.debut.sendKeys(funktionsnedsattning.funktionsnedsattningDebut));
-        promisesArr.push(fn.paverkan.sendKeys(funktionsnedsattning.funktionsnedsattningPaverkan));
+        promisesArr.push(fn.debut.sendKeys(funktionsnedsattning.debut));
+        promisesArr.push(fn.paverkan.sendKeys(funktionsnedsattning.paverkan));
 
         return Promise.all(promisesArr);
     },
