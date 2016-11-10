@@ -64,16 +64,15 @@ function sendCreateDraft(url, body, callback) {
 module.exports = function() {
     this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)"( med samordningsnummer)?$/, function(intygstyp, samordningsnummer, callback) {
         global.intyg.typ = intygstyp;
-        global.person.id = testdataHelpers.shuffle(testvalues.patienter)[0];
+        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
         if (samordningsnummer) {
-            global.person.id = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0].nummer;
+            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
         }
         var body, path;
         var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
         if (isSMIIntyg) {
             path = '/services/create-draft-certificate/v2.0?wsdl';
             body = soapMessageBodies.CreateDraftCertificateV2(
-                global.person.id,
                 global.user,
                 intygstyp
             );
@@ -81,7 +80,6 @@ module.exports = function() {
         } else {
             path = '/services/create-draft-certificate/v1.0?wsdl';
             body = soapMessageBodies.CreateDraftCertificate(
-                global.person.id,
                 global.user.hsaId,
                 global.user.fornamn + '' + global.user.efternamn,
                 global.user.enhetId,

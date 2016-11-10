@@ -20,7 +20,8 @@
 
 
 'use strict';
-module.exports.CreateDraftCertificateV2 = function(pnr, user, intygstyp) {
+module.exports.CreateDraftCertificateV2 = function(user, intygstyp) {
+
     var shortcodes = {
         'Läkarintyg för sjukpenning': 'LISJP',
         'Läkarutlåtande för sjukersättning': 'LUSE',
@@ -44,7 +45,6 @@ module.exports.CreateDraftCertificateV2 = function(pnr, user, intygstyp) {
             postadress: 'Langgatan 12',
             postort: 'Simrishamn',
             postnummer: '990 90'
-
         };
     }
 
@@ -63,7 +63,7 @@ module.exports.CreateDraftCertificateV2 = function(pnr, user, intygstyp) {
         '<urn1:patient>' +
         '<urn3:person-id>' +
         '<urn2:root>1.2.752.129.2.1.3.1</urn2:root>' +
-        '<urn2:extension>' + pnr.replace('-', '') + '</urn2:extension>' +
+        '<urn2:extension>' + person.id.replace('-', '') + '</urn2:extension>' +
         '</urn3:person-id>' +
         '<urn3:fornamn>' + person.fornamn + '</urn3:fornamn>' +
         '<urn3:efternamn>' + person.efternamn + '</urn3:efternamn>' +

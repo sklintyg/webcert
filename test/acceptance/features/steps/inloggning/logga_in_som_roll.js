@@ -181,19 +181,19 @@ module.exports = function() {
         var wcHeader = element(by.id('wcHeader'));
         return expect(wcHeader.getText()).to.eventually.contain('Läkare');
     });
-    this.Given(/^jag loggar in som läkare med medarbetaruppdrag som administatör$/, function() {
-        var userObj = {
-            fornamn: 'Jenny',
-            efternamn: 'Larsson',
-            hsaId: 'TSTNMT2321000156-1084',
-            enhetId: 'TSTNMT2321000156-107P',
-            lakare: true,
-            origin: 'DJUPINTEGRATION'
-        };
-        console.log('Loggar in som admin....');
-        return logInAsUserRole(userObj, 'Läkare');
+    // this.Given(/^jag loggar in som läkare med medarbetaruppdrag som administatör$/, function() {
+    //     var userObj = {
+    //         fornamn: 'Jenny',
+    //         efternamn: 'Larsson',
+    //         hsaId: 'TSTNMT2321000156-1084',
+    //         enhetId: 'TSTNMT2321000156-107P',
+    //         lakare: true,
+    //         origin: 'DJUPINTEGRATION'
+    //     };
+    //     console.log('Loggar in som admin....');
+    //     return logInAsUserRole(userObj, 'Läkare');
 
-    });
+    // });
 
 
 

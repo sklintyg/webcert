@@ -135,6 +135,7 @@ var LisuUtkast = BaseSmiUtkast._extend({
             kontakt: element(by.cssContainingText('option', 'Kontakt')),
             sendButton: element(by.id('sendArendeBtn'))
         };
+        this.arbetslivsinriktadeAtgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
         var panel = element(by.css('.arende-panel'));
         this.arendePanel = panel;
     },
@@ -242,14 +243,13 @@ var LisuUtkast = BaseSmiUtkast._extend({
     },
     angeAtgarder: function(atgarder) {
         var atgarderEL = this.atgarder;
+        var beskrivningEL = this.arbetslivsinriktadeAtgarderBeskrivning;
         var fillInAtgardBeskrivningar = function(atgarder) {
             var promisesArr = [];
-
             for (var i = 0; i < atgarder.length; i++) {
                 if (atgarder[i].beskrivning) {
                     promisesArr.push(
-                        element(by.id('arbetslivsinriktadeAtgarder-' + atgarder[i].key + '-description'))
-                        .sendKeys(atgarder[i].beskrivning)
+                        beskrivningEL.sendKeys(atgarder[i].beskrivning + '\n')
                     );
                 }
             }
