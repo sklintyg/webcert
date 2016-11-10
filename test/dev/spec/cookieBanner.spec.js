@@ -23,19 +23,21 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var WelcomePage = wcTestTools.pages.welcome;
 var basepage = wcTestTools.pages.webcertBase;
-var EC = protractor.ExpectedConditions;
+var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-xdescribe('Logga in och godkänn kakor', function() {
+describe('Logga in och godkänn kakor', function() {
 
     it('Öppna och logga in utan att disabla cookiebanner', function() {
+        browser.ignoreSynchronization = false;
         WelcomePage.get();
-        specHelper.waitForAngularTestability();
         WelcomePage.login('IFV1239877878-104B_IFV1239877878-1042', true);
-        specHelper.waitForAngularTestability();
+        // Need explicit get here to load protractor mocks in main angular app since welcomepage is a separate angular app
+        SokSkrivIntygPage.get();
 
-        browser.wait(EC.elementToBeClickable(element(by.id(basepage.cookieConsentBtnId))), 5000);
-        element(by.id(basepage.cookieConsentBtnId)).sendKeys(protractor.Key.SPACE);
-        browser.wait(EC.invisibilityOf(element(by.id(basepage.cookieConsentBtnId))), 5000);
+        expect(basepage.cookie.consentBanner.isDisplayed()).toBeTruthy();
+        expect(basepage.cookie.consentBtn.isDisplayed()).toBeTruthy();
+        basepage.cookie.consentBtn.sendKeys(protractor.Key.SPACE);
+        expect(basepage.cookie.consentBtn.isPresent()).toBeFalsy();
 
     });
 

@@ -51,7 +51,7 @@ describe('Luse tillaggsfragor variants', function() {
 
         afterEach(function () {
             proxy.onLoad.reset();
-            browser.clearMockModules();
+            specHelper.removeHttpBackendMock();
         });
 
         beforeEach(function () {

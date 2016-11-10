@@ -107,6 +107,9 @@ module.exports = {
 
         expect(utkastPage.isAt()).toBe(true);
     },
+    removeHttpBackendMock: function() {
+        browser.removeMockModule('httpBackendMock');
+    },
     loadHttpBackendMock: function() {
         browser.addMockModule('httpBackendMock', function() {
             function loadScript(urls) {
