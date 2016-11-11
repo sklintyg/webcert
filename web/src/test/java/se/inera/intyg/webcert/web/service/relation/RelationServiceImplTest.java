@@ -178,7 +178,7 @@ public class RelationServiceImplTest {
     @Test
     public void testWrongUnit() {
         when(userService.getUser()).thenReturn(createUser("anotherUnit"));
-        assertEquals(1, relationService.getRelations(INTYGID_4).get().size());
+        assertFalse(relationService.getRelations(INTYGID_4).isPresent());
     }
 
     @Test
