@@ -66,6 +66,15 @@ angular.module('webcert').constant('webcert.messages', {
         'label.qacheckhanterad.ejhanterad' : 'Ej Hanterade',
         'label.qacheckhanterad.tillbaka' : 'Tillbaka',
 
+        //intyg types
+        'intygtypes.fk7263.typename': 'Läkarintyg FK 7263',
+        'intygtypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
+        'intygtypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
+        'intygtypes.lisjp.typename': 'Läkarintyg för sjukpenning',
+        'intygtypes.luse.typename': 'Läkarutlåtande för sjukersättning',
+        'intygtypes.luae_na.typename': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+        'intygtypes.luae_fs.typename': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+
         //about texts
         'about.cookies': '<h3>Om kakor (cookies)</h3><p>Så kallade kakor (cookies) används för att underlätta för besökaren på webbplatsen. En kaka är en textfil som lagras på din dator och som innehåller information. Denna webbplats använder så kallade sessionskakor. Sessionskakor lagras temporärt i din dators minne under tiden du är inne på en webbsida. Sessionskakor försvinner när du stänger din webbläsare. Ingen personlig information om dig sparas vid användning av sessionskakor.</p><p>Om du inte accepterar användandet av kakor kan du stänga av det via din webbläsares säkerhetsinställningar. Du kan även ställa in webbläsaren så att du får en varning varje gång webbplatsen försöker sätta en kaka på din dator.</p><p><strong>Observera!</strong> Om du stänger av kakor i din webbläsare kan du inte logga in i Webcert.</p><p>Allmän information om kakor (cookies) och lagen om elektronisk kommunikation finns på Post- och telestyrelsens webbplats.</p><p><a href="https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/" target="_blank">Mer om kakor (cookies) på Post- och telestyrelsens webbplats</a></p>',
 
