@@ -21,7 +21,6 @@
 browser, JSON
 */
 'use strict';
-
 var winston = require('winston');
 
 exports.config = {
@@ -37,8 +36,8 @@ exports.config = {
         'features/*.feature'
     ],
     capabilities: {
-        // shardTestFiles: true,
-        // maxInstances: 15,
+        shardTestFiles: false,
+        maxInstances: 1,
         browserName: 'firefox',
         // browserName: 'internet explorer',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
@@ -47,7 +46,7 @@ exports.config = {
         platform: 'ANY'
     },
     cucumberOpts: {
-        format: ['json:./acceptance/report/acc_results.json', 'pretty'],
+        format: ['json:./acceptance/report/' + (Math.ceil(100000000 * Math.random())) + '_acc_results.json', 'pretty'],
         require: ['features/steps/**/*.js', 'features/support/**/*.js']
     },
     onPrepare: function() {
@@ -105,7 +104,6 @@ exports.config = {
         // browser.addMockModule('disableNgAnimate', disableNgAnimate);
     }
 };
-
 
 
 function formatLocalDate() {

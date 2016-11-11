@@ -47,3 +47,12 @@ ip20-mijö som är taggade med @smoke OCH inte är taggade med ~@notReady ELLER 
  ```sh
  grunt acc:ip20 --tags='@smoke,~@notReady @behorighet'
 ```
+### Exekvera testfall på flera noder och instanser parallellt.
+Default är att alla tester utförs sekventiellt på 1 nod med 1 browser-instans. 
+
+För att exekvera testerna parallellt på selenium-noden(noderna) och därmed potentiellt snabba upp exekveringstiden anges flaggan 'gridnodeinstances' till grunt-kommandot. Värdet på denna flagga är maximalt antal browser-instanser (totalt) som du vill exekvera tester på. Vid tillfället då det här skrevs har vi ett grid uppsatt med tre selenium-noder som maximalt kan ha 5 instanser var. I exemplet nedan använder vi oss därmed av maximalt antar instanser.
+```sh
+DATABASE_PASSWORD=xxxxxxxx grunt acc:ip30 --gridnodeinstances=15
+``` 
+För att få reda på maximalt antar browser-instanser i aktuellt konfiguration, gå till selenium-hubben i en browser (t.ex. http://selenium1.nordicmedtest.se:4444/grid/console för aktuell grid-uppsättning vid skrivtillfället) och inspektera respektive uppsatt nods konfiguration.
+
