@@ -102,6 +102,8 @@ module.exports = function() {
                             intyg.id = text.split('/').slice(-1)[0];
                             intyg.id = intyg.id.split('?')[0];
                             logger.info('intyg.id: ' + intyg.id);
+                        }).then(function() {
+
                         });
                 });
         });

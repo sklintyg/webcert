@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 @fk7263
 Scenario: Det ska gå att öppna ett signerat FK7263 intyg i Mina intyg för en patient med samordningsnummer
 	Givet att jag är inloggad som läkare
-	När jag väljer patienten "19440178-6530"
+	När jag går in på en patient med samordningsnummer
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget

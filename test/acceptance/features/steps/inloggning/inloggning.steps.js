@@ -67,12 +67,16 @@ function setForkedBrowser(forkedBrowser2) {
 
 module.exports = function() {
 
-    this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) { //förutsätter att personen finns i PU-tjänsten
-        return gotoPatient(personnummer);
+    this.Given(/^jag går in på en patient med samordningsnummer$/, function() {
+        return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0]);
     });
 
+    // this.When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) { //förutsätter att personen finns i PU-tjänsten
+    //     return gotoPatient(personnummer);
+    // });
+
     this.Given(/^jag matar in personnummer som inte finns i PUtjänsten$/, function(callback) {
-        return gotoPerson(testdata.values.patienterMedSamordningsnummerEjPU[0], callback); //personnummret finns inte med i PU-tjänsten
+        return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0], callback); //personnummret finns inte med i PU-tjänsten
     });
 
 

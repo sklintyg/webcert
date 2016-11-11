@@ -70,8 +70,8 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer$/, function() {
-        person.id = testdataHelpers.shuffle(testpatienter)[0];
-        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', 'alternatePatientSSn=' + person.id);
+        global.person = testdataHelpers.shuffle(testpatienter)[0];
+        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', 'alternatePatientSSn=' + global.person.id);
     });
 
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer$/, function() {
@@ -149,4 +149,10 @@ module.exports = function() {
 
         });
     }
+
+
+    this.Given(/^ska jag gå in på intyget med en extra "([^"]*)" parametrar med värdet "([^"]*)"$/, function(param, paramValue) {
+        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', param + '=' + paramValue);
+
+    });
 };
