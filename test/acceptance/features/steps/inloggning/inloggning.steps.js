@@ -143,8 +143,14 @@ module.exports = function() {
 
     });
 
-    this.Given(/^ska ett felmeddelande visas$/, function(callback) {
-        parallell.changeFields(forkedBrowser).then(function() {
+    this.Given(/^ska ett felmeddelande visas i "([^"]*)" intyget$/, function(intygShortCode, callback) {
+        var elemntId;
+        if ('LUAE_NA' === intygShortCode) {
+            elemntId = 'aktivitetsbegransning';
+        } else if ('LUAE_FS' === intygShortCode) {
+            elemntId = 'funktionsnedsattningDebut';
+        }
+        parallell.changeFields(forkedBrowser, elemntId).then(function() {
             console.log('saveErrorMessage found');
             return parallell.refreshBroswer(forkedBrowser);
         }).then(function() {
@@ -184,7 +190,6 @@ module.exports = function() {
             });
         });
     });
-
 
 
 

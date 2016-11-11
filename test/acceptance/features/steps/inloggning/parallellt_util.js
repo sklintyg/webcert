@@ -33,16 +33,16 @@ module.exports = {
             });
         });
     },
-    changeFields: function(secondBrowser) {
+    changeFields: function(secondBrowser, elementId) {
         console.log('Default browser done sleeping,\t\t' + new Date());
 
-        var abBrowser = browser.findElement(by.id('aktivitetsbegransning'));
+        var customBrowser = browser.findElement(by.id(elementId));
         var randomTxt = helpers.randomTextString();
-        return abBrowser.sendKeys(randomTxt).then(function() {
+        return customBrowser.sendKeys(randomTxt).then(function() {
             // Second browser
-            var abBrowser1 = secondBrowser.findElement(by.id('aktivitetsbegransning'));
+            var customBrowser1 = secondBrowser.findElement(by.id(elementId));
             var randomTxt1 = helpers.randomTextString();
-            return abBrowser1.sendKeys(randomTxt1).then(function() {
+            return customBrowser1.sendKeys(randomTxt1).then(function() {
                 var saveErrorMessage = secondBrowser.findElement(by.binding('viewState.common.error.saveErrorMessage'));
                 return expect(saveErrorMessage.getText()).to.eventually.contain('Kan inte spara utkastet.');
             });

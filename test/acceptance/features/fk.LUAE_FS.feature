@@ -38,8 +38,8 @@ Scenario: Makulera ett skickat intyg
 	När jag går till Mina intyg för patienten
 	Så ska intygets status i Mina intyg visa "Makulerat"
 
-#@samtidaanvandare @notReady
-#Scenario: Samtida användare ska generera felmeddelande
-	#När jag går in på att skapa ett "Läkarutlåtande för aktivitetsersättning vid förlängd skolgång" intyg
-	#Och sedan öppnar intyget i två webbläsarinstanser
-	#Så ska ett felmeddelande visas
+@samtidaanvandare
+Scenario: Samtida användare ska generera felmeddelande
+	När jag går in på att skapa ett "Läkarutlåtande för aktivitetsersättning vid förlängd skolgång" intyg
+	Och sedan öppnar intyget i två webbläsarinstanser
+	Så ska ett felmeddelande visas i "LUAE_FS" intyget
