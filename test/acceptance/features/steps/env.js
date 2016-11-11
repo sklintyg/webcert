@@ -37,7 +37,7 @@ function checkConsoleErrors(cb) {
 }
 
 module.exports = function() {
-    this.setDefaultTimeout(200 * 1000);
+    this.setDefaultTimeout(300 * 1000);
 
     this.Before(function(scenario) {
         global.scenario = scenario;

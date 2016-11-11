@@ -88,6 +88,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
+        helpers.updateEnhetAdressForNewIntyg();
         var fragaText = global.intyg.guidcheck;
         var page = fkIntygPage;
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);

@@ -23,6 +23,25 @@
 var fkLusePage = pages.intyg.luse.intyg;
 
 module.exports = {
+
+    //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
+    // SE2321000156-1004 saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
+    updateEnhetAdressForNewIntyg: function() {
+
+        if (global.user.enhetId !== 'SE2321000156-1004') {
+            global.user.enhetsAdress = {
+                postnummer: '65340',
+                postort: 'Karlstad',
+                postadress: 'Bryggaregatan 11',
+                telefon: '054203040'
+            };
+
+            if (global.user.enhetId === 'TSTNMT2321000156-105F') {
+                global.user.enhetsAdress.telefon = '054121314';
+            }
+
+        }
+    },
     generateIntygByType: function(typ, id) {
         if (typ === 'Transportstyrelsens läkarintyg') {
             return testdata.ts.bas.getRandom(id);

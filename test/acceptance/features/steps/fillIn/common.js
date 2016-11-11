@@ -17,20 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, Promise, logger, JSON */
+/* globals pages, logger, JSON */
 
 'use strict';
 var utkastPage;
 module.exports = {
+    fillInEnhetAdress: function() {
+        return utkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
+            logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
+        }, function(reason) {
+            throw ('FEL, angeEnhetAdress,' + reason);
+        });
+    },
     fillIn: function(intyg) {
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        return Promise.all([
-            utkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
-                logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
-            }, function(reason) {
-                throw ('FEL, angeEnhetAdress,' + reason);
-            })
-        ]);
+        return this.fillInEnhetAdress();
     }
 
 };

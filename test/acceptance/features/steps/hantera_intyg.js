@@ -68,6 +68,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag makulerar intyget och ersätter med nytt intyg$/, function(callback) {
+        helpers.updateEnhetAdressForNewIntyg();
 
         browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-1)[0];
@@ -94,6 +95,10 @@ module.exports = function() {
     });
 
     this.Given(/^jag kopierar intyget$/, function() {
+
+
+        helpers.updateEnhetAdressForNewIntyg();
+
         return fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
             return fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE)
                 .then(function() {
@@ -102,8 +107,6 @@ module.exports = function() {
                             intyg.id = text.split('/').slice(-1)[0];
                             intyg.id = intyg.id.split('?')[0];
                             logger.info('intyg.id: ' + intyg.id);
-                        }).then(function() {
-
                         });
                 });
         });
