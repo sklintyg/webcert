@@ -48,8 +48,7 @@
 <div uib-collapse="collapseLoginDesc" class="well">
   <h4>SITHS-kort</h4>
 
-  <p>Du som arbetar i en organisation som är ansluten till HSA-katalogen (Hälso- och sjukvårdens
-    adressregister) samt har medarbetaruppdrag ”Vård och behandling” loggar in med SITHS-kort.</p>
+  <p>Du som arbetar i en organisation som är ansluten till HSA-katalogen samt har medarbetaruppdrag ”Vård och behandling” loggar in med SITHS-kort.</p>
 
   <p>Problem med inloggning med SITHS-kort?</p>
   <p><a href="#" ng-click="open('pubapp/siths.help.html')">Läs mer om hur du kan felsöka</a></p>
