@@ -140,6 +140,14 @@ module.exports = function(grunt) {
         files.forEach(function (item,index) { 
             grunt.file.delete(item);
         });
+
+        // Gör en kontroll om vi fick något fel i tidigare task. Denna hantering finns pga att vi tvingades köra med 'force' i 
+        // task 'protractor:acc' då ett eventuellt fail i testfall i protractor-steget hindrar den här tasken från att köra 
+        // och vi vill ha en rapport oavsett om ett testfall har gått fel eller inte. 
+        if (grunt.fail.errorcount > 0) {
+            grunt.log.subhead('Tidigare eller nuvarande task innehöll ett felmeddelande (errorcount =' + grunt.fail.errorcount +')');
+            grunt.fail.warn("Hittade ett fel i task force:protractor:acc");
+        }
     });
 
     // Run: 'grunt acc:ip20'
@@ -180,6 +188,8 @@ module.exports = function(grunt) {
 
         tasks.push('env:' + environment);
         tasks.push('protractor_webdriver');
+        // Måste ha --force på denna då vi behöver att rapporten genereras ( efterföljande task genReport) 
+        // oavsett om alla testfall lyckas eller inte. Kontroll av eventuell felkod görs i genReport-task. 
         tasks.push('force:protractor:acc');
         tasks.push('genReport');
 
