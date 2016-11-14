@@ -275,8 +275,9 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
             return Promise.all([
                 sendKeysWithBackspaceFix(row.datum, val.datum),
-                row.underlag.click(),
-                row.underlag.element(by.cssContainingText('div', val.underlag)).click(),
+                row.underlag.click().then(function() {
+                    return row.underlag.element(by.cssContainingText('.ui-select-choices-row', val.underlag)).click();
+                }),
                 row.information.sendKeys(val.infoOmUtredningen)
             ]);
         };
