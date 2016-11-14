@@ -44,7 +44,7 @@ Exempel:
     |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @makulera @notReady
-Scenario: Makulera ett skickat ett <intygKod> intyg
+Scenariomall: Makulera ett skickat ett <intygKod> intyg
 	När jag går in på ett <intyg> med status "Mottaget"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
@@ -60,7 +60,7 @@ Exempel:
     |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @samtidaanvandare @notReady
-Scenario: Samtida användare ska generera felmeddelande (<intygKod>)
+Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>)
 	När jag går in på att skapa ett <intyg> intyg
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
