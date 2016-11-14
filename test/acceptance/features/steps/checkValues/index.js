@@ -24,6 +24,7 @@ var fk7263CheckValues = require('./fk.7263.js').checkValues;
 var fkLUSECheckValues = require('./fk.LUSE.js').checkValues;
 var fkLISJPCheckValues = require('./fk.LISJP.js').checkValues;
 var fkLUAENACheckValues = require('./fk.LUAE_NA.js').checkValues;
+var fkLUAEFSCheckValues = require('./fk.LUAE_FS.js').checkValues;
 
 var tsCommonCheckValues = require('./ts.common.js').checkValues;
 var tsBasCheckValues = require('./ts.bas.js').checkValues;
@@ -63,6 +64,8 @@ module.exports = {
             promiseArr.push(fkLISJPCheckValues(intyg));
         } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
             promiseArr.push(fkLUAENACheckValues(intyg));
+        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+            promiseArr.push(fkLUAEFSCheckValues(intyg));
         } else {
             throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
         }

@@ -25,7 +25,7 @@ Exempel:
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
-    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
+    #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @minaintyg @keepIntyg @intygTillFK @skicka @notReady
 Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
@@ -41,7 +41,7 @@ Exempel:
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
-    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
+    #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @makulera @notReady
 Scenariomall: Makulera ett skickat ett <intygKod> intyg
@@ -57,7 +57,7 @@ Exempel:
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
-    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
+    #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @samtidaanvandare @notReady
 Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>)
@@ -70,4 +70,4 @@ Exempel:
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
-    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
+    #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
