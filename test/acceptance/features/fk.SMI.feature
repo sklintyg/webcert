@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@keepIntyg @signera @notReady
+@keepIntyg @signera
 Scenariomall: Skapa och signera ett intyg för <intygKod>
 	När jag går in på att skapa ett <intyg> intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -27,7 +27,7 @@ Exempel:
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
-@minaintyg @keepIntyg @intygTillFK @skicka @notReady
+@minaintyg @keepIntyg @intygTillFK @skicka
 Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
 	När jag går in på ett <intyg> med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan
@@ -43,7 +43,7 @@ Exempel:
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
-@makulera @notReady
+@makulera
 Scenariomall: Makulera ett skickat ett <intygKod> intyg
 	När jag går in på ett <intyg> med status "Mottaget"
 	Och jag makulerar intyget
@@ -59,7 +59,7 @@ Exempel:
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
-@samtidaanvandare @notReady
+@samtidaanvandare
 Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>)
 	När jag går in på att skapa ett <intyg> intyg
 	Och sedan öppnar intyget i två webbläsarinstanser
