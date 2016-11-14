@@ -42,4 +42,4 @@ Scenario: Makulera ett skickat intyg
 Scenario: Samtida användare ska generera felmeddelande
 	När jag går in på att skapa ett "Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" intyg
 	Och sedan öppnar intyget i två webbläsarinstanser
-	Så ska ett felmeddelande visas i "LUAE_NA" intyget
+	Så ska ett felmeddelande visas

@@ -24,10 +24,12 @@
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkValues = wcTestTools.testdata.values.fk;
+var helpers = require('./helpers.js');
 
 module.exports = function() {
 
     this.Given(/^jag förnyar intyget$/, function(callback) {
+        helpers.updateEnhetAdressForNewIntyg();
         fkIntygPage.fornyaBtn.sendKeys(protractor.Key.SPACE).then(function() {
             return fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE);
         }).then(callback);

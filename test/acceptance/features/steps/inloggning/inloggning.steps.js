@@ -147,11 +147,11 @@ module.exports = function() {
 
     });
 
-    this.Given(/^ska ett felmeddelande visas i "([^"]*)" intyget$/, function(intygShortCode, callback) {
-        var elemntId;
-        if ('LUAE_NA' === intygShortCode) {
-            elemntId = 'aktivitetsbegransning';
-        } else if ('LUAE_FS' === intygShortCode) {
+    this.Given(/^ska ett felmeddelande visas$/, function(callback) {
+
+        var intygShortCode = helpers.getAbbrev(intyg.typ);
+        var elemntId = 'aktivitetsbegransning';
+        if ('LUAE_FS' === intygShortCode) {
             elemntId = 'funktionsnedsattningDebut';
         }
         parallell.changeFields(forkedBrowser, elemntId).then(function() {
