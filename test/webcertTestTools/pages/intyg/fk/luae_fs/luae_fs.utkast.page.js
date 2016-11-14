@@ -80,6 +80,13 @@ var LuaefsUtkast = FkBaseUtkast._extend({
         this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
         this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
+        this.enhetensAdress = {
+            postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
+            postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
+            postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
+            enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
+        };
+
         this.baseratPa = {
             minUndersokningAvPatienten: {
                 checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3')),
