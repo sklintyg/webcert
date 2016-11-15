@@ -29,6 +29,7 @@ var tmpDiagnos;
 
 function setDiagnos(diagnos) {
     tmpDiagnos = diagnos;
+    console.log(diagnos);
 }
 
 module.exports = function() {
