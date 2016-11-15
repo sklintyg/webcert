@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,wcTestTools, protractor, browser ,Promise*/
+/*global intyg,wcTestTools, protractor, browser*/
 
 'use strict';
 
@@ -39,47 +39,6 @@ module.exports = function() {
             console.log(intyg);
             return fillIn(global.intyg);
         }
-    });
-    this.Given(/^jag fyller i adress$/, function() {
-        global.intyg.enhet = td.values.enhetsAdress();
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            return Promise.all([
-                luseUtkastPage.enhetensAdress.enhetsTelefon.sendKeys(global.intyg.enhet.telefon),
-                luseUtkastPage.enhetensAdress.postAdress.sendKeys(global.intyg.enhet.gata),
-                luseUtkastPage.enhetensAdress.postOrt.sendKeys(global.intyg.enhet.postadress),
-                luseUtkastPage.enhetensAdress.postNummer.sendKeys(global.intyg.enhet.postnummer)
-            ]);
-
-        } else {
-
-            return Promise.all([
-                fkUtkastPage.enhetsAdress.enhetsTelefon.sendKeys(global.intyg.enhet.telefon),
-                fkUtkastPage.enhetsAdress.postAdress.sendKeys(global.intyg.enhet.gata),
-                fkUtkastPage.enhetsAdress.postOrt.sendKeys(global.intyg.enhet.postadress),
-                fkUtkastPage.enhetsAdress.postNummer.sendKeys(global.intyg.enhet.postnummer)
-            ]);
-        }
-
-    });
-    this.Given(/^ska adressen kopieras till det kopierade intyget$/, function() {
-        var promiseArray = [];
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            promiseArray.push(expect(luseUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(global.intyg.enhet.telefon));
-            promiseArray.push(expect(luseUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(global.intyg.enhet.gata));
-            promiseArray.push(expect(luseUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(global.intyg.enhet.postnummer));
-            promiseArray.push(expect(luseUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(global.intyg.enhet.postadress));
-
-        } else {
-
-            promiseArray.push(expect(fkUtkastPage.enhetsAdress.postAdress.getAttribute('value')).to.eventually.equal(global.intyg.enhet.gata));
-            promiseArray.push(expect(fkUtkastPage.enhetsAdress.postNummer.getAttribute('value')).to.eventually.equal(global.intyg.enhet.postnummer));
-            promiseArray.push(expect(fkUtkastPage.enhetsAdress.postOrt.getAttribute('value')).to.eventually.equal(global.intyg.enhet.postadress));
-            promiseArray.push(expect(fkUtkastPage.enhetsAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(global.intyg.enhet.telefon));
-        }
-        return Promise.all(promiseArray);
-
     });
 
     this.Given(/^jag ändrar diagnoskod$/, function() {

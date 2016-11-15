@@ -72,21 +72,4 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska jag gå in på intyget med en extra "([^"]*)" parametrar med värdet "([^"]*)"$/, function(param, paramValue, callback) {
-
-        var url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
-        url += '?';
-        url += 'fornamn=test&';
-        url += 'efternamn=testsson&';
-        url += 'postadress=Langgatan%2012&';
-        url += 'postnummer=990%2090&';
-        url += 'postort=Simrishamn&';
-        url += 'enhet=' + global.user.enhetId + '&';
-        url += param + '=' + paramValue;
-
-        console.log('Går till url: ' + url);
-        browser.get(url).then(callback);
-
-    });
-
 };

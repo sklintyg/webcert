@@ -152,6 +152,12 @@ var Fk7263Intyg = BaseIntyg._extend({
                 fortsattPaIntygsutkastKnapp: element(by.id('komplettering-modal-dialog-goToUtkast-button'))
             }
         };
+        this.enhetsAdress = {
+            postAdress: element(by.id('vardperson_postadress')),
+            postNummer: element(by.id('vardperson_postnummer')),
+            postOrt: element(by.id('vardperson_postort')),
+            enhetsTelefon: element(by.id('vardperson_telefonnummer'))
+        };
     },
 
     get: function get(intygId) {

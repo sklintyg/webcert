@@ -18,13 +18,25 @@
  */
 
 angular.module('webcert').controller('webcert.AboutWebcertCtrl',
-    ['$rootScope', '$scope', '$log', 'common.fragaSvarCommonService',
-        function($rootScope, $scope, $log, fragaSvarCommonService) {
+    ['$rootScope', '$scope', '$log', 'common.fragaSvarCommonService', 'webcert.UtkastProxy',
+        function($rootScope, $scope, $log, fragaSvarCommonService, UtkastProxy) {
             'use strict';
 
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
                 fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
             });
             $scope.$on('$destroy', unbindLocationChange);
+
+            function loadIntygTypes() {
+                $scope.intygTypes = [];
+                UtkastProxy.getUtkastTypesCachedUnfiltered(function(types) {
+                    $scope.intygTypes = types;
+                });
+            }
+            loadIntygTypes();
+
+            $scope.getDetailedDescription = function(intygsType) {
+                return intygsType.detailedDescription;
+            };
         }]
 );

@@ -28,7 +28,10 @@ var helpers = require('./helpers.js');
 module.exports = function() {
     this.Given(/^jag signerar intyget$/, function() {
         return browser.sleep(2000).then(function() { // fix för nåt med animering?
-            return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+            return expect(fkUtkastPage.sparatOchKomplettMeddelande.isDisplayed()).to.eventually.equal(true)
+                .then(function() {
+                    return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+                });
         });
     });
 
@@ -65,6 +68,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag makulerar intyget och ersätter med nytt intyg$/, function(callback) {
+        helpers.updateEnhetAdressForNewIntyg();
 
         browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-1)[0];
@@ -91,6 +95,10 @@ module.exports = function() {
     });
 
     this.Given(/^jag kopierar intyget$/, function() {
+
+
+        helpers.updateEnhetAdressForNewIntyg();
+
         return fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
             return fkIntygPage.copy.dialogConfirmButton.sendKeys(protractor.Key.SPACE)
                 .then(function() {

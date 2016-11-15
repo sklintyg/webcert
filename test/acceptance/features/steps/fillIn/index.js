@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser*/
+/*global browser, Promise*/
 'use strict';
 
 module.exports = {
     fillIn: function(intyg) {
-
+        var promiseArr = [];
         // Vänta på animering
-        return browser.sleep(2000).then(function() {
+        promiseArr.push(browser.sleep(2000).then(function() {
             switch (intyg.typ) {
                 case 'Transportstyrelsens läkarintyg':
                     return require('./ts.bas.js').fillIn(intyg);
@@ -38,10 +38,13 @@ module.exports = {
                     return require('./fk.LISJP.js').fillIn(intyg);
                 case 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga':
                     return require('./fk.LUAE_NA.js').fillIn(intyg);
+                case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
+                    return require('./fk.LUAE_FS.js').fillIn(intyg);
                 default:
                     throw 'Intyg.typ odefinierad.';
             }
-        });
-
+        }));
+        promiseArr.push(require('./common.js').fillIn(intyg));
+        return Promise.all(promiseArr);
     }
 };

@@ -16,12 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* globals Promise */
 
+var commonCheckValues = require('./common.js').checkValues;
 
 var fk7263CheckValues = require('./fk.7263.js').checkValues;
 var fkLUSECheckValues = require('./fk.LUSE.js').checkValues;
 var fkLISJPCheckValues = require('./fk.LISJP.js').checkValues;
 var fkLUAENACheckValues = require('./fk.LUAE_NA.js').checkValues;
+var fkLUAEFSCheckValues = require('./fk.LUAE_FS.js').checkValues;
 
 var tsCommonCheckValues = require('./ts.common.js').checkValues;
 var tsBasCheckValues = require('./ts.bas.js').checkValues;
@@ -40,24 +43,33 @@ module.exports = {
     },
     forIntyg: function(intyg) {
         'use strict';
+        var promiseArr = [commonCheckValues(intyg)];
         if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
-            return tsCommonCheckValues(intyg).then(function() {
-                return tsDiabetesCheckValues(intyg);
-            });
+            promiseArr.push(
+                tsCommonCheckValues(intyg).then(function() {
+                    return tsDiabetesCheckValues(intyg);
+                })
+            );
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg') {
-            return tsCommonCheckValues(intyg).then(function() {
-                return tsBasCheckValues(intyg);
-            });
+            promiseArr.push(
+                tsCommonCheckValues(intyg).then(function() {
+                    return tsBasCheckValues(intyg);
+                })
+            );
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            return fk7263CheckValues(intyg);
+            promiseArr.push(fk7263CheckValues(intyg));
         } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
-            return fkLUSECheckValues(intyg);
+            promiseArr.push(fkLUSECheckValues(intyg));
         } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
-            return fkLISJPCheckValues(intyg);
+            promiseArr.push(fkLISJPCheckValues(intyg));
         } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            return fkLUAENACheckValues(intyg);
+            promiseArr.push(fkLUAENACheckValues(intyg));
+        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+            promiseArr.push(fkLUAEFSCheckValues(intyg));
         } else {
             throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
         }
+
+        return Promise.all(promiseArr);
     }
 };

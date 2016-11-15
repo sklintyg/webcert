@@ -20,13 +20,12 @@
 /**
  * Created by bennysce on 02-12-15.
  */
-/*globals browser*/
+/*globals browser,protractor, Promise*/
 'use strict';
 
 var JClass = require('jclass');
 var EC = protractor.ExpectedConditions;
 var BaseUtkast = JClass._extend({
-
     init: function() {
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
@@ -39,6 +38,13 @@ var BaseUtkast = JClass._extend({
         this.showMissingInfoButton = element(by.id('showCompleteButton'));
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
         this.patientNamnPersonnummer = element(by.id('patientNamnPersonnummer'));
+        this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande'));
+        this.enhetensAdress = {
+            postAdress: element(by.id('clinicInfoPostalAddress')),
+            postNummer: element(by.id('clinicInfoPostalCode')),
+            postOrt: element(by.id('clinicInfoPostalCity')),
+            enhetsTelefon: element(by.id('clinicInfoPhone'))
+        };
     },
     get: function(intygType, intygId) {
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);
@@ -50,7 +56,7 @@ var BaseUtkast = JClass._extend({
         return this.signeraButton.isEnabled();
     },
     whenSigneraButtonIsEnabled: function() {
-    	return browser.wait(EC.elementToBeClickable(this.signeraButton), 5000);
+        return browser.wait(EC.elementToBeClickable(this.signeraButton), 5000);
     },
     signeraButtonClick: function() {
         this.signeraButton.click();
@@ -63,8 +69,7 @@ var BaseUtkast = JClass._extend({
                     button.click();
                 }
             });
-        }
-        else {
+        } else {
             this.showMissingInfoButton.click();
         }
     },
@@ -74,14 +79,24 @@ var BaseUtkast = JClass._extend({
         });
     },
     enableAutosave: function() {
-        browser.executeScript(function () {
+        browser.executeScript(function() {
             window.autoSave = true;
         });
     },
     disableAutosave: function() {
-        browser.executeScript(function () {
+        browser.executeScript(function() {
             window.autoSave = false;
         });
+    },
+    angeEnhetAdress: function(adressObj) {
+        return Promise.all([
+            this.enhetensAdress.postAdress.clear().sendKeys(adressObj.postadress),
+            this.enhetensAdress.postNummer.clear().sendKeys(adressObj.postnummer),
+            this.enhetensAdress.postOrt.clear().sendKeys(adressObj.postort),
+            this.enhetensAdress.enhetsTelefon.clear().sendKeys(adressObj.telefon)
+        ]);
+
+
     }
 });
 

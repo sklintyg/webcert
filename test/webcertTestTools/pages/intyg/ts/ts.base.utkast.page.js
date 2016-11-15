@@ -44,6 +44,13 @@ var BaseTsUtkast = BaseUtkast._extend({
         this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.checkbox'));
 
         this.kommentar = element(by.id('kommentar'));
+        this.adress = {
+            postadress: element(by.id('patientPostadress')),
+            postort: element(by.id('patientPostort')),
+            postnummer: element(by.id('patientPostnummer'))
+
+        };
+
     },
     get: function get(intygId) {
         get._super.call(this, this.intygType, intygId);
@@ -62,6 +69,14 @@ var BaseTsUtkast = BaseUtkast._extend({
     },
     fillInOvrigKommentar: function(utkast) {
         return this.kommentar.sendKeys(utkast.kommentar);
+    },
+    fillInPatientAdress: function(adressObj) {
+        return Promise.all([
+            this.adress.postadress.clear().sendKeys(adressObj.postadress),
+            this.adress.postnummer.clear().sendKeys(adressObj.postnummer),
+            this.adress.postort.clear().sendKeys(adressObj.postort)
+        ]);
+
     }
 });
 

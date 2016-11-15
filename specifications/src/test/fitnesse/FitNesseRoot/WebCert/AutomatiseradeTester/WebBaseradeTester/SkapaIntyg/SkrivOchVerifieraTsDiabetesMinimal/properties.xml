@@ -23,6 +23,7 @@
 <Files>true</Files>
 <Help>Signera ett minimalt TS-diabetes intyg</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>

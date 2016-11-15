@@ -80,10 +80,11 @@
           </table>
         </div>
 
-
         <div class="col-sm-6">
           <h1 class="page-title" ng-if="q.intygsId != ''">Ärendeformulär</h1>
-          <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="q.intygsId != ''">
+
+          <!-- Begin default form -->
+          <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="formToDisplay === 'arende' && q.intygsId != ''">
             <div>* == Obligatoriskt</div>
             <!-- metadata -->
             <div class="form-group">
@@ -221,9 +222,6 @@
               <a ng-click="add()">Lägg till komplettering</a>
             </div>
 
-
-
-
             <!-- Avsändare -->
             <div class="form-group">
               <div class="row">
@@ -255,6 +253,141 @@
                </div>
             </div>
           </div>
+          <!-- End default form -->
+
+          <!-- Begin fk7263 / legacy form -->
+          <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="formToDisplay === 'fragaSvar' && q.intygsId != ''">
+            <div>* == Obligatoriskt</div>
+            <!-- metadata -->
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label">Referens-id</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.externReferens">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">IntygsId*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.intygsId">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Personnummer*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.patientId">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Patientnamn*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.patientNamn">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Signeringstid</label>
+                <div class="col-sm-9">{{ q.signeringsTidpunkt }}</div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Tidpunkt*</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.avsantTidpunkt">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label">Typ av fråga*</label>
+                <div class="col-sm-9">
+                  <label class="radio">
+                    <input id="amnePaminnelse" name="amne" type="radio" value="Paminnelse" ng-model="q.amne">Påminnelse
+                  </label>
+                  <label class="radio">
+                    <input id="amneArbetstidsforlaggning" name="amne" type="radio" value="Arbetstidsforlaggning" ng-model="q.amne">Arbetstidsförläggning
+                  </label>
+                  <label class="radio">
+                    <input id="amneKontakt" name="amne" type="radio" value="Kontakt" ng-model="q.amne">Kontakt
+                  </label>
+                  <label class="radio">
+                    <input id="amneAvstangning" name="amne" type="radio" value="Avstamningsmote" ng-model="q.amne">Avstämningsmöte
+                  </label>
+                  <label class="radio">
+                    <input name="amneKomplettering" type="radio" value="Komplettering_av_lakarintyg" ng-model="q.amne">Komplettering
+                  </label>
+                  <label class="radio">
+                    <input name="amneOvrigt" type="radio" value="Ovrigt" ng-model="q.amne">Övrigt
+                  </label>
+                  <br/>
+                </div>
+              </div>
+            </div>
+
+             <div ng-if="q.amne == 'Komplettering_av_lakarintyg'">
+              <div class="well well-sm" style="margin-bottom:4px;" ng-repeat="kpl in q.kompletteringar">
+                <div class="form-group">
+                  <div class="row" style="margin-left:0px;margin-right: 0px;">
+
+                    <label class="col-sm-3 control-label">Kompletteringstext*</label>
+                    <div class="col-sm-7">
+                      <textarea ng-model="kpl.text"></textarea>
+                    </div>
+                    <div class="col-sm-2 text-right">
+                      <a ng-if="$index > 0" ng-click="remove($index)">Ta bort</a>
+                    </div>
+                  </div>
+                </div>
+                  <div class="row">
+                    <label class="col-sm-3 control-label">Fält*</label>
+                    <div class="col-sm-2">
+                      <input type="text" class="form-control" ng-model="kpl.falt">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div ng-if="q.amne == 'Komplettering_av_lakarintyg'" class="row text-right" style="margin-left:0px;margin-right: 0px;">
+                <a ng-click="addLegacy()">Lägg till komplettering</a>
+              </div>
+
+            <div class="form-group">
+              <div class="row">
+                <label class="col-sm-3 control-label">Rubrik</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="q.rubrik">
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-sm-3 control-label">Meddelande</label>
+                <div class="col-sm-9">
+                  <textarea ng-model="q.frageText"></textarea>
+                </div>
+              </div>
+           </div>
+
+            <div class="form-group">
+              <div class="col-sm-9">
+                <button type="button" class="btn btn-success" ng-click="sendLegacyQuestion(q)">Skapa fråga</button>
+               </div>
+            </div>
+
+          </div>
+          <!-- End fk7263 / legacy -->
+
+          <!-- Dont display -->
+          <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="formToDisplay === undefined && q.intygsId != ''">
+            <pre>
+                __   ____----.____     
+               /   \/    /_  |    |   __           _     __     ____
+              /    /    /| | | ___|  /   \___    _/ \  _|  | __|    \__   ____
+             /         / |_| | |    / /\  \  \  / /\ \|  | |/   \"" |  | |    |
+            /___/\    /______| |   /  __   \  \/ /__  \  | |__   \  /  | |  __|
+                  \__/      |__|  /__/  \___\   //  \__\ |    |   \ \  |_|  ___|_
+                                             \_/      |__|----"\___\ |____|      |
+                                                               |_____/   |_______|
+            </pre>
+             
+          </div>
+          <!-- End dont display -->
           <div ng-if="resultat" class="form-group">
             <label class="col-sm-12">Resultat
               <div>{{resultat}}</div>

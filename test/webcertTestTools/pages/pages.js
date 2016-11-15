@@ -26,6 +26,7 @@
 var intygPath = './intyg/'; // should point to intyg folder
 var WebcertBasePage = require('./webcert.base.page.js');
 var BaseUtkastPage = require(intygPath + 'base.utkast.page.js');
+var BaseIntygPage = require(intygPath + 'base.intyg.page.js');
 
 module.exports = {
     'webcertBase': new WebcertBasePage(),
@@ -36,7 +37,7 @@ module.exports = {
         'visaIntyg': require('./sokSkrivIntyg/sokSkrivValjIntyg.page.js')
     },
     fragorOchSvar: require('./fragorOchSvar.js'),
-    'intyg': {
+    intyg: {
         fk: {
             '7263': {
                 utkast: require(intygPath + 'fk7263/fk.7263.utkast.page.js'),
@@ -44,7 +45,7 @@ module.exports = {
             }
         },
         base: {
-            intyg: require(intygPath + 'base.intyg.page.js'),
+            intyg: new BaseIntygPage(),
             utkast: new BaseUtkastPage()
         },
         luse: {
@@ -78,5 +79,47 @@ module.exports = {
             }
         }
     },
-    'unsignedPage': require('./unsignedPage.js')
+    'unsignedPage': require('./unsignedPage.js'),
+
+
+    getIntygPageByType: function(typ) {
+        switch (typ) {
+            case 'Transportstyrelsens läkarintyg':
+                return this.intyg.ts.bas.intyg;
+            case 'Transportstyrelsens läkarintyg, diabetes':
+                return this.intyg.ts.diabetes.intyg;
+            case 'Läkarintyg FK 7263':
+                return this.intyg.fk['7263'].intyg;
+            case 'Läkarutlåtande för sjukersättning':
+                return this.intyg.luse.intyg;
+            case 'Läkarintyg för sjukpenning':
+                return this.intyg.lisu.intyg;
+            case 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga':
+                return this.intyg.luaeNA.intyg;
+            case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
+                return this.intyg.luaeFS.intyg;
+            default:
+                throw 'Intyg-typ odefinierad.';
+        }
+    },
+    getUtkastPageByType: function(typ) {
+        switch (typ) {
+            case 'Transportstyrelsens läkarintyg':
+                return this.intyg.ts.bas.utkast;
+            case 'Transportstyrelsens läkarintyg, diabetes':
+                return this.intyg.ts.diabetes.utkast;
+            case 'Läkarintyg FK 7263':
+                return this.intyg.fk['7263'].utkast;
+            case 'Läkarutlåtande för sjukersättning':
+                return this.intyg.luse.utkast;
+            case 'Läkarintyg för sjukpenning':
+                return this.intyg.lisu.utkast;
+            case 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga':
+                return this.intyg.luaeNA.utkast;
+            case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
+                return this.intyg.luaeFS.utkast;
+            default:
+                throw 'Intyg-typ odefinierad.';
+        }
+    }
 };

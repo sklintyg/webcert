@@ -66,25 +66,6 @@ angular.module('webcert').constant('webcert.messages', {
         'label.qacheckhanterad.ejhanterad' : 'Ej Hanterade',
         'label.qacheckhanterad.tillbaka' : 'Tillbaka',
 
-        //intyg types
-        'intygtypes.fk7263.typename': 'Läkarintyg FK 7263',
-        'intygtypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
-        'intygtypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
-        'intygtypes.lisjp.typename': 'Läkarintyg för sjukpenning',
-        'intygtypes.luse.typename': 'Läkarutlåtande för sjukersättning',
-        'intygtypes.luae_na.typename': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-        'intygtypes.luae_fs.typename': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-
-        //intyg help new texts as of 2016 (Can be removed?)
-        'intygtypes.2016.ts-bas.helptext': '<p>Transportstyrelsens läkarintyg ska användas vid förlängd giltighet av högre behörighet från 45 år, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Transportstyrelsens läkarintyg kan även användas när Transportstyrelsen i annat fall begärt ett allmänt läkarintyg avseende lämplighet att inneha körkort.</p>Specialistintyg finns bl.a. för alkohol, läkemedel, synfunktion, Alkolås m.m. Se <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.',
-        'intygtypes.2016.ts-diabetes.helptext': '<p>Transportstyrelsens läkarintyg, diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.</p>Information om Transportstyrelsens föreskrifter finns på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.',
-        'intygtypes.2016.fk7263.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till sjukpenning. Av intyget ska det framgå hur sjukdomen påverkar patientens arbetsförmåga och hur länge patienten behöver vara sjukskriven.',
-        'intygtypes.2016.sjukpenning.helptext': 'NEW: Läkarintyg för sjukpenning utökat används av läkaren för att dokumentera en nedsättning av arbetsförmågan, medicinska behandlingar och prognos samt rekommendera åtgärder. Det finns även möjlighet att ange uppgifter som kan hjälpa Försäkringskassan att utreda behov av samordning. Patienten använder därefter det för att ansöka om sjukpenning och rehabilitering eller vid frånvaro pga. sjukdom vid deltagande i arbetsmarknadspolitiskt program. Försäkringskassan fattar beslut om sjukpenning. Informationen i Läkarintyg för sjukpenning utökat ligger till grund för detta beslut. En läkares bedömningar i det innebär ingen ovillkorlig rätt till sjukpenning utan är ett underlag för beslut.',
-        'intygtypes.2016.luse.helptext': '<h3>Vad är sjukersättning?</h3><p>Sjukersättning är en ersättning för personer mellan 30 och 64 år som har nedsatt arbetsförmåga på grund av sjukdom, skada eller funktionsnedsättning. Beroende på hur mycket arbetsförmågan är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukersättning. Man kan få sjukersättning om Försäkringskassan bedömer att arbetsförmågan är nedsatt med minst 25 procent för all överskådlig framtid och att alla rehabiliteringsmöjligheter är uttömda.</p>',
-        'intygtypes.2016.lisjp.helptext': 'Läkarintyg för sjukpenning utökat används av läkaren för att dokumentera en nedsättning av arbetsförmågan, medicinska behandlingar och prognos samt rekommendera åtgärder. Det finns även möjlighet att ange uppgifter som kan hjälpa Försäkringskassan att utreda behov av samordning. Patienten använder därefter det för att ansöka om sjukpenning och rehabilitering eller vid frånvaro pga. sjukdom vid deltagande i arbetsmarknadspolitiskt program. Försäkringskassan fattar beslut om sjukpenning. Informationen i Läkarintyg för sjukpenning utökat ligger till grund för detta beslut. En läkares bedömningar i det innebär ingen ovillkorlig rätt till sjukpenning utan är ett underlag för beslut.',
-        'intygtypes.2016.luae_na.helptext': 'Läkarintyget används av Försäkringskassan för att bedöma om patienten har rätt till aktivitetsersättning för nedsatt arbetsförmåga.',
-        'intygtypes.2016.luae_fs.helptext': 'Läkarutlåtandet används av Försäkringskassan för att bedöma om patienten har rätt till aktivitetsersättning vid förlängd skolgång. Det medicinska underlaget skabeskriva om funktionsnedsättning finns eller har funnits som påverkar behovet av förlängd skolgång. Försäkringskassan behöver uppgifterna för att bedöma om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgångför attslutföra grundskola eller gymnasium.',
-
         //about texts
         'about.cookies': '<h3>Om kakor (cookies)</h3><p>Så kallade kakor (cookies) används för att underlätta för besökaren på webbplatsen. En kaka är en textfil som lagras på din dator och som innehåller information. Denna webbplats använder så kallade sessionskakor. Sessionskakor lagras temporärt i din dators minne under tiden du är inne på en webbsida. Sessionskakor försvinner när du stänger din webbläsare. Ingen personlig information om dig sparas vid användning av sessionskakor.</p><p>Om du inte accepterar användandet av kakor kan du stänga av det via din webbläsares säkerhetsinställningar. Du kan även ställa in webbläsaren så att du får en varning varje gång webbplatsen försöker sätta en kaka på din dator.</p><p><strong>Observera!</strong> Om du stänger av kakor i din webbläsare kan du inte logga in i Webcert.</p><p>Allmän information om kakor (cookies) och lagen om elektronisk kommunikation finns på Post- och telestyrelsens webbplats.</p><p><a href="https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/" target="_blank">Mer om kakor (cookies) på Post- och telestyrelsens webbplats</a></p>',
 
@@ -152,7 +133,7 @@ angular.module('webcert').constant('webcert.messages', {
         //Fraga/Svar
         'th.label.qa-forwarded': 'Vidarebefordrad',
         'th.help.qa-forwarded': 'Markera om fråga-svar är vidarebefordrat till den som ska hantera det.',
-        'th.label.qa-action': 'Åtgärd',
+        'th.label.qa-action': 'Att åtgärda',
         'th.help.qa-action': 'Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.',
         'th.label.qa-sender': 'Avsändare',
         'th.help.qa-sender': 'Vem som initierade frågan.',

@@ -119,5 +119,14 @@ exports.config = {
                 filename: 'index.html'
             })
         );
+
+        var disableNgAnimate = function() {
+            angular.module('disableNgAnimate', []).run(['$animate', function($animate) {
+                console.log('Animations are disabled');
+                $animate.enabled(false);
+            }]);
+        };
+
+        browser.addMockModule('disableNgAnimate', disableNgAnimate);
     }
 };

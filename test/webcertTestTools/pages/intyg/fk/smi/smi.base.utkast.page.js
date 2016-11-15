@@ -197,7 +197,8 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         this.diagnos = {
             diagnosRow: function(index) {
                 return {
-                    kod: element(by.id('diagnoseCode-' + index))
+                    kod: element(by.id('diagnoseCode-' + index)),
+                    beskrivning: element(by.id('diagnoseDescription-' + index))
                 };
 
             },
@@ -213,6 +214,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         this.ovrigt = element(by.id('ovrigt'));
         this.kontaktMedFK = element(by.id('form_kontaktMedFk')).element(by.css('input'));
         this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
+
         //enhetsadress lika för alla SMI-intyg
         this.enhetensAdress = {
             postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
@@ -274,8 +276,9 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
             return Promise.all([
                 sendKeysWithBackspaceFix(row.datum, val.datum),
-                row.underlag.click(),
-                row.underlag.element(by.cssContainingText('div', val.underlag)).click(),
+                row.underlag.click().then(function() {
+                    return row.underlag.element(by.cssContainingText('.ui-select-choices-row', val.underlag)).click();
+                }),
                 row.information.sendKeys(val.infoOmUtredningen)
             ]);
         };
@@ -297,9 +300,6 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeDiagnosKoder: function(diagnoser) {
         var promiseArr = [];
         for (var i = 0; i < diagnoser.length; i++) {
-            if (i !== 0) {
-                promiseArr.push(this.diagnos.laggTillDiagnosKnapp.sendKeys(protractor.Key.SPACE));
-            }
             var row = this.diagnos.diagnosRow(i);
             promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sendEnterToElement(row.kod)));
 
@@ -363,7 +363,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var mb = this.medicinskBehandling;
         return Promise.all([
             checkAndSendTextToForm(mb.avslutad.checkbox, mb.avslutad.text, behandling.avslutad),
-            checkAndSendTextToForm(mb.pagaende.checkbox ,mb.pagaende.text, behandling.pagaende),
+            checkAndSendTextToForm(mb.pagaende.checkbox, mb.pagaende.text, behandling.pagaende),
             checkAndSendTextToForm(mb.planerad.checkbox, mb.planerad.text, behandling.planerad),
             checkAndSendTextToForm(mb.substansintag.checkbox, mb.substansintag.text, behandling.substansintag)
         ]);

@@ -41,7 +41,7 @@ describe('Patient lookup variants', function() {
         var patientId = '19121212-1212';
 
         afterEach(function () {
-            browser.clearMockModules();
+            specHelper.removeHttpBackendMock();
         });
 
         beforeEach(function () {

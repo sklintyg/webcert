@@ -29,6 +29,37 @@ var LuaefsIntyg = FkBaseIntygPage._extend({
 
         this.intygType = 'luae_fs';
 
+        this.andraMedicinskaUtredningar = {
+            field: element(by.cssContainingText('.intyg-field', 'andra medicinska utredningar')),
+            getUtredning: function(index) {
+                return {
+                    typ: element(by.id('underlag-' + index + '-typ')),
+                    datum: element(by.id('underlag-' + index + '-datum')),
+                    info: element(by.id('underlag-' + index + '-hamtasFran'))
+                };
+            }
+        };
+
+        this.diagnoser = {
+            getDiagnos: function(index) {
+                index = index || 0;
+                return {
+                    kod: element(by.id('diagnoser-' + index + '-kod')),
+                    beskrivning: element(by.id('diagnoser-' + index + '-beskrivning'))
+                };
+            },
+            /*grund: element(by.id('diagnosgrund')),
+            nyBedomningDiagnosgrundJa: element(by.id('nyBedomningDiagnosgrund-Ja')),
+            nyBedomningDiagnosgrundNej: element(by.id('nyBedomningDiagnosgrund-Nej')),
+            nyBedomningDiagnosgrund: element(by.cssContainingText('.intyg-field', 'Finns skäl till att revidera/uppdatera tidigare satt diagnos?')),
+            diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))*/
+        };
+
+        this.funktionsnedsattning = {
+            debut: element(by.id('funktionsnedsattningDebut')),
+            paverkan: element(by.id('funktionsnedsattningPaverkan'))
+        };
+
         // Knappar etc. ärvs i första hand från BaseIntygPage
 
         // Svarstexter
@@ -68,6 +99,24 @@ var LuaefsIntyg = FkBaseIntygPage._extend({
 
         this.tillagsFraga1 = element(by.css('#tillaggsfraga-9001 div'));
         this.tillagsFraga2 = element(by.css('#tillaggsfraga-9002 div'));
+
+        this.baseratPa = {
+            minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
+            journaluppgifter: element(by.id('journaluppgifter')),
+            anhorigsBeskrivning: element(by.id('anhorigsBeskrivningAvPatienten')),
+            annat: element(by.id('annatGrundForMU')),
+            annatBeskrivning: element(by.id('annatGrundForMUBeskrivning')),
+            personligKannedom: element(by.id('kannedomOmPatient'))
+        };
+
+        this.ovrigaUpplysningar = element(by.id('ovrigt'));
+
+        this.kontaktFK = {
+            onskas: element(by.cssContainingText('.intyg-field', 'Jag önskar att Försäkringskassan kontaktar mig')),
+            ja: element(by.id('kontaktMedFk-Ja')),
+            nej: element(by.id('kontaktMedFk-Nej')),
+            anledning: element(by.id('anledningTillKontakt'))
+        };
     },
 
     get: function get(intygId) {

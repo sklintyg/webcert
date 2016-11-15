@@ -66,7 +66,7 @@ stage('fitnesse') {
             wrap([$class: 'Xvfb']) {
                 shgradle "fitnesseTest -PfileOutput -PoutputFormat=html -Dgeb.env=firefoxRemote -Dweb.baseUrl=https://webcert.inera.nordicmedtest.se/ \
                       -DbaseUrl=https://webcert.inera.nordicmedtest.se/ -Dlogsender.baseUrl=https://webcert.inera.nordicmedtest.se/log-sender/ \
-                      -Dcertificate.baseUrl=http://localhost:18008/inera-certificate/ \
+                      -Dcertificate.baseUrl=https://webcert.inera.nordicmedtest.se/inera-certificate/ \
                       -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
             }
         } finally {

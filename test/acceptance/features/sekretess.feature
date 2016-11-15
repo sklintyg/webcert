@@ -1,6 +1,6 @@
 # language: sv
 @sekretess
-Egenskap: Sekretessmarkerad åatient
+Egenskap: Sekretessmarkerad patient
 
 Bakgrund: Jag loggar in som läkare och går in på patient med sekretessmarkering.
    Givet att jag är inloggad som djupintegrerad läkare

@@ -68,43 +68,43 @@ function getRandomArbetstidsforlaggning(arbetsformaga) {
 function getRandomAtgarder() {
     var atgarder = [{
         namn: 'Arbetsträning',
-        beskrivning: 'aaa',
+        beskrivning: 'Arbetsträning-beskrivning',
         key: 'ARBETSTRANING'
     }, {
         namn: 'Arbetsanspassning',
-        beskrivning: 'aaa',
+        beskrivning: 'Arbetsanspassning-beskrivning',
         key: 'ARBETSANPASSNING'
     }, {
         namn: 'Söka nytt arbete',
-        beskrivning: 'aaa',
+        beskrivning: 'Söka nytt arbete-beskrivning',
         key: 'SOKA_NYTT_ARBETE'
     }, {
         namn: 'Besök på arbetsplatsen',
-        beskrivning: 'aaa',
+        beskrivning: 'Besök på arbetsplatsen-beskrivning',
         key: 'BESOK_ARBETSPLATS'
     }, {
         namn: 'Ergonomisk bedömning',
-        beskrivning: 'aaa',
+        beskrivning: 'Ergonomisk bedömning-beskrivning',
         key: 'ERGONOMISK'
     }, {
         namn: 'Hjälpmedel',
-        beskrivning: 'aaa',
+        beskrivning: 'Hjälpmedel-beskrivning',
         key: 'HJALPMEDEL'
     }, {
         namn: 'Konflikthantering',
-        beskrivning: 'aaa',
+        beskrivning: 'Konflikthantering-beskrivning',
         key: 'KONFLIKTHANTERING'
     }, {
         namn: 'Kontakt med företagshälsovård',
-        beskrivning: 'aaa',
+        beskrivning: 'Kontakt med företagshälsovård-beskrivning',
         key: 'KONTAKT_FHV'
     }, {
         namn: 'Omfördelning av arbetsuppgifter',
-        beskrivning: 'aaa',
+        beskrivning: 'Omfördelning av arbetsuppgifter-beskrivning',
         key: 'OMFORDELNING'
     }, {
         namn: 'Övrigt',
-        beskrivning: 'aaa',
+        beskrivning: 'Övrigt-beskrivning',
         key: 'OVRIGA_ATGARDER'
     }];
     var randomLength = Math.floor(Math.random() * atgarder.length) + 1;

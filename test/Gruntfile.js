@@ -28,6 +28,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-env');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks("grunt-jsbeautifier");
+    grunt.loadNpmTasks('grunt-force-task');
 
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
@@ -115,6 +116,40 @@ module.exports = function(grunt) {
     });
 
 
+    grunt.registerTask('genReport', 'Genererar rapport från testkörningen', function() {
+        var files = grunt.file.expand('acceptance/report/*_acc_results.json');
+        var combinedReport = '[';
+        files.forEach(function (item,index) { 
+            var fileText = grunt.file.read(item);
+            // Ibland är delrapporter tomma eller innehaller endast en []. 
+            // Hoppa over dessa.
+            if (fileText !== '[]' && fileText !== '') {
+                combinedReport += fileText.substring(1, (fileText.length -2));
+
+                if (index < files.length -1) {
+                    combinedReport += ',';
+                }
+            }
+            else {
+                grunt.log.subhead(fileText);
+            }
+        });
+        combinedReport += ']';
+        grunt.file.write('acceptance/report/acc_results.json', combinedReport);
+
+        files.forEach(function (item,index) { 
+            grunt.file.delete(item);
+        });
+
+        // Gör en kontroll om vi fick något fel i tidigare task. Denna hantering finns pga att vi tvingades köra med 'force' i 
+        // task 'protractor:acc' då ett eventuellt fail i testfall i protractor-steget hindrar den här tasken från att köra 
+        // och vi vill ha en rapport oavsett om ett testfall har gått fel eller inte. 
+        if (grunt.fail.errorcount > 0) {
+            grunt.log.subhead('Tidigare eller nuvarande task innehöll ett felmeddelande (errorcount =' + grunt.fail.errorcount +')');
+            grunt.fail.warn("Hittade ett fel i task force:protractor:acc");
+        }
+    });
+
     // Run: 'grunt acc:ip20'
     grunt.task.registerTask('acc', 'Task för att köra acceptanstest', function(environment) {
 
@@ -123,6 +158,13 @@ module.exports = function(grunt) {
             var defaultEnv = 'ip30';
             grunt.log.subhead('Ingen miljö vald, använder ' + defaultEnv + '-miljön..');
             environment = defaultEnv;
+        }
+
+        if (grunt.option('gridnodeinstances')) {
+            if (grunt.option('gridnodeinstances') > 1) {
+                grunt.config.set('protractor.acc.options.args.capabilities.shardTestFiles', true);
+                grunt.config.set('protractor.acc.options.args.capabilities.maxInstances', grunt.option('gridnodeinstances'));
+            }
         }
 
         // Ange taggar som grunt.option istället for argument till task. Flexiblare när det gäller att
@@ -138,7 +180,6 @@ module.exports = function(grunt) {
         grunt.log.subhead('Taggar:' + tagsArray);
         grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
 
-
         //Tasks
         var tasks = [];
         if (!grunt.option('CI')) {
@@ -147,7 +188,10 @@ module.exports = function(grunt) {
 
         tasks.push('env:' + environment);
         tasks.push('protractor_webdriver');
-        tasks.push('protractor:acc');
+        // Måste ha --force på denna då vi behöver att rapporten genereras ( efterföljande task genReport) 
+        // oavsett om alla testfall lyckas eller inte. Kontroll av eventuell felkod görs i genReport-task. 
+        tasks.push('force:protractor:acc');
+        tasks.push('genReport');
 
         grunt.task.run(tasks);
 

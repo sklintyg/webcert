@@ -23,6 +23,7 @@
 <Files>true</Files>
 <Help>Skapa ett FK 7263-intyg med smittskydd</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>

@@ -17,12 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, pages, Promise */
+/* globals logger, pages, Promise, person */
 
 'use strict';
 
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 
+function checkPatientadress(adressObj) {
+    return Promise.all([
+        expect(tsBasIntygPage.patientAdress.postadress.getText()).to.eventually.contain(adressObj.postadress),
+        expect(tsBasIntygPage.patientAdress.postnummer.getText()).to.eventually.contain(adressObj.postnummer),
+        expect(tsBasIntygPage.patientAdress.postort.getText()).to.eventually.contain(adressObj.postort)
+    ]);
+}
 module.exports = {
     checkValues: function(intyg) {
         logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
@@ -34,6 +41,13 @@ module.exports = {
             return allTypes.indexOf(a.toUpperCase()) - allTypes.indexOf(b.toUpperCase());
         });
         selectedTypes = selectedTypes.join(', ').toUpperCase();
+
+
+        promiseArr.push(checkPatientadress(person.adress).then(function(value) {
+            logger.info('OK - checkPatientadress = ' + value);
+        }, function(reason) {
+            throw ('FEL - checkPatientadress: ' + reason);
+        }));
 
         promiseArr.push(expect(tsBasIntygPage.intygetAvser.getText()).to.eventually.contain(selectedTypes).then(function(value) {
             logger.info('OK - Körkortstyper = ' + value);
@@ -55,6 +69,12 @@ module.exports = {
                 throw ('FEL - Identitet styrkt genom: ' + reason);
             }));
         }
+
+        promiseArr.push(checkPatientadress(person.adress).then(function(value) {
+            logger.info('OK - checkPatientadress = ' + value);
+        }, function(reason) {
+            throw ('FEL - checkPatientadress: ' + reason);
+        }));
 
         return Promise.all(promiseArr);
     }

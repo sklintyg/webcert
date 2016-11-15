@@ -21,7 +21,7 @@
  * Created by stephenwhite on 31/08/15.
  */
 angular.module('webcert.pub.login', ['ui.bootstrap'])
-    .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', function($scope, $sce, $uibModal, $window) {
+    .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', function($scope, $sce, $uibModal, $window, $http) {
         'use strict';
         var expand = $sce.trustAsHtml('Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
         var collapse = $sce.trustAsHtml('Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
@@ -60,5 +60,13 @@ angular.module('webcert.pub.login', ['ui.bootstrap'])
         $scope.ok = function () {
             $scope.modalInstance.close();
         };
+
+        function loadIntygTypes() {
+            $scope.intygTypes = [];
+            $http.get('/api/modules/active').success(function(data) {
+                $scope.intygTypes = data;
+            });
+        };
+        loadIntygTypes();
 
     }]);

@@ -25,6 +25,7 @@ module.exports = {
     fillIn: function(intyg) {
         browser.ignoreSynchronization = true;
         var promisesArr = [];
+
         //Ange smittskydd
         promisesArr.push(fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function() {
             logger.info('OK - angeSmittskydd :' + intyg.smittskydd);
@@ -102,6 +103,13 @@ module.exports = {
             logger.info('OK - angeRekommendationer :' + JSON.stringify(intyg.rekommendationer));
         }, function(reason) {
             throw ('FEL, angeRekommendationer,' + reason);
+        }));
+
+        //Ange enhetadress
+        promisesArr.push(fkUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
+            logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
+        }, function(reason) {
+            throw ('FEL, angeEnhetAdress,' + reason);
         }));
 
         return Promise.all(promisesArr)

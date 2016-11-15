@@ -48,7 +48,7 @@ public class RelationServiceImpl implements RelationService {
         // While we have a parent in the reference intyg
         while (reference != null && StringUtils.isNotEmpty(reference.getRelationIntygsId())) {
             reference = utkastRepo.findOne(reference.getRelationIntygsId());
-            if (reference == null || !userService.getUser().getIdsOfSelectedVardenhet().contains(reference.getEnhetsId())) {
+            if (reference == null || !isAuthorized(reference.getEnhetsId())) {
                 break;
             }
             relationList.add(new RelationItem(reference));
@@ -68,14 +68,18 @@ public class RelationServiceImpl implements RelationService {
 
     @Override
     public Optional<List<RelationItem>> getRelations(String intygsId) {
-        Utkast findOne = utkastRepo.findOne(intygsId);
-        if (findOne != null) {
+        Utkast baseCertificate = utkastRepo.findOne(intygsId);
+        if (baseCertificate != null && isAuthorized(baseCertificate.getEnhetsId())) {
             List<RelationItem> res = getChildRelations(intygsId);
-            res.add(new RelationItem(findOne));
+            res.add(new RelationItem(baseCertificate));
             res.addAll(getParentRelations(intygsId));
             return Optional.of(res);
         } else {
             return Optional.empty();
         }
+    }
+
+    private boolean isAuthorized(String enhetsId) {
+        return userService.getUser().getIdsOfSelectedVardenhet().contains(enhetsId);
     }
 }

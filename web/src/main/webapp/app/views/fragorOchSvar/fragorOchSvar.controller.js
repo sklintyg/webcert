@@ -67,7 +67,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     value: 'SVAR_FRAN_FK'
                 },
                 {
-                    label: 'Ingen',
+                    label: 'Inget',
                     value: 'HANTERAD'
                 }
             ];

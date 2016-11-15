@@ -22,6 +22,7 @@ describe('wcUtkastListSpec', function() {
 
     var $scope;
     var $state;
+    var UtkastProxy;
     var mockResponse;
     var utkastNotifyService;
     var element;
@@ -38,6 +39,9 @@ describe('wcUtkastListSpec', function() {
             utkastNotifyService =
                 jasmine.createSpyObj('common.UtkastNotifyService', ['onNotifyChange', 'notifyUtkast']);
             $provide.value('common.UtkastNotifyService', utkastNotifyService);
+
+            UtkastProxy = jasmine.createSpyObj('webcert.UtkastProxy', ['getUtkastTypesCachedUnfiltered']);
+            $provide.value('webcert.UtkastProxy', UtkastProxy);
 
             _$stateProvider_.state('fk7263-edit', {
                 url: '/fk7263/edit/:certificateId?:patientId&:hospName&:sjf'

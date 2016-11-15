@@ -88,6 +88,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
+        helpers.updateEnhetAdressForNewIntyg();
         var fragaText = global.intyg.guidcheck;
         var page = fkIntygPage;
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
@@ -498,4 +499,40 @@ module.exports = function() {
 
 
 
+    this.Given(/^ska jag se flera frågor$/, function() {
+        return pages.fragorOchSvar.qaTable.all(by.css('tr')).count().then(function(count) {
+            return expect(count).to.be.above(1); // mer än 1 pga att table-header är en rad
+        });
+    });
+
+    this.Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
+        var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
+        return showFilter.isPresent().then(function(isPresent) {
+            if (isPresent) {
+                return showFilter.sendKeys(protractor.Key.SPACE);
+            } else {
+                return Promise.resolve('Filter visas redan');
+            }
+        }).then(function() {
+            return element(by.id('qp-lakareSelector'))
+                .element(by.cssContainingText('option', lakare)).click()
+                .then(function() {
+                    return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
+                });
+
+        });
+    });
+
+
+    this.Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lakare) {
+        console.log('Kontrollerar att varje rad innehåller texten ' + lakare);
+        return pages.fragorOchSvar.qaTable.all(by.css('tr')).getText()
+            .then(function(textArr) {
+                var text = textArr.join('\n');
+                logger.info(text);
+                if (text.indexOf(lakare) < 0) {
+                    throw 'Hittade felaktig rad';
+                }
+            });
+    });
 };

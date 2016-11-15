@@ -31,6 +31,15 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     global.user = JSON.parse(JSON.stringify(userObj));
 
 
+    //Lägg till en adress för vårdenheten
+    global.user.enhetsAdress = {
+        postnummer: '66130',
+        postort: 'Karlstad',
+        postadress: 'Trumpsvängen 1',
+        telefon: '072-9192811'
+    };
+
+
     var login;
     if (!secondBrowser) {
 
