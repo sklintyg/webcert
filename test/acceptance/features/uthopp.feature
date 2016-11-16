@@ -14,7 +14,7 @@ Scenario: Ska gå in på intyg som är skickat till intygstjänsten
 	Så ska jag få ett mejl med ämnet "Försäkringskassan har ställt en fråga angående ett intyg"
 
 @skicka-fråga
-Scenario: Ska gå in på intyg som är skickat till intygstjänsten
+Scenario: Skicka fråga till Försäkringskassan
 	När jag skickar ett intyg till Intygstjänsten
 	Och jag skickar intyget direkt till Försäkringskassan
 	Och jag går in på intyget via uthoppslänk

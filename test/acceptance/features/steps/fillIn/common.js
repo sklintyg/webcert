@@ -34,7 +34,7 @@ module.exports = {
     setPatientAdressIfNotGiven: function() {
         var isFk7263 = global.intyg.typ.indexOf('7263') >= 0;
 
-        if (global.person.adress && !isFk7263) {
+        if (global.person.adress && !isFk7263 && global.user.origin !== 'DJUPINTEGRATION') {
             return utkastPage.angePatientAdress(global.person.adress).then(function() {
                 logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
             }, function(reason) {
