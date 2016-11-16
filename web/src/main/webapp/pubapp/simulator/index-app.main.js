@@ -130,7 +130,7 @@ angular.module('rhsIndexApp')
             var kompl = {
                 text: 'Detta är kompletteringstexten...',
                 frageId: '1',
-                instans: ''
+                instans: undefined
             };
 
             $scope.q.kompletteringar.push(kompl);
