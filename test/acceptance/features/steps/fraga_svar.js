@@ -35,6 +35,12 @@ function kontrolleraKompletteringsFragaHanterad(id) {
     return expect(element(by.id(selector)).isPresent()).to.eventually.be.ok;
 }
 
+function kontrolleraKompletteringsFragaOHanterad(id) {
+    var selector = 'arende-unhandled-' + id;
+    logger.info('Letar efter element med id ' + selector);
+    return expect(element(by.id(selector)).isPresent()).to.eventually.be.ok;
+}
+
 module.exports = function() {
     this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
@@ -534,5 +540,17 @@ module.exports = function() {
                     throw 'Hittade felaktig rad';
                 }
             });
+    });
+
+    this.Given(/^ska jag se min fråga under ohanterade frågor$/, function() {
+        var messageId;
+        console.log(global.meddelanden);
+        for (var k = 0; k < global.meddelanden.length; k++) {
+            if (global.meddelanden[k].typ === 'Fråga') {
+                messageId = global.meddelanden[k].id;
+            }
+        }
+        return kontrolleraKompletteringsFragaOHanterad(messageId);
+
     });
 };
