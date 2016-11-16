@@ -53,12 +53,12 @@ module.exports = {
             intyg: require(intygPath + 'fk/smi/luse/luse.intyg.page.js')
         },
         lisu: {
-            utkast: require(intygPath + 'fk/smi/lisu/lisu.utkast.page.js')
-            //intyg: require(intygPath + 'lisu.intyg.page.js')
+            utkast: require(intygPath + 'fk/smi/lisjp/lisjp.utkast.page.js')
+                //intyg: require(intygPath + 'lisu.intyg.page.js')
         },
         lisjp: {
-            utkast: require(intygPath + 'fk/smi/lisu/lisu.utkast.page.js')
-            //intyg: require(intygPath + 'lisu.intyg.page.js')
+            utkast: require(intygPath + 'fk/smi/lisjp/lisjp.utkast.page.js'),
+            intyg: require(intygPath + 'fk/smi/lisjp/lisjp.intyg.page.js')
         },
         luaeFS: {
             utkast: require(intygPath + 'fk/luae_fs/luae_fs.utkast.page.js'),
@@ -93,7 +93,7 @@ module.exports = {
             case 'Läkarutlåtande för sjukersättning':
                 return this.intyg.luse.intyg;
             case 'Läkarintyg för sjukpenning':
-                return this.intyg.lisu.intyg;
+                return this.intyg.lisjp.intyg;
             case 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga':
                 return this.intyg.luaeNA.intyg;
             case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':

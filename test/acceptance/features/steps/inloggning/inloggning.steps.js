@@ -120,6 +120,23 @@ module.exports = function() {
 
     });
 
+    this.Given(/^jag går in på att skapa ett slumpat intyg$/, function(callback) {
+        var randomIntygCode = ['LISJP', 'LUSE', 'LUAE_NA', 'LUAE_FS'][Math.floor(Math.random() * 4)];
+        intyg.typ = helpers.smiIntyg[randomIntygCode];
+        Promise.all([
+            sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
+            sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
+        ]).then(function() {
+            // Spara intygsid för kommande steg
+            browser.getCurrentUrl().then(function(text) {
+                intyg.id = text.split('/').slice(-1)[0];
+                logger.info('intyg.id: ' + intyg.id, function() {
+                    callback();
+                });
+            });
+        });
+    });
+
     this.Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {

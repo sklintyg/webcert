@@ -23,6 +23,7 @@
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var createIntygWithStatus = require('./helpers_create_intyg.js').createIntygWithStatus;
 var getIntygElementRow = require('./helpers.js').getIntygElementRow;
+var helpers = require('./helpers.js');
 
 function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 
@@ -58,6 +59,29 @@ module.exports = function() {
         intyg.typ = intygstyp;
         getIntygElementRow(intygstyp, status, function(el) {
             gotoIntyg(intygstyp, status, el, function(err) {
+                browser.getCurrentUrl().then(function(text) {
+                    intyg.id = text.split('/').slice(-1)[0];
+                    intyg.id = intyg.id.split('?')[0];
+                    logger.info('intyg.id:' + intyg.id);
+                    if (err) {
+                        callback(JSON.stringify(err));
+                    } else {
+                        callback();
+                    }
+                });
+            });
+        });
+    });
+
+    this.Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
+        timeout: 700 * 1000
+    }, function(status, callback) {
+        var randomIntygCode = ['LISJP', 'LUSE', 'LUAE_NA', 'LUAE_FS'][Math.floor(Math.random() * 4)];
+        var randomIntyg = helpers.smiIntyg[randomIntygCode];
+        logger.info('Intyg type: ' + randomIntyg);
+        intyg.typ = randomIntyg;
+        getIntygElementRow(randomIntyg, status, function(el) {
+            gotoIntyg(randomIntyg, status, el, function(err) {
                 browser.getCurrentUrl().then(function(text) {
                     intyg.id = text.split('/').slice(-1)[0];
                     intyg.id = intyg.id.split('?')[0];
