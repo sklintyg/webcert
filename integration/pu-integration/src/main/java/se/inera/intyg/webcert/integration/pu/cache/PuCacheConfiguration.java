@@ -19,11 +19,13 @@
 
 package se.inera.intyg.webcert.integration.pu.cache;
 
+import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.spring.SpringCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
@@ -53,6 +55,11 @@ public class PuCacheConfiguration implements se.inera.intyg.common.cache.core.Co
 
         cacheManager.getDynamicCacheConfiguration().setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(duration));
         cacheManager.getCache(PERSON_CACHE_NAME);
+    }
+
+    @PreDestroy
+    public void tearDown() {
+        Ignition.stopAll(false);
     }
 
 }
