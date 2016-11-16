@@ -1,2 +1,3 @@
 /acceptance/report/acc_results.json
+/acceptance/report/*_acc_results.json
 /dev/report
