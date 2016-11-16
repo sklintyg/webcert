@@ -4,7 +4,7 @@ apply plugin: "groovy"
 apply plugin: "inera-fitnesse"
 
 fitnesse {
-    port = 9147
+    port = 9126
     root = "FitNesseRoot"
     workingDir = "src/test/fitnesse"
     wikiStartPage = "WebCert.AutomatiseradeTester"
@@ -19,7 +19,8 @@ fitnesse {
         "webcert.web.baseUrl": System.properties['web.baseUrl'] ?: "http://localhost:9088/",
         "webcert.baseUrl"    : System.properties['baseUrl'] ?: "http://localhost:9088/",
         "logsender.baseUrl"  : System.properties['logsender.baseUrl'] ?: "http://localhost:9097/log-sender/",
-        "certificate.baseUrl": System.properties['certificate.baseUrl'] ?: "http://localhost:8080/inera-certificate/"
+        "certificate.baseUrl": System.properties['certificate.baseUrl'] ?: "http://localhost:8080/inera-certificate/",
+        "slim.port"          : "9147"
         ]
 }
 
