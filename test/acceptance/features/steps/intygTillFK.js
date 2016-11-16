@@ -28,7 +28,8 @@
  module.exports = function() {
 
      this.Given(/^jag skickar intyget direkt till Försäkringskassan$/, function(callback) {
-         var personId = global.intyg.personId;
+         //var personId = global.intyg.personId;
+         var personId = global.intyg.person.id;
          console.log(personId);
          var url;
          var body;

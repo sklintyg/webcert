@@ -31,14 +31,12 @@
 
      this.Given(/^jag skickar ett intyg till Intygstjänsten$/, function(callback) {
          global.intyg.id = testdataHelper.generateTestGuid();
-         global.intyg.personId = testdataHelper.shuffle(testvalues.patienter)[0];
-         //personId = personId.replace('-', '+')
-         //console.log(personId);
-         var personId = global.intyg.personId;
+         global.intyg.person = testdataHelper.shuffle(testvalues.patienter)[0];
+         var personId = global.intyg.person.id;
          console.log(personId);
          var url;
          var body;
-         console.log(intyg);
+         // console.log(intyg);
          intyg.typ = 'Läkarintyg FK 7263';
          var isSMIIntyg;
          if (intyg && intyg.typ) {
@@ -84,7 +82,6 @@
          } else {
              url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/register-certificate/v3.0?wsdl';
              url = url.replace('https', 'http');
-
              //function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId)
              body = soapMessageBodies.RegisterMedicalCertificate(
                  personId,
@@ -98,11 +95,9 @@
                  if (err) {
                      callback(err);
                  }
-
                  client.RegisterMedicalCertificate(body, function(err, result, body) {
                      console.log(err);
                      console.log(result);
-
                      var resultcode = result.result.resultCode;
                      logger.info('ResultCode: ' + resultcode);
                      if (resultcode !== 'OK') {
@@ -111,12 +106,11 @@
                      } else {
                          callback();
                      }
-                     /* if (err) {
+                     if (err) {
                          callback(err);
                      } else {
                          callback();
-                     }*/
-
+                     }
                  });
              });
          }

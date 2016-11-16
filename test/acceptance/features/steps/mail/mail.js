@@ -61,7 +61,8 @@ module.exports = {
                     }
                     // var bufferCache = '';
                     var now = new Date();
-                    var date5MinAgo = new Date(now.getTime() + 5 * 60000);
+                    var date5MinAgo = new Date(now.getTime() - 5 * 60000);
+                    console.log(date5MinAgo);
                     var mailArray = [];
                     imap.search(['UNSEEN', ['SINCE', date5MinAgo.toISOString()]],
                         function(err, results) {
@@ -76,9 +77,7 @@ module.exports = {
                                 console.log('Message #%d', seqno);
                                 var buffer = '';
                                 msg.on('body', function(stream, info) {
-
                                     //console.log(prefix + 'Body');
-
                                     stream.on('data', function(chunk) {
                                         buffer += chunk.toString('utf8');
                                     });
@@ -107,6 +106,7 @@ module.exports = {
                                     promiseArr.push(parseMail(mailArray[i]));
                                 }
                                 resolve(Promise.all(promiseArr));
+
                             });
                         }
                     );

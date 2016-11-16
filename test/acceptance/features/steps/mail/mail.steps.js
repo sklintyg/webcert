@@ -26,11 +26,8 @@ module.exports = function() {
 
     this.Given(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
         console.log('intygsid:' + intyg.id);
-        //var mailLink = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/' + intyg.id + '/questions?enhet';
         var textToSearchFor = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/' + intyg.id + '/questions?enhet=' + user.enhetId;
-        //user.enhetId;
-        //var mailLink = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/d5d28ab6-9907-d12b-cc93-52b5400e70c5/questions?enhet=TSTNMT2321000156-105F';
-        //svar mailLink = 'nmt_vg1_Rehab har fått en fråga från Försäkringskassan angående ett intyg.';
+        // var textToSearchFor = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/' + 'Hej' + '/questions?enhet=' + user.enhetId;
         console.log(textToSearchFor);
         return browser.sleep(30000).then(function() {
             return mail.readRecentMails()
