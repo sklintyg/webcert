@@ -69,15 +69,15 @@ var BaseTsUtkast = BaseUtkast._extend({
     },
     fillInOvrigKommentar: function(utkast) {
         return this.kommentar.sendKeys(utkast.kommentar);
-    },
-    fillInPatientAdress: function(adressObj) {
-        return Promise.all([
-            this.adress.postadress.clear().sendKeys(adressObj.postadress),
-            this.adress.postnummer.clear().sendKeys(adressObj.postnummer),
-            this.adress.postort.clear().sendKeys(adressObj.postort)
-        ]);
-
     }
+    // fillInPatientAdress: function(adressObj) {
+    //     return Promise.all([
+    //         this.adress.postadress.clear().sendKeys(adressObj.postadress),
+    //         this.adress.postnummer.clear().sendKeys(adressObj.postnummer),
+    //         this.adress.postort.clear().sendKeys(adressObj.postort)
+    //     ]);
+
+    // }
 });
 
 module.exports = BaseTsUtkast;

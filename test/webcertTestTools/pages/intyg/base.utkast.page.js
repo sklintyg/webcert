@@ -45,6 +45,11 @@ var BaseUtkast = JClass._extend({
             postOrt: element(by.id('clinicInfoPostalCity')),
             enhetsTelefon: element(by.id('clinicInfoPhone'))
         };
+        this.patientAdress = {
+            postAdress: element(by.id('grundData.patient.postadress')),
+            postNummer: element(by.id('grundData.patient.postnummer')),
+            postOrt: element(by.id('grundData.patient.postort'))
+        };
     },
     get: function(intygType, intygId) {
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);
@@ -94,6 +99,13 @@ var BaseUtkast = JClass._extend({
             this.enhetensAdress.postNummer.clear().sendKeys(adressObj.postnummer),
             this.enhetensAdress.postOrt.clear().sendKeys(adressObj.postort),
             this.enhetensAdress.enhetsTelefon.clear().sendKeys(adressObj.telefon)
+        ]);
+    },
+    angePatientAdress: function(adressObj) {
+        return Promise.all([
+            this.patientAdress.postAdress.clear().sendKeys(adressObj.postadress),
+            this.patientAdress.postNummer.clear().sendKeys(adressObj.postnummer),
+            this.patientAdress.postOrt.clear().sendKeys(adressObj.postort)
         ]);
 
 

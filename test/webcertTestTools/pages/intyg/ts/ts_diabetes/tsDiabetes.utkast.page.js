@@ -90,6 +90,12 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             yes: element(by.id('bedomningy')),
             no: element(by.id('bedomningn'))
         };
+
+        this.patientAdress = {
+            postAdress: element(by.id('patientPostadress')),
+            postNummer: element(by.id('patientPostnummer')),
+            postOrt: element(by.id('patientPostort'))
+        };
     },
     fillInKorkortstyper: function(typer) {
 

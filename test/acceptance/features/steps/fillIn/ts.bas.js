@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, pages, browser, JSON, Promise,person */
+/* globals logger, pages, browser, JSON, Promise */
 
 
 var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
@@ -55,11 +55,11 @@ module.exports = {
             throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
         }));
 
-        promiseArr.push(tsBasUtkastPage.fillInPatientAdress(person.adress).then(function() {
-            logger.info('OK - fillInPatientAdress :' + JSON.stringify(person.adress));
-        }, function(reason) {
-            throw ('FEL, fillInPatientAdress,' + reason);
-        }));
+        // promiseArr.push(tsBasUtkastPage.fillInPatientAdress(person.adress).then(function() {
+        //     logger.info('OK - fillInPatientAdress :' + JSON.stringify(person.adress));
+        // }, function(reason) {
+        //     throw ('FEL, fillInPatientAdress,' + reason);
+        // }));
 
         browser.ignoreSynchronization = true;
 

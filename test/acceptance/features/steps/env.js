@@ -84,6 +84,8 @@ module.exports = function() {
 
     });
 
+
+
     logger.on('logging', function(transport, level, msg, meta) {
         if (global.scenario) {
             global.scenario.attach(level + ': ' + msg);

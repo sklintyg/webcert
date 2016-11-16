@@ -19,6 +19,16 @@ Scenario: Skapa och signera ett slumpat intyg
 
 	#När jag går in på intyget i Mina intyg
 	#Så ska intygets information i Mina intyg vara den jag angett
+@luse
+Exempel:
+    |intygKod   | 	intyg                                                               |
+    |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
+
+Exempel:
+    |intygKod   | 	intyg                                                               |
+    |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
+    |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
+    #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @minaintyg @keepIntyg @intygTillFK @skicka
 Scenario: Skicka ett befintligt slumpat intyg till Försäkringskassan

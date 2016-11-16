@@ -112,6 +112,11 @@ var TsBasUtkast = BaseTsUtkast._extend({
             JA: element(by.id('somnvakenheta')),
             NEJ: element(by.id('somnvakenhetb'))
         };
+        this.patientAdress = {
+            postAdress: element(by.id('patientPostadress')),
+            postNummer: element(by.id('patientPostnummer')),
+            postOrt: element(by.id('patientPostort'))
+        };
     },
     fillInSynfunktioner: function(utkast) {
         var promiseArr = [];

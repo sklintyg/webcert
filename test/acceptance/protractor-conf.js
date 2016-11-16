@@ -25,7 +25,7 @@ var winston = require('winston');
 
 exports.config = {
     baseUrl: process.env.WEBCERT_URL,
-    allScriptsTimeout: 50000,
+    allScriptsTimeout: 100000,
     getPageTimeout: 20000,
     seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
     framework: 'custom',
@@ -94,14 +94,14 @@ exports.config = {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
         // Disable animations so e2e tests run more quickly
-        // var disableNgAnimate = function() {
-        //     angular.module('disableNgAnimate', []).run(['$animate',
-        //         function($animate) {
-        //             $animate.enabled(false);
-        //         }
-        //     ]);
-        // };
-        // browser.addMockModule('disableNgAnimate', disableNgAnimate);
+        var disableNgAnimate = function() {
+            angular.module('disableNgAnimate', []).run(['$animate',
+                function($animate) {
+                    $animate.enabled(false);
+                }
+            ]);
+        };
+        browser.addMockModule('disableNgAnimate', disableNgAnimate);
     }
 };
 

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, pages, JSON, browser, Promise,person */
+/* globals logger, pages, JSON, browser, Promise */
 
 
 var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
@@ -29,11 +29,11 @@ module.exports = {
 
         return Promise.all([
 
-            tsdUtkastPage.fillInPatientAdress(person.adress).then(function() {
-                logger.info('OK - fillInPatientAdress :' + JSON.stringify(person.adress));
-            }, function(reason) {
-                throw ('FEL, fillInPatientAdress,' + reason);
-            }),
+            // tsdUtkastPage.fillInPatientAdress(person.adress).then(function() {
+            //     logger.info('OK - fillInPatientAdress :' + JSON.stringify(person.adress));
+            // }, function(reason) {
+            //     throw ('FEL, fillInPatientAdress,' + reason);
+            // }),
 
             //Ange körkortstyper
             tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper).then(function() {

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, logger, JSON */
+/* globals pages, logger, JSON, Promise */
 
 'use strict';
 var utkastPage;
@@ -28,10 +28,27 @@ module.exports = {
         }, function(reason) {
             throw ('FEL, angeEnhetAdress,' + reason);
         });
+
+
+    },
+    setPatientAdressIfNotGiven: function() {
+        var isFk7263 = global.intyg.typ.indexOf('7263') >= 0;
+
+        if (global.person.adress && !isFk7263) {
+            return utkastPage.angePatientAdress(global.person.adress).then(function() {
+                logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
+            }, function(reason) {
+                throw ('FEL, setPatientAdress,' + reason);
+            });
+        } else {
+            logger.info('Ingen adress ändras');
+            return Promise.resolve();
+        }
+
     },
     fillIn: function(intyg) {
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        return this.fillInEnhetAdress();
+        return Promise.all([this.setPatientAdressIfNotGiven(), this.fillInEnhetAdress()]);
     }
 
 };
