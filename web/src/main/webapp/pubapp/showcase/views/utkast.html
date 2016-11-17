@@ -109,7 +109,7 @@
 </div>
 <br><br>
 <div class="form-group form-inline edit-form" ng-class="fmbState.cls" style="width:80px">
-<wc-fmb-help-display related-form-id="{{to.relatedFormId}}" diagnosis-code="fmbState.code"
-                     diagnosis-description="diagnosBeskrivning"
-                     help-text-contents="fmbState.helpTextContents"></wc-fmb-help-display>
+<wc-fmb-help-display related-form-id="{{to.relatedFormId}}" fmb-states="fmbState" field-name="fmbState.helpTextContents">
+  <textarea>This textarea will be compressed if FMB info is available.</textarea>
+</wc-fmb-help-display>
 </div>
