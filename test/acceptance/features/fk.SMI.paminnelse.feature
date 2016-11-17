@@ -1,12 +1,12 @@
 #language: sv
-@paminnelse @smi @notReady
+@paminnelse @smi
 Egenskap: Som läkare vill jag att påminnelser syns tydligt och leder mig till ursprungsfrågan
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
 
-Scenariomall: Påminnelse
-    Och att vårdsystemet skapat ett intygsutkast för <intyg>
+Scenario: Påminnelse
+    Och att vårdsystemet skapat ett intygsutkast för slumpat intyg
     Och jag går in på intygsutkastet via djupintegrationslänk
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -16,8 +16,3 @@ Scenariomall: Påminnelse
     Och Försäkringskassan ställer en "PAMINN" fråga om intyget
     Så ska statusuppdatering "NYFRFM" skickas till vårdsystemet. Totalt: "2"
     Och ska jag se påminnelsen på intygssidan
-
-Exempel:
-    |intygKod   | 	intyg                                                               |
-    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
-    |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |

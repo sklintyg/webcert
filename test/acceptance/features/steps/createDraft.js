@@ -60,36 +60,46 @@ function sendCreateDraft(url, body, callback) {
     });
 }
 
+function createBody(intygstyp, samordningsnummer, callback) {
+    global.intyg.typ = intygstyp;
+    global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+    if (samordningsnummer) {
+        global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+    }
+    var body, path;
+    var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
+    if (isSMIIntyg) {
+        path = '/services/create-draft-certificate/v2.0?wsdl';
+        body = soapMessageBodies.CreateDraftCertificateV2(
+            global.user,
+            intygstyp
+        );
+
+    } else {
+        path = '/services/create-draft-certificate/v1.0?wsdl';
+        body = soapMessageBodies.CreateDraftCertificate(
+            global.user.hsaId,
+            global.user.fornamn + '' + global.user.efternamn,
+            global.user.enhetId,
+            'Enhetsnamn'
+        );
+    }
+    console.log(body);
+    var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
+    url = url.replace('https', 'http');
+
+    sendCreateDraft(url, body, callback);
+}
 
 module.exports = function() {
     this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)"( med samordningsnummer)?$/, function(intygstyp, samordningsnummer, callback) {
-        global.intyg.typ = intygstyp;
-        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-        if (samordningsnummer) {
-            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
-        }
-        var body, path;
-        var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
-        if (isSMIIntyg) {
-            path = '/services/create-draft-certificate/v2.0?wsdl';
-            body = soapMessageBodies.CreateDraftCertificateV2(
-                global.user,
-                intygstyp
-            );
+        createBody(intygstyp, samordningsnummer, callback);
+    });
 
-        } else {
-            path = '/services/create-draft-certificate/v1.0?wsdl';
-            body = soapMessageBodies.CreateDraftCertificate(
-                global.user.hsaId,
-                global.user.fornamn + '' + global.user.efternamn,
-                global.user.enhetId,
-                'Enhetsnamn'
-            );
-        }
-        console.log(body);
-        var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
-        url = url.replace('https', 'http');
-
-        sendCreateDraft(url, body, callback);
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat intyg( med samordningsnummer)?$/, function(samordningsnummer, callback) {
+        var randomIntygCode = ['LISJP', 'LUSE', 'LUAE_NA', 'LUAE_FS'][Math.floor(Math.random() * 4)];
+        var randomIntygType = helpers.smiIntyg[randomIntygCode];
+        logger.info('Intyg typ: ' + randomIntygType + '\n');
+        createBody(randomIntygType, samordningsnummer, callback);
     });
 };
