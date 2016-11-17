@@ -122,18 +122,16 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
         // If we could init the authentication, we create a SignaturTicket, reusing the mechanism already present for
         // SITHS
         String orderRef = orderResponse.getOrderRef();
-
         String transactionId = validateOrderResponseTxId(authRequest, orderResponse);
 
-        startAsyncCollectPoller(webCertUser, orderRef, transactionId);
+        startAsyncCollectPoller(orderRef, transactionId);
         return draftHash;
     }
 
-    private void startAsyncCollectPoller(WebCertUser webCertUser, String orderRef, String transactionId) {
+    private void startAsyncCollectPoller(String orderRef, String transactionId) {
         GrpCollectPoller collectTask = grpCollectPollerFactory.getInstance();
         collectTask.setOrderRef(orderRef);
         collectTask.setTransactionId(transactionId);
-       // collectTask.setWebCertUser(webCertUser);
         collectTask.setSecurityContext(SecurityContextHolder.getContext());
         final long startTimeout = 6000L;
         taskExecutor.execute(collectTask, startTimeout);
