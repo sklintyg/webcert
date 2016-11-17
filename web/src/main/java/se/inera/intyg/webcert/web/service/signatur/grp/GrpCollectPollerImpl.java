@@ -138,8 +138,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
             }
         } finally {
             // Since this poller thread will be returned to its thread pool, we make sure we clean up the security
-            // context
-            // we bound to this runnable's threadlocal.
+            // context we bound to this runnable's threadlocal.
             SecurityContextHolder.clearContext();
         }
     }
@@ -148,8 +147,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
      * Since Spring doesn't (and shouldn't!) copy the threadlocal context from the thread that issued this worker
      * thread,
      * we manually set the {@link SecurityContext} set on this instance on the currently executing thread using the
-     * Spring
-     * static {@link SecurityContextHolder} mechanism.
+     * Spring static {@link SecurityContextHolder} mechanism.
      *
      * Make sure we clean up when the Runnable exits.
      */
@@ -207,7 +205,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.warn("Sleep was interrupted: " + e.getMessage());
         }
     }
 
