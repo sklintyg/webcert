@@ -26,3 +26,21 @@ Scenario: Informera om patienten har bytt adress och använd address på nya int
     När jag kopierar intyget
     Och jag signerar intyget
     Så ska intyget visa den nya addressen
+
+@samordningsnummer
+Scenario: Informera om patienten har fått ett nytt personnummer
+	När att vårdsystemet skapat ett intygsutkast för slumpat intyg med samordningsnummer
+	Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Och jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer
+    Så ska ett varning-meddelande visa "Patienten har ett nytt personnummer"
+
+@reservnummer
+Scenario: Informera om patienten har fått ett reservnummer
+	När att vårdsystemet skapat ett intygsutkast för slumpat intyg med samordningsnummer
+	Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Och jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer
+    Så ska ett varning-meddelande visa "Patienten har samordningsnummer kopplat till reservnummer"
