@@ -29,7 +29,7 @@
 
  module.exports = function() {
 
-     this.Given(/^jag skickar ett intyg till Intygstjänsten$/, function(callback) {
+     this.Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
          global.intyg.id = testdataHelper.generateTestGuid();
          global.intyg.person = testdataHelper.shuffle(testvalues.patienter)[0];
          var personId = global.intyg.person.id;
@@ -37,7 +37,7 @@
          var url;
          var body;
          // console.log(intyg);
-         intyg.typ = 'Läkarintyg FK 7263';
+         intyg.typ = helpers.smiIntyg[intygCode];
          var isSMIIntyg;
          if (intyg && intyg.typ) {
              isSMIIntyg = helpers.isSMIIntyg(intyg.typ);

@@ -30,11 +30,10 @@
      this.Given(/^jag skickar intyget direkt till Försäkringskassan$/, function(callback) {
          //var personId = global.intyg.personId;
          var personId = global.intyg.person.id;
-         console.log(personId);
+         //console.log(personId);
          var url;
          var body;
-         console.log(intyg);
-         intyg.typ = 'Läkarintyg FK 7263';
+         //console.log(intyg);
          var isSMIIntyg;
          if (intyg && intyg.typ) {
              isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
@@ -88,7 +87,7 @@
                  global.user.enhetId,
                  global.user.enhetId,
                  global.intyg.id);
-             console.log(body);
+             //console.log(body);
              soap.createClient(url, function(err, client) {
                  if (err) {
                      callback(err);
