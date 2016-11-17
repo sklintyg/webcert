@@ -84,7 +84,7 @@ public class ArendeViewConverterTest {
     public void setup() throws Exception {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         Map<String, List<String>> map = new HashMap<>();
-        map.put("1", Arrays.asList(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1));
+        map.put("1", Arrays.asList(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1));
         map.put("2", Arrays.asList(RespConstants.KANNEDOM_SVAR_JSON_ID_2));
         map.put("4", Arrays.asList("", "", RespConstants.UNDERLAG_SVAR_JSON_ID_4));
         when(moduleApi.getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class))).thenReturn(map);
@@ -139,6 +139,46 @@ public class ArendeViewConverterTest {
         assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
+        assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
+        assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
+        assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
+        verify(moduleApi).getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testConvertKompletteringWithoutInstans() throws ModuleNotFoundException {
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                SKAPADAV_PERSON_ID,
+                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+
+        Arende arende = buildArende("lisjp");
+        arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
+        ArendeView result = converter.convert(arende);
+
+        assertEquals(1, result.getKompletteringar().size());
+        assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
+        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
+        assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
+        assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
+        verify(moduleApi).getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testConvertKompletteringUnknownQuestionId() throws ModuleNotFoundException {
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                SKAPADAV_PERSON_ID,
+                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+
+        Arende arende = buildArende("lisjp");
+        arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));
+        ArendeView result = converter.convert(arende);
+
+        assertEquals(1, result.getKompletteringar().size());
+        assertEquals("", result.getKompletteringar().get(0).getJsonPropertyHandle());
+        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -309,7 +349,7 @@ public class ArendeViewConverterTest {
         return arende;
     }
 
-    private MedicinsktArende buildMedicinsktArende(String frageId, int instansId, String text) {
+    private MedicinsktArende buildMedicinsktArende(String frageId, Integer instansId, String text) {
         MedicinsktArende med1 = new MedicinsktArende();
         med1.setFrageId(frageId);
         med1.setInstans(instansId);

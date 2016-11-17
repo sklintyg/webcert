@@ -154,7 +154,7 @@ public class ArendeViewConverter {
             Integer position = getListPositionForInstanceId(arende);
             String jsonPropertyHandle = getJsonPropertyHandle(arende, position, arendeParameters);
             MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
-                    .setText(arende.getText()).setPosition(position).setJsonPropertyHandle(jsonPropertyHandle).build();
+                    .setText(arende.getText()).setPosition(Math.max(position - 1, 0)).setJsonPropertyHandle(jsonPropertyHandle).build();
             medicinskaArendenViews.add(view);
         }
         return medicinskaArendenViews;
@@ -162,21 +162,21 @@ public class ArendeViewConverter {
 
     private String getJsonPropertyHandle(MedicinsktArende arende, Integer position, Map<String, List<String>> arendeParameters) {
         List<String> filledPositions = arendeParameters.get(arende.getFrageId());
-        if (filledPositions != null) {
+        if (CollectionUtils.isNotEmpty(filledPositions)) {
             try {
-                return filledPositions.get(position);
+                return filledPositions.get(Math.min(position, filledPositions.size() - 1));
             } catch (IndexOutOfBoundsException e) {
                 LOG.error("The instance number in MedicinsktArende must be an integer > 0.");
-                return null;
+                return "";
             }
         }
-        throw new IllegalArgumentException("The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId() + " must be a list of Strings.");
+        LOG.error("The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId() + " must be a list of Strings.");
+        return "";
     }
 
     private int getListPositionForInstanceId(MedicinsktArende arende) {
         Integer instanceId = arende.getInstans();
-        int result = (instanceId != null) ? instanceId : 0;
-        return Math.max(result - 1, 0);
+        return (instanceId != null && instanceId > 0) ? instanceId : 0;
     }
 
     private static ArendeType getArendeType(Arende arende) {
