@@ -56,21 +56,7 @@ $ open http://localhost:9126/
 ```
 
 ### Köra flera Webcert-instanser för dev-ändamål
-Det är möjligt att starta flera lokala Webcert-instanser men man får se till att separera ett antal portar. Notera att databas _ej_ kommer delas.
-
-1. Bygg webcert, t.ex. genom mvn clean install
-2. Öppna ytterligare ett konsolfönster så du har två stycken totalt, byt bibliotek för båda till webcert/web.
-3. I fönster 1, starta webcert som vanligt på de vanliga portarna
-```
-$ mvn jetty:run
-```
-
-4. I fönster 2, starta webcert med alternativa portar
-```
-$ mvn jetty:run -Djetty.port=2088 -Dh2.tcp.port=2094 -Dh2.web.port=2090
-```
-
-Nu borde två parallella jetty-instanser körandes Webcert vara igång. Kan vara användbart för att exempelvis testa av saker som kan påverkas av att vi kör multipla noder i produktion.
+(Detta avsnitt var skrivet specifikt för Maven, behöver uppdateras med gradle-instruktioner)
 
 ## Licens
 Copyright (C) 2014 Inera AB (http://www.inera.se)
