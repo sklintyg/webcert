@@ -19,17 +19,19 @@
 
 package se.inera.intyg.webcert.web.service.signatur.grp;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.funktionstjanster.grp.v1.*;
+import se.funktionstjanster.grp.v1.AuthenticateRequestType;
+import se.funktionstjanster.grp.v1.FaultStatusType;
+import se.funktionstjanster.grp.v1.GrpFault;
+import se.funktionstjanster.grp.v1.GrpFaultType;
+import se.funktionstjanster.grp.v1.GrpServicePortType;
+import se.funktionstjanster.grp.v1.OrderResponseType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -39,6 +41,9 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.util.Optional;
 
 /**
  *
@@ -128,7 +133,8 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
         GrpCollectPoller collectTask = grpCollectPollerFactory.getInstance();
         collectTask.setOrderRef(orderRef);
         collectTask.setTransactionId(transactionId);
-        collectTask.setWebCertUser(webCertUser);
+       // collectTask.setWebCertUser(webCertUser);
+        collectTask.setSecurityContext(SecurityContextHolder.getContext());
         final long startTimeout = 6000L;
         taskExecutor.execute(collectTask, startTimeout);
     }
