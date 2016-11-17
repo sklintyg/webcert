@@ -19,20 +19,15 @@
 
 package se.inera.intyg.webcert.web.service.signatur.grp;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
 import se.funktionstjanster.grp.v1.CollectRequestType;
 import se.funktionstjanster.grp.v1.CollectResponseType;
 import se.funktionstjanster.grp.v1.FaultStatusType;
@@ -41,14 +36,23 @@ import se.funktionstjanster.grp.v1.GrpFaultType;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.funktionstjanster.grp.v1.Property;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -79,7 +83,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
 
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);
-        grpCollectPoller.setWebCertUser(buildWebCertUser());
+        grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
@@ -96,7 +100,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
                 buildResp(COMPLETE));
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);
-        grpCollectPoller.setWebCertUser(buildWebCertUser());
+        grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
@@ -110,7 +114,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildFault(FaultStatusType.USER_CANCEL));
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);
-        grpCollectPoller.setWebCertUser(buildWebCertUser());
+        grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
@@ -124,7 +128,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildFault(FaultStatusType.EXPIRED_TRANSACTION));
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTransactionId(TX_ID);
-        grpCollectPoller.setWebCertUser(buildWebCertUser());
+        grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
@@ -150,7 +154,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         return resp;
     }
 
-    private WebCertUser buildWebCertUser() {
+    private SecurityContext buildAuthentication() {
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
         WebCertUser user = new WebCertUser();
@@ -158,7 +162,10 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
         user.setPersonId(PERSON_ID);
 
-        return user;
+        Authentication authentication = new TestingAuthenticationToken(user, null);
+        SecurityContext securityContext = new SecurityContextImpl();
+        securityContext.setAuthentication(authentication);
+        return securityContext;
     }
 
 }
