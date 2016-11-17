@@ -163,12 +163,7 @@ public class ArendeViewConverter {
     private String getJsonPropertyHandle(MedicinsktArende arende, Integer position, Map<String, List<String>> arendeParameters) {
         List<String> filledPositions = arendeParameters.get(arende.getFrageId());
         if (CollectionUtils.isNotEmpty(filledPositions)) {
-            try {
-                return filledPositions.get(Math.min(position, filledPositions.size() - 1));
-            } catch (IndexOutOfBoundsException e) {
-                LOG.error("The instance number in MedicinsktArende must be an integer > 0.");
-                return "";
-            }
+            return filledPositions.get(position < filledPositions.size() ? position : 0);
         }
         LOG.error("The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId() + " must be a list of Strings.");
         return "";

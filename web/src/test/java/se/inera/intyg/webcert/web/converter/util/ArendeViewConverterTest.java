@@ -106,7 +106,7 @@ public class ArendeViewConverterTest {
                 result.getKompletteringar().get(2).getJsonPropertyHandle());
         assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
-        assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
+        assertEquals(new Integer(1), result.getKompletteringar().get(2).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -138,7 +138,7 @@ public class ArendeViewConverterTest {
                 result.getKompletteringar().get(2).getJsonPropertyHandle());
         assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
-        assertEquals(new Integer(2), result.getKompletteringar().get(2).getPosition());
+        assertEquals(new Integer(1), result.getKompletteringar().get(2).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -159,6 +159,26 @@ public class ArendeViewConverterTest {
         assertEquals(1, result.getKompletteringar().size());
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
         assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
+        assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
+        assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
+        verify(moduleApi).getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testConvertKompletteringInstansTooHigh() throws ModuleNotFoundException {
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                SKAPADAV_PERSON_ID,
+                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+
+        Arende arende = buildArende("lisjp");
+        arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", 3, "arende1")));
+        ArendeView result = converter.convert(arende);
+
+        assertEquals(1, result.getKompletteringar().size());
+        assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
+        assertEquals(new Integer(2), result.getKompletteringar().get(0).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -323,7 +343,7 @@ public class ArendeViewConverterTest {
         arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());
         MedicinsktArende medArende1 = buildMedicinsktArende("1", 1, "arende1");
         MedicinsktArende medArende2 = buildMedicinsktArende("2", 1, "arende1");
-        MedicinsktArende medArende4 = buildMedicinsktArende("4", 3, "arende1");
+        MedicinsktArende medArende4 = buildMedicinsktArende("4", 2, "arende1");
         arende.setKomplettering(Arrays.asList(medArende1, medArende2, medArende4));
 
         return arende;
