@@ -93,12 +93,7 @@ requestOrigins:
     intygstyper: # Implicit alla
   - &ro020
     name: *kro020
-    intygstyper:
-      - *ki010 # fk7263
-      - *ki040 # lisjp
-      - *ki050 # luse
-      - *ki060 # luae_na
-      - *ki070 # luae_fs
+    intygstyper: # Implicit alla
   - &ro030
     name: *kro030
     intygstyper: # Implicit alla
