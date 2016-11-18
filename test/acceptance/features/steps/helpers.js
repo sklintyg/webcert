@@ -239,29 +239,6 @@ module.exports = {
         'dialogRadioMinBedomingAndrad',
         'dialogRadioOvrigt'
     ],
-    statusCodes: [{
-        status: 'SKAPAT'
-    }, {
-        status: 'SIGNAT'
-    }, {
-        status: 'SKICKA'
-    }, {
-        status: 'RADERA'
-    }, {
-        status: 'MAKULE'
-    }, {
-        status: 'NYFRFM'
-    }, {
-        status: 'NYSVFM'
-    }, {
-        status: 'NYFRFV'
-    }, {
-        status: 'HANFRFV'
-    }, {
-        status: 'HANFRFM'
-    }, {
-        status: 'ANDRAT'
-    }],
 
     diffDays: function(dateFrom, dateTo) {
         var fromEl = dateFrom.split('-');

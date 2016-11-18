@@ -2,12 +2,14 @@
 @arendehantering @fk7263
 Egenskap: FK7263 Ärendehantering
 
+Bakgrund: Jag är inloggad och inne på ett skickat intyg
+      Givet att jag är inloggad som läkare "Åsa Svensson"
+      Och jag går in på en patient
+      Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+
 @ej-hanterad
 Scenario: Hantera fråga dialog
-   Givet att jag är inloggad som läkare
-   När jag går in på en patient
-   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
-   Och Försäkringskassan ställer en "Avstamningsmote" fråga om intyget
+   När Försäkringskassan ställer en "Avstamningsmote" fråga om intyget
    Och Försäkringskassan ställer en "Paminnelse" fråga om intyget
    Och jag går till sidan Frågor och svar
    Och jag väljer åtgärden "Visa alla ej hanterade"
@@ -22,10 +24,7 @@ Scenario: Hantera fråga dialog
 
 @filter 
 Scenario: Filtrera frågor på läkare
-   Givet att jag är inloggad som läkare "Åsa Svensson"
-   När jag går in på en patient
-   Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
-   Och Försäkringskassan ställer en "Kontakt" fråga om intyget
+   När Försäkringskassan ställer en "Kontakt" fråga om intyget
    Och jag går till sidan Frågor och svar
 
    Givet att jag är inloggad som läkare "Erik Nilsson"
@@ -38,6 +37,17 @@ Scenario: Filtrera frågor på läkare
 
    När jag väljer att filtrera på läkare "Åsa Svensson"
    Så ska jag bara se frågor på intyg signerade av "Åsa Svensson"
+
+@befintlig-fråga
+Scenario: Skicka fråga till Försäkringskassan genom att gå in på en befintlig fråga
+      När Försäkringskassan ställer en "Kontakt" fråga om intyget
+      Och jag går till sidan Frågor och svar
+      Och jag väljer att visa intyget med frågan
+
+      När jag skickar en fråga med slumpat ämne till Försäkringskassan
+
+      Så ska ett info-meddelande visa "Frågan är skickad till Försäkringskassan"
+      Och ska jag se min fråga under ohanterade frågor
 
 
 

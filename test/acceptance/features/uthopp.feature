@@ -13,7 +13,7 @@ Och jag skickar intyget direkt till Försäkringskassan
 Och Försäkringskassan ställer en "Kontakt" fråga om intyget 
 Så ska jag få ett mejl med ämnet "Försäkringskassan har ställt en fråga angående ett intyg"
 
-@skicka-fråga
+@fråga-till-fk
 Scenario: Skicka fråga till Försäkringskassan
 	När jag skickar ett intyg till Intygstjänsten
 	Och jag skickar intyget direkt till Försäkringskassan

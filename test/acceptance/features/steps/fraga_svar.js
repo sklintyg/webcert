@@ -41,55 +41,39 @@ function kontrolleraKompletteringsFragaOHanterad(id) {
     return expect(element(by.id(selector)).isPresent()).to.eventually.be.ok;
 }
 
+function sendQuestionToFK(amne, cb) {
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    console.log('isSMIIntyg : ' + isSMIIntyg);
+
+    var fragaText = 'En ' + amne + '-fråga ' + testdataHelper.generateTestGuid();
+
+    // if (isSMIIntyg) {
+
+    lisjpUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
+    lisjpUtkastPage.arendeQuestion.text.sendKeys(fragaText);
+    lisjpUtkastPage.selectQuestionTopic(amne);
+
+    lisjpUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
+
+    lisjpUtkastPage.arendePanel.getAttribute('id').then(function(result) {
+        var element = result.split('-');
+        var splitIndex = element[0].length + element[1].length + 2;
+        var fragaId = result.substr(splitIndex, result.length);
+
+        global.meddelanden.push({
+            typ: 'Fråga',
+            amne: helpers.subjectCodes[amne],
+            id: fragaId,
+            text: fragaText
+        });
+
+        logger.debug('Frågans ID: ' + fragaId);
+    }).then(cb);
+}
+
 module.exports = function() {
     this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        console.log('isSMIIntyg : ' + isSMIIntyg);
-
-        var fragaText = 'En ' + amne + '-fråga ' + testdataHelper.generateTestGuid();
-
-        // if (isSMIIntyg) {
-
-        lisjpUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
-        lisjpUtkastPage.arendeQuestion.text.sendKeys(fragaText);
-        lisjpUtkastPage.selectQuestionTopic(amne);
-
-        lisjpUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
-
-        lisjpUtkastPage.arendePanel.getAttribute('id').then(function(result) {
-            var element = result.split('-');
-            var splitIndex = element[0].length + element[1].length + 2;
-            var fragaId = result.substr(splitIndex, result.length);
-
-            global.meddelanden.push({
-                typ: 'Fråga',
-                amne: helpers.subjectCodes[amne],
-                id: fragaId,
-                text: fragaText
-            });
-
-            logger.debug('Frågans ID: ' + fragaId);
-        }).then(callback);
-
-        // } else {
-        //     fkIntygPage.question.newQuestionButton.sendKeys(protractor.Key.SPACE);
-        //     fkIntygPage.question.text.sendKeys(fragaText);
-        //     fkIntygPage.selectQuestionTopic(amne);
-
-        //     fkIntygPage.question.sendButton.sendKeys(protractor.Key.SPACE);
-
-        //     fkIntygPage.qaPanel.getAttribute('id').then(function(result) {
-        //         var fragaId = result.split('-')[1];
-        //         global.meddelanden.push({
-        //             typ: 'Fråga',
-        //             amne: amne,
-        //             id: fragaId,
-        //             text: fragaText
-        //         });
-        //         logger.debug('Frågans ID: ' + fragaId);
-        //         callback();
-        //     });
-        // }
+        sendQuestionToFK(amne, callback);
 
     });
 
@@ -471,6 +455,33 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^jag väljer att visa intyget med frågan$/, function() {
+        console.log(global.meddelanden);
+        var atgard = 'Svara';
+
+        logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
+        return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
+            return row.all(by.css('td')).getText().then(function(text) {
+                console.log(text);
+                var utc = new Date().toJSON().slice(0, 10);
+                var hasPersonnummer = (text.indexOf(person.id) > -1);
+                var hasAtgard = (text.indexOf(atgard) > -1);
+                var hasDateToday = (text.indexOf(utc) > -1);
+                return hasAtgard && hasPersonnummer && hasDateToday;
+            });
+        }).then(function(rows) {
+            matchingQARow = rows[0];
+            var btn = matchingQARow.element(by.cssContainingText('button', 'Visa'));
+            return btn.getAttribute('id').then(function(id) {
+                logger.info('knapp-id: ' + id);
+                buttonId = id;
+                return btn.sendKeys(protractor.Key.SPACE);
+            });
+
+
+        });
+    });
+
     this.Given(/^jag lämnar intygssidan$/, function() {
         return fkIntygPage.backBtn.click();
     });
@@ -552,5 +563,12 @@ module.exports = function() {
         }
         return kontrolleraKompletteringsFragaOHanterad(messageId);
 
+    });
+
+    this.Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function(callback) {
+        sendQuestionToFK(
+            testdataHelper.shuffle(['Arbetstidsförläggning', 'Avstämningsmöte', 'Kontakt', 'Övrigt'])[0],
+            callback
+        );
     });
 };
