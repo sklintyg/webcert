@@ -9,8 +9,8 @@ Bakgrund: Jag är inloggad
 
 # Första ändring per ändringssession ska loggas
 @skapa @skriva
-Scenariomall: Skapa <intygKod> intyg 
-	När jag går in på att skapa ett <intyg> intyg
+Scenario: Skapa SMI intyg
+	När jag går in på att skapa ett slumpat intyg
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
 	Och jag går tillbaka
 	Och jag går in på utkastet
@@ -18,33 +18,17 @@ Scenariomall: Skapa <intygKod> intyg
 	Och jag ändrar diagnoskod
 	Så ska det nu finnas 2 loggaktivitet "Skriva" för intyget
 
-Exempel:
-  |intygKod | 	intyg 								| 
-  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
-
 @öppna
-Scenariomall: Öppna <intygKod>-intyg
-	När jag går in på ett <intyg> med status "Signerat"
+Scenario: Öppna SMI-intyg
+	När jag går in på ett slumpat intyg med status "Signerat"
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 
-Exempel:
-  |intygKod | 	intyg 								| 
-  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
-
-
 @signera
-Scenariomall: Signera <intygKod> intyg
-	När jag går in på att skapa ett <intyg> intyg
+Scenario: Signera SMI intyg
+	När jag går in på att skapa ett slumpat intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Så ska loggaktivitet "Signera" skickas till loggtjänsten
-
-Exempel:
-  |intygKod | 	intyg 								| 
-  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 @skicka @utskrift
 Scenariomall: Skicka <intygKod> intyg till mottagare
@@ -53,9 +37,9 @@ Scenariomall: Skicka <intygKod> intyg till mottagare
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
 
 Exempel:
-  |intygKod | 	intyg 								| 
-  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
+  |intygKod | 	intyg 								|
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" |
+  |LISJP		| 	"Läkarintyg för sjukpenning" |
 
 @skriv-ut @utskrift @notReady
 Scenariomall: Skriv ut <intygtyp> intyg
@@ -64,9 +48,9 @@ Scenariomall: Skriv ut <intygtyp> intyg
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
 
 Exempel:
-  |intygKod | 	intyg 								| 
-  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
+  |intygKod | 	intyg 								|
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" |
+  |LISJP		| 	"Läkarintyg för sjukpenning" |
 
 @radera
 Scenariomall: Radera <intygKod> utkast
@@ -75,9 +59,9 @@ Scenariomall: Radera <intygKod> utkast
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 Exempel:
-  |intygKod | 	intyg 								| 
-  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
+  |intygKod | 	intyg 								|
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" |
+  |LISJP		| 	"Läkarintyg för sjukpenning" |
 
 
 @makulera
@@ -87,9 +71,9 @@ Scenariomall: Makulera <intygKod> intyg
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 Exempel:
-  |intygKod | 	intyg 								| 
-  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
+  |intygKod | 	intyg 								|
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" |
+  |LISJP		| 	"Läkarintyg för sjukpenning" |
 
 @kopiera
 Scenariomall: Kopiera <intygKod> intyg
@@ -99,6 +83,6 @@ Scenariomall: Kopiera <intygKod> intyg
 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
 
 Exempel:
-  |intygKod | 	intyg 								| 
-  |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
+  |intygKod | 	intyg 								|
+  |LUSE		|  	"Läkarutlåtande för sjukersättning" |
+  |LISJP		| 	"Läkarintyg för sjukpenning" |

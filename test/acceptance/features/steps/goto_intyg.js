@@ -51,26 +51,31 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
         cb();
     }
 }
+
+function getIER(intygstyp, status, callback) {
+    getIntygElementRow(intygstyp, status, function(el) {
+        gotoIntyg(intygstyp, status, el, function(err) {
+            browser.getCurrentUrl().then(function(text) {
+                intyg.id = text.split('/').slice(-1)[0];
+                intyg.id = intyg.id.split('?')[0];
+                logger.info('intyg.id:' + intyg.id);
+                if (err) {
+                    callback(JSON.stringify(err));
+                } else {
+                    callback();
+                }
+            });
+        });
+    });
+}
+
 module.exports = function() {
 
     this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
         timeout: 700 * 1000
     }, function(intygstyp, status, callback) {
         intyg.typ = intygstyp;
-        getIntygElementRow(intygstyp, status, function(el) {
-            gotoIntyg(intygstyp, status, el, function(err) {
-                browser.getCurrentUrl().then(function(text) {
-                    intyg.id = text.split('/').slice(-1)[0];
-                    intyg.id = intyg.id.split('?')[0];
-                    logger.info('intyg.id:' + intyg.id);
-                    if (err) {
-                        callback(JSON.stringify(err));
-                    } else {
-                        callback();
-                    }
-                });
-            });
-        });
+        getIER(intygstyp, status, callback);
     });
 
     this.Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
@@ -80,20 +85,7 @@ module.exports = function() {
         var randomIntyg = helpers.smiIntyg[randomIntygCode];
         logger.info('Intyg type: ' + randomIntyg);
         intyg.typ = randomIntyg;
-        getIntygElementRow(randomIntyg, status, function(el) {
-            gotoIntyg(randomIntyg, status, el, function(err) {
-                browser.getCurrentUrl().then(function(text) {
-                    intyg.id = text.split('/').slice(-1)[0];
-                    intyg.id = intyg.id.split('?')[0];
-                    logger.info('intyg.id:' + intyg.id);
-                    if (err) {
-                        callback(JSON.stringify(err));
-                    } else {
-                        callback();
-                    }
-                });
-            });
-        });
+        getIER(randomIntyg, status, callback);
     });
 
 };
