@@ -1,22 +1,22 @@
 # language: sv
-@statusuppdateringar @luaena
-Egenskap: Statusuppdateringar för LUAE_NA
+@statusuppdateringar @smi
+Egenskap: Statusuppdateringar för SMI intyg
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
-   Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga"
+   Och att vårdsystemet skapat ett intygsutkast för slumpat intyg
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @skicka-till-fk
 Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
-   Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
+    Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
-   När jag fyller i alla nödvändiga fält för intyget
-   Och jag signerar intyget
-   Så ska statusuppdatering "SIGNAT" skickas till vårdsystemet. Totalt: "1"
+    När jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Så ska statusuppdatering "SIGNAT" skickas till vårdsystemet. Totalt: "1"
 
-   När jag skickar intyget till Försäkringskassan
-   Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+    När jag skickar intyget till Försäkringskassan
+    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
 @makulera
 Scenario: Statusuppdateringar då intyg makuleras
@@ -50,6 +50,7 @@ Scenario: Statusuppdateringar vid fråga från FK
     Så ska statusuppdatering "HANFRFM" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+
 
 @fråga-till-fk
 Scenario: Statusuppdateringar vid fråga från vården
