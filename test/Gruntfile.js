@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global module */
+/* global module, Promise*/
 require('path');
+var request = require('request');
 
 module.exports = function(grunt) {
     'use strict';
@@ -93,8 +94,15 @@ module.exports = function(grunt) {
             acc: {
                 options: {
                     configFile: './acceptance/protractor-conf.js',
-                    args: {}
-                }
+                    args: {
+                        params: {
+                            // En fil där cucumber fyller i alla externa länkar som hittas.
+                            externalLinksFile: 'acceptance/report/external_links.txt'
+                        }
+                    }
+                },
+                partialReportPattern: 'acceptance/report/*_acc_results.json',
+                reportFile: 'acceptance/report/acc_results.json'
             }
         },
 
@@ -115,29 +123,83 @@ module.exports = function(grunt) {
         grunt.task.run(['env:' + environment, 'protractor_webdriver', 'protractor:dev']);
     });
 
+    grunt.registerTask('checkExternalLinks', 'Kontrollerar externa länkar som hittats under testerna', function() {
+        var done = this.async();
+        var externalFiles = grunt.file.read(grunt.config.get('protractor.acc.options.args.params.externalLinksFile'));
+        var externalFilesArr = externalFiles.split(',').filter(function(item) {
+            return item !== '';
+        });
+
+        var promiseArr = externalFilesArr.map(function(link) {
+            return new Promise(function(resolve, reject) {
+                request(link, function(error, response) {
+                    if (error) {
+                        reject('En extern länk genererade ett fel: ' + error + 'länk: ' + link);
+                    } else {
+                        if (response.statusCode !== 200) {
+                            reject('En extern länk returnerade en oönskad statuskod: ' + response.statusCode + ' , länk: ' + link);
+                        } else {
+                            resolve('Den här länken fungerar: ' + response.statusCode + ' , länk: ' + link);
+                        }
+                    }
+                });
+            });
+        });
+
+        // Mappa Promises från länkkontrollen till objekt som innehåller resultat samt resultat-text
+        // för att undvika fail-fast (vi vill se alla länkar som går fel inte bara den första).
+        var toResultObject = function(promise) {
+            return promise
+                .then(result => ({
+                    success: true,
+                    result
+                }))
+                .catch(error => ({
+                    success: false,
+                    error
+                }));
+        };
+
+        Promise.all(promiseArr.map(toResultObject)).then(function(values) {
+            var errors = 0;
+
+            for (var i = 0; i < values.length; ++i) {
+                if (!values[i].success) {
+                    console.log('ERR: ' + values[i].error);
+                    errors++;
+                } else {
+                    console.log(values[i].result);
+                }
+            }
+
+            if (errors > 0) {
+                grunt.fail.warn('Hittade ett eller flera fel i task checkExternalLinks');
+            }
+            done();
+        });
+    });
 
     grunt.registerTask('genReport', 'Genererar rapport från testkörningen', function() {
-        var files = grunt.file.expand('acceptance/report/*_acc_results.json');
+        var files = grunt.file.expand(grunt.config.get('protractor.acc.partialReportPattern'));
         var combinedReport = '[';
-        files.forEach(function (item,index) { 
+        files.forEach(function(item, index) {
             var fileText = grunt.file.read(item);
             // Ibland är delrapporter tomma eller innehaller endast en []. 
             // Hoppa over dessa.
             if (fileText !== '[]' && fileText !== '') {
-                combinedReport += fileText.substring(1, (fileText.length -2));
+                combinedReport += fileText.substring(1, (fileText.length - 2));
 
-                if (index < files.length -1) {
+                if (index < files.length - 1) {
                     combinedReport += ',';
                 }
-            }
-            else {
+            } else {
                 grunt.log.subhead(fileText);
             }
         });
         combinedReport += ']';
-        grunt.file.write('acceptance/report/acc_results.json', combinedReport);
+        grunt.file.write(grunt.config.get('protractor.acc.reportFile'), combinedReport);
 
-        files.forEach(function (item,index) { 
+        files.forEach(function(item) {
             grunt.file.delete(item);
         });
 
@@ -145,8 +207,8 @@ module.exports = function(grunt) {
         // task 'protractor:acc' då ett eventuellt fail i testfall i protractor-steget hindrar den här tasken från att köra 
         // och vi vill ha en rapport oavsett om ett testfall har gått fel eller inte. 
         if (grunt.fail.errorcount > 0) {
-            grunt.log.subhead('Tidigare eller nuvarande task innehöll ett felmeddelande (errorcount =' + grunt.fail.errorcount +')');
-            grunt.fail.warn("Hittade ett fel i task force:protractor:acc");
+            grunt.log.subhead('Tidigare eller nuvarande task innehöll ett felmeddelande (errorcount =' + grunt.fail.errorcount + ')');
+            grunt.fail.warn('Hittade ett fel i task force:protractor:acc');
         }
     });
 
@@ -186,14 +248,14 @@ module.exports = function(grunt) {
             tasks = ['jshint:acc', 'jsbeautifier:verify'];
         }
 
+        if (grunt.file.exists(grunt.config.get('protractor.acc.options.args.params.externalLinksFile'))) {
+            grunt.file.delete(grunt.config.get('protractor.acc.options.args.params.externalLinksFile'));
+        }
+
         tasks.push('env:' + environment);
         tasks.push('protractor_webdriver');
-        // Måste ha --force på denna då vi behöver att rapporten genereras ( efterföljande task genReport) 
-        // oavsett om alla testfall lyckas eller inte. Kontroll av eventuell felkod görs i genReport-task. 
         tasks.push('force:protractor:acc');
         tasks.push('genReport');
-
         grunt.task.run(tasks);
-
     });
 };

@@ -38,6 +38,26 @@ function checkConsoleErrors(cb) {
 
 module.exports = function() {
     this.setDefaultTimeout(300 * 1000);
+    global.externalPageLinks = [];
+
+    this.AfterStep(function(event, callback) {
+
+        // Samla in alla externa länkar på aktuell sida
+        element.all(by.css('a')).each(function(link) {
+            link.getAttribute('href').then(function(href) {
+                if (href !== null &&
+                    href !== '' &&
+                    href.indexOf(process.env.WEBCERT_URL) === -1 &&
+                    href.indexOf(process.env.MINAINTYG_URL) === -1 &&
+                    global.externalPageLinks.indexOf(href) === -1) {
+                    global.externalPageLinks.push(href);
+                }
+            });
+        }).then(function() {
+            callback();
+        });
+
+    });
 
     this.Before(function(scenario) {
         global.scenario = scenario;

@@ -22,6 +22,7 @@ browser, JSON
 */
 'use strict';
 var winston = require('winston');
+var fs = require('fs');
 
 exports.config = {
     baseUrl: process.env.WEBCERT_URL,
@@ -102,6 +103,17 @@ exports.config = {
             ]);
         };
         browser.addMockModule('disableNgAnimate', disableNgAnimate);
+    },
+    onComplete: function() {
+
+        // Kontrollera externa länkar på sidan som samlats ihop under scenario.
+        if (global.externalPageLinks.length > 0) {
+            fs.appendFile(browser.params.externalLinksFile, global.externalPageLinks.join(',') + ',', function(err) {
+                if (err) {
+                    throw err;
+                }
+            });
+        }
     }
 };
 
