@@ -19,28 +19,25 @@
 
 package se.inera.intyg.webcert.integration.pu.services;
 
-import com.google.common.annotations.VisibleForTesting;
+import static se.inera.intyg.webcert.integration.pu.cache.PuCacheConfiguration.PERSON_CACHE_NAME;
+
+import javax.xml.ws.WebServiceException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+
+import com.google.common.annotations.VisibleForTesting;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookUpSpecificationType;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
-import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
+import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.*;
 import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
-import se.riv.population.residentmaster.types.v1.JaNejTYPE;
-import se.riv.population.residentmaster.types.v1.NamnTYPE;
-import se.riv.population.residentmaster.types.v1.ResidentType;
-import se.riv.population.residentmaster.types.v1.SvenskAdressTYPE;
-
-import javax.xml.ws.soap.SOAPFaultException;
-
-import static se.inera.intyg.webcert.integration.pu.cache.PuCacheConfiguration.PERSON_CACHE_NAME;
+import se.riv.population.residentmaster.types.v1.*;
 
 public class PUServiceImpl implements PUService {
 
@@ -88,7 +85,7 @@ public class PUServiceImpl implements PUService {
             LOG.debug("Person '{}' found", personId.getPnrHash());
 
             return new PersonSvar(person, PersonSvar.Status.FOUND);
-        } catch (SOAPFaultException e) {
+        } catch (WebServiceException e) {
             LOG.warn("Error occured, no person '{}' found", personId.getPnrHash());
             return new PersonSvar(null, PersonSvar.Status.ERROR);
         }
