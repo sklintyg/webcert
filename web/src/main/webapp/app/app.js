@@ -168,7 +168,15 @@
 
             $rootScope.$on('$stateChangeStart',
                 function(event, toState, toParams/*, fromState, fromParams*/) {
-                    // if we dont have a user then we need to defer until we do ..
+                    var redirectToUnitSelection = function() {
+                        if (toState.name!=='normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
+                            event.preventDefault();
+                            $state.go('normal-origin-enhetsval', { destinationState: toState }, { location: false });
+                            return true;
+                        }
+                        return false;
+                    };
+
                     var termsCheck = function() {
                         // check terms if not accepted then always redirect
                         if (toState.name !== 'webcert.terms') {
@@ -180,13 +188,17 @@
                             $state.transitionTo('webcert.terms');
                         }
                     };
+
+                    // if we dont have a user then we need to defer until we do ..
                     if (!UserModel.user) {
                         event.preventDefault();
                         // gets resolved when a user is loaded
                         $state.transitionTo(toState.name, toParams);
                     } else {
-                        termsCheck();
-                        $window.doneLoading = false;
+                        if (!redirectToUnitSelection()) {
+                            termsCheck();
+                            $window.doneLoading = false;
+                        }
                     }
                 });
 

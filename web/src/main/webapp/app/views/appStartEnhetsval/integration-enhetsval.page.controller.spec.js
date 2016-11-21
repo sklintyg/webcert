@@ -18,7 +18,7 @@
  */
 
 describe(
-        'EnhetsvalPageCtrlSpec',
+        'IntegrationEnhetsvalPageCtrlSpec',
         function() {
             'use strict';
 

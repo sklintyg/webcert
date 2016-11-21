@@ -26,6 +26,22 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
     var commonPath = '/web/webjars/common/webcert/';
 
     $stateProvider.
+        state('normal-origin-enhetsval', {
+            url: '/normal-origin-enhetsval',
+            params: {
+                destinationState: null
+            },
+            views: {
+                'header': {
+                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
+                    controller: 'integration.EnhetsvalHeaderCtrl'
+                },
+                'content@': {
+                    templateUrl: '/app/views/appStartEnhetsval/normal-enhetsval.page.html',
+                    controller: 'normal.EnhetsvalPageCtrl'
+                }
+            }
+        }).
         state('integrationenhetsval', {
             url: '/integration-enhetsval',
             views: {
@@ -34,7 +50,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     controller: 'integration.EnhetsvalHeaderCtrl'
                 },
                 'content@': {
-                    templateUrl: '/app/views/integrationEnhetsval/enhetsval.page.html',
+                    templateUrl: '/app/views/appStartEnhetsval/integration-enhetsval.page.html',
                     controller: 'integration.EnhetsvalPageCtrl'
                 }
             }

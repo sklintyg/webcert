@@ -119,7 +119,7 @@ public class UserApiController extends AbstractApiController {
         WebCertUser user = getWebCertUserService().getUser();
 
         LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
-                user.getValdVardenhet().getId());
+                user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "(none)");
 
         boolean changeSuccess = user.changeValdVardenhet(request.getId());
 
@@ -171,7 +171,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/latestavtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getAvtal() {
-         Avtal avtal = avtalService.getLatestAvtal();
+        Avtal avtal = avtalService.getLatestAvtal();
         return Response.ok(avtal).build();
     }
 

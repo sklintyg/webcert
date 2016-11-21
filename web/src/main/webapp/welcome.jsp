@@ -455,6 +455,15 @@
       "hsaId": "TSTNMT2321000156-1079",
       "enhetId": "TSTNMT2321000156-1077",
       "lakare": true
+    },
+    // Läkare med flera enheter ingen blir förvald vid inloggning
+    {
+      "fornamn": "Åsa",
+      "efternamn": "Andersson",
+      "hsaId": "IFV1239877878-104B",
+      "enhetId": "",
+      "lakare": true,
+      "forskrivarKod": "2481632"
     }
   ];
 
@@ -700,6 +709,12 @@
           hsaId: 'TSTNMT2321000156-1066_TSTNMT2321000156-1062',
           env: 'demo',
           name: 'Lars Olsson (Cambio / Administratör / Vård och Behandling)'
+        },
+        {
+          id: 41,
+          hsaId: 'IFV1239877878-104B',
+          env: 'dev',
+          name: 'Åsa Andersson (Läkare Ej förvald enhet) - Har WebCert Enhet 1 & 2'
         }
       ]
     };

@@ -63,7 +63,7 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
                 // We don't handle any results from this dialog - and it cant be closed other than by choosing
                 // an enhet which will result in a full page redirect..
                 $uibModal.open({
-                    templateUrl: '/app/views/integrationEnhetsval/enhetsval.dialog.html',
+                    templateUrl: '/app/views/appStartEnhetsval/enhetsval.dialog.html',
                     backdrop: 'static',
                     keyboard: false,
                     windowClass: 'wc-integration-enhet-selector',

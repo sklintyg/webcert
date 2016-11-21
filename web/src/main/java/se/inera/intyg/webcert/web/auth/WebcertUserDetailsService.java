@@ -21,8 +21,10 @@ package se.inera.intyg.webcert.web.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.IntygUser;
+import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.common.security.siths.BaseUserDetailsService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -44,9 +46,9 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
      * as Principal.
      *
      * @param credential
-     *      The SAMLCredential.
+     *            The SAMLCredential.
      * @return
-     *      WebCertUser as Principal.
+     *         WebCertUser as Principal.
      */
     @Override
     protected WebCertUser buildUserPrincipal(SAMLCredential credential) {
@@ -60,10 +62,27 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
      * Makes sure that the default "fallback" role of Webcert is {@link AuthoritiesConstants#ROLE_ADMIN}.
      *
      * @return
-     *      AuthoritiesConstants.ROLE_ADMIN as String.
+     *         AuthoritiesConstants.ROLE_ADMIN as String.
      */
     @Override
     protected String getDefaultRole() {
         return AuthoritiesConstants.ROLE_ADMIN;
     }
+
+    @Override
+    protected void decorateIntygUserWithDefaultVardenhet(IntygUser intygUser) {
+        // This override should only apply to NORMAL origin logins. Other types of origins gets default behaviour.
+        if (!UserOriginType.NORMAL.name().equals(intygUser.getOrigin())) {
+            super.decorateIntygUserWithDefaultVardenhet(intygUser);
+            return;
+        }
+
+        final long nrUnitsToSelectFrom = intygUser.getVardgivare().stream().flatMap(vg -> vg.getVardenheter().stream()).count();
+
+        // If only 1 unit to select from - select it for them. Otherwise leave it unselected.
+        if (nrUnitsToSelectFrom == 1) {
+            super.decorateIntygUserWithDefaultVardenhet(intygUser);
+        }
+    }
+
 }
