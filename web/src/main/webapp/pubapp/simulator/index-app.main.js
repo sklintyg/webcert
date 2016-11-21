@@ -167,6 +167,10 @@ angular.module('rhsIndexApp')
         $scope.openForm = function(intyg) {
             $scope.formToDisplay = '';
 
+            // re-initialize as empty.
+            $scope.pendingActionQuestions = [];
+            $scope.pendingInternalActionQuestions = [];
+
             if (intyg.intygsTyp === 'fk7263') {
                 $scope.formToDisplay = 'fragaSvar';
                 $scope.q = LEGACY_QUESTION;
@@ -203,6 +207,15 @@ angular.module('rhsIndexApp')
                     $scope.pendingActionQuestions = response.data;
                 });
 
+                $http({
+                    method: 'GET',
+                    url: '/testability/arendetest/intyg/' + intyg.intygsId + '/internal'
+                }).then(function successCallback(response) {
+                    $scope.pendingInternalActionQuestions = response.data;
+                });
+
+
+                $scope.q.paminnelseMeddelandeId = '';
                 $scope.q.meddelandeId = guid();
                 $scope.q.intygsId = intyg.intygsId;
                 $scope.q.patientPersonId = intyg.patientPersonnummer.replace('-', '');
@@ -214,6 +227,7 @@ angular.module('rhsIndexApp')
         };
 
         $scope.typeClicked = function() {
+            $scope.q.paminnelseMeddelandeId = '';
             if ($scope.q.amne === 'KOMPLT') {
                 $scope.q.rubrik = 'Komplettering';
             } else {
@@ -237,7 +251,7 @@ angular.module('rhsIndexApp')
                 svarPa = '<urn1:svarPa><urn3:meddelande-id>' + q.svarPa.meddelandeId + '</urn3:meddelande-id>' + svarPaReferensId + '</urn1:svarPa>';
             }
             var paminnelseMeddelandeId = '';
-            if (!isEmpty(q.paminnelseMeddelandeId)) {
+            if (!isEmpty(q.paminnelseMeddelandeId) && q.amne === 'PAMINN') {
                 paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + q.paminnelseMeddelandeId + '</urn1:paminnelseMeddelande-id>';
             }
             var rubrik = '';

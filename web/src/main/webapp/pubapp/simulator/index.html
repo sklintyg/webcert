@@ -35,7 +35,7 @@
 
       <div class="row">
         <div class="col-sm-6">
-          <h1 class="page-title">Välkommen till Ärendeverktyget</h1>
+          <h1 class="page-title">Välkommen till Ärendeverkfgdfgdftyget</h1>
           <p class="well">Välj först en vårdenhet och sedan det intyg du vill skapa ett ärende för.<br>  <br>
 
             För att en vårdenhet skall gå att välja i drop-down menyn nedan så måste det finnas minst ett
@@ -118,11 +118,15 @@
                   <input type="text" class="form-control" ng-model="q.rubrik">
                 </div>
               </div>
-              <div class="row">
+              <div class="row" ng-if="q.amne == 'PAMINN'">
                 <label class="col-sm-3 control-label">Påminnelse-id</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" ng-model="q.paminnelseMeddelandeId">
-                  <span ng-if="q.amne == 'PAMINN'">Glöm inte fylla i ett påminnelse-id!</span>
+                  <!-- <input type="text" class="form-control" ng-model="q.paminnelseMeddelandeId">  -->
+                  <select class="form-control" ng-model="q.paminnelseMeddelandeId">
+                    <option value=""></option>
+                    <option ng-repeat="fraga in pendingInternalActionQuestions" value="{{ fraga.id }}">{{ fraga.title }} - {{ fraga.id }}</option>
+                  </select>
+                  <span ng-if="q.amne == 'PAMINN'">Glöm inte ange ett påminnelse-id!</span>
                 </div>
               </div>
             </div>

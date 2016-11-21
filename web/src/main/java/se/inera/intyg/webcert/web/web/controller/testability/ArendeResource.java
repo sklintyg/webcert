@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.ArendeAffectedResponse;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.SimpleArende;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -71,6 +72,26 @@ public class ArendeResource {
                 .map(a -> a.getMeddelandeId())
                 .collect(Collectors.toList()))
         .build();
+    }
+
+    /**
+     * Returnerar ärenden på givet intygsId i status PENDING_INTERNAL_ACTION.
+     *
+     * Används av ärendeverktyget för att ge förslag på möjliga ärenden att skicka in en påminnelse för.
+     *
+     * @param intygsId
+     * @return
+     */
+    @GET
+    @Path("/intyg/{intygsId}/internal")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getVantarPaSvarFranOss(@PathParam("intygsId") String intygsId) {
+        List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
+        return Response.ok(byIntygsId.stream()
+                .filter(a -> a.getStatus() == Status.PENDING_INTERNAL_ACTION)
+                .map(a -> new SimpleArende(a.getMeddelandeId(), a.getRubrik()))
+                .collect(Collectors.toList()))
+                .build();
     }
 
     @GET
