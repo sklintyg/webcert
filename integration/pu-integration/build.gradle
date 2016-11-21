@@ -7,7 +7,6 @@ dependencies {
   compile "se.inera.intyg.common:common-cache-core:${commonVersion}"
 
   runtime "org.springframework:spring-context-support:${springVersion}"
-  runtime "net.sf.ehcache:ehcache:${ehCacheVersion}"
 
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
