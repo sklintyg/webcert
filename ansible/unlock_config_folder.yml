@@ -2,7 +2,7 @@
 # This playbook unlocks the config repo folder
 
 - hosts: webcert-tomcat
-  sudo: yes 
+  become: yes 
   
   roles:
     - unlock-config-folder

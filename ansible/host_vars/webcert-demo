@@ -1,5 +1,4 @@
 ---
-# file: host_vars/intygstjanst-demo
 
 # Spring profiles
 profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled

@@ -1,21 +1,20 @@
 ---
-# file: roles/webcert-queues/tasks/main.yml
 
-- name: configure notification-sender DLQ
+- name: Configure notification-sender DLQ
   lineinfile:
     dest="{{ activemq_conf }}/activemq.xml"
     regexp=".*<policyEntry queue='{{ environment_name }}.webcert.notification.ws.queue'>"
     insertbefore=".*</policyEntries>"
     line="                <policyEntry queue='{{ environment_name }}.webcert.notification.ws.queue'><deadLetterStrategy><individualDeadLetterStrategy queuePrefix='DLQ.' useQueueForQueueMessages='true' enableAudit='false'/></deadLetterStrategy></policyEntry>"
 
-- name: configure certificate-sender DLQ
+- name: Configure certificate-sender DLQ
   lineinfile:
     dest="{{ activemq_conf }}/activemq.xml"
     regexp=".*<policyEntry queue='{{ environment_name }}.webcert.certificate.queue'>"
     insertbefore=".*</policyEntries>"
     line="                <policyEntry queue='{{ environment_name }}.webcert.certificate.queue'><deadLetterStrategy><individualDeadLetterStrategy queuePrefix='DLQ.' useQueueForQueueMessages='true' enableAudit='false'/></deadLetterStrategy></policyEntry>"
 
-- name: configure aggreagated logging DLQ
+- name: Configure aggregated logging DLQ
   lineinfile:
     dest="{{ activemq_conf }}/activemq.xml"
     regexp=".*<policyEntry queue='{{ environment_name }}.webcert.aggregated.log.queue'>"

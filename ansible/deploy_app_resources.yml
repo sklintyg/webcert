@@ -1,8 +1,0 @@
----
-# This playbook provisions application resources for WebCert, such as diagnose code files 
-
-- hosts: webcert-tomcat
-  sudo: yes 
-
-  roles:
-    - app-resources

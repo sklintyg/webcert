@@ -1,40 +1,32 @@
 ---
-# file: roles/webcert/tasks/main.yml
 
-- name: stop tomcat
+- name: Stop tomcat
   service: name={{ tomcat_service }} state=stopped pattern={{ tomcat_service }}
 
-- name: create release directory
+- name: Create release directory
   file: path={{ releases_folder }} state=directory
 
-- name: Make sure webcert-liquibase-runner file download is forced when using shapshots repo
-  file: state=absent  path={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
-  when: repo == "snapshots"
-
-- name: download intygstjanst-liquibase-runner-{{ version }}.zip
+- name: Download intygstjanst-liquibase-runner-{{ version }}.zip
   get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
            dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
   when: deploy_from_repo|bool
 
-- name: copy webcert-liquibase-runner-{{ version }}.zip
+- name: Copy webcert-liquibase-runner-{{ version }}.zip
   copy: src={{ inventory_dir }}/../tools/liquibase-runner/build/distributions/webcert-liquibase-runner-{{ version }}.zip dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
   when: not deploy_from_repo|bool
 
 - name: Unzip webcert-liquibase-runner-{{ version }}.zip
-  command: unzip -od {{ releases_folder }} {{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
-  args:
-    creates: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/liquibase-runner"
+  unarchive: src={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
+             dest={{ releases_folder }}
+             remote_src=yes
+             creates="{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/liquibase-runner"
 
-- name: run liquibase update
+- name: Run liquibase update
   command: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/webcert-liquibase-runner --url={{ database_url }} --username={{ database_username }} --password={{ database_password }} update"
   args:
       chdir: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}"
   environment:
       JAVA_HOME: "{{ java_home }}"
-
-- name: Make sure webcert-web file download is forced when using shapshots repo
-  file: state=absent  path={{ releases_folder }}/webcert-web-{{ version }}.war
-  when: repo == "snapshots"
 
 - name: Download webcert-web-{{ version }}.war
   get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r={{ repo }}&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
@@ -57,40 +49,36 @@
 - name: Deploy webcert-web-{{ version }}.war as ROOT.war
   command: cp {{ releases_folder }}/webcert-web-{{ version }}.war {{ webapps_folder }}/ROOT.war
 
-- name: Make sure log-sender file download is forced when using shapshots repo
-  file: state=absent  path={{ releases_folder }}/log-sender-{{ version }}.war
-  when: repo == "snapshots"
-
 - name: Download log-sender-{{ version }}.war
   get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r={{ repo }}&g=se.inera.intyg.webcert&a=log-sender&v={{ version }}&p=war
            dest={{ releases_folder }}/log-sender-{{ version }}.war
   when: deploy_from_repo|bool
 
-- name: copy log-sender-{{ version }}.war
+- name: Copy log-sender-{{ version }}.war
   copy: src={{ inventory_dir }}/../log-sender/build/libs/log-sender-{{ version }}.war dest={{ releases_folder }}/log-sender-{{ version }}.war
   when: not deploy_from_repo|bool
 
-- name: remove old version of unpacked log-sender war
+- name: Remove old version of unpacked log-sender war
   file: state=absent
       path={{ webapps_folder }}/log-sender
 
-- name: remove old version of log-sender war
+- name: Remove old version of log-sender war
   file: state=absent
       path={{ webapps_folder }}/log-sender.war
 
-- name: deploy log-sender-{{ version }}.war as log-sender.war
+- name: Deploy log-sender-{{ version }}.war as log-sender.war
   command: cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war
 
-- name: create version file
+- name: Create version file
   template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
-- name: fetch configuration repo to get new branches
+- name: Fetch configuration repo to get new branches
   command: chdir={{ config_folder }} git fetch origin
 
-- name: update configuration to {{ config_version }}
+- name: Update configuration to {{ config_version }}
   git: repo={{ config_repository }}
        dest={{ config_folder }}
        version={{ config_version }}
 
-- name: start tomcat
+- name: Start tomcat
   service: name={{ tomcat_service }} state=started pattern={{ tomcat_service }}

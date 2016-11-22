@@ -1,12 +1,11 @@
 ---
-# file: roles/app-resources/tasks/main.yml
 
-- name: delete application resources folder
+- name: Delete application resources folder
   file: "state=absent path={{ app_resources_folder }}"
 
-- name: create application resources folder
+- name: Create application resources folder
   file: "state=directory path={{ app_resources_folder }}"
 
-- name: copy application resources
+- name: Copy application resources
   copy: src="{{ app_resources_src }}"
        dest="{{ app_resources_folder }}"

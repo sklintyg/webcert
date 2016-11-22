@@ -1,10 +1,9 @@
 ---
-# file: roles/webcert-systemvariabler/tasks/main.yml
 
 - name: Create webcert-env.sh file
   template: src=webcert-env.sh.j2 dest="{{ inera_tomcat_folder }}/webcert-env.sh" mode=755
 
-- name: configure setenv.sh
+- name: Configure setenv.sh
   lineinfile:
     dest="{{ tomcat_bin }}/setenv.sh"
     create=yes
@@ -12,4 +11,3 @@
     regexp="webcert-env\.sh"
     insertafter="EOF"
     line=". \"{{ inera_tomcat_folder }}/webcert-env.sh\""
-    

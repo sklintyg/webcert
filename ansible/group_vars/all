@@ -1,5 +1,4 @@
 ---
-# file: group_vars/all
 
 # General
 inera_root: /opt/inera

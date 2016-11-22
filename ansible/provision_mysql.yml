@@ -2,7 +2,7 @@
 # This playbook provisions mysql for WebCert 
 
 - hosts: webcert-mysql
-  sudo: yes 
+  become: yes 
 
   roles:
     - webcert-mysql

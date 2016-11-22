@@ -1,7 +1,7 @@
 # This playbook deploys WebCert 
 
 - hosts: webcert-tomcat
-  sudo: yes 
+  become: yes 
   vars:
     # repo - values: nightly, snapshots or releases
     repo: releases

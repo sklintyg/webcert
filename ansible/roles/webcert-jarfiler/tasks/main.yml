@@ -1,5 +1,4 @@
 ---
-# file: roles/webcert-jarfiler/tasks/main.yml
 
 - name: Download activemq-client-{{ activemq_version }}.jar
   get_url: url=http://repo1.maven.org/maven2/org/apache/activemq/activemq-client/{{ activemq_version }}/activemq-client-{{ activemq_version }}.jar
