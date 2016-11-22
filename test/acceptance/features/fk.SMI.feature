@@ -36,7 +36,7 @@ Exempel:
 Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
 	När jag går in på ett <intyg> med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan
-	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system."
+	Så ska intygets status vara "Intyget är signerat, skickat och mottaget av Försäkringskassans system"
 
 	När jag går till Mina intyg för patienten
 	Så ska intygets status i Mina intyg visa "Mottaget av Försäkringskassans system"

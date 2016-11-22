@@ -35,6 +35,16 @@ module.exports = function() {
         };
         return logInAsUserRole(userObj, 'Tandläkare');
     });
+
+    this.Given(/^att jag är inloggad som tandläkare på vårdenhet "([^"]*)"$/, function(ve) {
+        var userObj = {
+            fornamn: 'Louise',
+            efternamn: 'Ericsson',
+            hsaId: 'TSTNMT2321000156-103B',
+            enhetId: ve
+        };
+        return logInAsUserRole(userObj, 'Tandläkare');
+    });
     this.Given(/^att jag är inloggad som läkare utan adress till enheten$/, function() {
         var userObj = {
             fornamn: 'Per',
@@ -99,6 +109,17 @@ module.exports = function() {
             }
         }
 
+        return logInAsUserRole(userObj, 'Läkare');
+    });
+
+    this.Given(/^att jag är inloggad som läkare på vårdenhet "([^"]*)"$/, function(ve) {
+        var userObj = {
+            fornamn: 'Erik',
+            efternamn: 'Nilsson',
+            hsaId: 'TSTNMT2321000156-105H',
+            enhetId: ve,
+            origin: 'DJUPINTEGRATION'
+        };
         return logInAsUserRole(userObj, 'Läkare');
     });
 

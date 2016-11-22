@@ -75,6 +75,11 @@ module.exports = function() {
     //     return gotoPatient(personnummer);
     // });
 
+    this.Given(/^jag går in på patienten$/, function() {
+        return gotoPatient(global.person);
+    });
+
+
     this.Given(/^jag matar in personnummer som inte finns i PUtjänsten$/, function(callback) {
         return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0], callback); //personnummret finns inte med i PU-tjänsten
     });

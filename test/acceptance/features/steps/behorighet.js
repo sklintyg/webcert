@@ -39,7 +39,8 @@ module.exports = function() {
     this.Given(/^är kopieraknappen tillgänglig$/, function(callback) {
         expect(basePage.copyBtn.isPresent()).to.become(true).then(function() {
             logger.info('OK - Kopiera knappen hittad');
-            basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
+            callback();
+            // basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
         }, function(reason) {
             callback('FEL : ' + reason);
         });

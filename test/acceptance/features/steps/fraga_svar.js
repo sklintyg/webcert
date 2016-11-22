@@ -275,21 +275,19 @@ module.exports = function() {
                 } else {
                     client.SendMessageToCare(body, function(err, result, resBody) {
                         console.log(resBody);
-                        if (err) {
-                            callback(err);
+                        var resultcode = result.result.resultCode;
+                        logger.info('ResultCode: ' + resultcode);
+                        console.log(result);
+                        if (resultcode !== 'OK') {
+                            logger.info(result);
+                            callback('ResultCode: ' + resultcode + '\n' + resBody);
                         } else {
-                            var resultcode = result.result.resultCode;
                             logger.info('ResultCode: ' + resultcode);
-                            console.log(result);
-                            if (resultcode !== 'OK') {
-                                logger.info(result);
-                                callback('ResultCode: ' + resultcode + '\n' + resBody);
-                            } else {
-                                logger.info('ResultCode: ' + resultcode);
-                                console.log(JSON.stringify(result));
-                                callback();
-                            }
+                            console.log(JSON.stringify(result));
 
+                            browser.refresh().then(function() {
+                                callback(err);
+                            });
                         }
                     });
                 }
@@ -322,7 +320,9 @@ module.exports = function() {
                         logger.info(result);
                         callback('ResultCode: ' + resultcode + '\n' + resBody);
                     } else {
-                        callback(err);
+                        browser.refresh().then(function() {
+                            callback(err);
+                        });
                     }
                 });
             });
@@ -570,5 +570,9 @@ module.exports = function() {
             testdataHelper.shuffle(['Arbetstidsförläggning', 'Avstämningsmöte', 'Kontakt', 'Övrigt'])[0],
             callback
         );
+    });
+
+    this.Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
+        return expect(element(by.id('unhandled-vidarebefordraEjHanterad')).isPresent()).to.eventually.be.ok;
     });
 };
