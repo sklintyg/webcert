@@ -24,6 +24,16 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag signerar intyget
    Så jag ska se den data jag angett för intyget
 
+   @fortsattUtkast @INTYG-2885
+Scenario: Ska kunna fortsätta besvara kompletterande intyg 
+   När jag går in på ett "Läkarutlåtande för sjukersättning" med status "Signerat" 
+   Och jag skickar intyget till Försäkringskassan
+   När Försäkringskassan skickar ett "KOMPLT" meddelande på intyget
+   Och jag går in på intyget
+   Och jag väljer att svara med ett nytt intyg
+   Och jag går tillbaka till intyget som behöver kompletteras
+   Så ska det finnas en knapp med texten "Fortsätt på intygsutkast"
+
 # Scenario: Ska kunna besvara komplettering med textmeddelande
 #    När jag går in på ett "Läkarintyg för sjukpenning" med status "Mottaget"
 #    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget

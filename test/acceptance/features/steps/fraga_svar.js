@@ -76,7 +76,6 @@ module.exports = function() {
         sendQuestionToFK(amne, callback);
 
     });
-
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
         helpers.updateEnhetAdressForNewIntyg();
         var fragaText = global.intyg.guidcheck;
@@ -91,6 +90,8 @@ module.exports = function() {
             throw ('Inga frågor hittades');
         } else {
             var svaraBtn = page.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', 'Svara'));
+
+
             return svaraBtn.sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     //Fulhack för att inte global ska innehålla en referens
@@ -98,7 +99,21 @@ module.exports = function() {
 
                     return page.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE);
                 });
+
+
+
+
         }
+    });
+    this.Given(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {
+
+        return element(by.id('wc-intyg-relations-button')).click().then(function() {
+            return element(by.id('wc-intyg-relations-list')).element(by.cssContainingText('.btn', 'Visa')).click();
+        });
+
+    });
+    this.Given(/^ska det finnas en knapp med texten "([^"]*)"$/, function(texten) {
+        return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(true);
     });
 
 

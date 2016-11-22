@@ -24,7 +24,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag signerar intyget
    Så jag ska se den data jag angett för intyget
 
-@textsvar
+@textsvar 
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
@@ -32,3 +32,13 @@ Scenario: Ska kunna besvara komplettering med textmeddelande
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska kunna svara med textmeddelande
 
+@fortsattUtkast @INTYG-2885
+Scenario: Ska kunna fortsätta besvara kompletterande intyg 
+   När jag går in på ett "Läkarintyg FK 7263" med status "Signerat" 
+   Och jag skickar intyget till Försäkringskassan
+   När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
+   Och jag går in på intyget
+   Och jag väljer att svara med ett nytt intyg
+   Och jag går tillbaka till intyget som behöver kompletteras
+   Så ska det finnas en knapp med texten "Fortsätt på intygsutkast"
+   
