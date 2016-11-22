@@ -157,4 +157,15 @@ module.exports = function() {
     this.Given(/^jag går till ej signerade utkast$/, function() {
         return element(by.id('menu-unsigned')).click();
     });
+    var savedLink;
+    this.Given(/^sparar länken till aktuell sida$/, function() {
+        return browser.getCurrentUrl().then(function(currentUrl) {
+            logger.info('Aktuell sida: ' + currentUrl);
+            savedLink = currentUrl;
+        });
+    });
+
+    this.Given(/^går till den sparade länken$/, function() {
+        return browser.get(savedLink);
+    });
 };

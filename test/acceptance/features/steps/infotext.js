@@ -51,4 +51,18 @@ module.exports = function() {
 
 
     });
+
+    this.Given(/^ska ett fel\-meddelande visa "([^"]*)"$/, function(text) {
+        var alerts = element.all(by.css('.alert-danger')).map(function(elm, index) {
+            return elm.getText();
+        });
+
+        return alerts.then(function(alertTexts) {
+            var joinedTexts = alertTexts.join('\n');
+            logger.info('Hittade fel-meddelanden: ' + joinedTexts);
+            return expect(joinedTexts).to.include(text);
+        });
+
+
+    });
 };

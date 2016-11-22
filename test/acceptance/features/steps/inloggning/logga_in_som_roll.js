@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser */
+/* globals browser,logger */
 
 'use strict';
 var loginHelper = require('./login.helpers.js');
@@ -112,7 +112,7 @@ module.exports = function() {
         return logInAsUserRole(userObj, 'Läkare');
     });
 
-    this.Given(/^att jag är inloggad som läkare på vårdenhet "([^"]*)"$/, function(ve) {
+    this.Given(/^att jag är inloggad som läkare på (vårdenhet|underenhet) "([^"]*)"$/, function(enhettyp, ve) {
         var userObj = {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
@@ -158,6 +158,45 @@ module.exports = function() {
         return logInAsUserRole(userObj, 'Läkare');
     });
 
+
+    this.Given(/^att jag är inloggad som läkare på (underenhet|vårdenhet) "([^"]*)" och inte har uppdrag på "([^"]*)"$/, function(typ, harEnhet, harInteEnhet) {
+
+        var userObj;
+        if (harInteEnhet === 'TSTNMT2321000156-1003') {
+            userObj = {
+                'fornamn': 'Arnold',
+                'efternamn': 'Johansson',
+                'hsaId': 'TSTNMT2321000156-1079',
+                'enhetId': harInteEnhet,
+                'origin': 'NORMAL'
+            };
+        } else if (harInteEnhet === 'TSTNMT2321000156-107J') {
+            userObj = {
+                fornamn: 'Erik',
+                efternamn: 'Nilsson',
+                hsaId: 'TSTNMT2321000156-105H',
+                enhetId: harInteEnhet
+            };
+        } else {
+            throw 'Användare för detta saknas';
+        }
+
+        //Kontrollera att inte medarbetaruppdrag finns på den andra enheten
+        return logInAsUserRole(userObj, 'Läkare')
+            .then(
+                function() {
+                    throw ('Lyckades logga in med den enheten som inte ska fungera');
+                },
+                function(err) {
+                    logger.info('FICK FEL: ' + err.message);
+                    userObj.enhetId = harEnhet;
+                    return logInAsUserRole(userObj, 'Läkare');
+                });
+    });
+
+
+
+
     this.Given(/^ska jag ha rollen "([^"]*)"$/, function(roll, callback) {
         checkUserRole().then(function(value) {
             var re = /\[\"(.*)\"\]/;
@@ -202,21 +241,6 @@ module.exports = function() {
         var wcHeader = element(by.id('wcHeader'));
         return expect(wcHeader.getText()).to.eventually.contain('Läkare');
     });
-    // this.Given(/^jag loggar in som läkare med medarbetaruppdrag som administatör$/, function() {
-    //     var userObj = {
-    //         fornamn: 'Jenny',
-    //         efternamn: 'Larsson',
-    //         hsaId: 'TSTNMT2321000156-1084',
-    //         enhetId: 'TSTNMT2321000156-107P',
-    //         lakare: true,
-    //         origin: 'DJUPINTEGRATION'
-    //     };
-    //     console.log('Loggar in som admin....');
-    //     return logInAsUserRole(userObj, 'Läkare');
-
-    // });
-
-
 
 };
 
