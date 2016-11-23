@@ -104,10 +104,10 @@ var LuseUtkast = BaseSmiUtkast._extend({
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
         return Promise.all([
-            checkAndSendTextToForm(mb.avslutad.checkbox, mb.avslutad.text, behandling.avslutad),
-            checkAndSendTextToForm(mb.pagaende.checkbox, mb.pagaende.text, behandling.pagaende),
-            checkAndSendTextToForm(mb.planerad.checkbox, mb.planerad.text, behandling.planerad),
-            checkAndSendTextToForm(mb.substansintag.checkbox, mb.substansintag.text, behandling.substansintag)
+            mb.avslutad.text.sendKeys(behandling.avslutad),
+            mb.pagaende.text.sendKeys(behandling.pagaende),
+            mb.planerad.text.sendKeys(behandling.planerad),
+            mb.substansintag.text.sendKeys(behandling.substansintag)
         ]);
     },
 
