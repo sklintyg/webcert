@@ -19,7 +19,7 @@ Scenario: Skapa och signera ett intyg
 Scenario: Skicka ett signerat intyg till Transportstyrelsen
     När jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
-    Så ska intygets status vara "Intyget är signerat, skickat och mottaget av Transportstyrelsens system"
+    Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
 @makulera
 Scenario: Makulera ett skickat intyg
