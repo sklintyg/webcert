@@ -7,12 +7,12 @@ applicationDefaultJvmArgs = ["-Dfile.encoding=utf8"]
 
 startScripts {
     doLast {
-        def webcertPersistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
+        def persistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
 
-        unixScript.text = unixScript.text.replaceAll(/"\$@"$/,
-            "--driver=com.mysql.jdbc.Driver --classpath=lib/${webcertPersistenceDependency} --changeLogFile=changelog/changelog.xml \"\\\$@\"")
+        unixScript.text = unixScript.text.replaceAll(/for s in \"\$\{@\}\"/,
+            'for s in --driver=com.mysql.jdbc.Driver --classpath=lib/' + persistenceDependency + ' --changeLogFile=changelog/changelog.xml "\\${@}"')
         windowsScript.text = windowsScript.text.replaceAll(/%CMD_LINE_ARGS%/,
-            "--driver=com.mysql.jdbc.Driver --classpath=lib/${webcertPersistenceDependency} --changeLogFile=changelog/changelog.xml %CMD_LINE_ARGS%")
+            "--driver=com.mysql.jdbc.Driver --classpath=lib/${persistenceDependency} --changeLogFile=changelog/changelog.xml %CMD_LINE_ARGS%")
     }
 }
 
@@ -29,8 +29,8 @@ sonarqube {
 }
 
 dependencies {
-  runtime project(':webcert-persistence')
+    runtime project(':webcert-persistence')
 
-  runtime "mysql:mysql-connector-java:${mysqlVersion}"
-  runtime "org.liquibase:liquibase-core:${liquibaseVersion}"
+    runtime "mysql:mysql-connector-java:${mysqlVersion}"
+    runtime "org.liquibase:liquibase-core:${liquibaseVersion}"
 }
