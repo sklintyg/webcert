@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.web.auth.bootstrap;
 
 import org.junit.BeforeClass;
-import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.common.security.authorities.bootstrap.AuthoritiesConfigurationLoader;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.authorities.bootstrap.AuthoritiesConfigurationLoader;
 
 /**
  * Created by Magnus Ekstrand on 26/11/15.

@@ -83,13 +83,13 @@
         class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
     <property name="exceptionMappings">
       <props>
-        <prop key="se.inera.intyg.common.security.exception.MissingMedarbetaruppdragException">
+        <prop key="se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException">
           /error.jsp?reason=login.medarbetaruppdrag
         </prop>
         <prop key="org.springframework.security.authentication.BadCredentialsException">
           /error.jsp?reason=login.failed
         </prop>
-        <prop key="se.inera.intyg.common.security.exception.HsaServiceException">
+        <prop key="se.inera.intyg.infra.security.exception.HsaServiceException">
           /error.jsp?reason=login.hsaerror
         </prop>
 

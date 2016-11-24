@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.util.logging.HashUtility;
 import se.inera.intyg.common.util.logging.LogMarkers;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
@@ -189,8 +188,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logPrivatePractitionerTermsApproved(String userId, String personId, Integer avtalVersion) {
-        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, HashUtility.hash(personId), avtalVersion);
+    public void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion) {
+        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, Personnummer.getPnrHashSafe(personId), avtalVersion);
     }
 
     @Override

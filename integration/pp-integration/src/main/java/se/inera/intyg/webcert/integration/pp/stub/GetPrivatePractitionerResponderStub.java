@@ -19,26 +19,24 @@
 
 package se.inera.intyg.webcert.integration.pp.stub;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-
-import se.inera.intyg.common.util.logging.HashUtility;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Stubbed responder for get private practitioner.
- *
+ * <p>
  * Created by Magnus Ekstrand on 18/06/15.
  */
 public class GetPrivatePractitionerResponderStub implements GetPrivatePractitionerResponderInterface {
@@ -108,7 +106,8 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         if (PERSONNUMMER_ERROR_RESPONSE.equals(id)) {
             response.setHoSPerson(null);
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: " + HashUtility.hash(id) + " exists.");
+            response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: "
+                    + Personnummer.getPnrHashSafe(new Personnummer(id)) + " exists.");
             return response;
         }
 
@@ -121,7 +120,8 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
 
         if (person == null) {
             response.setResultCode(ResultCodeEnum.INFO);
-            response.setResultText("No private practitioner with personal identity number: " + HashUtility.hash(id) + " exists.");
+            response.setResultText("No private practitioner with personal identity number: "
+                    + Personnummer.getPnrHashSafe(new Personnummer(id)) + " exists.");
         } else {
             response.setHoSPerson(person);
             response.setResultCode(ResultCodeEnum.OK);
@@ -153,7 +153,7 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         }
     }
 
-    private SOAPFault createSOAPFault()  {
+    private SOAPFault createSOAPFault() {
         SOAPFault soapFault;
 
         try {

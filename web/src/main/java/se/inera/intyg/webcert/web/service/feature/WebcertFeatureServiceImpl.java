@@ -34,7 +34,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import se.inera.intyg.common.security.common.service.Feature;
+import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
@@ -175,18 +175,6 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     public boolean isFeatureActive(String featureName) {
         Boolean featureState = featuresMap.get(featureName);
         return featureState != null && featureState;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.intyg.common.support.modules.support
-     * .feature.ModuleFeature, java.lang.String)
-     */
-    @Override
-    public boolean isModuleFeatureActive(ModuleFeature moduleFeature, String moduleName) {
-        return isModuleFeatureActive(moduleFeature.getName(), moduleName);
     }
 
     /*

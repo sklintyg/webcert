@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.logsender.converter;
 
 import org.junit.Test;
-import se.inera.intyg.common.logmessages.ActivityType;
-import se.inera.intyg.common.logmessages.Enhet;
-import se.inera.intyg.common.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.ActivityType;
+import se.inera.intyg.infra.logmessages.Enhet;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 import se.riv.ehr.log.v1.LogType;
 import se.riv.ehr.log.v1.ResourceType;
@@ -57,7 +57,7 @@ public class LogTypeFactoryImplTest {
         assertEquals(1, logType.getResources().getResource().size());
         ResourceType resourceType = logType.getResources().getResource().get(0);
 
-        assertEquals(resourceType.getPatient().getPatientId(), pdlLogMessage.getPdlResourceList().get(0).getPatient().getPatientId().getPersonnummerWithoutDash());
+        assertEquals(resourceType.getPatient().getPatientId(), pdlLogMessage.getPdlResourceList().get(0).getPatient().getPatientId());
         assertEquals(resourceType.getPatient().getPatientName(), pdlLogMessage.getPdlResourceList().get(0).getPatient().getPatientNamn());
         assertEquals(resourceType.getResourceType(), pdlLogMessage.getPdlResourceList().get(0).getResourceType());
 

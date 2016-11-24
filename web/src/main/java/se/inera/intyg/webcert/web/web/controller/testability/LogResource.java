@@ -35,7 +35,8 @@ import org.springframework.jms.core.JmsTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
-import se.inera.intyg.common.logmessages.PdlLogMessage;
+
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 
 @Api(value = "testability logMessages", description = "REST API för testbarhet - PDL-loggning")

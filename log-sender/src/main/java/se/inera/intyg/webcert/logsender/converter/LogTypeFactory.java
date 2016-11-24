@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.logsender.converter;
 
-import se.inera.intyg.common.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.riv.ehr.log.v1.LogType;
 
 /**

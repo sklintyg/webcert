@@ -29,7 +29,7 @@
   <cache:annotation-driven cache-manager="cacheManager"/>
 
   <beans profile="caching-enabled,prod">
-    <bean class="se.inera.intyg.common.cache.core.BasicCacheConfiguration"/>
+    <bean class="se.inera.intyg.infra.cache.core.BasicCacheConfiguration"/>
     <bean class="se.inera.intyg.webcert.integration.pu.cache.PuCacheConfiguration" />
   </beans>
   <beans profile="!caching-enabled">

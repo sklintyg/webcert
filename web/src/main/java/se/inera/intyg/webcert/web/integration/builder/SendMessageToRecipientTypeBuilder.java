@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.integration.builder;
 
 import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
 
-import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
-import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;

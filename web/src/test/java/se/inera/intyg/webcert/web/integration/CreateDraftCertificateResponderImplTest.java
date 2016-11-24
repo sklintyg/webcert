@@ -36,7 +36,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
+import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
@@ -94,7 +95,7 @@ public class CreateDraftCertificateResponderImplTest {
      * @throws ExternalServiceCallException
      */
     @Test
-    public void whenNewCertificateDraftSuccessResponse() throws ExternalServiceCallException {
+    public void whenNewCertificateDraftSuccessResponse() throws HsaServiceCallException {
 
         // Given
         ResultValidator resultsValidator = new ResultValidator();

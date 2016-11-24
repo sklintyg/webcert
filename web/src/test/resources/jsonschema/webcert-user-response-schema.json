@@ -550,6 +550,9 @@
     "hsaId": {
       "type": "string"
     },
+    "personId": {
+      "type": "string"
+    },
     "lakare": {
       "type": "boolean"
     },

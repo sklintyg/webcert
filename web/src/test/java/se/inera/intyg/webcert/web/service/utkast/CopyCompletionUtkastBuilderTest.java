@@ -37,7 +37,9 @@ import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.infra.integration.hsa.model.*;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -316,11 +318,11 @@ public class CopyCompletionUtkastBuilderTest {
         WebCertUser user = new WebCertUser();
         user.setHsaId(HOSPERSON_ID);
         user.setNamn(HOSPERSON_NAME);
-        se.inera.intyg.common.integration.hsa.model.Vardgivare vGivare = new se.inera.intyg.common.integration.hsa.model.Vardgivare();
+        se.inera.intyg.infra.integration.hsa.model.Vardgivare vGivare = new se.inera.intyg.infra.integration.hsa.model.Vardgivare();
         vGivare.setId(VARDGIVARE_ID);
         vGivare.setNamn(VARDENHET_NAME);
         user.setVardgivare(Arrays.asList(vGivare));
-        AbstractVardenhet vardenhet = new  se.inera.intyg.common.integration.hsa.model.Vardenhet();
+        AbstractVardenhet vardenhet = new se.inera.intyg.infra.integration.hsa.model.Vardenhet();
         vardenhet.setId(VARDENHET_ID);
         vardenhet.setNamn(VARDENHET_NAME);
         user.setValdVardenhet(vardenhet);

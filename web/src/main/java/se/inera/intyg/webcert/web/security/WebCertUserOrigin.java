@@ -27,7 +27,7 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import se.inera.intyg.common.security.common.model.UserOrigin;
+import se.inera.intyg.infra.security.common.model.UserOrigin;
 
 /**
  * Created by Magnus Ekstrand on 25/11/15.

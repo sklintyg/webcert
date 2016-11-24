@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.logsender.client.mock;
 
-import se.inera.intyg.common.logmessages.ActivityType;
+import se.inera.intyg.infra.logmessages.ActivityType;
 import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;

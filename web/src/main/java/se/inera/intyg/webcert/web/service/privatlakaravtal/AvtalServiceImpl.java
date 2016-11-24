@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.privatlakaravtal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
@@ -61,7 +62,7 @@ public class AvtalServiceImpl implements AvtalService {
             throw new IllegalStateException("Cannot approve private practitioner avtal, no avtal exists in the database.");
         }
         godkantAvtalRepository.approveAvtal(userId, latestAvtalVersion);
-        monitoringLogService.logPrivatePractitionerTermsApproved(userId, personId, latestAvtalVersion);
+        monitoringLogService.logPrivatePractitionerTermsApproved(userId, new Personnummer(personId), latestAvtalVersion);
     }
 
     @Override

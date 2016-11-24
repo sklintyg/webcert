@@ -20,12 +20,12 @@
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import io.swagger.annotations.Api;
-import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 
-import static se.inera.intyg.common.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 
 /**
  * Created by eriklupander on 2015-10-08.

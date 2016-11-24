@@ -36,7 +36,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
@@ -210,7 +210,7 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogPrivatePractitionerTermsApproved() {
-        logService.logPrivatePractitionerTermsApproved(HSA_ID, PERSON_ID, AVTAL_VERSION);
+        logService.logPrivatePractitionerTermsApproved(HSA_ID, new Personnummer(PERSON_ID), AVTAL_VERSION);
         verifyLog(Level.INFO,
                 "PP_TERMS_ACCEPTED User 'HSA_ID', personId 'ad060a2437cb0e66f41f3305bc8ba6e69b9db04805d6c7fddd720079ef673921' accepted private practitioner terms of version '98'");
     }

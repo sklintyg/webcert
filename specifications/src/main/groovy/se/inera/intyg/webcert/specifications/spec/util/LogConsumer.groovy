@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.util
 
-import se.inera.intyg.common.logmessages.PdlLogMessage
+import se.inera.intyg.infra.logmessages.PdlLogMessage
 import se.inera.intyg.common.specifications.spec.util.jms.ActiveMQConnectionFixture
 import se.inera.intyg.common.specifications.spec.util.jms.DestinationFixture
 import se.inera.intyg.common.specifications.spec.util.jms.JMSUtils

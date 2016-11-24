@@ -23,7 +23,7 @@
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     <cache:annotation-driven/>
-    <bean class="se.inera.intyg.common.cache.core.BasicCacheConfiguration">
+    <bean class="se.inera.intyg.infra.cache.core.BasicCacheConfiguration">
         <property name="bindport" value="47603"/>
         <property name="igniteIpAddresses" value="127.0.0.1:47603"/>
         <property name="cacheExpirySeconds" value="5"/>

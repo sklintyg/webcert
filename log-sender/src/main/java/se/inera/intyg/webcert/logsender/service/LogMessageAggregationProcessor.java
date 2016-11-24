@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.common.sender.exception.PermanentException;
  * Accepts a Camel Exchange that must contain a {@link Exchange#GROUPED_EXCHANGE} of (n)
  * log messages that should be sent in a batch to the PDL-log service.
  *
- * The resulting list of {@link se.inera.intyg.common.logmessages.PdlLogMessage} is serialized into a JSON string and
+ * The resulting list of {@link PdlLogMessage} is serialized into a JSON string and
  * passed on so Camel can supply it to the next consumer.
  *
  * The next consumer is typically the aggreagated.jms.queue. Since we want TextMessages for readability, the conversion
@@ -50,7 +50,7 @@ public class LogMessageAggregationProcessor {
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
     /**
-     * Transforms the contents of the grouped exchange into a list of {@link se.inera.intyg.common.logmessages.PdlLogMessage}.
+     * Transforms the contents of the grouped exchange into a list of {@link PdlLogMessage}.
      *
      * @param exchange
      *      An exchange typically containing (n) number of exchanges that has been aggregated into a grouped exchange.

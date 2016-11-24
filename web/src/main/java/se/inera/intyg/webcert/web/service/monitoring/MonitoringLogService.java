@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.monitoring;
 
 import java.util.List;
 
-import se.inera.intyg.common.security.common.service.AuthenticationLogger;
+import se.inera.intyg.infra.security.common.service.AuthenticationLogger;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -81,7 +81,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logPULookup(Personnummer personNummer, String result);
 
-    void logPrivatePractitionerTermsApproved(String userId, String personId, Integer avtalVersion);
+    void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion);
 
     void logNotificationSent(String hanType, String unitId);
 

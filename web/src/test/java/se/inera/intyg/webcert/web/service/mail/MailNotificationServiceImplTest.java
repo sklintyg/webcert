@@ -31,7 +31,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.intygstyper.luse.support.LuseEntryPoint;
 import se.inera.intyg.webcert.integration.pp.services.PPService;

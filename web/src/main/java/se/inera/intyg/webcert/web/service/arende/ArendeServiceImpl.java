@@ -33,10 +33,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
-import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.intygstyper.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.intygstyper.ts_diabetes.support.TsDiabetesEntryPoint;

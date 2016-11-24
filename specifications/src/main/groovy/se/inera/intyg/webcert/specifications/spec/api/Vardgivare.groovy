@@ -20,8 +20,8 @@
 package se.inera.intyg.webcert.specifications.spec.api
 
 import groovy.json.JsonOutput
-import se.inera.intyg.common.integration.hsa.model.Mottagning
-import se.inera.intyg.common.integration.hsa.model.Vardenhet
+import se.inera.intyg.infra.integration.hsa.model.Mottagning
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet
 import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
@@ -41,7 +41,7 @@ public class Vardgivare extends RestClientFixture {
     def mottagningsid
     def mottagningsnamn
 
-    se.inera.intyg.common.integration.hsa.model.Vardgivare currentVardgivare
+    se.inera.intyg.infra.integration.hsa.model.Vardgivare currentVardgivare
     Vardenhet currentEnhet
     Mottagning currentMottagning
 
@@ -53,7 +53,7 @@ public class Vardgivare extends RestClientFixture {
     }
 
     def attachVardgivare() {
-        se.inera.intyg.common.integration.hsa.model.Vardgivare existingVardgivare = vardgivare.find {
+        se.inera.intyg.infra.integration.hsa.model.Vardgivare existingVardgivare = vardgivare.find {
             it.id == vardgivarid
         }
 
@@ -89,7 +89,7 @@ public class Vardgivare extends RestClientFixture {
     }
 
     def buildOrganizationElements() {
-        currentVardgivare = new se.inera.intyg.common.integration.hsa.model.Vardgivare(
+        currentVardgivare = new se.inera.intyg.infra.integration.hsa.model.Vardgivare(
                 id: vardgivarid,
                 namn: vardgivarnamn)
 

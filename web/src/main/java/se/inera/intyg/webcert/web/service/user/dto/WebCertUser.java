@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.web.service.user.dto;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.inera.intyg.common.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 
 /**
  * @author andreaskaltenbach

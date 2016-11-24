@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.feature;
 
-import se.inera.intyg.common.security.common.service.Feature;
+import se.inera.intyg.infra.security.common.service.Feature;
 
 public enum WebcertFeature implements Feature {
 

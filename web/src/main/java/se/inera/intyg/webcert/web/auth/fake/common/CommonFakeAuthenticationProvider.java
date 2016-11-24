@@ -23,6 +23,7 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTI
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.NameID;
@@ -35,13 +36,12 @@ import org.springframework.security.providers.ExpiringUsernameAuthenticationToke
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
-import se.inera.intyg.common.integration.hsa.model.Mottagning;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
-import se.inera.intyg.common.security.authorities.AuthoritiesException;
-import se.inera.intyg.common.security.common.model.IntygUser;
-import se.inera.intyg.common.security.siths.BaseSakerhetstjanstAssertion;
-import se.inera.intyg.common.support.common.util.StringUtil;
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
@@ -110,7 +110,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
             FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
-            if (!StringUtil.isNullOrEmpty(fakeCredentials.getEnhetId())) {
+            if (!StringUtils.isEmpty(fakeCredentials.getEnhetId())) {
                 setVardenhetById(fakeCredentials.getEnhetId(), user);
                 setVardgivareByVardenhetId(fakeCredentials.getEnhetId(), user);
             }
