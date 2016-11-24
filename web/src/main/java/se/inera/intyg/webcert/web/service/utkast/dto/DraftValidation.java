@@ -19,16 +19,17 @@
 
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 
 public class DraftValidation {
 
     private ValidationStatus status = ValidationStatus.VALID;
 
     private List<DraftValidationMessage> messages = new ArrayList<>();
+    private List<DraftValidationMessage> warnings = new ArrayList<>();
 
     public DraftValidation() {
     }
@@ -45,6 +46,10 @@ public class DraftValidation {
         this.messages.add(message);
     }
 
+    public void addWarning(DraftValidationMessage warning) {
+        this.warnings.add(warning);
+    }
+
     public List<DraftValidationMessage> getMessages() {
         return messages;
     }
@@ -55,5 +60,14 @@ public class DraftValidation {
 
     public boolean isDraftValid() {
         return (ValidationStatus.VALID.equals(this.status));
+    }
+
+
+    public void setWarnings(List<DraftValidationMessage> warnings) {
+        this.warnings = warnings;
+    }
+
+    public List<DraftValidationMessage> getWarnings() {
+        return warnings;
     }
 }

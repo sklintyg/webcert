@@ -32,6 +32,7 @@ public class SaveDraftResponse {
     private UtkastStatus status;
 
     private List<SaveDraftValidationMessage> messages = new ArrayList<>();
+    private List<SaveDraftValidationMessage> warnings = new ArrayList<>();
 
     public SaveDraftResponse(long version, UtkastStatus status) {
         this.version = version;
@@ -50,15 +51,29 @@ public class SaveDraftResponse {
         return messages;
     }
 
-    public void getMessage(List<SaveDraftValidationMessage> messages) {
+    public void setMessages(List<SaveDraftValidationMessage> messages) {
         this.messages = messages;
+    }
+
+    public List<SaveDraftValidationMessage> getWarnings() {
+        return warnings;
+    }
+
+    public void setWarning(List<SaveDraftValidationMessage> warnings) {
+        this.warnings = warnings;
     }
 
     public void addMessage(String field, ValidationMessageType type, String message, String dynamicKey) {
         messages.add(new SaveDraftValidationMessage(field, type, message, dynamicKey));
     }
 
+    public void addWarning(String field, ValidationMessageType type, String message, String dynamicKey) {
+        warnings.add(new SaveDraftValidationMessage(field, type, message, dynamicKey));
+    }
+
     public long getVersion() {
         return version;
     }
+
+
 }

@@ -37,6 +37,7 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
@@ -57,6 +58,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
@@ -392,6 +394,19 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(utkast).setPatientFornamn("Tolvan");
         verify(utkast).setPatientEfternamn("Tolvansson");
         verify(utkast, times(0)).setPatientPersonnummer(any(Personnummer.class));
+    }
+
+    @Test
+    public void testValidateValidDraftWithWarningsIncludesWarningsInResponse() throws ModuleException, ModuleNotFoundException {
+        when(moduleRegistry.getModuleApi(anyString())).thenReturn(mockModuleApi);
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(buildValidationResponse());
+        DraftValidation validationResult = draftService.validateDraft(INTYG_ID, "luse", utkast.getModel());
+        assertEquals(1, validationResult.getWarnings().size());
+        assertEquals(0, validationResult.getMessages().size());
+    }
+
+    private ValidateDraftResponse buildValidationResponse() {
+        return new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList(), Collections.singletonList(new ValidationMessage("testfield", ValidationMessageType.WARN)));
     }
 
     private Patient buildPatient(String pnr, String fornamn, String efternamn) {

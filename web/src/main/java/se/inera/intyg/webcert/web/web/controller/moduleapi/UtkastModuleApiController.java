@@ -19,21 +19,11 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
-import javax.persistence.OptimisticLockException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -47,9 +37,33 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
+
+import javax.persistence.OptimisticLockException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Controller for module interaction with drafts.
@@ -181,16 +195,21 @@ public class UtkastModuleApiController extends AbstractApiController {
     }
 
     private SaveDraftResponse buildSaveDraftResponse(long version, DraftValidation draftValidation) {
+        SaveDraftResponse responseEntity = new SaveDraftResponse(version, UtkastStatus.DRAFT_COMPLETE);
 
-        if (draftValidation.isDraftValid()) {
-            return new SaveDraftResponse(version, UtkastStatus.DRAFT_COMPLETE);
+        // Always include WARN messages in the return even when the Draft is valid.
+        for (DraftValidationMessage warningMessage : draftValidation.getWarnings()) {
+            responseEntity.addWarning(warningMessage.getField(), warningMessage.getType(), warningMessage.getMessage(), warningMessage.getDynamicKey());
         }
 
-        SaveDraftResponse responseEntity = new SaveDraftResponse(version, UtkastStatus.DRAFT_INCOMPLETE);
+        if (draftValidation.isDraftValid()) {
+            return responseEntity;
+        }
 
-        List<DraftValidationMessage> validationMessages = draftValidation.getMessages();
+        // Make sure we change the status to DRAFT_INCOMPLETE if the draft wasn't valid.
+        responseEntity.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
-        for (DraftValidationMessage validationMessage : validationMessages) {
+        for (DraftValidationMessage validationMessage : draftValidation.getMessages()) {
             responseEntity.addMessage(validationMessage.getField(), validationMessage.getType(), validationMessage.getMessage(), validationMessage.getDynamicKey());
         }
 
