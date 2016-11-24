@@ -15,7 +15,7 @@ Så ska jag få ett mejl med ämnet "Försäkringskassan har ställt en fråga a
 
 @fråga-till-fk
 Scenario: Skicka fråga till Försäkringskassan
-	När jag skickar ett intyg till Intygstjänsten
+	När jag skickar ett "FK7263" intyg till Intygstjänsten
 	Och jag skickar intyget direkt till Försäkringskassan
 	Och jag går in på intyget via uthoppslänk
 	Och jag skickar en fråga med ämnet "Arbetstidsförläggning" till Försäkringskassan
