@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Webcert Save Fraft Rest api response model",
+  "title": "Webcert Save Draft Rest api response model",
   "type": "object",
   "properties": {
     "version": {
@@ -13,12 +13,18 @@
       "type": "array",
       "minItems": 0,
       "items": {}
+    },
+    "warnings": {
+      "type": "array",
+      "minItems": 0,
+      "items": {}
     }
   },
   "additionalProperties": false,
   "required": [
     "version",
     "status",
-    "messages"
+    "messages",
+    "warnings"
   ]
 }
