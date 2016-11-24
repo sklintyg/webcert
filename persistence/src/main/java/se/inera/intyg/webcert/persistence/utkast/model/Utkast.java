@@ -21,12 +21,12 @@ package se.inera.intyg.webcert.persistence.utkast.model;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 
-import autovalue.shaded.com.google.common.common.base.Objects;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
@@ -148,7 +148,7 @@ public class Utkast {
             return false;
         }
 
-        return Objects.equal(intygsId, ((Utkast) o).intygsId);
+        return Objects.equals(intygsId, ((Utkast) o).intygsId);
     }
 
     @Override
