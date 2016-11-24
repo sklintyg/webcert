@@ -21,17 +21,11 @@ package se.inera.intyg.common.specifications.spec.util.ssl;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
@@ -43,12 +37,17 @@ public class TestSSLSocketFactory extends SSLSocketFactory {
         super(truststore);
 
         TrustManager tm = new X509TrustManager() {
+            @Override
             public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                // Do nothing
             }
 
+            @Override
             public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                // Do nothing
             }
 
+            @Override
             public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }

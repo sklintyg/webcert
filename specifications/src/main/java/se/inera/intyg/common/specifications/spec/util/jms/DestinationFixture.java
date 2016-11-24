@@ -50,23 +50,13 @@ public abstract class DestinationFixture {
     }
 
     /**
-     * Register destination.
-     */
-    public void registerDestinationAs(String name, String lookup) throws JMSException {
-    }
-
-    /**
      * Register Queue.
      */
-    public void registerQueueAs(String name, String lookup) throws JMSException {
-        registerDestinationAs(name, lookup);
-    }
+    public abstract void registerQueueAs(String name, String lookup) throws JMSException;
 
     /**
      * Register Topic.
      */
-    public void registerTopicAs(String name, String lookup) throws JMSException {
-        registerDestinationAs(name, lookup);
-    }
+    public abstract void registerTopicAs(String name, String lookup) throws JMSException;
 
 }
