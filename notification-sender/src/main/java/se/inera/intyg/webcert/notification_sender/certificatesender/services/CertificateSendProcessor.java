@@ -49,7 +49,7 @@ public class CertificateSendProcessor {
             @Header(Constants.INTYGS_ID) String intygsId,
             @Header(Constants.PERSON_ID) String personId,
             @Header(Constants.RECIPIENT) String recipient,
-            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws Exception {
+            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
         SendCertificateToRecipientResponseType response;
         try {

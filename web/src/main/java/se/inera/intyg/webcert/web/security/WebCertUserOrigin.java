@@ -19,14 +19,15 @@
 
 package se.inera.intyg.webcert.web.security;
 
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
-import se.inera.intyg.common.security.common.model.UserOrigin;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+
+import se.inera.intyg.common.security.common.model.UserOrigin;
 
 /**
  * Created by Magnus Ekstrand on 25/11/15.
@@ -72,7 +73,6 @@ public class WebCertUserOrigin implements UserOrigin {
     // =====================================================================================
 
     private DefaultSavedRequest getSavedRequest(HttpServletRequest request) {
-        DefaultSavedRequest savedRequest = (DefaultSavedRequest) request.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
-        return savedRequest;
+        return (DefaultSavedRequest) request.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
     }
 }

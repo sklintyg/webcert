@@ -71,6 +71,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 
 /**
  * @author andreaskaltenbach
@@ -175,13 +176,12 @@ public class IntygServiceImpl implements IntygService {
         try {
             ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress, request);
 
-            switch (response.getResult().getResultCode()) {
-            case OK:
+            if (response.getResult().getResultCode() == ResultCodeType.OK) {
                 List<ListIntygEntry> fullIntygItemList = intygConverter.convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
                 fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList);
                 addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
                 return Pair.of(fullIntygItemList, Boolean.FALSE);
-            default:
+            } else {
                 LOG.error("Error when calling webservice ListCertificatesForCare: {}", response.getResult().getResultText());
             }
 

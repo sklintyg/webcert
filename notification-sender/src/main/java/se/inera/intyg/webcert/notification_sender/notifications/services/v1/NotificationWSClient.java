@@ -39,7 +39,7 @@ public class NotificationWSClient {
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
-            @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
+            @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
         LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, request.getUtlatande().getUtlatandeId().getExtension());
 

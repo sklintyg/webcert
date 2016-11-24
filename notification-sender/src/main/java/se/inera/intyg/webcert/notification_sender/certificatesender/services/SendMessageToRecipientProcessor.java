@@ -42,7 +42,7 @@ public class SendMessageToRecipientProcessor {
     @Autowired
     private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
 
-    public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws Exception {
+    public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
         try {
             SendMessageToRecipientType parameters = SendMessageToRecipientTypeConverter.fromXml(xmlBody);

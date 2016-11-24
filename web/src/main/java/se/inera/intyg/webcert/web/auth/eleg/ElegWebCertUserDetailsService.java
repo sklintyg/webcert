@@ -19,6 +19,9 @@
 
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +43,7 @@ import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizati
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
-
-import java.util.ArrayList;
-import java.util.List;
+import se.riv.infrastructure.directory.privatepractitioner.v1.*;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -107,8 +104,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         // Lookup user's role
         Role role = lookupUserRole();
 
-        WebCertUser webCertUser = createWebCertUser(hosPerson, role, samlCredential);
-        return webCertUser;
+        return createWebCertUser(hosPerson, role, samlCredential);
     }
 
     /*

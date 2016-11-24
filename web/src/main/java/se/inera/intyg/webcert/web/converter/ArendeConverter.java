@@ -19,13 +19,13 @@
 
 package se.inera.intyg.webcert.web.converter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.lang.StringUtils;
-import java.time.LocalDateTime;
 
 import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.common.support.common.enumerations.PartKod;
@@ -37,7 +37,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType.Komplettering;
-import se.riv.clinicalprocess.healthcond.certificate.v2.MeddelandeReferens;
 
 public final class ArendeConverter {
 
@@ -61,7 +60,7 @@ public final class ArendeConverter {
         res.setSkickatTidpunkt(request.getSkickatTidpunkt());
         if (request.getSvarPa() != null) {
             res.setSvarPaId(request.getSvarPa().getMeddelandeId());
-            res.setSvarPaReferens(extractReferensId(request.getSvarPa()));
+            res.setSvarPaReferens(request.getSvarPa().getReferensId());
         }
         return res;
     }
@@ -127,14 +126,6 @@ public final class ArendeConverter {
         arende.setSkickatTidpunkt(now);
         arende.setTimestamp(now);
         arende.setVardaktorName(vardaktorNamn);
-    }
-
-    // There are between 0 and 1 referensid in the MeddelandeReferens according to specification 2.0.RC3
-    // Because of this we get the first item if there exists one
-    private static String extractReferensId(MeddelandeReferens meddelandeReferens) {
-        return meddelandeReferens.getReferensId() != null && meddelandeReferens.getReferensId() != null
-                ? meddelandeReferens.getReferensId()
-                : null;
     }
 
     private static MedicinsktArende convert(Komplettering k) {

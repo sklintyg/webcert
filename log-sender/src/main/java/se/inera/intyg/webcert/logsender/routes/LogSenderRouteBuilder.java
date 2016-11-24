@@ -60,7 +60,7 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
       * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
       */
     @Override
-    public void configure() throws Exception {
+    public void configure() {
         errorHandler(transactionErrorHandler().logExhausted(false));
 
         // 1. Starts by splitting any inbound PdlLogMessage instances having more than one PdlResource into separate

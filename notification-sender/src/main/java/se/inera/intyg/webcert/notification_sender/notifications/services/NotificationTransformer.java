@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import java.io.IOException;
+
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.annotations.VisibleForTesting;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
@@ -48,7 +52,7 @@ public class NotificationTransformer {
         this.moduleRegistry = moduleRegistry;
     }
 
-    public void process(Message message) throws Exception {
+    public void process(Message message) throws ModuleException, IOException, ModuleNotFoundException {
         LOG.debug("Receiving message: {}", message.getMessageId());
 
         NotificationMessage notificationMessage = message.getBody(NotificationMessage.class);

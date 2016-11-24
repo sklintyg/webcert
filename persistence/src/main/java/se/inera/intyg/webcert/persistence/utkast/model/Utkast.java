@@ -26,6 +26,7 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 
+import autovalue.shaded.com.google.common.common.base.Objects;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
@@ -147,13 +148,7 @@ public class Utkast {
             return false;
         }
 
-        Utkast otherUtkast = (Utkast) o;
-
-        if (intygsId != null ? !intygsId.equals(otherUtkast.intygsId) : otherUtkast.intygsId != null) {
-            return false;
-        }
-
-        return true;
+        return Objects.equal(intygsId, ((Utkast) o).intygsId);
     }
 
     @Override

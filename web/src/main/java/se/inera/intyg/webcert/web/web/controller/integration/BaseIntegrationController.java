@@ -20,8 +20,6 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
@@ -34,8 +32,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
  * Created by eriklupander on 2015-10-08.
  */
 public abstract class BaseIntegrationController {
-
-    private static final Logger LOG = LoggerFactory.getLogger(BaseIntegrationController.class);
 
     protected WebCertUserService webCertUserService;
     private String urlBaseTemplate;

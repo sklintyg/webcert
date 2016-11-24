@@ -18,15 +18,16 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
 
 /**
  * Extracts the List of individual {@link Exchange}s that have been aggregated during the last minute and lets
@@ -43,7 +44,7 @@ public class NotificationAggregator {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationAggregator.class);
 
-    public List<Message> process(Exchange exchange) throws Exception {
+    public List<Message> process(Exchange exchange) {
 
         // Extract the list of exchanges (i.e. messages) from the Exchange.GROUPED_EXCHANGE property.
         List<Exchange> grouped = exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class);

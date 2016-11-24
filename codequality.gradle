@@ -40,6 +40,18 @@ subprojects {
         }
     }
 
+    apply plugin: 'pmd'
+
+    pmd {
+        ignoreFailures = false
+        ruleSetFiles = rootProject.files("${buildDir}/build-tools/pmd/pmdRuleSet.xml")
+        ruleSets = []
+        sourceSets = [ sourceSets.main ]
+    }
+
+    pmdMain.onlyIf { project.hasProperty('codeQuality') }
+    pmdTest.enabled = false
+
     apply plugin: 'com.github.hierynomus.license'
 
     license {

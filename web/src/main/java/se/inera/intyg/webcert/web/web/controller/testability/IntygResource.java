@@ -111,7 +111,7 @@ public class IntygResource {
                 String idAttr = item.getAttributes().getNamedItem("id").getNodeValue();
                 if (idAttr.startsWith("q") && !idAttr.contains("-") && !idAttr.contains(".")) {
                     String frageId = idAttr.substring(1);
-                    if (frageId.equals("9000")) {
+                    if ("9000".equals(frageId)) {
                         qList.add("9001");
                         qList.add("9002");
                     } else {

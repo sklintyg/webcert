@@ -19,11 +19,20 @@
 
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import io.swagger.annotations.Api;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
@@ -35,21 +44,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PatientParameter;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -129,7 +123,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/{typ}/{intygId}")
     // CHECKSTYLE:OFF ParameterNumber
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typ,
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typParam,
             @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
             @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName,
             @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
@@ -153,21 +147,22 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
 
         // If intygstyp can't be established, default to FK7263 to be backwards compatible
-        if (typ == null) {
-            typ = utkast != null ? utkast.getIntygsTyp() : Fk7263EntryPoint.MODULE_ID;
+        String intygsTyp = typParam;
+        if (typParam == null) {
+            intygsTyp = utkast != null ? utkast.getIntygsTyp() : Fk7263EntryPoint.MODULE_ID;
         }
 
         // Monitoring log the usage of coherentJournaling
         if (coherentJournaling) {
             if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
-                monitoringLog.logIntegratedOtherCaregiver(intygId, typ, utkast.getVardgivarId(), utkast.getEnhetsId());
+                monitoringLog.logIntegratedOtherCaregiver(intygId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
             } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
-                monitoringLog.logIntegratedOtherUnit(intygId, typ, utkast.getEnhetsId());
+                monitoringLog.logIntegratedOtherUnit(intygId, intygsTyp, utkast.getEnhetsId());
             }
         }
 
         // If the type doesn't equals to FK7263 then verify the required query-parameters
-        if (!typ.equals(Fk7263EntryPoint.MODULE_ID)) {
+        if (!intygsTyp.equals(Fk7263EntryPoint.MODULE_ID)) {
             verifyQueryStrings(fornamn, efternamn, postadress, postnummer, postort);
         }
 
@@ -177,8 +172,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         PatientParameter patientDetails = new PatientParameter(fornamn, efternamn, mellannamn, postadress, postnummer, postort);
 
-        LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, typ, coherentJournaling);
-        return buildRedirectResponse(uriInfo, typ, intygId, alternatePatientSSn, responsibleHospName, patientDetails, isUtkast, coherentJournaling);
+        LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, intygsTyp, coherentJournaling);
+        return buildRedirectResponse(uriInfo, intygsTyp, intygId, alternatePatientSSn, responsibleHospName, patientDetails, isUtkast, coherentJournaling);
     }
 
     private void verifyQueryStrings(String fornamn, String efternamn, String postadress, String postnummer, String postort) {

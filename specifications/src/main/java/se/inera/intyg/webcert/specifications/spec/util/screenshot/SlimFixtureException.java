@@ -74,15 +74,14 @@ public class SlimFixtureException extends RuntimeException {
         String result = message;
         if (!stackTraceInWiki) {
             // Until https://github.com/unclebob/fitnesse/issues/731 is fixed
-            if (message.contains("\n")) {
-                if (!message.startsWith("<") || !message.endsWith(">")) {
+            if (result.contains("\n")) {
+                if (!result.startsWith("<") || !result.endsWith(">")) {
                     // it is not yet HTML, make it HTML so we can use <br/>
-                    message = StringEscapeUtils.escapeHtml4(message);
-                    message = String.format("<div>%s</div>", message);
+                    result = String.format("<div>%s</div>", StringEscapeUtils.escapeHtml4(result));
                 }
-                message = message.replaceAll("(\\r)?\\n", "<br/>");
+                result = result.replaceAll("(\\r)?\\n", "<br/>");
             }
-            result = String.format("message:<<%s>>", message);
+            return String.format("message:<<%s>>", result);
         }
         return result;
     }

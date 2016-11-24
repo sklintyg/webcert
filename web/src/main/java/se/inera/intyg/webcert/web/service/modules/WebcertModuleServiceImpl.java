@@ -82,8 +82,7 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
     public String getDescriptionFromDiagnosKod(String code, String codeSystemStr) {
         DiagnosResponse response = diagnosService.getDiagnosisByCode(code, codeSystemStr);
         List<Diagnos> diagnoser = response.getDiagnoser();
-        String result = (diagnoser == null || diagnoser.size() != 1) ? "" : diagnoser.get(0).getBeskrivning();
-        return result;
+        return (diagnoser == null || diagnoser.size() != 1) ? "" : diagnoser.get(0).getBeskrivning();
     }
 
 }

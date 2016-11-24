@@ -61,11 +61,7 @@ public class CreateUtkastRequest {
             return false;
         }
 
-        if (patientFornamn.length() > NAME_MAX_LENGTH || patientEfternamn.length() > NAME_MAX_LENGTH) {
-            return false;
-        }
-
-        return true;
+        return patientFornamn.length() <= NAME_MAX_LENGTH && patientEfternamn.length() <= NAME_MAX_LENGTH;
     }
 
     public String getIntygType() {

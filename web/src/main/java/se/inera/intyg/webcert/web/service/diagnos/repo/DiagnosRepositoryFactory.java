@@ -19,17 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.util.Version;
@@ -130,14 +125,14 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         }
     }
 
-    public Diagnos createDiagnosFromString(String diagnosStr) {
+    public Diagnos createDiagnosFromString(String diagnosStrParam) {
 
-        if (StringUtils.isBlank(diagnosStr)) {
+        if (StringUtils.isBlank(diagnosStrParam)) {
             return null;
         }
 
         // remove excess space in the string
-        diagnosStr = StringUtils.normalizeSpace(diagnosStr);
+        String diagnosStr = StringUtils.normalizeSpace(diagnosStrParam);
 
         int firstSpacePos = diagnosStr.indexOf(SPACE);
 
@@ -156,7 +151,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         Assert.hasText(fileEncoding, "File-encoding for diagnos code files not set!");
     }
 }

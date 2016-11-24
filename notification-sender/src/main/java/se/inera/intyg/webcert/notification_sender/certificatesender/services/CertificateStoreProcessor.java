@@ -26,6 +26,7 @@ import org.apache.camel.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -44,7 +45,7 @@ public class CertificateStoreProcessor {
 
     public void process(@Body String utkastAsJson,
             @Header(Constants.INTYGS_TYP) String intygsTyp,
-            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws Exception {
+            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException, ModuleNotFoundException {
 
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 

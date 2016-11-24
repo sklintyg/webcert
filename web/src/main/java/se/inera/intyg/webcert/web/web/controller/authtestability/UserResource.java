@@ -19,23 +19,21 @@
 
 package se.inera.intyg.webcert.web.web.controller.authtestability;
 
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Rest interface only used for testing and in dev environments. It seems like it must be in
@@ -45,8 +43,6 @@ import java.util.Set;
 @Path("/")
 public class UserResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
-
     @Autowired
     private WebCertUserService webCertUserService;
 
@@ -55,7 +51,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @JsonPropertyDescription("Get the roles for user in session")
     public Response getUserRoles() {
-        final WebCertUser user = (WebCertUser) webCertUserService.getUser();
+        final WebCertUser user = webCertUserService.getUser();
         final Map<String, Role> roles = user.getRoles();
         final Set<String> roleStrings = roles.keySet();
         return Response.ok(roleStrings).build();

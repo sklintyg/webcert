@@ -98,11 +98,7 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
             pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDateTime>get("senastSparadDatum"), filter.getSavedTo()));
         }
 
-        if (authorizedIntygstyper == null) {
-            authorizedIntygstyper = new HashSet<>();
-        }
-
-        pred = builder.and(pred, root.<String>get("intygsTyp").in(authorizedIntygstyper));
+        pred = builder.and(pred, root.<String>get("intygsTyp").in(authorizedIntygstyper != null ? authorizedIntygstyper : new HashSet<>()));
         return pred;
     }
 

@@ -19,10 +19,20 @@
 
 package se.inera.intyg.webcert.logsender.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.WebServiceException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -33,12 +43,6 @@ import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
 import se.riv.ehr.log.v1.LogType;
-
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by eriklupander on 2015-05-21.
@@ -62,13 +66,17 @@ public class LogMessageSendProcessor {
      *
      * @param groupedLogEntries
      *      A String containing a JSON encoded array of {@link PdlLogMessage}(s)
-     * @throws Exception
+     * @throws IOException
+     * @throws JsonMappingException
+     * @throws JsonParseException
+     * @throws BatchValidationException
+     * @throws TemporaryException
      */
-    public void process(String groupedLogEntries) throws Exception {
+    public void process(String groupedLogEntries) throws JsonParseException, JsonMappingException, IOException, BatchValidationException, TemporaryException {
 
         try {
 
-            List<String> groupedList = objectMapper.readValue(groupedLogEntries, ArrayList.class);
+            List<String> groupedList = objectMapper.readValue(groupedLogEntries, List.class);
 
             List<LogType> logMessages = groupedList.stream()
                     .map(this::jsonToPdlLogMessage)

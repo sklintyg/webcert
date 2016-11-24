@@ -27,17 +27,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.index.*;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
 
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
@@ -56,13 +47,13 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
 
     @Override
     public List<Diagnos> getDiagnosesByCode(String code) {
-        code = sanitizeCodeValue(code);
-        if (code == null) {
+        String codeSanitized = sanitizeCodeValue(code);
+        if (codeSanitized == null) {
             return new ArrayList<>();
         }
         try {
-            int freq = indexReader.docFreq(new Term(CODE, code));
-            TermQuery query = new TermQuery(new Term(CODE, code));
+            int freq = indexReader.docFreq(new Term(CODE, codeSanitized));
+            TermQuery query = new TermQuery(new Term(CODE, codeSanitized));
             return searchDiagnosisByQuery(query, Math.max(1, freq));
         } catch (IOException e) {
             throw new RuntimeException("IOException occurred in lucene index search", e);
@@ -76,11 +67,11 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
      */
     @Override
     public List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults) {
-        codeFragment = sanitizeCodeValue(codeFragment);
-        if (codeFragment == null) {
+        String codeFragmentSanitized = sanitizeCodeValue(codeFragment);
+        if (codeFragmentSanitized == null) {
             return new ArrayList<>();
         }
-        PrefixQuery query = new PrefixQuery(new Term(CODE, codeFragment));
+        PrefixQuery query = new PrefixQuery(new Term(CODE, codeFragmentSanitized));
         return searchDiagnosisByQuery(query, nbrOfResults);
     }
 
@@ -133,13 +124,13 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         return matches;
     }
 
-    public String sanitizeCodeValue(String codeValue) {
+    public String sanitizeCodeValue(String codeValueParam) {
 
-        if (StringUtils.isBlank(codeValue)) {
+        if (StringUtils.isBlank(codeValueParam)) {
             return null;
         }
 
-        codeValue = StringUtils.deleteWhitespace(codeValue);
+        String codeValue = StringUtils.deleteWhitespace(codeValueParam);
         codeValue = StringUtils.remove(codeValue, '.');
 
         return (StringUtils.isBlank(codeValue)) ? null : codeValue.toUpperCase();

@@ -18,15 +18,18 @@
  */
 package se.inera.intyg.webcert.logsender.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Accepts a Camel Exchange that must contain a {@link Exchange#GROUPED_EXCHANGE} of (n)
@@ -55,8 +58,9 @@ public class LogMessageAggregationProcessor {
      *      An List<String>. Note that the payload is JSON, simplifies readability if message ever ends up on a DLQ.
      * @throws PermanentException
      *      If the exchange could not be read or did not contain any grouped exchanges, just ignore.
+     * @throws JsonProcessingException
      */
-    public String process(Exchange exchange) throws Exception {
+    public String process(Exchange exchange) throws PermanentException, JsonProcessingException {
 
         List<Exchange> grouped = exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class);
 

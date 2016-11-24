@@ -19,11 +19,20 @@
 
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import io.swagger.annotations.Api;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.security.common.model.UserOriginType;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
@@ -32,20 +41,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -144,8 +139,8 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
             }
         } else {
             // No enhet on link (legacy fallback for pre WC 5.0 links)
-            enhetHsaId = intygService.getIssuingVardenhetHsaId(intygsId, intygsTyp);
-            if (!user.changeValdVardenhet(enhetHsaId)) {
+            String enhet = intygService.getIssuingVardenhetHsaId(intygsId, intygsTyp);
+            if (!user.changeValdVardenhet(enhet)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User does not have access to enhet " + enhetHsaId);
             }
         }

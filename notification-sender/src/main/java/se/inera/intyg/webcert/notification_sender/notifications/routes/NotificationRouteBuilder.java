@@ -19,6 +19,10 @@
 
 package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.PredicateBuilder;
@@ -28,6 +32,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
@@ -36,10 +41,6 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateType;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
@@ -65,7 +66,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
      * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
      */
     @Override
-    public void configure() throws Exception {
+    public void configure() throws JAXBException {
         JaxbDataFormat jaxbMessageDataFormatV2 = initializeJaxbMessageDataFormatV2();
 
         // Start for aggregation route. All notifications enter this route. Draft saved and signed for non fk7263

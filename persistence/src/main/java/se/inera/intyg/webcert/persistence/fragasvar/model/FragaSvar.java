@@ -133,7 +133,7 @@ public class FragaSvar {
      * Komplettering för varje externaKontakter då vi fick multipla left outer joins.
      */
     @PostLoad
-    private void simulateEagerLoading() {
+    public void simulateEagerLoading() {
         getKompletteringar().size();
         getExternaKontakter().size();
     }

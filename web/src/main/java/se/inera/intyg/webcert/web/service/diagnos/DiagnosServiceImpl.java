@@ -206,11 +206,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         Assert.isTrue((nbrOfResults > 0), "nbrOfResults must be larger that 0");
 
-        if (searchString == null) {
-            return DiagnosResponse.invalidSearchString();
-        }
-        searchString = searchString.trim();
-        if (searchString.length() == 0) {
+        if (StringUtils.isBlank(searchString)) {
             return DiagnosResponse.invalidSearchString();
         }
 
@@ -224,10 +220,10 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         switch (codeSystem) {
         case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString, nbrOfResults + 1);
+            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
             break;
         case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString, nbrOfResults + 1);
+            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
             break;
         default:
             LOG.warn("Unknown code system '{}'", codeSystem);

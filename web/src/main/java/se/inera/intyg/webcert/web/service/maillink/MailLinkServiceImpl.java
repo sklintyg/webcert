@@ -19,16 +19,17 @@
 
 package se.inera.intyg.webcert.web.service.maillink;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by pebe on 2015-10-05.
@@ -45,9 +46,6 @@ public class MailLinkServiceImpl implements MailLinkService {
 
     @Value("${certificate.view.url.base}")
     private String urlBaseTemplate;
-
-    @Value("${certificate.view.url.intyg.integration.template}")
-    private String urlIntygFragmentTemplate;
 
     @Value("${certificate.view.url.utkast.integration.template}")
     private String urlUtkastFragmentTemplate;

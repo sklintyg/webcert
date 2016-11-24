@@ -18,20 +18,25 @@
  */
 package se.inera.intyg.webcert.logsender.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.camel.Body;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.logmessages.PdlResource;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This camel processor implements the split pattern. It will create a new Message for each
@@ -57,9 +62,12 @@ public class LogMessageSplitProcessor {
      * @return
      *      A list of {@link DefaultMessage} where each message contains a body of one {@link PdlLogMessage} having
      *      exactly one {@link PdlResource}.
-     * @throws Exception
+     * @throws IOException
+     * @throws JsonMappingException
+     * @throws JsonParseException
+     * @throws PermanentException
      */
-    public List<Message> process(@Body Message body) throws Exception {
+    public List<Message> process(@Body Message body) throws JsonParseException, JsonMappingException, IOException, PermanentException {
 
         List<Message> answer = new ArrayList<>();
 

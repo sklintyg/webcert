@@ -40,7 +40,7 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
      */
 
     @Override
-    public void configure() throws Exception {
+    public void configure() {
         errorHandler(transactionErrorHandler().logExhausted(false));
 
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")

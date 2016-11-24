@@ -19,29 +19,22 @@
 
 package se.inera.intyg.webcert.web.web.controller.swagger;
 
+import java.util.*;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
 import io.swagger.core.filter.SwaggerSpecFilter;
 import io.swagger.jaxrs.Reader;
-import io.swagger.jaxrs.config.JaxrsScanner;
-import io.swagger.jaxrs.config.ReaderConfigUtils;
-import io.swagger.jaxrs.config.ReflectiveJaxrsScanner;
+import io.swagger.jaxrs.config.*;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import io.swagger.models.Swagger;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class intefaces with io.swagger core classes for on-the-fly generation of Swagger .JSON files for use by
@@ -62,10 +55,10 @@ public class ApiScanner {
     private ServletContext context;
 
     /** Keeps track of whether a given endpoint has been initialized and stored in the context. */
-    private HashMap<String, Boolean> apiInitialized = new HashMap<>();
+    private Map<String, Boolean> apiInitialized = new HashMap<>();
 
     /** Populated from CXF xml file swagger-cxf-servlet.xml. */
-    private HashMap<String, String> basepathMap = new HashMap<>();
+    private Map<String, String> basepathMap = new HashMap<>();
 
     /**
      * Returns a list of key->value pairs of REST APIs declared in swagger-cxf-servlet.xml. Primarily used by our customized
@@ -192,8 +185,7 @@ public class ApiScanner {
         return output;
     }
 
-    @SuppressWarnings("unused")
-    public void setBasepathMap(HashMap<String, String> basepathMap) {
+    public void setBasepathMap(Map<String, String> basepathMap) {
         this.basepathMap = basepathMap;
     }
 }

@@ -61,6 +61,7 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
                 result.setErrorId(ErrorIdType.APPLICATION_ERROR);
                 result.setResultText(e.getMessage());
                 LOG.error("Could not process incoming message to care. Cause is: {}", e.getMessage());
+                break;
             }
         }
 
