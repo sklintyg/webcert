@@ -31,7 +31,7 @@
 var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
 exports.config = {
-    //seleniumAddress: 'http://localhost:4444/wd/hub',
+    seleniumAddress: require('./../webcertTestTools/environment.js').envConfig.SELENIUM_ADDRESS,
     baseUrl: require('./../webcertTestTools/environment.js').envConfig.WEBCERT_URL,
 
     specs: ['./spec/*.spec.js'],
