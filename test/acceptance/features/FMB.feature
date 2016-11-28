@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@fk7263 
+
 Scenariomall: Visas vid rätt fält för <intygKod>
 	När jag går in på att skapa ett <intyg> intyg
 	Och jag fyller i diagnoskod 

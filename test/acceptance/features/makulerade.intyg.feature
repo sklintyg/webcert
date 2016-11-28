@@ -31,4 +31,4 @@ Scenario: Det ska gå att kopiera slumpat och makulerat SMI-intyg
 Exempel:
   |intygKod | 	intyg 								| 
   |FK7263	|  	"Läkarintyg FK 7263" 				| 
-  |LISJP		| 	"Läkarintyg för sjukpenning" | 
+  #|LISJP		| 	"Läkarintyg för sjukpenning" | 
