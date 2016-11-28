@@ -22,3 +22,13 @@ Scenario: Det ska gå att kopiera slumpat och makulerat SMI-intyg
    Och jag makulerar intyget
    Så ska intyget visa varningen "Intyget är makulerat"
    Så ska det finnas en knapp med texten "Kopiera"
+
+   @kristi
+   Scenariomall: Utkast för <intygKod> ska inte kunna makuleras
+	När jag går in på att skapa ett <intyg> intyg
+	Så ska det inte finnas någon knapp för "makulera"
+
+Exempel:
+  |intygKod | 	intyg 								| 
+  |FK7263	|  	"Läkarintyg FK 7263" 				| 
+  |LISJP		| 	"Läkarintyg för sjukpenning" | 
