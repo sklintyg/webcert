@@ -47,6 +47,7 @@ module.exports = function() {
             link.getAttribute('href').then(function(href) {
                 if (href !== null &&
                     href !== '' &&
+                    href.includes('javascript') !== true &&
                     href.indexOf(process.env.WEBCERT_URL) === -1 &&
                     href.indexOf(process.env.MINAINTYG_URL) === -1 &&
                     global.externalPageLinks.indexOf(href) === -1) {
