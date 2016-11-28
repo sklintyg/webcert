@@ -81,3 +81,9 @@ stage('tag and upload') {
         shgradle "uploadArchives tagRelease -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DtyperVersion=${typerVersion}"
     }
 }
+
+stage('notify') {
+    node {
+        util.notifySuccess()
+    }
+}
