@@ -1,32 +1,77 @@
 @startuml
-actor User
-User -> Browser: I want to login
-Browser -> Webcert: Login request
-Webcert --> Browser: Redirect to Säkerhetstjänsten
+autonumber
+actor Actor
+activate Actor
+Actor -> Webbläsare: Vill logga in
 
-Browser -> Säkerhetstjänsten: SAML Authentication Request
-Säkerhetstjänsten --> Browser: (asks browser to start NetID plugin)
-Browser -\ NetIDPlugin: Start NetID plugin
+activate Webbläsare
+Webbläsare -> Webcert: Login request
 
-User -\ NetIDPlugin: Insert SITHS-card
-NetIDPlugin -> Säkerhetstjänsten: Init authentication
-Säkerhetstjänsten --> NetIDPlugin: Prompt for password
-User -> NetIDPlugin: Enter passcode
+Webcert --> Webbläsare: Redirect till Säkerhetstjänsten
 
-NetIDPlugin --> Säkerhetstjänsten: Authenticate
+Webbläsare -> Säkerhetstjänsten: SAML Authentication Request
+activate Säkerhetstjänsten
+Säkerhetstjänsten --> Webbläsare: Ber webbläsaren starta NetID plugin
+deactivate Säkerhetstjänsten
+Webbläsare -\ "NetID plugin": Startar NetID plugin
+deactivate Webbläsare
 
-Säkerhetstjänsten -> HSA: Hämtar medarbetaruppdrag
-HSA --> Säkerhetstjänsten: Svarar med medarbetaruppdrag
-Säkerhetstjänsten -> Browser: Visa HTML för val av medarb. uppdr
-User -> Browser: Väljer medarbetaruppdrag
-Browser -> Säkerhetstjänsten: Medarb. uppdr. valt
+activate "NetID plugin"
+Actor -\ "NetID plugin": Sätter in SITHS-kort
+"NetID plugin" -> Säkerhetstjänsten: Initierar autentisering
 
-Browser <-- Säkerhetstjänsten: SAML Authentication Response
-Browser -> Webcert: SAML Ticket
-Webcert -> Webcert: Parse SAML ticket
-Webcert -> HSA:
-HSA --> Webcert: HSA-information
+activate Säkerhetstjänsten
+Säkerhetstjänsten --> "NetID plugin": Ber om lösenord
+deactivate Säkerhetstjänsten
+
+Actor -> "NetID plugin": Anger lösenord
+
+
+"NetID plugin" --> Säkerhetstjänsten: Autentiserar
+deactivate "NetID plugin"
+activate Säkerhetstjänsten
+
+
+
+Säkerhetstjänsten -> HSA: Hämtar HsaID
+activate HSA
+HSA --> Säkerhetstjänsten: Användarens HsaID
+deactivate HSA
+
+Webbläsare <-- Säkerhetstjänsten: SAML identitetsintyg
+deactivate Säkerhetstjänsten
+activate Webbläsare
+
+Webbläsare -> Webcert: SAML identitetsintyg
+deactivate Webbläsare
+activate Webcert
+Webcert -> Webcert: Tolka SAML identitetsintyg
+Webcert -> HSA: Hämtar medarbetaruppdrag
+activate HSA
+HSA --> Webcert: Svarar med medarbetaruppdrag
+deactivate HSA
+alt val av vårdenhet krävs
+
+Webcert -/ Webbläsare: Omdirigerar till sida för val av enhet
+activate Webbläsare
+Actor -> Webbläsare: Väljer vårdenhet
+Webbläsare --/ Webcert: Vald vårdenhet
+deactivate Webbläsare
+end
+
 Webcert <-> Webcert: Skapar session
-Webcert --> Browser: Requested resource
-User -> Browser: Börjar arbeta
+Webcert --> Webbläsare: Begärd sida visas
+activate Webbläsare
+deactivate Webcert
+Actor -> Webbläsare: Börjar arbeta
+deactivate Webbläsare
+deactivate Actor
 @enduml
+
+
+
+
+Säkerhetstjänsten -> Webbläsare: Visa HTML för val av medarb. uppdr
+Actor -> Webbläsare: Väljer medarbetaruppdrag
+Webbläsare -> Säkerhetstjänsten: Medarb. uppdr. valt
+deactivate Actor

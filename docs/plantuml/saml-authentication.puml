@@ -1,19 +1,40 @@
 @startuml
-actor User
-User -> Browser: I want to login
-Browser -> Webcert: Login request
-Webcert --> Browser: Redirect to IdP
+autonumber
+actor Användare
+activate Användare
+Användare -> Webbläsare: Vill logga in
+activate Webbläsare
 
-Browser -> IdP: SAML Authentication Request
-IdP --> Browser: Select method
-Browser -\ IdP: Perform authentication
+Webbläsare -> Webcert: Login request
+activate Webcert
+Webcert --> Webbläsare: Omdirigering till CGIs IdP
+deactivate Webcert
+Webbläsare -> "CGI funktionstjänster": SAML authentication request
+activate "CGI funktionstjänster"
+"CGI funktionstjänster" --> Webbläsare: Frågar efter inloggningsmetod
 
-IdP -\ BankIDNetID: Authenticate
-User -> BankIDNetID: Interacts\nwith\nNetID/BankID\nclient
+Användare -> Webbläsare: Väljer inloggningsmetod
+Webbläsare -\ "CGI funktionstjänster": Vald inloggningsmetod
+deactivate Webbläsare
+"CGI funktionstjänster" -> "BankID / NetID": Begär autentisering
+deactivate "CGI funktionstjänster"
+activate  "BankID / NetID"
+Användare -/ "BankID / NetID": Interagerar med NetID/BankID-client
 
-BankIDNetID --> IdP: Authentication
-Browser <-- IdP: SAML Authentication Response
-Browser -> Webcert: SAML Ticket
-Webcert -> Webcert: Authorize
-Webcert --> Browser: Requested resource
+"BankID / NetID" --> "CGI funktionstjänster": Autentisering
+deactivate  "BankID / NetID"
+activate "CGI funktionstjänster"
+Webbläsare <-- "CGI funktionstjänster": SAML identitetsintyg
+deactivate "CGI funktionstjänster"
+activate Webbläsare
+
+Webbläsare -> Webcert: SAML identitetsintyg
+activate Webcert
+Webcert -> Webcert: Auktorisering\n(via Privatläkarportalen)
+Webcert --> Webbläsare: Begärd sida visas
+
+deactivate Webcert
+Användare -> Webbläsare: Börjar arbeta
+deactivate Användare
+deactivate Webbläsare
 @enduml
