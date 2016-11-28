@@ -69,6 +69,17 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
         return AuthoritiesConstants.ROLE_ADMIN;
     }
 
+    /**
+     * Webcert overrides the default (i.e. fallback) behaviour from the base class which specifies a pre-selected
+     * Vårdenhet during the
+     * authorization process:
+     *
+     * For users with origin {@link UserOriginType#NORMAL} users will be redirected to the Vårdenhet selection page if
+     * they have more than one (1) possible vårdenhet they have the requisite medarbetaruppdrag to select. (INTYG-3211)
+     *
+     * @param intygUser
+     *            User principal.
+     */
     @Override
     protected void decorateIntygUserWithDefaultVardenhet(IntygUser intygUser) {
         // This override should only apply to NORMAL origin logins. Other types of origins gets default behaviour.
@@ -84,5 +95,4 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
             super.decorateIntygUserWithDefaultVardenhet(intygUser);
         }
     }
-
 }
