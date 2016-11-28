@@ -31,10 +31,6 @@ public class SaveDraftValidationMessage {
 
     private String dynamicKey;
 
-    public SaveDraftValidationMessage() {
-
-    }
-
     public SaveDraftValidationMessage(String field, ValidationMessageType type, String message, String dynamicKey) {
         super();
         this.field = field;

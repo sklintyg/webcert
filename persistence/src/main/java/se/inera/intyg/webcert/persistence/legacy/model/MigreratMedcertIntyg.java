@@ -74,7 +74,7 @@ public class MigreratMedcertIntyg {
     private byte[] intygsData;
 
     public MigreratMedcertIntyg() {
-
+        // Default constructor for hibernate
     }
 
     @PrePersist

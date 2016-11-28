@@ -19,29 +19,24 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
+import java.io.IOException;
+import java.util.Enumeration;
+
+import javax.jms.*;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.logmessages.PdlLogMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.Enumeration;
 
 @Api(value = "testability logMessages", description = "REST API för testbarhet - PDL-loggning")
 @Path("/logMessages")
@@ -52,13 +47,6 @@ public class LogResource {
     private long timeOut = DEFAULT_TIMEOUT;
 
     private ObjectMapper objectMapper = new CustomObjectMapper();
-
-    LogResource() {
-    }
-
-    LogResource(long timeOut) {
-        this.timeOut = timeOut;
-    }
 
     @Autowired
     @Qualifier("jmsPDLLogTemplateNoTx")

@@ -51,17 +51,9 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     @Override
     public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, CommissionType miuOnUnit) {
-        CreateNewDraftRequest utkastsRequest = new CreateNewDraftRequest();
-
-        utkastsRequest.setIntygType(moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()));
-
-        Patient patient = TransportConverterUtil.getPatient(intyg.getPatient());
-        utkastsRequest.setPatient(patient);
-
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(), createVardenhetFromMIU(miuOnUnit));
         enrichHoSPerson(hosPerson);
-        utkastsRequest.setHosPerson(hosPerson);
-        return utkastsRequest;
+        return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), null, hosPerson, TransportConverterUtil.getPatient(intyg.getPatient()));
     }
 
     private HoSPersonal createHoSPerson(se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal hoSPersonType,

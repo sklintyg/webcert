@@ -35,10 +35,6 @@ public class CreateNewDraftRequest {
 
     private HoSPersonal hosPerson;
 
-    public CreateNewDraftRequest() {
-
-    }
-
     public CreateNewDraftRequest(String intygId, String intygType, UtkastStatus status, HoSPersonal hosPerson,
             Patient patient) {
         this.intygId = intygId;

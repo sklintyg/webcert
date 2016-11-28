@@ -51,7 +51,7 @@ public class Filter {
     private Set<String> intygsTyper = new HashSet<>();
 
     public boolean hasPageSizeAndStartFrom() {
-        return (pageSize != null && startFrom != null);
+        return pageSize != null && startFrom != null;
     }
 
     public List<String> getEnhetsIds() {

@@ -67,6 +67,6 @@ public final class ArendeListItemConverter {
     }
 
     private static boolean getSafeBooleanValue(Boolean booleanObj) {
-        return (booleanObj != null) && booleanObj;
+        return booleanObj != null && booleanObj;
     }
 }

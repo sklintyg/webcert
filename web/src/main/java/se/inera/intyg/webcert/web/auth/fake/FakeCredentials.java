@@ -19,9 +19,9 @@
 
 package se.inera.intyg.webcert.web.auth.fake;
 
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-
 import java.io.Serializable;
+
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 /**
  * @author andreaskaltenbach
@@ -42,6 +42,7 @@ public class FakeCredentials implements Serializable {
     private String reference;
 
     public FakeCredentials() {
+        // Needed for deserialization
     }
 
     public FakeCredentials(FakeCredentialsBuilder builder) {

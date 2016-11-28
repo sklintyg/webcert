@@ -492,7 +492,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         Map<String, Long> resultsMap = new HashMap<>();
 
-        if ((vardenheterIds == null) || vardenheterIds.isEmpty()) {
+        if (vardenheterIds == null || vardenheterIds.isEmpty()) {
             LOGGER.warn("No ids for Vardenheter was supplied");
             return resultsMap;
         }

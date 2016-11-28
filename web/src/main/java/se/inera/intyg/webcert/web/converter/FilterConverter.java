@@ -19,13 +19,14 @@
 
 package se.inera.intyg.webcert.web.converter;
 
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
+
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.VantarPa;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
-
-import java.util.List;
-import java.util.Set;
 
 public final class FilterConverter {
 
@@ -62,7 +63,7 @@ public final class FilterConverter {
     }
 
     private static boolean getSafeBooleanValue(Boolean booleanObj) {
-        return (booleanObj != null) && booleanObj;
+        return booleanObj != null && booleanObj;
     }
 
 }

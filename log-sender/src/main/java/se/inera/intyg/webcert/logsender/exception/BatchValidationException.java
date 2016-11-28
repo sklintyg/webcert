@@ -24,9 +24,6 @@ package se.inera.intyg.webcert.logsender.exception;
 public class BatchValidationException extends Exception {
     private static final long serialVersionUID = -3184379031315261252L;
 
-    public BatchValidationException() {
-    }
-
     public BatchValidationException(String message) {
         super(message);
     }

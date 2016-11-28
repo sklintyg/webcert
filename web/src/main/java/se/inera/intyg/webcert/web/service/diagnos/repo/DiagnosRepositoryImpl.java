@@ -133,7 +133,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         String codeValue = StringUtils.deleteWhitespace(codeValueParam);
         codeValue = StringUtils.remove(codeValue, '.');
 
-        return (StringUtils.isBlank(codeValue)) ? null : codeValue.toUpperCase();
+        return StringUtils.isBlank(codeValue) ? null : codeValue.toUpperCase();
     }
 
     public int nbrOfDiagosis() {

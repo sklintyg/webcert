@@ -43,10 +43,6 @@ public class ListIntygEntry {
 
     private long version;
 
-    public ListIntygEntry() {
-
-    }
-
     public String getIntygId() {
         return intygId;
     }

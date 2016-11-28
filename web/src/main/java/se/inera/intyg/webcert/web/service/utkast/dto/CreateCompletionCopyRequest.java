@@ -36,6 +36,7 @@ public class CreateCompletionCopyRequest extends CreateCopyRequest {
     }
 
     public CreateCompletionCopyRequest() {
+        // Needed for deserialization
     }
 
     public String getMeddelandeId() {

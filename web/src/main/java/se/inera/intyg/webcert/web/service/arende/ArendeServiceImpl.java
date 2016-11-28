@@ -384,12 +384,12 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public Map<String, Long> getNbrOfUnhandledArendenForCareUnits(List<String> vardenheterIds, Set<String> intygsTyper) {
-        if ((vardenheterIds == null) || vardenheterIds.isEmpty()) {
+        if (vardenheterIds == null || vardenheterIds.isEmpty()) {
             LOG.warn("No ids for Vardenheter was supplied");
             return new HashMap<>();
         }
 
-        if ((intygsTyper == null) || intygsTyper.isEmpty()) {
+        if (intygsTyper == null || intygsTyper.isEmpty()) {
             LOG.warn("No intygsTyper for querying Arenden was supplied");
             return new HashMap<>();
         }

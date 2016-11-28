@@ -19,15 +19,9 @@
 
 package se.inera.intyg.webcert.persistence.fmb.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Locale;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "FMB")
@@ -56,6 +50,7 @@ public class Fmb {
     private String lastUpdate;
 
     Fmb() {
+        // default constructor for hibernate
     }
 
     public Fmb(String icd10, FmbType type, FmbCallType callType, String text, String lastUpdate) {

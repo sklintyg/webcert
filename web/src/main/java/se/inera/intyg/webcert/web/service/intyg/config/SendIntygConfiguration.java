@@ -19,10 +19,11 @@
 
 package se.inera.intyg.webcert.web.service.intyg.config;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
 import java.text.MessageFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class SendIntygConfiguration {
 
@@ -33,7 +34,7 @@ public class SendIntygConfiguration {
     private WebCertUser webCertUser;
 
     public SendIntygConfiguration() {
-
+        // Needed for deserialization
     }
 
     public SendIntygConfiguration(String recipient, WebCertUser webCertUser) {

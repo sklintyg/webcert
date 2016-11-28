@@ -32,6 +32,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 public class IntygsReferens {
 
     public IntygsReferens() {
+        // default constructor for hibernate
     }
 
     public IntygsReferens(String intygsId, String intygsTyp, Personnummer patientId,

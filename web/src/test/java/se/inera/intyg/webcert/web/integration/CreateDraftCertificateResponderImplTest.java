@@ -26,10 +26,10 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -136,9 +136,7 @@ public class CreateDraftCertificateResponderImplTest {
     }
 
     private CreateNewDraftRequest createCreateNewDraftRequest(Vardenhet vardenhet) {
-        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest();
-        draftRequest.setIntygId(UTKAST_ID);
-        draftRequest.setHosPerson(new HoSPersonal());
+        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest(UTKAST_ID, null, null, new HoSPersonal(), null);
         draftRequest.getHosPerson().setVardenhet(vardenhet);
         return draftRequest;
     }

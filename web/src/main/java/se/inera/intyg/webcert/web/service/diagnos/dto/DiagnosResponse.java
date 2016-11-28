@@ -31,10 +31,6 @@ public class DiagnosResponse {
 
     private boolean moreResults;
 
-    public DiagnosResponse() {
-
-    }
-
     public static DiagnosResponse ok(List<Diagnos> diagnoser,  boolean moreResults) {
         DiagnosResponse diagnosResponse = new DiagnosResponse();
         diagnosResponse.setDiagnoser(diagnoser);

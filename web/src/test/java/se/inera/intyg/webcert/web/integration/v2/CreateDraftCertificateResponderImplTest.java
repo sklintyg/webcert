@@ -27,9 +27,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
-import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -141,7 +141,7 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Test
     public void testCreateDraftCertificateNoMIUs() throws ExternalServiceCallException {
-        List<CommissionType> miuList = new ArrayList<CommissionType>();
+        List<CommissionType> miuList = new ArrayList<>();
         CreateDraftCertificateType certificateType = createCertificateType();
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
@@ -220,9 +220,7 @@ public class CreateDraftCertificateResponderImplTest {
     }
 
     private CreateNewDraftRequest createCreateNewDraftRequest(Vardenhet vardenhet) {
-        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest();
-        draftRequest.setIntygId(UTKAST_ID);
-        draftRequest.setHosPerson(new HoSPersonal());
+        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest(UTKAST_ID, null, null, new HoSPersonal(), null);
         draftRequest.getHosPerson().setVardenhet(vardenhet);
         return draftRequest;
     }

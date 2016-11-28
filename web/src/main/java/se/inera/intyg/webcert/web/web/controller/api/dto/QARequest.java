@@ -26,9 +26,6 @@ public class QARequest {
     private String intygsTyp;
     private Long fragaSvarId;
 
-    public QARequest() {
-    }
-
     public String getIntygsTyp() {
         return intygsTyp;
     }

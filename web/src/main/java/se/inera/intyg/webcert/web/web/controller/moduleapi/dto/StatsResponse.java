@@ -43,10 +43,6 @@ public class StatsResponse {
     @JsonProperty("vardgivare")
     private List<VardgivareStats> vardgivare = new ArrayList<>();
 
-    public StatsResponse() {
-
-    }
-
     public long getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected() {
         return totalNbrOfUnhandledFragaSvarOnOtherThanSelected;
     }

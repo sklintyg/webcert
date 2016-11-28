@@ -43,10 +43,6 @@ public class CreateUtkastRequest {
 
     private String patientPostort;
 
-    public CreateUtkastRequest() {
-
-    }
-
     public boolean isValid() {
 
         if (StringUtils.isBlank(intygType)) {

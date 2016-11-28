@@ -19,9 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.signatur.asn1;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.LinkedList;
 
 import org.apache.commons.codec.binary.Base64;
@@ -70,7 +68,7 @@ public class ASN1StreamParser {
                 int b = unsignByte(bais);
                 buffer.add(b);
 
-                if ((buffer.size() == marker.length) && match(buffer, marker)) {
+                if (buffer.size() == marker.length && match(buffer, marker)) {
                     // Extract val
                     return readValue(dataLength, bais);
                 }
@@ -110,7 +108,7 @@ public class ASN1StreamParser {
                 int b = unsignByte(bais);
                 buffer.add(b);
 
-                if ((buffer.size() == marker.length) && match(buffer, marker)) {
+                if (buffer.size() == marker.length && match(buffer, marker)) {
 
                     int lengthOctet = unsignByte(bais);
                     int contentLength = determineContentLength(lengthOctet, bais);

@@ -50,10 +50,6 @@ public class DraftHolder {
 
     private List<RelationItem> relations;
 
-    public DraftHolder() {
-
-    }
-
     public long getVersion() {
         return version;
     }

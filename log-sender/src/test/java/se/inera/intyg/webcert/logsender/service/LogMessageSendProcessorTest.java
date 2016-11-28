@@ -18,13 +18,23 @@
  */
 package se.inera.intyg.webcert.logsender.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.ws.WebServiceException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.logmessages.ActivityType;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -36,15 +46,6 @@ import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
 import se.riv.ehr.log.v1.ResultCodeType;
-
-import javax.xml.ws.WebServiceException;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2016-03-08.
@@ -108,7 +109,7 @@ public class LogMessageSendProcessorTest {
 
     @Test(expected = TemporaryException.class)
     public void testSendLogMessagesThrowsTemporaryExceptionWhenLoggtjanstExecutionExceptionIsThrwn() throws Exception {
-        when(logSenderClient.sendLogMessage(anyList())).thenThrow(new LoggtjanstExecutionException());
+        when(logSenderClient.sendLogMessage(anyList())).thenThrow(new LoggtjanstExecutionException(null));
         testee.process(objectMapper.writeValueAsString(buildGroupedMessages()));
         verify(logSenderClient, times(1)).sendLogMessage(anyList());
     }

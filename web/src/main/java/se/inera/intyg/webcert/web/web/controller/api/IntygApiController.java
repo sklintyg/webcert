@@ -84,9 +84,6 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
 
-    public IntygApiController() {
-    }
-
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both

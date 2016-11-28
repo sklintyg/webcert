@@ -24,8 +24,7 @@ package se.inera.intyg.webcert.logsender.exception;
  */
 public class LoggtjanstExecutionException extends RuntimeException {
 
-    public LoggtjanstExecutionException() {
-    }
+    private static final long serialVersionUID = -6996998722601503134L;
 
     public LoggtjanstExecutionException(Throwable cause) {
         super(cause);

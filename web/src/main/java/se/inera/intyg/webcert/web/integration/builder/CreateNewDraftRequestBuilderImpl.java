@@ -52,17 +52,9 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     @Override
     public CreateNewDraftRequest buildCreateNewDraftRequest(Utlatande utlatande, CommissionType miuOnUnit) {
-        CreateNewDraftRequest utkastsRequest = new CreateNewDraftRequest();
-
-        utkastsRequest.setIntygType(utlatande.getTypAvUtlatande().getCode());
-
-        Patient patient = createPatient(utlatande.getPatient());
-        utkastsRequest.setPatient(patient);
-
         HoSPersonal hosPerson = createHoSPerson(utlatande.getSkapadAv(), createVardenhetFromMIU(miuOnUnit));
         enrichHoSPerson(hosPerson);
-        utkastsRequest.setHosPerson(hosPerson);
-        return utkastsRequest;
+        return new CreateNewDraftRequest(null, utlatande.getTypAvUtlatande().getCode(), null, hosPerson, createPatient(utlatande.getPatient()));
     }
 
     private void enrichHoSPerson(HoSPersonal hosPerson) {

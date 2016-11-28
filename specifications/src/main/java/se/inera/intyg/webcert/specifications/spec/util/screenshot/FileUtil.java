@@ -19,17 +19,12 @@
 
 package se.inera.intyg.webcert.specifications.spec.util.screenshot;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Scanner;
+import java.io.*;
 import java.nio.channels.FileChannel;
+import java.util.Scanner;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * File utilities.
@@ -37,6 +32,7 @@ import java.nio.channels.FileChannel;
 public final class FileUtil {
     private static final int BUFFER_SIZE = 4096;
     private static final String FILE_ENCODING = "UTF-8";
+    private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
 
     private FileUtil() {
         // ensure no instance is made.
@@ -227,7 +223,7 @@ public final class FileUtil {
                 try {
                     target.close();
                 } catch (IOException ex) {
-                    System.err.println(ex);
+                    LOG.error("Error: {}", ex);
                 }
             }
         }

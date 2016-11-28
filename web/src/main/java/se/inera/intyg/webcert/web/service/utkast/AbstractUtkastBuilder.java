@@ -336,7 +336,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
         ValidationStatus validationStatus = validationResponse.getStatus();
 
-        return (ValidationStatus.VALID.equals(validationStatus)) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
+        return ValidationStatus.VALID.equals(validationStatus) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
     }
 
 }

@@ -66,7 +66,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
             errors.addError("efternamn is required");
         }
 
-        if ((patient.getFornamn() == null) || patient.getFornamn().isEmpty()) {
+        if (patient.getFornamn() == null || patient.getFornamn().isEmpty()) {
             errors.addError("At least one fornamn is required");
         }
 

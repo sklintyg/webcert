@@ -41,11 +41,6 @@ public class WebCertUserOrigin implements UserOrigin {
     public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+";
     public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions";
 
-
-    public WebCertUserOrigin() {
-    }
-
-
     // ~ API
     // =====================================================================================
     @Override
