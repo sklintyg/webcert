@@ -1,9 +1,10 @@
 # This playbook deploys WebCert 
 
 - hosts: webcert-tomcat
+  serial: 1
   become: yes 
   vars:
-    version: 5.0.0-b80
+    version: 5.1.80
     config_version: master
 
   roles:
