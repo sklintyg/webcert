@@ -6,8 +6,8 @@
 - name: Create release directory
   file: path={{ releases_folder }} state=directory
 
-- name: Download intygstjanst-liquibase-runner-{{ version }}.zip
-  get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
+- name: download intygstjanst-liquibase-runner-{{ version }}.zip
+  get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
            dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
   when: deploy_from_repo|bool
 
@@ -16,10 +16,11 @@
   when: not deploy_from_repo|bool
 
 - name: Unzip webcert-liquibase-runner-{{ version }}.zip
-  unarchive: src={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
-             dest={{ releases_folder }}
-             remote_src=yes
-             creates="{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/liquibase-runner"
+  unarchive:
+    src: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip"
+    dest: "{{ releases_folder }}"
+    creates: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/liquibase-runner"
+    remote_src: yes
 
 - name: Run liquibase update
   command: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/webcert-liquibase-runner --url={{ database_url }} --username={{ database_username }} --password={{ database_password }} update"
@@ -27,6 +28,7 @@
       chdir: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}"
   environment:
       JAVA_HOME: "{{ java_home }}"
+  run_once: true
 
 - name: Download webcert-web-{{ version }}.war
   get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r=releases&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
@@ -79,6 +81,7 @@
   git: repo={{ config_repository }}
        dest={{ config_folder }}
        version={{ config_version }}
+  run_once: true
 
 - name: Start tomcat
   service: name={{ tomcat_service }} state=started pattern={{ tomcat_service }}

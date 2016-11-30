@@ -4,3 +4,4 @@
   git: repo="{{ config_repository }}"
        dest="{{ config_folder }}"
        version=master
+  run_once: true

@@ -2,6 +2,7 @@
 
 - name: Delete application resources folder
   file: "state=absent path={{ app_resources_folder }}"
+  run_once: true
 
 - name: Create application resources folder
   file: "state=directory path={{ app_resources_folder }}"
@@ -9,3 +10,4 @@
 - name: Copy application resources
   copy: src="{{ app_resources_src }}"
        dest="{{ app_resources_folder }}"
+  run_once: true

@@ -1,0 +1,14 @@
+[webcert-tomcat]
+webcert-dev-bf ansible_ssh_host=164.40.180.105 ansible_ssh_user=ine-intyg-build ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
+
+[webcert-mysql]
+webcert-dev-bf ansible_ssh_host=164.40.180.105 ansible_ssh_user=ine-intyg-build ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
+
+[activemq]
+webcert-dev-bf ansible_ssh_host=164.40.180.105 ansible_ssh_user=ine-intyg-build ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
+
+[tomcat:children]
+webcert-tomcat
+
+[mysql:children]
+webcert-mysql
