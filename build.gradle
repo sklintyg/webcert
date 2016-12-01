@@ -1,5 +1,6 @@
 ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
+    infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
     typerVersion = System.properties['typerVersion'] ?: '0-SNAPSHOT'
 
     funktionstjansterGrpSchemasVersion = "1.0.3"
@@ -70,6 +71,9 @@ subprojects {
     [install.repositories.mavenInstaller, uploadArchives.repositories.mavenDeployer]*.pom*.whenConfigured { pom ->
         pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common'}.each {
             it.version = findResolvedVersion(project, 'se.inera.intyg.common')
+        }
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.infra'}.each {
+            it.version = findResolvedVersion(project, 'se.inera.intyg.infra')
         }
         pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper'}.each {
             it.version = findResolvedVersion(project, 'se.inera.intyg.intygstyper')

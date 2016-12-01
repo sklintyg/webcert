@@ -1,7 +1,7 @@
 description = 'Webcert (Common)'
 
 dependencies {
-    compile "se.inera.intyg.infra:log-messages:${commonVersion}"
+    compile "se.inera.intyg.infra:log-messages:${infraVersion}"
     compile "se.inera.intyg.intygstyper:fk7263:${typerVersion}"
     compile "se.inera.intyg.intygstyper:ts-parent:${typerVersion}"
     compile "se.inera.intyg.intygstyper:fk-parent:${typerVersion}"
