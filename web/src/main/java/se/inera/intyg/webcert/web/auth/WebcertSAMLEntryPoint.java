@@ -51,6 +51,7 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
      * @return populated webSSOprofile
      * @throws MetadataProviderException in case metadata loading fails
      */
+    @Override
     protected WebSSOProfileOptions getProfileOptions(SAMLMessageContext context, AuthenticationException exception) throws MetadataProviderException {
 
         WebSSOProfileOptions ssoProfileOptions;

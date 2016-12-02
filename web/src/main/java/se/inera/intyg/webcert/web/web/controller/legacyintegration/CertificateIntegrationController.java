@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 @Api(value = "/webcert/web/user/basic-certificate", description = "REST API för fråga/svar via normal link, landstingspersonal", produces = MediaType.APPLICATION_JSON)
 public class CertificateIntegrationController extends FragaSvarUthoppController {
 
+    @Override
     protected UserOriginType getGrantedRequestOrigin() {
         return UserOriginType.NORMAL;
     }

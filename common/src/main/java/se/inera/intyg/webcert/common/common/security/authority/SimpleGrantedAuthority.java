@@ -45,6 +45,7 @@ public final class SimpleGrantedAuthority implements GrantedAuthority {
         this.description = description;
     }
 
+    @Override
     public String getAuthority() {
         return authority;
     }
@@ -53,6 +54,7 @@ public final class SimpleGrantedAuthority implements GrantedAuthority {
         return description;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -65,10 +67,12 @@ public final class SimpleGrantedAuthority implements GrantedAuthority {
         return false;
     }
 
+    @Override
     public int hashCode() {
         return this.authority.hashCode();
     }
 
+    @Override
     public String toString() {
         return this.authority;
     }

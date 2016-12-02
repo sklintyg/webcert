@@ -46,10 +46,12 @@ public enum WebcertFeature implements Feature {
         this.envName = envName;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getEnvName() {
         return envName;
     }

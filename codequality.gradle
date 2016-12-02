@@ -14,6 +14,8 @@ subprojects {
         }
     }
 
+    // Checkstyle ===========================================================
+
     apply plugin: 'checkstyle'
 
     checkstyle {
@@ -28,17 +30,7 @@ subprojects {
     checkstyleMain.source = "src/main/java"
     checkstyleTest.enabled = false
 
-    apply plugin: 'jacoco'
-
-    jacoco {
-        toolVersion = "0.7.6.201602180812"
-    }
-
-    test {
-        jacoco {
-            destinationFile = file("$buildDir/jacoco/test.exec")
-        }
-    }
+    // PMD ==================================================================
 
     apply plugin: 'pmd'
 
@@ -51,6 +43,35 @@ subprojects {
 
     pmdMain.onlyIf { project.hasProperty('codeQuality') }
     pmdTest.enabled = false
+
+    // Errorprone ===========================================================
+
+    apply plugin: 'net.ltgt.errorprone-base'
+
+    // This makes sure only production code (not tests) is checked
+    if (project.hasProperty('codeQuality')) {
+        compileJava {
+            toolChain net.ltgt.gradle.errorprone.ErrorProneToolChain.create(project)
+            options.compilerArgs += [ '-Xep:TypeParameterUnusedInFormals:ERROR', '-Xep:MissingOverride:ERROR', '-Xep:DefaultCharset:ERROR',
+                                      '-Xep:ClassCanBeStatic:ERROR', '-Xep:Finally:ERROR' ]
+        }
+    }
+
+    // Jacoco ===============================================================
+
+    apply plugin: 'jacoco'
+
+    jacoco {
+        toolVersion = "0.7.6.201602180812"
+    }
+
+    test {
+        jacoco {
+            destinationFile = file("$buildDir/jacoco/test.exec")
+        }
+    }
+
+    // License ==============================================================
 
     apply plugin: 'com.github.hierynomus.license'
 
@@ -83,5 +104,17 @@ sonarqube {
         property "sonar.exclusions", ["**/stub/**", "**/exception/**", "**/*Exception*.java", "**/*Fake*.java",
                                       "**/templates.js", "**/vendor/**", "**/swagger-ui/**"]
         property "sonar.javascript.lcov.reportPath", "build/karma/lcov.info"
+    }
+}
+
+// This buildscript block should not be required, since we have one in build.gradle, but for some reason errorprone
+// only works if the block is present in this file as well.
+buildscript {
+    dependencies {
+        classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.8'
+    }
+
+    repositories {
+        maven { url "https://plugins.gradle.org/m2/" }
     }
 }

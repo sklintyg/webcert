@@ -175,7 +175,7 @@ public class ASN1StreamParser {
      *
      * @param <E>
      */
-    private final class LimitedQueue<E> extends LinkedList<E> {
+    private static final class LimitedQueue<E> extends LinkedList<E> {
 
         private static final long serialVersionUID = 507838301817733410L;
 
