@@ -37,6 +37,7 @@ describe('ViewCertCtrl', function() {
     var $controller;
     var qas = [{}];
     var userModel;
+    var moduleService;
 
     function MockDeferreds($q){
         this.$q = $q;
@@ -83,6 +84,7 @@ describe('ViewCertCtrl', function() {
         $provide.value('common.fragaSvarCommonService', fragaSvarCommonService);
 
         $provide.value('$window', {location:{href:currentUrl}});
+
         UtkastProxy = jasmine.createSpyObj('webcert.UtkastProxy', [ 'getUtkastType' ]);
         $provide.value('webcert.UtkastProxy', UtkastProxy);
 
@@ -91,8 +93,12 @@ describe('ViewCertCtrl', function() {
 
         $stateParams = {qaOnly:false};
         $provide.value('$stateParams', $stateParams);
+
         $state = {current:{}};
         $provide.value('$state', $state);
+
+        moduleService  = jasmine.createSpyObj('common.moduleService', [ 'getModuleName' ]);
+        $provide.value('common.moduleService', moduleService);
 
         $provide.value('common.featureService', {
             features: {
@@ -100,12 +106,13 @@ describe('ViewCertCtrl', function() {
             },
             isFeatureActive: function() { return true; }
         });
+
         $provide.value('common.UserModel', getTestUser({'LAKARE': {'name': 'Läkare', 'desc': 'Läkare'}}, 'UTHOPP'));
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$location', '$window', 'common.featureService', 'common.UserModel',
-        function( _$controller_, _$rootScope_,_$q_, _$location_, _$window_, featureService, _userModel_) {
+    beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$location', '$window', 'common.featureService', 'common.moduleService', 'common.UserModel',
+        function( _$controller_, _$rootScope_,_$q_, _$location_, _$window_, featureService, moduleService, _userModel_) {
 
             $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
@@ -155,7 +162,7 @@ describe('ViewCertCtrl', function() {
             // ----- arrange
             expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
-            // spy on the defferd
+            // spy on the deferred
             var def = mockDeferreds.getDeferred();
             spyOn($q, 'defer').and.returnValue(def);
 

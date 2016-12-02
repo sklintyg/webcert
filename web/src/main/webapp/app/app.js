@@ -44,8 +44,9 @@
     $.ajaxSetup({ cache: false });
 
     // before we do anything.. we need to get the user and moduleConfig
-    var user;
+    var moduleArray = [];
     var moduleConfig;
+    var user;
 
     var app = angular.module('webcert',
         ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'ng.shims.placeholder', 'ui.select']);
@@ -58,6 +59,12 @@
         return $.get('/api/config').then(function(data) {
             moduleConfig = data;
             app.constant('moduleConfig', moduleConfig);
+            return data;
+        });
+    }
+
+    function getModules() {
+        return $.get('/api/modules/map').then(function(data) {
             return data;
         });
     }
@@ -96,7 +103,6 @@
 
     // Decorators that update form input names and interpolates them. Needed for datepicker directives templates dynamic name attributes
     app.config(function($provide) {
-
         $provide.decorator('ngModelDirective', function($delegate) {
             var ngModel = $delegate[0], controller = ngModel.controller;
             ngModel.controller =
@@ -149,8 +155,9 @@
     });
 
     // Inject language resources
-    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel', 'formlyConfig', 'webcert.messages', 'common.MonitoringLogService',
-        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, formlyConfig, wcMessages, MonitoringLogService) {
+    app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.moduleService',
+             'common.UserModel', 'formlyConfig', 'webcert.messages', 'common.MonitoringLogService',
+        function($log, $rootScope, $window, $location, $state, $q, messageService, moduleService, UserModel, formlyConfig, wcMessages, MonitoringLogService) {
 
             // Configure formly to use default hide directive.
             // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
@@ -165,6 +172,7 @@
             UserModel.termsAccepted = user.privatLakareAvtalGodkand;
 
             messageService.addResources(wcMessages);
+            moduleService.setModules(moduleArray);
 
             $rootScope.$on('$stateChangeStart',
                 function(event, toState, toParams/*, fromState, fromParams*/) {
@@ -244,13 +252,12 @@
 
     // We need to have the moduleConfig available before loading modules
     getModuleConfig().then(function(data) {
+
         // Get a list of all modules to find all files to load.
         getUser().then(function(data) {
             user = data;
-            $.get('/api/modules/map').then(function(modules) {
 
-
-                var modulesIds = [];
+            getModules().then(function(modules) {
                 var modulePromises = [];
 
                 if (user.jsMinified) {
@@ -271,7 +278,9 @@
                 }
 
                 angular.forEach(modules, function(module) {
-                    modulesIds.push(module.id);
+                    // Add module to array as is
+                    moduleArray.push(module);
+
                     loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
 
                     if (user.jsMinified) {
@@ -310,7 +319,10 @@
                     $.when.apply(this, dependencyPromises).then(function() {
                         angular.element(document).ready(function() {
 
-                            var allModules = [app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0));
+                            var allModules = ['webcert', 'common'].concat(Array.prototype.slice.call(
+                                Array.prototype.map.call(moduleArray, function(module) {
+                                    return module.id;
+                                }), 0));
 
                             // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
                             if (user.jsLoggning) {
@@ -337,8 +349,6 @@
     });
 
     function loadCssFromUrl(url) {
-
-
         var link = document.createElement('link');
         link.type = 'text/css';
         link.rel = 'stylesheet';
@@ -347,8 +357,6 @@
     }
 
     function loadScriptFromUrl(url) {
-
-
         var result = $.Deferred();
         var script = document.createElement('script');
         script.async = 'async';

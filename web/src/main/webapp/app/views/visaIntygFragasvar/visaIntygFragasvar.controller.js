@@ -23,9 +23,9 @@
 angular.module('webcert').controller('webcert.ViewCertCtrl',
     ['$rootScope', '$state', '$stateParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
         'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
-        'common.featureService',
+        'common.featureService', 'common.moduleService',
         function($rootScope, $state, $stateParams, $scope, $window, $location, $q, dialogService, UtkastProxy,
-            UserPreferencesService, fragaSvarCommonService, featureService) {
+            UserPreferencesService, fragaSvarCommonService, featureService, moduleService) {
             'use strict';
 
             var certificateType = $state.current.data.intygType;
@@ -34,6 +34,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
             }
 
             $scope.widgetState = {
+                certificateName: moduleService.getModuleName(certificateType),
                 certificateType: certificateType,
                 fragaSvarAvailable: false,
                 skipShowUnhandledDialog: false,
