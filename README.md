@@ -10,14 +10,14 @@ Webcert byggs med hjälp av Maven enligt följande:
 $ git clone https://github.com/sklintyg/webcert.git
 
 $ cd webcert
-$ mvn install
+$ ./gradlew clean build install -PcodeQuality
 ```
 
 ### Starta webbapplikationen
 Webbapplikationen kan startas med Jetty enligt följande:
 ```
-$ cd web
-$ mvn jetty:run
+$ cd webcert
+$ ./gradlew appRun
 $ open http://localhost:9088/welcome.jsp
 ```
 
@@ -26,7 +26,7 @@ Detta startar Webcert med stubbar för alla externa tjänster som Webcert använ
 ### Starta specifik version
 Man kan även starta Webcert i ett läge där endast de funktioner som är tillgängliga i en viss version är tillgängliga.
 ```
-$ mvn jetty:run -P v3.0
+$ ./gradlew appRun -Pv3.0
 ```
 
 ### Visa databasen
@@ -48,11 +48,11 @@ JDBC URL : jdbc:h2:tcp://localhost:9092/mem:dataSource
 ```
 
 ### Kör FitNesse
-För att köra FitNesse-testerna måste man starta FitNesse wiki:
+För att köra FitNesse-testerna måste man starta FitNesse wiki samt att Intygstjänsten och Webcert är igång:
 ```
-$ cd ../specifications
-$ mvn verify -Pwiki
-$ open http://localhost:9126/
+$ cd webcert
+$ ./gradlew fitnessWiki
+$ open http://localhost:9126/WebCert.AutomatiseradeTester
 ```
 
 ### Köra flera Webcert-instanser för dev-ändamål
