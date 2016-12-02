@@ -44,7 +44,7 @@
     <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.min.js?<spring:message code="buildNumber" />"></script>
-    <script type="text/javascript" src="/pubapp/login.controller.js"></script>
+    <script type="text/javascript" src="/public/login.controller.js"></script>
   </c:when>
   <c:otherwise>
     <!-- bower:js -->
@@ -62,7 +62,7 @@
     <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
     <!-- endbower -->
-    <script type="text/javascript" src="/pubapp/login.controller.js"></script>
+    <script type="text/javascript" src="/public/login.controller.js"></script>
   </c:otherwise>
 </c:choose>
 
@@ -97,9 +97,9 @@
     </div>
   </div>
   <div class="content-footer">
-    <p>Webcert använder kakor. <a href="#" ng-click="showCookieText = !showCookieText">Läs mer om Kakor (cookies)</a>
+    <p>Webcert använder kakor. <a href="#" ng-click="toggleCookie($event);">Läs mer om Kakor (cookies)</a>
     </p>
-    <div uib-collapse="!showCookieText" class="bluebox">
+    <div uib-collapse="!showCookieText" expanded="afterExpand();" class="bluebox">
       <h4>Om Kakor (cookies)</h4>
       <p>
         Så kallade kakor (cookies) används för att underlätta för besökaren på webbplatsen. En kaka är en textfil som
