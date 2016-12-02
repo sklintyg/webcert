@@ -15,7 +15,7 @@ fitnesse {
 
     extraProperties = [
         "fitnesse.working"   : "src/test/fitnesse",
-        "geb.env"            : System.properties['geb.env'] ?: "chrome",
+        "geb.env"            : System.properties['geb.env'] ?: "firefox",
         "webcert.web.baseUrl": System.properties['web.baseUrl'] ?: "http://localhost:9088/",
         "webcert.baseUrl"    : System.properties['baseUrl'] ?: "http://localhost:9088/",
         "logsender.baseUrl"  : System.properties['logsender.baseUrl'] ?: "http://localhost:9097/log-sender/",
