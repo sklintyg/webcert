@@ -61,6 +61,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 import javax.persistence.OptimisticLockException;
@@ -124,6 +125,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private Utkast utkast;
     private Utkast signedUtkast;
     private HoSPersonal hoSPerson;
+    private Patient defaultPatient;
 
     @Before
     public void setup() {
@@ -132,6 +134,15 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         hoSPerson.setFullstandigtNamn("Dr Dengroth");
         hoSPerson.getBefattningar().add("Befattning");
         hoSPerson.getSpecialiteter().add("Ortoped");
+
+        defaultPatient = new Patient();
+        defaultPatient.setPersonId(new Personnummer("19121212-1212"));
+        defaultPatient.setFornamn("fornamn");
+        defaultPatient.setMellannamn("mellannamn");
+        defaultPatient.setPostadress("pa1");
+        defaultPatient.setPostnummer("0000");
+        defaultPatient.setPostort("ort");
+
 
         se.inera.intyg.common.support.model.common.internal.Vardgivare vardgivare = new se.inera.intyg.common.support.model.common.internal.Vardgivare();
         vardgivare.setVardgivarid("SE234234");
@@ -241,6 +252,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
+        grunddata.setPatient(defaultPatient);
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
@@ -278,6 +290,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
+        grunddata.setPatient(defaultPatient);
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
@@ -323,6 +336,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
+        grunddata.setPatient(defaultPatient);
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(userService.getUser()).thenReturn(user);
@@ -393,7 +407,59 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(utkast).setPatientFornamn("Tolvan");
         verify(utkast).setPatientEfternamn("Tolvansson");
-        verify(utkast, times(0)).setPatientPersonnummer(any(Personnummer.class));
+        verify(utkast).setPatientPersonnummer(any(Personnummer.class));
+    }
+
+    @Test
+    public void testUpdatePatientOnDraft() throws Exception {
+        Patient newPatient = new Patient();
+        newPatient.setEfternamn("updated lastName");
+        newPatient.setMellannamn("updated middle-name");
+        newPatient.setFornamn("updated firstName");
+        newPatient.setFullstandigtNamn("updated full name");
+        newPatient.setPersonId(new Personnummer("01010101-0101"));
+        newPatient.setPostadress("updated postal address");
+        newPatient.setPostnummer("1111111");
+        newPatient.setPostort("updated post city");
+
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient, utkast.getIntygsTyp(), utkast.getIntygsId(), utkast.getVersion());
+
+        WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+
+        Patient oldPatient = new Patient();
+        oldPatient.setPersonId(utkast.getPatientPersonnummer());
+        oldPatient.setFornamn(utkast.getPatientFornamn());
+        oldPatient.setEfternamn(utkast.getPatientEfternamn());
+        oldPatient.setPostadress("old postal address");
+        oldPatient.setPostnummer("000000");
+        oldPatient.setPostort("old post city");
+        oldPatient.setPersonId(utkast.getPatientPersonnummer());
+        oldPatient.setPersonId(utkast.getPatientPersonnummer());
+        grunddata.setPatient(oldPatient);
+        grunddata.setSkapadAv(new HoSPersonal());
+
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+
+        // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
+        utkast = spy(utkast);
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.updateBeforeSave(anyString(),any(Patient.class))).thenReturn("{}");
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(userService.getUser()).thenReturn(user);
+        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+
+        draftService.updatePatientOnDraft(request);
+
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        // Assert notification message
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
+        verify(utkast).setPatientPersonnummer(any(Personnummer.class));
+
     }
 
     @Test

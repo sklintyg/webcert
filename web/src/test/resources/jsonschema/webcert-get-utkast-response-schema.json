@@ -21,6 +21,9 @@
     "content": {
       "type": "object"
     },
+    "latestTextVersion": {
+      "type": "string"
+    },
     "relations": {
       "type": "array",
       "items": {

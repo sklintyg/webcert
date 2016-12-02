@@ -20,12 +20,22 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,16 +43,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.intygstyper.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.intygstyper.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.intygstyper.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.intygstyper.luse.support.LuseEntryPoint;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PatientParameter;
 
 /**
@@ -71,6 +90,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
     private static final String PARAM_REFERENCE = "ref";
 
+    // Which modules should have the auto-update patient on draft behaviour?
+    private static final List<String> AUTO_UPDATE_PATIENT_ON_DRAFT_APPLICABLE_MODULES = Arrays.asList(
+            LuseEntryPoint.MODULE_ID,
+            LisjpEntryPoint.MODULE_ID,
+            LuaenaEntryPoint.MODULE_ID,
+            LuaefsEntryPoint.MODULE_ID);
+
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
     private static final String[] GRANTED_ROLES = new String[] { AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE,
@@ -85,6 +111,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @Autowired
     private MonitoringLogService monitoringLog;
+
+    @Autowired
+    private UtkastService utkastService;
+
     /**
      * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
      * the certificate.
@@ -117,7 +147,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
      *
      * @param intygId
      *            The id of the certificate to view.
-     * @param typ
+     * @param typParam
      *            The type of certificate
      */
     @GET
@@ -170,10 +200,68 @@ public class IntygIntegrationController extends BaseIntegrationController {
             user.setReference(reference);
         }
 
-        PatientParameter patientDetails = new PatientParameter(fornamn, efternamn, mellannamn, postadress, postnummer, postort);
+        if (isUtkast) {
+            // INTYG-3212: Draft patient info should always be up-to-date with the patient info supplied by the integrating journaling system
+            ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer,
+                    postort);
+        }
 
+        PatientParameter patientDetails = new PatientParameter(fornamn, efternamn, mellannamn, postadress, postnummer, postort);
         LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, intygsTyp, coherentJournaling);
         return buildRedirectResponse(uriInfo, intygsTyp, intygId, alternatePatientSSn, responsibleHospName, patientDetails, isUtkast, coherentJournaling);
+    }
+
+    /**
+     * Updates Patient section of a draft with updated patient details for selected types.
+     *
+     *
+     * @param intygsType
+     * @param intygsId
+     * @param draftVersion
+     * @param alternatePatientSSn
+     * @param fornamn
+     * @param mellannamn
+     * @param efternamn
+     * @param postadress
+     * @param postnummer
+     * @param postort
+     */
+    private void ensureDraftPatientInfoUpdated(String intygsType, String intygsId, long draftVersion, String alternatePatientSSn, String fornamn,
+            String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
+
+        // Should we apply this behaviour for this type of draft?
+        if (!AUTO_UPDATE_PATIENT_ON_DRAFT_APPLICABLE_MODULES.contains(intygsType)) {
+            LOG.debug("Draft of type {} draft is not enabled for auto-update of patient details", intygsType);
+            return;
+        }
+
+        // To be allowed to update utkast, we need to have the same authority as when saving a draft..
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsType)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .orThrow();
+
+        // 1. Create patient info based on what the journal system supplied
+        Patient patient = new Patient();
+        patient.setPersonId(new Personnummer(alternatePatientSSn));
+        patient.setFornamn(fornamn);
+        patient.setMellannamn(mellannamn);
+        patient.setEfternamn(efternamn);
+
+        if (StringUtils.isBlank(patient.getMellannamn())) {
+            patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getEfternamn());
+        } else {
+            patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn());
+        }
+
+        patient.setPostadress(postadress);
+        patient.setPostnummer(postnummer);
+        patient.setPostort(postort);
+
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(patient, intygsType, intygsId, draftVersion);
+
+        utkastService.updatePatientOnDraft(request);
+
     }
 
     private void verifyQueryStrings(String fornamn, String efternamn, String postadress, String postnummer, String postort) {

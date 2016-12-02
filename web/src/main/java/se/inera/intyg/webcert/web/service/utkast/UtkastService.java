@@ -26,6 +26,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ public interface UtkastService {
     Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified);
 
     SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent);
+
+    void updatePatientOnDraft(UpdatePatientOnDraftRequest request);
 
     DraftValidation validateDraft(String intygId, String intygType, String draft);
 
