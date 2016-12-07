@@ -101,8 +101,8 @@ sonarqube {
         property "sonar.projectKey", "webcert"
         property "sonar.host.url", System.properties['sonarUrl'] ?: "https://build-inera.nordicmedtest.se/sonar"
         property "sonar.test.exclusions", "src/test/**"
-        property "sonar.exclusions", ["**/stub/**", "**/exception/**", "**/*Exception*.java", "**/*Fake*.java",
-                                      "**/templates.js", "**/vendor/**", "**/swagger-ui/**"]
+        property "sonar.exclusions", ["**/*stub/**", "**/exception/**", "**/*Exception*.java", "**/*Fake*.java",
+                                      "**/*testability/**", "**/templates.js", "**/vendor/**", "**/swagger-ui/**"]
         property "sonar.javascript.lcov.reportPath", "build/karma/lcov.info"
     }
 }
