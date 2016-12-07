@@ -164,10 +164,10 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         switch (codeSystem) {
         case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
+            matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults);
             break;
         case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
+            matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults);
             break;
         default:
             LOG.warn("Unknown code system '{}'", codeSystem);
@@ -211,10 +211,10 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         switch (codeSystem) {
         case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
+            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults);
             break;
         case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
+            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults);
             break;
         default:
             LOG.warn("Unknown code system '{}'", codeSystem);
