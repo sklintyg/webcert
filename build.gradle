@@ -7,7 +7,7 @@ ext {
     insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
-    rivtaClinicalprocessSchemasVersion = "2.0.RC6.2"
+    rivtaClinicalprocessSchemasVersion = "2.0"
     rivtaInsuranceprocessSchemasVersion = "3.1.0.4"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
     rivtaItintegrationSchemasVersion = "1.0.0.4"
