@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         initModuleFeatures(featuresMap);
         processWebcertAndModuleFeatureProperties(features, featuresMap);
 
-        LOG.info("Active Webcert features is: {}", StringUtils.join(getActiveFeatures(), COMMA_SEP));
+        LOG.info("Active Webcert features is: {}", Joiner.on(COMMA_SEP).join(getActiveFeatures()));
     }
 
     /**
@@ -125,7 +125,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
                 moduleFeatureName = moduleFeature.getName();
                 moduleName = moduleId.toLowerCase();
                 moduleFeatureState = (moduleMap.get(moduleFeatureName) != null) ? moduleMap.get(moduleFeatureName) : Boolean.FALSE;
-                key = StringUtils.join(new String[] { moduleFeatureName, moduleName }, DOT_SEP);
+                key = Joiner.on(DOT_SEP).join(moduleFeatureName, moduleName);
                 featuresMap.put(key, moduleFeatureState);
             }
         }
@@ -186,7 +186,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     @Override
     public boolean isModuleFeatureActive(String moduleFeatureName, String moduleName) {
         if (isFeatureActive(moduleFeatureName)) {
-            String key = StringUtils.join(new String[] { moduleFeatureName, moduleName.toLowerCase() }, DOT_SEP);
+            String key = Joiner.on(DOT_SEP).join(moduleFeatureName, moduleName.toLowerCase());
             Boolean moduleFeatureState = featuresMap.get(key);
             return moduleFeatureState != null && moduleFeatureState;
         }

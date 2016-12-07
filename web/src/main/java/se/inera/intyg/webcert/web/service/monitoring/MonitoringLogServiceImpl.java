@@ -23,6 +23,7 @@ import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTER
 
 import java.util.List;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +82,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             List<String> frageIds) {
         if (KOMPLETTERING_AV_LAKARINTYG == amne) {
             logEvent(MonitoringEvent.QUESTION_RECEIVED_COMPLETION, fragestallare, externReferens, internReferens, intygsId, enhet,
-                    StringUtils.join(frageIds, ","));
+                    Joiner.on(",").join(frageIds));
         } else {
             logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, amne != null ? amne.name() : "NO AMNE");
         }

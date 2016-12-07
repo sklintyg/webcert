@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.integration;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Joiner;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
         // Validate incoming request
         List<String> validationMessages = QuestionAnswerValidator.validate(request);
         if (!validationMessages.isEmpty()) {
-            response.setResult(ResultOfCallUtil.failResult(StringUtils.join(validationMessages, ",")));
+            response.setResult(ResultOfCallUtil.failResult(Joiner.on(",").join(validationMessages)));
             return response;
         }
 

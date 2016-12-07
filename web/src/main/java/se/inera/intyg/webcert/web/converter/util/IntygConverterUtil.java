@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
@@ -58,7 +59,7 @@ public final class IntygConverterUtil {
     }
 
     public static String concatPatientName(List<String> fNames, List<String> mNames, String lName) {
-        return concatPatientName(StringUtils.join(fNames, " "), StringUtils.join(mNames, " "), lName);
+        return concatPatientName(Joiner.on(" ").join(fNames), Joiner.on(" ").join(mNames), lName);
     }
 
     public static String concatPatientName(String fName, String mName, String lName) {
@@ -78,7 +79,7 @@ public final class IntygConverterUtil {
     }
 
     public static String buildVardReferensId(String intygId, LocalDateTime ts) {
-        return StringUtils.join(new Object[] { "SEND", intygId, ts.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS")) }, "-");
+        return Joiner.on("-").join("SEND", intygId, ts.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS")));
     }
 
     /**

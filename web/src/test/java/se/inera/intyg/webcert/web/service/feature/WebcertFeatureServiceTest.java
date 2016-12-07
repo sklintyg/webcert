@@ -28,6 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,7 +114,7 @@ public class WebcertFeatureServiceTest {
     }
 
     private String makeModuleName(ModuleFeature moduleFeature, String moduleName) {
-        return StringUtils.join(new String[] { moduleFeature.getName(), moduleName }, ".");
+        return Joiner.on(".").join(Arrays.asList(moduleFeature.getName(), moduleName));
     }
 
     @Test

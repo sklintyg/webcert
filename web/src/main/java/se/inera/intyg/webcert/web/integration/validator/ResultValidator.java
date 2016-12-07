@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.integration.validator;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Joiner;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class ResultValidator {
     }
 
     public String getErrorMessagesAsString() {
-        return StringUtils.join(errors, ", ");
+        return Joiner.on(", ").join(errors);
     }
 
     public boolean hasErrors() {

@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.integration.builder;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Joiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -109,6 +109,6 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     }
 
     private static String joinNames(List<String> names) {
-        return StringUtils.join(names, SPACE);
+        return Joiner.on(SPACE).join(names);
     }
 }

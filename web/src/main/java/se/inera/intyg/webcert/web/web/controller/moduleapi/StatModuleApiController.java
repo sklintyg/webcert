@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import com.google.common.base.Joiner;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -191,7 +192,7 @@ public class StatModuleApiController extends AbstractApiController {
         VardenhetStats moStats;
 
         for (Mottagning mo : mottagningar) {
-            String moNamn = StringUtils.join(new Object[] { vardenhet.getNamn(), mo.getNamn() }, SEPARATOR);
+            String moNamn = Joiner.on(SEPARATOR).join(vardenhet.getNamn(), mo.getNamn());
             moStats = new VardenhetStats(moNamn, mo.getId());
             moStats.setOhanteradeFragaSvar(getSafeStatValueFromMap(mo.getId(), fragaSvarStats));
             moStats.setOsigneradeIntyg(getSafeStatValueFromMap(mo.getId(), intygStats));
