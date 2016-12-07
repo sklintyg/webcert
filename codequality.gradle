@@ -53,7 +53,7 @@ subprojects {
         compileJava {
             toolChain net.ltgt.gradle.errorprone.ErrorProneToolChain.create(project)
             options.compilerArgs += [ '-Xep:TypeParameterUnusedInFormals:ERROR', '-Xep:MissingOverride:ERROR', '-Xep:DefaultCharset:ERROR',
-                                      '-Xep:ClassCanBeStatic:ERROR', '-Xep:Finally:ERROR' ]
+                                      '-Xep:ClassCanBeStatic:ERROR', '-Xep:Finally:ERROR', '-Xep:ImmutableEnumChecker:ERROR' ]
         }
     }
 

@@ -35,14 +35,15 @@ public enum WebcertFeature implements Feature {
     JS_MINIFIED("jsMinified", "webcert.useMinifiedJavaScript");
 
     private final String name;
-    private String envName;
+    private final String envName;
 
     WebcertFeature(String name) {
         this.name = name;
+        this.envName = null;
     }
 
     WebcertFeature(String name, String envName) {
-        this(name);
+        this.name = name;
         this.envName = envName;
     }
 
