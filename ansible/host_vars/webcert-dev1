@@ -6,13 +6,3 @@ environment_name: "dev"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 deploy_from_repo: false
-
-# Tomcat installatio
-tomcat_service: "{{ inventory_hostname }}-tomcat"
-
-tomcat_conf: "{{ inera_root }}/{{ tomcat_service }}/conf"
-tomcat_bin: "{{ inera_root }}/{{ tomcat_service }}/bin"
-tomcat_lib: "{{ inera_root }}/{{ tomcat_service }}/lib"
-
-inera_tomcat_folder: "/var/lib/{{ tomcat_service }}"
-webapps_folder: "{{ inera_tomcat_folder }}/webapps"
