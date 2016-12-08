@@ -35,4 +35,3 @@
 - name: Download javax.servlet.jsp.jstl-1.2.1.jar
   get_url: url=http://repo1.maven.org/maven2/org/glassfish/web/javax.servlet.jsp.jstl/1.2.1/javax.servlet.jsp.jstl-1.2.1.jar
            dest={{ tomcat_lib }}/javax.servlet.jsp.jstl-1.2.1.jar
-    

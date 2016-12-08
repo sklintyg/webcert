@@ -1,7 +1,7 @@
 ---
 # This playbook provisions Tomcat resources for WebCert
 
-- hosts: webcert-tomcat
+- hosts: tomcat
   serial: 1
   become: yes
 

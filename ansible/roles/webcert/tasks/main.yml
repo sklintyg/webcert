@@ -39,11 +39,11 @@
   copy: src={{ inventory_dir }}/../web/build/libs/webcert-web-{{ version }}.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
   when: not deploy_from_repo|bool
 
-- name: Remove old version of unpacked ROOT war
+- name: Remove old version of unpacked war
   file: state=absent
       path={{ webapps_folder }}/ROOT
 
-- name: Remove old version of ROOT war
+- name: Remove old version of war
   file: state=absent
       path={{ webapps_folder }}/ROOT.war
 
@@ -69,9 +69,6 @@
 
 - name: Deploy log-sender-{{ version }}.war as log-sender.war
   command: cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war
-
-- name: Create version file
-  template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
 - name: Fetch configuration repo to get new branches
   command: chdir={{ config_folder }} git fetch origin
