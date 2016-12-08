@@ -152,7 +152,8 @@ public class DiagnosServiceImpl implements DiagnosService {
     @Override
     public DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystemStr, int nbrOfResults) {
 
-        Assert.isTrue(nbrOfResults > 0, "nbrOfResults must be larger that 0");
+        // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as possible
+        Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
 
         Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
 
@@ -164,10 +165,10 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         switch (codeSystem) {
         case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults);
+            matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
             break;
         case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults);
+            matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
             break;
         default:
             LOG.warn("Unknown code system '{}'", codeSystem);
@@ -195,7 +196,8 @@ public class DiagnosServiceImpl implements DiagnosService {
     @Override
     public DiagnosResponse searchDiagnosisByDescription(String searchString, String codeSystemStr, int nbrOfResults) {
 
-        Assert.isTrue(nbrOfResults > 0, "nbrOfResults must be larger that 0");
+        // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as possible
+        Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
 
         if (StringUtils.isBlank(searchString)) {
             return DiagnosResponse.invalidSearchString();
@@ -211,10 +213,10 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         switch (codeSystem) {
         case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults);
+            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
             break;
         case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults);
+            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
             break;
         default:
             LOG.warn("Unknown code system '{}'", codeSystem);

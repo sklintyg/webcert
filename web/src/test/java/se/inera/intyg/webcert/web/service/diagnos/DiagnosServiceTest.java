@@ -71,7 +71,7 @@ public class DiagnosServiceTest {
     @Test
     public void testGetDiagnosisByCodeOrdinaryValue() {
         // Given
-        int greaterThanZero = Integer.MAX_VALUE;
+        int greaterThanZero = Integer.MAX_VALUE - 1;
         String code = "A04";
 
         // When
@@ -99,7 +99,7 @@ public class DiagnosServiceTest {
 
         // When
         DiagnosResponse result = service.searchDiagnosisByCode(code, ICD_10, arbitraryChosenUpperBound);
-        DiagnosResponse nonLimitedResults = service.searchDiagnosisByCode(code, ICD_10, Integer.MAX_VALUE);
+        DiagnosResponse nonLimitedResults = service.searchDiagnosisByCode(code, ICD_10, Integer.MAX_VALUE - 1);
 
         // Then
         assertThat(result, allOf(
@@ -146,7 +146,7 @@ public class DiagnosServiceTest {
     public void testSearchDiagnosisByDescriptionWithOrdinaryValue() {
         // Given
         String searchTerm = "infekt";
-        int greaterThanZero = Integer.MAX_VALUE;
+        int greaterThanZero = Integer.MAX_VALUE - 1;
 
         // When
         DiagnosResponse result = service.searchDiagnosisByDescription(searchTerm, ICD_10, greaterThanZero);
@@ -176,7 +176,7 @@ public class DiagnosServiceTest {
 
         // When
         DiagnosResponse result = service.searchDiagnosisByDescription(searchTerm, ICD_10, arbitraryChosenUpperBound);
-        DiagnosResponse nonLimitedResults = service.searchDiagnosisByDescription(searchTerm, ICD_10, Integer.MAX_VALUE);
+        DiagnosResponse nonLimitedResults = service.searchDiagnosisByDescription(searchTerm, ICD_10, Integer.MAX_VALUE - 1);
 
         // Then
         assertThat(result, allOf(
@@ -191,4 +191,13 @@ public class DiagnosServiceTest {
                                                 hasProperty("diagnoser", hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testSearchDiagnosisByDescriptionThrowsExceptionForIntegerMaxValue() {
+        service.searchDiagnosisByDescription(null, null, Integer.MAX_VALUE);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSearchDiagnosisByCodeThrowsExceptionForIntegerMaxValue() {
+        service.searchDiagnosisByCode(null, null, Integer.MAX_VALUE);
+    }
 }
