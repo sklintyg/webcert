@@ -106,8 +106,8 @@ var LisuUtkast = BaseSmiUtkast._extend({
             // }
             prognos: {
                 form: element(by.id('form_prognos')),
-                inom: element(by.id('prognosDagarTillArbete-3-typ')),
-                select: element(by.css('#prognosDagarTillArbete-3-typ > div.ui-select-match > span'))
+                inom: element(by.id('prognosDagarTillArbete-1-typ')),
+                select: element(by.css('#prognosDagarTillArbete-1-typ > div.ui-select-match > span'))
             }
         };
         this.atgarder = {

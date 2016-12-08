@@ -83,6 +83,21 @@ module.exports = function() {
         return gotoIntyg(intygstyp, origin);
     });
 
+    function intygURL(typAvIntyg) {
+        if (typAvIntyg === 'Läkarutlåtande för sjukersättning') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
+        } else if (typAvIntyg === 'Läkarintyg för sjukpenning') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + global.intyg.id;
+        } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + global.intyg.id;
+        } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + global.intyg.id;
+        } else {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
+
+        }
+    }
+
     function gotoIntyg(intygstyp, origin, addToUrl) {
         var url;
         var isSMIIntyg;
@@ -109,12 +124,13 @@ module.exports = function() {
             url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';
 
         } else if (intygstyp === 'intyget' && origin === undefined) {
-            if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
+            url = intygURL(intyg.typ);
+            /*if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
             } else {
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
 
-            }
+            }*/
         } else {
             logger.error('Okänd parameter origin: ' + origin + ', intygstyp: ' + intygstyp);
         }
@@ -167,5 +183,17 @@ module.exports = function() {
 
     this.Given(/^går till den sparade länken$/, function() {
         return browser.get(savedLink);
+    });
+
+    this.Given(/^jag verifierar att URL:en är samma som den sparade länken$/, function() {
+        return browser.getCurrentUrl().then(function(currentUrl) {
+            expect(currentUrl).to.equal(savedLink);
+            logger.info('Sida som verifieras: ' + currentUrl);
+
+        });
+    });
+
+    this.Given(/^jag trycker på knappen med texten "([^"]*)"$/, function(BtnText) {
+        return element(by.cssContainingText('.btn', BtnText)).sendKeys(protractor.Key.SPACE);
     });
 };
