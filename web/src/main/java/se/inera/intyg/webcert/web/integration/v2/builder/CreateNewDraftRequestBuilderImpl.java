@@ -24,12 +24,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.common.integration.hsa.util.HsaAttributeExtractor;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.converter.TransportConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.integration.hsa.util.HsaAttributeExtractor;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
 import se.riv.infrastructure.directory.v1.CommissionType;
@@ -51,17 +53,9 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     @Override
     public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, CommissionType miuOnUnit) {
-        CreateNewDraftRequest utkastsRequest = new CreateNewDraftRequest();
-
-        utkastsRequest.setIntygType(moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()));
-
-        Patient patient = TransportConverterUtil.getPatient(intyg.getPatient());
-        utkastsRequest.setPatient(patient);
-
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(), createVardenhetFromMIU(miuOnUnit));
         enrichHoSPerson(hosPerson);
-        utkastsRequest.setHosPerson(hosPerson);
-        return utkastsRequest;
+        return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), null, hosPerson, TransportConverterUtil.getPatient(intyg.getPatient()));
     }
 
     private HoSPersonal createHoSPerson(se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal hoSPersonType,
@@ -84,7 +78,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private Vardenhet createVardenhetFromMIU(CommissionType miu) {
 
-        se.inera.intyg.common.integration.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getHealthCareUnitHsaId());
+        se.inera.intyg.infra.integration.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getHealthCareUnitHsaId());
 
         Vardenhet vardenhet = new Vardenhet();
         vardenhet.setEnhetsnamn(hsaVardenhet.getNamn());

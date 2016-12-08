@@ -195,7 +195,7 @@ public class RouteTest {
         sendProcessor.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                throw new PermanentException();
+                throw new PermanentException("");
             }
         });
 
@@ -224,7 +224,7 @@ public class RouteTest {
         revokeProcessor.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                throw new TemporaryException();
+                throw new TemporaryException("");
             }
         });
 

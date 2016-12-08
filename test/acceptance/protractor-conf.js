@@ -108,11 +108,37 @@ exports.config = {
 
         // Kontrollera externa länkar på sidan som samlats ihop under scenario.
         if (global.externalPageLinks.length > 0) {
-            fs.appendFile(browser.params.externalLinksFile, global.externalPageLinks.join(',') + ',', function(err) {
+            var linksArr = [];
+
+            fs.readFile(browser.params.externalLinksFile, function(err, data) {
+                if (err) {
+                    if (err.code === 'ENOENT') {
+                        console.error(browser.params.externalLinksFile + ' finns inte');
+                        return;
+                    } else {
+                        throw err;
+                    }
+                } else {
+                    linksArr = data.split(',');
+
+                    global.externalPageLinks.forEach(function(item) {
+                        if (item.indexOf() === -1) {
+                            linksArr.push(item);
+                        }
+                    });
+                }
+            });
+
+            if (linksArr.length === 0) {
+                linksArr = global.externalPageLinks;
+            }
+
+            fs.writeFile(browser.params.externalLinksFile, linksArr.join(',') + ',', function(err) {
                 if (err) {
                     throw err;
                 }
             });
+
         }
     }
 };

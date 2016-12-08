@@ -19,21 +19,17 @@
 
 package se.inera.intyg.webcert.integration.fmb.stub;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getfmbresponder.v1.GetFmbResponderInterface;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getfmbresponder.v1.GetFmbResponseType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getfmbresponder.v1.GetFmbType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.BeslutsunderlagType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.HuvuddiagnosType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.ICD10SEType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionType;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getfmbresponder.v1.*;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.*;
 
 public class GetFmbStub implements GetFmbResponderInterface {
 
@@ -54,7 +50,7 @@ public class GetFmbStub implements GetFmbResponderInterface {
             addHardcodedInfo(value);
             return value;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error: {}", e);
         }
 
         final GetFmbResponseType fmbResponse = new GetFmbResponseType();

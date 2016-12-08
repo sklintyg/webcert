@@ -29,9 +29,6 @@ public class SaveAndValidateDraftRequest {
 
     private Boolean autoSave;
 
-    public SaveAndValidateDraftRequest() {
-    }
-
     public String getIntygId() {
         return intygId;
     }

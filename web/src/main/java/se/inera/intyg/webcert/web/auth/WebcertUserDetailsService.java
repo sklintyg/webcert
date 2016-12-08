@@ -22,10 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.IntygUser;
-import se.inera.intyg.common.security.common.model.UserOriginType;
-import se.inera.intyg.common.security.siths.BaseUserDetailsService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.siths.BaseUserDetailsService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -69,6 +69,17 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
         return AuthoritiesConstants.ROLE_ADMIN;
     }
 
+    /**
+     * Webcert overrides the default (i.e. fallback) behaviour from the base class which specifies a pre-selected
+     * Vårdenhet during the
+     * authorization process:
+     *
+     * For users with origin {@link UserOriginType#NORMAL} users will be redirected to the Vårdenhet selection page if
+     * they have more than one (1) possible vårdenhet they have the requisite medarbetaruppdrag to select. (INTYG-3211)
+     *
+     * @param intygUser
+     *            User principal.
+     */
     @Override
     protected void decorateIntygUserWithDefaultVardenhet(IntygUser intygUser) {
         // This override should only apply to NORMAL origin logins. Other types of origins gets default behaviour.
@@ -84,5 +95,4 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
             super.decorateIntygUserWithDefaultVardenhet(intygUser);
         }
     }
-
 }

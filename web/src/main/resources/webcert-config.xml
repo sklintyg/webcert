@@ -82,12 +82,12 @@
     </bean>
 
     <!-- Read authorites configuration to setup user roles and privileges -->
-    <bean id="authoritiesConfigurationLoader" class="se.inera.intyg.common.security.authorities.bootstrap.AuthoritiesConfigurationLoader">
+    <bean id="authoritiesConfigurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.AuthoritiesConfigurationLoader">
       <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />
     </bean>
 
-    <bean id="commonAuthoritiesResolver" class="se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver" />
-    <bean id="authoritiesHelper" class="se.inera.intyg.common.security.authorities.AuthoritiesHelper" />
+    <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
+    <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
   </beans>
 
   <beans profile="dev,wc-init-data">

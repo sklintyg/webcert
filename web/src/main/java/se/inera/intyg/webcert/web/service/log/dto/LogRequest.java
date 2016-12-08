@@ -19,7 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.log.dto;
 
-import se.inera.intyg.common.support.common.util.StringUtil;
+import com.google.common.base.Joiner;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 public class LogRequest {
@@ -43,7 +44,7 @@ public class LogRequest {
     }
 
     public void setPatientName(String fornamn, String mellannamn, String efternamn) {
-        setPatientName(StringUtil.join(" ", fornamn, mellannamn, efternamn));
+        setPatientName(Joiner.on(" ").skipNulls().join(fornamn, mellannamn, efternamn));
     }
 
     public String getIntygId() {

@@ -20,8 +20,8 @@
 package se.inera.intyg.webcert.specifications.spec.api
 
 import java.time.LocalDateTime
-import se.inera.intyg.common.logmessages.Enhet
-import se.inera.intyg.common.logmessages.Patient
+import se.inera.intyg.infra.logmessages.Enhet
+import se.inera.intyg.infra.logmessages.Patient
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper
 import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 import se.inera.intyg.webcert.web.service.log.template.*

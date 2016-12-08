@@ -36,14 +36,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.common.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.common.security.common.model.*;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
@@ -96,7 +98,7 @@ public class SignaturServiceImpl implements SignaturService {
     @Override
     public SignaturTicket ticketStatus(String ticketId) {
         SignaturTicket ticket = ticketTracker.getTicket(ticketId);
-        if ((ticket != null) && ticket.getId().equals(ticketId)) {
+        if (ticket != null && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
             return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, 0, null, null, LocalDateTime.now());
@@ -158,7 +160,7 @@ public class SignaturServiceImpl implements SignaturService {
     private void validateSigningIdentity(WebCertUser user, String rawSignatur) {
 
         // Privatläkare som loggat in med NET_ID-klient måste signera med NetID med samma identitet som i sessionen.
-        if (user.isPrivatLakare() && (user.getAuthenticationMethod() == AuthenticationMethod.NET_ID)) {
+        if (user.isPrivatLakare() && user.getAuthenticationMethod() == AuthenticationMethod.NET_ID) {
             String signaturPersonId = asn1Util.parsePersonId(IOUtils.toInputStream(rawSignatur));
 
             if (verifyPersonIdEqual(user, signaturPersonId)) {

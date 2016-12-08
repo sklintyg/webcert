@@ -19,9 +19,9 @@
 
 package se.inera.intyg.webcert.intygstjanststub;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
 
@@ -55,11 +55,7 @@ public class RevokeMedicalCertificateResponderStub implements RevokeMedicalCerti
         }
 
         if (!isRevoked(certResponseType.getCertificateStates())) {
-            CertificateStateHolder revokedStatus = new CertificateStateHolder();
-            revokedStatus.setTimestamp(LocalDateTime.now());
-            revokedStatus.setState(CertificateState.CANCELLED);
-            revokedStatus.setTarget(attributedURIType.getValue());
-            intygStore.addStatus(certResponseType.getId(), revokedStatus);
+            intygStore.addStatus(certResponseType.getId(), new CertificateStateHolder(attributedURIType.getValue(), CertificateState.CANCELLED, LocalDateTime.now()));
         }
 
         resultOfCall.setResultCode(ResultCodeEnum.OK);

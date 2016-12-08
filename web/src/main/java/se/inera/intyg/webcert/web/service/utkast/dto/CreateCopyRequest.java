@@ -46,7 +46,7 @@ public abstract class CreateCopyRequest {
     }
 
     public CreateCopyRequest() {
-
+        // Needed for deserialization
     }
 
     public boolean containsNyttPatientPersonnummer() {

@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -317,7 +318,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         if (nameParts.length == 1) {
             res[0] = nameParts[0];
         } else {
-            res[0] = StringUtils.join(ArrayUtils.subarray(nameParts, 0, nameParts.length - 1), SPACE);
+            res[0] = Joiner.on(SPACE).join(ArrayUtils.subarray(nameParts, 0, nameParts.length - 1));
             res[1] = nameParts[nameParts.length - 1];
         }
 
@@ -336,7 +337,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
         ValidationStatus validationStatus = validationResponse.getStatus();
 
-        return (ValidationStatus.VALID.equals(validationStatus)) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
+        return ValidationStatus.VALID.equals(validationStatus) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
     }
 
 }

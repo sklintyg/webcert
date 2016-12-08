@@ -19,14 +19,23 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
-import org.apache.commons.lang.StringUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.OptimisticLockException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -37,10 +46,13 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -63,17 +75,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -338,7 +342,7 @@ public class UtkastServiceImpl implements UtkastService {
         // Is draft valid?
         DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
 
-        UtkastStatus utkastStatus = (draftValidation.isDraftValid()) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
+        UtkastStatus utkastStatus = draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
         utkast.setStatus(utkastStatus);
 
         // Save the updated draft
@@ -367,6 +371,56 @@ public class UtkastServiceImpl implements UtkastService {
         utkastRepository.flush();
 
         return new SaveAndValidateDraftResponse(utkast.getVersion(), draftValidation);
+    }
+
+    @Override
+    public void updatePatientOnDraft(UpdatePatientOnDraftRequest request) {
+        // diff draftPatient and request patient: if no changes, do nothing
+        String draftId = request.getDraftId();
+
+        LOG.debug("Checking that Patient is up-to-date on Utkast '{}'", draftId);
+
+        Utkast utkast = utkastRepository.findOne(draftId);
+
+        if (utkast == null) {
+            LOG.warn("Utkast '{}' was not found", draftId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
+        }
+
+        // check that the draft hasn't been modified concurrently
+        if (utkast.getVersion() != request.getVersion()) {
+            LOG.debug("Utkast '{}' was concurrently modified", draftId);
+            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
+        }
+
+        // check that the draft is still a draft
+        if (!isTheDraftStillADraft(utkast.getStatus())) {
+            LOG.error("Utkast '{}' can not be updated since it is no longer in draft mode", draftId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "This utkast can not be updated since it is no longer in draft mode");
+        }
+
+        final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp());
+
+        Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
+        Patient newPatient = createNewMergedPatient(draftPatient, request.getNewPatientDetails());
+
+        if (!draftPatient.equals(newPatient)) {
+            LOG.debug("Updated patient detected - about to update draft {}", draftId);
+            try {
+                String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), newPatient);
+                updateUtkastModel(utkast, updatedModel);
+                saveDraft(utkast);
+                sendNotification(utkast, Event.CHANGED);
+            } catch (ModuleException e) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+                        "Patient details on Utkast " + draftId + " could not be updated", e);
+            }
+
+        } else {
+            LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
+        }
+
     }
 
     @Override
@@ -416,6 +470,88 @@ public class UtkastServiceImpl implements UtkastService {
             LOG.debug("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsHsaId);
+        }
+    }
+    private Patient createNewMergedPatient(Patient draftPatient, Patient newPatientDetails) {
+        Patient mergedPatient = new Patient();
+
+        //Only accept valid personnr or samordningsnummer as new personId
+        if (newPatientDetails.getPersonId() != null && (Personnummer.createValidatedPersonnummerWithDash(newPatientDetails.getPersonId()).isPresent()
+                || newPatientDetails.getPersonId().isSamordningsNummer())) {
+            mergedPatient.setPersonId(newPatientDetails.getPersonId());
+        } else {
+            mergedPatient.setPersonId(draftPatient.getPersonId());
+        }
+
+        if (StringUtils.isNotBlank(newPatientDetails.getFornamn())) {
+            mergedPatient.setFornamn(newPatientDetails.getFornamn());
+        } else {
+            mergedPatient.setFornamn(draftPatient.getFornamn());
+        }
+
+        // Name
+        if (StringUtils.isNotBlank(newPatientDetails.getMellannamn())) {
+            mergedPatient.setMellannamn(newPatientDetails.getMellannamn());
+        } else {
+            mergedPatient.setMellannamn(draftPatient.getMellannamn());
+        }
+
+        if (StringUtils.isNotBlank(newPatientDetails.getEfternamn())) {
+            mergedPatient.setEfternamn(newPatientDetails.getEfternamn());
+        } else {
+            mergedPatient.setEfternamn(draftPatient.getEfternamn());
+        }
+
+        if (StringUtils.isNotBlank(newPatientDetails.getFullstandigtNamn())) {
+            mergedPatient.setFullstandigtNamn(newPatientDetails.getFullstandigtNamn());
+        } else {
+            mergedPatient.setMellannamn(draftPatient.getFullstandigtNamn());
+        }
+
+        // Address
+        if (StringUtils.isNotBlank(newPatientDetails.getPostadress())) {
+            mergedPatient.setPostadress(newPatientDetails.getPostadress());
+        } else {
+            mergedPatient.setPostadress(draftPatient.getPostadress());
+        }
+        if (StringUtils.isNotBlank(newPatientDetails.getPostnummer())) {
+            mergedPatient.setPostnummer(newPatientDetails.getPostnummer());
+        } else {
+            mergedPatient.setPostnummer(draftPatient.getPostnummer());
+        }
+        if (StringUtils.isNotBlank(newPatientDetails.getPostort())) {
+            mergedPatient.setPostort(newPatientDetails.getPostort());
+        } else {
+            mergedPatient.setPostort(draftPatient.getPostort());
+        }
+
+        return mergedPatient;
+    }
+
+
+    private ModuleApi getModuleApi(String intygsTyp) {
+        try {
+            return moduleRegistry.getModuleApi(intygsTyp);
+
+        } catch (ModuleNotFoundException e) {
+            if (e.getCause() != null && e.getCause().getCause() != null) {
+                // This error message is helpful when debugging save problems.
+                LOG.debug(e.getCause().getCause().getMessage());
+            }
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not get module for type " + intygsTyp, e);
+        }
+    }
+
+    private Patient getPatientFromCurrentDraft(ModuleApi moduleApi, String draftModel) {
+        try {
+            return moduleApi.getUtlatandeFromJson(draftModel).getGrundData().getPatient();
+
+        } catch (IOException e) {
+            if (e.getCause() != null && e.getCause().getCause() != null) {
+                // This error message is helpful when debugging save problems.
+                LOG.debug(e.getCause().getCause().getMessage());
+            }
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not get Patient from draft", e);
         }
     }
 
@@ -485,7 +621,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private int getSafeLength(String str) {
-        return (StringUtils.isNotBlank(str)) ? str.length() : 0;
+        return StringUtils.isNotBlank(str) ? str.length() : 0;
     }
 
     private boolean isTheDraftStillADraft(UtkastStatus utkastStatus) {
@@ -591,6 +727,7 @@ public class UtkastServiceImpl implements UtkastService {
             Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
             HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
+            utkast.setPatientPersonnummer(grundData.getPatient().getPersonId());
             String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
             utkast.setModel(updatedInternal);
 

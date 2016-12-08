@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.privatlakaravtal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
@@ -31,9 +32,11 @@ import static org.mockito.Mockito.when;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
@@ -92,7 +95,7 @@ public class AvtalServiceTest {
         when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
         avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
         verify(godkantAvtalRepository, times(1)).approveAvtal(anyString(), anyInt());
-        verify(monitoringLogService, times(1)).logPrivatePractitionerTermsApproved(anyString(), anyString(), anyInt());
+        verify(monitoringLogService, times(1)).logPrivatePractitionerTermsApproved(anyString(), any(Personnummer.class), anyInt());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -102,7 +105,7 @@ public class AvtalServiceTest {
             avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
         } catch (Exception e) {
             verify(godkantAvtalRepository, times(0)).approveAvtal(anyString(), anyInt());
-            verify(monitoringLogService, times(0)).logPrivatePractitionerTermsApproved(anyString(), anyString(), anyInt());
+            verify(monitoringLogService, times(0)).logPrivatePractitionerTermsApproved(anyString(), any(Personnummer.class), anyInt());
             throw e;
         }
     }

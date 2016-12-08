@@ -25,10 +25,6 @@ public class ChangeSelectedUnitRequest {
 
     private String namn;
 
-    public ChangeSelectedUnitRequest() {
-
-    }
-
     public String getId() {
         return id;
     }

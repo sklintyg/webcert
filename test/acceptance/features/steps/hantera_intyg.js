@@ -41,6 +41,13 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^ska det inte finnas någon knapp för "([^"]*)"$/, function(texten) {
+        return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
+    });
+
+
+
+
     this.Given(/^jag makulerar intyget$/, function(callback) {
 
         browser.getCurrentUrl().then(function(text) {

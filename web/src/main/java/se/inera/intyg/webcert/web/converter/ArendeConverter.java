@@ -27,7 +27,7 @@ import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.lang.StringUtils;
 
-import se.inera.intyg.common.integration.hsa.services.HsaEmployeeService;
+import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;

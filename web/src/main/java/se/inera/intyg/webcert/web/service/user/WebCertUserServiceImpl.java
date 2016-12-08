@@ -19,17 +19,17 @@
 
 package se.inera.intyg.webcert.web.service.user;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.common.security.common.model.Role;
-import se.inera.intyg.common.security.common.service.Feature;
+import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
@@ -163,20 +163,20 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     void enableFeatures(WebCertUser user, Feature... featuresToEnable) {
-        LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getFeatures(), ", "));
+        LOG.debug("User {} had these features: {}", user.getHsaId(), Joiner.on(", ").join(user.getFeatures()));
 
         for (Feature feature : featuresToEnable) {
             user.getFeatures().add(feature.getName());
         }
 
-        LOG.debug("User {} now has these features: {}", user.getHsaId(), StringUtils.join(user.getFeatures(), ", "));
+        LOG.debug("User {} now has these features: {}", user.getHsaId(), Joiner.on(", ").join(user.getFeatures()));
     }
 
     void enableModuleFeatures(WebCertUser user, String moduleName, ModuleFeature... modulefeaturesToEnable) {
         for (ModuleFeature moduleFeature : modulefeaturesToEnable) {
 
             String moduleFeatureName = moduleFeature.getName();
-            String moduleFeatureStr = StringUtils.join(new String[] { moduleFeatureName, moduleName.toLowerCase() }, ".");
+            String moduleFeatureStr = Joiner.on(".").join(moduleFeatureName, moduleName.toLowerCase());
 
             if (!user.isFeatureActive(moduleFeatureName)) {
                 LOG.warn("Could not add module feature '{}' to user {} since corresponding webcert feature is not enabled", moduleFeatureStr,

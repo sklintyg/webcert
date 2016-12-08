@@ -42,14 +42,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
-import se.inera.intyg.common.logmessages.*;
-import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.logmessages.ActivityPurpose;
+import se.inera.intyg.infra.logmessages.ActivityType;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -117,7 +119,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals("VARDGIVARE_ID", intygReadMessage.getUserCareUnit().getVardgivareId());
         assertEquals("Vårdgivaren", intygReadMessage.getUserCareUnit().getVardgivareNamn());
 
-        assertEquals("19121212-1212", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId().getPersonnummer());
+        assertEquals("191212121212", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId());
         assertEquals("Hans Olof van der Test", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn());
 
         assertTrue(intygReadMessage.getTimestamp().minusSeconds(DELAY).isBefore(now()));

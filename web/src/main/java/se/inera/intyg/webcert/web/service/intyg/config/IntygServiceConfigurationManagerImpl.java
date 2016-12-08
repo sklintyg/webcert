@@ -26,11 +26,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 
 @Component
 public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigurationManager {
@@ -39,14 +39,6 @@ public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigu
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    public IntygServiceConfigurationManagerImpl() {
-
-    }
-
-    public IntygServiceConfigurationManagerImpl(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     @Override
     public <T> T unmarshallConfig(String configAsJson, Class<T> configClazz) {

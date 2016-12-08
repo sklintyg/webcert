@@ -33,8 +33,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.intyg.common.logmessages.PdlLogMessage;
-import se.inera.intyg.common.logmessages.PdlResource;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.PdlResource;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 

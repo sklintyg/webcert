@@ -31,10 +31,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CreateIntygsIdAsUUIDStrategy implements CreateIntygsIdStrategy {
 
-    public CreateIntygsIdAsUUIDStrategy() {
-
-    }
-
     @Override
     public String createId() {
         return UUID.randomUUID().toString();

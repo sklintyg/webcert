@@ -46,7 +46,7 @@
     <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.min.js?<spring:message code="buildNumber" />"></script>
-    <script type="text/javascript" src="/pubapp/login.controller.js"></script>
+    <script type="text/javascript" src="/public/login.controller.js"></script>
   </c:when>
   <c:otherwise>
     <!-- bower:js -->
@@ -64,7 +64,7 @@
     <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
     <!-- endbower -->
-    <script type="text/javascript" src="/pubapp/login.controller.js"></script>
+    <script type="text/javascript" src="/public/login.controller.js"></script>
   </c:otherwise>
 </c:choose>
 

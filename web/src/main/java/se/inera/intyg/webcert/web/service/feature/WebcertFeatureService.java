@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.feature;
 
-import se.inera.intyg.common.security.common.service.CommonFeatureService;
+import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 
 /**
  * Service which keeps track of what features are active in Webcert and installed modules.

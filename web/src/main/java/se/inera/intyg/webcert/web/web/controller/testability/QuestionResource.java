@@ -41,12 +41,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import io.swagger.annotations.Api;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
-import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;

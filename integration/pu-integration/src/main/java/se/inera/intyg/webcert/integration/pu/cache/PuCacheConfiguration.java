@@ -23,6 +23,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.spring.SpringCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import se.inera.intyg.infra.cache.core.ConfigurableCache;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -37,7 +38,7 @@ import javax.cache.expiry.Duration;
  *
  * Created by eriklupander on 2016-10-20.
  */
-public class PuCacheConfiguration implements se.inera.intyg.common.cache.core.ConfigurableCache {
+public class PuCacheConfiguration implements ConfigurableCache {
 
     public static final String PERSON_CACHE_NAME = "personCache";
 

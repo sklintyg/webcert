@@ -26,9 +26,6 @@ public class RevokeSignedIntygParameter {
     private String reason;
     private String message;
 
-    public RevokeSignedIntygParameter() {
-    }
-
     public boolean isValid() {
         return StringUtils.isNotBlank(reason);
     }

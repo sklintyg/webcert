@@ -35,10 +35,6 @@ public class DiagnosParameter {
     // This will by default return all matches
     private int nbrOfResults = -1;
 
-    public DiagnosParameter() {
-
-    }
-
     public String getCodeFragment() {
         return codeFragment;
     }

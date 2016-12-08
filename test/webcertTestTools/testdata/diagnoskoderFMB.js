@@ -76,40 +76,42 @@ module.exports = {
     utanEgenFMBInfo: {
         diagnoser: [{
             kod: 'S830',
-            falt: ['Det FMB-stöd som visas är för koden S83', 'Skador orsakade av yttre våld',
+            falt: ['För S830 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S83', 'Skador orsakade av yttre våld',
                 'arbetsförmågan är ofta inte', 'Skadorna minskar förmågan', null,
                 'I arbeten som kan utföras mestadels stillasittande'
             ]
         }, {
             kod: 'S831',
-            falt: ['Det FMB-stöd som visas är för koden S83', 'Skador orsakade av yttre våld',
+            falt: ['För S831 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S83', 'Skador orsakade av yttre våld',
                 'arbetsförmågan är ofta inte', 'Skadorna minskar förmågan', null,
                 'I arbeten som kan utföras mestadels stillasittande'
             ]
         }, {
             kod: 'R010',
-            falt: ['Det FMB-stöd som visas är för koden R01', null, 'Sjukskrivning enbart utifrån ', null, null, null]
+            falt: ['För R010 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden R01', null, 'Sjukskrivning enbart utifrån ', null, null, null]
         }, {
             kod: 'R090',
-            falt: ['Det FMB-stöd som visas är för koden R09', null, 'Sjukskrivning enbart utifrån symtom', null, null, null]
+            falt: ['För R090 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden R09', null, 'Sjukskrivning enbart utifrån symtom', null, null, null]
         }, {
             kod: 'N210',
-            falt: ['Det FMB-stöd som visas är för koden N21', 'Symtomen vid njursten är svåra smärtor', 'Efter akuta pyelonefrit',
+            falt: ['För N210 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden N21', 'Symtomen vid njursten är svåra smärtor', 'Efter akuta pyelonefrit',
                 'Vid akuta njurstensanfall', null, 'Vid akut njurstensanfall'
             ]
         }, {
             kod: 'S302',
-            falt: ['Det FMB-stöd som visas är för koden S30', 'Skador orsakade av yttre', 'arbetsförmågan är ofta inte',
+            falt: ['För S302 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S30', 'Skador orsakade av yttre', 'arbetsförmågan är ofta inte',
                 'Skadorna minskar förmågan att gå och stå', null, null
             ]
         }, {
             kod: 'F420',
-            falt: ['Det FMB-stöd som visas är för koden F42', 'Tvångssyndrom kännetecknas', 'Sjukskrivning kan i',
+            falt: ['För F420 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden F42', 'Tvångssyndrom kännetecknas', 'Sjukskrivning kan i',
                 'Tvångssyndrom kan medföra', null, 'Sjukskrivning kan i många fall undvikas'
             ]
         }, {
             kod: 'G359',
-            falt: ['Det FMB-stöd som visas är för koden G35', 'Multipel skleros', 'Vid sjukdomsdebut', 'Hur MS påverkar', null, 'Vid sjukdomsdebut']
+            falt: ['För G359 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden G35',
+                'Multipel skleros', 'Vid sjukdomsdebut', 'Hur MS påverkar', null, 'Vid sjukdomsdebut'
+            ]
         }]
 
     },

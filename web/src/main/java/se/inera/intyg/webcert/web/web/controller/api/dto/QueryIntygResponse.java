@@ -29,6 +29,7 @@ public class QueryIntygResponse {
     private List<ListIntygEntry> results = new ArrayList<>();
 
     public QueryIntygResponse() {
+        // Needed for deserialization
     }
 
     public QueryIntygResponse(List<ListIntygEntry> results) {

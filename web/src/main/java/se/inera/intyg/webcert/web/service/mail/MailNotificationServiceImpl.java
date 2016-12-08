@@ -28,8 +28,8 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
-import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -181,7 +181,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         HealthCareUnitType response;
         try {
             response = organizationUnitService.getHealthCareUnit(mottagningsId);
-        } catch (ExternalServiceCallException e) {
+        } catch (HsaServiceCallException e) {
             LOG.warn("Could not call HSA for {}, cause: {}", mottagningsId, e.getMessage());
             return null;
         }
@@ -256,7 +256,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                         "HSA Id " + careUnitId + " does not exist in HSA catalogue, fetched over infrastructure:directory:organization:getunit.");
             }
             return new MailNotificationEnhet(response.getUnitHsaId(), response.getUnitName(), response.getMail());
-        } catch (WebServiceException | ExternalServiceCallException e) {
+        } catch (WebServiceException | HsaServiceCallException e) {
             LOG.error("Failed to contact HSA to get HSA Id '" + careUnitId + "' : " + e.getMessage());
             return null;
         }

@@ -27,7 +27,8 @@ angular.module('webcert.pub.login', ['ui.bootstrap'])
         var collapse = $sce.trustAsHtml('Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
         $scope.collapseLoginDesc = true;
         $scope.loginDescText = expand;
-        $scope.toggleLoginDesc = function(){
+        $scope.toggleLoginDesc = function(evt){
+            evt.preventDefault();
             $scope.collapseLoginDesc = !$scope.collapseLoginDesc;
             if($scope.collapseLoginDesc){
                 $scope.loginDescText = expand;
@@ -59,6 +60,15 @@ angular.module('webcert.pub.login', ['ui.bootstrap'])
 
         $scope.ok = function () {
             $scope.modalInstance.close();
+        };
+
+        $scope.toggleCookie = function(evt) {
+            evt.preventDefault();
+            $scope.showCookieText = !$scope.showCookieText;
+        };
+
+        $scope.afterExpand = function() {
+            $window.scrollTo(0,document.body.scrollHeight);
         };
 
         function loadIntygTypes() {

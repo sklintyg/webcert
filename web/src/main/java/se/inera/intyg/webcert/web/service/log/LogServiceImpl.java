@@ -35,9 +35,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.common.logmessages.*;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.logmessages.*;
 import se.inera.intyg.webcert.common.service.log.template.*;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
@@ -198,7 +198,7 @@ public class LogServiceImpl implements LogService {
         String careGiverId = logRequest.getIntygCareGiverId();
         String careGiverName = logRequest.getIntygCareGiverName();
 
-        Patient patient = new Patient(logRequest.getPatientId(), logRequest.getPatientName());
+        Patient patient = new Patient(logRequest.getPatientId().getPersonnummer().replace("-", "").replace("+", ""), logRequest.getPatientName());
         Enhet resourceOwner = new Enhet(careUnitId, careUnitName, careGiverId, careGiverName);
 
         PdlResource pdlResource = new PdlResource();

@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import org.apache.commons.lang3.StringUtils;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
 public class CopyIntygRequest {
@@ -35,9 +36,6 @@ public class CopyIntygRequest {
     private String postnummer;
     private String postort;
     private boolean coherentJournaling = false;
-
-    public CopyIntygRequest() {
-    }
 
     public Personnummer getPatientPersonnummer() {
         return patientPersonnummer;

@@ -14,8 +14,8 @@ task camelTest(type: Test) {
 dependencies {
   compile project(':webcert-common')
 
-  compile "se.inera.intyg.common:log-messages:${commonVersion}"
-  compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
+  compile "se.inera.intyg.infra:log-messages:${infraVersion}"
+  compile "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
   compile "se.inera.intyg.common:logging-util:${commonVersion}"
   compile "se.inera.intyg.common:integration-util:${commonVersion}"
 

@@ -31,6 +31,7 @@
   <context:component-scan base-package="org.springframework.security.saml"/>
 
   <!-- Unsecured pages -->
+  <security:http security="none" pattern="/public/**"/>
   <security:http security="none" pattern="/bower_components/**"/>
   <security:http security="none" pattern="/vendor/**"/>
   <security:http security="none" pattern="/web/webjars/**"/>
@@ -83,13 +84,13 @@
         class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
     <property name="exceptionMappings">
       <props>
-        <prop key="se.inera.intyg.common.security.exception.MissingMedarbetaruppdragException">
+        <prop key="se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException">
           /error.jsp?reason=login.medarbetaruppdrag
         </prop>
         <prop key="org.springframework.security.authentication.BadCredentialsException">
           /error.jsp?reason=login.failed
         </prop>
-        <prop key="se.inera.intyg.common.security.exception.HsaServiceException">
+        <prop key="se.inera.intyg.infra.security.exception.HsaServiceException">
           /error.jsp?reason=login.hsaerror
         </prop>
 

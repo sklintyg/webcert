@@ -23,14 +23,14 @@ import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTER
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Joiner;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.common.util.logging.HashUtility;
 import se.inera.intyg.common.util.logging.LogMarkers;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
@@ -82,7 +82,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             List<String> frageIds) {
         if (KOMPLETTERING_AV_LAKARINTYG == amne) {
             logEvent(MonitoringEvent.QUESTION_RECEIVED_COMPLETION, fragestallare, externReferens, internReferens, intygsId, enhet,
-                    StringUtils.join(frageIds, ","));
+                    Joiner.on(",").join(frageIds));
         } else {
             logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, amne != null ? amne.name() : "NO AMNE");
         }
@@ -189,8 +189,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logPrivatePractitionerTermsApproved(String userId, String personId, Integer avtalVersion) {
-        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, HashUtility.hash(personId), avtalVersion);
+    public void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion) {
+        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, Personnummer.getPnrHashSafe(personId), avtalVersion);
     }
 
     @Override

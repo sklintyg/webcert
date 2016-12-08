@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.logsender.service;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
 import org.junit.Test;
-import se.inera.intyg.common.logmessages.ActivityType;
+import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.logsender.helper.TestDataHelper;
 

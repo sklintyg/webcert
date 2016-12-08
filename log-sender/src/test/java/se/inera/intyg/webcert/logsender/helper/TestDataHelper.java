@@ -23,9 +23,8 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.intyg.common.logmessages.*;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.logmessages.*;
 
 /**
  * Utility for creating test data for unit- and integration tests.
@@ -78,8 +77,7 @@ public class TestDataHelper {
     }
 
     private static Patient buildPatient() {
-        Personnummer pnr = new Personnummer("19121212-1212");
-        Patient patient = new Patient(pnr, "Tolvan Tolvansson");
+        Patient patient = new Patient("19121212-1212", "Tolvan Tolvansson");
         return patient;
     }
 

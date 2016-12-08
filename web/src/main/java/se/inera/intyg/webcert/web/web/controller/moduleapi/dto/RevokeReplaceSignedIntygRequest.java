@@ -26,9 +26,6 @@ public class RevokeReplaceSignedIntygRequest {
     private CopyIntygRequest copyIntygRequest;
     private RevokeSignedIntygParameter revokeSignedIntygParameter;
 
-    public RevokeReplaceSignedIntygRequest() {
-    }
-
     public CopyIntygRequest getCopyIntygRequest() {
         return copyIntygRequest;
     }

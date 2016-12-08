@@ -19,8 +19,8 @@
 
 angular.module('webcert').factory('webcert.UtkastProxy',
     [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout',
-        'common.User', 'common.dialogService', 'common.authorityService', 'common.featureService', 'common.messageService', 'common.statService',
-        'common.UserModel',
+        'common.User', 'common.dialogService', 'common.authorityService', 'common.featureService',
+        'common.messageService', 'common.statService', 'common.UserModel',
         function($q, $http, $stateParams, $log, $location, $window, $timeout, User, dialogService,
             authorityService, featureService, messageService, statService, UserModel) {
             'use strict';

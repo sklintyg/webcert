@@ -38,8 +38,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import se.inera.intyg.common.integration.hsa.client.OrganizationUnitService;
-import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
+import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -84,7 +84,7 @@ public class MailNotificationServiceMockedTest {
         mailNotificationService.sendMailForIncomingAnswer(mailNotification("enhetsid"));
     }
 
-    private void mockOrganizationUnitServiceGetUnit() throws ExternalServiceCallException {
+    private void mockOrganizationUnitServiceGetUnit() throws HsaServiceCallException {
         UnitType unit = new UnitType();
         unit.setMail("test@test.invalid");
         unit.setUnitHsaId("enhetsid");
@@ -92,7 +92,7 @@ public class MailNotificationServiceMockedTest {
     }
 
     @Test
-    public void testNoHSAResponse() throws ExternalServiceCallException {
+    public void testNoHSAResponse() throws HsaServiceCallException {
         try {
             SOAPFault soapFault = SOAPFactory.newInstance().createFault();
             soapFault.setFaultString("Connection reset");

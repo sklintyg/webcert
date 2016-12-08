@@ -48,7 +48,7 @@ public class UtkastFilter {
     }
 
     public boolean hasPageSizeAndStartFrom() {
-        return (pageSize != null && startFrom != null);
+        return pageSize != null && startFrom != null;
     }
 
     public String getUnitHsaId() {

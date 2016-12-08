@@ -71,6 +71,7 @@ public class Signatur {
     private String signatur;
 
     public Signatur() {
+        // default constructor for hibernate
     }
 
     public Signatur(LocalDateTime signeringsDatum, String signeradAv, String intygId, String intygData, String intygHash, String signatur) {

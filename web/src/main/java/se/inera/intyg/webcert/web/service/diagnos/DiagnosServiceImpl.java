@@ -87,15 +87,6 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     private DiagnosRepository ksh97pDiagnosRepo;
 
-    public DiagnosServiceImpl() {
-
-    }
-
-    public DiagnosServiceImpl(String icd10seDiagnosKodFiler, String ksh97pDiagnosKodFiler) {
-        this.icd10seCodeFilesStr = icd10seDiagnosKodFiler;
-        this.ksh97pCodeFilesStr = ksh97pDiagnosKodFiler;
-    }
-
     @PostConstruct
     public void initDiagnosRepository() {
         this.icd10seDiagnosRepo = createDiagnosRepo(icd10seCodeFilesStr, Diagnoskodverk.ICD_10_SE.getCodeSystemName());
@@ -161,7 +152,8 @@ public class DiagnosServiceImpl implements DiagnosService {
     @Override
     public DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystemStr, int nbrOfResults) {
 
-        Assert.isTrue((nbrOfResults > 0), "nbrOfResults must be larger that 0");
+        // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as possible
+        Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
 
         Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
 
@@ -204,7 +196,8 @@ public class DiagnosServiceImpl implements DiagnosService {
     @Override
     public DiagnosResponse searchDiagnosisByDescription(String searchString, String codeSystemStr, int nbrOfResults) {
 
-        Assert.isTrue((nbrOfResults > 0), "nbrOfResults must be larger that 0");
+        // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as possible
+        Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
 
         if (StringUtils.isBlank(searchString)) {
             return DiagnosResponse.invalidSearchString();

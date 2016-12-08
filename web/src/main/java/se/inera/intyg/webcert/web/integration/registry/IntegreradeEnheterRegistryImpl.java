@@ -102,7 +102,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
             IntegreradEnhet enhet = getIntegreradEnhet(orgEnhetsHsaId);
             IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(enhet);
 
-            if ((orgEntry != null) && (orgEntry.compareTo(newEntry) != 0)) {
+            if (orgEntry != null && orgEntry.compareTo(newEntry) != 0) {
                 putIntegreradEnhet(newEntry, enhet.isSchemaVersion1(), enhet.isSchemaVersion2());
             }
         }

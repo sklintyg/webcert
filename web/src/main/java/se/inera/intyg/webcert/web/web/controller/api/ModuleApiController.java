@@ -63,7 +63,7 @@ public class ModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getActiveModules() {
         return Response.ok(moduleRegistry.listAllModules().stream()
-                .filter(i -> featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, i.getId()))
+                .filter(i -> featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), i.getId()))
                 .collect(Collectors.toList())).build();
     }
 }

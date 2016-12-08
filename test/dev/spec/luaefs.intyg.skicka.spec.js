@@ -60,7 +60,7 @@ describe('Validera sändning av luae_fs Intyg', function() {
             });
 
             // Add a small artificial wait so the send can be processed asynchronously by Intygstjänsten. Not pretty...
-            browser.sleep(500);
+            browser.sleep(1500);
             expect(isIntygSent(intygsId)).toBeTruthy();
         });
 

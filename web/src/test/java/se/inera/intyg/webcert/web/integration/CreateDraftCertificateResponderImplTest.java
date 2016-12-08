@@ -26,17 +26,18 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
+import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
@@ -94,7 +95,7 @@ public class CreateDraftCertificateResponderImplTest {
      * @throws ExternalServiceCallException
      */
     @Test
-    public void whenNewCertificateDraftSuccessResponse() throws ExternalServiceCallException {
+    public void whenNewCertificateDraftSuccessResponse() throws HsaServiceCallException {
 
         // Given
         ResultValidator resultsValidator = new ResultValidator();
@@ -136,9 +137,7 @@ public class CreateDraftCertificateResponderImplTest {
     }
 
     private CreateNewDraftRequest createCreateNewDraftRequest(Vardenhet vardenhet) {
-        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest();
-        draftRequest.setIntygId(UTKAST_ID);
-        draftRequest.setHosPerson(new HoSPersonal());
+        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest(UTKAST_ID, null, null, new HoSPersonal(), null);
         draftRequest.getHosPerson().setVardenhet(vardenhet);
         return draftRequest;
     }

@@ -23,10 +23,6 @@ public class SendSignedIntygParameter {
 
     private String recipient;
 
-    public SendSignedIntygParameter() {
-
-    }
-
     public String getRecipient() {
         return recipient;
     }

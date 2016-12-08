@@ -27,7 +27,7 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import se.inera.intyg.common.security.common.model.UserOrigin;
+import se.inera.intyg.infra.security.common.model.UserOrigin;
 
 /**
  * Created by Magnus Ekstrand on 25/11/15.
@@ -40,11 +40,6 @@ public class WebCertUserOrigin implements UserOrigin {
 
     public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+";
     public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions";
-
-
-    public WebCertUserOrigin() {
-    }
-
 
     // ~ API
     // =====================================================================================

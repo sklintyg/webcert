@@ -34,9 +34,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.*;

@@ -185,7 +185,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         try {
             PingForConfigurationType parameters = new PingForConfigurationType();
             PingForConfigurationResponseType pingResponse = privatlakarportalPingForConfiguration.pingForConfiguration(ppLogicalAddress, parameters);
-            return (pingResponse != null);
+            return pingResponse != null;
         } catch (Exception e) {
             LOG.error("pingPrivatlakarportal failed with exception: " + e.getMessage());
             return false;
@@ -197,7 +197,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         try {
             PingForConfigurationType parameters = new PingForConfigurationType();
             PingForConfigurationResponseType pingResponse = intygstjanstPingForConfiguration.pingForConfiguration(itLogicalAddress, parameters);
-            return (pingResponse != null);
+            return pingResponse != null;
         } catch (Exception e) {
             LOG.error("pingIntygstjanst failed with exception: " + e.getMessage());
             return false;

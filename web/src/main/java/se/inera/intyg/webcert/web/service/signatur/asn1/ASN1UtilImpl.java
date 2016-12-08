@@ -26,6 +26,7 @@ import static se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Type.PRINTABL
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.google.common.base.Charsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -82,7 +83,7 @@ public class ASN1UtilImpl implements ASN1Util {
 
     private String returnAsString(byte[] value) {
         if (value != null) {
-            return new String(value);
+            return new String(value, Charsets.UTF_8);
         } else {
             return null;
         }

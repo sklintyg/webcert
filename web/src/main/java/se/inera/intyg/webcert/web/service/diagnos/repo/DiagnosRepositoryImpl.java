@@ -21,14 +21,25 @@ package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.index.*;
-import org.apache.lucene.search.*;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.RAMDirectory;
 
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
@@ -87,14 +98,17 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
 
     @Override
     public List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults) {
+        if (StringUtils.isEmpty(searchString)) {
+            return Collections.emptyList();
+        }
         BooleanQuery query = new BooleanQuery();
         try (StandardAnalyzer analyzer = new StandardAnalyzer()) {
             TokenStream tokenStream = analyzer.tokenStream(DESC, searchString);
             CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
             tokenStream.reset();
             while (tokenStream.incrementToken()) {
-                String term = charTermAttribute.toString();
-                query.add(new PrefixQuery(new Term(DESC, term)), BooleanClause.Occur.MUST);
+                String term = WildcardQuery.WILDCARD_STRING + charTermAttribute.toString() + WildcardQuery.WILDCARD_STRING;
+                query.add(new WildcardQuery(new Term(DESC, term)), BooleanClause.Occur.MUST);
             }
         } catch (IOException e) {
             throw new RuntimeException("IOException occurred in lucene index search", e);
@@ -133,7 +147,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         String codeValue = StringUtils.deleteWhitespace(codeValueParam);
         codeValue = StringUtils.remove(codeValue, '.');
 
-        return (StringUtils.isBlank(codeValue)) ? null : codeValue.toUpperCase();
+        return StringUtils.isBlank(codeValue) ? null : codeValue.toUpperCase();
     }
 
     public int nbrOfDiagosis() {

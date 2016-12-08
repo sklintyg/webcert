@@ -79,9 +79,9 @@ public class ModuleApiControllerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetActiveModules() {
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_1)).thenReturn(true);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_2)).thenReturn(true);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_3)).thenReturn(true);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_1)).thenReturn(true);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_2)).thenReturn(true);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_3)).thenReturn(true);
 
         Response response = moduleApiController.getActiveModules();
         assertNotNull(response);
@@ -95,9 +95,9 @@ public class ModuleApiControllerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetActiveModulesOnlyReturnsActiveModules() {
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_1)).thenReturn(true);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_2)).thenReturn(false);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_3)).thenReturn(true);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_1)).thenReturn(true);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_2)).thenReturn(false);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_3)).thenReturn(true);
 
         Response response = moduleApiController.getActiveModules();
         assertNotNull(response);
@@ -110,9 +110,9 @@ public class ModuleApiControllerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetActiveModulesNoActive() {
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_1)).thenReturn(false);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_2)).thenReturn(false);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE_ID_3)).thenReturn(false);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_1)).thenReturn(false);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_2)).thenReturn(false);
+        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_3)).thenReturn(false);
 
         Response response = moduleApiController.getActiveModules();
         assertNotNull(response);

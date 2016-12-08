@@ -22,9 +22,7 @@ package se.inera.intyg.webcert.web.auth.eleg;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.saml2.core.AttributeStatement;
+import org.opensaml.saml2.core.*;
 import org.opensaml.xml.XMLObject;
 
 /**
@@ -98,7 +96,7 @@ public class CgiElegAssertion {
 
     private String getValue(Attribute attribute) {
         List<String> values = getValues(attribute);
-        return (values.isEmpty()) ? null : values.get(0);
+        return values.isEmpty() ? null : values.get(0);
     }
 
     private List<String> getValues(Attribute attribute) {

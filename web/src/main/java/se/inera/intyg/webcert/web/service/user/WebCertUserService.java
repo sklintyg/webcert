@@ -18,10 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import se.inera.intyg.common.security.common.service.CommonUserService;
+import se.inera.intyg.infra.security.common.service.Feature;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-public interface WebCertUserService extends CommonUserService {
+import java.util.List;
+
+public interface WebCertUserService {
 
      WebCertUser getUser();
 
@@ -48,4 +51,18 @@ public interface WebCertUserService extends CommonUserService {
      * Deletes all user preferences for the current user.
      */
     void deleteUserPreferences();
+
+    void enableFeaturesOnUser(Feature... featuresToEnable);
+
+    void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable);
+
+    boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation);
+
+    boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation);
+
+    boolean isAuthorizedForUnits(List<String> enhetsHsaIds);
+
+    void updateOrigin(String origin);
+
+    void updateUserRole(String roleName);
 }

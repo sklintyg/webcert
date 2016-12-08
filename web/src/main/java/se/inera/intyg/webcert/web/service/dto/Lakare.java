@@ -28,6 +28,7 @@ public class Lakare {
     private String name;
 
     public Lakare() {
+        // Needed for deserialization
     }
 
     public Lakare(String hsaId, String name) {

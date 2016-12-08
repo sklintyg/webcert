@@ -19,17 +19,29 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import io.swagger.annotations.Api;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.integration.hsa.model.Mottagning;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
-import se.inera.intyg.common.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+
+import com.google.common.base.Joiner;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -38,20 +50,6 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardenhetStats;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardgivareStats;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author marced
@@ -191,7 +189,7 @@ public class StatModuleApiController extends AbstractApiController {
         VardenhetStats moStats;
 
         for (Mottagning mo : mottagningar) {
-            String moNamn = StringUtils.join(new Object[] { vardenhet.getNamn(), mo.getNamn() }, SEPARATOR);
+            String moNamn = Joiner.on(SEPARATOR).join(vardenhet.getNamn(), mo.getNamn());
             moStats = new VardenhetStats(moNamn, mo.getId());
             moStats.setOhanteradeFragaSvar(getSafeStatValueFromMap(mo.getId(), fragaSvarStats));
             moStats.setOsigneradeIntyg(getSafeStatValueFromMap(mo.getId(), intygStats));

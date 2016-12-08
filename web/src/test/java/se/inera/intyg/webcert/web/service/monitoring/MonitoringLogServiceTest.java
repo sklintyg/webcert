@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import se.inera.intyg.common.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 /**
  * Unit test to assure that the monitoring log produces relevant messages.

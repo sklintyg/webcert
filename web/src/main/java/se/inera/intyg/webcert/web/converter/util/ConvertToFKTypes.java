@@ -40,7 +40,7 @@ public final class ConvertToFKTypes {
     }
 
     public static II toII(String root, String ext) {
-        if ((root == null) || (ext == null)) {
+        if (root == null || ext == null) {
             return null;
         }
         II ii = new II();

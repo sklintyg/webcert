@@ -40,8 +40,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.common.integration.hsa.model.Mottagning;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;

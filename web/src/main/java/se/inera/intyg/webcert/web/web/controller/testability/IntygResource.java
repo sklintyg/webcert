@@ -383,16 +383,6 @@ public class IntygResource {
         private UtkastStatus utkastStatus;
         private List<RelationItem> relations;
 
-        IntygContentWrapper(JsonNode contents, boolean revoked, UtkastStatus utkastStatus, Optional<List<RelationItem>> relations) {
-            this.contents = contents;
-            this.revoked = revoked;
-            this.utkastStatus = utkastStatus;
-            this.relations = relations.orElse(new ArrayList<>());
-        }
-
-        IntygContentWrapper() {
-        }
-
         JsonNode getContents() {
             return contents;
         }

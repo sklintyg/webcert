@@ -19,7 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.feature;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.*;
+import java.util.Map.Entry;
+
+import javax.annotation.PostConstruct;
+
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,19 +33,11 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import se.inera.intyg.common.security.common.service.Feature;
+
+import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-
-import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Service that keeps track of active features of Webcert and installed modules.
@@ -76,7 +73,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         initModuleFeatures(featuresMap);
         processWebcertAndModuleFeatureProperties(features, featuresMap);
 
-        LOG.info("Active Webcert features is: {}", StringUtils.join(getActiveFeatures(), COMMA_SEP));
+        LOG.info("Active Webcert features is: {}", Joiner.on(COMMA_SEP).join(getActiveFeatures()));
     }
 
     /**
@@ -90,7 +87,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             // the env name can be different to the enum name which is used in the gui.
             // as a result we can normalise the env names ... or translate them to the correct enum name.
             // I think we should normalise but this could be a bigger job, so translation will have to do.
-            if ((feature.getEnvName() != null) && env.containsProperty(feature.getEnvName())) {
+            if (feature.getEnvName() != null && env.containsProperty(feature.getEnvName())) {
                 features.setProperty(feature.getName(), env.getProperty(feature.getEnvName()));
             }
             featuresMap.put(feature.getName(), Boolean.FALSE);
@@ -114,7 +111,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             moduleId = mep.getModuleId();
             moduleMap = mep.getModuleFeatures();
 
-            if ((moduleMap == null) || moduleMap.isEmpty()) {
+            if (moduleMap == null || moduleMap.isEmpty()) {
                 LOG.warn("Module {} did not expose any features! All features of this module will be disabled!", moduleId);
                 moduleMap = Collections.emptyMap();
             }
@@ -128,7 +125,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
                 moduleFeatureName = moduleFeature.getName();
                 moduleName = moduleId.toLowerCase();
                 moduleFeatureState = (moduleMap.get(moduleFeatureName) != null) ? moduleMap.get(moduleFeatureName) : Boolean.FALSE;
-                key = StringUtils.join(new String[] { moduleFeatureName, moduleName }, DOT_SEP);
+                key = Joiner.on(DOT_SEP).join(moduleFeatureName, moduleName);
                 featuresMap.put(key, moduleFeatureState);
             }
         }
@@ -177,19 +174,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     @Override
     public boolean isFeatureActive(String featureName) {
         Boolean featureState = featuresMap.get(featureName);
-        return (featureState != null) && featureState;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isModuleFeatureActive(se.inera.intyg.common.support.modules.support
-     * .feature.ModuleFeature, java.lang.String)
-     */
-    @Override
-    public boolean isModuleFeatureActive(ModuleFeature moduleFeature, String moduleName) {
-        return isModuleFeatureActive(moduleFeature.getName(), moduleName);
+        return featureState != null && featureState;
     }
 
     /*
@@ -201,9 +186,9 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     @Override
     public boolean isModuleFeatureActive(String moduleFeatureName, String moduleName) {
         if (isFeatureActive(moduleFeatureName)) {
-            String key = StringUtils.join(new String[] { moduleFeatureName, moduleName.toLowerCase() }, DOT_SEP);
+            String key = Joiner.on(DOT_SEP).join(moduleFeatureName, moduleName.toLowerCase());
             Boolean moduleFeatureState = featuresMap.get(key);
-            return (moduleFeatureState != null) && moduleFeatureState;
+            return moduleFeatureState != null && moduleFeatureState;
         }
         return false;
     }

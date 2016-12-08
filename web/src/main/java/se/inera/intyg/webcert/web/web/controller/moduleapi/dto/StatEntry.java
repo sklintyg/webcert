@@ -28,9 +28,6 @@ public class StatEntry {
     private long unsignedCerts;
     private long unhandledQuestions;
 
-    public StatEntry() {
-    }
-
     public StatEntry(long unsignedCerts, long unhandledQuestions) {
         super();
         this.unsignedCerts = unsignedCerts;

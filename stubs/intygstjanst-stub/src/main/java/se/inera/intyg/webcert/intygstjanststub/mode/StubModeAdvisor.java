@@ -19,14 +19,14 @@
 
 package se.inera.intyg.webcert.intygstjanststub.mode;
 
+import java.lang.reflect.Method;
+
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Method;
 
 /**
  * Created by erikl on 15-04-09.
@@ -36,7 +36,7 @@ public class StubModeAdvisor extends AbstractPointcutAdvisor {
 
     private static final long serialVersionUID = 1L;
 
-    private final StaticMethodMatcherPointcut pointcut = new
+    private final transient StaticMethodMatcherPointcut pointcut = new
             StaticMethodMatcherPointcut() {
                 @Override
                 public boolean matches(Method method, Class<?> targetClass) {
@@ -45,7 +45,7 @@ public class StubModeAdvisor extends AbstractPointcutAdvisor {
             };
 
     @Autowired
-    private StubModeMethodInterceptor interceptor;
+    private transient StubModeMethodInterceptor interceptor;
 
     @Override
     public Pointcut getPointcut() {

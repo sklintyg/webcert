@@ -56,11 +56,11 @@ public class FragaSvarStatus {
     }
 
     public boolean hasAnswerSet() {
-        return (svarsText != null);
+        return svarsText != null;
     }
 
     public boolean isClosed() {
-        return (status.equals(Status.CLOSED));
+        return status.equals(Status.CLOSED);
     }
 
 }

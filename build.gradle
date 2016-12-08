@@ -1,12 +1,13 @@
 ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
+    infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
     typerVersion = System.properties['typerVersion'] ?: '0-SNAPSHOT'
 
     funktionstjansterGrpSchemasVersion = "1.0.3"
     insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
-    rivtaClinicalprocessSchemasVersion = "2.0.RC6.2"
+    rivtaClinicalprocessSchemasVersion = "2.0"
     rivtaInsuranceprocessSchemasVersion = "3.1.0.4"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
     rivtaItintegrationSchemasVersion = "1.0.0.4"
@@ -71,6 +72,9 @@ subprojects {
         pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common'}.each {
             it.version = findResolvedVersion(project, 'se.inera.intyg.common')
         }
+        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.infra'}.each {
+            it.version = findResolvedVersion(project, 'se.inera.intyg.infra')
+        }
         pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.intygstyper'}.each {
             it.version = findResolvedVersion(project, 'se.inera.intyg.intygstyper')
         }
@@ -104,6 +108,7 @@ buildscript {
         classpath 'com.moowork.gradle:gradle-node-plugin:0.+'
         classpath 'com.moowork.gradle:gradle-grunt-plugin:0.+'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.+'
+        classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.8'
     }
 
     repositories {

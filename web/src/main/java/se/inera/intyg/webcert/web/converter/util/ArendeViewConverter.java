@@ -171,7 +171,7 @@ public class ArendeViewConverter {
 
     private int getListPositionForInstanceId(MedicinsktArende arende) {
         Integer instanceId = arende.getInstans();
-        return (instanceId != null && instanceId > 0) ? instanceId : 0;
+        return instanceId != null && instanceId > 0 ? instanceId : 0;
     }
 
     private static ArendeType getArendeType(Arende arende) {

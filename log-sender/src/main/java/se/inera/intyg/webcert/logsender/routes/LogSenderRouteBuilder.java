@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logsender.exception.BatchValidationException;
 
 /**
- * Defines the LogSender Camel route which accepts {@link se.inera.intyg.common.logmessages.PdlLogMessage} in JSON-
+ * Defines the LogSender Camel route which accepts {@link PdlLogMessage} in JSON-
  * serialized TextMessages.
  *
  * @author eriklupander

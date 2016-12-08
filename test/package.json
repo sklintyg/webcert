@@ -33,6 +33,6 @@
   },
   "engine": "node >= 4.2.1",
   "scripts": {
-    "install": "node node_modules/protractor/bin/webdriver-manager update"
+      "install": "node node_modules/protractor/bin/webdriver-manager update"
   }
 }

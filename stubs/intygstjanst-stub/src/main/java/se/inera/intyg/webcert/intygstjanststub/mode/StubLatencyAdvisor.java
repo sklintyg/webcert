@@ -36,7 +36,7 @@ public class StubLatencyAdvisor extends AbstractPointcutAdvisor {
 
     private static final long serialVersionUID = 1L;
 
-    private final StaticMethodMatcherPointcut pointcut = new
+    private final transient StaticMethodMatcherPointcut pointcut = new
             StaticMethodMatcherPointcut() {
                 @Override
                 public boolean matches(Method method, Class<?> targetClass) {
@@ -45,7 +45,7 @@ public class StubLatencyAdvisor extends AbstractPointcutAdvisor {
             };
 
     @Autowired
-    private StubLatencyMethodInterceptor interceptor;
+    private transient StubLatencyMethodInterceptor interceptor;
 
     @Override
     public Pointcut getPointcut() {

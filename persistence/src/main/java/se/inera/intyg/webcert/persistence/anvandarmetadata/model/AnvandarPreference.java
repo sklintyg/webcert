@@ -18,12 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.anvandarmetadata.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by eriklupander on 2016-06-22.
@@ -49,7 +44,7 @@ public class AnvandarPreference {
     private String value;
 
     public AnvandarPreference() {
-
+        // default constructor for hibernate
     }
 
     public AnvandarPreference(String hsaId, String key, String value) {

@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.swagger.annotations.Api;
-import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 

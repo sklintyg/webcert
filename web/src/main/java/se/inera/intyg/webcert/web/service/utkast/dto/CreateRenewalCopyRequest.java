@@ -28,8 +28,4 @@ public class CreateRenewalCopyRequest extends CreateCopyRequest {
         super(orginalIntygsId, intygsTyp, patient, hosPerson);
     }
 
-    public CreateRenewalCopyRequest() {
-
-    }
-
 }

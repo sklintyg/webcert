@@ -53,15 +53,17 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswe
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
-import se.inera.intyg.common.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
-import se.inera.intyg.common.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.common.security.common.model.*;
+import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.intygstyper.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
@@ -124,7 +126,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     @Before
     public void setupCommonBehaviour() {
-        when(webcertFeatureServiceMock.isModuleFeatureActive(eq(ModuleFeature.HANTERA_FRAGOR), anyString())).thenReturn(true);
+        when(webcertFeatureServiceMock.isModuleFeatureActive(eq(ModuleFeature.HANTERA_FRAGOR.getName()), anyString())).thenReturn(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -1047,7 +1049,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.getIntygsReferens().setIntygsTyp("ts-bas");
 
-        when(webcertFeatureServiceMock.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, "ts-bas")).thenReturn(false);
+        when(webcertFeatureServiceMock.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR.getName(), "ts-bas")).thenReturn(false);
 
         service.processIncomingQuestion(fragaSvar);
         fail("Processing should have thrown an exception");

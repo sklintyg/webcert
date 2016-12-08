@@ -19,14 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.diagnos;
 
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class DiagnosServiceImplTest {
+
+    DiagnosService diagnosService = new DiagnosServiceImpl();
 
     @Test
     public void testValidateDiagnosisCodeIcd10() throws Exception {
@@ -38,7 +40,7 @@ public class DiagnosServiceImplTest {
 
         for (String code : codes) {
             //When
-            final boolean result = new DiagnosServiceImpl().validateDiagnosisCode(code, "ICD_10_SE");
+            final boolean result = diagnosService.validateDiagnosisCode(code, "ICD_10_SE");
 
             //Then
             assertTrue(result);
@@ -55,7 +57,7 @@ public class DiagnosServiceImplTest {
 
         for (String code : codes) {
             //When
-            final boolean result = new DiagnosServiceImpl().validateDiagnosisCode(code, "KSH_97_P");
+            final boolean result = diagnosService.validateDiagnosisCode(code, "KSH_97_P");
 
             //Then
             assertTrue(result);

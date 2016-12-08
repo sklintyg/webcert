@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.service.diagnos.model;
 
+import java.util.Objects;
+
 public class Diagnos implements Comparable<Diagnos> {
 
     private String kod;
@@ -44,5 +46,27 @@ public class Diagnos implements Comparable<Diagnos> {
     @Override
     public int compareTo(Diagnos d) {
         return getKod().compareTo(d.getKod());
+    }
+
+    @Override
+    public String toString() {
+        return kod + ":" + beskrivning;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        } else if (!(o instanceof Diagnos)) {
+            return false;
+        } else {
+            Diagnos d = (Diagnos) o;
+            return Objects.equals(this.kod, d.kod) && Objects.equals(this.beskrivning, d.beskrivning);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.kod, this.beskrivning);
     }
 }

@@ -28,12 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationResponderInterface;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationResponseType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.DiagnosInformationType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.OvrigFmbInformationType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionType;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.*;
+import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.*;
 
 public class GetDiagnosInformationStub implements GetDiagnosInformationResponderInterface {
 
@@ -55,7 +51,7 @@ public class GetDiagnosInformationStub implements GetDiagnosInformationResponder
             addHardcodedInfo(value);
             return value;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error: {}", e);
         }
 
         final GetDiagnosInformationResponseType diagnosInformationResponse = new GetDiagnosInformationResponseType();

@@ -26,11 +26,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.common.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.intygstyper.fkparent.support.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
+import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
+import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.intygstyper.fkparent.support.ResultTypeUtil;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -40,7 +40,10 @@ import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.CreateDraftCertificateResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.CreateDraftCertificateResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.CreateDraftCertificateType;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
@@ -123,7 +126,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         List<CommissionType> miusOnUnit;
         try {
             miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
-        } catch (ExternalServiceCallException e) {
+        } catch (HsaServiceCallException e) {
             return null;
         }
 

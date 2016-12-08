@@ -127,9 +127,9 @@ dependencies {
     compile "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
-    compile "se.inera.intyg.common:loggtjanst-stub:${commonVersion}"
-    compile "se.inera.intyg.common:security-siths:${commonVersion}"
-    compile "se.inera.intyg.common:common-cache-metrics:${commonVersion}"
+    compile "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
+    compile "se.inera.intyg.infra:security-siths:${infraVersion}"
+    compile "se.inera.intyg.infra:common-cache-metrics:${infraVersion}"
 
     compile "se.inera.intyg.intygstyper:ts-bas:${typerVersion}"
     compile "se.inera.intyg.intygstyper:ts-diabetes:${typerVersion}"

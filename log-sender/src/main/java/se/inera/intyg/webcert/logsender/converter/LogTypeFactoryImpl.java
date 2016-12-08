@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.logsender.converter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.logmessages.Enhet;
-import se.inera.intyg.common.logmessages.Patient;
-import se.inera.intyg.common.logmessages.PdlLogMessage;
-import se.inera.intyg.common.logmessages.PdlResource;
+import se.inera.intyg.infra.logmessages.Enhet;
+import se.inera.intyg.infra.logmessages.Patient;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.PdlResource;
 import se.riv.ehr.log.v1.ActivityType;
 import se.riv.ehr.log.v1.CareProviderType;
 import se.riv.ehr.log.v1.CareUnitType;
@@ -97,7 +97,7 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
     private PatientType patient(Patient source) {
         PatientType patient = new PatientType();
-        patient.setPatientId(StringUtils.trim(source.getPatientId().getPersonnummerWithoutDash()));
+        patient.setPatientId(StringUtils.trim(source.getPatientId()));
         patient.setPatientName(StringUtils.trim(source.getPatientNamn()));
         return patient;
     }

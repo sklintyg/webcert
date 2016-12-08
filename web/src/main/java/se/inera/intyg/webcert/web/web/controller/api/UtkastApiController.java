@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
@@ -146,10 +146,6 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private CreateNewDraftRequest createServiceRequest(CreateUtkastRequest req) {
-        CreateNewDraftRequest srvReq = new CreateNewDraftRequest();
-
-        srvReq.setIntygType(req.getIntygType());
-
         Patient pat = new Patient();
         pat.setPersonId(req.getPatientPersonnummer());
         pat.setFornamn(req.getPatientFornamn());
@@ -159,11 +155,8 @@ public class UtkastApiController extends AbstractApiController {
         pat.setPostadress(req.getPatientPostadress());
         pat.setPostnummer(req.getPatientPostnummer());
         pat.setPostort(req.getPatientPostort());
-        srvReq.setPatient(pat);
 
-        srvReq.setHosPerson(createHoSPersonFromUser());
-
-        return srvReq;
+        return new CreateNewDraftRequest(null, req.getIntygType(), null, createHoSPersonFromUser(), pat);
     }
 
     private UtkastFilter createUtkastFilter(QueryIntygParameter filterParameters) {

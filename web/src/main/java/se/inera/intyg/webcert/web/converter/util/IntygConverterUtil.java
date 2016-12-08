@@ -24,13 +24,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
-import se.inera.intyg.common.integration.hsa.model.AbstractVardenhet;
-import se.inera.intyg.common.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.common.internal.*;
@@ -58,7 +59,7 @@ public final class IntygConverterUtil {
     }
 
     public static String concatPatientName(List<String> fNames, List<String> mNames, String lName) {
-        return concatPatientName(StringUtils.join(fNames, " "), StringUtils.join(mNames, " "), lName);
+        return concatPatientName(Joiner.on(" ").join(fNames), Joiner.on(" ").join(mNames), lName);
     }
 
     public static String concatPatientName(String fName, String mName, String lName) {
@@ -78,7 +79,7 @@ public final class IntygConverterUtil {
     }
 
     public static String buildVardReferensId(String intygId, LocalDateTime ts) {
-        return StringUtils.join(new Object[] { "SEND", intygId, ts.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS")) }, "-");
+        return Joiner.on("-").join("SEND", intygId, ts.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS")));
     }
 
     /**

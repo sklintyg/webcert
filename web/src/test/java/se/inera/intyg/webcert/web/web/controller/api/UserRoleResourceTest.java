@@ -29,8 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
 
-import se.inera.intyg.common.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;

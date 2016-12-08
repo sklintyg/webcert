@@ -123,6 +123,7 @@ public class ArendeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAllQuestions() {
         return transactionTemplate.execute(new TransactionCallback<Response>() {
+            @Override
             public Response doInTransaction(TransactionStatus status) {
                 @SuppressWarnings("unchecked")
                 List<Arende> arenden = entityManager.createQuery("SELECT f FROM Arende f").getResultList();
@@ -142,6 +143,7 @@ public class ArendeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAllQuestionsOnUnit(@PathParam("enhetsId") String enhetsId) {
         return transactionTemplate.execute(new TransactionCallback<Response>() {
+            @Override
             public Response doInTransaction(TransactionStatus status) {
                 @SuppressWarnings("unchecked")
                 List<Arende> arenden = entityManager.createQuery("SELECT f FROM Arende f WHERE f.enhetId = :enhetId")

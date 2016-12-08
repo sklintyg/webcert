@@ -19,11 +19,20 @@
 
 package se.inera.intyg.webcert.web.service.diagnos;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.either;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,20 +59,6 @@ public class DiagnosServiceTest {
         assertEquals("Null should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(null, ICD_10).getResultat());
         assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("", ICD_10).getResultat());
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(" ", ICD_10).getResultat());
-        assertEquals("A is too short and should  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A", ICD_10).getResultat());
-        assertEquals("A0 is too short and should return  invalid", DiagnosResponseType.INVALID_CODE,
-                service.getDiagnosisByCode("A0", ICD_10).getResultat());
-        assertEquals("X01.1X is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND,
-                service.getDiagnosisByCode("X01.1X", ICD_10).getResultat());
-        assertEquals("X00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND,
-                service.getDiagnosisByCode("X00", ICD_10).getResultat());
-        assertEquals("A00 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00", ICD_10).getResultat());
-        assertEquals("A000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A000", ICD_10).getResultat());
-        assertEquals("A00.0 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0", ICD_10).getResultat());
-        assertEquals("A083B should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0", ICD_10).getResultat());
-        assertEquals("A08.3B should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0", ICD_10).getResultat());
-        assertEquals("W0000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("W0000", ICD_10).getResultat());
-
     }
 
     @Test
@@ -71,83 +66,99 @@ public class DiagnosServiceTest {
         assertEquals("Null should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(null, KSH97P).getResultat());
         assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("", KSH97P).getResultat());
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(" ", KSH97P).getResultat());
-        assertEquals("A is too short and should  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A", KSH97P).getResultat());
-        assertEquals("A0 is too short and should return  invalid", DiagnosResponseType.INVALID_CODE,
-                service.getDiagnosisByCode("A0", KSH97P).getResultat());
-        assertEquals("X01-P is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND,
-                service.getDiagnosisByCode("X01-P", KSH97P).getResultat());
-        assertEquals("X00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND,
-                service.getDiagnosisByCode("X00", KSH97P).getResultat());
-        assertEquals("A00 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00", KSH97P).getResultat());
-        assertEquals("A000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A000", KSH97P).getResultat());
-        assertEquals("A09-P should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A09-P", KSH97P).getResultat());
-        assertEquals("A00- should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00-", KSH97P).getResultat());
-        assertEquals("A00P should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A000P", KSH97P).getResultat());
-
     }
 
     @Test
-    public void testDiagnosServiceWithNbrOfResults() {
-        DiagnosResponse res = service.searchDiagnosisByCode("A04", ICD_10, 5);
-        assertNotNull(res);
-        assertEquals(DiagnosResponseType.OK, res.getResultat());
-        assertEquals("Should return codes A040-A045", 5, res.getDiagnoser().size());
+    public void testGetDiagnosisByCodeOrdinaryValue() {
+        // Given
+        int greaterThanZero = Integer.MAX_VALUE - 1;
+        String code = "A04";
+
+        // When
+        DiagnosResponse result = service.searchDiagnosisByCode(code, ICD_10, greaterThanZero);
+
+        /*
+         * Note: this test, in order to not make assumptions about the underlying implementation, will not assume a
+         * hardcoded amount of results to be returned.
+         */
+        // Then
+        assertThat(result, allOf(
+                is(notNullValue()),
+                is(either(
+                        allOf(
+                                hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
+                                hasProperty("diagnoser", hasSize(lessThanOrEqualTo(greaterThanZero)))))
+                                        .or(hasProperty("resultat", equalTo(DiagnosResponseType.NOT_FOUND))))));
     }
 
     @Test
-    public void testDiagnosServiceWithNbrOfResults2() {
-        DiagnosResponse res = service.searchDiagnosisByCode("A04", ICD_10, 10);
-        assertNotNull(res);
-        assertEquals(DiagnosResponseType.OK, res.getResultat());
-        assertEquals(10, res.getDiagnoser().size());
-    }
+    public void testGetDiagnosisByCodeLimitingAmountOfReturnedResultsIfMoreResultsAreAvailable() {
+        // Given
+        int arbitraryChosenUpperBound = 2;
+        String code = "A04";
 
-    @Test
-    public void testDiagnosServiceWithNbrOfResults3() {
-        DiagnosResponse res = service.searchDiagnosisByCode("A04", ICD_10, 15);
-        assertNotNull(res);
-        assertEquals(DiagnosResponseType.OK, res.getResultat());
-        assertEquals(11, res.getDiagnoser().size());
+        // When
+        DiagnosResponse result = service.searchDiagnosisByCode(code, ICD_10, arbitraryChosenUpperBound);
+        DiagnosResponse nonLimitedResults = service.searchDiagnosisByCode(code, ICD_10, Integer.MAX_VALUE - 1);
+
+        // Then
+        assertThat(result, allOf(
+                is(notNullValue()),
+                is(either(
+                        allOf(// Successfully limited amount of results?
+                                hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
+                                hasProperty("diagnoser", hasSize(equalTo(arbitraryChosenUpperBound)))))
+                                        .or(allOf(// Or, there were too few results to reach upper limit?
+                                                hasProperty("resultat", equalTo(nonLimitedResults.getResultat())),
+                                                hasProperty("diagnoser", equalTo(nonLimitedResults.getDiagnoser())),
+                                                hasProperty("diagnoser", hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDiagnosServiceWithNbrOfResultsZero() {
-        service.searchDiagnosisByCode("A04", ICD_10, 0);
+        // Given
+        String anyString = "";
+
+        // When
+        service.searchDiagnosisByCode(anyString, anyString, 0);
+
+        // Then throw IllegalArgumentException
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDiagnosServiceWithNbrOfResultsMinusOne() {
-        service.searchDiagnosisByCode("A04", ICD_10, -1);
+        // Given
+        String anyString = "";
+
+        // When
+        service.searchDiagnosisByCode(anyString, anyString, -1);
+
+        // Then throw IllegalArgumentException
     }
 
     @Test
-    public void testValidateDiagnosService() {
-        assertFalse("Null should return false", service.validateDiagnosisCode("null", ICD_10));
+    public void testDiagnosCodeValidationCanHandleEmptyArgument() {
+        assertFalse("Null should return false", service.validateDiagnosisCode(null, ICD_10));
         assertFalse("Empty string should return false", service.validateDiagnosisCode("", ICD_10));
-        assertFalse("Too short should return false", service.validateDiagnosisCode("A0", ICD_10));
-        assertFalse("Wrong case should return false", service.validateDiagnosisCode("a04", ICD_10));
-        assertTrue("Spaces after should not be a problem", service.validateDiagnosisCode("A04 ", ICD_10));
-
-        assertTrue("A18 is a valid code", service.validateDiagnosisCode("A18", ICD_10));
-        assertTrue("A184 is a valid code", service.validateDiagnosisCode("A184", ICD_10));
-        assertTrue("A18.4 is a valid code", service.validateDiagnosisCode("A18.4", ICD_10));
-        assertTrue("A184D is a valid code", service.validateDiagnosisCode("A184D", ICD_10));
-        assertTrue("A18.4D is a valid code", service.validateDiagnosisCode("A18.4D", ICD_10));
-        assertTrue("A1234 is a valid code", service.validateDiagnosisCode("A1234", ICD_10));
-        assertTrue("A12.34 is a valid code", service.validateDiagnosisCode("A1234", ICD_10));
     }
 
     @Test
-    public void testSearchDiagnosisByDescription() {
-        DiagnosResponse res = service.searchDiagnosisByDescription("infekt", ICD_10, 5);
-        assertNotNull(res);
-        assertEquals(DiagnosResponseType.OK, res.getResultat());
-        assertEquals("Should return 5 results", 5, res.getDiagnoser().size());
-        assertEquals("A040", res.getDiagnoser().get(0).getKod());
-        assertEquals("A041", res.getDiagnoser().get(1).getKod());
-        assertEquals("A042", res.getDiagnoser().get(2).getKod());
-        assertEquals("A043", res.getDiagnoser().get(3).getKod());
-        assertEquals("A072", res.getDiagnoser().get(4).getKod());
+    public void testSearchDiagnosisByDescriptionWithOrdinaryValue() {
+        // Given
+        String searchTerm = "infekt";
+        int greaterThanZero = Integer.MAX_VALUE - 1;
+
+        // When
+        DiagnosResponse result = service.searchDiagnosisByDescription(searchTerm, ICD_10, greaterThanZero);
+
+        // Then
+        assertThat(result, Matchers.<DiagnosResponse> allOf(
+                is(notNullValue()),
+                is(either(
+                        allOf(
+                                hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
+                                hasProperty("diagnoser", hasSize(greaterThan(0)))))
+                                        .or(hasProperty("resultat", equalTo(DiagnosResponseType.NOT_FOUND))))));
 
         assertEquals("Null should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
                 service.searchDiagnosisByDescription(null, ICD_10, 5).getResultat());
@@ -158,8 +169,35 @@ public class DiagnosServiceTest {
     }
 
     @Test
-    public void testValidateDiagnosesCodeMissingKodverk() {
-        boolean valid = service.validateDiagnosisCode("A18", null);
-        assertFalse(valid);
+    public void testSearchDiagnosisByDescriptionLimitingAmountOfReturnedResultsIfMoreResultsAreAvailable() {
+        // Given
+        String searchTerm = "infekt";
+        int arbitraryChosenUpperBound = 2;
+
+        // When
+        DiagnosResponse result = service.searchDiagnosisByDescription(searchTerm, ICD_10, arbitraryChosenUpperBound);
+        DiagnosResponse nonLimitedResults = service.searchDiagnosisByDescription(searchTerm, ICD_10, Integer.MAX_VALUE - 1);
+
+        // Then
+        assertThat(result, allOf(
+                is(notNullValue()),
+                is(either(
+                        allOf(// Successfully limited amount of results?
+                                hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
+                                hasProperty("diagnoser", hasSize(equalTo(arbitraryChosenUpperBound)))))
+                                        .or(allOf(// Or, there were too few results to reach upper limit?
+                                                hasProperty("resultat", equalTo(nonLimitedResults.getResultat())),
+                                                hasProperty("diagnoser", equalTo(nonLimitedResults.getDiagnoser())),
+                                                hasProperty("diagnoser", hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSearchDiagnosisByDescriptionThrowsExceptionForIntegerMaxValue() {
+        service.searchDiagnosisByDescription(null, null, Integer.MAX_VALUE);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSearchDiagnosisByCodeThrowsExceptionForIntegerMaxValue() {
+        service.searchDiagnosisByCode(null, null, Integer.MAX_VALUE);
     }
 }

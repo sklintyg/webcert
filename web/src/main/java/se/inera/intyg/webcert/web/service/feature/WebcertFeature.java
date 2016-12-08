@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.feature;
 
-import se.inera.intyg.common.security.common.service.Feature;
+import se.inera.intyg.infra.security.common.service.Feature;
 
 public enum WebcertFeature implements Feature {
 
@@ -35,21 +35,24 @@ public enum WebcertFeature implements Feature {
     JS_MINIFIED("jsMinified", "webcert.useMinifiedJavaScript");
 
     private final String name;
-    private String envName;
+    private final String envName;
 
     WebcertFeature(String name) {
         this.name = name;
+        this.envName = null;
     }
 
     WebcertFeature(String name, String envName) {
-        this(name);
+        this.name = name;
         this.envName = envName;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getEnvName() {
         return envName;
     }
