@@ -9,8 +9,13 @@ startScripts {
     doLast {
         def persistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
 
+        def originalScript = unixScript.text
         unixScript.text = unixScript.text.replaceAll(/for s in \"\$\{@\}\"/,
             'for s in --driver=com.mysql.jdbc.Driver --classpath=lib/' + persistenceDependency + ' --changeLogFile=changelog/changelog.xml "\\${@}"')
+        if (originalScript.equals(unixScript.text)) {
+                throw new RuntimeException("No replacement seems to have been made to the liquibase script.")
+        }
+
         windowsScript.text = windowsScript.text.replaceAll(/%CMD_LINE_ARGS%/,
             "--driver=com.mysql.jdbc.Driver --classpath=lib/${persistenceDependency} --changeLogFile=changelog/changelog.xml %CMD_LINE_ARGS%")
     }
