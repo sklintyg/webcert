@@ -55,6 +55,19 @@ var LuseUtkast = BaseSmiUtkast._extend({
         this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
         this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
+        this.underlag = {
+            ett: {
+                datum: element(by.id('underlag-0-datum'))
+            },
+            tva: {
+                datum: element(by.id('underlag-1-datum'))
+            },
+            tre: {
+                datum: element(by.id('underlag-2-datum'))
+            }
+
+        };
+
 
         this.baseratPa = {
             minUndersokningAvPatienten: {
