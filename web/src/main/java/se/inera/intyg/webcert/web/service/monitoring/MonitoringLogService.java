@@ -99,4 +99,5 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logRevokedPrint(String intygsId, String intygsTyp);
 
+    void logUtkastPatientDetailsUpdated(String intygsId, String intygsTyp);
 }

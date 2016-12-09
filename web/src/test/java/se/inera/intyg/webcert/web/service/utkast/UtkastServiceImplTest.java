@@ -19,6 +19,26 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.persistence.OptimisticLockException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,11 +47,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Role;
+
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -45,6 +61,11 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
@@ -63,25 +84,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import javax.persistence.OptimisticLockException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -142,7 +144,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         defaultPatient.setPostadress("pa1");
         defaultPatient.setPostnummer("0000");
         defaultPatient.setPostort("ort");
-
 
         se.inera.intyg.common.support.model.common.internal.Vardgivare vardgivare = new se.inera.intyg.common.support.model.common.internal.Vardgivare();
         vardgivare.setVardgivarid("SE234234");
@@ -417,12 +418,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         newPatient.setMellannamn("updated middle-name");
         newPatient.setFornamn("updated firstName");
         newPatient.setFullstandigtNamn("updated full name");
-        newPatient.setPersonId(new Personnummer("01010101-0101"));
+        newPatient.setPersonId(new Personnummer("19121272-1212"));
         newPatient.setPostadress("updated postal address");
         newPatient.setPostnummer("1111111");
         newPatient.setPostort("updated post city");
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient, utkast.getIntygsTyp(), utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient, utkast.getIntygsId(), utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -436,7 +437,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         oldPatient.setPostnummer("000000");
         oldPatient.setPostort("old post city");
         oldPatient.setPersonId(utkast.getPatientPersonnummer());
-        oldPatient.setPersonId(utkast.getPatientPersonnummer());
         grunddata.setPatient(oldPatient);
         grunddata.setSkapadAv(new HoSPersonal());
 
@@ -447,16 +447,17 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-        when(mockModuleApi.updateBeforeSave(anyString(),any(Patient.class))).thenReturn("{}");
+        when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
+        when(userService.isAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId(), false)).thenReturn(true);
         when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        // Assert notification message
+        verify(userService).isAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId(), false);
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
 
@@ -472,7 +473,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private ValidateDraftResponse buildValidationResponse() {
-        return new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList(), Collections.singletonList(new ValidationMessage("testfield", ValidationMessageType.WARN)));
+        return new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList(),
+                Collections.singletonList(new ValidationMessage("testfield", ValidationMessageType.WARN)));
     }
 
     private Patient buildPatient(String pnr, String fornamn, String efternamn) {

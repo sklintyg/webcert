@@ -25,23 +25,13 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
  */
 public class UpdatePatientOnDraftRequest {
     private Patient newPatientDetails;
-    private String draftType;
     private String draftId;
     private long version;
 
-    public UpdatePatientOnDraftRequest(Patient newPatientDetails, String draftType, String draftId, long version) {
+    public UpdatePatientOnDraftRequest(Patient newPatientDetails, String draftId, long version) {
         this.newPatientDetails = newPatientDetails;
-        this.draftType = draftType;
         this.draftId = draftId;
         this.version = version;
-    }
-
-    public String getDraftType() {
-        return draftType;
-    }
-
-    public void setDraftType(String draftType) {
-        this.draftType = draftType;
     }
 
     public Patient getNewPatientDetails() {
@@ -59,7 +49,6 @@ public class UpdatePatientOnDraftRequest {
     public void setDraftId(String draftId) {
         this.draftId = draftId;
     }
-
 
     public long getVersion() {
         return version;

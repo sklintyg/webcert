@@ -337,6 +337,13 @@ public class MonitoringLogServiceImplTest {
     }
 
     @Test
+    public void shouldLogUtkastPatientDetailsUpdated() {
+        logService.logUtkastPatientDetailsUpdated(INTYGS_ID, INTYGS_TYP);
+        verifyLog(Level.INFO, "UTKAST_PATIENT_UPDATED Patient details for utkast 'INTYGS_ID' of type 'INTYGS_TYP' updated");
+    }
+
+
+    @Test
     public void shouldLogDiagnoskodverkChanged() {
         logService.logDiagnoskodverkChanged(INTYGS_ID, INTYGS_TYP);
         verifyLog(Level.INFO, "DIAGNOSKODVERK_CHANGED Diagnoskodverk changed for utkast 'INTYGS_ID' of type 'INTYGS_TYP'");

@@ -201,7 +201,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
 
         if (isUtkast) {
-            // INTYG-3212: Draft patient info should always be up-to-date with the patient info supplied by the integrating journaling system
+            // INTYG-3212: Draft patient info should always be up-to-date with the patient info supplied by the
+            // integrating journaling system
             ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer,
                     postort);
         }
@@ -216,7 +217,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
      *
      *
      * @param intygsType
-     * @param intygsId
+     * @param draftId
      * @param draftVersion
      * @param alternatePatientSSn
      * @param fornamn
@@ -226,12 +227,12 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * @param postnummer
      * @param postort
      */
-    private void ensureDraftPatientInfoUpdated(String intygsType, String intygsId, long draftVersion, String alternatePatientSSn, String fornamn,
+    private void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, String alternatePatientSSn, String fornamn,
             String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
 
         // Should we apply this behaviour for this type of draft?
         if (!AUTO_UPDATE_PATIENT_ON_DRAFT_APPLICABLE_MODULES.contains(intygsType)) {
-            LOG.debug("Draft of type {} draft is not enabled for auto-update of patient details", intygsType);
+            LOG.debug("Auto-update of draft patient details is not enabled for intygstype {}", intygsType);
             return;
         }
 
@@ -258,7 +259,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         patient.setPostnummer(postnummer);
         patient.setPostort(postort);
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(patient, intygsType, intygsId, draftVersion);
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(patient, draftId, draftVersion);
 
         utkastService.updatePatientOnDraft(request);
 

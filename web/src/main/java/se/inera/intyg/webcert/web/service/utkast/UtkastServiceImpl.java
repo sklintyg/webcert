@@ -30,6 +30,7 @@ import java.util.Set;
 
 import javax.persistence.OptimisticLockException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +43,11 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.model.converter.util.WebcertModelFactoryUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
@@ -77,7 +78,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-import org.apache.commons.lang3.StringUtils;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -387,6 +387,8 @@ public class UtkastServiceImpl implements UtkastService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
         }
 
+        abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
+
         // check that the draft hasn't been modified concurrently
         if (utkast.getVersion() != request.getVersion()) {
             LOG.debug("Utkast '{}' was concurrently modified", draftId);
@@ -403,7 +405,7 @@ public class UtkastServiceImpl implements UtkastService {
         final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp());
 
         Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
-        Patient newPatient = createNewMergedPatient(draftPatient, request.getNewPatientDetails());
+        Patient newPatient = WebcertModelFactoryUtil.buildNewEffectivePatient(draftPatient, request.getNewPatientDetails());
 
         if (!draftPatient.equals(newPatient)) {
             LOG.debug("Updated patient detected - about to update draft {}", draftId);
@@ -411,6 +413,7 @@ public class UtkastServiceImpl implements UtkastService {
                 String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), newPatient);
                 updateUtkastModel(utkast, updatedModel);
                 saveDraft(utkast);
+                monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
                 sendNotification(utkast, Event.CHANGED);
             } catch (ModuleException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
@@ -472,62 +475,6 @@ public class UtkastServiceImpl implements UtkastService {
                     "User not authorized for for enhet " + enhetsHsaId);
         }
     }
-    private Patient createNewMergedPatient(Patient draftPatient, Patient newPatientDetails) {
-        Patient mergedPatient = new Patient();
-
-        //Only accept valid personnr or samordningsnummer as new personId
-        if (newPatientDetails.getPersonId() != null && (Personnummer.createValidatedPersonnummerWithDash(newPatientDetails.getPersonId()).isPresent()
-                || newPatientDetails.getPersonId().isSamordningsNummer())) {
-            mergedPatient.setPersonId(newPatientDetails.getPersonId());
-        } else {
-            mergedPatient.setPersonId(draftPatient.getPersonId());
-        }
-
-        if (StringUtils.isNotBlank(newPatientDetails.getFornamn())) {
-            mergedPatient.setFornamn(newPatientDetails.getFornamn());
-        } else {
-            mergedPatient.setFornamn(draftPatient.getFornamn());
-        }
-
-        // Name
-        if (StringUtils.isNotBlank(newPatientDetails.getMellannamn())) {
-            mergedPatient.setMellannamn(newPatientDetails.getMellannamn());
-        } else {
-            mergedPatient.setMellannamn(draftPatient.getMellannamn());
-        }
-
-        if (StringUtils.isNotBlank(newPatientDetails.getEfternamn())) {
-            mergedPatient.setEfternamn(newPatientDetails.getEfternamn());
-        } else {
-            mergedPatient.setEfternamn(draftPatient.getEfternamn());
-        }
-
-        if (StringUtils.isNotBlank(newPatientDetails.getFullstandigtNamn())) {
-            mergedPatient.setFullstandigtNamn(newPatientDetails.getFullstandigtNamn());
-        } else {
-            mergedPatient.setMellannamn(draftPatient.getFullstandigtNamn());
-        }
-
-        // Address
-        if (StringUtils.isNotBlank(newPatientDetails.getPostadress())) {
-            mergedPatient.setPostadress(newPatientDetails.getPostadress());
-        } else {
-            mergedPatient.setPostadress(draftPatient.getPostadress());
-        }
-        if (StringUtils.isNotBlank(newPatientDetails.getPostnummer())) {
-            mergedPatient.setPostnummer(newPatientDetails.getPostnummer());
-        } else {
-            mergedPatient.setPostnummer(draftPatient.getPostnummer());
-        }
-        if (StringUtils.isNotBlank(newPatientDetails.getPostort())) {
-            mergedPatient.setPostort(newPatientDetails.getPostort());
-        } else {
-            mergedPatient.setPostort(draftPatient.getPostort());
-        }
-
-        return mergedPatient;
-    }
-
 
     private ModuleApi getModuleApi(String intygsTyp) {
         try {

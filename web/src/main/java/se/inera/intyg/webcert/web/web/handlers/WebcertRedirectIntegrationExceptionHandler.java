@@ -73,6 +73,8 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
             WebCertServiceException we = (WebCertServiceException) re;
             if (we.getErrorCode() == WebCertServiceErrorCodeEnum.MISSING_PARAMETER) {
                 return buildErrorRedirectResponse("missing-parameter", we.getMessage());
+            } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM) {
+                return buildErrorRedirectResponse("auth-exception", we.getMessage());
             }
         }
         return buildErrorRedirectResponse("unknown", re.getMessage());

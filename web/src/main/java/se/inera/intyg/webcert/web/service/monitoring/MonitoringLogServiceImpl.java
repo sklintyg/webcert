@@ -243,6 +243,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.REVOKED_PRINT, intygsId, intygsType);
     }
 
+    @Override
+    public void logUtkastPatientDetailsUpdated(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.UTKAST_PATIENT_UPDATED, intygsId, intygsTyp);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -282,6 +287,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_READ("Utkast '{}' of type '{}' was read"),
         UTKAST_CREATED("Utkast '{}' of type '{}' created by '{}' on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
+        UTKAST_PATIENT_UPDATED("Patient details for utkast '{}' of type '{}' updated"),
         UTKAST_CONCURRENTLY_EDITED("Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
