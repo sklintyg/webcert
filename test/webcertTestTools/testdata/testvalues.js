@@ -236,6 +236,12 @@ module.exports = {
         efternamn: ''
     }],
 
+    patienterEjPU: [{
+        id: '20121212-1212',
+        namn: '',
+        efternamn: ''
+    }],
+
     enhetsAdress: function() {
         return {
             gata: shuffle(['Bryggaregatan 1', 'Svampstigen 2'])[0],

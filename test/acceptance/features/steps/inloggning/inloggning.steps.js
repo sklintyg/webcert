@@ -80,8 +80,13 @@ module.exports = function() {
     });
 
 
-    this.Given(/^jag matar in personnummer som inte finns i PUtjänsten$/, function(callback) {
-        return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0], callback); //personnummret finns inte med i PU-tjänsten
+    this.Given(/^jag matar in "([^"]*)" som inte finns i PUtjänsten$/, function(typAvNum, callback) {
+        if (typAvNum === 'samordningsnummer') {
+            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0], callback); //personnummret finns inte med i PU-tjänsten
+        } else {
+            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterEjPU)[0], callback);
+        }
+
     });
 
 

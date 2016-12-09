@@ -32,5 +32,5 @@ Scenario: Det ska gå att skicka CreateDraft:2 med ett samordningsnummer
 @saknatsamordningsnummer
 Scenario: Jag ska få ett felmeddelande när ett samordningsnummer saknas i PUtjänsten
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
-	När jag matar in personnummer som inte finns i PUtjänsten
-	Så ska valideringsfelet "Namnuppgifterna kunde inte hämtas och behöver därför fyllas i manuellt" visas
+	När jag matar in "samordningsnummer" som inte finns i PUtjänsten
+	Så ska valideringsfelet "Samordningsnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt." visas

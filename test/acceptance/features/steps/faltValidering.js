@@ -189,7 +189,7 @@ module.exports = function() {
 
 
     this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(arg1) {
-        var alertTexts = element.all(by.css('.alert-warning')).map(function(elm) {
+        var alertTexts = element.all(by.css('.alert')).map(function(elm) {
             return elm.getText();
         });
         return alertTexts.then(function(result) {
