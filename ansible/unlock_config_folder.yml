@@ -1,7 +1,8 @@
 ---
 # This playbook unlocks the config repo folder
 
-- hosts: webcert-tomcat
+- hosts: tomcat
+  serial: 1
   become: yes 
   
   roles:

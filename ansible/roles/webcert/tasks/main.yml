@@ -6,8 +6,8 @@
 - name: Create release directory
   file: path={{ releases_folder }} state=directory
 
-- name: Download intygstjanst-liquibase-runner-{{ version }}.zip
-  get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
+- name: download intygstjanst-liquibase-runner-{{ version }}.zip
+  get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
            dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
   when: deploy_from_repo|bool
 
@@ -16,10 +16,11 @@
   when: not deploy_from_repo|bool
 
 - name: Unzip webcert-liquibase-runner-{{ version }}.zip
-  unarchive: src={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
-             dest={{ releases_folder }}
-             remote_src=yes
-             creates="{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/liquibase-runner"
+  unarchive:
+    src: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip"
+    dest: "{{ releases_folder }}"
+    creates: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/liquibase-runner"
+    remote_src: yes
 
 - name: Run liquibase update
   command: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}/bin/webcert-liquibase-runner --url={{ database_url }} --username={{ database_username }} --password={{ database_password }} update"
@@ -38,11 +39,11 @@
   copy: src={{ inventory_dir }}/../web/build/libs/webcert-web-{{ version }}.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
   when: not deploy_from_repo|bool
 
-- name: Remove old version of unpacked ROOT war
+- name: Remove old version of unpacked war
   file: state=absent
       path={{ webapps_folder }}/ROOT
 
-- name: Remove old version of ROOT war
+- name: Remove old version of war
   file: state=absent
       path={{ webapps_folder }}/ROOT.war
 
@@ -68,9 +69,6 @@
 
 - name: Deploy log-sender-{{ version }}.war as log-sender.war
   command: cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war
-
-- name: Create version file
-  template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
 - name: Fetch configuration repo to get new branches
   command: chdir={{ config_folder }} git fetch origin

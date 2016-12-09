@@ -10,14 +10,10 @@ deploy_from_repo: true
 profiles: test
 
 # Configuration repository
-environment_name: "test"
-config_name: webcert-konfiguration
 config_repository: https://github.com/sklintyg/webcert-konfiguration.git
 config_folder: "{{ inera_root }}/webcert-konfiguration"
 gitcrypt_key_name: "git-crypt4.key"
 gitcrypt_key_file: "./{{ gitcrypt_key_name }}"
-config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
-feature_file_folder: "{{ config_folder }}/{{ environment_name }}/feature"
 
 # Application resources
 # Note: end with slash, in order to copy only files inside the source folder, not the folder itself
@@ -25,11 +21,12 @@ app_resources_src: "{{ playbook_dir }}/../src/main/resources/"
 app_resources_folder: "{{ inera_root }}/webcert-resources"
 
 # Tomcat installation
-tomcat_conf: "{{ inera_root }}/tomcat7/conf"
-tomcat_bin: "{{ inera_root }}/tomcat7/bin"
-tomcat_lib: "{{ inera_root }}/tomcat7/lib"
-tomcat_service: inera-tomcat
-inera_tomcat_folder: "/var/lib/{{ tomcat_service }}"
+tomcat_service: "{{ inventory_hostname }}-tomcat"
+inera_tomcat_folder: "{{ inera_root }}/{{ tomcat_service }}"
+
+tomcat_conf: "{{ inera_tomcat_folder }}/conf"
+tomcat_bin: "{{ inera_tomcat_folder }}/bin"
+tomcat_lib: "{{ inera_tomcat_folder }}/lib"
 webapps_folder: "{{ inera_tomcat_folder }}/webapps"
 
 # Database configuration
