@@ -51,6 +51,7 @@ module.exports = function() {
                     href.indexOf(process.env.WEBCERT_URL) === -1 &&
                     href.indexOf(process.env.MINAINTYG_URL) === -1 &&
                     global.externalPageLinks.indexOf(href) === -1) {
+                    console.log('Found one: ' + href);
                     global.externalPageLinks.push(href);
                 }
             });

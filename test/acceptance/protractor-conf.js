@@ -110,10 +110,16 @@ exports.config = {
         if (global.externalPageLinks.length > 0) {
             var linksArr = [];
 
-            fs.readFile(browser.params.externalLinksFile, function(err, data) {
+            fs.readFile(browser.params.externalLinksFile, 'utf-8', function(err, data) {
                 if (err) {
                     if (err.code === 'ENOENT') {
-                        console.error(browser.params.externalLinksFile + ' finns inte');
+                        console.error(browser.params.externalLinksFile + ' finns inte. Skapar den nu och lägger in aktuella länkar.');
+
+                        fs.writeFile(browser.params.externalLinksFile, global.externalPageLinks.join(','), function(err) {
+                            if (err) {
+                                throw err;
+                            }
+                        });
                         return;
                     } else {
                         throw err;
@@ -122,23 +128,18 @@ exports.config = {
                     linksArr = data.split(',');
 
                     global.externalPageLinks.forEach(function(item) {
-                        if (item.indexOf() === -1) {
+                        if (linksArr.indexOf(item) === -1) {
                             linksArr.push(item);
+                        }
+                    });
+
+                    fs.writeFile(browser.params.externalLinksFile, linksArr.join(','), function(err) {
+                        if (err) {
+                            throw err;
                         }
                     });
                 }
             });
-
-            if (linksArr.length === 0) {
-                linksArr = global.externalPageLinks;
-            }
-
-            fs.writeFile(browser.params.externalLinksFile, linksArr.join(',') + ',', function(err) {
-                if (err) {
-                    throw err;
-                }
-            });
-
         }
     }
 };
