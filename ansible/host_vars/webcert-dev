@@ -1,5 +1,0 @@
-# Configuration repository
-environment_name: "dev"
-config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
-
-deploy_from_repo: false

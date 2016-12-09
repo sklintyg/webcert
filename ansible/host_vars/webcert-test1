@@ -1,8 +1,8 @@
 ---
 
-# Spring profiles
-profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled
-
 # Configuration repository
 environment_name: "test"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
+
+# Spring profiles
+profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled
