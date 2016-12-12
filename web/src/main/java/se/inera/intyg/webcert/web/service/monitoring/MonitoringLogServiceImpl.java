@@ -114,8 +114,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logIntygSigned(String intygsId, String userHsaId, String authScheme, RelationKod relationCode) {
-        logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, userHsaId, authScheme, relationCode != null ? relationCode.name() : "NO RELATION");
+    public void logIntygSigned(String intygsId, String intygsTyp, String userHsaId, String authScheme, RelationKod relationCode) {
+        logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, intygsTyp, userHsaId, authScheme, relationCode != null ? relationCode.name() : "NO RELATION");
     }
 
     @Override
@@ -276,7 +276,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 "Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
         INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF"),
-        INTYG_SIGNED("Intyg '{}' signed by '{}' using scheme '{}' and relation code '{}'"),
+        INTYG_SIGNED("Intyg '{}' of type '{}' signed by '{}' using scheme '{}' and relation code '{}'"),
         INTYG_REGISTERED("Intyg '{}' of type '{}' registered with Intygstjänsten"),
         INTYG_SENT("Intyg '{}' sent to recipient '{}'"),
         INTYG_REVOKED("Intyg '{}' revoked by '{}' reason '{}'"),

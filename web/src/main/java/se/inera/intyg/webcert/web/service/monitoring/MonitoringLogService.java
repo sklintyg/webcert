@@ -51,7 +51,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logIntygPrintPdf(String intygsId, String intygsTyp);
 
-    void logIntygSigned(String intygsId, String userHsaId, String authScheme, RelationKod relationCode);
+    void logIntygSigned(String intygsId, String intygsTyp, String userHsaId, String authScheme, RelationKod relationCode);
 
     void logIntygRegistered(String intygsId, String intygsTyp);
 

@@ -216,7 +216,7 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
 
-        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(), user.getAuthenticationScheme(), utkast.getRelationKod());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(), utkast.getRelationKod());
 
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
@@ -277,7 +277,7 @@ public class SignaturServiceImpl implements SignaturService {
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
         // Audit signing
-        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(), user.getAuthenticationScheme(), utkast.getRelationKod());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(), utkast.getRelationKod());
 
         // Notify stakeholders when a draft has been signed
         notificationService.sendNotificationForDraftSigned(utkast);

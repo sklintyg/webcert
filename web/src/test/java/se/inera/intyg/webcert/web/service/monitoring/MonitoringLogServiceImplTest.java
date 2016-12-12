@@ -166,16 +166,16 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogIntygSigned() {
-        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME, null);
+        logService.logIntygSigned(INTYGS_ID, INTYGS_TYP, HSA_ID, AUTH_SCHEME, null);
         verifyLog(Level.INFO,
-                "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'NO RELATION'");
+                "INTYG_SIGNED Intyg 'INTYGS_ID' of type 'INTYGS_TYP' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'NO RELATION'");
     }
 
     @Test
     public void shouldLogIntygSignedWithRelation() {
-        logService.logIntygSigned(INTYGS_ID, HSA_ID, AUTH_SCHEME, RelationKod.KOMPLT);
+        logService.logIntygSigned(INTYGS_ID, INTYGS_TYP, HSA_ID, AUTH_SCHEME, RelationKod.KOMPLT);
         verifyLog(Level.INFO,
-                "INTYG_SIGNED Intyg 'INTYGS_ID' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'KOMPLT'");
+                "INTYG_SIGNED Intyg 'INTYGS_ID' of type 'INTYGS_TYP' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'KOMPLT'");
     }
 
     @Test
