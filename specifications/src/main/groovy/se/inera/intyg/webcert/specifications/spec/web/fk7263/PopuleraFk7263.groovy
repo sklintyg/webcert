@@ -111,6 +111,7 @@ class PopuleraFk7263 extends ExceptionHandlingFixture {
             }
             if (undersokningDatum != null) {
                 page.baserasPa.undersokningDatum = undersokningDatum
+                page.baserasPa.undersokningDatum << Keys.TAB
             }
             if (telefonkontakt != null){
                 page.baserasPa.setTelefonkontaktCheckBox(telefonkontakt)
@@ -197,6 +198,7 @@ class PopuleraFk7263 extends ExceptionHandlingFixture {
 
             if (funktionsnedsattning != null) {
                 page.funktionsnedsattning = funktionsnedsattning
+                page.funktionsnedsattning << Keys.TAB
             }
 
             if (aktivitetsbegransning != null){
