@@ -8,23 +8,11 @@
     },
     "status": {
       "type": "string"
-    },
-    "messages": {
-      "type": "array",
-      "minItems": 0,
-      "items": {}
-    },
-    "warnings": {
-      "type": "array",
-      "minItems": 0,
-      "items": {}
     }
   },
   "additionalProperties": false,
   "required": [
     "version",
-    "status",
-    "messages",
-    "warnings"
+    "status"
   ]
 }

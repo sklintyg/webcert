@@ -19,27 +19,29 @@
 
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
-import org.junit.Test;
-import se.inera.intyg.intygstyper.fk7263.model.internal.PrognosBedomning;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 
 import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
+import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
+
+import se.inera.intyg.intygstyper.fk7263.model.internal.PrognosBedomning;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Basic test suite that verifies that the endpoint (/moduleapi/utkast) is available and repond according to
@@ -94,11 +96,11 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         given().redirects().follow(false)
                 .expect().statusCode(HttpServletResponse.SC_FOUND)
                 .when().get("logout");
-        
+
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
-        
+
         given().expect().statusCode(200)
         .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
         .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
@@ -125,6 +127,25 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
                 put(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version).then().
                 body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json")).
                 body("version", equalTo(Integer.parseInt(version) + 1));
+    }
+
+    @Test
+    public void testValidateDraft() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsTyp = "fk7263";
+        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
+
+        Response responseIntyg = given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
+                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+
+        JsonPath model = new JsonPath(responseIntyg.body().asString());
+        Map<String, String> content = model.getJsonObject("content");
+
+        given().contentType(ContentType.JSON).body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
+                .expect().statusCode(200)
+                .when().post(BASEAPI + "/{intygsTyp}/{intygsId}/validate").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
     }
 
     @Test

@@ -19,17 +19,13 @@
 
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.util.List;
+import java.util.Map;
+
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
-
-import java.util.List;
-import java.util.Map;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 
 public interface UtkastService {
 
@@ -39,7 +35,7 @@ public interface UtkastService {
 
     Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified);
 
-    SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent);
+    SaveDraftResponse saveDraft(String intygId, long version, String draftAsJson, boolean createPdlLogEvent);
 
     void updatePatientOnDraft(UpdatePatientOnDraftRequest request);
 

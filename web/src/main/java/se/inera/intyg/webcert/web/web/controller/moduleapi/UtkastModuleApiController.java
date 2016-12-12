@@ -19,17 +19,25 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import io.swagger.annotations.Api;
+import java.io.UnsupportedEncodingException;
+
+import javax.persistence.OptimisticLockException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
@@ -38,32 +46,9 @@ import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveAndValidateDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SaveDraftResponse;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
-
-import javax.persistence.OptimisticLockException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
 
 /**
  * Controller for module interaction with drafts.
@@ -161,8 +146,6 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         LOG.debug("---- intyg : " + draftAsJson);
 
-        SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, version, draftAsJson, autoSave);
-
         boolean firstSave = false;
         HttpSession session = request.getSession(true);
         String lastSavedDraft = (String) session.getAttribute(LAST_SAVED_DRAFT);
@@ -172,48 +155,45 @@ public class UtkastModuleApiController extends AbstractApiController {
         session.setAttribute(LAST_SAVED_DRAFT, intygsId);
 
         try {
-            SaveAndValidateDraftResponse validateResponse = utkastService.saveAndValidateDraft(serviceRequest, firstSave);
+            SaveDraftResponse saveResponse = utkastService.saveDraft(intygsId, version, draftAsJson, firstSave);
 
-            SaveDraftResponse responseEntity = buildSaveDraftResponse(validateResponse.getVersion(), validateResponse.getDraftValidation());
-
-            return Response.ok().entity(responseEntity).build();
+            return Response.ok().entity(saveResponse).build();
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
     }
 
-    private SaveAndValidateDraftRequest createSaveAndValidateDraftRequest(String intygId, long version, String draftAsJson, Boolean autoSave) {
-        SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
+    /**
+     * Validate the supplied draft certificate.
+     *
+     * @param intygsId
+     *            The id of the certificate.
+     * @param payload
+     *            Object holding the certificate and its current status.
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/validate")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response validateDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            byte[] payload) {
 
-        request.setIntygId(intygId);
-        request.setVersion(version);
-        request.setDraftAsJson(draftAsJson);
-        request.setAutoSave(autoSave);
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .orThrow();
 
-        return request;
-    }
+        LOG.debug("Validating utkast with id '{}'", intygsId);
 
-    private SaveDraftResponse buildSaveDraftResponse(long version, DraftValidation draftValidation) {
-        SaveDraftResponse responseEntity = new SaveDraftResponse(version, UtkastStatus.DRAFT_COMPLETE);
+        String draftAsJson = fromBytesToString(payload);
 
-        // Always include WARN messages in the return even when the Draft is valid.
-        for (DraftValidationMessage warningMessage : draftValidation.getWarnings()) {
-            responseEntity.addWarning(warningMessage.getField(), warningMessage.getType(), warningMessage.getMessage(), warningMessage.getDynamicKey());
-        }
+        LOG.debug("---- intyg : " + draftAsJson);
 
-        if (draftValidation.isDraftValid()) {
-            return responseEntity;
-        }
+        DraftValidation validateResponse = utkastService.validateDraft(intygsId, intygsTyp, draftAsJson);
 
-        // Make sure we change the status to DRAFT_INCOMPLETE if the draft wasn't valid.
-        responseEntity.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-
-        for (DraftValidationMessage validationMessage : draftValidation.getMessages()) {
-            responseEntity.addMessage(validationMessage.getField(), validationMessage.getType(), validationMessage.getMessage(), validationMessage.getDynamicKey());
-        }
-
-        return responseEntity;
+        LOG.debug("Utkast validation on '{}' is {}", intygsId, validateResponse.isDraftValid() ? "valid" : "invalid");
+        return Response.ok().entity(validateResponse).build();
     }
 
     private String fromBytesToString(byte[] bytes) {
