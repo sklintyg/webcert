@@ -189,7 +189,7 @@ module.exports = function() {
 
 
     this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(arg1) {
-        var alertTexts = element.all(by.css('.alert')).map(function(elm) {
+        var alertTexts = element.all(by.css('.alert-danger.validation')).map(function(elm) {
             return elm.getText();
         });
         return alertTexts.then(function(result) {
@@ -198,6 +198,18 @@ module.exports = function() {
         });
 
     });
+
+    // this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(arg1) {
+    //     var alertTexts = element.all(by.css('.alert-danger validation')).map(function(elm) {
+    //         return elm.getText();
+    //     });
+    //     return alertTexts.then(function(result) {
+    //         return expect(result.join('\n')).to.have.string(arg1);
+
+    //     });
+
+    // });
+
 
     this.Given(/^ska "([^"]*)" valideringsfelet, "([^"]*)" visas$/, function(arg1, arg2) {
 

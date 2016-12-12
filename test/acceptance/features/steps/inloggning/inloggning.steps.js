@@ -80,7 +80,7 @@ module.exports = function() {
     });
 
 
-    this.Given(/^jag matar in "([^"]*)" som inte finns i PUtjänsten$/, function(typAvNum, callback) {
+    this.Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum, callback) {
         if (typAvNum === 'samordningsnummer') {
             return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0], callback); //personnummret finns inte med i PU-tjänsten
         } else {

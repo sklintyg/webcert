@@ -1,6 +1,7 @@
 #language: sv
 
 @samordningsnummer
+@samordningsnummer
 Egenskap: Samordningsnummer
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -29,8 +30,8 @@ Scenario: Det ska gå att skicka CreateDraft:2 med ett samordningsnummer
   Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning" med samordningsnummer
   Så jag går in på intygsutkastet via djupintegrationslänk
 
-@saknatsamordningsnummer
+@saknat
 Scenario: Jag ska få ett felmeddelande när ett samordningsnummer saknas i PUtjänsten
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
-	När jag matar in "samordningsnummer" som inte finns i PUtjänsten
+	När jag anger ett samordningsnummer som inte finns i PUtjänsten
 	Så ska valideringsfelet "Samordningsnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt." visas
