@@ -39,6 +39,14 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
             $scope.personnummer = '';
 
             $scope.loadPatient = function() {
+
+                if($scope.pnrForm && $scope.pnrForm.pnr) {
+                    $scope.pnrForm.pnr.$setTouched();
+                    if($scope.pnrForm.pnr.$invalid){
+                        return;
+                    }
+                }
+
                 $scope.viewState.loading = true;
                 Service.lookupPatient($scope.personnummer).then(function(patientResult) {
                     $scope.viewState.loading = false;
