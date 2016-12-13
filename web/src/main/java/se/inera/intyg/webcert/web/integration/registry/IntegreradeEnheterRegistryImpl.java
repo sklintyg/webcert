@@ -20,7 +20,10 @@
 package se.inera.intyg.webcert.web.integration.registry;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -166,7 +169,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
             return null;
         }
 
-        // update entity with control date;
+        // update entity with control date
         enhet.setSenasteKontrollDatum(LocalDateTime.now());
         integreradEnhetRepository.save(enhet);
 

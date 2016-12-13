@@ -28,7 +28,6 @@ public interface GrpCollectPoller extends Runnable {
 
     void setOrderRef(String orderRef);
     void setTransactionId(String transactionId);
-    // void setWebCertUser(WebCertUser webCertUser);
 
     void setSecurityContext(SecurityContext securityContext);
 }
