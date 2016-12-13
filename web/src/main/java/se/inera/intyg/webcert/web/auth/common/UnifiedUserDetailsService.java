@@ -19,16 +19,16 @@
 
 package se.inera.intyg.webcert.web.auth.common;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
-
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
 
 /**
  * Created by eriklupander on 2015-08-12.
@@ -52,7 +52,7 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
     private WebcertUserDetailsService webcertUserDetailsService;
 
     @Override
-    public Object loadUserBySAML(SAMLCredential samlCredential) throws UsernameNotFoundException {
+    public Object loadUserBySAML(SAMLCredential samlCredential) {
         if (samlCredential.getAuthenticationAssertion() == null) {
             throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. Must contain an authenticationAssertion");
         }

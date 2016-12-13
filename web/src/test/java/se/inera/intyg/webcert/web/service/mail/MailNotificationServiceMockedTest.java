@@ -26,7 +26,9 @@ import static org.mockito.Mockito.when;
 
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-import javax.xml.soap.*;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.junit.Before;
@@ -37,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
@@ -65,7 +68,7 @@ public class MailNotificationServiceMockedTest {
 
     @Before
     public void setUp() {
-        mailNotificationService.setFromAddress("no-reply@webcert.intygstjanster.se");
+        ReflectionTestUtils.setField(mailNotificationService, "fromAddress", "no-reply@webcert.intygstjanster.se");
     }
 
     @Test

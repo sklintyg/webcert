@@ -69,8 +69,6 @@ public class MailLinkServiceImpl implements MailLinkService {
         urlParams.put(PARAM_HOSP_NAME, "");
         urlParams.put(PARAM_PATIENT_SSN, "");
 
-        URI location = UriBuilder.fromPath(urlBaseTemplate).fragment(urlUtkastFragmentTemplate).buildFromMap(urlParams);
-
-        return location;
+        return UriBuilder.fromPath(urlBaseTemplate).fragment(urlUtkastFragmentTemplate).buildFromMap(urlParams);
     }
 }

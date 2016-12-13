@@ -21,9 +21,10 @@ package se.inera.intyg.webcert.web.integration.builder;
 
 import java.util.List;
 
-import com.google.common.base.Joiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Joiner;
 
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -62,7 +63,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private void enrichHoSPerson(HoSPersonal hosPerson) {
         List<PersonInformationType> hsaPersonResponse = hsaPersonService.getHsaPersonInfo(hosPerson.getPersonId());
-        if (hsaPersonResponse != null && hsaPersonResponse.size() > 0) {
+        if (hsaPersonResponse != null && !hsaPersonResponse.isEmpty()) {
             // set befattningar and specialiteter from hsa response
             hosPerson.getBefattningar().addAll(hsaAttributeExtractor.extractBefattningar(hsaPersonResponse));
             hosPerson.getSpecialiteter().addAll(hsaAttributeExtractor.extractSpecialiseringar(hsaPersonResponse));

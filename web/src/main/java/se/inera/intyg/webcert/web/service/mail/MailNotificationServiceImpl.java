@@ -19,6 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.mail;
 
+import java.util.Locale;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +36,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
@@ -38,13 +47,6 @@ import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v
 import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.xml.ws.WebServiceException;
-import java.util.Locale;
 
 /**
  * @author andreaskaltenbach
@@ -68,11 +70,6 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Value("${mail.from}")
     private String fromAddress;
-
-    // package scope for testability
-    void setFromAddress(String fromAddress) {
-        this.fromAddress = fromAddress;
-    }
 
     @Value("${mail.webcert.host.url}")
     private String webCertHostUrl;

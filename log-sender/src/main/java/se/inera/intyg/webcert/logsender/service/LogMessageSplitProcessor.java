@@ -28,14 +28,12 @@ import org.apache.camel.impl.DefaultMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.infra.logmessages.PdlResource;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 
 /**
@@ -63,17 +61,15 @@ public class LogMessageSplitProcessor {
      *      A list of {@link DefaultMessage} where each message contains a body of one {@link PdlLogMessage} having
      *      exactly one {@link PdlResource}.
      * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonParseException
      * @throws PermanentException
      */
-    public List<Message> process(@Body Message body) throws JsonParseException, JsonMappingException, IOException, PermanentException {
+    public List<Message> process(@Body Message body) throws IOException, PermanentException {
 
         List<Message> answer = new ArrayList<>();
 
         if (body != null) {
             PdlLogMessage pdlLogMessage = objectMapper.readValue((String) body.getBody(), PdlLogMessage.class);
-            if (pdlLogMessage.getPdlResourceList().size() == 0) {
+            if (pdlLogMessage.getPdlResourceList().isEmpty()) {
                 LOG.error("No resources in PDL log message {}, not proceeding.", pdlLogMessage.getLogId());
                 throw new PermanentException("No resources in PDL log message, discarding message.");
             } else if (pdlLogMessage.getPdlResourceList().size() == 1) {

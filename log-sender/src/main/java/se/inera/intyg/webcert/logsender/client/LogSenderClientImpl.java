@@ -18,10 +18,16 @@
  */
 package se.inera.intyg.webcert.logsender.client;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.WebServiceException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import se.inera.intyg.webcert.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelogresponder.v1.StoreLogRequestType;
@@ -29,10 +35,6 @@ import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
 import se.riv.ehr.log.v1.LogType;
 import se.riv.ehr.log.v1.ResultCodeType;
-
-import javax.xml.ws.WebServiceException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Responsible for sending a list of {@link LogType} over the {@link StoreLogResponderInterface}.
@@ -54,7 +56,7 @@ public class LogSenderClientImpl implements LogSenderClient {
     @Override
     public StoreLogResponseType sendLogMessage(List<LogType> logEntries) {
 
-        if (logEntries == null || logEntries.size() == 0) {
+        if (logEntries == null || logEntries.isEmpty()) {
             StoreLogResponseType response = new StoreLogResponseType();
             ResultType resultType = new ResultType();
             resultType.setResultCode(ResultCodeType.INFO);

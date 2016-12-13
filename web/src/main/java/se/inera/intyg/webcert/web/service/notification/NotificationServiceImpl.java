@@ -19,12 +19,25 @@
 
 package se.inera.intyg.webcert.web.service.notification;
 
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.*;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFV;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.MAKULE;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFV;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYSVFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
 
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,13 +88,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Qualifier("jmsNotificationTemplateForAggregation")
     private JmsTemplate jmsTemplateForAggregation;
 
-    @PostConstruct
-    public void checkJmsTemplate() {
-        if (jmsTemplateForAggregation == null) {
-            LOGGER.error("Notification is disabled!");
-        }
-    }
-
     @Autowired
     private SendNotificationStrategy sendNotificationStrategy;
 
@@ -96,6 +102,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private UtkastRepository utkastRepo;
+
+    @PostConstruct
+    public void checkJmsTemplate() {
+        if (jmsTemplateForAggregation == null) {
+            LOGGER.error("Notification is disabled!");
+        }
+    }
 
     /*
      * (non-Javadoc)

@@ -200,9 +200,7 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         // Get a list of drafts
-        List<Utkast> utkastList = utkastRepository.filterIntyg(filter, intygsTyper);
-
-        return utkastList;
+        return utkastRepository.filterIntyg(filter, intygsTyper);
     }
 
     @Override

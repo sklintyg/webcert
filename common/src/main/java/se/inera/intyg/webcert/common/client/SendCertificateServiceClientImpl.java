@@ -22,11 +22,13 @@ package se.inera.intyg.webcert.common.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.webcert.common.client.converter.SendCertificateToRecipientTypeConverter;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientType;
 
 /**
  * Exposes the SendCertificateToRecipient SOAP service.
@@ -56,9 +58,7 @@ public class SendCertificateServiceClientImpl implements SendCertificateServiceC
 
         SendCertificateToRecipientType request = SendCertificateToRecipientTypeConverter.convert(intygsId, personId, skickatAv, recipient);
 
-        SendCertificateToRecipientResponseType response = sendService.sendCertificateToRecipient(logicalAddress, request);
-
-        return response;
+        return sendService.sendCertificateToRecipient(logicalAddress, request);
     }
 
     private void validateArgument(String arg, String msg) {

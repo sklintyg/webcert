@@ -104,7 +104,7 @@ public class PPServiceImpl implements PPService {
         }
     }
 
-    private HoSPersonType getPrivatePractitioner(String logicalAddress, GetPrivatePractitionerType parameters) throws WebServiceException {
+    private HoSPersonType getPrivatePractitioner(String logicalAddress, GetPrivatePractitionerType parameters) {
 
         try {
             GetPrivatePractitionerResponseType response = getPrivatePractitionerService.getPrivatePractitioner(logicalAddress, parameters);

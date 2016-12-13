@@ -20,7 +20,14 @@
 package se.inera.intyg.webcert.web.service.arende;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -43,20 +50,26 @@ import se.inera.intyg.intygstyper.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.arende.model.*;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.converter.*;
+import se.inera.intyg.webcert.web.converter.ArendeConverter;
+import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
+import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.ArendeViewConverter;
 import se.inera.intyg.webcert.web.integration.builder.SendMessageToRecipientTypeBuilder;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.*;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -114,7 +127,7 @@ public class ArendeServiceImpl implements ArendeService {
     private CertificateSenderService certificateSenderService;
 
     @Override
-    public Arende processIncomingMessage(Arende arende) throws WebCertServiceException {
+    public Arende processIncomingMessage(Arende arende) {
         if (arendeRepository.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "meddelandeId not unique");
         }
@@ -141,7 +154,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    public ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) throws WebCertServiceException {
+    public ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) {
         if (!VALID_VARD_AMNEN.contains(amne)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
                     + " for new question from vard!");
@@ -250,7 +263,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    public List<Lakare> listSignedByForUnits(String enhetsId) throws WebCertServiceException {
+    public List<Lakare> listSignedByForUnits(String enhetsId) {
 
         List<String> enhetsIdParams = new ArrayList<>();
         if (enhetsId != null) {
@@ -461,7 +474,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
     }
 
-    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent) throws WebCertServiceException {
+    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
                 arende.getSvarPaId() != null);

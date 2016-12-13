@@ -26,9 +26,6 @@ package se.inera.intyg.webcert.common.common;
  */
 public final class Constants {
 
-    private Constants() {
-    }
-
     /** Messaging. */
     public static final String STORE_MESSAGE = "STORE";
     public static final String SEND_MESSAGE = "SEND";
@@ -45,5 +42,8 @@ public final class Constants {
     public static final String JMSX_GROUP_ID = "JMSXGroupID";
     public static final String JMSX_GROUP_SEQ = "JMSXGroupSeq";
     public static final String JMS_REDELIVERED = "JMSRedelivered";
+
+    private Constants() {
+    }
 
 }

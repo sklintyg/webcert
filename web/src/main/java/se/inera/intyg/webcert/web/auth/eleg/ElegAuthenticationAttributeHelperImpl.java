@@ -41,7 +41,7 @@ public class ElegAuthenticationAttributeHelperImpl implements ElegAuthentication
             for (Attribute attribute : attributeStatement.getAttributes()) {
                 if (attribute.getName().equals(attributeName)) {
 
-                    if (attribute.getAttributeValues().size() > 0) {
+                    if (!attribute.getAttributeValues().isEmpty()) {
                         XMLObject xmlObject = attribute.getAttributeValues().get(0);
                         if (xmlObject instanceof XSString && ((XSString) xmlObject).getValue() != null) {
                             return ((XSString) xmlObject).getValue();

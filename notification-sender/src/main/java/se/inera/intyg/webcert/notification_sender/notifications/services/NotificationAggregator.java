@@ -49,7 +49,7 @@ public class NotificationAggregator {
         // Extract the list of exchanges (i.e. messages) from the Exchange.GROUPED_EXCHANGE property.
         List<Exchange> grouped = exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class);
 
-        if (grouped == null || grouped.size() == 0) {
+        if (grouped == null || grouped.isEmpty()) {
             LOG.info("No aggregated log messages, this is normal if camel aggregator has a batch timeout. Doing nothing.");
             return Collections.emptyList();
         }

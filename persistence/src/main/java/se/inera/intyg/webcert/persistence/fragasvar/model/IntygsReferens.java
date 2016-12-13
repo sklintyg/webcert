@@ -31,19 +31,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 @Embeddable
 public class IntygsReferens {
 
-    public IntygsReferens() {
-        // default constructor for hibernate
-    }
-
-    public IntygsReferens(String intygsId, String intygsTyp, Personnummer patientId,
-                          String patientName, LocalDateTime signeringsDatum) {
-        this.intygsId = intygsId;
-        this.intygsTyp = intygsTyp;
-        this.patientId = patientId.getPersonnummer();
-        this.patientNamn = patientName;
-        this.signeringsDatum = signeringsDatum;
-    }
-
     @Column(name = "INTYGS_ID")
     private String intygsId;
 
@@ -60,10 +47,18 @@ public class IntygsReferens {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime signeringsDatum;
 
-    /*
-    @Embedded
-    private String patientId;
-    */
+    public IntygsReferens() {
+        // default constructor for hibernate
+    }
+
+    public IntygsReferens(String intygsId, String intygsTyp, Personnummer patientId,
+                          String patientName, LocalDateTime signeringsDatum) {
+        this.intygsId = intygsId;
+        this.intygsTyp = intygsTyp;
+        this.patientId = patientId.getPersonnummer();
+        this.patientNamn = patientName;
+        this.signeringsDatum = signeringsDatum;
+    }
 
     public String getIntygsId() {
         return intygsId;

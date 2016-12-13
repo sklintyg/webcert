@@ -25,8 +25,6 @@ package se.inera.intyg.webcert.web.auth.common;
  * Created by eriklupander on 2015-10-13.
  */
 public final class AuthConstants {
-    private AuthConstants() {
-    }
 
     public static final String ALIAS_SITHS = "defaultAlias";
     public static final String ALIAS_ELEG = "eleg";
@@ -39,4 +37,8 @@ public final class AuthConstants {
 
     public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT = "urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient";
     public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI = "urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI";
+
+    private AuthConstants() {
+    }
+
 }

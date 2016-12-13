@@ -69,7 +69,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private void enrichHoSPerson(HoSPersonal hosPerson) {
         List<PersonInformationType> hsaPersonResponse = hsaPersonService.getHsaPersonInfo(hosPerson.getPersonId());
-        if (hsaPersonResponse != null && hsaPersonResponse.size() > 0) {
+        if (hsaPersonResponse != null && !hsaPersonResponse.isEmpty()) {
             // set befattningar and specialiteter from hsa response
             hosPerson.getBefattningar().addAll(hsaAttributeExtractor.extractBefattningar(hsaPersonResponse));
             hosPerson.getSpecialiteter().addAll(hsaAttributeExtractor.extractSpecialiseringar(hsaPersonResponse));

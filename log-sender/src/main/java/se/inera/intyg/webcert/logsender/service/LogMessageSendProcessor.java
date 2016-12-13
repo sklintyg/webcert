@@ -29,12 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logsender.client.LogSenderClient;
 import se.inera.intyg.webcert.logsender.converter.LogTypeFactory;
@@ -67,12 +65,10 @@ public class LogMessageSendProcessor {
      * @param groupedLogEntries
      *      A String containing a JSON encoded array of {@link PdlLogMessage}(s)
      * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonParseException
      * @throws BatchValidationException
      * @throws TemporaryException
      */
-    public void process(String groupedLogEntries) throws JsonParseException, JsonMappingException, IOException, BatchValidationException, TemporaryException {
+    public void process(String groupedLogEntries) throws IOException, BatchValidationException, TemporaryException {
 
         try {
 

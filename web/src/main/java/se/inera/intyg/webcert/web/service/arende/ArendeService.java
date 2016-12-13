@@ -19,9 +19,10 @@
 
 package se.inera.intyg.webcert.web.service.arende;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -34,11 +35,11 @@ public interface ArendeService {
     /**
      * Validates and decorates incoming arende with additional information.
      */
-    Arende processIncomingMessage(Arende arende) throws WebCertServiceException;
+    Arende processIncomingMessage(Arende arende);
 
-    ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) throws WebCertServiceException;
+    ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande);
 
-    ArendeConversationView answer(String svarPaMeddelandeId, String meddelande) throws WebCertServiceException;
+    ArendeConversationView answer(String svarPaMeddelandeId, String meddelande);
 
     ArendeConversationView setForwarded(String meddelandeId, boolean vidarebefordrad);
 
@@ -47,7 +48,7 @@ public interface ArendeService {
     /**
      * List names of signing doctors for units where the webcert user is logged in.
      */
-    List<Lakare> listSignedByForUnits(String enhetsId) throws WebCertServiceException;
+    List<Lakare> listSignedByForUnits(String enhetsId);
 
     List<ArendeConversationView> getArenden(String intygsId);
 
