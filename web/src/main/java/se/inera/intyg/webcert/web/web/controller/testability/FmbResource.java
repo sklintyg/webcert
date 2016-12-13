@@ -32,12 +32,14 @@ import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
 
+import java.util.Optional;
+
 @Api(value = "testability fmb", description = "REST API för testbarhet - FMB")
 @Path("/fmb")
 public class FmbResource {
 
     @Autowired
-    private FmbService fmbService;
+    private Optional<FmbService> fmbService;
 
     /**
      * Populate FMB data using the configured endpoint. Using a GET to update data might
@@ -51,8 +53,12 @@ public class FmbResource {
     @Produces(MediaType.APPLICATION_JSON)
     @JsonPropertyDescription("Update FMB data")
     public Response updateFmbData() {
-        fmbService.updateData();
-        return Response.ok().build();
+        if (fmbService.isPresent()) {
+            fmbService.get().updateData();
+            return Response.ok().build();
+        } else {
+            return Response.serverError().entity("FMB Service not running").build();
+        }
     }
 
 }
