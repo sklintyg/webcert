@@ -93,11 +93,8 @@ describe('arende on fk7263 intyg', function() {
     });
 
     describe('make sure "Fortsätt på intygsutkast" buttons exists', function() {
-        it('is showing fk intyg', function() {
-            expect(Fk7263IntygPage.isAt()).toBeTruthy();
-        });
-
         it('Click the Fortsatt button in arende view', function() {
+            Fk7263IntygPage.get(intygId);
             Fk7263IntygPage.fortsattPaIntygsutkast(meddelandeId);
             expect(Fk7263UtkastPage.isAt()).toBeTruthy();
         });

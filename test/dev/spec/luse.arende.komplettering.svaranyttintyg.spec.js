@@ -93,17 +93,12 @@ describe('arende on luse intyg', function() {
     });
 
     describe('make sure "Svara med nytt intyg" button have changed to "Fortsätt på intygsutkast"', function() {
-        it('is showing fk intyg', function() {
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-        });
-
         it('Is showing the Fortsatt button in arende view', function() {
+            LuseIntygPage.get(intygId);
             expect(LuseIntygPage.getSvaraPaKompletteringFortsattPaIntygsutkastButton(meddelandeId).isDisplayed()).toBeTruthy();
             LuseIntygPage.getSvaraPaKompletteringFortsattPaIntygsutkastButton(meddelandeId).click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
         });
-
-
     });
 
 });
