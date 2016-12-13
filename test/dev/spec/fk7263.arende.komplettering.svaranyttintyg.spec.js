@@ -92,28 +92,6 @@ describe('arende on fk7263 intyg', function() {
         });
     });
 
-    describe('show related intyg', function() {
-        it('should not be visible as default', function() {
-            expect(Fk7263UtkastPage.relatedIntygList.isPresent()).toBeFalsy();
-        });
-
-        it('should become visible when toggled', function() {
-            Fk7263UtkastPage.togglerelatedIntygList.click();
-            expect(Fk7263UtkastPage.relatedIntygList.isPresent()).toBeTruthy();
-            expect(Fk7263UtkastPage.relatedIntygList.rows().count()).toBe(3);
-            expect(Fk7263UtkastPage.relatedIntygList.row(2).visa.getText()).toBe('Visas nu');
-            expect(Fk7263UtkastPage.relatedIntygList.row(2).relation.getText()).toBe('Kompletterar');
-            expect(Fk7263UtkastPage.relatedIntygList.row(2).status.getText()).toBe('Utkast, kan signeras');
-            expect(Fk7263UtkastPage.relatedIntygList.row(3).relation.getText()).toBe('');
-            expect(Fk7263UtkastPage.relatedIntygList.row(3).status.getText()).toBe('Signerat');
-        });
-
-        it('should return to intyg when Visa button is clicked', function() {
-            Fk7263UtkastPage.relatedIntygList.row(3).visa.click();
-            expect(Fk7263IntygPage.isAt()).toBeTruthy();
-        });
-    });
-
     describe('make sure "Fortsätt på intygsutkast" buttons exists', function() {
         it('is showing fk intyg', function() {
             expect(Fk7263IntygPage.isAt()).toBeTruthy();
@@ -121,21 +99,6 @@ describe('arende on fk7263 intyg', function() {
 
         it('Click the Fortsatt button in arende view', function() {
             Fk7263IntygPage.fortsattPaIntygsutkast(meddelandeId);
-            expect(Fk7263UtkastPage.isAt()).toBeTruthy();
-        });
-    });
-
-    describe('make sure we go to the previously created utkast when clicking the appropriate button in the modal', function() {
-        it('Click related intyg button again, assert is showing fk intyg', function() {
-            Fk7263UtkastPage.togglerelatedIntygList.click();
-            Fk7263UtkastPage.relatedIntygList.row(3).visa.click();
-            expect(Fk7263IntygPage.isAt()).toBeTruthy();
-        });
-
-        it('Is showing the Fortsatt button in modal', function() {
-            Fk7263IntygPage.svaraMedNyttIntyg(meddelandeId);
-            expect(Fk7263IntygPage.getKompletteringsDialog().modalDialogHeader.isDisplayed()).toBeTruthy();
-            Fk7263IntygPage.getKompletteringsDialog().fortsattPaIntygsutkastKnapp.click();
             expect(Fk7263UtkastPage.isAt()).toBeTruthy();
         });
     });

@@ -92,28 +92,6 @@ describe('arende on luse intyg', function() {
         });
     });
 
-    describe('show related intyg', function() {
-        it('should not be visible as default', function() {
-            expect(LuseUtkastPage.relatedIntygList.isPresent()).toBeFalsy();
-        });
-
-        it('should become visible when toggled', function() {
-            LuseUtkastPage.togglerelatedIntygList.click();
-            expect(LuseUtkastPage.relatedIntygList.isPresent()).toBeTruthy();
-            expect(LuseUtkastPage.relatedIntygList.rows().count()).toBe(3);
-            expect(LuseUtkastPage.relatedIntygList.row(2).visa.getText()).toBe('Visas nu');
-            expect(LuseUtkastPage.relatedIntygList.row(2).relation.getText()).toBe('Kompletterar');
-            expect(LuseUtkastPage.relatedIntygList.row(2).status.getText()).toBe('Utkast, kan signeras');
-            expect(LuseUtkastPage.relatedIntygList.row(3).relation.getText()).toBe('');
-            expect(LuseUtkastPage.relatedIntygList.row(3).status.getText()).toBe('Signerat');
-        });
-
-        it('should return to intyg when Visa button is clicked', function() {
-            LuseUtkastPage.relatedIntygList.row(3).visa.click();
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-        });
-    });
-
     describe('make sure "Svara med nytt intyg" button have changed to "Fortsätt på intygsutkast"', function() {
         it('is showing fk intyg', function() {
             expect(LuseIntygPage.isAt()).toBeTruthy();
@@ -126,21 +104,6 @@ describe('arende on luse intyg', function() {
         });
 
 
-    });
-
-    describe('make sure we go to the previously created utkast when clicking the appropriate button in the modal', function() {
-        it('Click related intyg button again, assert is showing fk intyg', function() {
-            LuseUtkastPage.togglerelatedIntygList.click();
-            LuseUtkastPage.relatedIntygList.row(3).visa.click();
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-        });
-
-        it('Is showing the Fortsatt button in modal', function() {
-            LuseIntygPage.getSvaraPaKompletteringButton(meddelandeId).click();
-            expect(LuseIntygPage.kompletteraMedFortsattPaIntygsutkastButton.isDisplayed()).toBeTruthy();
-            LuseIntygPage.kompletteraMedFortsattPaIntygsutkastButton.click();
-            expect(LuseUtkastPage.isAt()).toBeTruthy();
-        });
     });
 
 });
