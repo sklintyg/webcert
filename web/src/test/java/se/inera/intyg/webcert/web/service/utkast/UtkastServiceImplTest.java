@@ -221,7 +221,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testSaveAndValidateDraftFirstSave() throws Exception {
+    public void testSaveDraftDraftFirstSave() throws Exception {
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
@@ -257,7 +257,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testSaveAndValidateDraftSecondSave() throws Exception {
+    public void testSaveDraftSecondSave() throws Exception {
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
@@ -292,7 +292,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testSaveAndValidateDraftThatIsSigned() {
+    public void testSaveDraftThatIsSigned() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
@@ -303,7 +303,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
-    public void testSaveAndValidateDraftWithExceptionInModule() throws Exception {
+    public void testSaveDraftWithExceptionInModule() throws Exception {
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
