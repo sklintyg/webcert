@@ -54,13 +54,13 @@ module.exports = function(grunt) {
 
     var modules = {
         'common':      { base: 'common/web' },
-        'fk7263':      { base: 'intygstyper/fk7263' },
-        'ts-bas':      { base: 'intygstyper/ts/ts-bas' },
-        'ts-diabetes': { base: 'intygstyper/ts/ts-diabetes' },
-        'luse':        { base: 'intygstyper/fk/luse', angularModule:'luse' },
-        'lisjp':       { base: 'intygstyper/fk/lisjp', angularModule:'lisjp' },
-        'luae_na':     { base: 'intygstyper/fk/luae_na', angularModule:'luae_na' },
-        'luae_fs':     { base: 'intygstyper/fk/luae_fs', angularModule:'luae_fs' }
+        'fk7263':      { base: 'common/fk7263' },
+        'ts-bas':      { base: 'common/ts/ts-bas' },
+        'ts-diabetes': { base: 'common/ts/ts-diabetes' },
+        'luse':        { base: 'common/fk/luse', angularModule:'luse' },
+        'lisjp':       { base: 'common/fk/lisjp', angularModule:'lisjp' },
+        'luae_na':     { base: 'common/fk/luae_na', angularModule:'luae_na' },
+        'luae_fs':     { base: 'common/fk/luae_fs', angularModule:'luae_fs' }
     };
     Object.keys(modules).forEach(function(moduleName) {
         var module = modules[moduleName];
