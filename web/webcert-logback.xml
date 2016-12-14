@@ -115,7 +115,7 @@
 
   <logger name="se.inera.webcert.notifications" level="info" />
 
-  <logger name="se.inera.intyg.common.integration" level="info" />
+  <logger name="se.inera.intyg.infra.integration" level="info" />
 
   <!-- Log service for monitoring and audit information -->
   <logger name="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService" level="info" />
