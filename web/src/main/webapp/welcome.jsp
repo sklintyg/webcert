@@ -466,7 +466,9 @@
       "forskrivarKod": "2481632"
     }
   ];
+</script>
 
+<script type="text/javascript">
   function updateJsonInput() {
     var jsonEl = document.getElementById("userJson");
     var jsonElView = document.getElementById("userJsonDisplay");
@@ -484,9 +486,34 @@
     'WcWelcomeApp.controllers'
   ]);
 
-  angular.module('WcWelcomeApp.controllers', []).controller('welcomeController', function($scope) {
+  angular.module('WcWelcomeApp.controllers', []).controller('welcomeController', function($scope, $http) {
     $scope.loginModel = loginArr;
     $scope.selectedIndex = '40';
+
+      $scope.intlink = {
+          id: '',
+          alternatePatientSSn: '',
+          fornamn: 'Nils',
+          mellannamn: 'Nisse',
+          efternamn: 'Nygren',
+          postadress: 'Nygatan 14',
+          postnummer: '555 66',
+          postort: 'Nyberga',
+          sjf: true
+      };
+     $scope.djupintegrationsInloggning = function(evt) {
+         evt.preventDefault();
+         var jsonEl = angular.element(document.querySelector('#userJsonDisplay'));
+         $http.post('/fake', "userJsonDisplay=" +jsonEl.text(), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
+             var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
+             q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
+             q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
+             window.location.href=q;
+         }, function fail(error) {
+             alert("Fel vid djupintegrations-inloggningen!");
+         });
+
+     };
 
     $scope.$watch('selectedIndex', function(newSelected, oldVal) {
       $scope.updateUserContext(newSelected, oldVal);
@@ -737,31 +764,38 @@
             men som inte förekommer i template-listan.</p>
 
           <div class="form-group col-xs-8">
-            <h4>Mallar</h4>
+            <h4>Visa Mallar för : <span class="envButtons"><label for="all"><input id="all" name="all" type="radio"
+                                                                                 ng-model="environment.name"
+                                                                                 value="all" /> Alla</label></span>
+            <span class="envButtons"><label for="dev"><input id="dev" name="dev" type="radio"
+                                                             ng-model="environment.name"
+                                                             value="dev" /> Dev</label></span>
+            <span class="envButtons"><label for="demo"><input id="demo" name="demo" type="radio"
+                                                              ng-model="environment.name" value="demo" /> Demo</label></span>
+            </h4>
             <select name="jsonSelect" id="jsonSelect" ng-model="selectedIndex" size="15" class="form-control"
                     style="width: 100%">
               <option ng-repeat="option in data.availableOptions" ng-if="whichEnv(option.env)" id="{{option.hsaId}}"
                       value="{{option.id}}">{{option.name}}
               </option>
             </select>
-            <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary"
+
+
+
+            <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-lg"
                    style="margin-top: 20px; width: 100%">
           </div>
 
           <div class="form-group col-xs-4">
-            <div>
-              <h4>Miljö</h4>
-              <span class="envButtons"><label for="all"><input id="all" name="all" type="radio"
-                                                               ng-model="environment.name"
-                                                               value="all" /> All</label></span>
-              <span class="envButtons"><label for="dev"><input id="dev" name="dev" type="radio"
-                                                               ng-model="environment.name"
-                                                               value="dev" /> Dev</label></span>
-              <span class="envButtons"><label for="demo"><input id="demo" name="demo" type="radio"
-                                                                ng-model="environment.name" value="demo" /> Demo</label></span>
+            <div style="padding-top: 0.6em;">
+              <h4>Inloggningsprofil</h4>
+              <input type="hidden" id="userJson" name="userjson" />
+              <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
+                        style="height: 200px; width: 100%;">
+                        </textarea>
             </div>
-            <div>
-              <h4>Origin</h4>
+
+            <h5>Logga in med origin: </h5>
               <span class="originButtons"><label for="NORMAL"><input id="NORMAL" name="origin" type="radio"
                                                                      ng-model="environment.origin" value="NORMAL"
                                                                      checked /> NORMAL</label></span>
@@ -770,14 +804,21 @@
                                                                               value="DJUPINTEGRATION" /> DJUPINTEGRATION</label></span>
               <span class="originButtons"><label for="UTHOPP"><input id="UTHOPP" name="origin" type="radio"
                                                                      ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
-            </div>
-            <div style="padding-top: 0.6em;">
-              <h4>Inloggningsprofil</h4>
-              <input type="hidden" id="userJson" name="userjson" />
-              <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
-                        style="height: 200px; width: 100%;">
-                        </textarea>
-            </div>
+                <div ng-if="environment.origin === 'DJUPINTEGRATION'" class="panel panel-default panel-body ">
+                  <small>Djupintegrationslänk-genväg: Välj journalsystem-parametrar och tryck på länkinloggning.</small>
+                  <input type="text" class="form-control" size="40" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
+                  <input type="text" class="form-control" size="20" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
+                  <input type="text" class="form-control" size="20" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
+                  <input type="text" class="form-control" size="20" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
+                  <input type="text" class="form-control" size="20" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
+                  <input type="text" class="form-control" size="20" ng-model="intlink.postadress" placeholder="Postadress"><br>
+                  <input type="text" class="form-control" size="6" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
+                     <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <label for="sjf-checkbox">Sammanhållen Journalföring</label><br>
+                  <button ng-click="djupintegrationsInloggning($event)" class="btn btn-sm btn-warning" style="width:100%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">länkinloggning</button>
+
+                </div>
+
+
           </div>
 
         </div>
