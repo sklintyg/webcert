@@ -162,8 +162,8 @@
                               ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-default btn-secondary' : qa.vidarebefordrad}"
                               title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
                               ng-click="openMailDialog(qa)">
-                        <img ng-if="!qa.vidarebefordrad" src="/img/mail.png">
-                        <img ng-if="qa.vidarebefordrad" src="/img/mail_dark.png">
+                        <span class="glyphicon glyphicon-share-alt"
+                              ng-class="{'forward-active': !qa.vidarebefordrad, 'forward-inactive': qa.vidarebefordrad}"></span>
                       </button>
                     </td>
                     <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">

@@ -54,7 +54,7 @@
 
 <h2>Tillbakaknapp</h2>
   Används bla i skriv utkastsidan.<br>
-<a id="tillbakaButton" class="backlink-icon" href="" title="Tillbaka till Skriv intyg"></a>
+<a id="tillbakaButton" class="backlink-icon glyphicons glyphicons-circle-arrow-left" href="" title="Tillbaka till Skriv intyg"></a>
 
 
 <h2>wc-help-mark</h2>
@@ -64,8 +64,7 @@ Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
 
 <h2>Vidarebefodrad knapp (både action och indikator på vidarebefordrad state)</h2>
 <button type="button" class="btn btn-default vidarebefordra-btn" ng-class="{'btn-info': !cert1.vidarebefordrad, 'btn-default btn-secondary' : cert1.vidarebefordrad}" ng-click="cert1.vidarebefordrad = !cert1.vidarebefordrad">
-  <img ng-if="!cert1.vidarebefordrad" src="/img/mail.png">
-  <img ng-if="cert1.vidarebefordrad" src="/img/mail_dark.png">
+  <span class="glyphicon glyphicon-share-alt"></span>
 </button>
 
 

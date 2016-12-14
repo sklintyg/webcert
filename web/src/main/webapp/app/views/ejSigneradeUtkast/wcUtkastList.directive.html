@@ -21,8 +21,8 @@
               ng-class="{'btn-info': !intyg.vidarebefordrad, 'btn-default btn-secondary' : intyg.vidarebefordrad}"
               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
               ng-click="openMailDialog(intyg)">
-        <img ng-if="!intyg.vidarebefordrad" src="/img/mail.png">
-        <img ng-if="intyg.vidarebefordrad" src="/img/mail_dark.png">
+          <span class="glyphicon glyphicon-share-alt"
+                ng-class="{'forward-active': !intyg.vidarebefordrad, 'forward-inactive': intyg.vidarebefordrad}"></span>
       </button>
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST" class="center">
