@@ -33,7 +33,7 @@ angular.module('showcase').controller('showcase.UtkastCtrl',
                 show: false
             };
 
-            CommonViewState.validationSections = [
+            CommonViewState.validation.sections = [
                 'diagnos',
                 'aktuellt-sjukdomsforlopp'
             ];
