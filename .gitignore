@@ -3,15 +3,11 @@
 .project
 .settings
 .sonar
-
 .idea
 *.iml
-
 *.log
 rebel.xml
-
 .DS_Store
-
 generated
 bin
 node
@@ -28,3 +24,5 @@ build
 node-v*
 typings/
 reports/
+jsconfig.json
+typings.json
