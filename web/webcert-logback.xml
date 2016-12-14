@@ -103,7 +103,7 @@
 
   <logger name="se.inera.intyg.webcert" level="info" />
 
-  <logger name="se.inera.intyg.intygstyper" level="info" />
+  <logger name="se.inera.intyg.common" level="info" />
 
   <logger name="org.apache.camel" level="error" />
 

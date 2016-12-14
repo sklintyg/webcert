@@ -39,7 +39,7 @@ import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 
-import se.inera.intyg.intygstyper.fk7263.model.internal.PrognosBedomning;
+import se.inera.intyg.common.fk7263.model.internal.PrognosBedomning;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 

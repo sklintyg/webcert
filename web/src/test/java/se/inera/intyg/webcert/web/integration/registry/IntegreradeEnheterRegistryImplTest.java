@@ -37,9 +37,9 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.intygstyper.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;

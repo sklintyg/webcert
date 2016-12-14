@@ -119,7 +119,7 @@
     <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService" />
 
     <!-- Used to send notifications of type fk7263 on schema version 1 -->
-    <bean class="se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification" />
+    <bean class="se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification" />
 
     <bean id="messageSource"
       class="org.springframework.context.support.ResourceBundleMessageSource">

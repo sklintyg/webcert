@@ -27,8 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.*;
-import se.inera.intyg.intygstyper.fk7263.schemas.clinicalprocess.healthcond.certificate.converter.ModelConverter;
-import se.inera.intyg.intygstyper.fk7263.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
+import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certificate.converter.ModelConverter;
+import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubLatencyAware;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;

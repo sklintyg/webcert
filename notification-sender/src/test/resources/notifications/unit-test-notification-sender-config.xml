@@ -44,7 +44,7 @@
   <bean id="certificateStatusUpdateForCareResponderV2" class="se.inera.intyg.webcert.notification_sender.mocks.v2.CertificateStatusUpdateForCareResponderStub"/>
 
   <bean id="mockFk7263Converter" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification" />
+    <constructor-arg value="se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification" />
   </bean>
 
 </beans>

@@ -131,12 +131,12 @@ dependencies {
     compile "se.inera.intyg.infra:security-siths:${infraVersion}"
     compile "se.inera.intyg.infra:common-cache-metrics:${infraVersion}"
 
-    compile "se.inera.intyg.intygstyper:ts-bas:${typerVersion}"
-    compile "se.inera.intyg.intygstyper:ts-diabetes:${typerVersion}"
-    compile "se.inera.intyg.intygstyper:luse:${typerVersion}"
-    compile "se.inera.intyg.intygstyper:lisjp:${typerVersion}"
-    compile "se.inera.intyg.intygstyper:luae_na:${typerVersion}"
-    compile "se.inera.intyg.intygstyper:luae_fs:${typerVersion}"
+    compile "se.inera.intyg.common:ts-bas:${commonVersion}"
+    compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"
+    compile "se.inera.intyg.common:luse:${commonVersion}"
+    compile "se.inera.intyg.common:lisjp:${commonVersion}"
+    compile "se.inera.intyg.common:luae_na:${commonVersion}"
+    compile "se.inera.intyg.common:luae_fs:${commonVersion}"
 
     compile "org.springframework:spring-web:${springVersion}"
     compile "org.springframework:spring-webmvc:${springVersion}"

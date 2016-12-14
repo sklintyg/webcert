@@ -30,8 +30,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.stub.HsaServiceStub;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.intygstyper.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.intygstyper.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.webcert.mailstub.MailStore;
 import se.inera.intyg.webcert.mailstub.OutgoingMail;
 

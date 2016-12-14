@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.intygstyper.fkparent.support.ResultTypeUtil;
+import se.inera.intyg.common.fkparent.support.ResultTypeUtil;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.*;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;

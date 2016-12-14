@@ -59,7 +59,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.FragorOchS
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.intygstyper.fk7263.model.converter.Fk7263InternalToNotification;
+import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
 import se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;

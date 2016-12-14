@@ -2,9 +2,9 @@ description = 'Webcert (Common)'
 
 dependencies {
     compile "se.inera.intyg.infra:log-messages:${infraVersion}"
-    compile "se.inera.intyg.intygstyper:fk7263:${typerVersion}"
-    compile "se.inera.intyg.intygstyper:ts-parent:${typerVersion}"
-    compile "se.inera.intyg.intygstyper:fk-parent:${typerVersion}"
+    compile "se.inera.intyg.common:fk7263:${commonVersion}"
+    compile "se.inera.intyg.common:ts-parent:${commonVersion}"
+    compile "se.inera.intyg.common:fk-parent:${commonVersion}"
 
     compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
 }
