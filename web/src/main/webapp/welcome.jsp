@@ -804,16 +804,18 @@
                                                                               value="DJUPINTEGRATION" /> DJUPINTEGRATION</label></span>
               <span class="originButtons"><label for="UTHOPP"><input id="UTHOPP" name="origin" type="radio"
                                                                      ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
-                <div ng-if="environment.origin === 'DJUPINTEGRATION'" class="panel panel-default panel-body ">
-                  <small>Djupintegrationslänk-genväg: Välj journalsystem-parametrar och tryck på länkinloggning.</small>
-                  <input type="text" class="form-control" size="40" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
-                  <input type="text" class="form-control" size="20" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
-                  <input type="text" class="form-control" size="20" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
-                  <input type="text" class="form-control" size="20" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
-                  <input type="text" class="form-control" size="20" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
-                  <input type="text" class="form-control" size="20" ng-model="intlink.postadress" placeholder="Postadress"><br>
-                  <input type="text" class="form-control" size="6" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
-                     <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <label for="sjf-checkbox">Sammanhållen Journalföring</label><br>
+                <div ng-if="environment.origin === 'DJUPINTEGRATION'" class="panel panel-body panel-info">
+
+                  <p>Djupintegrationslänk-genväg: Välj journalsystem-parametrar och tryck på länkinloggning.</p>
+
+                  <label for="intlink-id" class="control-label">utkast/intygsid:</label> <input type="text" class="form-control" size="40" id="intlink-id" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
+                  <label for="alternatePatientSSn" class="control-label">alternatePatientSSn:</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
+                  <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
+                  <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
+                  <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
+                  <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.postadress" placeholder="Postadress"><br>
+                  <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
+                  <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
                   <button ng-click="djupintegrationsInloggning($event)" class="btn btn-sm btn-warning" style="width:100%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">länkinloggning</button>
 
                 </div>
