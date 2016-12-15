@@ -17,18 +17,92 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, Promise */
+/* globals logger, pages, Promise, wcTestTools */
 
 'use strict';
 
-// var helpers = require('./helpers.js');
-// var lusePage = pages.intyg.lisjp.intyg;
+var testdataHelper = wcTestTools.helpers.testdata;
+var lisjpPage = pages.intyg.lisjp.intyg;
+
+function checkBaseratPa(baseratPa) {
+    var minUndersokningText = testdataHelper.dateToText((baseratPa.undersokning));
+    var journaluppgifterText = testdataHelper.dateToText((baseratPa.journaluppgifter));
+    var annatText = testdataHelper.dateToText((baseratPa.annat));
+    var annatBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.annatBeskrivning);
+
+    return Promise.all([
+        expect(lisjpPage.baseratPa.minUndersokningAvPatienten.getText()).to.eventually.equal(minUndersokningText),
+        expect(lisjpPage.baseratPa.journaluppgifter.getText()).to.eventually.equal(journaluppgifterText),
+        expect(lisjpPage.baseratPa.annat.getText()).to.eventually.equal(annatText),
+        expect(lisjpPage.baseratPa.annatBeskrivning.getText()).to.eventually.equal(annatBeskrivningText)
+    ]);
+}
+
+function checkDiagnos(diagnos) {
+    diagnos.diagnoser = [];
+    diagnos.diagnoser.push({
+        kod: diagnos.kod,
+        bakgrund: diagnos.bakgrund
+    });
+    console.log('DIAGNOSER');
+    console.log(diagnos.diagnoser);
+    var diagnoser = diagnos.diagnoser;
+    // var nyBedomning = testdataHelper.boolTillJaNej(diagnos.nyBedomning);
+    var promiseArr = [];
+    for (var i = 0; i < diagnoser.length; i++) {
+        promiseArr.push(expect(lisjpPage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.equal(diagnoser[i].kod));
+    }
+    // promiseArr.push(expect(lisjpPage.diagnoser.grund.getText()).to.eventually.equal(diagnos.narOchVarStalldesDiagnoserna));
+    // promiseArr.push(expect(lisjpPage.diagnoser.nyBedomningDiagnosgrund.getText()).to.eventually.contain(nyBedomning));
+
+    return Promise.all(promiseArr);
+
+}
+
+function checkFunktionsnedsattning(nedsattning) {
+    return expect(lisjpPage.funktionsnedsattning.getText()).to.eventually.equal(nedsattning);
+}
+
+function checkAktivitetsbegransning(begr) {
+    return expect(lisjpPage.aktivitetsbegransning.getText()).to.eventually.equal(begr);
+}
 
 module.exports = {
     checkValues: function(intyg, callback) {
         logger.info('-- Kontrollerar Läkarintyg för sjukpenning --');
         logger.warn('intyg med typ: ' + intyg.typ + 'saknar funktioner för kontroll av data');
         return Promise.all([ //kommer snart
+            //Baserat på
+            checkBaseratPa(intyg.baseratPa)
+            .then(function(value) {
+                logger.info('OK - Baseras på');
+            }, function(reason) {
+                throw ('FEL, Baseras på: ' + reason);
+            }),
+
+            //Diagnoser
+            checkDiagnos(intyg.diagnos)
+            .then(function(value) {
+                logger.info('OK - Diagnos');
+            }, function(reason) {
+                throw ('FEL, Diagnos: ' + reason);
+            }),
+
+            //Funktionsnedsättning
+            checkFunktionsnedsattning(intyg.funktionsnedsattning)
+            .then(function(value) {
+                logger.info('OK - Funktionsnedsättning');
+            }, function(reason) {
+                throw ('FEL, Funktionsnedsättning: ' + reason);
+            }),
+
+            //Aktivitestbegränsning
+            checkAktivitetsbegransning(intyg.aktivitetsbegransning)
+            .then(function(value) {
+                logger.info('OK - Aktivitestbegränsning');
+            }, function(reason) {
+                throw ('FEL, Aktivitestbegränsning: ' + reason);
+            })
         ]);
     }
 };
