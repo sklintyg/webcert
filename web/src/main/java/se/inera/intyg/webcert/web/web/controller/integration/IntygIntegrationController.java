@@ -92,6 +92,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     // Which modules should have the auto-update patient on draft behaviour?
     private static final List<String> AUTO_UPDATE_PATIENT_ON_DRAFT_APPLICABLE_MODULES = Arrays.asList(
+            Fk7263EntryPoint.MODULE_ID,
             LuseEntryPoint.MODULE_ID,
             LisjpEntryPoint.MODULE_ID,
             LuaenaEntryPoint.MODULE_ID,
@@ -245,20 +246,23 @@ public class IntygIntegrationController extends BaseIntegrationController {
         // 1. Create patient info based on what the journal system supplied
         Patient patient = new Patient();
         patient.setPersonId(new Personnummer(alternatePatientSSn));
-        patient.setFornamn(fornamn);
-        patient.setMellannamn(mellannamn);
-        patient.setEfternamn(efternamn);
 
-        if (StringUtils.isBlank(patient.getMellannamn())) {
-            patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getEfternamn());
-        } else {
-            patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn());
+        // INTYG-3329: All but Legacy Fk7263 drafts should update all patient properties
+        if (!Fk7263EntryPoint.MODULE_ID.equals(intygsType)) {
+            patient.setFornamn(fornamn);
+            patient.setMellannamn(mellannamn);
+            patient.setEfternamn(efternamn);
+
+            if (StringUtils.isBlank(patient.getMellannamn())) {
+                patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getEfternamn());
+            } else {
+                patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn());
+            }
+
+            patient.setPostadress(postadress);
+            patient.setPostnummer(postnummer);
+            patient.setPostort(postort);
         }
-
-        patient.setPostadress(postadress);
-        patient.setPostnummer(postnummer);
-        patient.setPostort(postort);
-
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(patient, draftId, draftVersion);
 
         utkastService.updatePatientOnDraft(request);

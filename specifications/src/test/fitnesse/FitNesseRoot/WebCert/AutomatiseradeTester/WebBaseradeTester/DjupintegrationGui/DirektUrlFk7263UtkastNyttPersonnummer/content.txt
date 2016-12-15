@@ -17,10 +17,12 @@
 | skript | !-HanteraAnvandare-! |
 | uppdatera origin till | DJUPINTEGRATION |
 
-!3 Visa utkastet via integrationslänken
+!3 Visa utkastet via integrationslänken med ett nytt personnummer och utkastet skall ha fått uppdaterat personnummer
 
 | skript | !-IntegrationMedJournalsystem-! |
 | visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} | enhet | IFV1239877878-1045 |
+| kontrollera att |patientens personnummer |${person3.personnummer}|
+| kontrollera att |patientens namn |Test Testorsson|
 
 !3 Ta bort utkastet
 

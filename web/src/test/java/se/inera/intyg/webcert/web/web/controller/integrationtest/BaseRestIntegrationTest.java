@@ -59,6 +59,8 @@ public abstract class BaseRestIntegrationTest {
 
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";
+    protected static final String DEFAULT_UTKAST_PATIENT_FORNAMN = "Api";
+    protected static final String DEFAULT_UTKAST_PATIENT_EFTERNAMN = "Restman";
 
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
             "IFV1239877878-1042").lakare(true).build();
@@ -221,8 +223,8 @@ public abstract class BaseRestIntegrationTest {
     protected CreateUtkastRequest createUtkastRequest(String intygsType, String patientPersonNummer) {
         CreateUtkastRequest utkastRequest = new CreateUtkastRequest();
         utkastRequest.setIntygType(intygsType);
-        utkastRequest.setPatientFornamn("Api");
-        utkastRequest.setPatientEfternamn("Restman");
+        utkastRequest.setPatientFornamn(DEFAULT_UTKAST_PATIENT_FORNAMN);
+        utkastRequest.setPatientEfternamn(DEFAULT_UTKAST_PATIENT_EFTERNAMN);
         utkastRequest.setPatientPersonnummer(new Personnummer(patientPersonNummer));
         utkastRequest.setPatientPostadress("Blåbärsvägen 14");
         utkastRequest.setPatientPostort("Molnet");

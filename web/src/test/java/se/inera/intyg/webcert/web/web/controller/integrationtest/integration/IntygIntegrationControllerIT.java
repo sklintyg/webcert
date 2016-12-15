@@ -156,6 +156,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                                 + "&postnummer=" + queryParams.get("postnummer")
                                 + "&postort=" + queryParams.get("postort")));
     }
+
     /**
      * Verify that the utkast patient info is updated with supplied parameters as part of the djupintegreration link redirect process.
      */
@@ -213,6 +214,60 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         .body("content.grundData.patient.postadress", equalTo(queryParams.get("postadress")))
         .body("content.grundData.patient.postnummer", equalTo(queryParams.get("postnummer")))
         .body("content.grundData.patient.postort", equalTo(queryParams.get("postort")));
+    }
+
+    /**
+     * Verify that the utkast patientId info is updated with supplied parameters as part of the fk7263 djupintegreration link redirect process.
+     */
+    @Test
+    public void testOnlyPatientIdDetailsUpdatedFromJournalSystemUtkastFk7263() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsId", utkastId);
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("alternatePatientSSn", "19121212-1212");
+        queryParams.put("responsibleHospName", "HrDoktor");
+        queryParams.put("fornamn", "nyaförnamnet");
+        queryParams.put("efternamn", "nyaefternamnet");
+        queryParams.put("mellannamn", "nyamellannamnet");
+        queryParams.put("postadress", "nyvägen 12");
+        queryParams.put("postnummer", "000001");
+        queryParams.put("postort", "sjukort");
+        queryParams.put("enhet", "IFV1239877878-1042");
+
+        //Go to deep integration link with other patient info than on current utkast...
+        given().redirects()
+                .follow(false)
+                .pathParam("intygsId", utkastId)
+                .queryParams(queryParams)
+                .expect()
+                .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .when()
+                .get("/visa/intyg/{intygsId}")
+                .then()
+                .header(HttpHeaders.LOCATION,
+                        endsWith("/fk7263/edit/" + utkastId
+                                + "?patientId=" + queryParams.get("alternatePatientSSn")
+                                + "&hospName=" + queryParams.get("responsibleHospName")
+                                + "&fornamn=nyaf%C3%B6rnamnet"
+                                + "&mellannamn=" + queryParams.get("mellannamn")
+                                + "&efternamn=" + queryParams.get("efternamn")
+                                + "&postadress=nyv%C3%A4gen+12"
+                                + "&postnummer=" + queryParams.get("postnummer")
+                                + "&postort=" + queryParams.get("postort")));
+
+        //..after following the link - the draft should have updated patient id and fullstandigtNamn
+        given().expect().statusCode(200).when().get("moduleapi/utkast/fk7263/" + utkastId).then().
+                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+                .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
+                .body("content.grundData.patient.fullstandigtNamn", equalTo(DEFAULT_UTKAST_PATIENT_FORNAMN + " " + DEFAULT_UTKAST_PATIENT_EFTERNAMN));
     }
 
     /**
