@@ -90,14 +90,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
     private static final String PARAM_REFERENCE = "ref";
 
-    // Which modules should have the auto-update patient on draft behaviour?
-    private static final List<String> AUTO_UPDATE_PATIENT_ON_DRAFT_APPLICABLE_MODULES = Arrays.asList(
-            Fk7263EntryPoint.MODULE_ID,
-            LuseEntryPoint.MODULE_ID,
-            LisjpEntryPoint.MODULE_ID,
-            LuaenaEntryPoint.MODULE_ID,
-            LuaefsEntryPoint.MODULE_ID);
-
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
     private static final String[] GRANTED_ROLES = new String[] { AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE,
@@ -230,12 +222,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
      */
     private void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, String alternatePatientSSn, String fornamn,
             String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
-
-        // Should we apply this behaviour for this type of draft?
-        if (!AUTO_UPDATE_PATIENT_ON_DRAFT_APPLICABLE_MODULES.contains(intygsType)) {
-            LOG.debug("Auto-update of draft patient details is not enabled for intygstype {}", intygsType);
-            return;
-        }
 
         // To be allowed to update utkast, we need to have the same authority as when saving a draft..
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsType)
