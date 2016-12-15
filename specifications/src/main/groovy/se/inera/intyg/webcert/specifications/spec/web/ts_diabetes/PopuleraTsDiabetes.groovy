@@ -112,7 +112,7 @@ class PopuleraTsDiabetes extends ExceptionHandlingFixture {
             if (synVansterOgaMedKorrektion != null) page.syn.vansterOgaMedKorrektion = synVansterOgaMedKorrektion
             if (synBinokulartUtanKorrektion != null) page.syn.binokulartUtanKorrektion = synBinokulartUtanKorrektion
             if (synBinokulartMedKorrektion != null) page.syn.binokulartMedKorrektion = synBinokulartMedKorrektion
-            if (synD != null) page.syn.fragaD = synD
+            if (synD != null) page.syn.valjFragaD(synD)
 
             if (behorighet != null) {
                 page.bedomning.valjBehorighet(behorighet)

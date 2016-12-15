@@ -244,6 +244,13 @@ class SynModule extends Module {
         binokulartMedKorrektion { $("#synBinokulartMedKorrektion") }
         fragaD { $("input", name: "synd") }
     }
+
+    def valjFragaD(Boolean value) {
+        if (value != null) {
+            AbstractPage.scrollIntoView("synBinokulartMedKorrektion");
+            fragaD = value;
+        }
+    }
 }
 
 class BedomningModule extends Module {
