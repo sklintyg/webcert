@@ -25,22 +25,41 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.OptimisticLockException;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.*;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
+import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -48,7 +67,9 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -58,7 +79,9 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,6 +94,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private static final long UTKAST_VERSION = 1;
     private static final long INTYG_VERSION = 2;
+    private static final String UTKAST_ENHETS_ID = "hsa123";
 
     @Mock
     private UtkastRepository mockUtkastRepository;
@@ -401,31 +425,17 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testUpdatePatientOnDraft() throws Exception {
-        Patient newPatient = new Patient();
-        newPatient.setEfternamn("updated lastName");
-        newPatient.setMellannamn("updated middle-name");
-        newPatient.setFornamn("updated firstName");
-        newPatient.setFullstandigtNamn("updated full name");
-        newPatient.setPersonId(new Personnummer("19121272-1212"));
-        newPatient.setPostadress("updated postal address");
-        newPatient.setPostnummer("1111111");
-        newPatient.setPostort("updated post city");
+        utkast.setEnhetsId(UTKAST_ENHETS_ID);
+
+        Patient newPatient = getUpdatedPatient();
 
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient, utkast.getIntygsId(), utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
-        GrundData grunddata = new GrundData();
 
-        Patient oldPatient = new Patient();
-        oldPatient.setPersonId(utkast.getPatientPersonnummer());
-        oldPatient.setFornamn(utkast.getPatientFornamn());
-        oldPatient.setEfternamn(utkast.getPatientEfternamn());
-        oldPatient.setPostadress("old postal address");
-        oldPatient.setPostnummer("000000");
-        oldPatient.setPostort("old post city");
-        oldPatient.setPersonId(utkast.getPatientPersonnummer());
-        grunddata.setPatient(oldPatient);
+        GrundData grunddata = new GrundData();
+        grunddata.setPatient(defaultPatient);
         grunddata.setSkapadAv(new HoSPersonal());
 
         when(utlatande.getGrundData()).thenReturn(grunddata);
@@ -439,16 +449,55 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(userService.isAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId(), false)).thenReturn(true);
         when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(userService).isAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId(), false);
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
 
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testUpdatePatientOnDraftNoMedarbetaruppdragThrowsException() throws Exception {
+        utkast.setEnhetsId("<unknownenhet>");
+        Patient newPatient = getUpdatedPatient();
+
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient, utkast.getIntygsId(), utkast.getVersion());
+
+        WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+
+        grunddata.setPatient(defaultPatient);
+        grunddata.setSkapadAv(new HoSPersonal());
+
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+
+        // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
+        utkast = spy(utkast);
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(userService.getUser()).thenReturn(user);
+
+        draftService.updatePatientOnDraft(request);
+
+        verifyNoMoreInteractions(mockUtkastRepository, notificationService);
+
+    }
+
+    private Patient getUpdatedPatient() {
+        Patient newPatient = new Patient();
+        newPatient.setEfternamn("updated lastName");
+        newPatient.setMellannamn("updated middle-name");
+        newPatient.setFornamn("updated firstName");
+        newPatient.setFullstandigtNamn("updated full name");
+        newPatient.setPersonId(new Personnummer("19121272-1212"));
+        newPatient.setPostadress("updated postal address");
+        newPatient.setPostnummer("1111111");
+        newPatient.setPostort("updated post city");
+        return newPatient;
     }
 
     @Test
@@ -504,9 +553,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardgivare.setNamn("vardgivarnamn");
         user.setValdVardgivare(vardgivare);
         Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setId("enhetid");
+        vardenhet.setId(UTKAST_ENHETS_ID);
         vardenhet.setNamn("enhetnamn");
         user.setValdVardenhet(vardenhet);
+
+        vardgivare.setVardenheter(Arrays.asList(vardenhet));
+        user.setVardgivare(Arrays.asList(vardgivare));
         return user;
     }
 

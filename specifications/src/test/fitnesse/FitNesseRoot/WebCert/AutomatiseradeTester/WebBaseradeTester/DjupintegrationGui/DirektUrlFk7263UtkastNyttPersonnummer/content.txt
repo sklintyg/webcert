@@ -21,7 +21,6 @@
 
 | skript | !-IntegrationMedJournalsystem-! |
 | visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} | enhet | IFV1239877878-1045 |
-| nytt personnummer meddelande visas |
 
 !3 Ta bort utkastet
 
