@@ -105,12 +105,12 @@ module.exports = {
             throw ('FEL, angeRekommendationer,' + reason);
         }));
 
-        //Ange enhetadress
-        promisesArr.push(fkUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
-            logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
-        }, function(reason) {
-            throw ('FEL, angeEnhetAdress,' + reason);
-        }));
+        // //Ange enhetadress
+        // promisesArr.push(fkUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
+        //     logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
+        // }, function(reason) {
+        //     throw ('FEL, angeEnhetAdress,' + reason);
+        // }));
 
         return Promise.all(promisesArr)
             .then(function(value) {

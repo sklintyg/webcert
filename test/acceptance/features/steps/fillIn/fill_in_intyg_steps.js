@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,wcTestTools, protractor, browser*/
+/*global intyg,wcTestTools, protractor, browser,testdata*/
 
 'use strict';
 
@@ -168,6 +168,15 @@ module.exports = function() {
                 });
             });
         });
+    });
+
+
+    this.Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
+        isSmitta = (typeof isSmitta === 'undefined');
+        console.log(isSmitta);
+        global.intyg = testdata.fk['7263'].getRandom(false, isSmitta);
+        console.log(intyg);
+        return fillIn(global.intyg);
     });
 
 

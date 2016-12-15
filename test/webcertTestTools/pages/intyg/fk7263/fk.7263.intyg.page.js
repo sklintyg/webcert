@@ -39,24 +39,30 @@ var Fk7263Intyg = BaseIntyg._extend({
 
         this.field2 = {
             diagnoskod: element(by.id('diagnosKod')),
-            diagnosBeskrivning: element(by.id('diagnosBeskrivning'))
+            diagnosBeskrivning: element(by.id('diagnosBeskrivning')),
+            block: element(by.id('field2'))
         };
         this.field3 = {
-            sjukdomsforlopp: element(by.id('sjukdomsforlopp'))
+            sjukdomsforlopp: element(by.id('sjukdomsforlopp')),
+            block: element(by.css('[field-number="3"]'))
         };
         this.field4 = {
-            funktionsnedsattning: element(by.id('funktionsnedsattning'))
+            funktionsnedsattning: element(by.id('funktionsnedsattning')),
+            block: element(by.css('[field-number="4"]'))
         };
         this.field4b = {
             undersokningAvPatienten: element(by.id('undersokningAvPatienten')),
             telefonKontakt: element(by.id('telefonkontaktMedPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),
             annat: element(by.id('annanReferens')),
-            annanReferensBeskrivning: element(by.id('annanReferensBeskrivning'))
+            annanReferensBeskrivning: element(by.id('annanReferensBeskrivning')),
+            block: element(by.css('[field-number="4b"]'))
+
 
         };
         this.field5 = {
-            aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
+            aktivitetsbegransning: element(by.id('aktivitetsbegransning')),
+            block: element(by.css('[field-number="5"]'))
         };
 
         this.field6a = {
@@ -67,7 +73,8 @@ var Fk7263Intyg = BaseIntyg._extend({
         };
 
         this.field7 = {
-            text: element(by.id('field7')).element(by.css('.intyg-block__content'))
+            text: element(by.id('field7')).element(by.css('.intyg-block__content')),
+            block: element(by.css('[field-number="7"]'))
         };
 
         this.field8b = {
@@ -86,17 +93,20 @@ var Fk7263Intyg = BaseIntyg._extend({
             nedsat100: {
                 from: element(by.id('nedsattMed100from')),
                 tom: element(by.id('nedsattMed100tom'))
-            }
+            },
+            block: element(by.css('[field-number="8a"]'))
         };
 
         this.field10 = {
             title: element(by.css('div[field-number="10"]')).element(by.css('.title')),
-            text: element(by.css('div[field-number="10"]')).element(by.css('.intyg-block__content'))
+            text: element(by.css('div[field-number="10"]')).element(by.css('.intyg-block__content')),
+            block: element(by.css('[field-number="10"]'))
         };
 
         this.field11 = {
             title: element(by.css('div[field-number="11"]')).element(by.css('.title')),
-            text: element(by.css('div[field-number="11"]')).element(by.css('.intyg-block__content'))
+            text: element(by.css('div[field-number="11"]')).element(by.css('.intyg-block__content')),
+            block: element(by.css('[field-number="11"]'))
         };
 
         this.field12 = {

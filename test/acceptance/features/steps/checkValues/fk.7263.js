@@ -25,7 +25,7 @@
 var helpers = require('./helpers.js');
 var intygPage = pages.intyg.fk['7263'].intyg;
 
-var field5 = intygPage.field5.aktivitetsbegransning;
+var field5 = intygPage.field5;
 var field6a = intygPage.field6a;
 
 function checkSmitta(isSmittskydd) {
@@ -64,65 +64,100 @@ function checkDiagnos(diagnos) {
             )
         );
 
+    } else {
+        promiseArr.push(
+            expect(field2.block.getText()).to.eventually.contain('Ej angivet').then(
+                function(value) {
+                    logger.info('OK - Diagnoskod = ' + value);
+                    return Promise.resolve();
+                },
+                function(reason) {
+                    throw ('FEL, Diagnoskod,' + reason);
+                }
+            )
+        );
     }
     return Promise.all(promiseArr);
 }
 
 function checkBaserasPa(baserasPa) {
-    var promiseArr = [];
-    if (baserasPa.minUndersokning) {
-        promiseArr.push(expect(intygPage.field4b.undersokningAvPatienten.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minUndersokning.datum)).then(
+
+    if (baserasPa) {
+        var promiseArr = [];
+        if (baserasPa.minUndersokning) {
+            promiseArr.push(expect(intygPage.field4b.undersokningAvPatienten.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minUndersokning.datum)).then(
+                function(value) {
+                    logger.info('OK - Undersokning av patienten baseras på min Undersokning = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Undersokning av patienten baseras på min Undersokning, ' + reason);
+                }
+            ));
+        }
+        if (baserasPa.minTelefonkontakt) {
+            promiseArr.push(expect(intygPage.field4b.telefonKontakt.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minTelefonkontakt.datum)).then(
+                function(value) {
+                    logger.info('OK - Undersokning av patienten baseras på min Telefonkontakt = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Undersokning av patienten baseras på min Telefonkontakt, ' + reason);
+                }
+            ));
+        }
+        if (baserasPa.journaluppgifter) {
+            promiseArr.push(expect(intygPage.field4b.journaluppgifter.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.journaluppgifter.datum)).then(
+                function(value) {
+                    logger.info('OK - Undersokning av patienten baseras på journaluppgifter = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Undersokning av patienten baseras på journaluppgifter, ' + reason);
+                }
+            ));
+        }
+        if (baserasPa.annat) {
+            promiseArr.push(expect(intygPage.field4b.annat.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.annat.datum)).then(
+                function(value) {
+                    logger.info('OK - Undersokning av patienten baseras på annat = ' + value);
+                },
+                function(reason) {
+                    throw ('FEL, Undersokning av patienten baseras på annat, ' + reason);
+                }
+            ));
+            logger.debug('TODO: Fix check for undersökning annat text');
+            // expect(intygPage.field4b.annanReferensBeskrivning.getText()).to.eventually.contain(baserasPa.annat.text).then(
+            //   function (value) {
+            //     logger.info('OK - Undersokning av patienten baseras på annat text = ' + value);
+            //   },
+            //   function (reason) {
+            //     throw('FEL, Undersokning av patienten baseras på annat text, ' + reason);
+            //   }
+            // );
+        }
+        return Promise.all(promiseArr);
+    } else {
+        return expect(intygPage.field4b.block.getText()).to.eventually.contain('Ej angivet').then(
             function(value) {
-                logger.info('OK - Undersokning av patienten baseras på min Undersokning = ' + value);
+                logger.info('OK - Baseras på = ' + value);
             },
             function(reason) {
-                throw ('FEL, Undersokning av patienten baseras på min Undersokning, ' + reason);
+                throw ('FEL, Baseras på,' + reason);
             }
-        ));
+        );
     }
-    if (baserasPa.minTelefonkontakt) {
-        promiseArr.push(expect(intygPage.field4b.telefonKontakt.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minTelefonkontakt.datum)).then(
-            function(value) {
-                logger.info('OK - Undersokning av patienten baseras på min Telefonkontakt = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Undersokning av patienten baseras på min Telefonkontakt, ' + reason);
-            }
-        ));
-    }
-    if (baserasPa.journaluppgifter) {
-        promiseArr.push(expect(intygPage.field4b.journaluppgifter.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.journaluppgifter.datum)).then(
-            function(value) {
-                logger.info('OK - Undersokning av patienten baseras på journaluppgifter = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Undersokning av patienten baseras på journaluppgifter, ' + reason);
-            }
-        ));
-    }
-    if (baserasPa.annat) {
-        promiseArr.push(expect(intygPage.field4b.annat.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.annat.datum)).then(
-            function(value) {
-                logger.info('OK - Undersokning av patienten baseras på annat = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Undersokning av patienten baseras på annat, ' + reason);
-            }
-        ));
-        logger.debug('TODO: Fix check for undersökning annat text');
-        // expect(intygPage.field4b.annanReferensBeskrivning.getText()).to.eventually.contain(baserasPa.annat.text).then(
-        //   function (value) {
-        //     logger.info('OK - Undersokning av patienten baseras på annat text = ' + value);
-        //   },
-        //   function (reason) {
-        //     throw('FEL, Undersokning av patienten baseras på annat text, ' + reason);
-        //   }
-        // );
-    }
-    return Promise.all(promiseArr);
 }
 
 function checkArbetsformaga(arbetsformaga) {
+
+    if (!arbetsformaga) {
+        return expect(intygPage.field8a.block.getText()).to.eventually.contain('Ej angivet').then(
+            function(value) {
+                logger.info('OK - Arbetsförmåga på = ' + value);
+            },
+            function(reason) {
+                throw ('FEL, Arbetsförmåga på,' + reason);
+            }
+        );
+    }
     var promiseArr = [];
     if (arbetsformaga.nedsattMed25) {
         promiseArr.push(
@@ -228,7 +263,14 @@ function checkArbetesinriktadRehab(rek) {
             }
         );
     } else {
-        return Promise.resolve();
+        return expect(intygPage.field7.block.getText()).to.eventually.contain('Ej angivet').then(
+            function(value) {
+                logger.info('OK - Rehabilitering aktuell = ' + value);
+            },
+            function(reason) {
+                throw ('FEL, Rehabilitering aktuell,' + reason);
+            }
+        );
     }
 }
 
@@ -248,6 +290,72 @@ function checkAktivitetsbegransning(begr) {
     }
 }
 
+function checkSjukdomsforlopp(forlopp) {
+    if (forlopp) {
+        return expect(intygPage.field3.sjukdomsforlopp.getText()).to.eventually.equal(forlopp).then(
+            function(value) {
+                logger.info('OK - Sjukdomsförlopp = ' + value);
+            },
+            function(reason) {
+                throw ('FEL, Sjukdomsförlopp,' + reason);
+            }
+        );
+    } else {
+        return expect(intygPage.field3.block.getText()).to.eventually.contain('Ej angivet').then(
+            function(value) {
+                logger.info('OK - Sjukdomsförlopp = ' + value);
+            },
+            function(reason) {
+                throw ('FEL, Sjukdomsförlopp,' + reason);
+            }
+        );
+    }
+}
+
+function checkFunktionsnedsattning(nedsattning) {
+    if (nedsattning) {
+        return expect(intygPage.field4.funktionsnedsattning.getText()).to.eventually.equal(nedsattning).then(
+            function(value) {
+                logger.info('OK - Funktionsnedsättning = ' + value);
+            },
+            function(reason) {
+                throw ('FEL, Funktionsnedsättning,' + reason);
+            }
+        );
+    } else {
+        return expect(intygPage.field4.block.getText()).to.eventually.contain('Ej angivet').then(
+            function(value) {
+                logger.info('OK - Funktionsnedsättning = ' + value);
+            },
+            function(reason) {
+                throw ('FEL, Funktionsnedsättning,' + reason);
+            }
+        );
+    }
+}
+
+
+function checkAktivitetsbegransning(begr) {
+    if (begr) {
+        return expect(field5.aktivitetsbegransning.getText()).to.eventually.equal(begr).then(
+            function(value) {
+                logger.info('OK - Aktivitetsbegränsning = ' + value);
+            },
+            function(reason) {
+                throw ('FEL, Aktivitetsbegränsning,' + reason);
+            }
+        );
+    } else {
+        return expect(field5.block.getText()).to.eventually.contain('Ej angivet').then(
+            function(value) {
+                logger.info('OK - Aktivitetsbegränsning = ' + value);
+            },
+            function(reason) {
+                throw ('FEL, Aktivitetsbegränsning,' + reason);
+            }
+        );
+    }
+}
 
 
 module.exports = {
@@ -265,37 +373,17 @@ module.exports = {
             checkDiagnos(intyg.diagnos),
 
             //Kontrollera FÄLT 3 : Sjukdomsförlopp
-            expect(intygPage.field3.sjukdomsforlopp.getText()).to.eventually.equal(intyg.aktuelltSjukdomsforlopp).then(
-                function(value) {
-                    logger.info('OK - Sjukdomsförlopp = ' + value);
-                },
-                function(reason) {
-                    throw ('FEL, Sjukdomsförlopp,' + reason);
-                }
-            ),
+            checkSjukdomsforlopp(intyg.aktuelltSjukdomsforlopp),
 
             //Kontrollera FÄLT 4 : Funktionsnedsättning
-            expect(intygPage.field4.funktionsnedsattning.getText()).to.eventually.equal(intyg.funktionsnedsattning).then(
-                function(value) {
-                    logger.info('OK - Funktionsnedsättning = ' + value);
-                },
-                function(reason) {
-                    throw ('FEL, Funktionsnedsättning,' + reason);
-                }
-            ),
+            checkFunktionsnedsattning(intyg.funktionsnedsattning),
 
             //Kontrollera FÄLT 4b : Intyget baseras på
             checkBaserasPa(intyg.baserasPa),
 
             //Kontrollera Fält 5 : Aktivitetsbegränsning
-            expect(field5.getText()).to.eventually.equal(intyg.aktivitetsBegransning).then(
-                function(value) {
-                    logger.info('OK - Aktivitetsbegränsning = ' + value);
-                },
-                function(reason) {
-                    throw ('FEL, Aktivitetsbegränsning,' + reason);
-                }
-            ),
+            checkAktivitetsbegransning(intyg.aktivitetsBegransning),
+
 
             //Kontrollera FÄLT 6a : Rekommendationer
             //Kontakt med AF

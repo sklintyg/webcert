@@ -132,7 +132,7 @@ var random = {
     },
     arbetsformagaFMB: function() {
         return 'Arbetsförmåga bedöms nedsatt längre tid än FMB anger text';
-    },
+    }
 
 
 };
@@ -140,8 +140,12 @@ var random = {
 
 
 module.exports = {
-    getRandom: function(intygsID) {
-        var isSmittskydd = shuffle(testdata.smittskydd)[0];
+    getRandom: function(intygsID, isSmitta) {
+        var isSmittskydd = isSmitta;
+
+        if (typeof isSmitta === 'undefined') {
+            isSmittskydd = shuffle(testdata.smittskydd)[0];
+        }
 
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();

@@ -7,7 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-Scenariomall: Validera felaktigt ifyllda fält
+Scenariomall: Validera felaktigt <typAvFält> i <intygsTyp>
 	När jag går in på att skapa ett <intygsTyp> intyg
 	Och jag fyller i text i <typAvFält> fältet
 	Så ska valideringsfelet <feltext> visas 
