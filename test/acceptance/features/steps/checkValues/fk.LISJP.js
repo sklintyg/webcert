@@ -44,16 +44,11 @@ function checkDiagnos(diagnos) {
         kod: diagnos.kod,
         bakgrund: diagnos.bakgrund
     });
-    console.log('DIAGNOSER');
-    console.log(diagnos.diagnoser);
     var diagnoser = diagnos.diagnoser;
-    // var nyBedomning = testdataHelper.boolTillJaNej(diagnos.nyBedomning);
     var promiseArr = [];
     for (var i = 0; i < diagnoser.length; i++) {
         promiseArr.push(expect(lisjpPage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.equal(diagnoser[i].kod));
     }
-    // promiseArr.push(expect(lisjpPage.diagnoser.grund.getText()).to.eventually.equal(diagnos.narOchVarStalldesDiagnoserna));
-    // promiseArr.push(expect(lisjpPage.diagnoser.nyBedomningDiagnosgrund.getText()).to.eventually.contain(nyBedomning));
 
     return Promise.all(promiseArr);
 
