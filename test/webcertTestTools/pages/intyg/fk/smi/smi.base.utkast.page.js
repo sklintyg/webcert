@@ -84,7 +84,7 @@ function sendTextToForm(textEL, text) {
 var BaseSmiUtkast = FkBaseUtkast._extend({
     init: function init() {
         init._super.call(this);
-
+        this.fmbButtons = ['diagnos-fmb-button', 'funktionsnedsattning-fmb-button', 'aktivitetsbegransning-fmb-button', 'bedomning-fmb-button'];
 
         this.at = element(by.css('.edit-form'));
 

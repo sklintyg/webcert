@@ -27,6 +27,9 @@ var JClass = require('jclass');
 var EC = protractor.ExpectedConditions;
 var BaseUtkast = JClass._extend({
     init: function() {
+        this.fmbDialogs = ['fmb_text_SYMPTOM_PROGNOS_BEHANDLING', 'fmb_text_GENERELL_INFO', 'fmb_text_FUNKTIONSNEDSATTNING', 'fmb_text_AKTIVITETSBEGRANSNING', 'fmb_text_BESLUTSUNDERLAG_TEXTUELLT'];
+        this.fmbButtons = ['FALT2-fmb-button', 'FALT4-fmb-button', 'FALT5-fmb-button', 'FALT8B-fmb-button'];
+        this.fmbAlertText = element(by.id('fmb_diagnos_not_in_fmb_alert'));
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
         this.radera = {

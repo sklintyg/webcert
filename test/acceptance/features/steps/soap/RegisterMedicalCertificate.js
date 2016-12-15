@@ -21,7 +21,7 @@
 'use strict';
 //var testdataHelper = wcTestTools.helpers.testdata;
 //var helpers = require('../helpers');
-module.exports.RegisterMedicalCertificate = function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId) {
+module.exports.RegisterMedicalCertificate = function(personId, personNamn, personEfternamn, doctorHsa, doctorName, unitHsa, unitName, intygsId) {
 
 
     return '    <ns3:RegisterMedicalCertificate\n' +
@@ -37,7 +37,7 @@ module.exports.RegisterMedicalCertificate = function(personId, doctorHsa, doctor
         '        <skickatDatum>2016-09-08T10:29:15</skickatDatum>\n' +
         '        <patient>\n' +
         '            <ns2:person-id root="1.2.752.129.2.1.3.1" extension="' + personId + '"/>\n' +
-        '            <ns2:fullstandigtNamn>Test Testorsson</ns2:fullstandigtNamn>\n' +
+        '            <ns2:fullstandigtNamn>' + personNamn + ' ' + personEfternamn + '</ns2:fullstandigtNamn>\n' +
         '        </patient>\n' +
         '        <skapadAvHosPersonal>\n' +
         '            <ns2:personal-id root="1.2.752.129.2.1.4.1" extension="' + doctorHsa + '"/>\n' +
