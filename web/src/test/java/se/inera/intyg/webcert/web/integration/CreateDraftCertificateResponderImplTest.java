@@ -24,9 +24,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,22 +38,33 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.common.support.model.common.internal.*;
-import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.infrastructure.directory.v1.CommissionType;
 
@@ -83,6 +96,9 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterService;
+
+    @Mock
+    private MonitoringLogService monitoringLogService;
 
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
@@ -127,6 +143,67 @@ public class CreateDraftCertificateResponderImplTest {
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.OK);
         assertEquals(response.getUtlatandeId().getExtension(), UTKAST_ID);
+    }
+
+    @Test
+    public void testCreateDraftCertificateValidationError() throws HsaServiceCallException {
+        final String validationError = "error";
+        ResultValidator resultsValidator = new ResultValidator();
+        resultsValidator.addError(validationError);
+        CreateDraftCertificateType certificateType = createCertificateType();
+
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
+
+        CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+
+        verifyZeroInteractions(mockUtkastService);
+        verifyZeroInteractions(mockIntegreradeEnheterService);
+        verifyZeroInteractions(mockHsaPersonService);
+
+        assertNotNull(response);
+        assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
+        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+        assertEquals(validationError, response.getResult().getResultText());
+    }
+
+    @Test
+    public void testCreateDraftCertificateHsaException() throws HsaServiceCallException {
+        ResultValidator resultsValidator = new ResultValidator();
+        CreateDraftCertificateType certificateType = createCertificateType();
+
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
+        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenThrow(new HsaServiceCallException(""));
+
+        CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+
+        verifyZeroInteractions(mockUtkastService);
+        verifyZeroInteractions(mockIntegreradeEnheterService);
+        verify(monitoringLogService).logMissingMedarbetarUppdrag(USER_HSAID, UNIT_HSAID);
+
+        assertNotNull(response);
+        assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
+        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+        assertEquals("No valid MIU was found for person SE1234567890 on unit SE0987654321, can not create draft!", response.getResult().getResultText());
+    }
+
+    @Test
+    public void testCreateDraftCertificateHsaReturnsNoMIUs() throws HsaServiceCallException {
+        ResultValidator resultsValidator = new ResultValidator();
+        CreateDraftCertificateType certificateType = createCertificateType();
+
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
+        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(new ArrayList<>());
+
+        CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+
+        verifyZeroInteractions(mockUtkastService);
+        verifyZeroInteractions(mockIntegreradeEnheterService);
+        verify(monitoringLogService).logMissingMedarbetarUppdrag(USER_HSAID, UNIT_HSAID);
+
+        assertNotNull(response);
+        assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
+        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+        assertEquals("No valid MIU was found for person SE1234567890 on unit SE0987654321, can not create draft!", response.getResult().getResultText());
     }
 
     private VardpersonReferens createVardpersonReferens(String hsaId, String name) {

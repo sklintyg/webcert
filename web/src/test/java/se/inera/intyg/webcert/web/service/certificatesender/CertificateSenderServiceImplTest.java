@@ -26,13 +26,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
@@ -176,6 +181,13 @@ public class CertificateSenderServiceImplTest {
         } finally {
             verify(template, times(1)).send(any(MessageCreator.class));
         }
+    }
+
+    @Test
+    public void testCheckJmsTemplateNoTemplateAvailable() {
+        ReflectionTestUtils.setField(service, "jmsTemplate", null);
+        service.checkJmsTemplate();
+        // no exception is thrown
     }
 
     private TextMessage createTextMessage(String s) throws JMSException {

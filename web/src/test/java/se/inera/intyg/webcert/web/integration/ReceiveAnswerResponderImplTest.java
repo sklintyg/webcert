@@ -25,6 +25,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -41,10 +42,17 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -82,6 +90,21 @@ public class ReceiveAnswerResponderImplTest {
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+    }
+
+    @Test
+    public void testReceiveAnswerValidationError() {
+        ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
+        request.getAnswer().setSvar(null); // invalid
+        ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
+
+        verifyZeroInteractions(mockNotificationService);
+        verifyZeroInteractions(mockFragaSvarService);
+
+        assertNotNull(response);
+        assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
+        assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
+        assertEquals("Missing svar element.", response.getResult().getErrorText());
     }
 
     private ReceiveMedicalCertificateAnswerType createRequest(String answerFile) {

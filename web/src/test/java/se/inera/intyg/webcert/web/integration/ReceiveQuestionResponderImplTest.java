@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -34,14 +35,23 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -81,6 +91,21 @@ public class ReceiveQuestionResponderImplTest {
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+    }
+
+    @Test
+    public void testReceiveQuestionValidationError() {
+        ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
+        request.getQuestion().setAmne(null); // invalid
+        ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
+
+        verifyZeroInteractions(mockNotificationService);
+        verifyZeroInteractions(mockFragaSvarService);
+
+        assertNotNull(response);
+        assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
+        assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
+        assertEquals("Amne är felaktigt", response.getResult().getErrorText());
     }
 
     private ReceiveMedicalCertificateQuestionType createRequest(String questionFile) {

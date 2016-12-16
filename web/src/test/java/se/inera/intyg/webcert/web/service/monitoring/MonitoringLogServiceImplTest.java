@@ -25,9 +25,13 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +40,10 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -92,6 +97,13 @@ public class MonitoringLogServiceImplTest {
                 "ANSWER_RECEIVED Received answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
+    @Test
+    public void shouldLogAnswerReceivedWhenAllParamtersNull() {
+        logService.logAnswerReceived(null, null, null, null, null);
+        verifyLog(Level.INFO,
+                "ANSWER_RECEIVED Received answer to question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
+    }
+
     private void verifyLog(Level logLevel, String logMessage) {
         // Verify and capture logging interaction
         verify(mockAppender).doAppend(captorLoggingEvent.capture());
@@ -108,6 +120,13 @@ public class MonitoringLogServiceImplTest {
         logService.logAnswerSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
                 "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
+    }
+
+    @Test
+    public void shouldLogAnswerSentWithAllParametersNull() {
+        logService.logAnswerSent(null, null, null, null, null);
+        verifyLog(Level.INFO,
+                "ANSWER_SENT Sent answer to question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
     }
 
     @Test
@@ -209,6 +228,60 @@ public class MonitoringLogServiceImplTest {
     }
 
     @Test
+    public void shouldLogArendeReceived() {
+        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, false);
+        verifyLog(Level.INFO, "ARENDE_RECEIVED_QUESTION Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+    }
+
+    @Test
+    public void shouldLogArendeReceivedWithAllParametersNull() {
+        logService.logArendeReceived(null, null, null, null, null, false);
+        verifyLog(Level.INFO, "ARENDE_RECEIVED_QUESTION Received arende with amne 'NO AMNE' for 'null' of type 'null' for unit 'null'");
+    }
+
+    @Test
+    public void shouldLogArendeReceivedCompletion() {
+        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KOMPLT, Arrays.asList("1", "2"), false);
+        verifyLog(Level.INFO, "MEDICINSKT_ARENDE_RECEIVED Received medicinskt arende for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET' on questions '[1, 2]'");
+    }
+
+    @Test
+    public void shouldLogArendeReceivedAnswer() {
+        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, true);
+        verifyLog(Level.INFO, "ARENDE_RECEIVED_ANSWER Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+    }
+
+    @Test
+    public void shouldLogArendeReceivedAnswerAmneMissing() {
+        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, null, null, true);
+        verifyLog(Level.INFO, "ARENDE_RECEIVED_ANSWER Received arende with amne 'NO AMNE' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+    }
+
+    @Test
+    public void shouldLogArendeCreated() {
+        logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, false);
+        verifyLog(Level.INFO, "ARENDE_CREATED_QUESTION Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+    }
+
+    @Test
+    public void shouldLogArendeCreatedWithAllParametersNull() {
+        logService.logArendeCreated(null, null, null, null, false);
+        verifyLog(Level.INFO, "ARENDE_CREATED_QUESTION Created arende with amne 'NO AMNE' for 'null' of type 'null' for unit 'null'");
+    }
+
+    @Test
+    public void shouldLogArendeCreatedAnswer() {
+        logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, true);
+        verifyLog(Level.INFO, "ARENDE_CREATED_ANSWER Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+    }
+
+    @Test
+    public void shouldLogArendeCreatedAnswerWithAllParametersNull() {
+        logService.logArendeCreated(null, null, null, null, true);
+        verifyLog(Level.INFO, "ARENDE_CREATED_ANSWER Created arende with amne 'NO AMNE' for 'null' of type 'null' for unit 'null'");
+    }
+
+    @Test
     public void shouldLogPrivatePractitionerTermsApproved() {
         logService.logPrivatePractitionerTermsApproved(HSA_ID, new Personnummer(PERSON_ID), AVTAL_VERSION);
         verifyLog(Level.INFO,
@@ -227,6 +300,13 @@ public class MonitoringLogServiceImplTest {
         logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE, null);
         verifyLog(Level.INFO,
                 "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
+    }
+
+    @Test
+    public void shouldLogQuestionReceivedWhenAllParametersNull() {
+        logService.logQuestionReceived(null, null, null, null, null, null, null);
+        verifyLog(Level.INFO,
+                "QUESTION_RECEIVED Received question from 'null' with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
     }
 
     @Test
