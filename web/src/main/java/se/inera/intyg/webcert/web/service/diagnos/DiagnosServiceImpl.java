@@ -288,13 +288,11 @@ public class DiagnosServiceImpl implements DiagnosService {
             return null;
         }
 
-        Diagnoskodverk codeSystem = Diagnoskodverk.valueOf(codeSystemStr);
-
-        if (codeSystem == null) {
+        try {
+            return Diagnoskodverk.valueOf(codeSystemStr);
+        } catch (IllegalArgumentException e) {
             LOG.warn("Can not validate diagnosis code, unknown code system '{}'", codeSystemStr);
             return null;
         }
-
-        return codeSystem;
     }
 }

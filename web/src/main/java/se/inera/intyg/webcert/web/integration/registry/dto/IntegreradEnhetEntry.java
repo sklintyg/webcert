@@ -80,4 +80,43 @@ public class IntegreradEnhetEntry implements Comparable<IntegreradEnhetEntry> {
         int vgComp = getVardgivareId().compareTo(other.getVardgivareId());
         return (vgComp == 0) ? getEnhetsId().compareTo(other.getEnhetsId()) : vgComp;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((enhetsId == null) ? 0 : enhetsId.hashCode());
+        result = prime * result + ((vardgivareId == null) ? 0 : vardgivareId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        IntegreradEnhetEntry other = (IntegreradEnhetEntry) obj;
+        if (enhetsId == null) {
+            if (other.enhetsId != null) {
+                return false;
+            }
+        } else if (!enhetsId.equals(other.enhetsId)) {
+            return false;
+        }
+        if (vardgivareId == null) {
+            if (other.vardgivareId != null) {
+                return false;
+            }
+        } else if (!vardgivareId.equals(other.vardgivareId)) {
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -27,9 +27,17 @@ import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 import java.time.LocalDateTime;
 
 import iso.v21090.dt.v1.II;
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.*;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.*;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 
 /**
  * Created by pehr on 10/2/13.
@@ -74,9 +82,7 @@ public final class ConvertToFKTypes {
     public static InnehallType toInnehallType(String text, LocalDateTime singeringsDatum) {
         InnehallType iht = new InnehallType();
         iht.setMeddelandeText(text);
-        if (singeringsDatum != null) {
-            iht.setSigneringsTidpunkt(singeringsDatum);
-        }
+        iht.setSigneringsTidpunkt(singeringsDatum);
         return iht;
     }
 
@@ -144,9 +150,7 @@ public final class ConvertToFKTypes {
         }
 
         VardgivareType vgt = new VardgivareType();
-        if (vp.getVardgivarnamn() != null) {
-            vgt.setVardgivarnamn(vp.getVardgivarnamn());
-        }
+        vgt.setVardgivarnamn(vp.getVardgivarnamn());
 
         if (vp.getVardgivarId() != null) {
             vgt.setVardgivareId(toII(HSA_ID_OID, vp.getVardgivarId()));
