@@ -319,7 +319,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
 
-        if (request.containsNewPersonnummer()) {
+        if (request.containsNewValidPatientPersonId()) {
             LOG.debug("Adding new personnummer to request");
             req.setNyttPatientPersonnummer(request.getNyttPatientPersonnummer());
         }
@@ -338,7 +338,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patient, hosPerson);
 
-        if (copyRequest.containsNewPersonnummer()) {
+        if (copyRequest.containsNewValidPatientPersonId()) {
             LOG.debug("Adding new personnummer to request");
             req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
         }
@@ -358,7 +358,7 @@ public class IntygModuleApiController extends AbstractApiController {
         CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson,
                 copyRequest.isCoherentJournaling());
 
-        if (copyRequest.containsNewPersonnummer()) {
+        if (copyRequest.containsNewValidPatientPersonId()) {
             LOG.debug("Adding new personnummer to request");
             req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
         }

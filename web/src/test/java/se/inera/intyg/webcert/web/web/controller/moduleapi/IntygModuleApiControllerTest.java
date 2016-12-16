@@ -234,7 +234,7 @@ public class IntygModuleApiControllerTest {
         final String revokeReason = "revokeReason";
         final String personnummer = "191212121212";
         final String newIntygId = "newIntygId";
-        final String newPersonnummer = "newPersonnummer";
+        final String newPersonnummer = "201212121212";
         final String efternamn = "efternamn";
         final String fornamn = "fornamn";
         final String mellannamn = "mellannamn";
@@ -411,7 +411,7 @@ public class IntygModuleApiControllerTest {
         final String postadress = "postadress";
         final String postort = "postort";
         final String postnummer = "postnummer";
-        final String newPersonnummer = "newPersonnummer";
+        final String newPersonnummer = "201212121212";
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
@@ -445,6 +445,55 @@ public class IntygModuleApiControllerTest {
         assertEquals(postnummer, captor.getValue().getPatient().getPostnummer());
         assertEquals(postort, captor.getValue().getPatient().getPostort());
         assertEquals(newPersonnummer, captor.getValue().getNyttPatientPersonnummer().getPersonnummer());
+    }
+
+    /**
+     * Verify that a non-valid personnr/samordningsnummer (i.e a "reservnummer") supplied as NyttPatientPersonnummer will not be applied to the new utkast.
+     */
+    @Test
+    public void testCreateNewCopyWithNewPatientReservnummerDefaultsToPreviousPersonnummer() {
+        final String personnummer = "191212121212";
+        final String newIntygId = "newIntygId";
+        final String efternamn = "efternamn";
+        final String fornamn = "fornamn";
+        final String mellannamn = "mellannamn";
+        final String postadress = "postadress";
+        final String postort = "postort";
+        final String postnummer = "postnummer";
+        final String newReservnummer = "A20090122";
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(newReservnummer));
+        copyIntygRequest.setEfternamn(efternamn);
+        copyIntygRequest.setFornamn(fornamn);
+        copyIntygRequest.setMellannamn(mellannamn);
+        copyIntygRequest.setPostadress(postadress);
+        copyIntygRequest.setPostort(postort);
+        copyIntygRequest.setPostnummer(postnummer);
+
+        WebCertUser user = new WebCertUser();
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+        user.setOrigin("NORMAL");
+
+        ArgumentCaptor<CreateNewDraftCopyRequest> captor = ArgumentCaptor.forClass(CreateNewDraftCopyRequest.class);
+        when(copyUtkastService.createCopy(captor.capture())).thenReturn(new CreateNewDraftCopyResponse(CERTIFICATE_TYPE, newIntygId));
+        when(webcertUserService.getUser()).thenReturn(user);
+
+        Response response = moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+
+        verify(copyUtkastService, times(1)).createCopy(any());
+        verifyNoMoreInteractions(copyUtkastService);
+        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
+        assertEquals(personnummer, captor.getValue().getPatient().getPersonId().getPersonnummer());
+        assertEquals(fornamn, captor.getValue().getPatient().getFornamn());
+        assertEquals(efternamn, captor.getValue().getPatient().getEfternamn());
+        assertEquals(mellannamn, captor.getValue().getPatient().getMellannamn());
+        assertEquals(postadress, captor.getValue().getPatient().getPostadress());
+        assertEquals(postnummer, captor.getValue().getPatient().getPostnummer());
+        assertEquals(postort, captor.getValue().getPatient().getPostort());
+        assertNull(captor.getValue().getNyttPatientPersonnummer());
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -502,7 +551,7 @@ public class IntygModuleApiControllerTest {
         final String personnummer = "191212121212";
         final String newIntygId = "newIntygId";
         final String meddelandeId = "meddelandeId";
-        final String newPersonnummer = "newPersonnummer";
+        final String newPersonnummer = "201212121212";
         final String efternamn = "efternamn";
         final String fornamn = "fornamn";
         final String mellannamn = "mellannamn";
@@ -594,7 +643,7 @@ public class IntygModuleApiControllerTest {
     public void testCreateRenewal() {
         final String newDraftIntygId = "newDraftIntygId";
         final String personnummer = "191212121212";
-        final String newPersonnummer = "newPersonnummer";
+        final String newPersonnummer = "201212121212";
         final String efternamn = "efternamn";
         final String fornamn = "fornamn";
         final String mellannamn = "mellannamn";

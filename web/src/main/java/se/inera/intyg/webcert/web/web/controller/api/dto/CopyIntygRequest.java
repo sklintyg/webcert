@@ -61,8 +61,9 @@ public class CopyIntygRequest {
         this.coherentJournaling = coherentJournaling;
     }
 
-    public boolean containsNewPersonnummer() {
-        return nyttPatientPersonnummer != null && StringUtils.isNotBlank(nyttPatientPersonnummer.getPersonnummer());
+    public boolean containsNewValidPatientPersonId() {
+        return (nyttPatientPersonnummer != null && (Personnummer.createValidatedPersonnummerWithDash(nyttPatientPersonnummer).isPresent()
+                || nyttPatientPersonnummer.isSamordningsNummer()));
     }
 
     public boolean isValid() {
