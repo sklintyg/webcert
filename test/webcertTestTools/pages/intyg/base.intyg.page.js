@@ -32,15 +32,12 @@ var BaseIntyg = JClass._extend({
         this.makulera = {
             btn: element(by.id('makuleraBtn')),
             dialogMakulera: element(by.id('button1makulera-dialog')),
-            dialogErsatt: element(by.id('button2makulera-dialog')),
-            dialogRadioFelaktigtIntyg: element(by.id('reason-FELAKTIGT_INTYG')),
-            dialogRadioFelaktigtIntygClarification: element(by.id('clarification-FELAKTIGT_INTYG')),
-            dialogRadioPatientNyInfo: element(by.id('reason-PATIENT_NY_INFO')),
-            dialogRadioPatientNyInfoClarification: element(by.id('clarification-PATIENT_NY_INFO')),
-            dialogRadioMinBedomingAndrad: element(by.id('reason-MIN_BEDOMNING_ANDRAD')),
-            dialogRadioMinBedomingAndradClarification: element(by.id('clarification-MIN_BEDOMNING_ANDRAD')),
-            dialogRadioOvrigt: element(by.id('reason-OVRIGT')),
-            dialogRadioOvrigtClarification: element(by.id('clarification-OVRIGT')),
+
+            dialogRadioFelPatient: element(by.id('reason-FEL_PATIENT')),
+            dialogRadioFelPatientClarification: element(by.id('clarification-FEL_PATIENT')),
+            dialogRadioAnnatAllvarligtFel: element(by.id('reason-ANNAT_ALLVARLIGT_FEL')),
+            dialogRadioAnnatAllvarligtFelClarification: element(by.id('clarification-ANNAT_ALLVARLIGT_FEL')),
+
             statusRevokeInprogress: element(by.id('certificate-revoked-it-message-text')),
             statusRevoked: element(by.id('certificate-is-revoked-message-text'))
         };

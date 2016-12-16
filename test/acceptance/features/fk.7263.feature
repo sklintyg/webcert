@@ -42,14 +42,14 @@ Scenario: Kopiera ett signerat intyg
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
 
-@makulera @ersatt
-Scenario: Makulera ett signerat intyg och ersätt det
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
-	Och jag fyller i alla nödvändiga fält för intyget
-	Och jag signerar intyget
-
-	Och jag makulerar intyget och ersätter med nytt intyg
-	Så ska det finnas en referens till gamla intyget
-
-	Och jag går till Mina intyg för patienten
-	Så ska intygets status i Mina intyg visa "Makulerat"
+# @makulera @ersatt
+# Scenario: Makulera ett signerat intyg och ersätt det
+#	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+#	Och jag fyller i alla nödvändiga fält för intyget
+#	Och jag signerar intyget
+#
+#	Och jag makulerar intyget och ersätter med nytt intyg
+#	Så ska det finnas en referens till gamla intyget
+#
+#	Och jag går till Mina intyg för patienten
+#	Så ska intygets status i Mina intyg visa "Makulerat"

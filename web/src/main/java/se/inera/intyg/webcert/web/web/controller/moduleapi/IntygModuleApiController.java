@@ -186,35 +186,6 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Issues a request to Intygstjanst to revoke the signed intyg and then copy it and return the id of the utkast.
-     *
-     * @param intygsId
-     *            The id of the intyg to revoke
-     * @param param
-     *            A JSON struct containing an optional message
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/aterkallaersatt")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response revokeReplaceSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            RevokeReplaceSignedIntygRequest revokeReplaceRequest) {
-
-        validateRevokeAuthority(intygsTyp);
-        validateCopyAuthority(intygsTyp);
-
-        if (!revokeReplaceRequest.getCopyIntygRequest().isValid() || !revokeReplaceRequest.getRevokeSignedIntygParameter().isValid()) {
-            LOG.warn("Request to revoke and replace '{}' is not valid", intygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
-        }
-
-        revokeIntyg(intygsTyp, intygsId, revokeReplaceRequest.getRevokeSignedIntygParameter());
-        CopyIntygResponse response = replaceIntyg(revokeReplaceRequest.getCopyIntygRequest(), intygsTyp, intygsId);
-
-        return Response.ok().entity(response).build();
-    }
-
-    /**
      * Create a copy of a certificate.
      *
      * @param request
@@ -400,16 +371,6 @@ public class IntygModuleApiController extends AbstractApiController {
         CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
 
         LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", orgIntygsId, serviceResponse.getNewDraftIntygId(),
-                serviceResponse.getNewDraftIntygType());
-
-        return new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
-    }
-
-    private CopyIntygResponse replaceIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId) {
-        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
-        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
-
-        LOG.debug("Created a new replacement copy from '{}' with id '{}' and type {}", orgIntygsId, serviceResponse.getNewDraftIntygId(),
                 serviceResponse.getNewDraftIntygType());
 
         return new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());

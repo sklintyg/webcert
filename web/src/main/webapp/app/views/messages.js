@@ -51,7 +51,7 @@ angular.module('webcert').constant('webcert.messages', {
         'print.label.revoked': 'Observera! Intyget är makulerat och därför inte giltigt.',
 
         'label.makulera': 'Makulera intyg',
-        'label.makulera.body' : 'Intyg som innehåller ogiltig eller felaktig information kan makuleras. Om intyget har skickats elektroniskt till en mottagare kommer mottagaren att informeras om makuleringen.<br><br>Det makulerade intyget kan ersättas med ett nytt. Då kopieras intygsinformationen in i ett nytt utkast som kan korrigeras.',
+        'label.makulera.body' : 'Intyg som innehåller allvarliga fel kan makuleras. Exempel på ett allvarligt fel är om intyget är utfärdat för fel patient. Om intyget har skickats elektroniskt till en mottagare kommer mottagaren att informeras om makuleringen.<br><br>Om du fått ny information om patienten eller av annan anledning behöver korrigera innehållet i intyget, ska det inte makuleras. Du kan då välja att skapa ett nytt intyg genom att använda funktionen Kopiera och korrigera de felaktiga uppgifterna.',
         'label.makulera.confirmation': 'Kvittens - Återtaget intyg',
 
         'label.qaonlywarning' : 'Du har valt att lämna frågor och svar',

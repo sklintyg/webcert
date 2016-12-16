@@ -18,30 +18,28 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import org.junit.Test;
+import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -383,34 +381,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .body("message", not(isEmptyString()));
     }
 
-    @Test
-    public void testRevokeReplaceSignedIntyg() {
-        final String personnummer = "19121212-1212";
-        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-
-        String intygsTyp = "fk7263";
-        String intygsId = createUtkast(intygsTyp, personnummer);
-        signeraUtkastWithTestabilityApi(intygsId);
-
-        RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
-        revokeParam.setMessage("Makulera!");
-        revokeParam.setReason("FELAKTIGT_INTYG");
-
-        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
-
-        RevokeReplaceSignedIntygRequest request = new RevokeReplaceSignedIntygRequest();
-        request.setRevokeSignedIntygParameter(revokeParam);
-        request.setCopyIntygRequest(copyIntygRequest);
-
-        given().contentType(ContentType.JSON).body(request).expect().statusCode(200)
-                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkallaersatt").then()
-                .body("intygsUtkastId", not(isEmptyString()))
-                .body("intygsUtkastId", not(equalTo(intygsId)))
-                .body("intygsTyp", equalTo(intygsTyp));
-
-        deleteUtkast(intygsId);
-    }
 
     private void signeraUtkastWithTestabilityApi(String intygsId) {
         String completePath = "testability/intyg/" + intygsId + "/komplett";

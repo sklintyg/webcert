@@ -19,23 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.ws.rs.core.Response;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
+import se.inera.intyg.common.fk7263.model.internal.Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -51,7 +34,6 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.common.fk7263.model.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -61,12 +43,39 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeReplaceSignedIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -226,147 +235,6 @@ public class IntygModuleApiControllerTest {
     public void testRevokeSignedIntygNotAuthorised() {
         setupUser("", "");
         moduleApiController.revokeSignedIntyg("intygType", CERTIFICATE_ID, null);
-    }
-
-    @Test
-    public void testRevokeReplaceSignedIntyg() {
-        final String revokeMessage = "revokeMessage";
-        final String revokeReason = "revokeReason";
-        final String personnummer = "191212121212";
-        final String newIntygId = "newIntygId";
-        final String newPersonnummer = "201212121212";
-        final String efternamn = "efternamn";
-        final String fornamn = "fornamn";
-        final String mellannamn = "mellannamn";
-        final String postadress = "postadress";
-        final String postort = "postort";
-        final String postnummer = "postnummer";
-
-        RevokeReplaceSignedIntygRequest revokeReplaceRequest = new RevokeReplaceSignedIntygRequest();
-        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
-        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(newPersonnummer));
-        copyIntygRequest.setEfternamn(efternamn);
-        copyIntygRequest.setFornamn(fornamn);
-        copyIntygRequest.setMellannamn(mellannamn);
-        copyIntygRequest.setPostadress(postadress);
-        copyIntygRequest.setPostort(postort);
-        copyIntygRequest.setPostnummer(postnummer);
-        revokeReplaceRequest.setCopyIntygRequest(copyIntygRequest);
-
-        RevokeSignedIntygParameter revokeSignedIntygParameter = new RevokeSignedIntygParameter();
-        revokeSignedIntygParameter.setMessage(revokeMessage);
-        revokeSignedIntygParameter.setReason(revokeReason);
-        revokeReplaceRequest.setRevokeSignedIntygParameter(revokeSignedIntygParameter);
-
-        WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.MAKULERA_INTYG, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG, AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
-        user.setOrigin("NORMAL");
-
-        when(intygService.revokeIntyg(eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), eq(revokeMessage), eq(revokeReason))).thenReturn(IntygServiceResult.OK);
-        ArgumentCaptor<CreateNewDraftCopyRequest> captor = ArgumentCaptor.forClass(CreateNewDraftCopyRequest.class);
-        when(copyUtkastService.createReplacementCopy(captor.capture())).thenReturn(new CreateNewDraftCopyResponse(CERTIFICATE_TYPE, newIntygId));
-        when(webcertUserService.getUser()).thenReturn(user);
-
-        Response response = moduleApiController.revokeReplaceSignedIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, revokeReplaceRequest);
-
-        verify(intygService, times(1)).revokeIntyg(eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), eq(revokeMessage), eq(revokeReason));
-        verifyNoMoreInteractions(intygService);
-        verify(copyUtkastService, times(1)).createReplacementCopy(any());
-        verifyNoMoreInteractions(copyUtkastService);
-        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
-        assertEquals(personnummer, captor.getValue().getPatient().getPersonId().getPersonnummer());
-        assertEquals(newPersonnummer, captor.getValue().getNyttPatientPersonnummer().getPersonnummer());
-        assertEquals(fornamn, captor.getValue().getPatient().getFornamn());
-        assertEquals(efternamn, captor.getValue().getPatient().getEfternamn());
-        assertEquals(mellannamn, captor.getValue().getPatient().getMellannamn());
-        assertEquals(postadress, captor.getValue().getPatient().getPostadress());
-        assertEquals(postnummer, captor.getValue().getPatient().getPostnummer());
-        assertEquals(postort, captor.getValue().getPatient().getPostort());
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void testRevokeReplaceSignedIntygMissingFeatureMakuleraIntyg() {
-        WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG, AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
-        user.setOrigin("NORMAL");
-        when(webcertUserService.getUser()).thenReturn(user);
-
-        try {
-            moduleApiController.revokeReplaceSignedIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, null);
-        } finally {
-            verifyZeroInteractions(intygService);
-            verifyZeroInteractions(copyUtkastService);
-        }
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void testRevokeReplaceSignedIntygMissingFeatureKopieraIntyg() {
-        WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.MAKULERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG, AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
-        user.setOrigin("NORMAL");
-        when(webcertUserService.getUser()).thenReturn(user);
-
-        try {
-            moduleApiController.revokeReplaceSignedIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, null);
-        } finally {
-            verifyZeroInteractions(intygService);
-            verifyZeroInteractions(copyUtkastService);
-        }
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void testRevokeReplaceSignedIntygMissingPrivilegeKopieraIntyg() {
-        WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.MAKULERA_INTYG, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
-        user.setOrigin("NORMAL");
-        when(webcertUserService.getUser()).thenReturn(user);
-
-        try {
-            moduleApiController.revokeReplaceSignedIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, null);
-        } finally {
-            verifyZeroInteractions(intygService);
-            verifyZeroInteractions(copyUtkastService);
-        }
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void testRevokeReplaceSignedIntygMissingPrivilegeMakuleraIntyg() {
-        WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.MAKULERA_INTYG, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
-        user.setOrigin("NORMAL");
-        when(webcertUserService.getUser()).thenReturn(user);
-
-        try {
-            moduleApiController.revokeReplaceSignedIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, null);
-        } finally {
-            verifyZeroInteractions(intygService);
-            verifyZeroInteractions(copyUtkastService);
-        }
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testRevokeReplaceSignedIntygMissingPersonnummer() {
-        WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.MAKULERA_INTYG, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG, AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
-        user.setOrigin("NORMAL");
-
-        RevokeReplaceSignedIntygRequest revokeReplaceRequest = new RevokeReplaceSignedIntygRequest();
-        revokeReplaceRequest.setCopyIntygRequest(new CopyIntygRequest());
-
-        when(webcertUserService.getUser()).thenReturn(user);
-        try {
-            moduleApiController.revokeReplaceSignedIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, revokeReplaceRequest);
-        } finally {
-            verifyZeroInteractions(intygService);
-            verifyZeroInteractions(copyUtkastService);
-        }
     }
 
     @Test

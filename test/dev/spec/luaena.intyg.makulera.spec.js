@@ -54,9 +54,11 @@ describe('Validera makulering av luae_na Intyg', function() {
 
         it('Makulera intyget', function() {
             IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-            IntygPage.makulera.dialogRadioFelaktigtIntyg.sendKeys(protractor.Key.SPACE)
-            browser.wait(IntygPage.makulera.dialogMakulera.isDisplayed())
-                .then(IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE));
+            IntygPage.makulera.dialogRadioAnnatAllvarligtFel.sendKeys(protractor.Key.SPACE)
+            browser.wait(IntygPage.makulera.dialogRadioAnnatAllvarligtFelClarification.isDisplayed())
+                .then(IntygPage.makulera.dialogRadioAnnatAllvarligtFelClarification.sendKeys("Patienten har en helt annan diagnos än den angivna, blandade ihop mjältbrand med nageltrång. Lätt hänt..."));
+
+            IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
 
             element.all(by.id('#makuleraBtn')).then(function(items) {
                 expect(items.length).toBe(0);
@@ -71,6 +73,7 @@ describe('Validera makulering av luae_na Intyg', function() {
         });
 
     });
+
 
     afterAll(function() {
         testdataHelper.deleteIntyg(intygsId);

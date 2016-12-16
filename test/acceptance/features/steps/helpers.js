@@ -234,10 +234,12 @@ module.exports = {
         }
     },
     makuleraReason: [
-        'dialogRadioFelaktigtIntyg',
-        'dialogRadioPatientNyInfo',
-        'dialogRadioMinBedomingAndrad',
-        'dialogRadioOvrigt'
+        // 'dialogRadioFelaktigtIntyg',
+        // 'dialogRadioPatientNyInfo',
+        // 'dialogRadioMinBedomingAndrad',
+        // 'dialogRadioOvrigt'
+        'dialogRadioFelPatient',
+        'dialogRadioAnnatAllvarligtFel'
     ],
 
     diffDays: function(dateFrom, dateTo) {

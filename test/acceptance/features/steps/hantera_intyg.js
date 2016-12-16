@@ -74,32 +74,32 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^jag makulerar intyget och ersätter med nytt intyg$/, function(callback) {
-        helpers.updateEnhetAdressForNewIntyg();
-
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            intyg.id = intyg.id.split('?')[0];
-        });
-
-        fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-
-        browser.sleep(2000).then(function() { // fix för animering
-            var reason = helpers.makuleraReason[Math.floor(Math.random() * 3)];
-            fkIntygPage.getReason(reason).then(function(radioBthEl) {
-                radioBthEl.sendKeys(protractor.Key.SPACE).then(function() {
-                    fkIntygPage.getReason(reason + 'Clarification').then(function(txtEl) {
-                        txtEl.sendKeys(helpers.randomTextString()).then(function() {
-                            fkIntygPage.getReason('dialogErsatt').then(function(dialogMakuleraEl) {
-                                dialogMakuleraEl.sendKeys(protractor.Key.SPACE).then(callback);
-                            });
-
-                        });
-                    });
-                });
-            });
-        });
-    });
+    // this.Given(/^jag makulerar intyget och ersätter med nytt intyg$/, function(callback) {
+    //     helpers.updateEnhetAdressForNewIntyg();
+    //
+    //     browser.getCurrentUrl().then(function(text) {
+    //         intyg.id = text.split('/').slice(-1)[0];
+    //         intyg.id = intyg.id.split('?')[0];
+    //     });
+    //
+    //     fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+    //
+    //     browser.sleep(2000).then(function() { // fix för animering
+    //         var reason = helpers.makuleraReason[Math.floor(Math.random() * 3)];
+    //         fkIntygPage.getReason(reason).then(function(radioBthEl) {
+    //             radioBthEl.sendKeys(protractor.Key.SPACE).then(function() {
+    //                 fkIntygPage.getReason(reason + 'Clarification').then(function(txtEl) {
+    //                     txtEl.sendKeys(helpers.randomTextString()).then(function() {
+    //                         fkIntygPage.getReason('dialogErsatt').then(function(dialogMakuleraEl) {
+    //                             dialogMakuleraEl.sendKeys(protractor.Key.SPACE).then(callback);
+    //                         });
+    //
+    //                     });
+    //                 });
+    //             });
+    //         });
+    //     });
+    // });
 
     this.Given(/^jag kopierar intyget$/, function() {
 
