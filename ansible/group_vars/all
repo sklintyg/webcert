@@ -14,6 +14,7 @@ config_repository: https://github.com/sklintyg/webcert-konfiguration.git
 config_folder: "{{ inera_root }}/webcert-konfiguration"
 gitcrypt_key_name: "git-crypt4.key"
 gitcrypt_key_file: "./{{ gitcrypt_key_name }}"
+feature_file_folder: "{{ config_folder }}/{{ environment_name }}/feature"
 
 # Application resources
 # Note: end with slash, in order to copy only files inside the source folder, not the folder itself
