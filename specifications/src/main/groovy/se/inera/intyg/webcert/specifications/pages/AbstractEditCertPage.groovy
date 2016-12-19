@@ -48,8 +48,6 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
         intygetSparatOchEjKomplettMeddelande(required: false){ $("#intyget-sparat-och-ej-komplett-meddelande") }
 
         errorPanel(required: false) { $("#error-panel") }
-        visaVadSomSaknasKnapp(required: false) { $("#showCompleteButton") }
-        doljVadSomSaknasKnapp(required: false) { $("#hideCompleteButton") }
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
         sekretessmarkering(required: false) { $("#sekretessmarkering") }
         vardenhet { module VardenhetModule }
@@ -90,7 +88,7 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
             js.setSaving(val)
         }
     }
-
+/*
     def visaVadSomSaknas() {
         visaVadSomSaknasKnapp.click();
         waitFor {
@@ -101,7 +99,7 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
     def doljVadSomSaknas() {
         doljVadSomSaknasKnapp.click();
     }
-
+*/
     def tillbaka() {
         tillbakaBtn.click();
         waitFor {

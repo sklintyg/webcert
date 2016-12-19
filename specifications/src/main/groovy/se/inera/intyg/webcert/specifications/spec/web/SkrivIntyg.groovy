@@ -74,18 +74,6 @@ class SkrivIntyg extends ExceptionHandlingFixture {
         intygsid
     }
 
-    void visaVadSomSaknas() {
-        Browser.drive {
-            page.visaVadSomSaknas()
-        }
-    }
-
-    void doljVadSomSaknas() {
-        Browser.drive {
-            page.doljVadSomSaknas()
-        }
-    }
-
     boolean visaVadSomSaknasListaVisas() {
         boolean result
         Browser.drive {
