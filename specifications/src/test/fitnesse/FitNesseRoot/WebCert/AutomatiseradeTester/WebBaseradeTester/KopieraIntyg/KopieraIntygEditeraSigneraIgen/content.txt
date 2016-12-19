@@ -50,7 +50,6 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 | skript | !-HanteraUtkast-! |
 | säkerställ att | meddelande intyget ej komplett visas |
-| säkerställ att inte | signera knapp aktiverad |
 
 !3 Populera intyget
 
