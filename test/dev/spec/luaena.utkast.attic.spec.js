@@ -57,89 +57,69 @@ describe('luae_na attic tests', function() {
 
     it('should load utkast', function() {
         UtkastPage.get(intygsId);
-        UtkastPage.showMissingInfoButtonClick();
-
-        expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
-
         UtkastPage.disableAutosave();
     });
 
     describe('annat', function() {
         it('should still be valid if annat is empty', function() {
             UtkastPage.baseratPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
-            UtkastPage.showMissingInfoButtonClick(true);
 
             expect(UtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('');
             expect(UtkastPage.baseratPa.annat.beskrivning.isPresent()).toBeFalsy();
             // annatBeskrivning should be removed from the model sent to the server
             // if it is still present we should get a validationerror here.
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
 
         it('should restore annatBeskrivning if annat is specified again', function() {
             UtkastPage.baseratPa.annat.datum.sendKeys('2016-12-12');
-            UtkastPage.showMissingInfoButtonClick(true);
 
             expect(UtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-12-12');
             expect(UtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat');
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
     });
 
     describe('underlag', function() {
         it('should still be valid if underlagFinns is set to no', function() {
             UtkastPage.andraMedicinskaUtredningar.finns.NEJ.sendKeys(protractor.Key.SPACE);
-            UtkastPage.showMissingInfoButtonClick(true);
 
             expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.isPresent()).toBeFalsy();
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
 
         it('should restore underlag if underlagFinns is set to yes again', function() {
             UtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
-            UtkastPage.showMissingInfoButtonClick(true);
 
             expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.ui-select-match-text')).getText()).toBe('Underlag från habiliteringen');
             expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).datum.getAttribute('value')).toBe('2016-04-26');
             expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).information.getAttribute('value')).toBe('vårdgivare');
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
     });
 
     describe('skalTillNyBedomning', function() {
         it('should still be valid if skalTillNyBedomning is set to no', function() {
             UtkastPage.diagnos.skalTillNyBedomning.NEJ.sendKeys(protractor.Key.SPACE);
-            UtkastPage.showMissingInfoButtonClick(true);
 
             expect(UtkastPage.diagnos.diagnosForNyBedomning.isPresent()).toBeFalsy();
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
 
         it('should restore diagnosForNyBedomning if skalTillNyBedomning is set to yes again', function() {
             UtkastPage.diagnos.skalTillNyBedomning.JA.sendKeys(protractor.Key.SPACE);
-            UtkastPage.showMissingInfoButtonClick(true);
 
             expect(UtkastPage.diagnos.diagnosForNyBedomning.getAttribute('value')).toBe('Diagnos 2');
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
     });
 
     describe('kontaktMedFk', function() {
         it('should still be valid if kontaktMedFk is set to no', function() {
             UtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
-            UtkastPage.showMissingInfoButtonClick(true);
 
             expect(UtkastPage.anledningTillKontakt.isPresent()).toBeFalsy();
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
 
         it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
             UtkastPage.enableAutosave();
             UtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
-            UtkastPage.showMissingInfoButtonClick(true);
 
             expect(UtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Kontaktorsak');
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(0);
         });
     });
 });

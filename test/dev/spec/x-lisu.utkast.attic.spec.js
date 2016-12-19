@@ -58,7 +58,7 @@ xdescribe('lisu.utkast.attic', function() {
 
     it('should load utkast', function () {
         LisuUtkastPage.get(intygsId);
-        LisuUtkastPage.showMissingInfoButtonClick();
+        LisuUtkastPage.signeraButtonClick();
 
         expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
 
@@ -68,7 +68,7 @@ xdescribe('lisu.utkast.attic', function() {
     describe('annat', function() {
         it('should still be valid if annat is empty', function() {
             LisuUtkastPage.baseratPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('');
             expect(LisuUtkastPage.baseratPa.annat.beskrivning.isPresent()).toBeFalsy();
@@ -82,7 +82,7 @@ xdescribe('lisu.utkast.attic', function() {
                 expect(LisuUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-12-12');
                 expect(LisuUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag');
 
-                LisuUtkastPage.showMissingInfoButtonClick(true);
+                LisuUtkastPage.signeraButtonClick();
                 expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
             });
 //console.log(browser.ignoreSynchronization);
@@ -92,7 +92,7 @@ xdescribe('lisu.utkast.attic', function() {
     describe('sysselsättning', function() {
         it('should still be valid if changed to arbetssökande', function() {
             LisuUtkastPage.sysselsattning.typ.arbetssokande.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.isPresent()).toBeFalsy();
             expect(LisuUtkastPage.sysselsattning.arbetsmarknadspolitisktProgramBeskrivning.isPresent()).toBeFalsy();
@@ -101,7 +101,7 @@ xdescribe('lisu.utkast.attic', function() {
 
         it ('should restore nuvarandeArbete description if nuvarande arbete is selected again', function() {
             LisuUtkastPage.sysselsattning.typ.nuvarandeArbete.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.getAttribute('value')).toBe('defenestrist');
             expect(LisuUtkastPage.sysselsattning.arbetsmarknadspolitisktProgramBeskrivning.isPresent()).toBeFalsy();
@@ -111,7 +111,7 @@ xdescribe('lisu.utkast.attic', function() {
         it('should still be valid if changed to Deltar i arbetmarknadspolitiskt program', function() {
             LisuUtkastPage.sysselsattning.typ.arbetmarknadspolitisktProgram.sendKeys(protractor.Key.SPACE);
             LisuUtkastPage.sysselsattning.arbetsmarknadspolitisktProgramBeskrivning.sendKeys('Bra program');
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.isPresent()).toBeFalsy();
             expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
@@ -119,7 +119,7 @@ xdescribe('lisu.utkast.attic', function() {
 
         it('should still be valid if changed to studier', function() {
             LisuUtkastPage.sysselsattning.typ.studier.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.isPresent()).toBeFalsy();
             expect(LisuUtkastPage.sysselsattning.arbetsmarknadspolitisktProgramBeskrivning.isPresent()).toBeFalsy();
@@ -128,7 +128,7 @@ xdescribe('lisu.utkast.attic', function() {
 
         it ('should restore arbetsmarknadspolitisktProgram description if arbetmarknadspolitisktProgram is selected again', function() {
             LisuUtkastPage.sysselsattning.typ.arbetmarknadspolitisktProgram.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sysselsattning.nuvarandeArbeteBeskrivning.isPresent()).toBeFalsy();
             expect(LisuUtkastPage.sysselsattning.arbetsmarknadspolitisktProgramBeskrivning.getAttribute('value')).toBe('Bra program');
@@ -144,7 +144,7 @@ xdescribe('lisu.utkast.attic', function() {
             LisuUtkastPage.sjukskrivning[50].till.clear();
             LisuUtkastPage.sjukskrivning[25].fran.clear();
             LisuUtkastPage.sjukskrivning[25].till.clear();
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.nej.isPresent()).toBeFalsy();
             expect(LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.ja.isPresent()).toBeFalsy();
@@ -155,7 +155,7 @@ xdescribe('lisu.utkast.attic', function() {
         it('should restore all arbetstidsforlaggning fields if sjukskrivning 75% is selected again', function() {
             LisuUtkastPage.sjukskrivning[75].fran.sendKeys('2016-05-09');
             LisuUtkastPage.sjukskrivning[75].till.sendKeys('2016-05-15');
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.ja.getAttribute('checked')).toBeTruthy();
             expect(LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.beskrivning.getAttribute('value')).toBe('Nattetid är bäst');
@@ -164,7 +164,7 @@ xdescribe('lisu.utkast.attic', function() {
 
         it('should still be valid if sjukskrivningsperiod > 75', function() {
             LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.nej.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.beskrivning.isPresent()).toBeFalsy();
             expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
@@ -172,7 +172,7 @@ xdescribe('lisu.utkast.attic', function() {
 
         it('should restore arbetstidsforlaggning description if arbetstidsforlaggning ja is selected again', function() {
             LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.ja.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.sjukskrivning.arbetstidsforlaggning.beskrivning.getAttribute('value')).toBe('Nattetid är bäst');
             expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
@@ -181,7 +181,7 @@ xdescribe('lisu.utkast.attic', function() {
         describe('prognos', function() {
             it('should still be valid if prognos is changed', function() {
                 LisuUtkastPage.sjukskrivning.prognos.typ[1].sendKeys(protractor.Key.SPACE);
-                LisuUtkastPage.showMissingInfoButtonClick(true);
+                LisuUtkastPage.signeraButtonClick();
 
                 expect(LisuUtkastPage.sjukskrivning.prognos.dagarTillArbete[30].isPresent()).toBeFalsy();
                 expect(LisuUtkastPage.sjukskrivning.prognos.dagarTillArbete[60].isPresent()).toBeFalsy();
@@ -192,7 +192,7 @@ xdescribe('lisu.utkast.attic', function() {
 
             it('should restore dagarTillArbete if prognos x days is selected again', function() {
                 LisuUtkastPage.sjukskrivning.prognos.typ[5].sendKeys(protractor.Key.SPACE);
-                LisuUtkastPage.showMissingInfoButtonClick(true);
+                LisuUtkastPage.signeraButtonClick();
 
                 expect(LisuUtkastPage.sjukskrivning.prognos.dagarTillArbete[30].isPresent()).toBeTruthy();
                 expect(LisuUtkastPage.sjukskrivning.prognos.dagarTillArbete[60].isPresent()).toBeTruthy();
@@ -208,7 +208,7 @@ xdescribe('lisu.utkast.attic', function() {
                 LisuUtkastPage.atgarder.typ[8].sendKeys(protractor.Key.SPACE);
                 LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
                 LisuUtkastPage.atgarder.ejAktuelltBeskrivning.sendKeys('Inte längre aktuellt');
-                LisuUtkastPage.showMissingInfoButtonClick(true);
+                LisuUtkastPage.signeraButtonClick();
 
                 expect(LisuUtkastPage.atgarder.typ[8].isEnabled()).toBe(false);
                 expect(LisuUtkastPage.atgarder.aktuelltBeskrivning.isPresent()).toBeFalsy();
@@ -218,7 +218,7 @@ xdescribe('lisu.utkast.attic', function() {
             it('should restore arbetslivsinriktadeAtgarderAktuelltBeskrivning if åtgärd "Arbetsträning" is selected', function() {
                 LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
                 LisuUtkastPage.atgarder.typ[2].sendKeys(protractor.Key.SPACE);
-                LisuUtkastPage.showMissingInfoButtonClick(true);
+                LisuUtkastPage.signeraButtonClick();
 
                 expect(LisuUtkastPage.atgarder.typ[1].isEnabled()).toBe(false);
                 expect(LisuUtkastPage.atgarder.aktuelltBeskrivning.getAttribute('value')).toBe('Det är alltid bra');
@@ -229,7 +229,7 @@ xdescribe('lisu.utkast.attic', function() {
             it('should restore arbetslivsinriktadeAtgarderAktuelltBeskrivning if åtgärd "Inte längre aktuellt" is selected again', function() {
                 LisuUtkastPage.atgarder.typ[2].sendKeys(protractor.Key.SPACE);
                 LisuUtkastPage.atgarder.typ[1].sendKeys(protractor.Key.SPACE);
-                LisuUtkastPage.showMissingInfoButtonClick(true);
+                LisuUtkastPage.signeraButtonClick();
 
                 expect(LisuUtkastPage.atgarder.typ[2].isEnabled()).toBe(false);
                 expect(LisuUtkastPage.atgarder.aktuelltBeskrivning.isPresent()).toBeFalsy();
@@ -244,7 +244,7 @@ xdescribe('lisu.utkast.attic', function() {
     describe('kontaktMedFk', function() {
         it('should still be valid if kontaktMedFk is set to no', function() {
             LisuUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.anledningTillKontakt.isPresent()).toBeFalsy();
             expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);
@@ -253,7 +253,7 @@ xdescribe('lisu.utkast.attic', function() {
         it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
             LisuUtkastPage.enableAutosave();
             LisuUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
-            LisuUtkastPage.showMissingInfoButtonClick(true);
+            LisuUtkastPage.signeraButtonClick();
 
             expect(LisuUtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Egentligen inte');
             expect(LisuUtkastPage.getMissingInfoMessagesCount()).toBe(0);

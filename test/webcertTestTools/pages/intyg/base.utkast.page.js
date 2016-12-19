@@ -38,7 +38,6 @@ var BaseUtkast = JClass._extend({
         };
         this.newTextVersionAlert = element(by.id('newTextVersion'));
         this.backBtn = element(by.id('tillbakaButton'));
-        this.showMissingInfoButton = element(by.id('showCompleteButton'));
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
         this.patientNamnPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande'));
@@ -68,18 +67,6 @@ var BaseUtkast = JClass._extend({
     },
     signeraButtonClick: function() {
         this.signeraButton.click();
-    },
-    showMissingInfoButtonClick: function(optional) {
-        if (optional) {
-            var button = this.showMissingInfoButton;
-            button.isPresent().then(function(result) {
-                if (result) {
-                    button.click();
-                }
-            });
-        } else {
-            this.showMissingInfoButton.click();
-        }
     },
     getMissingInfoMessagesCount: function() {
         return this.showMissingInfoList.all(by.tagName('a')).then(function(items) {

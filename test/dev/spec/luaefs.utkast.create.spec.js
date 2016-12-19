@@ -50,7 +50,7 @@ describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
 
             UtkastPage.disableAutosave();
 
-            UtkastPage.showMissingInfoButtonClick();
+            UtkastPage.signeraButtonClick();
 
             expect(UtkastPage.getMissingInfoMessagesCount()).toBe(3);
 
