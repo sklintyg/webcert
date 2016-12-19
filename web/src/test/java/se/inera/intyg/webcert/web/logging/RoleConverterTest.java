@@ -22,6 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +36,16 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class RoleConverterTest {
 
     private RoleConverter converter = new RoleConverter();
+
+    @Before
+    public void setup() {
+        cleanup();
+    }
+
+    @After
+    public void cleanup() {
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 
     @Test
     public void testConvert() {
