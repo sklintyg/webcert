@@ -30,12 +30,13 @@ var helpers = require('./helpers');
 
 function getNotificationEntries(intygsId, value, numEvents) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    var isTSIntyg = helpers.isTSIntyg(intyg.typ);
     var table = 'webcert_requests.requests';
     var handelseTidName = 'handelsetidpunkt';
     var extensionType = 'utlatandeExtension';
     var selectStatement = 'SELECT utlatandeExtension, handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName;
 
-    if (isSMIIntyg) {
+    if (isSMIIntyg || isTSIntyg) {
         table = 'webcert_requests.statusupdates_2';
         handelseTidName = 'handelseTid';
         extensionType = 'intygsExtension';

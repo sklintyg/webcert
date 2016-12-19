@@ -68,7 +68,9 @@ function createBody(intygstyp, samordningsnummer, callback) {
     }
     var body, path;
     var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
-    if (isSMIIntyg) {
+    var isTSIntyg = helpers.isTSIntyg(intygstyp);
+
+    if (isSMIIntyg || isTSIntyg) {
         path = '/services/create-draft-certificate/v2.0?wsdl';
         body = soapMessageBodies.CreateDraftCertificateV2(
             global.user,
@@ -97,8 +99,16 @@ module.exports = function() {
     });
 
     this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat intyg( med samordningsnummer)?$/, function(samordningsnummer, callback) {
-        var randomIntygCode = ['LISJP', 'LUSE', 'LUAE_NA', 'LUAE_FS'][Math.floor(Math.random() * 4)];
-        var randomIntygType = helpers.smiIntyg[randomIntygCode];
+        var randomIntygType = testdataHelpers.shuffle([
+            'Läkarintyg för sjukpenning',
+            'Läkarutlåtande för sjukersättning',
+            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+            'Läkarintyg FK 7263',
+            'Transportstyrelsens läkarintyg',
+            'Transportstyrelsens läkarintyg, diabetes'
+
+        ])[0];
         logger.info('Intyg typ: ' + randomIntygType + '\n');
         createBody(randomIntygType, samordningsnummer, callback);
     });

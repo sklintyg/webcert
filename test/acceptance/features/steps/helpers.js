@@ -128,27 +128,29 @@ module.exports = {
             cb(filteredElements[0]);
         });
     },
-    // whichSMIIntyg: function(intygsType) {
-    //     var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
-    //     return (intygsType) ? (intygsType.match(regex) ? (intygsType === this.smiIntyg.LISJP ? this.getSMIAbbrev(this.smiIntyg.LISJP) : this.getSMIAbbrev(this.smiIntyg.LUSE)) : false) : false;
-    // },
     getAbbrev: function(value) {
-        for (var key in this.smiIntyg) {
-            if (this.smiIntyg[key] === value) {
+        for (var key in this.intygShortcode) {
+            if (this.intygShortcode[key] === value) {
                 return key.toString();
             }
         }
         return null;
     },
-    smiIntyg: {
+    intygShortcode: {
         'LISJP': 'Läkarintyg för sjukpenning',
         'LUSE': 'Läkarutlåtande för sjukersättning',
         'LUAE_NA': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-        'LUAE_FS': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+        'LUAE_FS': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+        'FK7263': 'Läkarintyg FK 7263',
+        'TSTRK1007': 'Transportstyrelsens läkarintyg',
+        'TSTRK1031': 'Transportstyrelsens läkarintyg, diabetes'
     },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
+    },
+    isTSIntyg: function(intygsType) {
+        return intygsType.indexOf('Transportstyrelsen') > -1;
     },
     subjectCodes: {
         'Komplettering': 'KOMPLT',

@@ -31,6 +31,7 @@ module.exports = function() {
         browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-1)[0];
             logger.info('Intygsid: ' + intyg.id);
+            intyg.id = intyg.id.split('?')[0];
         });
 
         Promise.all([

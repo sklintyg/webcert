@@ -100,12 +100,12 @@ module.exports = function() {
 
     function gotoIntyg(intygstyp, origin, addToUrl) {
         var url;
-        var isSMIIntyg;
+        var usingCreateDraft2;
         if (intyg && intyg.typ) {
-            isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+            usingCreateDraft2 = helpers.isSMIIntyg(intyg.typ) || helpers.isTSIntyg(intyg.typ);
         }
         if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
-            if (isSMIIntyg) {
+            if (usingCreateDraft2) {
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
                 url = url + '?';
                 url += 'fornamn=' + encodeURIComponent(person.fornamn) + '&';
@@ -141,7 +141,7 @@ module.exports = function() {
 
         return browser.get(url).then(function() {
             console.log('Går till url: ' + url);
-            if (!isSMIIntyg) { // om djupintegration v1 så kommer det fram uppdragsval
+            if (!usingCreateDraft2) { // om djupintegration v1 så kommer det fram uppdragsval
                 var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
                 enhetSelectorLink.isPresent().then(function(isPresent) {
                     if (isPresent) {

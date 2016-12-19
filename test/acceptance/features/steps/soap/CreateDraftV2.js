@@ -17,17 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 'use strict';
+var helpers = require('../helpers');
 module.exports.CreateDraftCertificateV2 = function(user, intygstyp) {
-    var shortcodes = {
-        'Läkarintyg för sjukpenning': 'LISJP',
-        'Läkarutlåtande för sjukersättning': 'LUSE',
-        'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga': 'LUAE_NA',
-        'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång': 'LUAE_FS'
-    };
-    var typCode = shortcodes[intygstyp];
+    var typCode = helpers.getAbbrev(intygstyp);
 
     if (user.enhetId === 'TSTNMT2321000156-102R') {
         throw 'Enhet TSTNMT2321000156-102R är reserverad för djupintegration v1';
