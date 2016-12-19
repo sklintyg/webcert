@@ -144,8 +144,7 @@ module.exports = {
         'LISJP': 'Läkarintyg för sjukpenning',
         'LUSE': 'Läkarutlåtande för sjukersättning',
         'LUAE_NA': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-        'LUAE_FS': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-        'FK7263': 'Läkarintyg FK 7263'
+        'LUAE_FS': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
     },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;

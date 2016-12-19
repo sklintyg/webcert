@@ -130,9 +130,13 @@ module.exports = function() {
 
     });
 
-    this.Given(/^jag går in på att skapa ett slumpat intyg$/, function(callback) {
-        var randomIntygCode = ['LISJP', 'LUSE', 'LUAE_NA', 'LUAE_FS'][Math.floor(Math.random() * 4)];
-        intyg.typ = helpers.smiIntyg[randomIntygCode];
+    this.Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function(callback) {
+        intyg.typ = testdataHelpers.shuffle([
+            'Läkarintyg för sjukpenning',
+            'Läkarutlåtande för sjukersättning',
+            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+        ])[0];
         Promise.all([
             sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
             sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
@@ -146,6 +150,7 @@ module.exports = function() {
             });
         });
     });
+
 
     this.Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);

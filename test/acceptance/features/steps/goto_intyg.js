@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, intyg, logger, person, protractor, pages, JSON */
+/*global browser, intyg, logger, person, protractor, pages, JSON,wcTestTools */
 'use strict';
 
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var createIntygWithStatus = require('./helpers_create_intyg.js').createIntygWithStatus;
 var getIntygElementRow = require('./helpers.js').getIntygElementRow;
-var helpers = require('./helpers.js');
+var shuffle = wcTestTools.helpers.testdata.shuffle;
 
 function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 
@@ -78,14 +78,21 @@ module.exports = function() {
         getIER(intygstyp, status, callback);
     });
 
-    this.Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
+
+
+    this.Given(/^jag går in på ett slumpat SMI\-intyg med status "([^"]*)"$/, {
         timeout: 700 * 1000
     }, function(status, callback) {
-        var randomIntygCode = ['LISJP', 'LUSE', 'LUAE_NA', 'LUAE_FS'][Math.floor(Math.random() * 4)];
-        var randomIntyg = helpers.smiIntyg[randomIntygCode];
+        var randomIntyg = shuffle([
+            'Läkarintyg för sjukpenning',
+            'Läkarutlåtande för sjukersättning',
+            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+        ])[0];
         logger.info('Intyg type: ' + randomIntyg);
         intyg.typ = randomIntyg;
         getIER(randomIntyg, status, callback);
     });
+
 
 };
