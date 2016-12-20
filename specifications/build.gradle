@@ -29,8 +29,6 @@ sonarqube {
 }
 
 dependencies {
-    def seleniumVersion = "${seleniumVersion}"
-
     compile project(":mail-stub")
     compile project(":webcert-web")
 

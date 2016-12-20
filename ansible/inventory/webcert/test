@@ -1,5 +1,6 @@
 [tomcat]
-webcert-test ansible_ssh_host=webcert.inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=21022 ansible_ssh_private_key_file=~/.ssh/inera_rsa
+webcert-test1 ansible_ssh_host=webcert.inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=21022 ansible_ssh_private_key_file=~/.ssh/inera_rsa
+webcert-test2 ansible_ssh_host=webcert.inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=21022 ansible_ssh_private_key_file=~/.ssh/inera_rsa
 
 [mysql]
 webcert-test ansible_ssh_host=webcert.inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=21022 ansible_ssh_private_key_file=~/.ssh/inera_rsa

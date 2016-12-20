@@ -6,3 +6,6 @@ config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 # Spring profiles
 profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled
+
+# Tomcat
+tomcat_http_port: 8081
