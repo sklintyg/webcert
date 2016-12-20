@@ -34,13 +34,13 @@ module.exports = function() {
         ]);
     });
 
-    this.Given(/^ska intyget visa det nya namnet$/, function() {
-        return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.fornamn + ' ' + person.efternamn);
-    });
+    // this.Given(/^ska intyget visa det nya namnet$/, function() {
+    //     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.fornamn + ' ' + person.efternamn);
+    // });
 
-    this.Given(/^ska intyget visa det nya personnummret$/, function() {
-        return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.fornamn + ' ' + person.efternamn + ' - ' + person.id);
-    });
+    // this.Given(/^ska intyget visa det nya personnummret$/, function() {
+    //     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.fornamn + ' ' + person.efternamn + ' - ' + person.id);
+    // });
 
     this.Given(/^ska adressen kopieras till det kopierade intyget$/, function() {
         var promiseArray = [];

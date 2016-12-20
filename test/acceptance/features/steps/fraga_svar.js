@@ -414,11 +414,6 @@ module.exports = function() {
         }
     });
 
-    this.Given(/^ska frågan vara hanterad$/, function(callback) {
-        // Write code here that turns the phrase above into concrete actions
-        callback(null, 'pending');
-    });
-
     this.Given(/^jag markerar frågan från vården som hanterad$/, function() {
         var fragaText;
         for (var k = 0; k < global.meddelanden.length; k++) {

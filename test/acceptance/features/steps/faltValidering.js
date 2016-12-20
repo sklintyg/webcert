@@ -84,32 +84,6 @@ function populateFieldArray(object, ignoreKeys) {
 
 module.exports = function() {
 
-    this.Given(/^jag fyller i text i "([^"]*)" fältet$/, function(fieldtype) {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-
-
-        var date = helpers.randomTextString().substring(0, 4);
-
-        if (isSMIIntyg && fieldtype === 'kännedom-datum') {
-            return luseUtkastPage.baseratPa.kannedomOmPatient.datum.sendKeys(date);
-        } else if (isSMIIntyg && fieldtype === 'slumpat-datum') {
-            return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.baseratPa, ['anhorigBeskrivning', 'kannedomOmPatient']))[0].datum.sendKeys(date);
-
-        } else if (isSMIIntyg && fieldtype === 'underlag-datum') {
-            luseUtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
-            return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.underlag))[0].datum.sendKeys(date);
-
-        } else if (isSMIIntyg && fieldtype === 'postnummer') {
-            return luseUtkastPage.enhetensAdress.postNummer.sendKeys(date);
-        } else if (isSMIIntyg && fieldtype === 'arbetsförmåga-datum') {
-            var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
-            return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].sendKeys(date);
-        } else {
-            return fkUtkastPage.diagnosKod.sendKeys(date);
-        }
-
-    });
-
     this.Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
 
@@ -205,30 +179,6 @@ module.exports = function() {
         return Promise.all(promiseArray);
 
     });
-
-
-
-    this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(arg1) {
-        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
-            return elm.getText();
-        });
-        return alertTexts.then(function(result) {
-            return expect(result.join('\n')).to.have.string(arg1);
-
-        });
-
-    });
-
-    // this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(arg1) {
-    //     var alertTexts = element.all(by.css('.alert-danger validation')).map(function(elm) {
-    //         return elm.getText();
-    //     });
-    //     return alertTexts.then(function(result) {
-    //         return expect(result.join('\n')).to.have.string(arg1);
-
-    //     });
-
-    // });
 
 
     this.Given(/^ska "([^"]*)" valideringsfelet, "([^"]*)" visas$/, function(arg1, arg2) {

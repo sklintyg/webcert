@@ -39,21 +39,6 @@ module.exports = function() {
         return browser.get(link);
     });
 
-    this.Given(/^jag ändrar enhet till "([^"]*)"$/, function(enhet) {
-        return (global.user.enhetId = enhet);
-    });
-
-    this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn och adress$/, function() {
-        person.fornamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
-        person.efternamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];
-        person.adress = {
-            postadress: 'Västra storgatan 20',
-            postort: 'Karlstad',
-            postnummer: '66130'
-
-        };
-        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk');
-    });
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn$/, function() {
         person.fornamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
         person.efternamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];

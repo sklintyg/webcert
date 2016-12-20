@@ -1,6 +1,6 @@
 # language: sv
 @statusuppdateringar @ts @diabetes
-Egenskap: Statusuppdateringar för TS-bas intyg
+Egenskap: Statusuppdateringar för TS-diabetes intyg
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
