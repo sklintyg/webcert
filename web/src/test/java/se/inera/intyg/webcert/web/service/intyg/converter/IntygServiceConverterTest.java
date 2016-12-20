@@ -27,9 +27,11 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.*;
-
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,13 +40,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.common.fk7263.model.internal.Utlatande;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -60,14 +62,14 @@ public class IntygServiceConverterTest {
     @Before
     public void setup() throws Exception {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Utlatande());
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
     }
 
 
     @Test
     public void testBuildSendTypeFromUtlatande() throws Exception {
 
-        Utlatande utlatande = createUtlatandeFromJson();
+        Fk7263Utlatande utlatande = createUtlatandeFromJson();
 
         SendType res = IntygConverterUtil.buildSendTypeFromUtlatande(utlatande);
 
@@ -254,9 +256,9 @@ public class IntygServiceConverterTest {
         assertEquals(specialisering2, result.getSpecialiteter().get(1));
     }
 
-    private Utlatande createUtlatandeFromJson() throws Exception {
+    private Fk7263Utlatande createUtlatandeFromJson() throws Exception {
         return new CustomObjectMapper().readValue(
-                readClasspathResource("IntygServiceTest/utlatande.json").getFile(), Utlatande.class);
+                readClasspathResource("IntygServiceTest/utlatande.json").getFile(), Fk7263Utlatande.class);
     }
 
     private ClassPathResource readClasspathResource(String file) throws IOException {
