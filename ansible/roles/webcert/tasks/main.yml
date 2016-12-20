@@ -12,7 +12,7 @@
   when: deploy_from_repo|bool
 
 - name: Copy webcert-liquibase-runner-{{ version }}.zip
-  copy: src={{ inventory_dir }}/../tools/liquibase-runner/build/distributions/webcert-liquibase-runner-{{ version }}.zip dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
+  copy: src={{ playbook_dir }}/../tools/liquibase-runner/build/distributions/webcert-liquibase-runner-{{ version }}.zip dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
   when: not deploy_from_repo|bool
 
 - name: Unzip webcert-liquibase-runner-{{ version }}.zip
@@ -36,7 +36,7 @@
   when: deploy_from_repo|bool
 
 - name: Copy webcert-web-{{ version }}.war from THIS machine when not deploying from remote repo
-  copy: src={{ inventory_dir }}/../web/build/libs/webcert-web-{{ version }}.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
+  copy: src={{ playbook_dir }}/../web/build/libs/webcert-web-{{ version }}.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
   when: not deploy_from_repo|bool
 
 - name: Remove old version of unpacked war
@@ -56,7 +56,7 @@
   when: deploy_from_repo|bool
 
 - name: Copy log-sender-{{ version }}.war
-  copy: src={{ inventory_dir }}/../log-sender/build/libs/log-sender-{{ version }}.war dest={{ releases_folder }}/log-sender-{{ version }}.war
+  copy: src={{ playbook_dir }}/../log-sender/build/libs/log-sender-{{ version }}.war dest={{ releases_folder }}/log-sender-{{ version }}.war
   when: not deploy_from_repo|bool
 
 - name: Remove old version of unpacked log-sender war
