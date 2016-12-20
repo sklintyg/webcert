@@ -26,6 +26,7 @@ var basePage = pages.webcertBase;
 var utkastPage = pages.intyg.base.utkast;
 var unsignedPage = pages.unsignedPage;
 
+
 module.exports = function() {
 
     this.Given(/^går in på Sök\/skriv intyg$/, function(callback) {
@@ -62,8 +63,8 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^synns Vidarebefodra knappen$/, function() {
-        return expect(basePage.copyBtn.isPresent()).to.become(true).then(function() {
+    this.Given(/^visas Vidarebefodra knappen$/, function() {
+        return expect(fkIntygPage.forwardBtn.isPresent()).to.become(true).then(function() {
             logger.info('OK - Vidarebeforda knappen hittad');
         }, function(reason) {
             throw ('FEL : ' + reason);
@@ -188,7 +189,7 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^synns inte signera knappen$/, function(callback) {
+    this.Given(/^visas inte signera knappen$/, function(callback) {
         fkUtkastPage.signeraButton.isPresent().then(function(isVisible) {
             if (isVisible) {
                 callback('FEL - Signera knapp synlig!');
@@ -198,7 +199,7 @@ module.exports = function() {
         }).then(callback);
     });
 
-    this.Given(/^synns Hämta personuppgifter knappen$/, function(callback) {
+    this.Given(/^visas Hämta personuppgifter knappen$/, function(callback) {
         fkUtkastPage.fetchPatientButton.isPresent().then(function(isVisible) {
             if (isVisible) {
                 logger.debug('OK - Hämta personuppgifter synlig!');
@@ -227,5 +228,17 @@ module.exports = function() {
             }
         }).then(callback);
     });
+    this.Given(/^jag byter vårdenhet till "([^"]*)"$/, function(id, callback) {
+        //basePage.changeUnit.sendKeys(protractor.Key.SPACE).then(function() 
+        basePage.changeUnit.click().then(function() {
+            var enhetId = 'select-active-unit-' + id + '-modal';
+            console.log(enhetId);
+            element(by.id(enhetId)).click().then(callback); //sendKeys(protractor.Key.SPACE).then(callback);
+
+        });
+
+        //Kristina håller på här
+    });
+
 
 };
