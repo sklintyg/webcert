@@ -26,7 +26,6 @@ var helpers = require('./helpers');
 var testdata = wcTestTools.testdata;
 var testdataHelpers = wcTestTools.helpers.testdata;
 var tmpDiagnos;
-var anhorigIgnoreKeys = ['forsakringsmedicinsktBeslutsstodBeskrivning', 'arbetstidsforlaggning', 'arbetsresor', 'formagaTrotsBegransningBeskrivning', 'prognos'];
 
 function setDiagnos(diagnos) {
     tmpDiagnos = diagnos;
@@ -64,23 +63,6 @@ function checkFMB(promArray, isSMIIntyg, egenDiagnos, fmbDiagnos, antalDiagnoser
     return Promise.all(promArray);
 }
 
-
-
-function populateFieldArray(object, ignoreKeys) {
-    var re = [];
-    if (object) {
-        for (var key in object) {
-            if (object.hasOwnProperty(key)) {
-                var index = (typeof ignoreKeys !== 'undefined') ? ignoreKeys.indexOf(key) : -1;
-                if (index === -1) {
-
-                    re.push(object[key]);
-                }
-            }
-        }
-    }
-    return re;
-}
 
 module.exports = function() {
 
@@ -218,4 +200,8 @@ module.exports = function() {
 
 
     });
+    this.Given(/^jag raderar ett  slumpat obligatoriskt fält$/, function(callback) {
+
+    });
+
 };

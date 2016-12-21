@@ -211,7 +211,7 @@ module.exports = {
         'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'LUAE_FS': ['funktionsnedsattningDebut', 'funktionsnedsattningPaverkan', 'ovrigt'],
-        'FK7263': ['diagnoskod', 'arbetsförmåga', 'sjukskrivningsperiod']
+        'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod']
     },
     getUserObj: function(userKey) {
         return this.userObj[userKey];

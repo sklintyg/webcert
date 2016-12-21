@@ -31,13 +31,17 @@ var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var td = wcTestTools.testdata;
 
-function chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback) {
+function chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback, clearFlag) {
+    var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
+    console.log('Fältet som ändras är: ' + field + ' i intyg ' + intygShortcode);
+    changeField(intygShortcode, field, callback, clearFlag);
+}
+/*function chooseRandomMandatoryFieldAndDelete(isSMIIntyg, intygShortcode, callback) {
     var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
     console.log('Fältet som ändras är: ' + field + ' i intyg ' + intygShortcode);
     changeField(intygShortcode, field, callback);
-}
-
-function changeField(intygShortcode, field, callback) {
+}*/
+function changeField(intygShortcode, field, callback, clearFlag) {
     if (intygShortcode === 'LUSE') {
         if (field === 'aktivitetsbegransning') {
             intyg.aktivitetsbegransning = helpers.randomTextString();
@@ -107,8 +111,22 @@ function changeField(intygShortcode, field, callback) {
             callback(null, 'pending');
         }
 
-    } else {
-        callback(null, 'pending');
+    } else if (intygShortcode === 'FK7263') {
+        if (clearFlag) { //'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod']
+            if (field === 'aktivitetsbegransning') {
+                intyg.aktivitetsBegransning.clear();
+            } else if (field === 'diagnoskod') {
+                intyg.diagnosKod.clear();
+
+            } else if (field === 'funktionsnedsattning') {
+                intyg.funktionsNedsattning.clear();
+            } else {
+                callback(null, 'pending');
+            }
+
+        } else {
+            callback(null, 'pending');
+        }
     }
 }
 
