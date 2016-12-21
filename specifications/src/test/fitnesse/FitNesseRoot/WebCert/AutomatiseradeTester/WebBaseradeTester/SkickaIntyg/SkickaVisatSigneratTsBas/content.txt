@@ -21,15 +21,7 @@ Detta test ska visa på att man kan skicka ett signerat ts-intyg.
 | skicka det visade intyget av typ | ts-bas |
 | säkerställ att | meddelande for status intyg skickat visas | Transportstyrelsen |
 
-!3 Verififera att intyget finns i intygstjänsten och stubben
+!3 Kontrollera att Intygstjänsten (asynkront) tagit emot och skickat intyget
 
 | skript | !-IntygstjanstAsynk-! |
 | säkerställ att| finns intyg | intyg-fit-7 | i intygstjansten skickad till | TS | med vantetid | 5000 |
-
-| ts intyg finns i stub |
-| id | exists? |
-| intyg-fit-7 | true |
-
-!3 Rensa intyg från ts stub
-
-| ta bort ts intyg stub |
