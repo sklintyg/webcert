@@ -20,7 +20,7 @@ Scenario: Ska endast kunna hantera FK7263
 	När jag går till ej signerade utkast
 	Så ska jag inte se utkast av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
 
-@fk7263 @signera @skicka @makulera @kopiera
+@fk7263 @signera @skicka @makulera @kopiera @waitingForFix
 Scenario: Skapa, Skicka och Makulera FK7263
 	Givet att jag är inloggad som tandläkare
 	När jag går in på en patient

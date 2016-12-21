@@ -7,6 +7,7 @@ Bakgrund: Logga in och gå in på en patient
 	Givet att jag är inloggad som djupintegrerad läkare
 	Och jag går in på en patient
 
+@waitingForFix
 Scenario: Kan makulera sjukintyg
 	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag makulerar intyget

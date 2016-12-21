@@ -18,7 +18,7 @@ Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
     När jag skickar intyget till Försäkringskassan
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
-@makulera
+@makulera @waitingForFix
 Scenario: Statusuppdateringar då intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget

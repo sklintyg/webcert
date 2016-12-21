@@ -21,7 +21,7 @@ Scenario: Skicka ett signerat intyg till Transportstyrelsen
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
-@makulera
+@makulera @waitingForFix
 Scenario: Makulera ett skickat intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg" med status "Mottaget"
     Så ska intygets status vara "Intyget är signerat, skickat och mottaget av Transportstyrelsens system"

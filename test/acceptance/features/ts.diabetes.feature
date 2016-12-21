@@ -24,7 +24,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
     När jag går till Mina intyg för patienten
     Så ska intygets status i Mina intyg visa "Mottaget av Transportstyrelsens system"
 
-@makulera
+@makulera @waitingForFix
 Scenario: Makulera ett skickat intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget"
     Och jag makulerar intyget
