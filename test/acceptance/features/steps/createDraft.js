@@ -60,12 +60,9 @@ function sendCreateDraft(url, body, callback) {
     });
 }
 
-function createBody(intygstyp, samordningsnummer, callback) {
+function createBody(intygstyp, callback) {
     global.intyg.typ = intygstyp;
-    global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-    if (samordningsnummer) {
-        global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
-    }
+
     var body, path;
     var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
     var isTSIntyg = helpers.isTSIntyg(intygstyp);
@@ -95,10 +92,20 @@ function createBody(intygstyp, samordningsnummer, callback) {
 
 module.exports = function() {
     this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)"( med samordningsnummer)?$/, function(intygstyp, samordningsnummer, callback) {
-        createBody(intygstyp, samordningsnummer, callback);
+        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+        if (samordningsnummer) {
+            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+        }
+
+        createBody(intygstyp, callback);
     });
 
     this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat intyg( med samordningsnummer)?$/, function(samordningsnummer, callback) {
+        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+        if (samordningsnummer) {
+            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+        }
+
         var randomIntygType = testdataHelpers.shuffle([
             'Läkarintyg för sjukpenning',
             'Läkarutlåtande för sjukersättning',
@@ -110,6 +117,20 @@ module.exports = function() {
 
         ])[0];
         logger.info('Intyg typ: ' + randomIntygType + '\n');
-        createBody(randomIntygType, samordningsnummer, callback);
+        createBody(randomIntygType, callback);
     });
+
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat SMI\-intyg$/, function(callback) {
+        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+        var randomIntygType = testdataHelpers.shuffle([
+            'Läkarintyg för sjukpenning',
+            'Läkarutlåtande för sjukersättning',
+            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+
+        ])[0];
+        logger.info('Intyg typ: ' + randomIntygType + '\n');
+        createBody(randomIntygType, callback);
+    });
+
 };

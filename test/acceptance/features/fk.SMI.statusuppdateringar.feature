@@ -4,7 +4,7 @@ Egenskap: Statusuppdateringar för SMI intyg
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
-   Och att vårdsystemet skapat ett intygsutkast för slumpat intyg
+   Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @skicka-till-fk
