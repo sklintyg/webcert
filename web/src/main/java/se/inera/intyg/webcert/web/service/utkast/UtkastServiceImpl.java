@@ -74,6 +74,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
@@ -500,7 +501,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Always return the warning messages
         for (ValidationMessage validationWarning : dr.getValidationWarnings()) {
-            draftValidation.addWarning(new se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage(
+            draftValidation.addWarning(new DraftValidationMessage(
                     validationWarning.getField(), validationWarning.getType(), validationWarning.getMessage(), validationWarning.getDynamicKey()));
         }
 
@@ -513,7 +514,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Only bother with returning validation (e.g. error) messages if the Draft is INVALID.
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
-            draftValidation.addMessage(new se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage(
+            draftValidation.addMessage(new DraftValidationMessage(
                     validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage(), validationMsg.getDynamicKey()));
         }
 

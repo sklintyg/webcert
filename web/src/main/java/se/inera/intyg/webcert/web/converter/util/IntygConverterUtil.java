@@ -24,17 +24,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Joiner;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
-import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
 import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -89,21 +94,21 @@ public final class IntygConverterUtil {
      * <li>If draft has a aterkalledDatum, a CANCELLED status is added</li>
      * <li>If there is a signature with a signature date, a RECEIVED status is added.</li>
      */
-    public static List<se.inera.intyg.common.support.model.Status> buildStatusesFromUtkast(Utkast draft) {
-        List<se.inera.intyg.common.support.model.Status> statuses = new ArrayList<>();
+    public static List<Status> buildStatusesFromUtkast(Utkast draft) {
+        List<Status> statuses = new ArrayList<>();
 
         if (draft.getSkickadTillMottagareDatum() != null) {
-            se.inera.intyg.common.support.model.Status status = new se.inera.intyg.common.support.model.Status(CertificateState.SENT,
+            Status status = new Status(CertificateState.SENT,
                     draft.getSkickadTillMottagare(), draft.getSkickadTillMottagareDatum());
             statuses.add(status);
         }
         if (draft.getAterkalladDatum() != null) {
-            se.inera.intyg.common.support.model.Status status = new se.inera.intyg.common.support.model.Status(CertificateState.CANCELLED,
+            Status status = new Status(CertificateState.CANCELLED,
                     null, draft.getAterkalladDatum());
             statuses.add(status);
         }
         if (draft.getSignatur() != null && draft.getSignatur().getSigneringsDatum() != null) {
-            se.inera.intyg.common.support.model.Status status = new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED,
+            Status status = new Status(CertificateState.RECEIVED,
                     null, draft.getSignatur().getSigneringsDatum());
             statuses.add(status);
         }
