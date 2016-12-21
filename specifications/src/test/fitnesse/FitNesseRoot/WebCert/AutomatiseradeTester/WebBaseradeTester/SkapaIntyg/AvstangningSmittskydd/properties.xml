@@ -23,6 +23,7 @@
 <Files>true</Files>
 <Help>Säkerställ att alla värden som beror på avstängning smittskydd är återställt</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>

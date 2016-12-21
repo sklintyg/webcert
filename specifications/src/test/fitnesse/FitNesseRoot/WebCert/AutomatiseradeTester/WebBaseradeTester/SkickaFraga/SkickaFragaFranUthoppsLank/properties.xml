@@ -23,6 +23,7 @@
 <Files>true</Files>
 <Help>Skicka ny fråga till FK genom att gå till ett intyg via uthoppslänk</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>

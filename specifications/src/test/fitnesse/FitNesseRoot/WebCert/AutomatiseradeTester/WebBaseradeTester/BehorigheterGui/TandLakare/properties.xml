@@ -23,6 +23,7 @@
 <Files>true</Files>
 <Help>Kontrollera att tandläkare får tillgång till förväntade funktioner i GUI</Help>
 <Properties>true</Properties>
+<Prune/>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>
