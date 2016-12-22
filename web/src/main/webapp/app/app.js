@@ -229,6 +229,7 @@
                 function(event, toState, toParams, fromState, fromParams, error) {
                     $log.debug('$stateChangeError');
                     $log.debug(toState);
+                    $log.debug(error);
                 });
 
             $rootScope.$on('$viewContentLoading', function(/*event, viewConfig*/) {
