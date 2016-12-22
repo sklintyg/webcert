@@ -205,7 +205,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {
-        expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(true).and.notify(callback);
+        expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
     });
     this.Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
         logger.debug('Diagnos' + fk7263Utkast.diagnosKod.getText());
