@@ -113,13 +113,16 @@ function changeField(intygShortcode, field, callback, clearFlag) {
 
     } else if (intygShortcode === 'FK7263') {
         if (clearFlag) { //'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod']
+            // this.diagnosKod = element(by.id('diagnoseCode'));
+            //this.funktionsNedsattning = element(by.id('disabilities'));
+            //this.aktivitetsBegransning = element(by.id('activityLimitation'));
             if (field === 'aktivitetsbegransning') {
-                intyg.aktivitetsBegransning.clear();
+                fkUtkastPage.aktivitetsBegransning.clear().then(callback);
             } else if (field === 'diagnoskod') {
-                intyg.diagnosKod.clear();
+                fkUtkastPage.diagnosKod.clear().then(callback);
 
             } else if (field === 'funktionsnedsattning') {
-                intyg.funktionsNedsattning.clear();
+                fkUtkastPage.funktionsNedsattning.clear().then(callback);
             } else {
                 callback(null, 'pending');
             }
@@ -217,6 +220,20 @@ module.exports = function() {
         console.log(intyg);
         return fillIn(global.intyg);
     });
+    this.Given(/^jag fyller i alla obligatoriska  fält för intyget$/, function() {
+        if (!global.intyg.typ) {
+            throw 'intyg.typ odefinierad.';
+        } else {
+            global.intyg = testdata.fk['7263'].getRandom(intyg.id, false);
+            console.log(intyg);
+            return fillIn(global.intyg);
+        }
+    });
 
+
+};
+
+module.exports.changingFields = function(isSMIIntyg, intygShortcode, callback, clearFlag) {
+    chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback, clearFlag);
 
 };

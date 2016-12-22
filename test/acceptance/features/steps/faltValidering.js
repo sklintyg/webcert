@@ -23,6 +23,7 @@ var luseUtkastPage = pages.intyg.luse.utkast;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var helpers = require('./helpers');
+var fillInIntyg = require('./fillIn/fill_in_intyg_steps');
 var testdata = wcTestTools.testdata;
 var testdataHelpers = wcTestTools.helpers.testdata;
 var tmpDiagnos;
@@ -251,9 +252,14 @@ module.exports = function() {
 
     });
 
-
-    // });
     this.Given(/^jag raderar ett  slumpat obligatoriskt fält$/, function(callback) {
+
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var intygShortcode = helpers.getAbbrev(intyg.typ);
+
+        fillInIntyg.changingFields(isSMIIntyg, intygShortcode, callback, true);
+        //fillInIntyg.chooseRandomFieldBasedOnIntyg(isSMIIntyg, false, callback, true);
+
 
     });
 

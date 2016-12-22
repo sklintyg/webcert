@@ -237,7 +237,7 @@ module.exports = function() {
 
         });
 
-        //Kristina håller på här
+
     });
 
 
