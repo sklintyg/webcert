@@ -21,7 +21,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Skicka ny fråga till FK  genom att gå in på ett intyg via befintlig fråga</Help>
+<Help>Migrerat av NMT (TI-134). Skicka ny fråga till FK  genom att gå in på ett intyg via befintlig fråga</Help>
 <Properties>true</Properties>
 <Prune/>
 <RecentChanges>true</RecentChanges>

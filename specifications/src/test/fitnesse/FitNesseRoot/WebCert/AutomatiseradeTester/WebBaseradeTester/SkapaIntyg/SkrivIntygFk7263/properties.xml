@@ -21,7 +21,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Skapa ett komplett FK 7263-utkast och ta bort det</Help>
+<Help>Migrerat av NMT (TI-134). Skapa ett komplett FK 7263-utkast och ta bort det</Help>
 <Properties>true</Properties>
 <Prune/>
 <RecentChanges>true</RecentChanges>

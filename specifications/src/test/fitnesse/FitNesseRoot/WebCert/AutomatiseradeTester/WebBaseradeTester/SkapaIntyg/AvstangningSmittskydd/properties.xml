@@ -21,7 +21,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Säkerställ att alla värden som beror på avstängning smittskydd är återställt</Help>
+<Help>Migrerat av NMT (TI-134). Säkerställ att alla värden som beror på avstängning smittskydd är återställt</Help>
 <Properties>true</Properties>
 <Prune/>
 <RecentChanges>true</RecentChanges>

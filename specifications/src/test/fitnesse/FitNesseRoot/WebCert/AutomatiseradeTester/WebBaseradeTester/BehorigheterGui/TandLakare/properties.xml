@@ -21,7 +21,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Kontrollera att tandläkare får tillgång till förväntade funktioner i GUI</Help>
+<Help>Migrerat av NMT (TI-134). Kontrollera att tandläkare får tillgång till förväntade funktioner i GUI</Help>
 <Properties>true</Properties>
 <Prune/>
 <RecentChanges>true</RecentChanges>

@@ -21,7 +21,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Skapa ett FK 7263-intyg med smittskydd</Help>
+<Help>Migrerat av NMT (TI-134). Skapa ett FK 7263-intyg med smittskydd</Help>
 <Properties>true</Properties>
 <Prune/>
 <RecentChanges>true</RecentChanges>
