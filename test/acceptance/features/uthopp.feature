@@ -8,14 +8,14 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @fråga-uthopp @mailnotifikation 
 Scenario: Ska gå in på intyg som är skickat till intygstjänsten
-När jag skickar ett "FK7263" intyg till Intygstjänsten
+När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
 Och jag skickar intyget direkt till Försäkringskassan
 Och Försäkringskassan ställer en "Kontakt" fråga om intyget 
 Så ska jag få ett mejl med ämnet "Försäkringskassan har ställt en fråga angående ett intyg"
 
 @fråga-till-fk
 Scenario: Skicka fråga till Försäkringskassan
-	När jag skickar ett "FK7263" intyg till Intygstjänsten
+	När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
 	Och jag skickar intyget direkt till Försäkringskassan
 	Och jag går in på intyget via uthoppslänk
 	Och jag skickar en fråga med ämnet "Arbetstidsförläggning" till Försäkringskassan

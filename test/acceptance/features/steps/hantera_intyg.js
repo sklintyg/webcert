@@ -45,6 +45,12 @@ module.exports = function() {
         return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
     });
 
+    this.Given(/^jag klickar på signera\-knappen$/, function() {
+        return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+    });
+
+
+
 
 
 

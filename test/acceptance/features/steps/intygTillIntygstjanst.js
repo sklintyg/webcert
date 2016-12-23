@@ -27,12 +27,12 @@
  var testdataHelper = wcTestTools.helpers.testdata;
  var testvalues = wcTestTools.testdata.values;
 
- function intygTillIntygtjanst(intygCode, callback) {
+ function intygTillIntygtjanst(intygtyp, callback) {
      var personId = global.intyg.person.id;
      var url;
      var body;
 
-     intyg.typ = helpers.smiIntyg[intygCode];
+     intyg.typ = intygtyp;
      var isSMIIntyg;
      if (intyg && intyg.typ) {
          isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
