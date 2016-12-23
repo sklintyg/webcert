@@ -65,4 +65,26 @@ module.exports = function() {
 
 
     });
+
+    this.Given(/^ska jag se en rubrik med texten "([^"]*)"$/, function(text) {
+
+        var header3s = element.all(by.css('h3')).map(function(elm, index) {
+            return elm.getText();
+        });
+
+        return header3s.then(function(headerTexts) {
+            var joinedTexts = headerTexts.join('\n');
+            logger.info('Hittade rubriker: ' + joinedTexts);
+            return expect(joinedTexts).to.include(text);
+        });
+
+
+    });
+
+    this.Given(/^ska jag se en lista med vad som saknas$/, function() {
+        return expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(true);
+    });
+
+
+
 };
