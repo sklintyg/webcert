@@ -17,7 +17,7 @@ Exempel:
   |FK7263	|  	"Läkarintyg FK 7263" 				| 
   |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
-
+@treställig
 Scenariomall: FMB information för treställig diagnoskod ska visas vid rätt fält då koden inte har egen FMB info när <intygKod> skapas
 	När jag går in på att skapa ett <intyg> intyg
 	Och jag fyller i diagnoskod utan egen FMB info

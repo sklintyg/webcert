@@ -53,7 +53,8 @@ function populateFieldArray(object, ignoreKeys) {
     return re;
 }
 
-function checkFMB(promArray, isSMIIntyg, egenDiagnos, fmbDiagnos, antalDiagnoser) {
+function checkFMB(isSMIIntyg, egenDiagnos, fmbDiagnos, antalDiagnoser) {
+    var promiseArray = [];
     var page;
     if (isSMIIntyg) {
         page = lisjpUtkastPage;
@@ -65,11 +66,11 @@ function checkFMB(promArray, isSMIIntyg, egenDiagnos, fmbDiagnos, antalDiagnoser
     elm = element(by.id(page.fmbButtons[0]));
     elm.sendKeys(protractor.Key.SPACE);
     if (egenDiagnos === false) { //kontrollerar allerttexten att det är en överliggande fmb text
-        promArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.falt[5]));
+        promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.falt[5]));
     }
     for (var k = 0; k < 2; k++) {
         if (fmbDiagnos.falt[k]) { //kontrollerar texterna i diagnosrutan
-            promArray.push(expect(element(by.id(page.fmbDialogs[k])).getText()).to.eventually.contain(fmbDiagnos.falt[k]));
+            promiseArray.push(expect(element(by.id(page.fmbDialogs[k])).getText()).to.eventually.contain(fmbDiagnos.falt[k]));
         }
 
     }
@@ -77,10 +78,10 @@ function checkFMB(promArray, isSMIIntyg, egenDiagnos, fmbDiagnos, antalDiagnoser
         if (fmbDiagnos.falt[i]) { //kontroll av övriga fmbtexter
             elm = element(by.id(page.fmbButtons[i - 1]));
             elm.sendKeys(protractor.Key.SPACE);
-            promArray.push(expect(element(by.id(page.fmbDialogs[i])).getText()).to.eventually.contain(fmbDiagnos.falt[i]));
+            promiseArray.push(expect(element(by.id(page.fmbDialogs[i])).getText()).to.eventually.contain(fmbDiagnos.falt[i]));
         }
     }
-    return Promise.all(promArray);
+    return Promise.all(promiseArray);
 }
 
 
@@ -123,31 +124,18 @@ module.exports = function() {
 
     this.Given(/^ska rätt info gällande FMB visas$/, function() {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        var promiseArray = [];
         //var diagnos = testdataHelpers.shuffle(testdata.fmb.fmbInfo.diagnoser)[0];
         //setDiagnos(diagnos);
         console.log(tmpDiagnos);
+        return checkFMB(isSMIIntyg, true, tmpDiagnos, tmpDiagnos.falt.length);
 
-        if (isSMIIntyg) {
-            return checkFMB(promiseArray, true, true, tmpDiagnos, tmpDiagnos.falt.length);
-        } else {
-            return checkFMB(promiseArray, false, true, tmpDiagnos, tmpDiagnos.falt.length);
-        }
-        return Promise.all(promiseArray);
     });
 
     this.Given(/^ska FMB info för överliggande diagnoskod visas$/, function() {
-        var promiseArray = [];
         console.log(tmpDiagnos);
 
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            return checkFMB(promiseArray, true, false, tmpDiagnos, tmpDiagnos.falt.length - 1); //kontrollerar även allert texten
-
-        } else {
-            return checkFMB(promiseArray, false, false, tmpDiagnos, tmpDiagnos.falt.length - 1);
-        }
-        return Promise.all(promiseArray);
+        return checkFMB(isSMIIntyg, false, tmpDiagnos, tmpDiagnos.falt.length - 1); //kontrollerar även allert texten
     });
     this.Given(/^jag fyller i diagnoskod utan FMB info$/, function() {
         var diagnos = testdataHelpers.shuffle(testdata.fmb.utanFMBInfo.diagnoser)[0];
