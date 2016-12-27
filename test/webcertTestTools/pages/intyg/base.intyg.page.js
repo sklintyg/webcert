@@ -24,7 +24,7 @@
 'use strict';
 
 var JClass = require('jclass');
-
+var shuffle = require('../../helpers/testdataHelper.js').shuffle;
 var BaseIntyg = JClass._extend({
     init: function() {
         this.intygType = null;
@@ -101,6 +101,26 @@ var BaseIntyg = JClass._extend({
             }
         }
     },
+    pickMakuleraOrsak: function(optionalOrsak) {
+        var makuleraDialog = element(by.cssContainingText('.modal-dialog', 'Makulera intyg'));
+        var getMojligaOrsaker = makuleraDialog.all(by.css('label')).map(function(elm, index) {
+            return elm.getText();
+        });
+
+        return getMojligaOrsaker.then(function(orsaker) {
+            console.log(orsaker);
+            var reason = shuffle(orsaker)[0];
+            if (optionalOrsak) {
+                reason = optionalOrsak;
+            }
+            console.log('Väljer orsak: ' + reason);
+            return element(by.cssContainingText('label', reason)).sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    return makuleraDialog.element(by.css('textarea')).sendKeys('Beskrivning för ') + reason;
+                });
+        });
+    },
+
     getIntegration: function(intygId, params) {
         var url = '/visa/intyg/' + intygId;
         var first = true;

@@ -67,13 +67,7 @@ module.exports = {
         if (!intyg.messages) {
             intyg.messages = [];
         }
-        var panels;
-
-        // if (isSMIIntyg) {
-        panels = fkLusePage.qaPanels;
-        // } else {
-        //     panels = fkIntygPage.qaPanels;
-        // }
+        var panels = fkLusePage.qaPanels;
 
         if (!panels) {
             return Promise.resolve('Inga frågor hittades');
@@ -237,14 +231,6 @@ module.exports = {
             enhetId: 'TSTNMT2321000156-1003'
         }
     },
-    makuleraReason: [
-        // 'dialogRadioFelaktigtIntyg',
-        // 'dialogRadioPatientNyInfo',
-        // 'dialogRadioMinBedomingAndrad',
-        // 'dialogRadioOvrigt'
-        'dialogRadioFelPatient',
-        'dialogRadioAnnatAllvarligtFel'
-    ],
 
     diffDays: function(dateFrom, dateTo) {
         var fromEl = dateFrom.split('-');

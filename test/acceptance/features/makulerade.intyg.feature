@@ -1,6 +1,6 @@
 # language: sv
 
-@kopiera-knapp @waitingForFix
+@kopiera-knapp
 Egenskap: Makulerat intyg ska kunna kopieras
 
 Bakgrund: Jag befinner mig på webcerts förstasida

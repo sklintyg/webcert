@@ -48,7 +48,7 @@ Scenario: Radera SMI utkast
 	Och jag raderar utkastet
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
-@makulera @waitingForFix
+@makulera
 Scenario: Makulera SMI intyg
 	När  jag går in på ett slumpat SMI-intyg med status "Mottaget"
 	Och jag makulerar intyget
