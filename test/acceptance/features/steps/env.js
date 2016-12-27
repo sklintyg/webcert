@@ -69,6 +69,7 @@ module.exports = function() {
         global.intyg = {};
         global.meddelanden = []; //{typ:'', id:''}
         global.user = {};
+        browser.driver.manage().window().maximize();
     });
 
     //After scenario
@@ -113,8 +114,6 @@ module.exports = function() {
             global.scenario.attach(level + ': ' + msg);
         }
     });
-
-
 
 
 
