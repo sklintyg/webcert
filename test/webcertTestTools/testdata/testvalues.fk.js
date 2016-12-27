@@ -30,8 +30,8 @@ var fkValues = {
         return shuffle(
             [
                 [
-                    getRandomUtredning(),
                     getRandomUtredning()
+                    //getRandomUtredning() TODO: Fixa stöd för flera utredningar. Detta misslyckas ibland
                 ],
                 false
             ])[0];
