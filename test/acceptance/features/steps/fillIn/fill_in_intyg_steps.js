@@ -134,7 +134,7 @@ function changeField(intygShortcode, field, callback, clearFlag) {
 }
 
 function isValid(intygShortcode) {
-    return (intygShortcode in helpers.smiIntyg);
+    return (intygShortcode in helpers.intygShortcode);
 }
 
 module.exports = function() {
