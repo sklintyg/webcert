@@ -1,7 +1,7 @@
 # language: sv
 @komplettering @smi @INTYG-2642
  # kompletteringsfråga saknas på utkast-sida
-Egenskap: Komplettering av LUSE-intyg
+Egenskap: Komplettering av SMI-intyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare

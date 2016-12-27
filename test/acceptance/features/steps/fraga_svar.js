@@ -89,27 +89,31 @@ module.exports = function() {
         if (!intyg.messages || intyg.messages.length <= 0) {
             throw ('Inga frågor hittades');
         } else {
-            var svaraBtn = page.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', 'Svara'));
 
+            return browser.getCurrentUrl().then(function(url) {
 
-            return svaraBtn.sendKeys(protractor.Key.SPACE)
-                .then(function() {
-                    //Fulhack för att inte global ska innehålla en referens
-                    global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
+                global.behoverKompletterasLink = url;
 
-                    return page.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE);
-                });
+                var svaraBtn = page.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', 'Svara'));
+                return svaraBtn.sendKeys(protractor.Key.SPACE)
+                    .then(function() {
+                        //Fulhack för att inte global ska innehålla en referens
+                        global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
+                        return page.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE);
+                    });
 
-
+            });
 
 
         }
     });
     this.Given(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {
+        return browser.get(global.behoverKompletterasLink);
 
-        return element(by.id('wc-intyg-relations-button')).click().then(function() {
-            return element(by.id('wc-intyg-relations-list')).element(by.cssContainingText('.btn', 'Visa')).click();
-        });
+        // Denna funktionalitet användes när relations-valen fanns kvar
+        // return element(by.id('wc-intyg-relations-button')).click().then(function() {
+        //     return element(by.id('wc-intyg-relations-list')).element(by.cssContainingText('.btn', 'Visa')).click();
+        // });
 
     });
     this.Given(/^ska det finnas en knapp med texten "([^"]*)"$/, function(texten) {
