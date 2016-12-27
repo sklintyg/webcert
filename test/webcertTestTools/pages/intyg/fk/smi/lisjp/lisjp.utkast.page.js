@@ -284,7 +284,7 @@ var LisuUtkast = BaseSmiUtkast._extend({
             if (prognos.within) {
 
                 return prognosEL.select.click().then(function() {
-                    return prognosEL.inom.element(by.cssContainingText('span', prognos.within)).click();
+                    return prognosEL.inom.element(by.cssContainingText('span', prognos.within)).sendKeys(protractor.Key.SPACE);
                 });
             } else {
                 return Promise.resolve();
