@@ -121,8 +121,11 @@ var random = {
     rekommendationer: function(smittskydd) {
         return {
             resor: shuffle([true, false])[0],
-            kontaktMedArbetsformedlingen: randomKontaktMedAF(smittskydd),
-            kontaktMedForetagshalsovard: randomKontaktMedAF(smittskydd),
+            kontaktMedArbetsformedlingen: false,
+            kontaktMedForetagshalsovard: false,
+            //TODO: Dessa fält fylls inte i om true. Fixa!
+            // kontaktMedArbetsformedlingen: randomKontaktMedAF(smittskydd),
+            // kontaktMedForetagshalsovard: randomKontaktMedAF(smittskydd),
             ovrigt: shuffle([false, randomRekommendationOvrigt(smittskydd)])[0],
             arbetslivsinriktadRehab: randomRehabAktuell(smittskydd)
         };
