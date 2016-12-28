@@ -79,7 +79,27 @@
          $(this).toggleClass('bigger');
      });
 
+
+     var totAntal = $('.panel-title').length;
+     var totFailed = $('.panel-danger').length;
+     var totSuccess = $('.panel-success').length;
+
+     var percentSuccess = (totSuccess / totAntal) * 100;
+     var precentFailed = (totFailed / totAntal) * 100;
+
+     $('body').prepend('<br>' +
+         '<div class="progress">' +
+         '<div class="progress-bar progress-bar-success" style="width: ' + percentSuccess + '%;">' +
+         'Lyckade: ' + totSuccess +
+         '</div>' +
+         '<div class="progress-bar progress-bar-danger" style="width: ' + precentFailed + '%;">' +
+         'Felande: ' + totFailed +
+         '</div>' +
+         '</div>');
+
+
  }
+
 
 
 
@@ -99,4 +119,5 @@
                  drawResults(JSON.parse(result.responseText));
              });
      }
+
  };
