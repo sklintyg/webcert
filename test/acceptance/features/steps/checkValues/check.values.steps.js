@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals person, Promise,pages,intyg*/
+/* globals person, ursprungligPerson, Promise,pages,intyg*/
 
 'use strict';
 var lusePage = pages.intyg.luse.intyg;
@@ -38,9 +38,14 @@ module.exports = function() {
     //     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.fornamn + ' ' + person.efternamn);
     // });
 
-    // this.Given(/^ska intyget visa det nya personnummret$/, function() {
-    //     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.fornamn + ' ' + person.efternamn + ' - ' + person.id);
-    // });
+    this.Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
+        if (arg1 === 'nya') {
+            return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.id);
+        } else {
+            return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(ursprungligPerson.id);
+        }
+
+    });
 
     this.Given(/^ska adressen kopieras till det kopierade intyget$/, function() {
         var promiseArray = [];

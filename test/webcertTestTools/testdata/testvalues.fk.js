@@ -110,7 +110,7 @@ function getRandomUtredning() {
             'Underlag från fysioterapeut',
             'Underlag från logoped',
             'Underlag från psykolog',
-            'Underlag från företagshälsovård',
+            //'Underlag från företagshälsovård', //TODO, Fixa funktion för olika värde på underlag för LUAE_NA och LUAE_FS (företags/skolhälsovård)
             'Utredning av annan specialistklinik',
             'Utredning från vårdinrättning utomlands',
             'Övrigt'

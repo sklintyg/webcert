@@ -281,10 +281,11 @@ var LisuUtkast = BaseSmiUtkast._extend({
     angePrognosForArbetsformaga: function(prognos) {
         var prognosEL = this.sjukskrivning.prognos;
         return prognosEL.form.element(by.cssContainingText('label', prognos.name)).sendKeys(protractor.Key.SPACE).then(function() {
+            browser.executeScript('window.scrollTo(0,3000);');
             if (prognos.within) {
 
                 return prognosEL.select.click().then(function() {
-                    return prognosEL.inom.element(by.cssContainingText('span', prognos.within)).sendKeys(protractor.Key.SPACE);
+                    return prognosEL.inom.element(by.cssContainingText('span', prognos.within)).click();
                 });
             } else {
                 return Promise.resolve();

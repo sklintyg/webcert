@@ -55,12 +55,15 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer$/, function() {
+        global.ursprungligPerson = JSON.parse(JSON.stringify(global.person));
         global.person = testdataHelpers.shuffle(testpatienter)[0];
         return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', 'alternatePatientSSn=' + global.person.id);
     });
 
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer$/, function() {
-        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', 'alternatePatientSSn=3243342');
+        global.ursprungligPerson = JSON.parse(JSON.stringify(global.person));
+        global.person.id = '3243342';
+        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', 'alternatePatientSSn=' + global.person.id);
     });
 
 
@@ -77,7 +80,7 @@ module.exports = function() {
             return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + global.intyg.id;
         } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
             return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + global.intyg.id;
-        } else {
+        } else if (typAvIntyg === 'Läkarintyg FK 7263') {
             return process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
 
         }
@@ -91,6 +94,16 @@ module.exports = function() {
         }
         if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
             if (usingCreateDraft2) {
+
+                if (!person.adress) {
+                    person.adress = {
+                        postadress: 'Norra storgatan 30',
+                        postort: 'Katthult',
+                        postnummer: '10000'
+
+                    };
+                }
+
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
                 url = url + '?';
                 url += 'fornamn=' + encodeURIComponent(person.fornamn) + '&';
@@ -103,7 +116,10 @@ module.exports = function() {
 
             } else {
                 //EN WORKAROUND med parameter TILLS INTYG 2711 är LÖST
-                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id + '?fornamn=TODO';
+                //url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id + '?fornamn=TODO';
+                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+                url = url + '?';
+                url += 'enhet=' + global.user.enhetId + '&';
             }
         } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
             url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';

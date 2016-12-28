@@ -100,10 +100,12 @@ module.exports = function() {
         createBody(intygstyp, callback);
     });
 
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat intyg( med samordningsnummer)?$/, function(samordningsnummer, callback) {
+    //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer 
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat intyg( med samordningsnummer eller personnummer)?$/, function(samEllerPersonNummer, callback) {
         global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-        if (samordningsnummer) {
-            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+        if (samEllerPersonNummer) {
+            var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
+            global.person = testdataHelpers.shuffle(shuffladPID)[0];
         }
 
         var randomIntygType = testdataHelpers.shuffle([
