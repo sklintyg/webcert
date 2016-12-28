@@ -84,10 +84,10 @@
      var totFailed = $('.panel-danger').length;
      var totSuccess = $('.panel-success').length;
 
-     var percentSuccess = (totSuccess / totAntal) * 100;
-     var precentFailed = (totFailed / totAntal) * 100;
+     var percentSuccess = Math.round((totSuccess / totAntal) * 100);
+     var precentFailed = 100 - percentSuccess;
 
-     $('body').prepend('<br>' +
+     $('#anchor').prepend('<br>' +
          '<div class="progress">' +
          '<div class="progress-bar progress-bar-success" style="width: ' + percentSuccess + '%;">' +
          'Lyckade: ' + totSuccess +

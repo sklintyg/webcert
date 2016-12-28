@@ -22,6 +22,8 @@
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
+var luseUtkastPage = pages.intyg.luse.utkast;
+var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 // var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 var helpers = require('./helpers');
@@ -80,9 +82,11 @@ module.exports = function() {
         helpers.updateEnhetAdressForNewIntyg();
         var fragaText = global.intyg.guidcheck;
         var page = fkIntygPage;
+        var utkast = fkUtkastPage;
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
             page = fkLusePage;
+            utkast = luseUtkastPage;
         }
 
 
@@ -99,7 +103,15 @@ module.exports = function() {
                     .then(function() {
                         //Fulhack för att inte global ska innehålla en referens
                         global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
-                        return page.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE);
+                        return page.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE)
+                            .then(function() {
+                                    // Ange patientens address om den inte är ifylld i utkastet
+                                    // Den angivna addressen sparas endast för aktuellt intyg och följer inte med vid komplettering (PA-003)
+                                    // Fältet måste därför fyllas i igen, speciellt om patienten inte har adress i PU.
+                                    return utkast.angePatientAdress(global.person.adress);
+                                }
+
+                            );
                     });
 
             });
