@@ -116,6 +116,9 @@ var BaseIntyg = JClass._extend({
             console.log('Väljer orsak: ' + reason);
             return element(by.cssContainingText('label', reason)).sendKeys(protractor.Key.SPACE)
                 .then(function() {
+                    return browser.sleep(1500);
+                })
+                .then(function() {
                     return makuleraDialog.element(by.css('textarea')).sendKeys('Beskrivning för ') + reason;
                 });
         });
