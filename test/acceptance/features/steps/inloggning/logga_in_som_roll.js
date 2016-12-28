@@ -16,9 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /* globals browser,logger */
-
 'use strict';
 var loginHelper = require('./login.helpers.js');
 var logInAsUserRole = loginHelper.logInAsUserRole;
@@ -183,8 +181,7 @@ module.exports = function() {
 
         //Kontrollera att inte medarbetaruppdrag finns på den andra enheten
         return logInAsUserRole(userObj, 'Läkare')
-            .then(
-                function() {
+            .then(function() {
                     throw ('Lyckades logga in med den enheten som inte ska fungera');
                 },
                 function(err) {
@@ -193,7 +190,6 @@ module.exports = function() {
                     return logInAsUserRole(userObj, 'Läkare');
                 });
     });
-
 
 
 
