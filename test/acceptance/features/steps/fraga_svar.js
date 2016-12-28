@@ -107,6 +107,14 @@ module.exports = function() {
                             .then(function() {
 
                                     if (isSMIIntyg) {
+                                        if (!person.adress) {
+                                            person.adress = {
+                                                postadress: 'Norra storgatan 30',
+                                                postort: 'Katthult',
+                                                postnummer: '10000'
+
+                                            };
+                                        }
                                         // Ange patientens address om den inte är ifylld i utkastet
                                         // Den angivna addressen sparas endast för aktuellt intyg och följer inte med vid komplettering (PA-003)
                                         // Fältet måste därför fyllas i igen, speciellt om patienten inte har adress i PU.
