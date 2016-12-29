@@ -44,6 +44,7 @@ var TsDiabetesIntyg = BaseIntyg._extend({
         this.synIntyg = element(by.id('separatOgonlakarintyg'));
 
         this.falt1 = {
+            bedomningKanInteTaStallning: element(by.id('bedomningKanInteTaStallning')),
             bedomning: element(by.id('bedomning')),
             endastKost: element(by.id('endastKost')),
             tabletter: element(by.id('tabletter')),

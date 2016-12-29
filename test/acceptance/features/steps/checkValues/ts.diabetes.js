@@ -157,12 +157,19 @@ module.exports = {
                 }));
             }
         });
-
-        promiseArr.push(expect(tsDiabIntyg.falt1.bedomning.getText()).to.eventually.contain(selectedTypes).then(function(value) {
-            logger.info('OK - Bedömningen avser körkortstyper = ' + value);
-        }, function(reason) {
-            throw ('FEL - Bedömningen avser körkortstyper: ' + reason);
-        }));
+        if (intyg.bedomning.stallningstagande === 'Någon av följande behörighetstyper') {
+            promiseArr.push(expect(tsDiabIntyg.falt1.bedomning.getText()).to.eventually.contain(selectedTypes).then(function(value) {
+                logger.info('OK - Bedömningen avser körkortstyper = ' + value);
+            }, function(reason) {
+                throw ('FEL - Bedömningen avser körkortstyper: ' + reason);
+            }));
+        } else {
+            promiseArr.push(expect(tsDiabIntyg.falt1.bedomningKanInteTaStallning.getText()).to.eventually.contain('Kan inte ta ställning').then(function() {
+                logger.info('OK - Kan inte ta ställning');
+            }, function(reason) {
+                throw ('FEL - Bedömningen avser körkortstyper: ' + reason);
+            }));
+        }
 
 
         return Promise.all(promiseArr);

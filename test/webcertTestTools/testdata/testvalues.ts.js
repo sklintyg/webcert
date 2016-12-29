@@ -181,13 +181,14 @@ var tsValues = {
     getRandomBedomning: function(korkortstyper) {
         //TODO: bör shuffla ja och nej,
         var lamplighet = shuffle(['Ja', 'Nej'])[0];
+        var stalltagande = shuffle(['Någon av följande behörighetstyper', 'Kan inte ta ställning'])[0];
 
         if (!this.hasHogreKorkortsbehorigheter(korkortstyper)) {
             lamplighet = null;
         }
 
         var bedomningsObj = {
-            stallningstagande: 'behorighet_bedomning',
+            stallningstagande: stalltagande,
             behorigheter: korkortstyper,
             lamplighet: lamplighet
         };
@@ -211,3 +212,5 @@ var tsValues = {
 };
 
 module.exports = tsValues;
+
+console.log(tsValues.getRandomBedomning(tsValues.korkortstyper));
