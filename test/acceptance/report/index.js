@@ -90,10 +90,10 @@
      $('#anchor').prepend('<br>' +
          '<div class="progress">' +
          '<div class="progress-bar progress-bar-success" style="width: ' + percentSuccess + '%;">' +
-         'Lyckade: ' + totSuccess +
+         totSuccess +
          '</div>' +
          '<div class="progress-bar progress-bar-danger" style="width: ' + precentFailed + '%;">' +
-         'Felande: ' + totFailed +
+         totFailed +
          '</div>' +
          '</div>');
 

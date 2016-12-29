@@ -43,6 +43,7 @@ Exempel:
   Och jag makulerar intyget
   Så ska det finnas en knapp med texten "Skriv ut"
 
+@notReady #utgått
   Scenario: Ersatt intyg vid makulering ska innehålla uppdaterade personuppgifter
   När jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten
   Och jag går in på intyget
