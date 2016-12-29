@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals protractor, wcTestTools, browser, intyg, logger,person */
+/*globals protractor, wcTestTools, browser, intyg, logger,person, JSON */
 
 'use strict';
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
