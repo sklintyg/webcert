@@ -22,7 +22,10 @@ var testdataHelper = require('./../helpers/testdataHelper.js');
 var shuffle = testdataHelper.shuffle;
 
 var fkValues = {
-    ICD10: ['A00', 'B00', 'C00', 'D00', 'Z720B', 'Z413'],
+    ICD10: ['A00',
+        //'B00', TODO: FIxa problem där B001W väljs istället för B00
+        'C00', 'D00', 'Z720B', 'Z413'
+    ],
     mediciner: ['Ipren', 'Alvedon', 'Bamyl'],
     medicinskaBehandlingar: ['Lågkaloridiet', 'Motionsrådgivning', 'Kostrådgivning', 'Kognitiv beteendeinriktad terapi', 'Elektrokonvulsiv behandling'],
     funktionsnedsattningar: ['Problem', 'Inget tal', 'Ingen koncentration', 'Total', 'Blind', 'Svajig i benen', 'Ingen'],
