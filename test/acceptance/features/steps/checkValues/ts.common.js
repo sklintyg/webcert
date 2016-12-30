@@ -76,6 +76,21 @@ module.exports = {
             throw ('FEL - checkPatientadress: ' + reason);
         }));
 
+        //Bedömning
+        if (intyg.bedomning.stallningstagande === 'Någon av följande behörighet') {
+            promiseArr.push(expect(tsBasIntygPage.falt1.bedomning.getText()).to.eventually.contain(selectedTypes).then(function(value) {
+                logger.info('OK - Bedömningen avser körkortstyper = ' + value);
+            }, function(reason) {
+                throw ('FEL - Bedömningen avser körkortstyper: ' + reason);
+            }));
+        } else {
+            promiseArr.push(expect(tsBasIntygPage.falt1.bedomningKanInteTaStallning.getText()).to.eventually.contain(intyg.bedomning.stallningstagande).then(function() {
+                logger.info('OK bedömning -' + intyg.bedomning.stallningstagande);
+            }, function(reason) {
+                throw ('FEL bedömning- ' + intyg.bedomning.stallningstagande + ' ' + reason);
+            }));
+        }
+
         return Promise.all(promiseArr);
     }
 };

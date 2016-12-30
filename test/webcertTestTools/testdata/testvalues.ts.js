@@ -179,18 +179,21 @@ var tsValues = {
         return foundHogreBehorigheter.length > 0;
     },
     getRandomBedomning: function(korkortstyper) {
-        var lamplighet = shuffle(['Ja', 'Nej'])[0];
-        var stalltagande = shuffle(['Någon av följande behörighetstyper', 'Kan inte ta ställning'])[0];
+        var stalltagande = shuffle(['Någon av följande behörighet', 'Kan inte ta ställning'])[0];
 
-        if (!this.hasHogreKorkortsbehorigheter(korkortstyper)) {
-            lamplighet = null;
-        }
+        // if (!this.hasHogreKorkortsbehorigheter(korkortstyper)) {
+        //     lamplighet = null;
+        // }
 
         var bedomningsObj = {
             stallningstagande: stalltagande,
-            behorigheter: korkortstyper,
-            lamplighet: lamplighet
+            lamplighet: null
         };
+
+
+        if (stalltagande === 'Någon av följande behörighet') {
+            bedomningsObj.behorigheter = korkortstyper;
+        }
 
         //För vissa körkortstyper krävs det svar lämplighet
         if (
@@ -211,4 +214,3 @@ var tsValues = {
 };
 
 module.exports = tsValues;
-

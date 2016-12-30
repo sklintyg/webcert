@@ -63,19 +63,19 @@ var BaseTsUtkast = BaseUtkast._extend({
     },
     fillInBedomning: function(bedomningObj) {
         return Promise.all([
-            element(by.id(bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE),
+            element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE),
             pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
         ]);
     },
     fillInOvrigKommentar: function(utkast) {
-        return this.kommentar.sendKeys(utkast.kommentar);
-    }
-    // fillInPatientAdress: function(adressObj) {
-    //     return Promise.all([
-    //         this.adress.postadress.clear().sendKeys(adressObj.postadress),
-    //         this.adress.postnummer.clear().sendKeys(adressObj.postnummer),
-    //         this.adress.postort.clear().sendKeys(adressObj.postort)
-    //     ]);
+            return this.kommentar.sendKeys(utkast.kommentar);
+        }
+        // fillInPatientAdress: function(adressObj) {
+        //     return Promise.all([
+        //         this.adress.postadress.clear().sendKeys(adressObj.postadress),
+        //         this.adress.postnummer.clear().sendKeys(adressObj.postnummer),
+        //         this.adress.postort.clear().sendKeys(adressObj.postort)
+        //     ]);
 
     // }
 });
