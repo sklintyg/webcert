@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.api
 
-import se.inera.intyg.common.specifications.spec.util.FitnesseHelper
+import se.inera.intyg.webcert.specifications.spec.util.FitnesseHelper
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtabp20.v1.ReceiveMedicalCertificateAnswerResponderInterface
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType

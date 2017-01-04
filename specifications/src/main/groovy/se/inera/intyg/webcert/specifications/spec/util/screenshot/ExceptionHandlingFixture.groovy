@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringEscapeUtils
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.UnhandledAlertException
 import org.openqa.selenium.WebDriverException
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method

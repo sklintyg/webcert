@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.specifications.pages
 
 import geb.Module
 import geb.Page
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 
 class AbstractEditCertPage extends AbstractLoggedInPage {
 

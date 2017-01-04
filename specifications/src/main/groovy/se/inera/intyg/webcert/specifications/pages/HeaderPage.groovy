@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.pages
 
-import se.inera.intyg.common.specifications.page.AbstractPage
+import se.inera.intyg.webcert.specifications.page.AbstractPage
 
 class HeaderPage extends AbstractPage {
 

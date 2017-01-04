@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.web.ts_diabetes
 
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.pages.ts_diabetes.EditeraTsDiabetesPage
 import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 

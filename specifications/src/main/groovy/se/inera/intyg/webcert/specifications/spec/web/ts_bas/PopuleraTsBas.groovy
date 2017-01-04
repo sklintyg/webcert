@@ -19,9 +19,9 @@
 
 package se.inera.intyg.webcert.specifications.spec.web.ts_bas
 
-import se.inera.intyg.common.specifications.page.AbstractPage
+import se.inera.intyg.webcert.specifications.page.AbstractPage
 import se.inera.intyg.webcert.specifications.pages.ts_bas.EditeraTsBasPage
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class PopuleraTsBas extends ExceptionHandlingFixture {

@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.specifications.pages
 
-import se.inera.intyg.common.specifications.page.AbstractPage
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.page.AbstractPage
+import se.inera.intyg.webcert.specifications.spec.Browser
 
 class WelcomePage extends AbstractPage {
 

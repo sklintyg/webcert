@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.pages.fk7263
 import geb.Module
-import se.inera.intyg.common.specifications.page.AbstractPage
+import se.inera.intyg.webcert.specifications.page.AbstractPage
 import se.inera.intyg.webcert.specifications.pages.AbstractEditCertPage
 
 class EditeraFk7263Page extends AbstractEditCertPage {

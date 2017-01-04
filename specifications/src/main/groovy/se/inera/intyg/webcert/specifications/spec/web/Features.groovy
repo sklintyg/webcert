@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.web
 
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.pages.AccessDeniedPage
 import se.inera.intyg.webcert.specifications.pages.SokSkrivaIntygPage
 import se.inera.intyg.webcert.specifications.pages.UnhandledQAPage

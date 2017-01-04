@@ -25,7 +25,7 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.internal.Base64Encoder
 import org.openqa.selenium.remote.Augmenter
 import org.openqa.selenium.remote.ScreenshotException
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 
 /**
  * Created by PEBE on 2015-11-27.

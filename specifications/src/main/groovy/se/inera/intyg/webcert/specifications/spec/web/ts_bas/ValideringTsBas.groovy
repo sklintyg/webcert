@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.web.ts_bas
 
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class ValideringTsBas extends ExceptionHandlingFixture {

@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.specifications.spec.util
 
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.URLENC

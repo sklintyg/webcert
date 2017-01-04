@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.specifications.pages.ts_diabetes
 
 import geb.Module
-import se.inera.intyg.common.specifications.page.AbstractPage
+import se.inera.intyg.webcert.specifications.page.AbstractPage
 import se.inera.intyg.webcert.specifications.pages.AbstractEditCertPage
 import se.inera.intyg.webcert.specifications.pages.VardenhetModule
 

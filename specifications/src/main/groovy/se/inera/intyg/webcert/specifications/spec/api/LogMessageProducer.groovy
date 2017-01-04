@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.specifications.spec.api
 
 import java.time.LocalDateTime
 import se.inera.intyg.infra.logmessages.PdlLogMessage
-import se.inera.intyg.common.specifications.spec.util.jms.ActiveMQConnectionFixture
-import se.inera.intyg.common.specifications.spec.util.jms.JMSUtils
-import se.inera.intyg.common.specifications.spec.util.jms.Producer
+import se.inera.intyg.webcert.specifications.spec.util.jms.ActiveMQConnectionFixture
+import se.inera.intyg.webcert.specifications.spec.util.jms.JMSUtils
+import se.inera.intyg.webcert.specifications.spec.util.jms.Producer
 
 import javax.jms.Connection
 import javax.jms.Message

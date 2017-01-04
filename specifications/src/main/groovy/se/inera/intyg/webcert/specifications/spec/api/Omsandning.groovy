@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.specifications.spec.api
 import java.time.LocalDateTime
 import java.sql.Timestamp
 
-import se.inera.intyg.common.specifications.spec.util.sql.SQLFixture
+import se.inera.intyg.webcert.specifications.spec.util.sql.SQLFixture
 
 class Omsandning extends SQLFixture {
 

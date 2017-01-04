@@ -18,7 +18,7 @@
  */
 
 package se.inera.intyg.webcert.specifications.spec.web
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
 import se.inera.intyg.webcert.specifications.pages.fk7263.VisaFk7263Page
 import se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils

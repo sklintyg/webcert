@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.specifications.spec.web.fk7263
 
 import org.codehaus.groovy.runtime.StackTraceUtils
 
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
 import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 

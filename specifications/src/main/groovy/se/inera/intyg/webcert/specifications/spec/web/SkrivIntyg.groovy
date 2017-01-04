@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.specifications.spec.web
 import org.openqa.selenium.Keys
-import se.inera.intyg.common.specifications.page.AbstractPage
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.page.AbstractPage
+import se.inera.intyg.webcert.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.pages.AbstractEditCertPage
 import se.inera.intyg.webcert.specifications.pages.SokSkrivValjIntygTypPage
 import se.inera.intyg.webcert.specifications.pages.SokSkrivaIntygPage

@@ -22,9 +22,9 @@ package se.inera.intyg.webcert.specifications.spec.web.fk7263
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.openqa.selenium.Keys
-import se.inera.intyg.common.specifications.page.AbstractPage
+import se.inera.intyg.webcert.specifications.page.AbstractPage
 import se.inera.intyg.webcert.specifications.pages.fk7263.EditeraFk7263Page
-import se.inera.intyg.common.specifications.spec.Browser
+import se.inera.intyg.webcert.specifications.spec.Browser
 import se.inera.intyg.webcert.specifications.spec.util.screenshot.ExceptionHandlingFixture
 
 class PopuleraFk7263 extends ExceptionHandlingFixture {
