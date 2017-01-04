@@ -1,0 +1,148 @@
+<!--
+  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<ns3:RegisterTSDiabetes xmlns:ns2="urn:local:se:intygstjanster:services:types:1" xmlns:ns4="urn:local:se:intygstjanster:services:1" xmlns:ns3="urn:local:se:intygstjanster:services:RegisterTSDiabetesResponder:1">
+    <ns3:intyg>
+        <ns4:intygsId>987654321</ns4:intygsId>
+        <ns4:intygsTyp>ts-diabetes</ns4:intygsTyp>
+        <ns4:version>02</ns4:version>
+        <ns4:utgava>06</ns4:utgava>
+        <ns4:grundData>
+            <ns4:signeringsTidstampel>2013-08-12T15:57:00</ns4:signeringsTidstampel>
+            <ns4:skapadAv>
+                <ns4:personId>
+                    <ns2:root>1.2.752.129.2.1.4.1</ns2:root>
+                    <ns2:extension>SE0000000000-1333</ns2:extension>
+                </ns4:personId>
+                <ns4:fullstandigtNamn>Doktor Thompson</ns4:fullstandigtNamn>
+                <ns4:vardenhet>
+                    <ns4:enhetsId>
+                        <ns2:root>1.2.752.129.2.1.4.1</ns2:root>
+                        <ns2:extension>SE0000000000-1337</ns2:extension>
+                    </ns4:enhetsId>
+                    <ns4:enhetsnamn>Vårdenhet Väst</ns4:enhetsnamn>
+                    <ns4:postadress>Enhetsvägen 12</ns4:postadress>
+                    <ns4:postnummer>54321</ns4:postnummer>
+                    <ns4:postort>Tumba</ns4:postort>
+                    <ns4:telefonnummer>08-1337</ns4:telefonnummer>
+                    <ns4:vardgivare>
+                        <ns4:vardgivarid>
+                            <ns2:root>1.2.752.129.2.1.4.1</ns2:root>
+                            <ns2:extension>SE0000000000-HAHAHHSAA</ns2:extension>
+                        </ns4:vardgivarid>
+                        <ns4:vardgivarnamn>Vårdgivarnamn</ns4:vardgivarnamn>
+                    </ns4:vardgivare>
+                </ns4:vardenhet>
+            </ns4:skapadAv>
+            <ns4:patient>
+                <ns4:personId>
+                    <ns2:root>1.2.752.129.2.1.3.1</ns2:root>
+                    <ns2:extension>19121212-1212</ns2:extension>
+                </ns4:personId>
+                <ns4:fullstandigtNamn>Herr Dundersjuk</ns4:fullstandigtNamn>
+                <ns4:fornamn>Herr</ns4:fornamn>
+                <ns4:efternamn>Dundersjuk</ns4:efternamn>
+                <ns4:postadress>Testvägen 12</ns4:postadress>
+                <ns4:postnummer>12345</ns4:postnummer>
+                <ns4:postort>Testort</ns4:postort>
+            </ns4:patient>
+        </ns4:grundData>
+        <ns4:intygAvser>
+            <ns4:korkortstyp>AM</ns4:korkortstyp>
+            <ns4:korkortstyp>A1</ns4:korkortstyp>
+            <ns4:korkortstyp>A2</ns4:korkortstyp>
+            <ns4:korkortstyp>A</ns4:korkortstyp>
+            <ns4:korkortstyp>B</ns4:korkortstyp>
+            <ns4:korkortstyp>BE</ns4:korkortstyp>
+            <ns4:korkortstyp>TRAKTOR</ns4:korkortstyp>
+            <ns4:korkortstyp>C1</ns4:korkortstyp>
+            <ns4:korkortstyp>C1E</ns4:korkortstyp>
+            <ns4:korkortstyp>C</ns4:korkortstyp>
+            <ns4:korkortstyp>CE</ns4:korkortstyp>
+            <ns4:korkortstyp>D1</ns4:korkortstyp>
+            <ns4:korkortstyp>D1E</ns4:korkortstyp>
+            <ns4:korkortstyp>D</ns4:korkortstyp>
+            <ns4:korkortstyp>DE</ns4:korkortstyp>
+            <ns4:korkortstyp>TAXI</ns4:korkortstyp>
+        </ns4:intygAvser>
+        <ns4:identitetStyrkt>
+            <ns4:idkontroll>IDK6</ns4:idkontroll>
+        </ns4:identitetStyrkt>
+        <ns4:diabetes>
+            <ns4:debutArDiabetes>2012</ns4:debutArDiabetes>
+            <ns4:diabetesTyp>TYP2</ns4:diabetesTyp>
+            <ns4:harBehandlingKost>true</ns4:harBehandlingKost>
+            <ns4:harBehandlingTabletter>true</ns4:harBehandlingTabletter>
+            <ns4:harBehandlingInsulin>true</ns4:harBehandlingInsulin>
+            <ns4:insulinBehandlingSedanAr>2012</ns4:insulinBehandlingSedanAr>
+            <ns4:annanBehandlingBeskrivning>Hypnos</ns4:annanBehandlingBeskrivning>
+        </ns4:diabetes>
+        <ns4:hypoglykemier>
+            <ns4:harKunskapOmAtgarder>true</ns4:harKunskapOmAtgarder>
+            <ns4:harTeckenNedsattHjarnfunktion>true</ns4:harTeckenNedsattHjarnfunktion>
+            <ns4:saknarFormagaKannaVarningstecken>true</ns4:saknarFormagaKannaVarningstecken>
+            <ns4:harAllvarligForekomst>true</ns4:harAllvarligForekomst>
+            <ns4:allvarligForekomstBeskrivning>Beskrivning</ns4:allvarligForekomstBeskrivning>
+            <ns4:harAllvarligForekomstTrafiken>true</ns4:harAllvarligForekomstTrafiken>
+            <ns4:allvarligForekomstTrafikBeskrivning>Beskrivning</ns4:allvarligForekomstTrafikBeskrivning>
+            <ns4:genomforEgenkontrollBlodsocker>true</ns4:genomforEgenkontrollBlodsocker>
+            <ns4:harAllvarligForekomstVakenTid>true</ns4:harAllvarligForekomstVakenTid>
+            <ns4:allvarligForekomstVakenTidAr>2012-12-12</ns4:allvarligForekomstVakenTidAr>
+        </ns4:hypoglykemier>
+        <ns4:separatOgonLakarintygKommerSkickas>false</ns4:separatOgonLakarintygKommerSkickas>
+        <ns4:synfunktion>
+            <ns4:harSynfaltsdefekt>false</ns4:harSynfaltsdefekt>
+            <ns4:synskarpaUtanKorrektion>
+                <ns4:hogerOga>0.0</ns4:hogerOga>
+                <ns4:vansterOga>0.0</ns4:vansterOga>
+                <ns4:binokulart>0.0</ns4:binokulart>
+            </ns4:synskarpaUtanKorrektion>
+            <ns4:synskarpaMedKorrektion>
+                <ns4:hogerOga>0.0</ns4:hogerOga>
+                <ns4:vansterOga>0.0</ns4:vansterOga>
+                <ns4:binokulart>0.0</ns4:binokulart>
+            </ns4:synskarpaMedKorrektion>
+            <ns4:harDiplopi>true</ns4:harDiplopi>
+            <ns4:finnsSynfaltsprovning>true</ns4:finnsSynfaltsprovning>
+            <ns4:synfaltsprovningUtanAnmarkning>true</ns4:synfaltsprovningUtanAnmarkning>
+            <ns4:finnsProvningOgatsRorlighet>true</ns4:finnsProvningOgatsRorlighet>
+        </ns4:synfunktion>
+        <ns4:ovrigKommentar>Kommentarer av det viktiga slaget</ns4:ovrigKommentar>
+        <ns4:bedomning>
+            <ns4:korkortstyp>AM</ns4:korkortstyp>
+            <ns4:korkortstyp>A1</ns4:korkortstyp>
+            <ns4:korkortstyp>A2</ns4:korkortstyp>
+            <ns4:korkortstyp>A</ns4:korkortstyp>
+            <ns4:korkortstyp>B</ns4:korkortstyp>
+            <ns4:korkortstyp>BE</ns4:korkortstyp>
+            <ns4:korkortstyp>TRAKTOR</ns4:korkortstyp>
+            <ns4:korkortstyp>C1</ns4:korkortstyp>
+            <ns4:korkortstyp>C1E</ns4:korkortstyp>
+            <ns4:korkortstyp>C</ns4:korkortstyp>
+            <ns4:korkortstyp>CE</ns4:korkortstyp>
+            <ns4:korkortstyp>D1</ns4:korkortstyp>
+            <ns4:korkortstyp>D1E</ns4:korkortstyp>
+            <ns4:korkortstyp>D</ns4:korkortstyp>
+            <ns4:korkortstyp>DE</ns4:korkortstyp>
+            <ns4:korkortstyp>TAXI</ns4:korkortstyp>
+            <ns4:lamplighetInnehaBehorighetSpecial>true</ns4:lamplighetInnehaBehorighetSpecial>
+            <ns4:behovAvLakareSpecialistKompetens>Kronologisk bastuberedning</ns4:behovAvLakareSpecialistKompetens>
+        </ns4:bedomning>
+    </ns3:intyg>
+</ns3:RegisterTSDiabetes>
