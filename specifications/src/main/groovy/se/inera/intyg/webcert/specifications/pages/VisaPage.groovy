@@ -30,7 +30,6 @@ class VisaPage extends AbstractPage {
         intygLaddat(required: false) { $('#intyg-vy-laddad') }
         intygLaddatNoWait { $('#intyg-vy-laddad') }
 
-        skickaDialogCheck(required: false) { $("#patientSamtycke") }
         skickaDialogSkickaKnapp(required: false) { $("#button1send-dialog") }
 
         skickaKnapp(required: false) { $("#sendBtn") }

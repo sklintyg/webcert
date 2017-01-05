@@ -19,13 +19,9 @@
 
 package se.inera.intyg.webcert.specifications.spec.util.base
 
-import java.security.KeyStore
 import java.security.cert.X509Certificate
 
-import javax.net.ssl.KeyManager
-import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.TrustManager
-import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
 import org.apache.cxf.configuration.jsse.TLSClientParameters
@@ -130,36 +126,14 @@ class WsClientFixture {
 	}
 
 	def setupSSLCertificates(def responder) {
-        boolean ntjpClientAuthentication = Boolean.getBoolean("service.ntjpClientAuthentication")
 		Client client = ClientProxy.getClient(responder)
 		HTTPConduit httpConduit = (HTTPConduit)client.getConduit();
 		TLSClientParameters tlsParams = new TLSClientParameters();
 		tlsParams.setDisableCNCheck(true);
 
-        if (ntjpClientAuthentication) {
-    		KeyStore trustStore = KeyStore.getInstance("JKS");
-    		String trustpass = "password";//provide trust pass
-
-    		trustStore.load(WsClientFixture.class.getResourceAsStream("/truststore-ntjp.jks"), trustpass.toCharArray());
-    		TrustManagerFactory trustFactory =
-    				TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-    		trustFactory.init(trustStore);
-    		TrustManager[] tm = trustFactory.getTrustManagers();
-    		tlsParams.setTrustManagers(tm);
-
-    		KeyStore certStore = KeyStore.getInstance("PKCS12");
-            String certFile = System.getProperty("ws.certificate.file");
-            String certPass = System.getProperty("ws.certificate.password");
-    		certStore.load(WsClientFixture.class.getResourceAsStream(certFile), certPass.toCharArray());
-    		KeyManagerFactory keyFactory =
-    				KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-    		keyFactory.init(certStore, certPass.toCharArray());
-    		KeyManager[] km = keyFactory.getKeyManagers();
-    		tlsParams.setKeyManagers(km);
-        } else {
         TrustManager[] tm = [new TrustAllX509TrustManager()]
         tlsParams.setTrustManagers(tm);
-    }
+
 		FiltersType filter = new FiltersType();
 		filter.getInclude().add(".*_EXPORT_.*");
 		filter.getInclude().add(".*_EXPORT1024_.*");
