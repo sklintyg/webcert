@@ -38,31 +38,45 @@ function writeNewIntyg(typ, status) {
         enhetId: standardUser.enhetId,
         lakare: true
     };
-    return loginHelpers.logInAsUserRole(userObj, 'Läkare')
-        .then(function() {
-            sokSkrivIntygPage.selectPersonnummer(person.id);
-            sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(typ);
-            sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
-            global.intyg = require('./helpers').generateIntygByType(typ);
-            return require('./fillIn').fillIn(intyg).then(function() {
-                var promiseArr = [];
-                var userObj = {
-                    fornamn: standardUser.fornamn,
-                    efternamn: standardUser.efternamn,
-                    hsaId: standardUser.hsaId,
-                    enhetId: standardUser.enhetId,
-                    lakare: standardUser.lakare,
-                    origin: standardUser.origin
-                };
 
-                promiseArr.push(fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE));
-                if (status === 'Mottaget') {
-                    promiseArr.push(fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE));
-                    promiseArr.push(fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
-                }
-                promiseArr.push(loginHelpers.logInAsUser(userObj));
-                return Promise.all(promiseArr);
-            });
+    // Logga in med en användrae som garanterat kan signera intyg
+    return loginHelpers.logInAsUserRole(userObj, 'Läkare')
+        // Väj samma person som tidigare
+        .then(function() {
+            return sokSkrivIntygPage.selectPersonnummer(person.id)
+                .then(function() { // Välj rätt typ av utkast
+                    return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(typ);
+                })
+                .then(function() { // Klicka på skapa nytt utkast
+                    return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
+                })
+                .then(function() { // Ange intygsdata
+                    global.intyg = require('./helpers').generateIntygByType(typ);
+                    return require('./fillIn').fillIn(intyg);
+                })
+                .then(function() { //Klicka på signera
+                    return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+                })
+                .then(function() { // Skicka till mottagare om intyget ska vara Mottaget
+                    if (status === 'Mottaget') {
+                        return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE)
+                            .then(function() {
+                                return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
+                            });
+                    } else {
+                        return Promise.resolve();
+                    }
+                })
+                .then(function() { // Logga in med tidigare användare
+                    return loginHelpers.logInAsUser({
+                        fornamn: standardUser.fornamn,
+                        efternamn: standardUser.efternamn,
+                        hsaId: standardUser.hsaId,
+                        enhetId: standardUser.enhetId,
+                        lakare: standardUser.lakare,
+                        origin: standardUser.origin
+                    });
+                });
         });
 }
 
