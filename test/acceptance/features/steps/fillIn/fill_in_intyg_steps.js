@@ -30,6 +30,7 @@ var luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var td = wcTestTools.testdata;
+var fkValues = wcTestTools.testdata.values.fk;
 
 function chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback, clearFlag) {
     var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
@@ -166,7 +167,7 @@ module.exports = function() {
         if (field === 'sjukskrivningsperiod') {
             browser.ignoreSynchronization = true;
             return fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
-                return fkUtkastPage.nedsatt.med25.tom.sendKeys('2017-01-02').then(function() {
+                return fkUtkastPage.nedsatt.med25.tom.sendKeys(fkValues.getRandomArbetsformaga().nedsattMed25.tom).then(function() {
                     browser.ignoreSynchronization = false;
                 });
             });
