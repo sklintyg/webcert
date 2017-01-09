@@ -251,4 +251,13 @@ module.exports = function() {
 
     });
 
+    this.Given(/^jag kryssar i Prognos Går ej att bedöma utan beskrivning$/, function(callback) {
+
+        fkUtkastPage.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE);
+        fkUtkastPage.prognos.fortydligande.clear().then(callback);
+
+
+    });
+
+
 };

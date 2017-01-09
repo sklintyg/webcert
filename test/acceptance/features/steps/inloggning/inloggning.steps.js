@@ -207,17 +207,6 @@ module.exports = function() {
     this.Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {
         expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
     });
-    this.Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
-        logger.debug('Diagnos' + fk7263Utkast.diagnosKod.getText());
-        fk7263Utkast.signeraButton.isEnabled().then(function(isVisible) {
-            if (isVisible) {
-                callback('FEL - Signera-knappen är klickbar!');
-            } else {
-                logger.debug('OK Signera-knappen är ej klickbar!');
-            }
-        }).then(callback);
-    });
-
 
 
     this.Given(/^ska jag bli inloggad som "([^"]*)"$/, function(arg1) {
