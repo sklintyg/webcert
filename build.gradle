@@ -18,7 +18,6 @@ ext {
     aspectJWeaverVersion = "1.7.1"
     awaitilityVersion = "1.4.0"
     camelVersion = "2.16.0"
-    commonsDbcp2Version = "2.0"
     dbUnitVersion = "2.4.9"
     fitnesseVersion = "20150814"
     gebCoreVersion = "0.10.0"

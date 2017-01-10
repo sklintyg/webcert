@@ -47,7 +47,6 @@ dependencies {
     compile "org.gebish:geb-core:${gebCoreVersion}"
     compile "org.seleniumhq.selenium:selenium-server:${seleniumServerVersion}"
     compile "org.skyscreamer:jsonassert:${jsonAssertVersion}"
-    compile "org.apache.commons:commons-dbcp2:${commonsDbcp2Version}"
 
     compile "com.jayway.awaitility:awaitility:${awaitilityVersion}"
 
@@ -64,7 +63,6 @@ dependencies {
     fitnesse "org.gebish:geb-core:${gebCoreVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-server:${seleniumServerVersion}"
     fitnesse "org.skyscreamer:jsonassert:${jsonAssertVersion}"
-    fitnesse "org.apache.commons:commons-dbcp2:${commonsDbcp2Version}"
     fitnesse (project(":webcert-specifications")) { transitive = false }
     fitnesse "com.jayway.awaitility:awaitility:${awaitilityVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-support:${seleniumVersion}"
