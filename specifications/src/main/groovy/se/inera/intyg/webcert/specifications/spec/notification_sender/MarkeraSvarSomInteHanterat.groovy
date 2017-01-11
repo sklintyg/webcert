@@ -31,8 +31,6 @@ import org.springframework.core.io.ClassPathResource
 
 import static se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils.*
 
-import org.apache.commons.io.IOUtils
-
 class MarkeraSvarSomInteHanterat {
 
     String intygTyp

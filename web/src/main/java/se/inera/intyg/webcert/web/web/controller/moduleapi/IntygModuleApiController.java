@@ -18,31 +18,47 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Strings;
+
 import io.swagger.annotations.Api;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.*;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.*;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 /**
  * Controller exposing services to be used by modules.
@@ -346,11 +362,11 @@ public class IntygModuleApiController extends AbstractApiController {
 
         patient.setPersonId(copyRequest.getPatientPersonnummer());
 
-        if (!StringUtils.isBlank(copyRequest.getFornamn())
-                && !StringUtils.isBlank(copyRequest.getEfternamn())
-                && !StringUtils.isBlank(copyRequest.getPostadress())
-                && !StringUtils.isBlank(copyRequest.getPostnummer())
-                && !StringUtils.isBlank(copyRequest.getPostort())) {
+        if (!Strings.nullToEmpty(copyRequest.getFornamn()).trim().isEmpty()
+                && !Strings.nullToEmpty(copyRequest.getEfternamn()).trim().isEmpty()
+                && !Strings.nullToEmpty(copyRequest.getPostadress()).trim().isEmpty()
+                && !Strings.nullToEmpty(copyRequest.getPostnummer()).trim().isEmpty()
+                && !Strings.nullToEmpty(copyRequest.getPostort()).trim().isEmpty()) {
             patient.setFornamn(copyRequest.getFornamn());
             patient.setEfternamn(copyRequest.getEfternamn());
             patient.setMellannamn(copyRequest.getMellannamn());

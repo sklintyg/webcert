@@ -20,13 +20,16 @@ package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Handelsekod;
-import se.riv.clinicalprocess.healthcond.certificate.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Arenden;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 
 public final class CertificateStatusUpdateForCareTypeConverter {
 
@@ -53,7 +56,7 @@ public final class CertificateStatusUpdateForCareTypeConverter {
      */
     private static void complementIntyg(Intyg intyg) {
         Enhet enhet = intyg.getSkapadAv().getEnhet();
-        if (StringUtils.isBlank(enhet.getArbetsplatskod().getExtension())) {
+        if (Strings.nullToEmpty(enhet.getArbetsplatskod().getExtension()).trim().isEmpty()) {
             enhet.getArbetsplatskod().setExtension(TEMPORARY_ARBETSPLATSKOD);
         }
         if ("".equals(enhet.getEpost())) {

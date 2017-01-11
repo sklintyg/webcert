@@ -34,10 +34,11 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
 
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -182,7 +183,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             verifyQueryStrings(fornamn, efternamn, postadress, postnummer, postort);
         }
 
-        if (!StringUtils.isBlank(reference)) {
+        if (!Strings.nullToEmpty(reference).trim().isEmpty()) {
             user.setReference(reference);
         }
 
@@ -232,7 +233,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             patient.setMellannamn(mellannamn);
             patient.setEfternamn(efternamn);
 
-            if (StringUtils.isBlank(patient.getMellannamn())) {
+            if (Strings.nullToEmpty(patient.getMellannamn()).trim().isEmpty()) {
                 patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getEfternamn());
             } else {
                 patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn());
@@ -257,7 +258,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private void verifyQueryString(String queryStringName, String queryStringValue) {
-        if (StringUtils.isBlank(queryStringValue)) {
+        if (Strings.nullToEmpty(queryStringValue).trim().isEmpty()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter '" + queryStringName + "'");
         }
     }

@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 public class RevokeSignedIntygParameter {
 
@@ -26,7 +26,7 @@ public class RevokeSignedIntygParameter {
     private String message;
 
     public boolean isValid() {
-        return StringUtils.isNotBlank(reason);
+        return !Strings.nullToEmpty(reason).trim().isEmpty();
     }
 
     public String getReason() {

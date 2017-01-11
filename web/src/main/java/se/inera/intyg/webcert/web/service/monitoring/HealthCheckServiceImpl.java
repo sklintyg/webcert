@@ -21,19 +21,27 @@ package se.inera.intyg.webcert.web.service.monitoring;
 import java.sql.Time;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import javax.jms.*;
-import javax.persistence.*;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Stopwatch;
 
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
@@ -86,8 +94,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     @Transactional
     public HealthStatus checkDB() {
         boolean ok;
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
+        Stopwatch stopWatch = Stopwatch.createStarted();
         ok = checkTimeFromDb();
         stopWatch.stop();
         HealthStatus status = createStatusWithTiming(ok, stopWatch);
@@ -97,8 +104,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
 
     @Override
     public HealthStatus checkJMS() {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
+        Stopwatch stopWatch = Stopwatch.createStarted();
         boolean ok = checkJmsConnection();
         stopWatch.stop();
         HealthStatus status = createStatusWithTiming(ok, stopWatch);
@@ -129,8 +135,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
 
     @Override
     public HealthStatus checkIntygstjanst() {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
+        Stopwatch stopWatch = Stopwatch.createStarted();
         boolean ok = pingIntygstjanst();
         stopWatch.stop();
         HealthStatus status = createStatusWithTiming(ok, stopWatch);
@@ -171,8 +176,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
 
     @Override
     public HealthStatus checkPrivatlakarportal() {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
+        Stopwatch stopWatch = Stopwatch.createStarted();
         boolean ok = pingPrivatlakarportal();
         stopWatch.stop();
         HealthStatus status = createStatusWithTiming(ok, stopWatch);
@@ -232,7 +236,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         LOG.info("Operation {} completed with result {} in {} ms", operation, result, status.getMeasurement());
     }
 
-    private HealthStatus createStatusWithTiming(boolean ok, StopWatch stopWatch) {
-        return new HealthStatus(stopWatch.getTime(), ok);
+    private HealthStatus createStatusWithTiming(boolean ok, Stopwatch stopWatch) {
+        return new HealthStatus(stopWatch.elapsed(TimeUnit.MILLISECONDS), ok);
     }
 }

@@ -20,10 +20,16 @@ package se.inera.intyg.webcert.persistence.arende.repository;
 
 import java.util.List;
 
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -87,7 +93,7 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
             pred = builder.and(pred, builder.equal(root.get("skickatAv"), "WC"));
         }
 
-        if (StringUtils.isNotEmpty(filter.getHsaId())) {
+        if (!Strings.isNullOrEmpty(filter.getHsaId())) {
             pred = builder.and(pred, builder.equal(root.get("signeratAv"), filter.getHsaId()));
         }
 

@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -42,7 +43,7 @@ public abstract class BaseIntegrationController {
     public void validateRedirectToIntyg(String intygId) {
 
         // Input validation
-        if (StringUtils.isBlank(intygId)) {
+        if (Strings.nullToEmpty(intygId).trim().isEmpty()) {
             throw new IllegalArgumentException("Path parameter 'intygId' was either whitespace, empty (\"\") or null");
         }
 

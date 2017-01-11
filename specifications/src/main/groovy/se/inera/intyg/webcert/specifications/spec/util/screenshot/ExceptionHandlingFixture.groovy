@@ -22,14 +22,14 @@ package se.inera.intyg.webcert.specifications.spec.util.screenshot
 import fitnesse.slim.fixtureInteraction.FixtureInteraction
 import fitnesse.slim.fixtureInteraction.InteractionAwareFixture
 import fitnesse.slim.test.StopTestException
-import org.apache.commons.io.FilenameUtils
-import org.apache.commons.lang.exception.ExceptionUtils
-import org.apache.commons.lang3.StringEscapeUtils
+import com.google.common.base.Throwables
+import com.google.common.html.HtmlEscapers
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.UnhandledAlertException
 import org.openqa.selenium.WebDriverException
 import se.inera.intyg.webcert.specifications.spec.Browser
 
+import java.io.File
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
@@ -116,7 +116,7 @@ class ExceptionHandlingFixture implements InteractionAwareFixture {
             if (t == null) {
                 message = "";
             } else {
-                message = ExceptionUtils.getStackTrace(t);
+                message = Throwables.getStackTraceAsString(t);
             }
         }
         if (screenShotFile != null) {
@@ -147,7 +147,7 @@ class ExceptionHandlingFixture implements InteractionAwareFixture {
     }
 
     private String formatExceptionMsg(String value) {
-        return StringEscapeUtils.escapeHtml4(value);
+        return HtmlEscapers.htmlEscaper().escape(value);
     }
 
     /**
@@ -159,8 +159,7 @@ class ExceptionHandlingFixture implements InteractionAwareFixture {
         String fileName = "pageSource";
         try {
             String location = location();
-            URL u = new URL(location);
-            String file = FilenameUtils.getName(u.getPath());
+            String file = new File(location).getName();
             file = file.replaceAll("^(.*?)(\\.html?)?\$", "\$1");
             if (!"".equals(file)) {
                 fileName = file;

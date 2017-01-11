@@ -20,16 +20,19 @@ package se.inera.intyg.webcert.web.integration.v2.validator;
 
 import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.HANTERA_INTYGSUTKAST;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Patient;
 
@@ -63,15 +66,15 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     private void validatePatient(Patient patient, ResultValidator errors) {
-        if (StringUtils.isBlank(patient.getEfternamn())) {
+        if (Strings.nullToEmpty(patient.getEfternamn()).trim().isEmpty()) {
             errors.addError("efternamn is required");
         }
 
-        if (StringUtils.isBlank(patient.getFornamn())) {
+        if (Strings.nullToEmpty(patient.getFornamn()).trim().isEmpty()) {
             errors.addError("fornamn is required");
         }
 
-        if (patient.getPersonId() == null || StringUtils.isBlank(patient.getPersonId().getExtension())) {
+        if (patient.getPersonId() == null || Strings.nullToEmpty(patient.getPersonId().getExtension()).trim().isEmpty()) {
             errors.addError("personId is required");
         } else {
             PersonnummerChecksumValidator.validate(new Personnummer(patient.getPersonId().getExtension()), errors);
@@ -79,7 +82,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     private void validateSkapadAv(HosPersonal skapadAv, ResultValidator errors) {
-        if (StringUtils.isBlank(skapadAv.getFullstandigtNamn())) {
+        if (Strings.nullToEmpty(skapadAv.getFullstandigtNamn()).trim().isEmpty()) {
             errors.addError("Physicians full name is required");
         }
 
@@ -89,7 +92,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     private void validateEnhet(Enhet enhet, ResultValidator errors) {
         if (enhet == null) {
             errors.addError("Enhet is missing");
-        } else if (StringUtils.isBlank(enhet.getEnhetsnamn())) {
+        } else if (Strings.nullToEmpty(enhet.getEnhetsnamn()).trim().isEmpty()) {
             errors.addError("enhetsnamn is required");
         }
     }

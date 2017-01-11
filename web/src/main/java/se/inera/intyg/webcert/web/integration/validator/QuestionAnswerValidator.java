@@ -18,9 +18,12 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
-import iso.v21090.dt.v1.II;
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.google.common.base.Strings;
+
+import iso.v21090.dt.v1.II;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
@@ -28,9 +31,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.support.Constants;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class QuestionAnswerValidator {
 
@@ -78,7 +78,7 @@ public final class QuestionAnswerValidator {
     }
 
     private static void validateLakarutlatande(List<String> messages, LakarutlatandeEnkelType lakarutlatande) {
-        if (StringUtils.isEmpty(lakarutlatande.getLakarutlatandeId())) {
+        if (Strings.isNullOrEmpty(lakarutlatande.getLakarutlatandeId())) {
             messages.add("Intygsid är tom eller saknas");
         }
     }
@@ -94,10 +94,10 @@ public final class QuestionAnswerValidator {
         if (!Constants.HSA_ID_OID.equals(personalId.getRoot())) {
             messages.add("Felaktig root pa personalid");
         }
-        if (StringUtils.isEmpty(personalId.getExtension())) {
+        if (Strings.isNullOrEmpty(personalId.getExtension())) {
             messages.add("Extension på personalid ar tom eller saknas");
         }
-        if (StringUtils.isEmpty(hosPersonal.getFullstandigtNamn())) {
+        if (Strings.isNullOrEmpty(hosPersonal.getFullstandigtNamn())) {
             messages.add("Personalnamn ar tom eller saknas");
         }
     }
@@ -107,10 +107,10 @@ public final class QuestionAnswerValidator {
                 && !Constants.PERSON_ID_OID.equals(patient.getPersonId().getRoot())) {
             messages.add("Felaktig root på personid");
         }
-        if (StringUtils.isEmpty(patient.getPersonId().getExtension())) {
+        if (Strings.isNullOrEmpty(patient.getPersonId().getExtension())) {
             messages.add("Extension på personid ar tom eller saknas");
         }
-        if (StringUtils.isEmpty(patient.getFullstandigtNamn())) {
+        if (Strings.isNullOrEmpty(patient.getFullstandigtNamn())) {
             messages.add("Personnamn saknas eller ar tomt");
         }
     }
@@ -119,10 +119,10 @@ public final class QuestionAnswerValidator {
         if (!Constants.HSA_ID_OID.equals(hosPersonal.getEnhet().getEnhetsId().getRoot())) {
             messages.add("Felaktig enhetsid root");
         }
-        if (StringUtils.isEmpty(hosPersonal.getEnhet().getEnhetsId().getExtension())) {
+        if (Strings.isNullOrEmpty(hosPersonal.getEnhet().getEnhetsId().getExtension())) {
             messages.add("Enhetsid extension ar tom eller saknas");
         }
-        if (StringUtils.isEmpty(hosPersonal.getEnhet().getEnhetsnamn())) {
+        if (Strings.isNullOrEmpty(hosPersonal.getEnhet().getEnhetsnamn())) {
             messages.add("Enhetsnamn ar tom eller saknas");
         }
     }
@@ -131,10 +131,10 @@ public final class QuestionAnswerValidator {
         if (!Constants.HSA_ID_OID.equals(hosPersonal.getEnhet().getVardgivare().getVardgivareId().getRoot())) {
             messages.add("Felaktig vardgivareid root");
         }
-        if (StringUtils.isEmpty(hosPersonal.getEnhet().getVardgivare().getVardgivareId().getExtension())) {
+        if (Strings.isNullOrEmpty(hosPersonal.getEnhet().getVardgivare().getVardgivareId().getExtension())) {
             messages.add("VardgivareId extension ar tom eller saknas");
         }
-        if (StringUtils.isEmpty(hosPersonal.getEnhet().getVardgivare().getVardgivarnamn())) {
+        if (Strings.isNullOrEmpty(hosPersonal.getEnhet().getVardgivare().getVardgivarnamn())) {
             messages.add("Vardgivarenamn ar tom eller saknas");
         }
     }

@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
@@ -66,7 +66,7 @@ public class CopyIntygRequest {
     }
 
     public boolean isValid() {
-        return patientPersonnummer != null && StringUtils.isNotBlank(patientPersonnummer.getPersonnummer());
+        return patientPersonnummer != null && !Strings.nullToEmpty(patientPersonnummer.getPersonnummer()).trim().isEmpty();
     }
 
     public String getFornamn() {

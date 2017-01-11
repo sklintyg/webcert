@@ -18,16 +18,19 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
 
 /**
  * Base UserDetailsService for both Siths and E-leg based authentication.
@@ -67,16 +70,12 @@ public abstract class BaseWebCertUserDetailsService {
 
         StringBuilder sb = new StringBuilder();
 
-        if (StringUtils.isNotBlank(fornamn)) {
-            sb.append(fornamn);
-        }
+        sb.append(Strings.nullToEmpty(fornamn).trim());
 
-        if (StringUtils.isNotBlank(mellanOchEfterNamn)) {
-            if (sb.length() > 0) {
-                sb.append(SPACE);
-            }
-            sb.append(mellanOchEfterNamn);
+        if (sb.length() > 0) {
+            sb.append(SPACE);
         }
+        sb.append(Strings.nullToEmpty(mellanOchEfterNamn).trim());
 
         return sb.toString();
     }

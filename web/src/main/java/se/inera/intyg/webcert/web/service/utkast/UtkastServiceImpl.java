@@ -29,12 +29,13 @@ import java.util.Set;
 
 import javax.persistence.OptimisticLockException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -559,7 +560,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private int getSafeLength(String str) {
-        return StringUtils.isNotBlank(str) ? str.length() : 0;
+        return Strings.nullToEmpty(str).trim().length();
     }
 
     private boolean isTheDraftStillADraft(UtkastStatus utkastStatus) {
@@ -620,7 +621,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     private void populateRequestWithIntygId(CreateNewDraftRequest request) {
 
-        if (StringUtils.isNotBlank(request.getIntygId())) {
+        if (!Strings.nullToEmpty(request.getIntygId()).trim().isEmpty()) {
             LOG.debug("Detected that the CreateNewDraftRequest already contains an intygId!");
             return;
         }

@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.specifications.spec.util.screenshot;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import com.google.common.html.HtmlEscapers;
 
 /**
  * Exception in Slim fixture.
@@ -76,7 +76,7 @@ public class SlimFixtureException extends RuntimeException {
             if (result.contains("\n")) {
                 if (!result.startsWith("<") || !result.endsWith(">")) {
                     // it is not yet HTML, make it HTML so we can use <br/>
-                    result = String.format("<div>%s</div>", StringEscapeUtils.escapeHtml4(result));
+                    result = String.format("<div>%s</div>", HtmlEscapers.htmlEscaper().escape(result));
                 }
                 result = result.replaceAll("(\\r)?\\n", "<br/>");
             }

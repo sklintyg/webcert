@@ -19,13 +19,22 @@
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
@@ -77,7 +86,7 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
         Predicate pred = builder.conjunction();
         pred = builder.and(pred, builder.equal(root.get("enhetsId"), filter.getUnitHsaId()));
 
-        if (StringUtils.isNotEmpty(filter.getSavedByHsaId())) {
+        if (!Strings.isNullOrEmpty(filter.getSavedByHsaId())) {
             pred = builder.and(pred, builder.equal(root.get("senastSparadAv").get("hsaId"), filter.getSavedByHsaId()));
         }
 

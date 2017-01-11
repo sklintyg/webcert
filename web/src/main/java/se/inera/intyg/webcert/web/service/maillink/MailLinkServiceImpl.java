@@ -24,11 +24,12 @@ import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 /**
  * Created by pebe on 2015-10-05.
@@ -51,11 +52,11 @@ public class MailLinkServiceImpl implements MailLinkService {
 
     @Override
     public URI intygRedirect(String typ, String intygId) {
-        if (StringUtils.isBlank(intygId)) {
+        if (Strings.nullToEmpty(intygId).trim().isEmpty()) {
             LOG.error("Path parameter 'intygId' was either whitespace, empty (\"\") or null");
             return null;
         }
-        if (StringUtils.isBlank(typ)) {
+        if (Strings.nullToEmpty(typ).trim().isEmpty()) {
             LOG.error("Path parameter 'typ' was either whitespace, empty (\"\") or null");
             return null;
         }

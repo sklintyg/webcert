@@ -28,8 +28,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -95,24 +93,31 @@ public class IntygServiceConverterTest {
 
     @Test
     public void testConcatPatientName() {
-
-        List<String> fNames = Arrays.asList("Adam", "Bertil", "Cesar");
-        List<String> mNames = Collections.singletonList("Davidsson");
+        String fName = "Adam Bertil Cesar";
+        String mName = "Davidsson";
         String lName = "Eriksson";
 
-        String name = IntygConverterUtil.concatPatientName(fNames, mNames, lName);
+        String name = IntygConverterUtil.concatPatientName(fName, mName, lName);
 
         assertEquals("Adam Bertil Cesar Davidsson Eriksson", name);
     }
 
     @Test
-    public void testConcatPatientNameWithSomeNamesBlank() {
-
-        List<String> fNames = Arrays.asList("Adam", "", "Bertil");
-        List<String> mNames = Collections.singletonList(" ");
+    public void testConcatPatientNameWithoutMiddlename() {
+        String fName = "Adam Bertil";
         String lName = "Eriksson";
 
-        String name = IntygConverterUtil.concatPatientName(fNames, mNames, lName);
+        String name = IntygConverterUtil.concatPatientName(fName, null, lName);
+
+        assertEquals("Adam Bertil Eriksson", name);
+    }
+
+    @Test
+    public void testConcatPatientNameWithBlankMiddlename() {
+        String fName = "Adam Bertil";
+        String lName = "Eriksson";
+
+        String name = IntygConverterUtil.concatPatientName(fName, " ", lName);
 
         assertEquals("Adam Bertil Eriksson", name);
     }

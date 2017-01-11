@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -49,7 +49,7 @@ public abstract class CreateCopyRequest {
     }
 
     public boolean containsNyttPatientPersonnummer() {
-        return nyttPatientPersonnummer != null && StringUtils.isNotBlank(nyttPatientPersonnummer.getPersonnummer());
+        return nyttPatientPersonnummer != null && !Strings.nullToEmpty(nyttPatientPersonnummer.getPersonnummer()).trim().isEmpty();
     }
 
     public String getOriginalIntygId() {

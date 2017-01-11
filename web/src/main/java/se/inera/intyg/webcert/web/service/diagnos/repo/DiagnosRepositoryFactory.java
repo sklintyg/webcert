@@ -18,12 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.util.Version;
@@ -36,6 +41,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
@@ -86,7 +93,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
 
     public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) {
 
-        if (StringUtils.isBlank(fileUrl)) {
+        if (Strings.nullToEmpty(fileUrl).trim().isEmpty()) {
             return;
         }
 
@@ -126,7 +133,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
 
     public Diagnos createDiagnosFromString(String diagnosStrParam) {
 
-        if (StringUtils.isBlank(diagnosStrParam)) {
+        if (Strings.nullToEmpty(diagnosStrParam).trim().isEmpty()) {
             return null;
         }
 

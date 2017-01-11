@@ -18,14 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -316,17 +317,17 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
 
         String[] res = new String[] { "", "" };
 
-        if (StringUtils.isBlank(fullName)) {
+        if (Strings.nullToEmpty(fullName).trim().isEmpty()) {
             return res;
         }
 
         // use the last name from the template efternamn as efternamn and the rest as fornamn.
-        String[] nameParts = StringUtils.split(fullName, SPACE);
+        String[] nameParts = fullName.split(SPACE);
 
         if (nameParts.length == 1) {
             res[0] = nameParts[0];
         } else {
-            res[0] = Joiner.on(SPACE).join(ArrayUtils.subarray(nameParts, 0, nameParts.length - 1));
+            res[0] = Joiner.on(SPACE).join(Arrays.asList(nameParts).subList(0, nameParts.length - 1));
             res[1] = nameParts[nameParts.length - 1];
         }
 

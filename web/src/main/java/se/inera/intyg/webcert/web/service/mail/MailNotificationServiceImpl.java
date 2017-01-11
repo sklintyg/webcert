@@ -26,7 +26,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.xml.ws.WebServiceException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +35,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -282,7 +283,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             url += mailNotification.getCertificateType() + "/";
         }
         url += mailNotification.getCertificateId() + "/questions";
-        if (StringUtils.isNotBlank(mailNotification.getCareUnitId())) {
+        if (!Strings.nullToEmpty(mailNotification.getCareUnitId()).trim().isEmpty()) {
             url += "?enhet=" + mailNotification.getCareUnitId();
         }
 

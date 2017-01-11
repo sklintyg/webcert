@@ -18,23 +18,33 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
-import com.google.common.collect.*;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
@@ -43,7 +53,10 @@ import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
 @Path("/fmb")
 @Api(value = "fmb", description = "REST API för Försäkringsmedicinskt beslutsstöd", produces = MediaType.APPLICATION_JSON)
@@ -115,7 +128,7 @@ public class FmbApiController extends AbstractApiController {
                 return icd10WithFmbInfo;
             }
             // Make the icd10-code one position shorter, and thus more general.
-            icd10WithFmbInfo = StringUtils.chop(icd10WithFmbInfo);
+            icd10WithFmbInfo = icd10WithFmbInfo.substring(0, icd10WithFmbInfo.length() - 1);
         }
         return icd10;
     }

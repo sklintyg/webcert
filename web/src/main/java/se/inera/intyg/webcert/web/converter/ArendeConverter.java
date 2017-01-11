@@ -24,13 +24,15 @@ import java.util.stream.Collectors;
 
 import javax.xml.ws.WebServiceException;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 
-import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.common.support.common.enumerations.PartKod;
+import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.arende.model.*;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -146,8 +148,8 @@ public final class ArendeConverter {
             try {
                 return hsaEmployeeService.getEmployee(utkast.getSignatur().getSigneradAv(), null)
                         .stream()
-                        .filter(pit -> StringUtils.isNotEmpty(pit.getMiddleAndSurName()))
-                        .map(pit -> StringUtils.isNotEmpty(pit.getGivenName())
+                        .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
+                        .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
                                 ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
                                 : pit.getMiddleAndSurName())
                         .findFirst()

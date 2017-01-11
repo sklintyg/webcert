@@ -25,7 +25,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
@@ -82,7 +83,7 @@ public class BootstrapBean {
 
     private void addContentTemplate(Resource res) {
         try {
-            String contentTemplate = IOUtils.toString(res.getInputStream(), "UTF-8");
+            String contentTemplate = Resources.toString(res.getURL(), Charsets.UTF_8);
             intygStore.addContentTemplate(res.getFilename(), contentTemplate);
         } catch (IOException e) {
             LOG.error("Error converting content template file {}: {}", res.getFilename(), e.getMessage());

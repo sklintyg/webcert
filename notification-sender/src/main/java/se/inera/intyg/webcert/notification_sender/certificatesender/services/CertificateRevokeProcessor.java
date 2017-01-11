@@ -24,8 +24,9 @@ import javax.xml.ws.WebServiceException;
 
 import org.apache.camel.Body;
 import org.apache.camel.Header;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -43,10 +44,10 @@ public class CertificateRevokeProcessor {
     public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
             @Header(Constants.INTYGS_TYP) String intygsTyp) throws TemporaryException, PermanentException {
 
-        checkArgument(!StringUtils.isEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE, Constants.INTYGS_ID);
-        checkArgument(!StringUtils.isEmpty(logicalAddress), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
+        checkArgument(!Strings.isNullOrEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE, Constants.INTYGS_ID);
+        checkArgument(!Strings.isNullOrEmpty(logicalAddress), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
                 Constants.LOGICAL_ADDRESS);
-        checkArgument(!StringUtils.isEmpty(intygsTyp), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
+        checkArgument(!Strings.isNullOrEmpty(intygsTyp), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
                 Constants.INTYGS_TYP);
 
         try {

@@ -18,7 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +33,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,8 +105,8 @@ public class StatModuleApiController extends AbstractApiController {
 
         List<String> unitIdsOfSelected = user.getIdsOfSelectedVardenhet();
 
-        @SuppressWarnings("unchecked")
-        List<String> unitIdsOfNotSelected = (List<String>) CollectionUtils.subtract(allUnitIds, unitIdsOfSelected);
+        List<String> unitIdsOfNotSelected = new ArrayList<>(allUnitIds);
+        unitIdsOfNotSelected.removeAll(unitIdsOfSelected);
 
         long fragaSvarOnOtherUnitThanTheSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected, mergedMap);
         statsResponse.setTotalNbrOfUnhandledFragaSvarOnOtherThanSelected(fragaSvarOnOtherUnitThanTheSelected);

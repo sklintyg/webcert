@@ -18,18 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
@@ -131,13 +134,13 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         Set<String> isAnswered = new HashSet<>();
 
         for (Arende arende : arenden) {
-            if (StringUtils.isNotBlank(arende.getSvarPaId())) {
+            if (!Strings.nullToEmpty(arende.getSvarPaId()).trim().isEmpty()) {
                 isAnswered.add(arende.getSvarPaId());
             }
         }
 
         for (Arende arende : arenden) {
-            if (ArendeAmne.PAMINN == arende.getAmne() || StringUtils.isNotBlank(arende.getSvarPaId())) {
+            if (ArendeAmne.PAMINN == arende.getAmne() || !Strings.nullToEmpty(arende.getSvarPaId()).trim().isEmpty()) {
                 // skip answers and reminders
                 continue;
             }

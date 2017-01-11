@@ -26,8 +26,6 @@ import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.ContentType.URLENC
 import static se.inera.intyg.webcert.specifications.spec.util.WebcertRestUtils.*
 
-import org.apache.commons.io.IOUtils
-
 class SkickaIntyg {
 
     String intygId

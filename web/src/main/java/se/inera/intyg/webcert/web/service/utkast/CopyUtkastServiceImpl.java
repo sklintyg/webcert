@@ -18,13 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -317,11 +318,11 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private boolean hasRequiredPatientDetails(Patient patient) {
         // Vid kopiering i djupintegration är alla patient parametrar utom mellannamn obligatoriska
         return patient != null
-                && !StringUtils.isBlank(patient.getFornamn())
-                && !StringUtils.isBlank(patient.getEfternamn())
-                && !StringUtils.isBlank(patient.getPostadress())
-                && !StringUtils.isBlank(patient.getPostnummer())
-                && !StringUtils.isBlank(patient.getPostort());
+                && !Strings.nullToEmpty(patient.getFornamn()).trim().isEmpty()
+                && !Strings.nullToEmpty(patient.getEfternamn()).trim().isEmpty()
+                && !Strings.nullToEmpty(patient.getPostadress()).trim().isEmpty()
+                && !Strings.nullToEmpty(patient.getPostnummer()).trim().isEmpty()
+                && !Strings.nullToEmpty(patient.getPostort()).trim().isEmpty();
     }
 
     private Person copyPatientDetailsFromRequest(CreateCopyRequest copyRequest) {

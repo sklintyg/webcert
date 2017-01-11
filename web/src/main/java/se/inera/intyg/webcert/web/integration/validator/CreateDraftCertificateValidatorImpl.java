@@ -18,13 +18,17 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 
 
@@ -61,7 +65,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     private void validatePatient(Patient patient, ResultValidator errors) {
-        if (StringUtils.isBlank(patient.getEfternamn())) {
+        if (Strings.nullToEmpty(patient.getEfternamn()).trim().isEmpty()) {
             errors.addError("efternamn is required");
         }
 
@@ -69,7 +73,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
             errors.addError("At least one fornamn is required");
         }
 
-        if (patient.getPersonId() == null || StringUtils.isBlank(patient.getPersonId().getExtension())) {
+        if (patient.getPersonId() == null || Strings.nullToEmpty(patient.getPersonId().getExtension()).trim().isEmpty()) {
             errors.addError("personId is required");
         } else {
             PersonnummerChecksumValidator.validate(new Personnummer(patient.getPersonId().getExtension()), errors);
@@ -77,11 +81,11 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     private void validateSkapadAv(HosPersonal skapadAv, ResultValidator errors) {
-        if (StringUtils.isBlank(skapadAv.getFullstandigtNamn())) {
+        if (Strings.nullToEmpty(skapadAv.getFullstandigtNamn()).trim().isEmpty()) {
             errors.addError("Physicians full name is required");
         }
 
-        if (skapadAv.getPersonalId() == null || StringUtils.isBlank(skapadAv.getPersonalId().getExtension())) {
+        if (skapadAv.getPersonalId() == null || Strings.nullToEmpty(skapadAv.getPersonalId().getExtension()).trim().isEmpty()) {
             errors.addError("Physicians hsaId is required");
         }
 
@@ -92,11 +96,11 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         if (enhet == null) {
             errors.addError("Enhet is missing");
         } else {
-            if (StringUtils.isBlank(enhet.getEnhetsnamn())) {
+            if (Strings.nullToEmpty(enhet.getEnhetsnamn()).trim().isEmpty()) {
                 errors.addError("enhetsnamn is required");
             }
 
-            if (enhet.getEnhetsId() == null || StringUtils.isBlank(enhet.getEnhetsId().getExtension())) {
+            if (enhet.getEnhetsId() == null || Strings.nullToEmpty(enhet.getEnhetsId().getExtension()).trim().isEmpty()) {
                 errors.addError("enhetsId is required");
             }
         }

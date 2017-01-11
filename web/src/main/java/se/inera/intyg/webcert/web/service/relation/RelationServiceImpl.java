@@ -18,12 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.relation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -45,7 +49,7 @@ public class RelationServiceImpl implements RelationService {
         Utkast reference = utkastRepo.findOne(intygsId);
 
         // While we have a parent in the reference intyg
-        while (reference != null && StringUtils.isNotEmpty(reference.getRelationIntygsId())) {
+        while (reference != null && !Strings.isNullOrEmpty(reference.getRelationIntygsId())) {
             reference = utkastRepo.findOne(reference.getRelationIntygsId());
             if (reference == null || !isAuthorized(reference.getEnhetsId())) {
                 break;

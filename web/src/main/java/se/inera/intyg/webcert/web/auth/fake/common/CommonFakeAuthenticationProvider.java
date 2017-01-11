@@ -22,7 +22,6 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTI
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.NameID;
@@ -34,6 +33,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -109,7 +110,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
             FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
-            if (!StringUtils.isEmpty(fakeCredentials.getEnhetId())) {
+            if (!Strings.isNullOrEmpty(fakeCredentials.getEnhetId())) {
                 setVardenhetById(fakeCredentials.getEnhetId(), user);
                 setVardgivareByVardenhetId(fakeCredentials.getEnhetId(), user);
             }

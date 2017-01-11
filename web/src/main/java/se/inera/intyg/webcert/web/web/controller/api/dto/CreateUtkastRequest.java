@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 
@@ -44,15 +44,15 @@ public class CreateUtkastRequest {
 
     public boolean isValid() {
 
-        if (StringUtils.isBlank(intygType)) {
+        if (Strings.nullToEmpty(intygType).trim().isEmpty()) {
             return false;
         }
 
-        if (patientPersonnummer == null || StringUtils.isBlank(patientPersonnummer.getPersonnummer())) {
+        if (patientPersonnummer == null || Strings.nullToEmpty(patientPersonnummer.getPersonnummer()).trim().isEmpty()) {
             return false;
         }
 
-        if (StringUtils.isBlank(patientFornamn) || StringUtils.isBlank(patientEfternamn)) {
+        if (Strings.nullToEmpty(patientFornamn).trim().isEmpty() || Strings.nullToEmpty(patientEfternamn).trim().isEmpty()) {
             return false;
         }
 

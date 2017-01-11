@@ -23,9 +23,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
@@ -62,20 +61,16 @@ public final class IntygConverterUtil {
         return sendType;
     }
 
-    public static String concatPatientName(List<String> fNames, List<String> mNames, String lName) {
-        return concatPatientName(Joiner.on(" ").join(fNames), Joiner.on(" ").join(mNames), lName);
-    }
-
     public static String concatPatientName(String fName, String mName, String lName) {
         StringBuilder sb = new StringBuilder();
         sb.append(fName);
 
-        if (mName != null) {
+        if (!Strings.nullToEmpty(mName).trim().isEmpty()) {
             sb.append(" ").append(mName);
         }
 
         sb.append(" ").append(lName);
-        return StringUtils.normalizeSpace(sb.toString());
+        return sb.toString().trim();
     }
 
     public static String buildVardReferensId(String intygId) {

@@ -19,12 +19,19 @@
 package se.inera.intyg.webcert.web.service.fragasvar;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.ws.soap.SOAPFaultException;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,22 +40,35 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
+import com.google.common.base.Strings;
+
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.converter.*;
+import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
+import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
+import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
+import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -199,7 +219,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar saveSvar(Long fragaSvarsId, String svarsText) {
 
         // Input sanity check
-        if (StringUtils.isEmpty(svarsText)) {
+        if (Strings.isNullOrEmpty(svarsText)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "SvarsText cannot be empty!");
         }
@@ -286,7 +306,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     public FragaSvar saveNewQuestion(String intygId, String typ, Amne amne, String frageText) {
         // Argument check
-        if (StringUtils.isEmpty(frageText)) {
+        if (Strings.isNullOrEmpty(frageText)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "frageText cannot be empty!");
         }
@@ -422,14 +442,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Enforce business rule FS-011, from FK + answer should remain closed
         if (!FrageStallare.WEBCERT.isKodEqual(fragaSvar.getFrageStallare())
-                && StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
+                && !Strings.isNullOrEmpty(fragaSvar.getSvarsText())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "FS-011: Cant revert status for question " + frageSvarId);
         }
 
         NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
 
-        if (StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
+        if (!Strings.isNullOrEmpty(fragaSvar.getSvarsText())) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
             if (FrageStallare.WEBCERT.isKodEqual(fragaSvar.getFrageStallare())) {
@@ -553,7 +573,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         if (FrageStallare.WEBCERT.equals(frageStallare)) {
             if (Status.ANSWERED.equals(fragaSvarStatus)) {
                 return NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED;
-            } else if (Status.CLOSED.equals(fragaSvarStatus) && StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
+            } else if (Status.CLOSED.equals(fragaSvarStatus) && !Strings.isNullOrEmpty(fragaSvar.getSvarsText())) {
                 return NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED;
             } else if (Status.CLOSED.equals(fragaSvarStatus)) {
                 return NotificationEvent.QUESTION_FROM_CARE_UNHANDLED;

@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +30,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
@@ -64,7 +66,7 @@ public class AvtalRepositoryFactory {
                     return;
                 }
 
-                String avtalText = IOUtils.toString(resource.getInputStream(), "UTF-8");
+                String avtalText = Resources.toString(resource.getURL(), Charsets.UTF_8);
                 Avtal avtal = new Avtal();
                 avtal.setAvtalText(avtalText);
                 avtal.setAvtalVersion(1);

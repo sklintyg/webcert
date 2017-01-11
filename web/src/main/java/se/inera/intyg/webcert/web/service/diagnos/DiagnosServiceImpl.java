@@ -25,13 +25,14 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
@@ -94,7 +95,8 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     private DiagnosRepository createDiagnosRepo(String codeFilesStr, String repoName) {
         Assert.hasText(codeFilesStr, "Can not populate " + repoName + " DiagnosRepository since no diagnosis code files was supplied");
-        String[] splittedcodeFiles = StringUtils.split(codeFilesStr, COMMA);
+
+        String[] splittedcodeFiles = codeFilesStr.split(COMMA);
         return diagnosRepositoryFactory.createAndInitDiagnosRepository(Arrays.asList(splittedcodeFiles));
     }
 
@@ -198,7 +200,7 @@ public class DiagnosServiceImpl implements DiagnosService {
         // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as possible
         Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
 
-        if (StringUtils.isBlank(searchString)) {
+        if (Strings.nullToEmpty(searchString).trim().isEmpty()) {
             return DiagnosResponse.invalidSearchString();
         }
 
@@ -244,7 +246,7 @@ public class DiagnosServiceImpl implements DiagnosService {
     @Override
     public boolean validateDiagnosisCode(String diagnosisCode, String codeSystemStr) {
 
-        if (StringUtils.isBlank(diagnosisCode)) {
+        if (Strings.nullToEmpty(diagnosisCode).trim().isEmpty()) {
             LOG.debug("Could not validate code since it is null or empty");
             return false;
         }
@@ -282,7 +284,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     private Diagnoskodverk getDiagnoskodverk(String codeSystemStr) {
 
-        if (StringUtils.isBlank(codeSystemStr)) {
+        if (Strings.nullToEmpty(codeSystemStr).trim().isEmpty()) {
             LOG.debug("Can not validate diagnosis code without code system");
             return null;
         }

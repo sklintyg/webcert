@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -40,6 +39,9 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.RAMDirectory;
+
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
@@ -97,7 +99,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
 
     @Override
     public List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults) {
-        if (StringUtils.isEmpty(searchString)) {
+        if (Strings.isNullOrEmpty(searchString)) {
             return Collections.emptyList();
         }
         BooleanQuery query = new BooleanQuery();
@@ -138,15 +140,10 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
     }
 
     public String sanitizeCodeValue(String codeValueParam) {
+        String codeValue = Strings.nullToEmpty(codeValueParam);
+        codeValue = CharMatcher.is('.').or(CharMatcher.WHITESPACE).removeFrom(codeValue);
 
-        if (StringUtils.isBlank(codeValueParam)) {
-            return null;
-        }
-
-        String codeValue = StringUtils.deleteWhitespace(codeValueParam);
-        codeValue = StringUtils.remove(codeValue, '.');
-
-        return StringUtils.isBlank(codeValue) ? null : codeValue.toUpperCase();
+        return codeValue.trim().isEmpty() ? null : codeValue.toUpperCase();
     }
 
     public int nbrOfDiagosis() {

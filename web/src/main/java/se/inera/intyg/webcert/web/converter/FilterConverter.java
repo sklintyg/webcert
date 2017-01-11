@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.converter;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.VantarPa;
@@ -39,7 +39,7 @@ public final class FilterConverter {
 
         filter.getEnhetsIds().addAll(unitIds);
 
-        if (StringUtils.isNotEmpty(source.getVantarPa())) {
+        if (!Strings.isNullOrEmpty(source.getVantarPa())) {
             filter.setVantarPa(VantarPa.valueOf(source.getVantarPa()));
         }
 
