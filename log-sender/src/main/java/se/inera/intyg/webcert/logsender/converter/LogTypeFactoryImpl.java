@@ -18,8 +18,13 @@
  */
 package se.inera.intyg.webcert.logsender.converter;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.infra.logmessages.Enhet;
 import se.inera.intyg.infra.logmessages.Patient;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
@@ -33,9 +38,6 @@ import se.riv.ehr.log.v1.ResourceType;
 import se.riv.ehr.log.v1.ResourcesType;
 import se.riv.ehr.log.v1.SystemType;
 import se.riv.ehr.log.v1.UserType;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Encapsulates PdlLogMessage (internal format) -> LogType (ehr format) conversion.
@@ -67,8 +69,8 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
     private void buildUserType(PdlLogMessage source, LogType logType) {
         UserType user = new UserType();
-        user.setUserId(StringUtils.trim(source.getUserId()));
-        user.setName(StringUtils.trim(source.getUserName()));
+        user.setUserId(trim(source.getUserId()));
+        user.setName(trim(source.getUserName()));
         user.setCareProvider(careProvider(source.getUserCareUnit()));
         user.setCareUnit(careUnit(source.getUserCareUnit()));
         logType.setUser(user);
@@ -76,8 +78,8 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
     private void buildSystemType(PdlLogMessage source, LogType logType) {
         SystemType system = new SystemType();
-        system.setSystemId(StringUtils.trim(source.getSystemId()));
-        system.setSystemName(StringUtils.trim(source.getSystemName()));
+        system.setSystemId(trim(source.getSystemId()));
+        system.setSystemName(trim(source.getSystemName()));
         logType.setSystem(system);
     }
 
@@ -88,7 +90,7 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
         activity.setPurpose(source.getPurpose().getType());
         activity.setActivityLevel(source.getActivityLevel());
 
-        if (StringUtils.isNotEmpty(source.getActivityArgs())) {
+        if (!Strings.isNullOrEmpty(source.getActivityArgs())) {
             activity.setActivityArgs(source.getActivityArgs());
         }
 
@@ -97,22 +99,22 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
     private PatientType patient(Patient source) {
         PatientType patient = new PatientType();
-        patient.setPatientId(StringUtils.trim(source.getPatientId()));
-        patient.setPatientName(StringUtils.trim(source.getPatientNamn()));
+        patient.setPatientId(trim(source.getPatientId()));
+        patient.setPatientName(trim(source.getPatientNamn()));
         return patient;
     }
 
     private CareUnitType careUnit(Enhet source) {
         CareUnitType careUnit = new CareUnitType();
-        careUnit.setCareUnitId(StringUtils.trim(source.getEnhetsId()));
-        careUnit.setCareUnitName(StringUtils.trim(source.getEnhetsNamn()));
+        careUnit.setCareUnitId(trim(source.getEnhetsId()));
+        careUnit.setCareUnitName(trim(source.getEnhetsNamn()));
         return careUnit;
     }
 
     private CareProviderType careProvider(Enhet source) {
         CareProviderType careProvider = new CareProviderType();
-        careProvider.setCareProviderId(StringUtils.trim(source.getVardgivareId()));
-        careProvider.setCareProviderName(StringUtils.trim(source.getVardgivareNamn()));
+        careProvider.setCareProviderId(trim(source.getVardgivareId()));
+        careProvider.setCareProviderName(trim(source.getVardgivareNamn()));
         return careProvider;
     }
 
@@ -124,5 +126,9 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
 
         resource.setPatient(patient(source.getPatient()));
         return resource;
+    }
+
+    private String trim(String input) {
+        return input != null ? input.trim() : null;
     }
 }

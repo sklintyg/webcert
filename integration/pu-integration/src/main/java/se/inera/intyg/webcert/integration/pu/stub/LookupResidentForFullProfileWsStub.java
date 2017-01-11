@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
+
+import com.google.common.base.Joiner;
+
 import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileResponseType;
 import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.LookupResidentForFullProfileType;
 import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
@@ -65,7 +67,7 @@ public class LookupResidentForFullProfileWsStub implements LookupResidentForFull
         }
 
         if (messages.size() > 0) {
-            throw new IllegalArgumentException(StringUtils.collectionToCommaDelimitedString(messages));
+            throw new IllegalArgumentException(Joiner.on(",").join(messages));
         }
     }
 }

@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
@@ -70,17 +72,17 @@ public class ValidatePrivatePractitionerResponderStub implements ValidatePrivate
             String personId = parameters.getPersonalIdentityNumber();
 
             // Exakt ett av fälten hsaIdentityNumber och personalIdentityNumber ska anges.
-            if (StringUtils.isEmpty(hsaId) && StringUtils.isEmpty(personId)) {
+            if (Strings.isNullOrEmpty(hsaId) && Strings.isNullOrEmpty(personId)) {
                 messages.add("Inget av argumenten hsaId och personId är satt. Ett av dem måste ha ett värde.");
             }
 
-            if (!StringUtils.isEmpty(hsaId) && !StringUtils.isEmpty(personId)) {
+            if (!Strings.isNullOrEmpty(hsaId) && !Strings.isNullOrEmpty(personId)) {
                 messages.add("Endast ett av argumenten hsaId och personId får vara satt.");
             }
         }
 
         if (messages.size() > 0) {
-            throw new IllegalArgumentException(StringUtils.collectionToCommaDelimitedString(messages));
+            throw new IllegalArgumentException(Joiner.on(",").join(messages));
         }
     }
 }

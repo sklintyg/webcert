@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.fkstub.validation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.util.StringUtils;
+import com.google.common.base.Strings;
 
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
 
@@ -35,7 +35,7 @@ public class SendMedicalCertificateQuestionValidator {
 
     public void validateAndCorrect() {
         // First, validate properties at SendMedicalCertificateQuestion request level
-        if (StringUtils.isEmpty(questionType.getVardReferensId())) {
+        if (Strings.isNullOrEmpty(questionType.getVardReferensId())) {
             validationErrors.add("No vardReferens-id found!");
         }
         if (questionType.getAmne() == null) {
@@ -44,7 +44,7 @@ public class SendMedicalCertificateQuestionValidator {
         if (questionType.getFraga() == null) {
             validationErrors.add("No Question fraga element found!");
         } else {
-            if (StringUtils.isEmpty(questionType.getFraga().getMeddelandeText())) {
+            if (Strings.isNullOrEmpty(questionType.getFraga().getMeddelandeText())) {
                 validationErrors.add("No Question fraga meddelandeText elements found or set!");
             }
             if (questionType.getFraga().getSigneringsTidpunkt() == null) {

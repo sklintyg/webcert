@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.fkstub.validation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.util.StringUtils;
+import com.google.common.base.Strings;
 
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 
@@ -35,10 +35,10 @@ public class SendMedicalCertificateAnswerValidator {
 
     public void validateAndCorrect() {
         // First, validate properties at SendMedicalCertificateAnswer request level
-        if (StringUtils.isEmpty(answerType.getVardReferensId())) {
+        if (Strings.isNullOrEmpty(answerType.getVardReferensId())) {
             validationErrors.add("No vardReferens-id found!");
         }
-        if (StringUtils.isEmpty(answerType.getFkReferensId())) {
+        if (Strings.isNullOrEmpty(answerType.getFkReferensId())) {
             validationErrors.add("No fkReferens-id found!");
         }
         if (answerType.getAmne() == null) {
@@ -47,7 +47,7 @@ public class SendMedicalCertificateAnswerValidator {
         if (answerType.getFraga() == null) {
             validationErrors.add("No Answer fraga element found!");
         } else {
-            if (StringUtils.isEmpty(answerType.getFraga().getMeddelandeText())) {
+            if (Strings.isNullOrEmpty(answerType.getFraga().getMeddelandeText())) {
                 validationErrors.add("No Answer fraga meddelandeText elements found or set!");
             }
             if (answerType.getFraga().getSigneringsTidpunkt() == null) {
@@ -57,7 +57,7 @@ public class SendMedicalCertificateAnswerValidator {
         if (answerType.getSvar() == null) {
             validationErrors.add("No Answer svar element found!");
         } else {
-            if (StringUtils.isEmpty(answerType.getSvar().getMeddelandeText())) {
+            if (Strings.isNullOrEmpty(answerType.getSvar().getMeddelandeText())) {
                 validationErrors.add("No Answer svar meddelandeText elements found or set!");
             }
             if (answerType.getSvar().getSigneringsTidpunkt() == null) {

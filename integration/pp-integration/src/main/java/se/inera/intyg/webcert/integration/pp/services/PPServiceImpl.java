@@ -24,7 +24,8 @@ import javax.xml.ws.soap.SOAPFaultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
+
+import com.google.common.base.Strings;
 
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
@@ -94,11 +95,11 @@ public class PPServiceImpl implements PPService {
 
     private void validateIdentifier(String hsaIdentityNumber, String personalIdentityNumber) {
         // Exakt ett av fälten hsaIdentityNumber och personalIdentityNumber ska anges.
-        if (StringUtils.isEmpty(hsaIdentityNumber) && StringUtils.isEmpty(personalIdentityNumber)) {
+        if (Strings.isNullOrEmpty(hsaIdentityNumber) && Strings.isNullOrEmpty(personalIdentityNumber)) {
             throw new IllegalArgumentException("Inget av argumenten hsaIdentityNumber och personalIdentityNumber är satt. Ett av dem måste ha ett värde.");
         }
 
-        if (!StringUtils.isEmpty(hsaIdentityNumber) && !StringUtils.isEmpty(personalIdentityNumber)) {
+        if (!Strings.isNullOrEmpty(hsaIdentityNumber) && !Strings.isNullOrEmpty(personalIdentityNumber)) {
             throw new IllegalArgumentException("Endast ett av argumenten hsaIdentityNumber och personalIdentityNumber får vara satt.");
         }
     }

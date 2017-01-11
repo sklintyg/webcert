@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +44,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
@@ -147,7 +147,7 @@ public class UtkastApiControllerTest {
         when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
-        utkastRequest.setPatientFornamn(StringUtils.repeat("a", 255));
+        utkastRequest.setPatientFornamn(Strings.repeat("a", 255));
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
@@ -160,7 +160,7 @@ public class UtkastApiControllerTest {
         when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
-        utkastRequest.setPatientFornamn(StringUtils.repeat("a", 256));
+        utkastRequest.setPatientFornamn(Strings.repeat("a", 256));
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
@@ -173,7 +173,7 @@ public class UtkastApiControllerTest {
         when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
-        utkastRequest.setPatientEfternamn(StringUtils.repeat("a", 255));
+        utkastRequest.setPatientEfternamn(Strings.repeat("a", 255));
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
@@ -186,7 +186,7 @@ public class UtkastApiControllerTest {
         when(utkastService.createNewDraft(Mockito.any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
-        utkastRequest.setPatientEfternamn(StringUtils.repeat("a", 256));
+        utkastRequest.setPatientEfternamn(Strings.repeat("a", 256));
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }

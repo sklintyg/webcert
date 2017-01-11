@@ -22,13 +22,14 @@ import java.util.stream.Collectors;
 
 import javax.mail.internet.MimeMessage;
 
-import org.apache.cxf.common.util.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
 
 /**
  * @author andreaskaltenbach
@@ -56,7 +57,7 @@ public class JavaMailSenderAroundAdvice {
      */
     @Around("execution(* org.springframework.mail.javamail.JavaMailSender+.send(..))")
     public Object interceptMailSending(ProceedingJoinPoint pjp) throws Throwable {
-        if (StringUtils.isEmpty(mailHost)) {
+        if (Strings.isNullOrEmpty(mailHost)) {
             for (Object argument : pjp.getArgs()) {
                 if (argument instanceof MimeMessage) {
                     OutgoingMail outgoingMail = new OutgoingMail((MimeMessage) argument);

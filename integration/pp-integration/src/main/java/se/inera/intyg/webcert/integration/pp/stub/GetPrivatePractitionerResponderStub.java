@@ -18,20 +18,24 @@
  */
 package se.inera.intyg.webcert.integration.pp.stub;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
-
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Stubbed responder for get private practitioner.
@@ -138,17 +142,17 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
             String personId = parameters.getPersonalIdentityNumber();
 
             // Exakt ett av fälten hsaIdentityNumber och personalIdentityNumber ska anges.
-            if (StringUtils.isEmpty(hsaId) && StringUtils.isEmpty(personId)) {
+            if (Strings.isNullOrEmpty(hsaId) && Strings.isNullOrEmpty(personId)) {
                 messages.add("Inget av argumenten hsaId och personId är satt. Ett av dem måste ha ett värde.");
             }
 
-            if (!StringUtils.isEmpty(hsaId) && !StringUtils.isEmpty(personId)) {
+            if (!Strings.isNullOrEmpty(hsaId) && !Strings.isNullOrEmpty(personId)) {
                 messages.add("Endast ett av argumenten hsaId och personId får vara satt.");
             }
         }
 
         if (messages.size() > 0) {
-            throw new IllegalArgumentException(StringUtils.collectionToCommaDelimitedString(messages));
+            throw new IllegalArgumentException(Joiner.on(",").join(messages));
         }
     }
 

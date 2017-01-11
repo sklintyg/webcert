@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -42,6 +41,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
@@ -138,7 +138,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         }
 
         // remove excess space in the string
-        String diagnosStr = StringUtils.normalizeSpace(diagnosStrParam);
+        String diagnosStr = CharMatcher.WHITESPACE.trimAndCollapseFrom(diagnosStrParam, ' ');
 
         int firstSpacePos = diagnosStr.indexOf(SPACE);
 
