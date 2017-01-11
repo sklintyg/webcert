@@ -115,11 +115,9 @@ module.exports = function() {
                 url += 'enhet=' + global.user.enhetId + '&';
 
             } else {
-                //EN WORKAROUND med parameter TILLS INTYG 2711 är LÖST
-                //url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id + '?fornamn=TODO';
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
-                url = url + '?';
-                url += 'enhet=' + global.user.enhetId + '&';
+                // url = url + '?';
+                // url += 'enhet=' + global.user.enhetId + '&';
             }
         } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
             url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';

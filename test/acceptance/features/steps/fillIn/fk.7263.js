@@ -30,7 +30,7 @@ module.exports = {
         promisesArr.push(fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function() {
             logger.info('OK - angeSmittskydd :' + intyg.smittskydd);
         }, function(reason) {
-            throw ('FEL, angeSmittskydd,' + reason);
+            throw ('FEL, angeSmittskydd, ' + intyg.smittskydd + ' , ' + reason);
         }));
 
         //Ange baseras på

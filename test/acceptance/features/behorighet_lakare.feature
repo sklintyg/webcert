@@ -2,6 +2,7 @@
 @behorighet @lakare @hurr
 Egenskap: Behörigheter för en läkare
 
+@testtest
 Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-102R"
 	När jag går in på en patient

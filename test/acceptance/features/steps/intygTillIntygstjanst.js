@@ -28,7 +28,6 @@
  var testvalues = wcTestTools.testdata.values;
 
  function intygTillIntygtjanst(intygtyp, callback) {
-     var personId = global.intyg.person.id;
      var url;
      var body;
 
@@ -46,15 +45,15 @@
          url = url.replace('https', 'http');
          //function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId)
          body = soapMessageBodies.RegisterMedicalCertificate(
-             personId,
-             global.intyg.person.fornamn,
-             global.intyg.person.efternamn,
+             global.person.id,
+             global.person.fornamn,
+             global.person.efternamn,
              global.user.hsaId,
              global.user.fornamn + ' ' + global.user.efternamn,
              global.user.enhetId,
              global.user.enhetId,
              global.intyg.id);
-         //console.log(body);
+         console.log(body);
          soap.createClient(url, function(err, client) {
              if (err) {
                  callback(err);
@@ -84,7 +83,7 @@
 
      this.Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
          global.intyg.id = testdataHelper.generateTestGuid();
-         global.intyg.person = testdataHelper.shuffle(testvalues.patienter)[0];
+         global.person = testdataHelper.shuffle(testvalues.patienter)[0];
 
          //console.log(personId);
          //                'patientFornamn': 'Tolvan',
@@ -95,9 +94,9 @@
      });
      this.Given(/^jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten$/, function(callback) {
          global.intyg.id = testdataHelper.generateTestGuid();
-         global.intyg.person = testdataHelper.shuffle(testvalues.patienter)[0];
-         global.intyg.person.fornamn = 'Ett Gammalt';
-         global.intyg.person.efternamn = 'Namn';
+         global.person = testdataHelper.shuffle(testvalues.patienter)[0];
+         global.person.fornamn = 'Fornamn';
+         global.person.efternamn = 'Efternamn';
          console.log(global.intyg);
          intygTillIntygtjanst('Läkarintyg FK 7263', callback);
      });

@@ -28,8 +28,6 @@
  module.exports = function() {
 
      this.Given(/^jag skickar intyget direkt till Försäkringskassan$/, function(callback) {
-         //var personId = global.intyg.personId;
-         var personId = global.intyg.person.id;
          //console.log(personId);
          var url;
          var body;
@@ -81,13 +79,13 @@
 
              //function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId)
              body = soapMessageBodies.SendMedicalCertificate(
-                 personId,
+                 global.person.id,
                  global.user.hsaId,
                  global.user.fornamn + ' ' + global.user.efternamn,
                  global.user.enhetId,
                  global.user.enhetId,
                  global.intyg.id);
-             //console.log(body);
+             console.log(body);
              soap.createClient(url, function(err, client) {
                  if (err) {
                      callback(err);

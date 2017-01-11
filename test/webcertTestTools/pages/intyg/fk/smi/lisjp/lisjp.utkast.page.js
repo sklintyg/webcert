@@ -29,20 +29,20 @@ var LisuUtkast = BaseSmiUtkast._extend({
 
         this.baseratPa = {
             minUndersokningAvPatienten: {
-                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3')),
+                checkbox: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
             },
             telefonkontakt: {
-                checkbox: element(by.id('formly_1_date_telefonkontaktMedPatienten_4')),
+                checkbox: element(by.id('form_telefonkontaktMedPatienten')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_telefonkontaktMedPatienten')).element(by.css('input[type=text]'))
             },
             journaluppgifter: {
-                checkbox: element(by.id('formly_1_date_journaluppgifter_5')),
+                checkbox: element(by.id('form_journaluppgifter')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
             },
             annat: {
                 beskrivning: element(by.id('annatGrundForMUBeskrivning')),
-                checkbox: element(by.id('formly_1_date_annatGrundForMU_6')),
+                checkbox: element(by.id('form_annatGrundForMU')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_annatGrundForMU')).element(by.css('input[type=text]'))
             }
         };

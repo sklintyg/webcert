@@ -71,15 +71,15 @@ var LuseUtkast = BaseSmiUtkast._extend({
 
         this.baseratPa = {
             minUndersokningAvPatienten: {
-                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_1')),
+                checkbox: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
             },
             journaluppgifter: {
-                checkbox: element(by.id('formly_1_date_journaluppgifter_2')),
+                checkbox: element(by.id('form_journaluppgifter')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
             },
             anhorigBeskrivning: {
-                checkbox: element(by.id('form_anhorigsBeskrivningAvPatienten')),
+                checkbox: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=text]'))
             },
             annat: {

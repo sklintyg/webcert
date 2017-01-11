@@ -46,14 +46,14 @@ module.exports.RegisterMedicalCertificate = function(personId, personNamn, perso
         '            <ns2:enhet>\n' +
         '                <ns2:enhets-id root="1.2.752.129.2.1.4.1" extension="' + unitHsa + '"/>\n' +
         '                <ns2:arbetsplatskod root="1.2.752.29.4.71" extension="123456789011"/>\n' +
-        '                <ns2:enhetsnamn>Kir mott</ns2:enhetsnamn>\n' +
+        '                <ns2:enhetsnamn>Enhetnamn</ns2:enhetsnamn>\n' +
         '                <ns2:postadress>Lasarettsvägen 13</ns2:postadress>\n' +
         '                <ns2:postnummer>85150</ns2:postnummer>\n' +
         '                <ns2:postort>Sundsvall</ns2:postort>\n' +
         '                <ns2:telefonnummer>060-1818000</ns2:telefonnummer>\n' +
         '                <ns2:vardgivare>\n' +
-        '                    <ns2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="' + unitHsa + '"/>\n' +
-        '                    <ns2:vardgivarnamn>Landstinget Norrland</ns2:vardgivarnamn>\n' +
+        '                    <ns2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="' + 'TSTNMT2321000156-1002' + '"/>\n' +
+        '                    <ns2:vardgivarnamn>Nordic Medtest</ns2:vardgivarnamn>\n' +
         '                </ns2:vardgivare>\n' +
         '            </ns2:enhet>\n' +
         '        </skapadAvHosPersonal>\n' +

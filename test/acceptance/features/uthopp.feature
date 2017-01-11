@@ -1,6 +1,6 @@
 # language: sv
 
-@uthopp
+@uthopp @uthoppsläge
 Egenskap: Uthoppsläge Fk7263
 
 Bakgrund: Jag befinner mig på webcerts förstasida

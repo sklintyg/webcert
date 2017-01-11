@@ -88,7 +88,6 @@ module.exports = function() {
         }
 
         if (scenario.isFailed()) {
-            logger.info('scenario failed');
             browser.takeScreenshot().then(function(png) {
                 // var decodedImage = new Buffer(png, 'base64');
                 // return scenario.attach(decodedImage, 'image/png');
