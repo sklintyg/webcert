@@ -138,6 +138,7 @@ dependencies {
     compile "se.inera.intyg.common:luae_na:${commonVersion}"
     compile "se.inera.intyg.common:luae_fs:${commonVersion}"
 
+    compile "commons-io:commons-io:${commonsIoVersion}"
     compile "org.springframework:spring-web:${springVersion}"
     compile "org.springframework:spring-webmvc:${springVersion}"
     compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
