@@ -16,52 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.intyg.converter;
+package se.inera.intyg.webcert.web.converter.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@RunWith(MockitoJUnitRunner.class)
-public class IntygServiceConverterTest {
-
-    @Mock
-    IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    ModuleApi moduleApi;
-
-    @Before
-    public void setup() throws Exception {
-        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
-    }
-
+public class IntygConverterUtilTest {
 
     @Test
     public void testBuildSendTypeFromUtlatande() throws Exception {
@@ -80,7 +56,7 @@ public class IntygServiceConverterTest {
         assertEquals("Test Testorsson", res.getLakarutlatande().getPatient().getFullstandigtNamn());
         assertEquals("19121212-1212", res.getLakarutlatande().getPatient().getPersonId().getExtension());
         assertNotNull(res.getLakarutlatande().getSigneringsTidpunkt());
-        //assertEquals("VardgivarId", res.getAdressVard().getHosPersonal().getForskrivarkod());
+        assertNull(res.getAdressVard().getHosPersonal().getForskrivarkod());
         assertEquals("En Läkare", res.getAdressVard().getHosPersonal().getFullstandigtNamn());
         assertEquals("Personal HSA-ID", res.getAdressVard().getHosPersonal().getPersonalId().getExtension());
         assertEquals("Kir mott", res.getAdressVard().getHosPersonal().getEnhet().getEnhetsnamn());
@@ -261,12 +237,7 @@ public class IntygServiceConverterTest {
     }
 
     private Fk7263Utlatande createUtlatandeFromJson() throws Exception {
-        return new CustomObjectMapper().readValue(
-                readClasspathResource("IntygServiceTest/utlatande.json").getFile(), Fk7263Utlatande.class);
-    }
-
-    private ClassPathResource readClasspathResource(String file) throws IOException {
-        return new ClassPathResource(file);
+        return new CustomObjectMapper().readValue(new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), Fk7263Utlatande.class);
     }
 
 }
