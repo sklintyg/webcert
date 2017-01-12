@@ -27,3 +27,13 @@ Scenario: Makulera ett skickat intyg
     Så ska intygets status vara "Intyget är signerat, skickat och mottaget av Transportstyrelsens system"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
+
+@saknatFalt
+Scenario: Validera uteblivna fält i intyget
+    När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag raderar ett  slumpat obligatoriskt fält
+    Och jag klickar på signera-knappen
+    Så ska jag se en rubrik med texten "Utkastet saknar uppgifter i följande avsnitt"
+    Och ska jag se en lista med vad som saknas
+      

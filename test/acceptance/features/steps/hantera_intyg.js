@@ -23,6 +23,7 @@
 
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
+var utkastPage = pages.intyg.base.utkast;
 var helpers = require('./helpers.js');
 
 function signeraUtkast() {
@@ -69,6 +70,18 @@ module.exports = function() {
 
     this.Given(/^jag klickar på signera\-knappen$/, function() {
         return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+    });
+
+
+
+    this.Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
+        utkastPage.signeraButton.isEnabled().then(function(isVisible) {
+            if (isVisible) {
+                callback('FEL - Signera-knappen är klickbar!');
+            } else {
+                logger.debug('OK Signera-knappen är ej klickbar!');
+            }
+        }).then(callback);
     });
 
 

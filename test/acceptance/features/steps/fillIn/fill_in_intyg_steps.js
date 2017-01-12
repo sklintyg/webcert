@@ -29,6 +29,8 @@ var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
+var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
+
 var td = wcTestTools.testdata;
 var fkValues = wcTestTools.testdata.values.fk;
 
@@ -37,11 +39,7 @@ function chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback, cle
     console.log('Fältet som ändras är: ' + field + ' i intyg ' + intygShortcode);
     changeField(intygShortcode, field, callback, clearFlag);
 }
-/*function chooseRandomMandatoryFieldAndDelete(isSMIIntyg, intygShortcode, callback) {
-    var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
-    console.log('Fältet som ändras är: ' + field + ' i intyg ' + intygShortcode);
-    changeField(intygShortcode, field, callback);
-}*/
+
 function changeField(intygShortcode, field, callback, clearFlag) {
     if (intygShortcode === 'LUSE') {
         if (field === 'aktivitetsbegransning') {
@@ -113,10 +111,7 @@ function changeField(intygShortcode, field, callback, clearFlag) {
         }
 
     } else if (intygShortcode === 'FK7263') {
-        if (clearFlag) { //'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod']
-            // this.diagnosKod = element(by.id('diagnoseCode'));
-            //this.funktionsNedsattning = element(by.id('disabilities'));
-            //this.aktivitetsBegransning = element(by.id('activityLimitation'));
+        if (clearFlag) {
             if (field === 'aktivitetsbegransning') {
                 fkUtkastPage.aktivitetsBegransning.clear().then(callback);
             } else if (field === 'diagnoskod') {
@@ -124,6 +119,26 @@ function changeField(intygShortcode, field, callback, clearFlag) {
 
             } else if (field === 'funktionsnedsattning') {
                 fkUtkastPage.funktionsNedsattning.clear().then(callback);
+            } else {
+                callback(null, 'pending');
+            }
+
+        } else {
+            callback(null, 'pending');
+        }
+    } else if (intygShortcode === 'TSTRK1007') {
+        if (clearFlag) {
+            if (field === 'funktionsnedsattning') {
+                tsBasUtkastPage.funktionsnedsattning.aYes.sendKeys(protractor.Key.SPACE);
+                tsBasUtkastPage.funktionsnedsattning.aText.clear().then(callback);
+            } else if (field === 'hjartKarlsjukdom') {
+                tsBasUtkastPage.hjartKarl.cYes.sendKeys(protractor.Key.SPACE);
+                tsBasUtkastPage.hjartKarl.cText.clear().then(callback);
+
+
+            } else if (field === 'utanKorrektion') {
+                tsBasUtkastPage.syn.utanKorrektion.hoger.clear().then(callback);
+
             } else {
                 callback(null, 'pending');
             }

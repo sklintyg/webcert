@@ -196,16 +196,21 @@ module.exports = {
             } else if (intygAbbrev === 'LUAE_FS') {
                 return this.pageField[intygAbbrev][index];
             }
+        } else if (intygAbbrev === 'TSTRK1007') {
+            return this.pageField.TSTRK1007[index];
         } else {
             return this.pageField.FK7263[index];
         }
+
     },
     pageField: {
         'LISJP': ['aktivitetsbegransning', 'sysselsattning', 'funktionsnedsattning'],
         'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'LUAE_FS': ['funktionsnedsattningDebut', 'funktionsnedsattningPaverkan', 'ovrigt'],
-        'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod']
+        'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod'],
+        'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion']
+
     },
     getUserObj: function(userKey) {
         return this.userObj[userKey];
