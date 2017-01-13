@@ -21,6 +21,8 @@
 'use strict';
 var luseUtkastPage = pages.intyg.luse.utkast;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
+var tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
+
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var helpers = require('./helpers');
 var fillInIntyg = require('./fillIn/fill_in_intyg_steps');
@@ -234,6 +236,15 @@ module.exports = function() {
         } else if (isSMIIntyg && fieldtype === 'arbetsförmåga-datum') {
             var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
             return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].sendKeys(date);
+        } else if (fieldtype === 'insulin-datum') {
+            return tsdUtkastPage.fillInAllmant({
+                year: Math.floor((Math.random() * 20) + 1980),
+                typ: 'Typ 1',
+                behandling: {
+                    typer: ['Insulin'],
+                    insulinYear: 'text'
+                }
+            });
         } else {
             return fkUtkastPage.diagnosKod.sendKeys(date);
         }
