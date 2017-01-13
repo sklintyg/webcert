@@ -42,19 +42,19 @@ public class ModuleAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().expect().statusCode(200).when().get("api/modules/map").
-                then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-module-map-response-schema.json")).
-                body("", hasSize(greaterThan(0))).
-                body("id", hasItems("fk7263", "ts-bas", "ts-diabetes"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/modules/map")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-module-map-response-schema.json"))
+                .body("", hasSize(greaterThan(0))).body("id", hasItems("fk7263", "ts-bas", "ts-diabetes"));
     }
 
     @Test
     public void testGetActiveModules() {
-        given().expect().statusCode(200).when().get("api/modules/active").
-            then().
-            body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-module-map-response-schema.json")).
-            body("", hasSize(greaterThan(0))).
-            body("id", hasItems("fk7263", "ts-bas", "ts-diabetes"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/modules/active")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-module-map-response-schema.json"))
+                .body("", hasSize(greaterThan(0))).body("id", hasItems("fk7263", "ts-bas", "ts-diabetes"));
     }
 }

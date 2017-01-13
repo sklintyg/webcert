@@ -43,7 +43,10 @@ public class JsLogAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().contentType(JSON).and().body("rest-api-integrationtest-message").expect().statusCode(200).when().post("api/jslog/debug");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(JSON)
+                .and().body("rest-api-integrationtest-message")
+                .expect().statusCode(200)
+                .when().post("api/jslog/debug");
     }
 
     @Test
@@ -51,7 +54,9 @@ public class JsLogAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().contentType(JSON).and().body(new MonitoringRequest()).expect().statusCode(400).when().post("api/jslog/monitoring");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(JSON).and().body(new MonitoringRequest())
+                .expect().statusCode(400)
+                .when().post("api/jslog/monitoring");
     }
 
     @Test
@@ -66,6 +71,8 @@ public class JsLogAPIControllerIT extends BaseRestIntegrationTest {
         info.put(WIDTH, "1920");
         request.setInfo(info);
 
-        given().contentType(JSON).and().body(request).expect().statusCode(200).when().post("api/jslog/monitoring");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(JSON).and().body(request)
+                .expect().statusCode(200)
+                .when().post("api/jslog/monitoring");
     }
 }

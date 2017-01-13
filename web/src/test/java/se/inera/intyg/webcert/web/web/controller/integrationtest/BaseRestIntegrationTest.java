@@ -30,6 +30,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.jayway.restassured.filter.session.SessionFilter;
 import org.junit.After;
 import org.junit.Before;
 
@@ -55,6 +56,11 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
  * Created by marced on 19/11/15.
  */
 public abstract class BaseRestIntegrationTest {
+
+    /** Use to create a ROUTEID cookie to ensure the correct tomcat-node is used */
+    public static String routeId;
+
+    public static SessionFilter sessionFilter;
 
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";
@@ -134,11 +140,14 @@ public abstract class BaseRestIntegrationTest {
 
     private String getAuthSession(String credentialsJson) {
         Response response = given().contentType(ContentType.URLENC).and().redirects().follow(false).and()
-                .formParam(USER_JSON_FORM_PARAMETER, credentialsJson).expect()
-                .statusCode(HttpServletResponse.SC_FOUND).when()
-                .post(FAKE_LOGIN_URI).then().extract().response();
+                .formParam(USER_JSON_FORM_PARAMETER, credentialsJson)
+                .expect().statusCode(HttpServletResponse.SC_FOUND)
+                .when().post(FAKE_LOGIN_URI)
+                .then().extract().response();
 
         assertNotNull(response.sessionId());
+        routeId = response.getCookie("ROUTEID") != null ? response.getCookie("ROUTEID") : "nah";
+
         return response.sessionId();
     }
 
@@ -149,7 +158,9 @@ public abstract class BaseRestIntegrationTest {
      * @param newRole
      */
     protected void changeRoleTo(String newRole) {
-        given().pathParam("role", newRole).expect().statusCode(200).when().get("authtestability/user/role/{role}");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("role", newRole)
+                .expect().statusCode(200)
+                .when().get("authtestability/user/role/{role}");
     }
 
     /**
@@ -159,7 +170,9 @@ public abstract class BaseRestIntegrationTest {
      * @param newOrigin
      */
     protected void changeOriginTo(String newOrigin) {
-        given().pathParam("origin", newOrigin).expect().statusCode(200).when().get("authtestability/user/origin/{origin}");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("origin", newOrigin)
+                .expect().statusCode(200)
+                .when().get("authtestability/user/origin/{origin}");
     }
 
     /**
@@ -175,9 +188,11 @@ public abstract class BaseRestIntegrationTest {
     protected String createUtkast(String intygsTyp, String patientPersonNummer) {
         CreateUtkastRequest utkastRequest = createUtkastRequest(intygsTyp, patientPersonNummer);
 
-        Response response = given().pathParam("intygstyp", intygsTyp).contentType(ContentType.JSON).body(utkastRequest).expect().statusCode(200)
-                .when().post("api/utkast/{intygstyp}").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
+        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .pathParam("intygstyp", intygsTyp).contentType(ContentType.JSON).body(utkastRequest)
+                .expect().statusCode(200)
+                .when().post("api/utkast/{intygstyp}")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
                 .body("intygsTyp", equalTo(utkastRequest.getIntygType())).extract().response();
 
         // The type-specific model is a serialized json within the model property, need to extract that first.
@@ -205,7 +220,10 @@ public abstract class BaseRestIntegrationTest {
         final String utkastId = createUtkast(intygsTyp, patientPersonNummer);
 
         // ..then "fake" it to be signed. Maybe we should set more signature related metadata?
-        given().pathParam("intygsId", utkastId).body(DEFAULT_LAKARE.getHsaId()).expect().statusCode(200).when().put("testability/intyg/{intygsId}/signerat");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .pathParam("intygsId", utkastId).body(DEFAULT_LAKARE.getHsaId())
+                .expect().statusCode(200)
+                .when().put("testability/intyg/{intygsId}/signerat");
 
         return utkastId;
     }
@@ -243,9 +261,11 @@ public abstract class BaseRestIntegrationTest {
     protected int createQuestion(String typ, String intygId, String personnummer) {
         FragaSvar fs = createTestQuestion(typ, intygId, personnummer);
 
-        Response response = given().contentType(ContentType.JSON)
-                .body(fs).expect().statusCode(200).when()
-                .post("testability/questions").then().extract().response();
+        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).body(fs)
+                .expect().statusCode(200)
+                .when().post("testability/questions")
+                .then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
         return model.get("internReferens");
@@ -263,9 +283,11 @@ public abstract class BaseRestIntegrationTest {
     protected String createArendeQuestion(String typ, String intygId, String personnummer) {
         Arende arende = createTestArendeQuestion(typ, intygId, personnummer);
 
-        Response response = given().contentType(ContentType.JSON)
-                .body(arende).expect().statusCode(200).when()
-                .post("testability/questions/arende").then().extract().response();
+        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).body(arende)
+                .expect().statusCode(200)
+                .when().post("testability/questions/arende")
+                .then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
         return model.get("meddelandeId");
@@ -278,11 +300,15 @@ public abstract class BaseRestIntegrationTest {
      *            internal id of the question to remove
      */
     protected void deleteQuestion(int internId) {
-        given().pathParam("id", internId).expect().statusCode(200).when().delete("testability/questions/{id}");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("id", internId)
+                .expect().statusCode(200)
+                .when().delete("testability/questions/{id}");
     }
 
     protected void deleteQuestionsByEnhet(String enhetsId) {
-        given().pathParam("enhetsId", enhetsId).expect().statusCode(200).when().delete("testability/questions/enhet/{enhetsId}");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("enhetsId", enhetsId)
+                .expect().statusCode(200)
+                .when().delete("testability/questions/enhet/{enhetsId}");
     }
 
     /**
@@ -381,7 +407,9 @@ public abstract class BaseRestIntegrationTest {
      *            the internal reference to the intyg to be marked
      */
     protected void sendIntyg(String intygId) {
-        given().pathParams("id", intygId).expect().statusCode(200).when().put("/testability/intyg/{id}/skickat");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParams("id", intygId)
+                .expect().statusCode(200)
+                .when().put("/testability/intyg/{id}/skickat");
     }
 
 }

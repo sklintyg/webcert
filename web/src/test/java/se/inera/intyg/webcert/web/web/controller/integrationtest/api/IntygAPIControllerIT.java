@@ -49,9 +49,10 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        ListIntygEntry[] intygArray = given().pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER).expect().statusCode(200).when().get("api/intyg/person/{personNummer}").
-                then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-list-response-schema.json")).extract().response()
+        ListIntygEntry[] intygArray = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER)
+                .expect().statusCode(200)
+                .when().get("api/intyg/person/{personNummer}")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-list-response-schema.json")).extract().response()
                 .as(ListIntygEntry[].class);
 
         // assert there are no drafts from WebCert
@@ -66,10 +67,10 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
         ListIntygEntry[] intygArray =
-                given().pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER).expect().statusCode(200).when()
-                        .get("api/intyg/person/{personNummer}").
-                        then().
-                        body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-list-response-schema.json")).extract().response()
+                given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER)
+                        .expect().statusCode(200)
+                        .when().get("api/intyg/person/{personNummer}")
+                        .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-list-response-schema.json")).extract().response()
                         .as(ListIntygEntry[].class);
 
         assertTrue(intygArray.length > 0);
@@ -95,10 +96,10 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
         notifiedState.setNotified(true);
 
         ListIntygEntry updatedIntyg =
-                given().contentType(ContentType.JSON).and().body(notifiedState).and().pathParams(pathParams).expect().statusCode(200).when()
-                        .put("api/intyg/{intygsTyp}/{intygsId}/{version}/vidarebefordra").
-                        then().
-                        body(matchesJsonSchemaInClasspath("jsonschema/webcert-put-notified-utkast-response-schema.json")).extract().response()
+                given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(notifiedState).and().pathParams(pathParams)
+                        .expect().statusCode(200)
+                        .when().put("api/intyg/{intygsTyp}/{intygsId}/{version}/vidarebefordra")
+                        .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-put-notified-utkast-response-schema.json")).extract().response()
                         .as(ListIntygEntry.class);
 
         assertNotNull(updatedIntyg);

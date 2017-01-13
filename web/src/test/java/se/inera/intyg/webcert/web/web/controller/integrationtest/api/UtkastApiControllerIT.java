@@ -72,8 +72,11 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         CreateUtkastRequest utkastRequest = createUtkastRequest(utkastType, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response response = given().contentType(ContentType.JSON).body(utkastRequest).expect().statusCode(200).when().post("api/utkast/fk7263").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
+        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).body(utkastRequest)
+                .expect().statusCode(200)
+                .when().post("api/utkast/fk7263")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
                 .body("intygsTyp", equalTo(utkastRequest.getIntygType())).body("skapadAv.hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("enhetsId", equalTo(DEFAULT_LAKARE.getEnhetId())).body("version", equalTo(0))
                 .body("skapadAv.namn", equalTo(DEFAULT_LAKARE_NAME)).extract().response();
@@ -99,8 +102,10 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        Lakare[] lakareWithUtkast = given().expect().statusCode(200).when().get("api/utkast/lakare").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-lakare-med-utkast-response-schema.json")).extract().response()
+        Lakare[] lakareWithUtkast = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/utkast/lakare")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-lakare-med-utkast-response-schema.json")).extract().response()
                 .as(Lakare[].class);
 
         Assert.assertEquals(1, lakareWithUtkast.length);
@@ -117,10 +122,11 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        QueryIntygResponse queryResponse = given().param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId()).expect()
-                .statusCode(200).when().get("api/utkast").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json")).body("totalCount", equalTo(1)).extract()
-                .response().as(QueryIntygResponse.class);
+        QueryIntygResponse queryResponse = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
+                .expect().statusCode(200).when().get("api/utkast")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+                .body("totalCount", equalTo(1)).extract().response().as(QueryIntygResponse.class);
 
         // The only result should match the utkast we created in the setup
         Assert.assertEquals(utkastId, queryResponse.getResults().get(0).getIntygId());
@@ -131,7 +137,8 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetQuestion() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        given().pathParams("intygsTyp", "luse", "version", "0.9").expect().statusCode(200)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParams("intygsTyp", "luse", "version", "0.9")
+                .expect().statusCode(200)
                 .when().get("api/utkast/questions/{intygsTyp}/{version}")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-texter.json"));
     }

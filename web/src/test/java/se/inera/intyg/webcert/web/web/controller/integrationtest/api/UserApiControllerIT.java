@@ -43,9 +43,12 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().expect().statusCode(200).when().get("api/anvandare").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json")).body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId())).body("namn", equalTo(DEFAULT_LAKARE_NAME));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200).when().get("api/anvandare")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
+                .body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId()))
+                .body("namn", equalTo(DEFAULT_LAKARE_NAME));
     }
 
     @Test
@@ -70,8 +73,9 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         ChangeSelectedUnitRequest changeRequest = new ChangeSelectedUnitRequest();
         changeRequest.setId(vardEnhetToChangeTo);
 
-        given().contentType(ContentType.JSON).and().body(changeRequest).when().post("api/anvandare/andraenhet").then().statusCode(200)
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(changeRequest)
+                .when().post("api/anvandare/andraenhet")
+                .then().statusCode(200).body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
                 .body("valdVardenhet.id", equalTo(vardEnhetToChangeTo));
     }
 
@@ -84,8 +88,10 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
                 "IFV1239877878-1042").lakare(true).reference(reference).build();
         RestAssured.sessionId = getAuthSession(user);
 
-        given().expect().statusCode(200).when().get("api/anvandare").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
                 .body("reference", equalTo(reference));
     }
 
@@ -106,7 +112,9 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         ChangeSelectedUnitRequest changeRequest = new ChangeSelectedUnitRequest();
         changeRequest.setId(vardEnhetToChangeTo);
 
-        given().contentType(ContentType.JSON).and().body(changeRequest).expect().statusCode(400).when().post("api/anvandare/andraenhet");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(changeRequest)
+                .expect().statusCode(400)
+                .when().post("api/anvandare/andraenhet");
     }
 
     @Test
@@ -114,7 +122,9 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().contentType(ContentType.JSON).when().put("api/anvandare/godkannavtal").then().statusCode(200);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .when().put("api/anvandare/godkannavtal")
+                .then().statusCode(200);
     }
 
     @Test
@@ -122,7 +132,9 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().contentType(ContentType.JSON).when().delete("api/anvandare/privatlakaravtal").then().statusCode(200);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .when().delete("api/anvandare/privatlakaravtal")
+                .then().statusCode(200);
     }
 
     @Test
@@ -130,8 +142,9 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().contentType(ContentType.JSON).when().get("api/anvandare/latestavtal").then().statusCode(200)
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-avtal-response-schema.json"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .when().get("api/anvandare/latestavtal")
+                .then().statusCode(200).body(matchesJsonSchemaInClasspath("jsonschema/webcert-avtal-response-schema.json"));
     }
 
     @Test
@@ -139,7 +152,9 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().contentType(ContentType.JSON).expect().statusCode(200).when().get("api/anvandare/ping");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().get("api/anvandare/ping");
     }
 
     @Test
@@ -148,10 +163,13 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         WebUserPreferenceStorageRequest storeRequest = new WebUserPreferenceStorageRequest();
         storeRequest.setKey("key1");
         storeRequest.setValue("value1");
-        given().contentType(ContentType.JSON).and().body(storeRequest).when().put("api/anvandare/preferences").then().statusCode(200);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(storeRequest)
+                .when().put("api/anvandare/preferences")
+                .then().statusCode(200);
 
-        given().expect().statusCode(200).when().get("api/anvandare").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200).when().get("api/anvandare")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
                 .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("anvandarPreference.key1", equalTo("value1"));
     }
@@ -165,8 +183,10 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         given().contentType(ContentType.JSON).and().body(storeRequest).when().put("api/anvandare/preferences").then().statusCode(200);
         given().contentType(ContentType.JSON).when().delete("api/anvandare/preferences/key1").then().statusCode(200);
 
-        given().expect().statusCode(200).when().get("api/anvandare").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
                 .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("anvandarPreference.key1", nullValue());
     }

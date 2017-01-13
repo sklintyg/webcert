@@ -59,8 +59,10 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
     }
 
     @Test
@@ -70,18 +72,18 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
-        given().redirects().follow(false)
-                .expect().statusCode(HttpServletResponse.SC_FOUND)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+                .expect().statusCode(302)
                 .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
 
-        given().expect().statusCode(200)
-            .expect().statusCode(HttpServletResponse.SC_OK)
-            .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId + "?=sjf=true")
-            .then()
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId + "?=sjf=true")
+                .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
     }
 
@@ -92,20 +94,20 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
-        given().redirects().follow(false)
-                .expect().statusCode(HttpServletResponse.SC_FOUND)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+                .expect().statusCode(302)
                 .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
 
-        given().expect().statusCode(200)
-        .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-        .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
-        .then()
-            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(500)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .then()
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
     }
 
     @Test
@@ -115,17 +117,20 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response responseIntyg = given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+        Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         String version = model.getString("version");
         Map<String, String> content = model.getJsonObject("content");
 
-        given().contentType(ContentType.JSON).body(content).expect().statusCode(200).when().
-                put(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json")).
-                body("version", equalTo(Integer.parseInt(version) + 1));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).body(content)
+                .expect().statusCode(200)
+                .when().put(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
+                .body("version", equalTo(Integer.parseInt(version) + 1));
     }
 
     @Test
@@ -135,16 +140,19 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response responseIntyg = given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+        Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         Map<String, String> content = model.getJsonObject("content");
 
-        given().contentType(ContentType.JSON).body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
                 .expect().statusCode(200)
-                .when().post(BASEAPI + "/{intygsTyp}/{intygsId}/validate").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
+                .when().post(BASEAPI + "/{intygsTyp}/{intygsId}/validate")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
     }
 
     @Test
@@ -154,19 +162,25 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response responseIntyg = given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+        Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         String version = model.getString("version");
 
-        given().contentType(ContentType.JSON).expect().statusCode(200).when().
-                delete(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().delete(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version);
 
-        given().contentType(ContentType.JSON).expect().statusCode(500).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json")).
-                body("errorCode", equalTo(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND.name())).
-                body("message", not(isEmptyString()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(500)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND.name()))
+                .body("message", not(isEmptyString()));
     }
 
     @Test
@@ -176,8 +190,10 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().contentType(ContentType.JSON).expect().statusCode(200).when().
-                post(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/loggautskrift");
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().post(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/loggautskrift");
     }
 
     @Test
@@ -187,17 +203,21 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response responseIntyg = given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+        Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         String version = model.getString("version");
 
-        given().contentType(ContentType.JSON).expect().statusCode(500).when().
-                post(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json")).
-                body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INVALID_STATE.name())).
-                body("message", not(isEmptyString()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(500)
+                .when().post(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INVALID_STATE.name()))
+                .body("message", not(isEmptyString()));
     }
 
     @Test
@@ -206,9 +226,11 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Intyg intyg = createIntyg();
 
-        given().contentType(ContentType.JSON).expect().statusCode(200).when().
-                post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
     }
 
     @Test
@@ -217,9 +239,10 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Intyg intyg = createIntyg();
 
-        given().contentType(ContentType.JSON).expect().statusCode(200).when().
-                post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeraserver").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeraserver")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
     }
 
     @Test
@@ -228,16 +251,18 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Intyg intyg = createIntyg();
 
-        Response reponseTicket = given().contentType(ContentType.JSON).expect().statusCode(200).when().
-                post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
+        Response reponseTicket = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(reponseTicket.body().asString());
         String biljettId = model.getString("id");
 
-        given().contentType(ContentType.JSON).expect().statusCode(200).when().
-                get(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when().get(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"));
     }
 
     private Intyg createIntyg() throws IOException {
@@ -245,8 +270,10 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response responseIntyg = given().expect().statusCode(200).when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+        Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = (ObjectNode) mapper.readTree(responseIntyg.body().asString());
@@ -263,10 +290,12 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         node.put("from", "2016-01-19");
         node.put("tom", "2016-01-25");
 
-        responseIntyg = given().contentType(ContentType.JSON).body(content).expect().statusCode(200).when().
-                put(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version).then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json")).
-                body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
+        responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).body(content)
+                .expect().statusCode(200)
+                .when().put(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
+                .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
 

@@ -47,18 +47,19 @@ public class PersonAPIControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetNonExistingPerson() {
 
-        given().pathParam("personNummer", "1201127584").expect().statusCode(200).when().get("api/person/{personNummer}").
-                then().
-                body("status", equalTo(PersonSvar.Status.NOT_FOUND.name()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", "1201127584")
+                .expect().statusCode(200)
+                .when().get("api/person/{personNummer}")
+                .then().body("status", equalTo(PersonSvar.Status.NOT_FOUND.name()));
     }
 
     @Test
     public void testGetExistingPerson() {
 
-        given().pathParam("personNummer", PATIENT_PERSONNUMMER).expect().statusCode(200).when().get("api/person/{personNummer}").
-                then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-person-response-schema.json")).
-                body("person.personnummer", equalTo(PATIENT_PERSONNUMMER)).
-                body("status", equalTo(PersonSvar.Status.FOUND.name()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", PATIENT_PERSONNUMMER)
+                .expect().statusCode(200)
+                .when().get("api/person/{personNummer}").then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-person-response-schema.json"))
+                .body("person.personnummer", equalTo(PATIENT_PERSONNUMMER))
+                .body("status", equalTo(PersonSvar.Status.FOUND.name()));
     }
 }

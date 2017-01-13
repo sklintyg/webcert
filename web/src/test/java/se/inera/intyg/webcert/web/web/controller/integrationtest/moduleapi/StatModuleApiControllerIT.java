@@ -46,7 +46,9 @@ public class StatModuleApiControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().expect().statusCode(200).when().get("moduleapi/stat").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-stat-response-schema.json"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("moduleapi/stat")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-stat-response-schema.json"));
     }
 }

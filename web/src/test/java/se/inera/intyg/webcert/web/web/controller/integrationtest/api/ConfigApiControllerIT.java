@@ -32,8 +32,10 @@ public class ConfigApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetConfig() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        given().expect().statusCode(200).when().get("api/config").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-config-response-schema.json"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/config")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-config-response-schema.json"));
     }
 
 }

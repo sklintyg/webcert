@@ -56,9 +56,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().expect().statusCode(200)
-                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId).then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
 
@@ -72,9 +73,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "ts-bas";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().expect().statusCode(200)
-                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId).then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
 
@@ -88,9 +90,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "ts-diabetes";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().expect().statusCode(200)
-                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId).then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
 
@@ -122,9 +125,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         SendSignedIntygParameter sendParam = new SendSignedIntygParameter();
         sendParam.setRecipient("FK");
-        given().contentType(ContentType.JSON).body(sendParam).expect().statusCode(200)
-                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/skicka").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).body(sendParam)
+                .expect().statusCode(200)
+                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/skicka")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
 
         deleteUtkast(intygsId);
     }
@@ -140,9 +144,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
         revokeParam.setMessage("Makulera!");
         revokeParam.setReason("FELAKTIGT_INTYG");
-        given().contentType(ContentType.JSON).body(revokeParam).expect().statusCode(200)
-                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).body(revokeParam)
+                .expect().statusCode(200)
+                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
 
         deleteUtkast(intygsId);
     }
@@ -161,11 +166,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RevokeSignedIntygParameter revokeParam = new RevokeSignedIntygParameter();
         revokeParam.setMessage("Makulera!");
         revokeParam.setReason("FELAKTIGT_INTYG");
-        given().contentType(ContentType.JSON).body(revokeParam)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).body(revokeParam)
                 .expect().statusCode(500)
                 .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
-                .then()
-                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
                 .body("message", not(isEmptyString()));
 
         deleteUtkast(intygsId);
@@ -181,7 +185,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
-        given().redirects().follow(false)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .expect().statusCode(HttpServletResponse.SC_FOUND)
                 .when().get("logout");
 
@@ -191,7 +195,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        given().redirects().follow(false).and().pathParam("intygsId", intygsId)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects().follow(false).and().pathParam("intygsId", intygsId)
                 .expect().statusCode(HttpServletResponse.SC_OK)
                 .when().get("moduleapi/intyg/fk7263/{intygsId}?sjf=true")
                 .then()
@@ -211,7 +216,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
-        given().redirects().follow(false)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .expect().statusCode(HttpServletResponse.SC_FOUND)
                 .when().get("logout");
 
@@ -221,7 +226,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        given().redirects().follow(false).and().pathParam("intygsId", intygsId)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects().follow(false).and().pathParam("intygsId", intygsId)
                 .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
                 .when().get("moduleapi/intyg/fk7263/{intygsId}")
                 .then()
@@ -245,8 +251,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", utkastId);
 
-        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(200).when()
-                .post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+                .expect().statusCode(200)
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
                 .then()
                 .body("intygsUtkastId", not(isEmptyString()))
                 .body("intygsUtkastId", not(equalTo(utkastId)))
@@ -273,9 +281,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", utkastId);
 
-        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(500).when()
-                .post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").then()
-                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name())).body("message", not(isEmptyString()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+                .expect().statusCode(500)
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name())).body("message", not(isEmptyString()));
 
     }
 
@@ -297,9 +307,12 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", utkastId);
 
-        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest).expect().statusCode(500).when()
-                .post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera").then()
-                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name())).body("message", not(isEmptyString()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+                .expect().statusCode(500)
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
 
     }
 
@@ -310,7 +323,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
         // Then logout
-        given().redirects().follow(false)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .expect().statusCode(HttpServletResponse.SC_FOUND)
                 .when().get("logout");
 
@@ -329,7 +342,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", intygsId);
 
-        String newIntygsId = given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+        String newIntygsId = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(HttpServletResponse.SC_OK)
                 .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
                 .then()
@@ -340,7 +354,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .path("intygsUtkastId");
 
         // Check that the copy contains the correct stuff
-        given().expect().statusCode(200)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
                 .when().get("moduleapi/intyg/fk7263/" + newIntygsId + "?sjf=true")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
@@ -355,7 +370,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
         // Then logout
-        given().redirects().follow(false)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .expect().statusCode(HttpServletResponse.SC_FOUND)
                 .when().get("logout");
 
@@ -373,7 +388,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", intygsId);
 
-        given().contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
                 .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
                 .then()
@@ -392,7 +408,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     private void testGetUnknownIntyg(String intygsTyp) {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = "unknown-1";
-        given().expect().statusCode(500)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(500)
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId);
     }
 

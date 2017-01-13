@@ -44,10 +44,11 @@ public class RestExceptionHandlerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().expect().statusCode(500).when().get("api/anvandare/non-existing-endpoint}").
-                then().
-                body("errorCode", equalTo(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM.name())).
-                body("message", not(isEmptyString()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(500)
+                .when().get("api/anvandare/non-existing-endpoint}")
+                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
     }
 
 }

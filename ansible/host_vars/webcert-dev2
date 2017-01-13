@@ -5,6 +5,9 @@ environment_name: "dev"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 # Spring profiles.
-profiles: test,wc-security-test,wc-eid-stub,wc-hsa-stub,wc-pp-stub,wc-pu-stub,wc-fk-stub,wc-loggtjanst-stub,wc-mail-stub,wc-notificationsender-stub,caching-enabled
+profiles: test,wc-all-stubs,wc-security-test,testability-api
+
+# Tomcat
+tomcat_http_port: 8082
 
 deploy_from_repo: false

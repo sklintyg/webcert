@@ -50,11 +50,10 @@ public class FragaSvarApiControllerIT extends BaseRestIntegrationTest {
     public void testQueryFragaSvarNoResults() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().param("hsaId", "finnsEj").expect().statusCode(200).
-                when().
-                get("api/fragasvar/sok").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-query-response-schema.json")).
-                body("totalCount", equalTo(0));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).param("hsaId", "finnsEj").expect().statusCode(200)
+                .when().get("api/fragasvar/sok")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-query-response-schema.json"))
+                .body("totalCount", equalTo(0));
     }
 
     /**
@@ -67,11 +66,10 @@ public class FragaSvarApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().expect().statusCode(200).
-                when().
-                get("api/fragasvar/sok").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-query-response-schema.json")).
-                body("totalCount", greaterThan(0));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).expect().statusCode(200)
+                .when().get("api/fragasvar/sok")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-query-response-schema.json"))
+                .body("totalCount", greaterThan(0));
     }
 
     /**
@@ -84,12 +82,11 @@ public class FragaSvarApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().param("enhetsId", DEFAULT_LAKARE.getEnhetId()).expect().statusCode(200).
-                when().
-                get("api/fragasvar/lakare").then().
-                body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-get-lakare-med-fragasvar-response-schema.json")).
-                body("", hasSize(greaterThan(0))).
-                body("hsaId", hasItem(DEFAULT_LAKARE.getHsaId()));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
+                .expect().statusCode(200)
+                .when().get("api/fragasvar/lakare")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-get-lakare-med-fragasvar-response-schema.json"))
+                .body("", hasSize(greaterThan(0))).body("hsaId", hasItem(DEFAULT_LAKARE.getHsaId()));
     }
 
 }

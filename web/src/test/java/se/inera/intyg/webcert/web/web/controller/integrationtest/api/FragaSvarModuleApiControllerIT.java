@@ -43,8 +43,10 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().pathParameters("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId).expect().statusCode(200).when()
-                .get("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .pathParameters("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId)
+                .expect().statusCode(200)
+                .when().get("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-schema.json"))
                 .body("$", hasSize(1));
 
@@ -58,7 +60,8 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body("svarsText")
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body("svarsText")
                 .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/besvara").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
 
@@ -74,7 +77,8 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         DispatchState state = new DispatchState();
         state.setDispatched(true);
 
-        given().contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body(state)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body(state)
                 .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/hanterad").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
         deleteQuestion(internId);
@@ -92,7 +96,8 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         param.setAmne(Amne.OVRIGT);
         param.setFrageText("Test");
 
-        int id = given().contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId).body(param)
+        int id = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId).body(param)
                 .expect().statusCode(200).when().post("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"))
                 .extract().path("internReferens");
@@ -104,9 +109,11 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
-        given().pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).expect().statusCode(200).when()
-                .get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId)
+                .expect().statusCode(200)
+                .when().get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
         deleteQuestion(internId);
     }
 
@@ -123,8 +130,10 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         request.setIntygsTyp(DEFAULT_INTYGSTYP);
         requests.add(request);
 
-        given().contentType(ContentType.JSON).body(requests).expect().statusCode(200).when().put("moduleapi/fragasvar/stang").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-schema.json"))
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).body(requests)
+                .expect().statusCode(200)
+                .when().put("moduleapi/fragasvar/stang")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-schema.json"))
                 .body("$", hasSize(requests.size()));
         deleteQuestion(internId);
     }
