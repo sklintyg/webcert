@@ -180,8 +180,10 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         WebUserPreferenceStorageRequest storeRequest = new WebUserPreferenceStorageRequest();
         storeRequest.setKey("key1");
         storeRequest.setValue("value1");
-        given().contentType(ContentType.JSON).and().body(storeRequest).when().put("api/anvandare/preferences").then().statusCode(200);
-        given().contentType(ContentType.JSON).when().delete("api/anvandare/preferences/key1").then().statusCode(200);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(storeRequest)
+                .when().put("api/anvandare/preferences").then().statusCode(200);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
+                .when().delete("api/anvandare/preferences/key1").then().statusCode(200);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
