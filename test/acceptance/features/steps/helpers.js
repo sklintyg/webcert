@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata,intyg,logger,pages,Promise*/
+/*global testdata,intyg,logger,pages,Promise,browser*/
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
@@ -247,7 +247,11 @@ module.exports = {
         var secondDate = new Date(toEl[0], toEl[1], toEl[2]);
 
         return Math.round(Math.abs((firstDate.getTime() - secondDate.getTime()) / (oneDay)));
+    },
+    injectConsoleTracing: function() {
+        return browser.executeScript('window.errs=typeof(errs)=="undefined" ? [] : window.errs; window.console.error = function(msg){window.errs.push(msg); }; ');
     }
+
 
 
 };

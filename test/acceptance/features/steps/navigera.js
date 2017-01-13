@@ -86,6 +86,9 @@ module.exports = function() {
         }
     }
 
+
+
+
     function gotoIntyg(intygstyp, origin, addToUrl) {
         var url;
         var usingCreateDraft2;
@@ -140,6 +143,9 @@ module.exports = function() {
 
         return browser.get(url).then(function() {
             console.log('Går till url: ' + url);
+
+            helpers.injectConsoleTracing();
+
             if (!usingCreateDraft2) { // om djupintegration v1 så kommer det fram uppdragsval
                 var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
                 enhetSelectorLink.isPresent().then(function(isPresent) {

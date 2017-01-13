@@ -88,7 +88,7 @@ function checkKontaktMedFk(kontakt) {
 
 module.exports = {
     checkValues: function(intyg) {
-        logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
+        logger.info('-- Kontrollerar LUAE_FS --');
         logger.warn('intyg med typ: ' + intyg.typ + ' saknar vissa funktioner för kontroll av data');
 
         return Promise.all([

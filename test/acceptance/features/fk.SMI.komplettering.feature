@@ -12,9 +12,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag går in på att skapa ett slumpat SMI-intyg
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
-   Och jag ska se den data jag angett för intyget
    Och jag skickar intyget till Försäkringskassan
-   Så ska intygets status vara "Intyget är signerat"
 
    När Försäkringskassan skickar ett "KOMPLT" meddelande på intyget
    Och jag går in på intyget

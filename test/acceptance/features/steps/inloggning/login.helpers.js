@@ -19,6 +19,7 @@
 
 /*global logger, JSON, browser, pages */
 'use strict';
+var helpers = require('../helpers');
 
 var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     logger.info((secondBrowser) ? 'Login in second browser >>' : '');
@@ -59,7 +60,11 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         secondBrowser.sleep(3000);
     }
 
-    return login;
+
+
+    return login.then(function() {
+        return helpers.injectConsoleTracing();
+    });
 };
 
 module.exports = {

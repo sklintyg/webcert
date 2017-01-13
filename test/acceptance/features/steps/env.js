@@ -20,20 +20,14 @@
 /* globals browser, logger */
 'use strict';
 
+var hasFoundConsoleErrors = false;
 
 function checkConsoleErrors(cb) {
-    browser.manage().logs().get('browser').then(function(browserLog) {
-        if (browserLog.length) {
-            browserLog.forEach(function(log) {
-                var error = log.level.value > 900;
-                if (error) {
-                    console.log(log);
-                    throw ('KONSOL -> ' + log.level.name + ': ' + log.message);
-                }
-                cb();
-            });
-        }
-    });
+    if (hasFoundConsoleErrors) {
+        console.log('Fick script-fel');
+        throw ('Hittade script-fel under körning');
+    }
+    cb();
 }
 
 module.exports = function() {
@@ -56,7 +50,17 @@ module.exports = function() {
                 }
             });
         }).then(function() {
-            callback();
+
+            //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
+            browser.executeScript('return window.errs;').then(function(v) {
+                if (v) {
+                    console.log(v);
+                    hasFoundConsoleErrors = true;
+
+                }
+                callback();
+            });
+
         });
 
     });
@@ -69,8 +73,8 @@ module.exports = function() {
         global.intyg = {};
         global.meddelanden = []; //{typ:'', id:''}
         global.user = {};
+        hasFoundConsoleErrors = false;
     });
-
     //After scenario
     this.After(function(scenario, callback) {
 
