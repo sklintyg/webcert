@@ -24,7 +24,7 @@ var hasFoundConsoleErrors = false;
 
 function checkConsoleErrors(cb) {
     if (hasFoundConsoleErrors) {
-        console.log('Fick script-fel');
+        logger.info('Fick script-fel');
         throw ('Hittade script-fel under körning');
     }
     cb();
