@@ -2,13 +2,13 @@
 
 - name: Stop tomcat
   service:
-    name: {{ tomcat_service }}
+    name: "{{ tomcat_service }}"
     state: stopped
-    pattern: {{ tomcat_service }}
+    pattern: "{{ tomcat_service }}"
 
 - name: Create release directory
   file:
-    path: {{ releases_folder }}
+    path: "{{ releases_folder }}"
     state: directory
 
 - name: download intygstjanst-liquibase-runner-{{ version }}.zip
@@ -89,18 +89,18 @@
   command: "cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war"
 
 - name: Fetch configuration repo to get new branches
-  command: "git fetch origin"
-    args:
-      chdir: {{ config_folder }}
+  command: git fetch origin
+  args:
+    chdir: "{{ config_folder }}"
 
 - name: Update configuration to {{ config_version }}
   git:
-    repo: {{ config_repository }}
+    repo: "{{ config_repository }}"
     dest: "{{ config_folder }}"
-    version: {{ config_version }}
+    version: "{{ config_version }}"
 
 - name: Start tomcat
   service:
-    name: {{ tomcat_service }}
+    name: "{{ tomcat_service }}"
     state: started
-    pattern: {{ tomcat_service }}
+    pattern: "{{ tomcat_service }}"
