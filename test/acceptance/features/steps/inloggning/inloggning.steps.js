@@ -133,9 +133,9 @@ module.exports = function() {
     this.Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function(callback) {
         intyg.typ = testdataHelpers.shuffle([
             //'Läkarintyg för sjukpenning',
-            'Läkarutlåtande för sjukersättning',
-            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+            // 'Läkarutlåtande för sjukersättning',
+            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga'
+            // 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
         ])[0];
         Promise.all([
             sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),

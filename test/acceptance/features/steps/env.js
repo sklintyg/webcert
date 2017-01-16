@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, logger */
+/* globals browser, logger, JSON */
 'use strict';
 
 var hasFoundConsoleErrors = false;
 
 function checkConsoleErrors(cb) {
     if (hasFoundConsoleErrors) {
-        logger.info('Fick script-fel');
+        logger.info(hasFoundConsoleErrors);
         throw ('Hittade script-fel under körning');
     }
     cb();
@@ -54,8 +54,8 @@ module.exports = function() {
             //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
             browser.executeScript('return window.errs;').then(function(v) {
                 if (v && v.length > 0) {
-                    logger.info(v);
-                    hasFoundConsoleErrors = true;
+                    hasFoundConsoleErrors = JSON.stringify(v);
+                    logger.info(hasFoundConsoleErrors);
 
                 }
                 callback();
