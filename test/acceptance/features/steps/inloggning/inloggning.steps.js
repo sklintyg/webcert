@@ -65,6 +65,22 @@ function setForkedBrowser(forkedBrowser2) {
     forkedBrowser = forkedBrowser2;
 }
 
+function gotoIntygUtkast(intygtyp, cb) {
+    intyg.typ = intygtyp;
+    Promise.all([
+        sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp),
+        sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
+    ]).then(function() {
+        // Spara intygsid för kommande steg
+        browser.getCurrentUrl().then(function(text) {
+            intyg.id = text.split('/').slice(-1)[0];
+            logger.info('intyg.id: ' + intyg.id, function() {
+                cb();
+            });
+        });
+    });
+}
+
 module.exports = function() {
 
     this.Given(/^jag går in på en patient med samordningsnummer$/, function() {
@@ -114,19 +130,21 @@ module.exports = function() {
 
     this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp, callback) {
         intyg.typ = intygsTyp;
-        Promise.all([
-            sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygsTyp),
-            sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
-        ]).then(function() {
-            // Spara intygsid för kommande steg
-            browser.getCurrentUrl().then(function(text) {
-                intyg.id = text.split('/').slice(-1)[0];
-                logger.info('intyg.id: ' + intyg.id, function() {
-                    callback();
-                });
+        gotoIntygUtkast(intyg.typ, callback);
 
-            });
-        });
+    });
+
+    this.Given(/^jag går in på att skapa ett slumpat intyg$/, function(callback) {
+        intyg.typ = testdataHelpers.shuffle([
+            'Läkarutlåtande för sjukersättning',
+            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+            'Läkarintyg FK 7263',
+            'Transportstyrelsens läkarintyg',
+            'Transportstyrelsens läkarintyg, diabetes'
+        ])[0];
+
+        gotoIntygUtkast(intyg.typ, callback);
 
     });
 

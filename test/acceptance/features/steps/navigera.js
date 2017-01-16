@@ -27,6 +27,10 @@ var testdata = wcTestTools.testdata;
 var testpatienter = testdata.values.patienter;
 
 module.exports = function() {
+    this.Given(/^jag trycker på visa intyget$/, function() {
+        return element(by.id('showBtn-' + intyg.id)).sendKeys(protractor.Key.SPACE);
+    });
+
 
     this.Given(/^jag går tillbaka$/, function() {
         return fkUtkastPage.backBtn.sendKeys(protractor.Key.SPACE);

@@ -66,7 +66,7 @@ module.exports = function() {
 
     });
 
-    this.Given(/^ska jag se en rubrik med texten "([^"]*)"$/, function(text) {
+    this.Given(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighet, text) {
 
         var header3s = element.all(by.css('h3')).map(function(elm, index) {
             return elm.getText();
@@ -75,7 +75,12 @@ module.exports = function() {
         return header3s.then(function(headerTexts) {
             var joinedTexts = headerTexts.join('\n');
             logger.info('Hittade rubriker: ' + joinedTexts);
-            return expect(joinedTexts).to.include(text);
+            if (synlighet === 'se') {
+                return expect(joinedTexts).to.include(text);
+            } else {
+                return expect(joinedTexts).to.not.include(text);
+            }
+
         });
 
 
