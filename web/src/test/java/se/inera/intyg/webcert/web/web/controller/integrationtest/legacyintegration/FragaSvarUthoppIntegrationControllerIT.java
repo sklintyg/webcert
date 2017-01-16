@@ -41,7 +41,8 @@ public class FragaSvarUthoppIntegrationControllerIT extends BaseRestIntegrationT
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         changeOriginTo("UTHOPP");
 
-        given().redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("webcert/web/user/certificate/{intygsId}/questions?enhet=IFV1239877878-1042").
                 then().
@@ -53,7 +54,8 @@ public class FragaSvarUthoppIntegrationControllerIT extends BaseRestIntegrationT
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        given().redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("webcert/web/user/certificate/{intygsId}/questions").
                 then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
