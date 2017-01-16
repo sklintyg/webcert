@@ -53,8 +53,8 @@ module.exports = function() {
 
             //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
             browser.executeScript('return window.errs;').then(function(v) {
-                if (v) {
-                    console.log(v);
+                if (v && v.length > 0) {
+                    logger.info(v);
                     hasFoundConsoleErrors = true;
 
                 }

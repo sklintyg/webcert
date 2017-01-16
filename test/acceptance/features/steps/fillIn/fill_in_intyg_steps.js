@@ -30,7 +30,6 @@ var luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
-var tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 
 var td = wcTestTools.testdata;
 var fkValues = wcTestTools.testdata.values.fk;
