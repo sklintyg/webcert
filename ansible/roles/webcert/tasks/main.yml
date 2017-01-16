@@ -1,18 +1,26 @@
 ---
 
 - name: Stop tomcat
-  service: name={{ tomcat_service }} state=stopped pattern={{ tomcat_service }}
+  service:
+    name: {{ tomcat_service }}
+    state: stopped
+    pattern: {{ tomcat_service }}
 
 - name: Create release directory
-  file: path={{ releases_folder }} state=directory
+  file:
+    path: {{ releases_folder }}
+    state: directory
 
 - name: download intygstjanst-liquibase-runner-{{ version }}.zip
-  get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
-           dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
+  get_url:
+    url: https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
+    dest: {{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
   when: deploy_from_repo|bool
 
 - name: Copy webcert-liquibase-runner-{{ version }}.zip
-  copy: src={{ playbook_dir }}/../tools/liquibase-runner/build/distributions/webcert-liquibase-runner-{{ version }}.zip dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
+  copy:
+    src: {{ playbook_dir }}/../tools/liquibase-runner/build/distributions/webcert-liquibase-runner-{{ version }}.zip
+    dest: {{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip
   when: not deploy_from_repo|bool
 
 - name: Unzip webcert-liquibase-runner-{{ version }}.zip
@@ -30,53 +38,69 @@
       JAVA_HOME: "{{ java_home }}"
 
 - name: Download webcert-web-{{ version }}.war
-  get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r=releases&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
-           dest={{ releases_folder }}/webcert-web-{{ version }}.war
-           timeout=120
+  get_url:
+    url: https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r=releases&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
+    dest: {{ releases_folder }}/webcert-web-{{ version }}.war
+    timeout: 120
   when: deploy_from_repo|bool
 
 - name: Copy webcert-web-{{ version }}.war from THIS machine when not deploying from remote repo
-  copy: src={{ playbook_dir }}/../web/build/libs/webcert-web-{{ version }}.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
+  copy:
+    src: {{ playbook_dir }}/../web/build/libs/webcert-web-{{ version }}.war
+    dest: {{ releases_folder }}/webcert-web-{{ version }}.war
   when: not deploy_from_repo|bool
 
 - name: Remove old version of unpacked war
-  file: state=absent
-      path={{ webapps_folder }}/ROOT
+  file:
+    state: absent
+    path: {{ webapps_folder }}/ROOT
 
 - name: Remove old version of war
-  file: state=absent
-      path={{ webapps_folder }}/ROOT.war
+  file:
+    state: absent
+    path: {{ webapps_folder }}/ROOT.war
 
 - name: Deploy webcert-web-{{ version }}.war as ROOT.war
-  command: cp {{ releases_folder }}/webcert-web-{{ version }}.war {{ webapps_folder }}/ROOT.war
+  command: "cp {{ releases_folder }}/webcert-web-{{ version }}.war {{ webapps_folder }}/ROOT.war"
 
 - name: Download log-sender-{{ version }}.war
-  get_url: url=https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r=releases&g=se.inera.intyg.webcert&a=log-sender&v={{ version }}&p=war
-           dest={{ releases_folder }}/log-sender-{{ version }}.war
+  get_url:
+    url: https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r=releases&g=se.inera.intyg.webcert&a=log-sender&v={{ version }}&p=war
+    dest: {{ releases_folder }}/log-sender-{{ version }}.war
   when: deploy_from_repo|bool
 
 - name: Copy log-sender-{{ version }}.war
-  copy: src={{ playbook_dir }}/../log-sender/build/libs/log-sender-{{ version }}.war dest={{ releases_folder }}/log-sender-{{ version }}.war
+  copy:
+    src: {{ playbook_dir }}/../log-sender/build/libs/log-sender-{{ version }}.war
+    dest: {{ releases_folder }}/log-sender-{{ version }}.war
   when: not deploy_from_repo|bool
 
 - name: Remove old version of unpacked log-sender war
-  file: state=absent
-      path={{ webapps_folder }}/log-sender
+  file:
+    state: absent
+    path: {{ webapps_folder }}/log-sender
 
 - name: Remove old version of log-sender war
-  file: state=absent
-      path={{ webapps_folder }}/log-sender.war
+  file:
+    state: absent
+    path: {{ webapps_folder }}/log-sender.war
 
 - name: Deploy log-sender-{{ version }}.war as log-sender.war
-  command: cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war
+  command: "cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war"
 
 - name: Fetch configuration repo to get new branches
-  command: chdir={{ config_folder }} git fetch origin
+  command: "git fetch origin"
+    args:
+      chdir: {{ config_folder }}
 
 - name: Update configuration to {{ config_version }}
-  git: repo={{ config_repository }}
-       dest={{ config_folder }}
-       version={{ config_version }}
+  git:
+    repo: {{ config_repository }}
+    dest: {{ config_folder }}
+    version: {{ config_version }}
 
 - name: Start tomcat
-  service: name={{ tomcat_service }} state=started pattern={{ tomcat_service }}
+  service:
+    name: {{ tomcat_service }}
+    state: started
+    pattern: {{ tomcat_service }}
