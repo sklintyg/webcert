@@ -61,7 +61,7 @@ import javax.annotation.Nullable;
 @Transactional("jpaTransactionManager")
 @Configuration
 @EnableScheduling
-@Profile({"dev", "webcertMainNode"})
+@Profile({"dev", "test", "webcertMainNode"})
 public class FmbServiceImpl implements FmbService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FmbServiceImpl.class);
