@@ -40,7 +40,7 @@
 - name: Download webcert-web-{{ version }}.war
   get_url:
     url: https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r=releases&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
-    dest: {{ releases_folder }}/webcert-web-{{ version }}.war
+    dest: "{{ releases_folder }}/webcert-web-{{ version }}.war"
     timeout: 120
   when: deploy_from_repo|bool
 
@@ -96,7 +96,7 @@
 - name: Update configuration to {{ config_version }}
   git:
     repo: {{ config_repository }}
-    dest: {{ config_folder }}
+    dest: "{{ config_folder }}"
     version: {{ config_version }}
 
 - name: Start tomcat
