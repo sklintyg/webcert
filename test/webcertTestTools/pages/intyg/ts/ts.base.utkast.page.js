@@ -26,6 +26,8 @@
 var pageHelpers = require('../../pageHelper.util.js');
 var BaseUtkast = require('../base.utkast.page.js');
 
+
+
 var BaseTsUtkast = BaseUtkast._extend({
     init: function init() {
         init._super.call(this);
@@ -41,6 +43,7 @@ var BaseTsUtkast = BaseUtkast._extend({
             yes: element(by.id('bedomningy')),
             no: element(by.id('bedomningn'))
         };
+
         this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.checkbox'));
 
         this.kommentar = element(by.id('kommentar'));
@@ -61,23 +64,27 @@ var BaseTsUtkast = BaseUtkast._extend({
     fillInIdentitetStyrktGenom: function(idtyp) {
         return this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
     },
+    fillInBedomningLamplighet: function(lamplighet) {
+        if (lamplighet) {
+            if (lamplighet === 'Ja') {
+                return this.bedomning.yes.sendKeys(protractor.Key.SPACE);
+            } else {
+                return this.bedomning.no.sendKeys(protractor.Key.SPACE);
+            }
+        }
+
+        return Promise.resolve('Inget svar på lämplighet angivet');
+    },
     fillInBedomning: function(bedomningObj) {
         return Promise.all([
             element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE),
-            pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
+            pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter),
+            this.fillInBedomningLamplighet(bedomningObj.lamplighet)
         ]);
     },
     fillInOvrigKommentar: function(utkast) {
-            return this.kommentar.sendKeys(utkast.kommentar);
-        }
-        // fillInPatientAdress: function(adressObj) {
-        //     return Promise.all([
-        //         this.adress.postadress.clear().sendKeys(adressObj.postadress),
-        //         this.adress.postnummer.clear().sendKeys(adressObj.postnummer),
-        //         this.adress.postort.clear().sendKeys(adressObj.postort)
-        //     ]);
-
-    // }
+        return this.kommentar.sendKeys(utkast.kommentar);
+    }
 });
 
 module.exports = BaseTsUtkast;

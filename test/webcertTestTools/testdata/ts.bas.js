@@ -32,6 +32,10 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
 
+        var bedomningObj = testValues.getRandomBedomning(randomKorkortstyper);
+        // TS Bas behöver inte svar på lämplighet
+        bedomningObj.lamplighet = null;
+
         return {
             id: intygsID,
             typ: 'Transportstyrelsens läkarintyg',
@@ -44,7 +48,7 @@ module.exports = {
             synintyg: {
                 a: 'Ja'
             },
-            bedomning: testValues.getRandomBedomning(randomKorkortstyper),
+            bedomning: bedomningObj,
             synDonder: shuffle(testValues.synDonder)[0],
             synNedsattBelysning: shuffle(testValues.synNedsattBelysning)[0],
             synOgonsjukdom: shuffle(testValues.synOgonsjukdom)[0],
