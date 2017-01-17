@@ -8,5 +8,5 @@
 - name: Unlock config repo
   command: "/usr/local/bin/git-crypt unlock {{ inera_root }}/{{ gitcrypt_key_name }}"
   args:
-    chdir: {{ config_folder }} 
+    chdir: "{{ config_folder }}"
     creates: "{{ config_folder }}/.git/git-crypt"
