@@ -72,7 +72,6 @@ var BaseTsUtkast = BaseUtkast._extend({
                 return this.bedomning.no.sendKeys(protractor.Key.SPACE);
             }
         }
-
         return Promise.resolve('Inget svar på lämplighet angivet');
     },
     fillInBedomning: function(bedomningObj) {

@@ -29,7 +29,7 @@ var LuseIntyg = BaseSmiIntygPage._extend({
         this.intygType = 'luse';
 
         this.andraMedicinskaUtredningar = {
-            field: element(by.cssContainingText('.intyg-field', 'andra medicinska utredningar')),
+            field: element(by.id('form_underlagFinns')),
             getUtredning: function(index) {
                 return {
                     typ: element(by.id('underlag-' + index + '-typ')),
