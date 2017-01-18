@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals pages,intyg,protractor,wcTestTools,Promise*/
+/*globals pages,intyg,protractor,wcTestTools,Promise,browser*/
 
 'use strict';
 var luseUtkastPage = pages.intyg.luse.utkast;
@@ -181,6 +181,15 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^ska varken "([^"]*)" eller info om det saknade "([^"]*)" finnas kvar$/, function(feltext, fältet) {
+        // Write code here that turns the phrase above into concrete actions
+
+        return expect(element(by.css('.alert-danger')).isDisplayed()).to.eventually.equal(false).then(function() {
+            return expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(false);
+        });
+    });
+
+
     // this.Given(/^ska "([^"]*)" valideringsfelet, "([^"]*)" visas$/, function(arg1, arg2) {
 
     //     if (arg1 === 'postnummer') {
@@ -245,6 +254,14 @@ module.exports = function() {
                     insulinYear: 'text'
                 }
             });
+        } else if (fieldtype === 'UndersökningsDatum') {
+
+            return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('10/12-2017').then(function() {
+                var enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                return enter.perform();
+            });
+
+
         } else {
             return fkUtkastPage.diagnosKod.sendKeys(date);
         }
@@ -269,6 +286,22 @@ module.exports = function() {
 
 
     });
+    this.Given(/^jag ändrar till giltig text i "([^"]*)"$/, function(fieldtype) {
+        if (fieldtype === 'UndersökningsDatum') {
+            return fkUtkastPage.baserasPa.minUndersokning.datum.clear().then(function() {
+                return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2017-01-12').then(function() {
+                    var enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                    console.log('Ändrar datum');
+                    return enter.perform();
+
+                });
+            });
+        }
+
+    });
+
+
+
 
 
 };
