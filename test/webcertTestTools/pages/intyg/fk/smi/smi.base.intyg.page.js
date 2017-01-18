@@ -96,6 +96,17 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             kanGoraTrotsBegransning: element(by.id('formagaTrotsBegransning'))
         };
 
+        this.andraMedicinskaUtredningar = {
+            field: element(by.id('form_underlagFinns')),
+            getUtredning: function(index) {
+                return {
+                    typ: element(by.id('underlag-' + index + '-typ')),
+                    datum: element(by.id('underlag-' + index + '-datum')),
+                    info: element(by.id('underlag-' + index + '-hamtasFran'))
+                };
+            }
+        };
+
         this.ovrigaUpplysningar = element(by.id('ovrigt'));
 
         this.kontaktFK = {

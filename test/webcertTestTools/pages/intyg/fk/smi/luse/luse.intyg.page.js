@@ -27,17 +27,6 @@ var LuseIntyg = BaseSmiIntygPage._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'luse';
-
-        this.andraMedicinskaUtredningar = {
-            field: element(by.id('form_underlagFinns')),
-            getUtredning: function(index) {
-                return {
-                    typ: element(by.id('underlag-' + index + '-typ')),
-                    datum: element(by.id('underlag-' + index + '-datum')),
-                    info: element(by.id('underlag-' + index + '-hamtasFran'))
-                };
-            }
-        };
     },
 
     get: function get(intygId) {

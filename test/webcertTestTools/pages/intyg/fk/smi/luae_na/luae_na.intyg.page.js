@@ -28,17 +28,6 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
     init: function init() {
         init._super.call(this);
 
-        this.andraMedicinskaUtredningar = {
-            field: element(by.cssContainingText('.intyg-field', 'andra medicinska utredningar')),
-            getUtredning: function(index) {
-                return {
-                    typ: element(by.id('underlag-' + index + '-typ')),
-                    datum: element(by.id('underlag-' + index + '-datum')),
-                    info: element(by.id('underlag-' + index + '-hamtasFran'))
-                };
-            }
-        };
-
         this.medicinskaForutsattningar = {
             utecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
             trotsBegransningar: element(by.id('formagaTrotsBegransning')),
@@ -73,8 +62,7 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
         if (data.diagnos.nyBedomning) {
             expect(this.diagnoser.nyBedomningDiagnosgrundJa.isDisplayed()).toBeTruthy();
             expect(this.diagnoser.diagnosForNyBedomning.getText()).toBe(data.diagnos.diagnosForNyBedomning);
-        }
-        else {
+        } else {
             expect(this.diagnoser.nyBedomningDiagnosgrundNej.isDisplayed()).toBeTruthy();
             expect(this.diagnoser.diagnosForNyBedomning.getText()).toBe('Ej angivet');
         }
@@ -109,8 +97,7 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
 
         if (data.kontaktMedFk) {
             expect(this.kontaktFK.ja.isDisplayed()).toBeTruthy();
-        }
-        else {
+        } else {
             expect(this.kontaktFK.nej.isDisplayed()).toBeTruthy();
         }
     }
