@@ -562,6 +562,11 @@
       "minItems": 0,
       "type": "array"
     },
+    "miuNamnPerEnhetsId": {
+      "additionalProperties": true,
+      "properties": {},
+      "type": "object"
+    },
     "namn": {
       "type": "string"
     },

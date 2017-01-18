@@ -55,7 +55,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -187,7 +186,7 @@ public class LogServiceImpl implements LogService {
         SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
 
         return new LogUser(webCertUser.getHsaId(), webCertUser.getNamn(),
-                webCertUser.getBefattningar().stream().collect(Collectors.joining(", ")),
+                webCertUser.getSelectedMedarbetarUppdragNamn(),
                 webCertUser.getTitel(), valdVardenhet.getId(), valdVardenhet.getNamn(),
                 valdVardgivare.getId(), valdVardgivare.getNamn());
     }

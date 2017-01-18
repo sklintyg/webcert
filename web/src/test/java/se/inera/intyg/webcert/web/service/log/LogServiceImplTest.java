@@ -46,8 +46,9 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.jms.Session;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.time.LocalDateTime.now;
 import static org.junit.Assert.assertEquals;
@@ -117,7 +118,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         assertEquals("HSAID", intygReadMessage.getUserId());
         assertEquals("Markus Gran", intygReadMessage.getUserName());
-        assertEquals("Läkare", intygReadMessage.getUserAssignment());
+        assertEquals("Läkare på vårdcentralen", intygReadMessage.getUserAssignment());
         assertEquals("Överläkare", intygReadMessage.getUserTitle());
 
         assertEquals("VARDENHET_ID", intygReadMessage.getUserCareUnit().getEnhetsId());
@@ -171,9 +172,15 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user.setVardgivare(Collections.singletonList(vg));
         user.changeValdVardenhet("VARDENHET_ID");
         user.setTitel("Överläkare");
-        user.setBefattningar(Arrays.asList("Läkare"));
+        user.setMiuNamnPerEnhetsId(buildMiUMap());
 
         return user;
+    }
+
+    private Map<String, String> buildMiUMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("VARDENHET_ID", "Läkare på vårdcentralen");
+        return map;
     }
 
 }

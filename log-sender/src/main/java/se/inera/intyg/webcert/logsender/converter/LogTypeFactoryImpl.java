@@ -71,8 +71,14 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
         user.setName(trim(source.getUserName()));
         user.setCareProvider(careProvider(source.getUserCareUnit()));
         user.setCareUnit(careUnit(source.getUserCareUnit()));
-        user.setAssignment(source.getUserAssignment());
-        user.setTitle(source.getUserTitle());
+
+        // Only set assignment and title if they are non-empty.
+        if (!Strings.isNullOrEmpty(source.getUserAssignment())) {
+            user.setAssignment(source.getUserAssignment());
+        }
+        if (!Strings.isNullOrEmpty(source.getUserTitle())) {
+            user.setTitle(source.getUserTitle());
+        }
         logType.setUser(user);
     }
 
