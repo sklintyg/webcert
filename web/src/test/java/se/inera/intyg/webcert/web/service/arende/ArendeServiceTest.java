@@ -28,7 +28,6 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
@@ -82,7 +81,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.converter.util.ArendeViewConverter;
+import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -150,8 +149,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         // always return the Arende that is saved
         when(arendeRepository.save(any(Arende.class))).thenAnswer(invocation -> (Arende) invocation.getArguments()[0]);
 
-        // Added to fix tests after INTYG-3318
-        doReturn(Collections.emptyList()).when(arendeViewConverter).findAllKomplementForGivenIntyg(any(String.class));
     }
 
     @After

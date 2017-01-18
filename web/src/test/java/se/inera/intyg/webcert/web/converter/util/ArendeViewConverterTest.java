@@ -68,7 +68,7 @@ import se.inera.intyg.common.util.integration.integration.json.CustomObjectMappe
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
@@ -96,9 +96,6 @@ public class ArendeViewConverterTest {
     @Mock
     private ModuleApi moduleApi;
 
-    @Mock
-    private UtkastRepository utkastRepository;
-
     @SuppressWarnings("unchecked")
     @Before
     public void setup() throws Exception {
@@ -109,7 +106,6 @@ public class ArendeViewConverterTest {
         map.put("2", Arrays.asList(RespConstants.KANNEDOM_SVAR_JSON_ID_2));
         map.put("4", Arrays.asList("", "", RespConstants.UNDERLAG_SVAR_JSON_ID_4));
         when(moduleApi.getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class))).thenReturn(map);
-        when(utkastRepository.findAllByRelationIntygsId(any(String.class))).thenReturn(Collections.emptyList());
     }
 
     @SuppressWarnings("unchecked")
@@ -292,7 +288,7 @@ public class ArendeViewConverterTest {
         arendeList.add(buildArende(UUID.randomUUID().toString(), decemberYear9999, decemberYear9999));
         arendeList.add(buildArende(UUID.randomUUID().toString(), january, january));
 
-        List<ArendeConversationView> result = converter.buildArendeConversations(intygsId, arendeList);
+        List<ArendeConversationView> result = converter.buildArendeConversations(intygsId, arendeList, Collections.emptyList());
 
         assertEquals(4, result.size());
         assertEquals(1, result.get(0).getPaminnelser().size());

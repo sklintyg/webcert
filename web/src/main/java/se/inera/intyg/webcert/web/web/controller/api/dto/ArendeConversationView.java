@@ -28,31 +28,13 @@ import com.google.common.collect.ImmutableList;
 @AutoValue
 public abstract class ArendeConversationView {
 
-    @AutoValue
-    public abstract static class IntygInfo {
-        public abstract String getIntygsId();
-
-        public abstract String getSigneratAv();
-
-        public abstract LocalDateTime getSigneratDatum();
-
-        public abstract LocalDateTime getSkickatDatum();
-
-        public abstract String getNamnetPaSkapareAvIntyg();
-
-        public static IntygInfo create(String intygsId, String signeratAv, LocalDateTime signeratDatum, LocalDateTime skickatDatum,
-                String namnetPaSkapareAvIntyg) {
-            return new AutoValue_ArendeConversationView_IntygInfo(intygsId, signeratAv, signeratDatum, skickatDatum, namnetPaSkapareAvIntyg);
-        }
-    }
-
     public abstract ArendeView getFraga();
 
     @Nullable
     public abstract ArendeView getSvar();
 
     @Nullable
-    public abstract ArendeConversationView.IntygInfo getBesvaradMedIntyg();
+    public abstract BesvaratMedIntyg getBesvaradMedIntyg();
 
     @Nullable
     public abstract LocalDateTime getSenasteHandelse();
@@ -73,7 +55,7 @@ public abstract class ArendeConversationView {
 
         public abstract Builder setSvar(ArendeView svar);
 
-        public abstract Builder setBesvaradMedIntyg(IntygInfo besvaradMedIntyg);
+        public abstract Builder setBesvaradMedIntyg(BesvaratMedIntyg besvaradMedIntyg);
 
         public abstract Builder setSenasteHandelse(LocalDateTime senasteHandelse);
 

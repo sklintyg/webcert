@@ -60,8 +60,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
+import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
-import se.inera.intyg.webcert.web.converter.util.ArendeViewConverter;
+import se.inera.intyg.webcert.web.converter.util.BesvaratMedIntygUtil;
 import se.inera.intyg.webcert.web.integration.builder.SendMessageToRecipientTypeBuilder;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -77,6 +78,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.BesvaratMedIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
 
 @Service
@@ -293,7 +295,9 @@ public class ArendeServiceImpl implements ArendeService {
                 .filter(a -> hsaEnhetIds.contains(a.getEnhetId()))
                 .collect(Collectors.toList());
 
-        return arendeViewConverter.buildArendeConversations(intygsId, arendeList);
+        List<BesvaratMedIntyg> kompltToIntyg = BesvaratMedIntygUtil.findAllKomplementForGivenIntyg(intygsId, utkastRepository);
+
+        return arendeViewConverter.buildArendeConversations(intygsId, arendeList, kompltToIntyg);
     }
 
     @Override

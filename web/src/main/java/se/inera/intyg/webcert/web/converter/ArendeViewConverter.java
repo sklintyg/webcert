@@ -16,15 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.converter.util;
+package se.inera.intyg.webcert.web.converter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,7 +35,6 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -45,11 +42,12 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.util.BesvaratMedIntygUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
+import se.inera.intyg.webcert.web.web.controller.api.dto.BesvaratMedIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 
 @Component
@@ -61,9 +59,6 @@ public class ArendeViewConverter {
 
     @Autowired
     private IntygServiceImpl intygService;
-
-    @Autowired
-    private UtkastRepository utkastRepository;
 
     public ArendeView convertToDto(Arende arende) {
         if (arende == null) {
@@ -94,7 +89,7 @@ public class ArendeViewConverter {
                 .build();
     }
 
-    public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, ArendeConversationView.IntygInfo komplt,
+    public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, BesvaratMedIntyg komplt,
             List<Arende> paminnelser) {
         return ArendeConversationView.builder()
                 .setFraga(convertToDto(fraga))
@@ -120,15 +115,15 @@ public class ArendeViewConverter {
      *            the id of the intyg to which all the messages belong to
      * @param intygMessages
      *            a list of messages (Arende) relating to the same intyg
+     * @param kompltToIntyg
+     *            a list of kompletterande intyg for the given intyg, if any (empty list is allowed, null is not)
      * @return A list of ArendeConversationView meant for frontend consumption or undefined if messages are not for the
      *         same intyg
      */
-    public List<ArendeConversationView> buildArendeConversations(String intygsId, List<Arende> intygMessages) {
+    public List<ArendeConversationView> buildArendeConversations(String intygsId, List<Arende> intygMessages,
+            List<BesvaratMedIntyg> kompltToIntyg) {
         // Group by conversation thread.
         Map<String, List<Arende>> threads = intygMessages.stream().collect(Collectors.groupingBy(ArendeViewConverter::getThreadRootMessageId));
-
-        // Only need to find komplement intyg for intyg once, since all conversation threads belong to the same intyg.
-        List<ArendeConversationView.IntygInfo> kompltToIntyg = findAllKomplementForGivenIntyg(intygsId);
 
         List<ArendeConversationView> arendeConversations = threads.values().stream()
                 .filter(ArendeViewConverter::conversationContainsFraga)
@@ -150,7 +145,7 @@ public class ArendeViewConverter {
     }
 
     private ArendeConversationView createConversationViewFromArendeList(List<Arende> messagesInThread,
-            List<ArendeConversationView.IntygInfo> kompltForIntyg) {
+            List<BesvaratMedIntyg> kompltForIntyg) {
         Optional<Arende> fraga = messagesInThread.stream()
                 .filter(a -> getArendeType(a) == ArendeType.FRAGA)
                 .reduce((element, otherElement) -> {
@@ -170,39 +165,11 @@ public class ArendeViewConverter {
         }
 
         // Find oldest intyg among kompletterande intyg, that's newer than the fraga
-        ArendeConversationView.IntygInfo komplt = null;
+        BesvaratMedIntyg komplt = null;
         if (!svar.isPresent()) {
-            komplt = returnOldestKompltOlderThan(fraga.get().getTimestamp(), kompltForIntyg);
+            komplt = BesvaratMedIntygUtil.returnOldestKompltOlderThan(fraga.get().getTimestamp(), kompltForIntyg);
         }
         return convertToArendeConversationView(fraga.get(), svar.orElse(null), komplt, paminnelser);
-    }
-
-    public ArendeConversationView.IntygInfo findRelatedIntygKomplettering(Arende arende) {
-        return returnOldestKompltOlderThan(arende.getTimestamp(), findAllKomplementForGivenIntyg(arende.getIntygsId()));
-    }
-
-    private static ArendeConversationView.IntygInfo returnOldestKompltOlderThan(LocalDateTime fragaSendDate,
-            List<ArendeConversationView.IntygInfo> kompltForIntyg) {
-        return kompltForIntyg.stream()
-                .reduce(null, (saved, current) -> {
-                    if (saved == null) {
-                        return current;
-                    }
-                    return isInsideBounds(current.getSigneratDatum(), fragaSendDate, saved.getSkickatDatum()) ? current : saved;
-                });
-    }
-
-    /**
-     * Given an existing intyg's id, will return info about all associated supplemental (kompletterande) intyg, and an
-     * empty list if no such intyg are found.
-     */
-    public List<ArendeConversationView.IntygInfo> findAllKomplementForGivenIntyg(String intygsId) {
-        return utkastRepository.findAllByRelationIntygsId(intygsId).stream()
-                .filter(u -> Objects.equals(u.getRelationKod(), RelationKod.KOMPLT))
-                .filter(u -> u.getSignatur() != null)
-                .map(u -> ArendeConversationView.IntygInfo.create(u.getIntygsId(), u.getSignatur().getSigneradAv(), u.getSignatur().getSigneringsDatum(),
-                        u.getSkickadTillMottagareDatum(), u.getSkapadAv().getNamn()))
-                .collect(Collectors.toList());
     }
 
     private static String getThreadRootMessageId(Arende arende) {
@@ -212,10 +179,6 @@ public class ArendeViewConverter {
 
     private static boolean conversationContainsFraga(List<Arende> thread) {
         return thread.stream().filter(a -> getArendeType(a) == ArendeType.FRAGA).findAny().isPresent();
-    }
-
-    private static boolean isInsideBounds(LocalDateTime arg, LocalDateTime lowerBound, LocalDateTime upperBound) {
-        return (arg.compareTo(lowerBound) > 0) && (arg.compareTo(upperBound) < 0);
     }
 
     private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
