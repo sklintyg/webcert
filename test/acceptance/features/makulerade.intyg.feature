@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
    När jag går in på en patient
 
 @FK7263-kopiera-knapp
-Scenario: Det ska gå att kopiera ett makulerat FK7263 intyg
+Scenario: Det ska inte gå att kopiera ett makulerat FK7263 intyg
   När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
   Och jag skickar intyget till Försäkringskassan
   Och jag makulerar intyget
