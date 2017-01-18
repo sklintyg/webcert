@@ -15,8 +15,7 @@ Det innebär att följande saker behöver vara uppfyllda:
 
 (2) Starta log-sender från /webcert/log-sender:
 
-
-    mvn jetty:run
+    ./gradlew appRun
     
 ### Konfigurera Webcert    
 

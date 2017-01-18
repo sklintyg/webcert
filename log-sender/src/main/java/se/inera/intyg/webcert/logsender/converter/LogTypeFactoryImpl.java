@@ -18,13 +18,8 @@
  */
 package se.inera.intyg.webcert.logsender.converter;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
-
+import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.logmessages.Enhet;
 import se.inera.intyg.infra.logmessages.Patient;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
@@ -38,6 +33,9 @@ import se.riv.ehr.log.v1.ResourceType;
 import se.riv.ehr.log.v1.ResourcesType;
 import se.riv.ehr.log.v1.SystemType;
 import se.riv.ehr.log.v1.UserType;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Encapsulates PdlLogMessage (internal format) -> LogType (ehr format) conversion.
@@ -73,6 +71,8 @@ public class LogTypeFactoryImpl implements LogTypeFactory {
         user.setName(trim(source.getUserName()));
         user.setCareProvider(careProvider(source.getUserCareUnit()));
         user.setCareUnit(careUnit(source.getUserCareUnit()));
+        user.setAssignment(source.getUserAssignment());
+        user.setTitle(source.getUserTitle());
         logType.setUser(user);
     }
 

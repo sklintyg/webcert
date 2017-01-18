@@ -18,43 +18,48 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import static java.time.LocalDateTime.now;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.Collections;
-
-import javax.jms.Session;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.support.destination.DestinationResolutionException;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.logmessages.ActivityPurpose;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import javax.jms.Session;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static java.time.LocalDateTime.now;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by pehr on 13/11/13.
@@ -112,6 +117,8 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         assertEquals("HSAID", intygReadMessage.getUserId());
         assertEquals("Markus Gran", intygReadMessage.getUserName());
+        assertEquals("Läkare", intygReadMessage.getUserAssignment());
+        assertEquals("Överläkare", intygReadMessage.getUserTitle());
 
         assertEquals("VARDENHET_ID", intygReadMessage.getUserCareUnit().getEnhetsId());
         assertEquals("Vårdenheten", intygReadMessage.getUserCareUnit().getEnhetsNamn());
@@ -163,6 +170,8 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user.setNamn("Markus Gran");
         user.setVardgivare(Collections.singletonList(vg));
         user.changeValdVardenhet("VARDENHET_ID");
+        user.setTitel("Överläkare");
+        user.setBefattningar(Arrays.asList("Läkare"));
 
         return user;
     }

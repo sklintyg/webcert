@@ -1,6 +1,28 @@
 description = 'Webcert (Log Sender)'
 
 apply plugin: 'war'
+apply plugin: 'org.akhikhl.gretty'
+
+def webappOutputDir = 'build/apps/'
+
+gretty {
+    integrationTestTask = null
+    contextPath = '/log-sender'
+    httpPort = 9099
+    scanInterval = 0
+    contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
+
+    jvmArgs = [
+            "-Dcatalina.base=${buildDir}/catalina.base",
+            "-Dspring.profiles.active=dev",
+            "-Dcredentials.file=${projectDir}/log-sender-dummy-credentials.properties",
+            "-Dlogsender.config.file=${projectDir}/log-sender-dev.properties",
+            "-Dlogsender.logback.file=${projectDir}/log-sender-logback.xml",
+            "-Djava.awt.headless=true"
+    ]
+
+    extraResourceBase webappOutputDir
+}
 
 test {
     exclude '**/*IT*'
@@ -35,4 +57,9 @@ dependencies {
   testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
   testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
   testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"
+
+  gretty "org.apache.activemq:activemq-client:${activeMqVersion}"
+  gretty "org.apache.activemq:activemq-broker:${activeMqVersion}"
+  gretty "com.h2database:h2:${h2Version}"
+  gretty "mysql:mysql-connector-java:${mysqlVersion}"
 }

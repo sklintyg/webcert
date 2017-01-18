@@ -18,51 +18,61 @@
  */
 package se.inera.intyg.webcert.web.service.log.dto;
 
-
+/**
+ * Immutable representation of a Webcert user for PDL logging purposes.
+ */
 public class LogUser {
 
     private String userId;
     private String userName;
+    private String userAssignment;
+    private String userTitle;
     private String enhetsId;
     private String enhetsNamn;
     private String vardgivareId;
     private String vardgivareNamn;
 
+    // CHECKSTYLE:OFF ParameterNumber
+    public LogUser(String userId, String userName, String userAssignment, String userTitle, String enhetsId, String enhetsNamn, String vardgivareId, String vardgivareNamn) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userAssignment = userAssignment;
+        this.userTitle = userTitle;
+        this.enhetsId = enhetsId;
+        this.enhetsNamn = enhetsNamn;
+        this.vardgivareId = vardgivareId;
+        this.vardgivareNamn = vardgivareNamn;
+    }
+    // CHECKSTYLE:ON ParameterNumber
     public String getUserId() {
         return userId;
     }
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+
     public String getUserName() {
         return userName;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
+
+    public String getUserAssignment() {
+        return userAssignment;
     }
+
+    public String getUserTitle() {
+        return userTitle;
+    }
+
     public String getEnhetsId() {
         return enhetsId;
     }
-    public void setEnhetsId(String enhetsId) {
-        this.enhetsId = enhetsId;
-    }
+
     public String getEnhetsNamn() {
         return enhetsNamn;
     }
-    public void setEnhetsNamn(String enhetsNamn) {
-        this.enhetsNamn = enhetsNamn;
-    }
+
     public String getVardgivareId() {
         return vardgivareId;
     }
-    public void setVardgivareId(String vardgivareId) {
-        this.vardgivareId = vardgivareId;
-    }
+
     public String getVardgivareNamn() {
         return vardgivareNamn;
     }
-    public void setVardgivareNamn(String vardgivareNamn) {
-        this.vardgivareNamn = vardgivareNamn;
-    }
-
 }

@@ -46,7 +46,7 @@
     <Arg>jms/Queue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>logging.queue</Arg>
+        <Arg>dev.logging.queue</Arg>
       </New>
     </Arg>
   </New>

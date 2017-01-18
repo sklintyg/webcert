@@ -18,30 +18,44 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import java.time.LocalDateTime;
-
-import javax.annotation.PostConstruct;
-import javax.jms.*;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.logmessages.*;
-import se.inera.intyg.webcert.common.service.log.template.*;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.infra.logmessages.ActivityPurpose;
+import se.inera.intyg.infra.logmessages.Enhet;
+import se.inera.intyg.infra.logmessages.Patient;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.PdlResource;
+import se.inera.intyg.infra.logmessages.ResourceType;
+import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygPrintMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygReadMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygRevokeMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygSendMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygSignMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygUpdateMessage;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -169,21 +183,13 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public LogUser getLogUser(WebCertUser webCertUser) {
-
-        LogUser logUser = new LogUser();
-
-        logUser.setUserId(webCertUser.getHsaId());
-        logUser.setUserName(webCertUser.getNamn());
-
         SelectableVardenhet valdVardenhet = webCertUser.getValdVardenhet();
-        logUser.setEnhetsId(valdVardenhet.getId());
-        logUser.setEnhetsNamn(valdVardenhet.getNamn());
-
         SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
-        logUser.setVardgivareId(valdVardgivare.getId());
-        logUser.setVardgivareNamn(valdVardgivare.getNamn());
 
-        return logUser;
+        return new LogUser(webCertUser.getHsaId(), webCertUser.getNamn(),
+                webCertUser.getBefattningar().stream().collect(Collectors.joining(", ")),
+                webCertUser.getTitel(), valdVardenhet.getId(), valdVardenhet.getNamn(),
+                valdVardgivare.getId(), valdVardgivare.getNamn());
     }
 
 
@@ -218,6 +224,8 @@ public class LogServiceImpl implements LogService {
     private void populateWithCurrentUserAndCareUnit(PdlLogMessage logMsg, LogUser user) {
         logMsg.setUserId(user.getUserId());
         logMsg.setUserName(user.getUserName());
+        logMsg.setUserAssignment(user.getUserAssignment());
+        logMsg.setUserTitle(user.getUserTitle());
 
         Enhet vardenhet = new Enhet(user.getEnhetsId(), user.getEnhetsNamn(), user.getVardgivareId(), user.getVardgivareNamn());
         logMsg.setUserCareUnit(vardenhet);

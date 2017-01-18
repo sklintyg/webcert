@@ -18,25 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.OptimisticLockException;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -78,6 +65,17 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -147,10 +145,14 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Create a PDL log for this action
         Vardenhet vardenhet = request.getHosPerson().getVardenhet();
-        logCreateDraftPDL(savedUtkast, vardenhet.getVardgivare().getVardgivarid(),
-                vardenhet.getVardgivare().getVardgivarnamn(), vardenhet.getEnhetsid(),
-                vardenhet.getEnhetsnamn(), request.getHosPerson().getPersonId(),
-                request.getHosPerson().getFullstandigtNamn());
+
+        // CHECKSTYLE: ParameterNumber OFF
+        LogUser logUser = new LogUser(request.getHosPerson().getPersonId(), request.getHosPerson().getFullstandigtNamn(),
+                request.getHosPerson().getBefattningar().stream().collect(Collectors.joining(", ")), null,
+                vardenhet.getEnhetsid(), vardenhet.getEnhetsnamn(), vardenhet.getVardgivare().getVardgivarid(), vardenhet.getVardgivare().getVardgivarnamn());
+        // CHECKSTYLE: ParameterNumber ON
+
+        logCreateDraftPDL(savedUtkast, logUser);
 
         return savedUtkast;
     }
@@ -567,17 +569,7 @@ public class UtkastServiceImpl implements UtkastService {
         return ALL_DRAFT_STATUSES.contains(utkastStatus);
     }
 
-    private void logCreateDraftPDL(Utkast utkast, String hsaIdVardgivare, String namnVardgivare,
-            String hsaIdVardenhet, String namnVardenhet, String hsaIdHosPerson,
-            String namnHosPerson) {
-
-        LogUser logUser = new LogUser();
-        logUser.setVardgivareId(hsaIdVardgivare);
-        logUser.setVardgivareNamn(namnVardgivare);
-        logUser.setEnhetsId(hsaIdVardenhet);
-        logUser.setEnhetsNamn(namnVardenhet);
-        logUser.setUserId(hsaIdHosPerson);
-        logUser.setUserName(namnHosPerson);
+    private void logCreateDraftPDL(Utkast utkast, LogUser logUser) {
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logCreateIntyg(logRequest, logUser);
