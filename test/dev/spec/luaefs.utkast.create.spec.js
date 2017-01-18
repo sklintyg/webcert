@@ -46,7 +46,7 @@ describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
             });
         });
 
-        it('tomt utkast skall visa lista med fel efter klick på "Visa vad som saknas"', function() {
+        it('tomt utkast skall visa lista med fel efter klick på Signera', function() {
 
             UtkastPage.disableAutosave();
 
@@ -121,12 +121,9 @@ describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
         });
 
         it('Ange kontakt önskas', function() {
-            var promiseArr = [];
-            promiseArr.push(UtkastPage.kontaktMedFkNo.click());
-            promiseArr.push(
-                UtkastPage.anledningTillKontakt.sendKeys('Patienten känner att en avstämning vore bra.'));
-
-            Promise.all(promiseArr);
+            UtkastPage.kontaktMedFkNo.sendKeys(protractor.Key.SPACE).then(function(){
+                UtkastPage.anledningTillKontakt.sendKeys('Patienten känner att en avstämning vore bra.');
+            });
         });
 
         it('Ange tilläggsfrågor', function() {

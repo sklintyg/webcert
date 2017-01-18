@@ -87,24 +87,6 @@ describe('Luse kompletteringsbegäran tests', function() {
             }];
         }
 
-        // INTYG-3252 frågeId 1 without instans parameter set
-        it('should show kompletteringsbegäran for group baseratPa', function () {
-            SokSkrivIntygPage.get();
-            proxy.whenGET(new RegExp('/moduleapi\/utkast\/luse\/testIntygId1\?.*')).respond(200, utkastData);
-            proxy.whenGET(new RegExp('/moduleapi\/arende\/testIntygId2\?.*')).respond(200, arendeData(
-                [{'position':0,'frageId':'1','text':'Detta är kompletteringstexten datum','jsonPropertyHandle':'baseratPa'}]
-            ));
-            proxy.whenPOST(/.*/).passThrough();
-            proxy.whenGET(/.*/).passThrough();
-            browser.setLocation('luse/edit/testIntygId1');
-
-            // Kompletteringsbegäran should be displayed immediately under validationGroup-baserasPa
-            expect(element(by.id('validationGroup-baserasPa')).getAttribute('class')).toContain('groupkomplettering');
-            expect(element(by.css('#validationGroup-baserasPa > .validation')).isDisplayed()).toBeTruthy();
-            expect(element(by.css('#validationGroup-baserasPa > .validation')).getText()).toEqual('Kompletteringsbegäran');
-            expect(element(by.css('.fieldkomplettering #form_undersokningAvPatienten')).isPresent()).toBeFalsy();
-        });
-
         it('should show kompletteringsbegäran for field undersokningAvPatienten', function () {
             SokSkrivIntygPage.get();
             proxy.whenGET(new RegExp('/moduleapi\/utkast\/luse\/testIntygId1\?.*')).respond(200, utkastData);
@@ -113,14 +95,14 @@ describe('Luse kompletteringsbegäran tests', function() {
             ));
             proxy.whenPOST(/.*/).passThrough();
             proxy.whenGET(/.*/).passThrough();
-            browser.setLocation('luse/edit/testIntygId1');
-
-            // Kompletteringsbegäran should not be displayed immediately under validationGroup-baserasPa
-            expect(element(by.css('#validationGroup-baserasPa > .validation')).isPresent()).toBeFalsy();
-            // Kompletteringsbegäran should be displayed under form_undersokningAvPatienten
-            expect(element(by.css('div[data-komplettering-section="undersokningAvPatienten"]')).isDisplayed()).toBeTruthy();
-            expect(element(by.css('div[data-komplettering-section="undersokningAvPatienten"]')).getText()).toEqual('Kompletteringsbegäran');
-            expect(element(by.css('.fieldkomplettering #form_undersokningAvPatienten')).isPresent()).toBeTruthy();
+            browser.setLocation('luse/edit/testIntygId1', function() {
+                // Kompletteringsbegäran should not be displayed immediately under validationGroup-baserasPa
+                expect(element(by.css('#validationGroup-baserasPa > .validation')).isPresent()).toBeFalsy();
+                // Kompletteringsbegäran should be displayed under form_undersokningAvPatienten
+                expect(element(by.css('div[data-komplettering-section="undersokningAvPatienten"]')).isDisplayed()).toBeTruthy();
+                expect(element(by.css('div[data-komplettering-section="undersokningAvPatienten"]')).getText()).toEqual('Kompletteringsbegäran');
+                expect(element(by.css('.fieldkomplettering #form_undersokningAvPatienten')).isPresent()).toBeTruthy();
+            });
         });
     });
 });
