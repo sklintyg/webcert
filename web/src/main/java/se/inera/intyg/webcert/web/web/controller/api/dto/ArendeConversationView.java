@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -29,21 +28,56 @@ import com.google.common.collect.ImmutableList;
 @AutoValue
 public abstract class ArendeConversationView {
 
+    @AutoValue
+    public abstract static class IntygInfo {
+        public abstract String getIntygsId();
+
+        public abstract String getSigneratAv();
+
+        public abstract LocalDateTime getSigneratDatum();
+
+        public abstract LocalDateTime getSkickatDatum();
+
+        public abstract String getNamnetPaSkapareAvIntyg();
+
+        public static IntygInfo create(String intygsId, String signeratAv, LocalDateTime signeratDatum, LocalDateTime skickatDatum,
+                String namnetPaSkapareAvIntyg) {
+            return new AutoValue_ArendeConversationView_IntygInfo(intygsId, signeratAv, signeratDatum, skickatDatum, namnetPaSkapareAvIntyg);
+        }
+    }
+
     public abstract ArendeView getFraga();
 
     @Nullable
     public abstract ArendeView getSvar();
 
     @Nullable
+    public abstract ArendeConversationView.IntygInfo getBesvaradMedIntyg();
+
+    @Nullable
     public abstract LocalDateTime getSenasteHandelse();
 
+    @Nullable
     public abstract ImmutableList<ArendeView> getPaminnelser();
 
-    public static ArendeConversationView create(ArendeView fraga,
-            ArendeView svar,
-            LocalDateTime senasteHandelse,
-            List<ArendeView> paminnelser) {
-        return new AutoValue_ArendeConversationView(fraga, svar, senasteHandelse, ImmutableList.copyOf(paminnelser));
+    public static Builder builder() {
+        return new AutoValue_ArendeConversationView.Builder();
+    }
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+
+        public abstract ArendeConversationView build();
+
+        public abstract Builder setFraga(ArendeView fraga);
+
+        public abstract Builder setSvar(ArendeView svar);
+
+        public abstract Builder setBesvaradMedIntyg(IntygInfo besvaradMedIntyg);
+
+        public abstract Builder setSenasteHandelse(LocalDateTime senasteHandelse);
+
+        public abstract Builder setPaminnelser(ImmutableList<ArendeView> paminnelser);
     }
 
 }

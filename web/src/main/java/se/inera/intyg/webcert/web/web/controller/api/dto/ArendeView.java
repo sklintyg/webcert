@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -102,7 +101,7 @@ public abstract class ArendeView {
 
     public static Builder builder() {
         return new AutoValue_ArendeView.Builder()
-                .setKompletteringar(ImmutableList.<MedicinsktArendeView> of())
+                .setKompletteringar(ImmutableList.of())
                 .setExternaKontakter(ImmutableList.<String> of());
     }
 
@@ -147,18 +146,9 @@ public abstract class ArendeView {
 
         public abstract Builder setVardaktorNamn(String vardaktorNamn);
 
-        public Builder setKompletteringar(List<MedicinsktArendeView> kompletteringar) {
-            return setKompletteringar(ImmutableList.copyOf(kompletteringar));
-        }
+        public abstract Builder setKompletteringar(ImmutableList<MedicinsktArendeView> kompletteringar);
 
-        public Builder setExternaKontakter(List<String> externaKontakter) {
-            return setExternaKontakter(ImmutableList.copyOf(externaKontakter));
-        }
-
-        /* package private */
-        abstract Builder setKompletteringar(ImmutableList<MedicinsktArendeView> kompletteringar);
-
-        abstract Builder setExternaKontakter(ImmutableList<String> kompletteringar);
+        public abstract Builder setExternaKontakter(ImmutableList<String> externaKontakter);
     }
 
 }

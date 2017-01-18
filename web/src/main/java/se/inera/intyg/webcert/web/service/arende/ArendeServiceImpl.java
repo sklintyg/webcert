@@ -169,8 +169,7 @@ public class ArendeServiceImpl implements ArendeService {
                 webcertUserService.getUser().getNamn(), hsaEmployeeService);
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE);
-
-        return arendeViewConverter.convertToArendeConversationView(saved, null, new ArrayList<>());
+        return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>());
     }
 
     @Override
@@ -214,7 +213,7 @@ public class ArendeServiceImpl implements ArendeService {
         if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())) {
             closeCompletionsAsHandled(svarPaMeddelande.getIntygsId(), svarPaMeddelande.getIntygTyp());
         }
-        return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved,
+        return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
                 arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId));
     }
 
@@ -227,6 +226,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         return arendeViewConverter.convertToArendeConversationView(updatedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
+                null,
                 arendeRepository.findByPaminnelseMeddelandeId(meddelandeId));
     }
 
@@ -259,6 +259,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         return arendeViewConverter.convertToArendeConversationView(openedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
+                null,
                 arendeRepository.findByPaminnelseMeddelandeId(meddelandeId));
     }
 
@@ -285,12 +286,14 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
-        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId);
 
         List<String> hsaEnhetIds = webcertUserService.getUser().getIdsOfSelectedVardenhet();
 
-        return arendeViewConverter
-                .buildArendeConversations(arendeList.stream().filter(a -> hsaEnhetIds.contains(a.getEnhetId())).collect(Collectors.toList()));
+        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId).stream()
+                .filter(a -> hsaEnhetIds.contains(a.getEnhetId()))
+                .collect(Collectors.toList());
+
+        return arendeViewConverter.buildArendeConversations(intygsId, arendeList);
     }
 
     @Override
@@ -320,7 +323,7 @@ public class ArendeServiceImpl implements ArendeService {
                 .filter(Objects::nonNull)
                 // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
                 // they want to display this information to the user. We cannot do this without a database access, hence
-                // we do it after the convert
+                // we do it after the convertToDto
                 .map(item -> {
                     item.setPaminnelse(!arendeRepository.findByPaminnelseMeddelandeId(item.getMeddelandeId()).isEmpty());
                     return item;
@@ -354,6 +357,7 @@ public class ArendeServiceImpl implements ArendeService {
             Arende closedArende = closeArendeAsHandled(lookupArende(meddelandeId));
             return arendeViewConverter.convertToArendeConversationView(closedArende,
                     arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
+                    null,
                     arendeRepository.findByPaminnelseMeddelandeId(meddelandeId));
         }
     }

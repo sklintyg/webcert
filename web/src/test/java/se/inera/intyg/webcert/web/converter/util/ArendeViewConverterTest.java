@@ -31,6 +31,7 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ import se.inera.intyg.common.util.integration.integration.json.CustomObjectMappe
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
@@ -94,25 +96,32 @@ public class ArendeViewConverterTest {
     @Mock
     private ModuleApi moduleApi;
 
+    @Mock
+    private UtkastRepository utkastRepository;
+
     @SuppressWarnings("unchecked")
     @Before
     public void setup() throws Exception {
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         Map<String, List<String>> map = new HashMap<>();
-        map.put("1", Arrays.asList(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1));
+        map.put("1", Arrays.asList(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1,
+                RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1));
         map.put("2", Arrays.asList(RespConstants.KANNEDOM_SVAR_JSON_ID_2));
         map.put("4", Arrays.asList("", "", RespConstants.UNDERLAG_SVAR_JSON_ID_4));
         when(moduleApi.getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class))).thenReturn(map);
+        when(utkastRepository.findAllByRelationIntygsId(any(String.class))).thenReturn(Collections.emptyList());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertToArendeForLuse() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                SKAPADAV_PERSON_ID,
-                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
+                .thenReturn(new IntygContentHolder("", buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                        SKAPADAV_PERSON_ID,
+                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
+                        false, null));
 
-        ArendeView result = converter.convert(buildArende("luse"));
+        ArendeView result = converter.convertToDto(buildArende("luse"));
 
         assertNotNull(result.getKompletteringar().get(0).getJsonPropertyHandle());
         assertEquals(RespConstants.KANNEDOM_SVAR_JSON_ID_2,
@@ -129,7 +138,7 @@ public class ArendeViewConverterTest {
     }
 
     @Test
-    public void convertToJson() throws JsonGenerationException, JsonMappingException, IOException{
+    public void convertToJson() throws JsonGenerationException, JsonMappingException, IOException {
         Arende arende = buildArende("lisjp");
         StringWriter jsonWriter = new StringWriter();
         CustomObjectMapper objectMapper = new CustomObjectMapper();
@@ -139,11 +148,13 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertToArendeForLisjp() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                SKAPADAV_PERSON_ID,
-                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
+                .thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                        SKAPADAV_PERSON_ID,
+                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
+                        false, null));
 
-        ArendeView result = converter.convert(buildArende("lisjp"));
+        ArendeView result = converter.convertToDto(buildArende("lisjp"));
 
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1,
                 result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -163,13 +174,15 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertKompletteringWithoutInstans() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                SKAPADAV_PERSON_ID,
-                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
+                .thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                        SKAPADAV_PERSON_ID,
+                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
+                        false, null));
 
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
-        ArendeView result = converter.convert(arende);
+        ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -183,13 +196,15 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertKompletteringInstansTooHigh() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                SKAPADAV_PERSON_ID,
-                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
+                .thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                        SKAPADAV_PERSON_ID,
+                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
+                        false, null));
 
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", 3, "arende1")));
-        ArendeView result = converter.convert(arende);
+        ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -203,13 +218,15 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertKompletteringUnknownQuestionId() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean())).thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                SKAPADAV_PERSON_ID,
-                LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null));
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
+                .thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                        SKAPADAV_PERSON_ID,
+                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
+                        false, null));
 
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));
-        ArendeView result = converter.convert(arende);
+        ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals("", result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -223,7 +240,7 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertToArendeWithoutKomplettering() throws ModuleNotFoundException {
-        ArendeView result = converter.convert(buildArende("meddelandeId", LocalDateTime.now(), LocalDateTime.now()));
+        ArendeView result = converter.convertToDto(buildArende("meddelandeId", LocalDateTime.now(), LocalDateTime.now()));
 
         assertTrue(result.getKompletteringar().isEmpty());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
@@ -243,7 +260,7 @@ public class ArendeViewConverterTest {
         final LocalDateTime paminnelse2Timestamp = paminnelse1Timestamp.minusDays(2);
 
         ArendeConversationView res = converter.convertToArendeConversationView(buildArende(fragaMeddelandeId, senasteHandelseFraga, LocalDateTime.now()),
-                buildArende(svarMeddelandeId, null, LocalDateTime.now()), Arrays.asList(buildArende(paminnelse2MeddelandeId, null, paminnelse2Timestamp),
+                buildArende(svarMeddelandeId, null, LocalDateTime.now()), null, Arrays.asList(buildArende(paminnelse2MeddelandeId, null, paminnelse2Timestamp),
                         buildArende(paminnelse1MeddelandeId, null, paminnelse1Timestamp)));
         assertNotNull(res);
         assertNotNull(res.getFraga());
@@ -275,7 +292,7 @@ public class ArendeViewConverterTest {
         arendeList.add(buildArende(UUID.randomUUID().toString(), decemberYear9999, decemberYear9999));
         arendeList.add(buildArende(UUID.randomUUID().toString(), january, january));
 
-        List<ArendeConversationView> result = converter.buildArendeConversations(arendeList);
+        List<ArendeConversationView> result = converter.buildArendeConversations(intygsId, arendeList);
 
         assertEquals(4, result.size());
         assertEquals(1, result.get(0).getPaminnelser().size());
