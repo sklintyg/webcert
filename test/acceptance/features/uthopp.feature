@@ -6,7 +6,7 @@ Egenskap: Uthoppsläge Fk7263
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som uthoppsläkare
 
-@fråga-uthopp @mailnotifikation 
+@fråga-uthopp @mailnotifikation @notReady
 Scenario: Ska gå in på intyg som är skickat till intygstjänsten
 När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
 Och jag skickar intyget direkt till Försäkringskassan
@@ -21,5 +21,3 @@ Scenario: Skicka fråga till Försäkringskassan
 	Och jag skickar en fråga med ämnet "Arbetstidsförläggning" till Försäkringskassan
 	Så ska ett info-meddelande visa "Frågan är skickad till Försäkringskassan"
 	Och ska jag se min fråga under ohanterade frågor
-
-
