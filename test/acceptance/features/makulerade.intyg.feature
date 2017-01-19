@@ -20,7 +20,7 @@ Scenario: Det ska gå att kopiera slumpat och makulerat SMI-intyg
    Och jag skickar intyget till Försäkringskassan
    Och jag makulerar intyget
    Så ska intyget visa varningen "Intyget är makulerat"
-   Så ska det finnas en knapp med texten "Kopiera"
+   Så ska det inte finnas en knapp med texten "Kopiera"
 
 
    Scenariomall: Utkast för <intygKod> ska inte kunna makuleras
