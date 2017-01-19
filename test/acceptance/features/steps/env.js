@@ -31,7 +31,7 @@ function checkConsoleErrors(cb) {
 }
 
 module.exports = function() {
-    this.setDefaultTimeout(300 * 1000);
+    this.setDefaultTimeout(500 * 1000);
     global.externalPageLinks = [];
 
     this.AfterStep(function(event, callback) {

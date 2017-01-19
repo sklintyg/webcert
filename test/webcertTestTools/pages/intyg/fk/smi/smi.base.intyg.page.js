@@ -68,7 +68,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             grund: element(by.id('diagnosgrund')),
             nyBedomningDiagnosgrundJa: element(by.id('nyBedomningDiagnosgrund-Ja')),
             nyBedomningDiagnosgrundNej: element(by.id('nyBedomningDiagnosgrund-Nej')),
-            nyBedomningDiagnosgrund: element(by.cssContainingText('.intyg-field', 'Finns skäl till att revidera/uppdatera tidigare satt diagnos?')),
+            nyBedomningDiagnosgrund: element(by.id('form_nyBedomningDiagnosgrund')),
             diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))
         };
 
@@ -96,10 +96,21 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             kanGoraTrotsBegransning: element(by.id('formagaTrotsBegransning'))
         };
 
+        this.andraMedicinskaUtredningar = {
+            field: element(by.id('form_underlagFinns')),
+            getUtredning: function(index) {
+                return {
+                    typ: element(by.id('underlag-' + index + '-typ')),
+                    datum: element(by.id('underlag-' + index + '-datum')),
+                    info: element(by.id('underlag-' + index + '-hamtasFran'))
+                };
+            }
+        };
+
         this.ovrigaUpplysningar = element(by.id('ovrigt'));
 
         this.kontaktFK = {
-            onskas: element(by.cssContainingText('.intyg-field', 'Jag önskar att Försäkringskassan kontaktar mig')),
+            onskas: element(by.id('form_kontaktMedFk')),
             ja: element(by.id('kontaktMedFk-Ja')),
             nej: element(by.id('kontaktMedFk-Nej')),
             anledning: element(by.id('anledningTillKontakt'))

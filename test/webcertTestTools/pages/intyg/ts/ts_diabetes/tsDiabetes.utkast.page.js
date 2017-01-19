@@ -85,12 +85,6 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             }
         };
 
-        this.bedomning = {
-            form: element(by.id('bedomningForm')),
-            yes: element(by.id('bedomningy')),
-            no: element(by.id('bedomningn'))
-        };
-
         this.patientAdress = {
             postAdress: element(by.id('patientPostadress')),
             postNummer: element(by.id('patientPostnummer')),
@@ -238,22 +232,6 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         } else {
             return this.syn.a.no.sendKeys(protractor.Key.SPACE);
         }
-    },
-    fillInBedomning: function(bedomningObj) {
-        var promisesArr = [];
-        console.log(bedomningObj);
-
-        promisesArr.push(this.bedomning.form.element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE));
-        promisesArr.push(pageHelpers.clickAll(this.bedomning.form.all(by.css('label.checkbox')), bedomningObj.behorigheter));
-
-        if (bedomningObj.lamplighet) {
-            if (bedomningObj.lamplighet === 'Ja') {
-                promisesArr.push(this.bedomning.yes.sendKeys(protractor.Key.SPACE));
-            } else {
-                promisesArr.push(this.bedomning.no.sendKeys(protractor.Key.SPACE));
-            }
-        }
-        return Promise.all(promisesArr);
     }
 });
 

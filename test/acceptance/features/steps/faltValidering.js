@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals pages,intyg,protractor,wcTestTools,Promise*/
+
+/*globals pages,intyg,protractor,wcTestTools,Promise,browser*/
+
 
 'use strict';
 var luseUtkastPage = pages.intyg.luse.utkast;
@@ -28,16 +30,9 @@ var helpers = require('./helpers');
 var fillInIntyg = require('./fillIn/fill_in_intyg_steps');
 var testdata = wcTestTools.testdata;
 var testdataHelpers = wcTestTools.helpers.testdata;
-var tmpDiagnos;
 
 var anhorigIgnoreKeys = ['forsakringsmedicinsktBeslutsstodBeskrivning', 'arbetstidsforlaggning', 'arbetsresor', 'formagaTrotsBegransningBeskrivning', 'prognos'];
 
-
-function setDiagnos(diagnos) {
-    tmpDiagnos = diagnos;
-    // console.log(diagnos);
-
-}
 
 function populateFieldArray(object, ignoreKeys) {
     var re = [];
@@ -103,7 +98,7 @@ module.exports = function() {
     this.Given(/^jag fyller i diagnoskod$/, function() {
 
         var diagnos = testdataHelpers.shuffle(testdata.fmb.fmbInfo.diagnoser)[0];
-        setDiagnos(diagnos);
+        global.tmpDiagnos = diagnos;
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
             return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
@@ -114,7 +109,7 @@ module.exports = function() {
     });
     this.Given(/^jag fyller i diagnoskod utan egen FMB info$/, function() {
         var diagnos = testdataHelpers.shuffle(testdata.fmb.utanEgenFMBInfo.diagnoser)[0];
-        setDiagnos(diagnos);
+        global.tmpDiagnos = diagnos;
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
             return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
@@ -128,20 +123,20 @@ module.exports = function() {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         //var diagnos = testdataHelpers.shuffle(testdata.fmb.fmbInfo.diagnoser)[0];
         //setDiagnos(diagnos);
-        console.log(tmpDiagnos);
-        return checkFMB(isSMIIntyg, true, tmpDiagnos, tmpDiagnos.falt.length);
+        console.log(global.tmpDiagnos);
+        return checkFMB(isSMIIntyg, true, global.tmpDiagnos, global.tmpDiagnos.falt.length);
 
     });
 
     this.Given(/^ska FMB info för överliggande diagnoskod visas$/, function() {
-        console.log(tmpDiagnos);
+        console.log(global.tmpDiagnos);
 
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        return checkFMB(isSMIIntyg, false, tmpDiagnos, tmpDiagnos.falt.length - 1); //kontrollerar även allert texten
+        return checkFMB(isSMIIntyg, false, global.tmpDiagnos, global.tmpDiagnos.falt.length - 1); //kontrollerar även allert texten
     });
     this.Given(/^jag fyller i diagnoskod utan FMB info$/, function() {
         var diagnos = testdataHelpers.shuffle(testdata.fmb.utanFMBInfo.diagnoser)[0];
-        setDiagnos(diagnos);
+        global.tmpDiagnos = diagnos;
         console.log(diagnos);
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
@@ -180,6 +175,15 @@ module.exports = function() {
             return expect(result.join('\n')).to.have.string(arg1);
         });
     });
+
+    this.Given(/^ska varken "([^"]*)" eller info om det saknade "([^"]*)" finnas kvar$/, function(feltext, fältet) {
+        // Write code here that turns the phrase above into concrete actions
+
+        return expect(element(by.css('.alert-danger')).isDisplayed()).to.eventually.equal(false).then(function() {
+            return expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(false);
+        });
+    });
+
 
     // this.Given(/^ska "([^"]*)" valideringsfelet, "([^"]*)" visas$/, function(arg1, arg2) {
 
@@ -245,6 +249,14 @@ module.exports = function() {
                     insulinYear: 'text'
                 }
             });
+        } else if (fieldtype === 'UndersökningsDatum') {
+
+            return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('10/12-2017').then(function() {
+                var enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                return enter.perform();
+            });
+
+
         } else {
             return fkUtkastPage.diagnosKod.sendKeys(date);
         }
@@ -269,6 +281,22 @@ module.exports = function() {
 
 
     });
+    this.Given(/^jag ändrar till giltig text i "([^"]*)"$/, function(fieldtype) {
+        if (fieldtype === 'UndersökningsDatum') {
+            return fkUtkastPage.baserasPa.minUndersokning.datum.clear().then(function() {
+                return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2017-01-12').then(function() {
+                    var enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                    console.log('Ändrar datum');
+                    return enter.perform();
+
+                });
+            });
+        }
+
+    });
+
+
+
 
 
 };

@@ -1,5 +1,5 @@
 # language: sv
-@faltvalidering @ts @kristi
+@faltvalidering @ts 
 # Funktion har ändrats. TF behöver uppdateras
 Egenskap: Fältvalidering TS
 
@@ -16,3 +16,5 @@ Scenariomall: Validera felaktigt <typAvFält> i <intygsTyp>
 Exempel:
  	| intygsTyp                     |	 typAvFält		     	| feltext       				    |
     |"Transportstyrelsens läkarintyg, diabetes"	|	"insulin-datum"	| "År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än år 1900."			|
+
+

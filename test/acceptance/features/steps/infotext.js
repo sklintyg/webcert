@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* globals logger */
+/* globals logger , Promise*/
 
 'use strict';
 
@@ -89,6 +89,19 @@ module.exports = function() {
     this.Given(/^ska jag se en lista med vad som saknas$/, function() {
         return expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(true);
     });
+
+    this.Given(/^ska jag se en lista med endast det saknade "([^"]*)"$/, function(saknat) {
+        var str = 'Utkastet saknar uppgifter i följande avsnitt\n' + saknat;
+        var promiseArray = []; // Write code here that turns the phrase above into concrete actions  
+        promiseArray.push(expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(true));
+        promiseArray.push(expect(element(by.id('visa-vad-som-saknas-lista')).getText()).to.eventually.equal(str));
+        return Promise.all(promiseArray);
+
+    });
+    this.Given(/^ska utkastets statusheader meddela "([^"]*)"$/, function(meddelande) {
+        return expect(element(by.id('intyget-sparat-och-ej-komplett-meddelande')).getText()).to.eventually.contain(meddelande);
+    });
+
 
 
 

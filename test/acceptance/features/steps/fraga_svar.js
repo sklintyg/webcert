@@ -142,7 +142,9 @@ module.exports = function() {
     this.Given(/^ska det finnas en knapp med texten "([^"]*)"$/, function(texten) {
         return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(true);
     });
-
+    this.Given(/^ska det inte finnas en knapp med texten "([^"]*)"$/, function(texten) {
+        return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
+    });
 
     this.Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
         var fragaText;
