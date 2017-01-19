@@ -26,6 +26,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -57,13 +58,15 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
-    public static final String VARDGIVARE_1 = "VG1";
-    public static final String VARDGIVARE_2 = "VG2";
+    private static final String VARDGIVARE_1 = "VG1";
+    private static final String VARDGIVARE_2 = "VG2";
 
-    public static final String VARDENHET_1 = "VG1VE1";
-    public static final String VARDENHET_2 = "VG1VE2";
-    public static final String VARDENHET_3 = "VG2VE1";
-    public static final String VARDENHET_4 = "VG2VE2";
+    private static final String VARDENHET_1 = "VG1VE1";
+    private static final String VARDENHET_2 = "VG1VE2";
+    private static final String VARDENHET_3 = "VG2VE1";
+    private static final String VARDENHET_4 = "VG2VE2";
+
+    private static final String MOTTAGNING_1 = "VG1VE1M1";
 
     @Mock
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
@@ -184,6 +187,26 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(anvandarPreferenceRepository, times(2)).delete(any(AnvandarPreference.class));
     }
 
+    @Test
+    public void testGetMiuOk() {
+        WebCertUser user = createWebCertUser(false);
+        assertEquals("Mitt uppdrag", user.getSelectedMedarbetarUppdragNamn());
+    }
+
+    @Test
+    public void testGetMiuWhenOnMottagning() {
+        WebCertUser user = createWebCertUser(false);
+        ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning());
+        user.changeValdVardenhet(MOTTAGNING_1);
+        assertEquals("Mitt mottagningsuppdrag", user.getSelectedMedarbetarUppdragNamn());
+    }
+
+    private Mottagning buildMottagning() {
+        Mottagning mottagning = new Mottagning(MOTTAGNING_1, "Mottagningen");
+        mottagning.setParentHsaId(VARDENHET_1);
+        return mottagning;
+    }
+
     private Map<String, String> buildMapOfAllUserPrefs() {
         Map<String, String> prefs = new HashMap<>();
         prefs.put("key1", "value1");
@@ -238,6 +261,8 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         user.setValdVardenhet(vg1ve1);
         user.setValdVardgivare(vg1);
 
+        user.setMiuNamnPerEnhetsId(buildMiuMap());
+
         if (fromJS) {
             user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
         } else {
@@ -245,6 +270,13 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         }
 
         return user;
+    }
+
+    private Map<String, String> buildMiuMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put(VARDENHET_1, "Mitt uppdrag");
+        map.put(MOTTAGNING_1, "Mitt mottagningsuppdrag");
+        return map;
     }
 
     private WebCertUser buildUserPrincipal() {
