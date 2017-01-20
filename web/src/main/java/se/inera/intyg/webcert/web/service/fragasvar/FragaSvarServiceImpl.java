@@ -65,10 +65,12 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
+import se.inera.intyg.webcert.web.converter.util.BesvaratMedIntygUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -82,6 +84,8 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.BesvaratMedIntyg;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 
 /**
  * @author andreaskaltenbach
@@ -131,6 +135,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private MonitoringLogService monitoringService;
+
+    @Autowired
+    private UtkastRepository utkastRepository;
 
     @Override
     public FragaSvar processIncomingQuestion(FragaSvar fragaSvar) {
@@ -189,7 +196,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public List<FragaSvar> getFragaSvar(String intygId) {
+    public List<FragaSvarView> getFragaSvar(String intygId) {
 
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
 
@@ -212,7 +219,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // property and not a direct entity persisted
         // property in which case we could have used an order by in the query.
         Collections.sort(fragaSvarList, SENASTE_HANDELSE_DATUM_COMPARATOR);
-        return fragaSvarList;
+
+        // INTYG-3318
+        List<BesvaratMedIntyg> bmi = BesvaratMedIntygUtil.findAllKomplementForGivenIntyg(intygId, utkastRepository);
+        List<FragaSvarView> fragaSvarWithBesvaratMedIntygInfo = fragaSvarList.stream()
+                .map(fs -> FragaSvarView.create(fs,
+                        fs.getFrageSkickadDatum() == null ? null : BesvaratMedIntygUtil.returnOldestKompltOlderThan(fs.getFrageSkickadDatum(), bmi)))
+                .collect(Collectors.toList());
+        return fragaSvarWithBesvaratMedIntygInfo;
     }
 
     @Override

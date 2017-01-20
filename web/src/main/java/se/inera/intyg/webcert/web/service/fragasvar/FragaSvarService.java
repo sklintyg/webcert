@@ -19,13 +19,16 @@
 package se.inera.intyg.webcert.web.service.fragasvar;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 
 /**
  * @author andreaskaltenbach
@@ -41,7 +44,7 @@ public interface FragaSvarService {
     /**
      * Returns all the question/answer pairs that exist for the given certificate.
      */
-    List<FragaSvar> getFragaSvar(String intygId);
+    List<FragaSvarView> getFragaSvar(String intygId);
 
     /**
      * Create an answer for an existing question.
