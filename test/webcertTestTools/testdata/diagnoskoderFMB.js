@@ -23,117 +23,183 @@ module.exports = {
     fmbInfo: {
         diagnoser: [{
             kod: 'S83',
-            falt: ['Skador orsakade av yttre våld mot kroppens extremiteter',
-                'arbetsförmågan är ofta inte nedsatt någon längre tid ',
-                'Skadorna minskar förmågan att gå och stå', null,
-                'I arbeten som kan utföras mestadels stillasittande'
-            ]
+            symptomPrognosBehandling: 'Skador orsakade av yttre våld mot kroppens extremiteter',
+            generellInfo: 'arbetsförmågan är ofta inte nedsatt någon längre tid ',
+            funktionsnedsattning: 'Skadorna minskar förmågan att gå och stå',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'I arbeten som kan utföras mestadels stillasittande'
+
         }, {
             kod: 'S832',
-            falt: ['Meniskskador kan uppkomma', 'Akuta besvär efter en meniskskada',
-                'upphakningar i knäleden', 'Påverkad gångförmåga', 'I akutskede efter knädistorsionsskada'
-            ]
+            symptomPrognosBehandling: 'Meniskskador kan uppkomma',
+            generellInfo: 'Akuta besvär efter en meniskskada',
+            funktionsnedsattning: 'upphakningar i knäleden',
+            aktivitetsbegransning: 'Påverkad gångförmåga',
+            beslutsunderlag: 'I akutskede efter knädistorsionsskada'
+
         }, {
             kod: 'S835',
-            falt: ['Meniskskador kan uppkomma efter trauma', 'Akuta besvär efter en meniskskada',
-                'Meniskskador kan ge upphakningar', 'Påverkad gångförmåga', 'I akutskede'
-            ]
+            symptomPrognosBehandling: 'Meniskskador kan uppkomma efter trauma',
+            generellInfo: 'Akuta besvär efter en meniskskada',
+            funktionsnedsattning: 'Meniskskador kan ge upphakningar',
+            aktivitetsbegransning: 'Påverkad gångförmåga',
+            beslutsunderlag: 'I akutskede'
+
         }, {
             kod: 'S90',
-            falt: ['Skador orsakade av yttre våld', 'arbetsförmågan är ofta',
-                'Skadorna minskar förmågan', null, null
-            ]
+            symptomPrognosBehandling: 'Skador orsakade av yttre våld',
+            generellInfo: 'arbetsförmågan är ofta',
+            funktionsnedsattning: 'Skadorna minskar förmågan',
+            aktivitetsbegransning: null,
+            beslutsunderlag: null
+
         }, {
             kod: 'S92',
-            falt: ['Skador orsakade av', 'arbetsförmågan är ofta inte nedsatt',
-                'Skadorna minskar förmågan', null, 'I arbeten som kan utföras'
-            ]
+            symptomPrognosBehandling: 'Skador orsakade av',
+            generellInfo: 'arbetsförmågan är ofta inte nedsatt',
+            funktionsnedsattning: 'Skadorna minskar förmågan',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'I arbeten som kan utföras'
+
         }, {
             kod: 'S93',
-            falt: ['Skador orsakade av', 'arbetsförmågan är ofta ',
-                'Skadorna minskar förmågan ', null, null
-            ]
+            symptomPrognosBehandling: 'Skador orsakade av',
+            generellInfo: 'arbetsförmågan är ofta ',
+            funktionsnedsattning: 'Skadorna minskar förmågan ',
+            aktivitetsbegransning: null,
+            beslutsunderlag: null
+
         }, {
             kod: 'R09',
-            falt: [null, 'Sjukskrivning enbart', null, null, null]
+            symptomPrognosBehandling: null,
+            generellInfo: 'Sjukskrivning enbart',
+            funktionsnedsattning: null,
+            aktivitetsbegransning: null,
+            beslutsunderlag: null
         }, {
             kod: 'O267',
-            falt: ['Smärtor i bäckenet och', 'Observandum', 'begränsas förmågan att lyfta', 'Gå, stå sitta', 'Flertalet gravida']
+            symptomPrognosBehandling: 'Smärtor i bäckenet och',
+            generellInfo: 'Observandum',
+            funktionsnedsattning: 'begränsas förmågan att lyfta',
+            aktivitetsbegransning: 'Gå, stå sitta',
+            beslutsunderlag: 'Flertalet gravida'
         }, {
             kod: 'N850',
-            falt: ['Rekommendationen omfattar operation', 'Komplikationer kan', 'Bukväggskirurgi', null, 'Vid kombinerad laparoskopisk']
+            symptomPrognosBehandling: 'Rekommendationen omfattar operation',
+            generellInfo: 'Komplikationer kan',
+            funktionsnedsattning: 'Bukväggskirurgi',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'Vid kombinerad laparoskopisk'
         }, {
             kod: 'M753',
-            falt: ['Kortvariga besvär', 'De akuta besvären', 'axelbesvär ger ofta så akuta smärtor', null, 'Kalkaxel och impingementsyndrom']
+            symptomPrognosBehandling: 'Kortvariga besvär',
+            generellInfo: 'De akuta besvären',
+            funktionsnedsattning: 'axelbesvär ger ofta så akuta smärtor',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'Kalkaxel och impingementsyndrom'
         }, {
             kod: 'M751',
-            falt: ['drabbade axelleden', 'rotatorcuffsyndrom', 'axelbesvär ger ofta', null, 'Kalkaxel och impingementsyndrom']
+            symptomPrognosBehandling: 'drabbade axelleden',
+            generellInfo: 'rotatorcuffsyndrom',
+            funktionsnedsattning: 'axelbesvär ger ofta',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'Kalkaxel och impingementsyndrom'
         }, {
             kod: 'R40',
-            falt: [null, 'Sjukskrivning enbart utifrån symtom ska undvikas', null, null, null]
+            symptomPrognosBehandling: null,
+            generellInfo: 'Sjukskrivning enbart utifrån symtom ska undvikas',
+            funktionsnedsattning: null,
+            aktivitetsbegransning: null,
+            beslutsunderlag: null
         }]
     },
     utanEgenFMBInfo: {
         diagnoser: [{
             kod: 'S830',
-            falt: ['Skador orsakade av yttre våld', 'arbetsförmågan är ofta inte', 'Skadorna minskar förmågan', null,
-                'I arbeten som kan utföras mestadels stillasittande', 'För S830 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S83'
-            ]
+            symptomPrognosBehandling: 'Skador orsakade av yttre våld',
+            generellInfo: 'arbetsförmågan är ofta inte',
+            funktionsnedsattning: 'Skadorna minskar förmågan',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'I arbeten som kan utföras mestadels stillasittande',
+            overliggande: 'För S830 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S83'
+
         }, {
             kod: 'S831',
-            falt: ['Skador orsakade av yttre våld', 'arbetsförmågan är ofta inte', 'Skadorna minskar förmågan', null,
-                'I arbeten som kan utföras mestadels stillasittande', 'För S831 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S83'
-            ]
+            symptomPrognosBehandling: 'Skador orsakade av yttre våld',
+            generellInfo: 'arbetsförmågan är ofta inte',
+            funktionsnedsattning: 'Skadorna minskar förmågan',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'I arbeten som kan utföras mestadels stillasittande',
+            overliggande: 'För S831 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S83'
+
         }, {
             kod: 'R010',
-            falt: [null, 'Sjukskrivning enbart utifrån ', null, null, null, 'För R010 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden R01']
+            symptomPrognosBehandling: null,
+            generellInfo: 'Sjukskrivning enbart utifrån ',
+            funktionsnedsattning: null,
+            aktivitetsbegransning: null,
+            beslutsunderlag: null,
+            overliggande: 'För R010 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden R01'
         }, {
             kod: 'R090',
-            falt: [null, 'Sjukskrivning enbart utifrån symtom', null, null, null, 'För R090 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden R09']
+            symptomPrognosBehandling: null,
+            generellInfo: 'Sjukskrivning enbart utifrån symtom',
+            funktionsnedsattning: null,
+            aktivitetsbegransning: null,
+            beslutsunderlag: null,
+            overliggande: 'För R090 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden R09'
         }, {
             kod: 'N210',
-            falt: ['Symtomen vid njursten är svåra smärtor', 'Efter akuta pyelonefrit',
-                'Vid akuta njurstensanfall', null, 'Vid akut njurstensanfall', 'För N210 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden N21'
-            ]
+            symptomPrognosBehandling: 'Symtomen vid njursten är svåra smärtor',
+            generellInfo: 'Efter akuta pyelonefrit',
+            funktionsnedsattning: 'Vid akuta njurstensanfall',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'Vid akut njurstensanfall',
+            overliggande: 'För N210 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden N21'
+
         }, {
             kod: 'S302',
-            falt: ['Skador orsakade av yttre', 'arbetsförmågan är ofta inte', 'Skadorna minskar förmågan att gå och stå',
-                null, null, 'För S302 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S30'
-            ]
+            symptomPrognosBehandling: 'Skador orsakade av yttre',
+            generellInfo: 'arbetsförmågan är ofta inte',
+            funktionsnedsattning: 'Skadorna minskar förmågan att gå och stå',
+            aktivitetsbegransning: null,
+            beslutsunderlag: null,
+            overliggande: 'För S302 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S30'
+
         }, {
             kod: 'F420',
-            falt: ['Tvångssyndrom kännetecknas', 'Sjukskrivning kan i', 'Tvångssyndrom kan medföra',
-                null, 'Sjukskrivning kan i många fall undvikas', 'För F420 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden F42'
-            ]
+            symptomPrognosBehandling: 'Tvångssyndrom kännetecknas',
+            generellInfo: 'Sjukskrivning kan i',
+            funktionsnedsattning: 'Tvångssyndrom kan medföra',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'Sjukskrivning kan i många fall undvikas',
+            overliggande: 'För F420 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden F42'
+
         }, {
             kod: 'G359',
-            falt: ['Multipel skleros', 'Vid sjukdomsdebut', 'Hur MS påverkar', null, 'Vid sjukdomsdebut',
-                'För G359 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden G35'
-            ]
+            symptomPrognosBehandling: 'Multipel skleros',
+            generellInfo: 'Vid sjukdomsdebut',
+            funktionsnedsattning: 'Hur MS påverkar',
+            aktivitetsbegransning: null,
+            beslutsunderlag: 'Vid sjukdomsdebut',
+            overliggande: 'För G359 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden G35'
+
         }]
 
     },
     utanFMBInfo: {
         diagnoser: [{
-            kod: 'H92',
-            falt: [{}]
+            kod: 'H92'
         }, {
-            kod: 'I00',
-            falt: [{}]
+            kod: 'I00'
         }, {
-            kod: 'N08',
-            falt: [{}]
+            kod: 'N08'
         }, {
-            kod: 'M76',
-            falt: [{}]
+            kod: 'M76'
         }, {
-            kod: 'O00',
-            falt: [{}]
+            kod: 'O00'
         }, {
-            kod: 'A00',
-            falt: [{}]
+            kod: 'A00'
         }]
-
     }
-
 };

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals pages,intyg,protractor,wcTestTools,Promise,browser*/
+/*globals pages,intyg,protractor,wcTestTools,Promise,browser,logger*/
 
 
 'use strict';
@@ -50,100 +50,108 @@ function populateFieldArray(object, ignoreKeys) {
     return re;
 }
 
-function checkFMB(isSMIIntyg, egenDiagnos, fmbDiagnos, antalDiagnoser) {
-    var promiseArray = [];
+function checkFMB(fmbDiagnos) {
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     var page;
     if (isSMIIntyg) {
         page = lisjpUtkastPage;
     } else {
         page = fkUtkastPage;
     }
-    console.log(antalDiagnoser);
-    var elm;
-    elm = element(by.id(page.fmbButtons[0]));
-    elm.sendKeys(protractor.Key.SPACE);
-    if (egenDiagnos === false) { //kontrollerar allerttexten att det är en överliggande fmb text
-        promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.falt[5]));
-    }
-    for (var k = 0; k < 2; k++) {
-        if (fmbDiagnos.falt[k]) { //kontrollerar texterna i diagnosrutan
-            promiseArray.push(expect(element(by.id(page.fmbDialogs[k])).getText()).to.eventually.contain(fmbDiagnos.falt[k]));
-        }
+    var elm = page.fmbButtons.falt2;
+    return elm.sendKeys(protractor.Key.SPACE).then(function() {
 
-    }
-    for (var i = 2; i < antalDiagnoser; i++) {
-        if (fmbDiagnos.falt[i]) { //kontroll av övriga fmbtexter
-            elm = element(by.id(page.fmbButtons[i - 1]));
-            elm.sendKeys(protractor.Key.SPACE);
-            promiseArray.push(expect(element(by.id(page.fmbDialogs[i])).getText()).to.eventually.contain(fmbDiagnos.falt[i]));
+        var promiseArray = [];
+
+        if (fmbDiagnos.overliggande) {
+            logger.info('Kontrollerar överliggande');
+            promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.overliggande));
+
         }
-    }
-    return Promise.all(promiseArray);
+        if (fmbDiagnos.symptomPrognosBehandling) {
+            logger.info('Kontrollerar Symtom Prognos Behandling');
+            promiseArray.push(expect(page.fmbDialogs.symptomPrognosBehandling.getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
+
+        }
+        if (fmbDiagnos.generellInfo) {
+            logger.info('Kontrollerar Generell info');
+            promiseArray.push(expect(page.fmbDialogs.generellInfo.getText()).to.eventually.contain(fmbDiagnos.generellInfo));
+
+        }
+        if (fmbDiagnos.funktionsnedsattning) {
+            logger.info('Kontrollerar Funktionsnedsättning');
+            promiseArray.push(
+
+                page.fmbButtons.falt4.sendKeys(protractor.Key.SPACE).then(function() {
+                    return expect(page.fmbDialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning);
+                }));
+        }
+        if (fmbDiagnos.aktivitetsbegransning) {
+            logger.info('Kontrollerar Aktivietsbegränsning');
+            promiseArray.push(
+                page.fmbButtons.falt5.sendKeys(protractor.Key.SPACE).then(function() {
+                    return expect(page.fmbDialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning);
+                }));
+
+        }
+        if (fmbDiagnos.beslutsunderlag) {
+            logger.info('Kontrollerar Beslutsunderlag');
+
+            promiseArray.push(page.fmbButtons.falt8.sendKeys(protractor.Key.SPACE).then(function() {
+                return expect(page.fmbDialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag);
+            }));
+        }
+        return Promise.all(promiseArray);
+
+    });
+
 }
 
+function fillInDiagnoskod(diagnos) {
+    logger.info('Anger diagnos:', diagnos);
+    global.tmpDiagnos = diagnos;
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    if (isSMIIntyg) {
+        return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
+    } else {
+        return fkUtkastPage.angeDiagnosKod(diagnos.kod);
+    }
+}
 
 module.exports = function() {
 
     this.Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-
-        if (isSMIIntyg) {
-            return luseUtkastPage.diagnoseCode.sendKeys(dKod);
-        } else {
-            return fkUtkastPage.diagnosKod.sendKeys(dKod);
-        }
+        return fillInDiagnoskod({
+            kod: dKod
+        });
 
 
     });
     this.Given(/^jag fyller i diagnoskod$/, function() {
-
         var diagnos = testdataHelpers.shuffle(testdata.fmb.fmbInfo.diagnoser)[0];
-        global.tmpDiagnos = diagnos;
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
-        } else {
-            return fkUtkastPage.angeDiagnosKod(diagnos.kod);
-        }
+        return fillInDiagnoskod(diagnos);
 
     });
     this.Given(/^jag fyller i diagnoskod utan egen FMB info$/, function() {
         var diagnos = testdataHelpers.shuffle(testdata.fmb.utanEgenFMBInfo.diagnoser)[0];
-        global.tmpDiagnos = diagnos;
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
-        } else {
-            return fkUtkastPage.angeDiagnosKod(diagnos.kod);
-        }
+        return fillInDiagnoskod(diagnos);
     });
 
 
     this.Given(/^ska rätt info gällande FMB visas$/, function() {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        //var diagnos = testdataHelpers.shuffle(testdata.fmb.fmbInfo.diagnoser)[0];
-        //setDiagnos(diagnos);
-        console.log(global.tmpDiagnos);
-        return checkFMB(isSMIIntyg, true, global.tmpDiagnos, global.tmpDiagnos.falt.length);
+
+        logger.info(global.tmpDiagnos);
+        return checkFMB(global.tmpDiagnos);
 
     });
 
     this.Given(/^ska FMB info för överliggande diagnoskod visas$/, function() {
-        console.log(global.tmpDiagnos);
-
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        return checkFMB(isSMIIntyg, false, global.tmpDiagnos, global.tmpDiagnos.falt.length - 1); //kontrollerar även allert texten
+        logger.info(global.tmpDiagnos);
+        return checkFMB(global.tmpDiagnos); //kontrollerar även allert texten
     });
     this.Given(/^jag fyller i diagnoskod utan FMB info$/, function() {
         var diagnos = testdataHelpers.shuffle(testdata.fmb.utanFMBInfo.diagnoser)[0];
-        global.tmpDiagnos = diagnos;
-        console.log(diagnos);
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
-        } else {
-            return fkUtkastPage.angeDiagnosKod(diagnos.kod);
-        }
+        fillInDiagnoskod(diagnos);
     });
 
     this.Given(/^ska ingen info gällande FMB visas$/, function() {
@@ -157,10 +165,10 @@ module.exports = function() {
 
         }
 
-        promiseArray.push(expect(element(by.id(page.fmbButtons[0])).isDisplayed()).to.become(false));
-        promiseArray.push(expect(element(by.id(page.fmbButtons[1])).isDisplayed()).to.become(false));
-        promiseArray.push(expect(element(by.id(page.fmbButtons[2])).isDisplayed()).to.become(false));
-        promiseArray.push(expect(element(by.id(page.fmbButtons[3])).isDisplayed()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt2.isDisplayed()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt4.isDisplayed()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt5.isDisplayed()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt8.isDisplayed()).to.become(false));
 
 
         return Promise.all(promiseArray);
@@ -184,41 +192,6 @@ module.exports = function() {
         });
     });
 
-
-    // this.Given(/^ska "([^"]*)" valideringsfelet, "([^"]*)" visas$/, function(arg1, arg2) {
-
-    //     if (arg1 === 'postnummer') {
-    //         element(by.css('span[stat-key="common.validation.postnummer.incorrect-format"]')).getText().then(function(text) {
-    //             return expect(text).to.contain(arg2);
-    //         });
-    //     } else if (arg1 === 'underlag') {
-    //         element(by.css('span[stat-key="luse.validation.underlag.date.incorrect_format"]')).getText().then(function(text) {
-    //             return expect(text).to.contain(arg2);
-    //         });
-    //     } else if (arg1 === 'underlag-LUAEFS') {
-    //         element(by.css('span[stat-key="luae_fs.validation.underlag.date.incorrect_format"]')).getText().then(function(text) {
-    //             return expect(text).to.contain(arg2);
-    //         });
-    //     } else if (arg1 === 'underlag-LUAENA') {
-    //         element(by.css('span[stat-key="luae_na.validation.underlag.date.incorrect_format"]')).getText().then(function(text) {
-    //             return expect(text).to.contain(arg2);
-    //         });
-    //     } else if (arg1 === 'datum') {
-    //         element(by.css('span[key="common.validation.date.INVALID_FORMAT"]')).getText().then(function(text) {
-    //             return expect(text).to.contain(arg2);
-    //         });
-    //     } else if (arg1 === 'kännedom') {
-    //         element(by.css('span[key="common.validation.singleDate.INVALID_FORMAT"]')).getText().then(function(text) {
-    //             return expect(text).to.contain(arg2);
-    //         });
-    //     } else if (arg1 === 'arbetsförmåga') {
-    //         element(by.css('span[key="common.validation.date-period.INVALID_FORMAT"]')).getText().then(function(text) {
-    //             return expect(text).to.contain(arg2);
-    //         });
-
-    //     } else {
-    //         return;
-    //     }
 
     this.Given(/^jag fyller i text i "([^"]*)" fältet$/, function(fieldtype) {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
