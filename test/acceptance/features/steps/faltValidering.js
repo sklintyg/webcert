@@ -60,50 +60,65 @@ function checkFMB(fmbDiagnos) {
     }
     var elm = page.fmbButtons.falt2;
     return elm.sendKeys(protractor.Key.SPACE).then(function() {
+            return browser.sleep(2000);
+        })
+        .then(function() {
 
-        var promiseArray = [];
+            var promiseArray = [];
 
-        if (fmbDiagnos.overliggande) {
-            logger.info('Kontrollerar överliggande');
-            promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.overliggande));
+            if (fmbDiagnos.overliggande) {
+                logger.info('Kontrollerar överliggande');
+                promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.overliggande));
 
-        }
-        if (fmbDiagnos.symptomPrognosBehandling) {
-            logger.info('Kontrollerar Symtom Prognos Behandling');
-            promiseArray.push(expect(page.fmbDialogs.symptomPrognosBehandling.getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
+            }
+            if (fmbDiagnos.symptomPrognosBehandling) {
+                logger.info('Kontrollerar Symtom Prognos Behandling');
+                promiseArray.push(expect(page.fmbDialogs.symptomPrognosBehandling.getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
 
-        }
-        if (fmbDiagnos.generellInfo) {
-            logger.info('Kontrollerar Generell info');
-            promiseArray.push(expect(page.fmbDialogs.generellInfo.getText()).to.eventually.contain(fmbDiagnos.generellInfo));
+            }
+            if (fmbDiagnos.generellInfo) {
+                logger.info('Kontrollerar Generell info');
+                promiseArray.push(expect(page.fmbDialogs.generellInfo.getText()).to.eventually.contain(fmbDiagnos.generellInfo));
 
-        }
-        if (fmbDiagnos.funktionsnedsattning) {
-            logger.info('Kontrollerar Funktionsnedsättning');
-            promiseArray.push(
+            }
+            if (fmbDiagnos.funktionsnedsattning) {
+                logger.info('Kontrollerar Funktionsnedsättning');
+                promiseArray.push(
 
-                page.fmbButtons.falt4.sendKeys(protractor.Key.SPACE).then(function() {
-                    return expect(page.fmbDialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning);
-                }));
-        }
-        if (fmbDiagnos.aktivitetsbegransning) {
-            logger.info('Kontrollerar Aktivietsbegränsning');
-            promiseArray.push(
-                page.fmbButtons.falt5.sendKeys(protractor.Key.SPACE).then(function() {
-                    return expect(page.fmbDialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning);
-                }));
+                    page.fmbButtons.falt4.sendKeys(protractor.Key.SPACE)
+                    .then(function() {
+                        return browser.sleep(2000);
+                    })
+                    .then(function() {
+                        return expect(page.fmbDialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning);
+                    }));
+            }
+            if (fmbDiagnos.aktivitetsbegransning) {
+                logger.info('Kontrollerar Aktivietsbegränsning');
+                promiseArray.push(
+                    page.fmbButtons.falt5.sendKeys(protractor.Key.SPACE)
+                    .then(function() {
+                        return browser.sleep(2000);
+                    })
+                    .then(function() {
+                        return expect(page.fmbDialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning);
+                    }));
 
-        }
-        if (fmbDiagnos.beslutsunderlag) {
-            logger.info('Kontrollerar Beslutsunderlag');
+            }
+            if (fmbDiagnos.beslutsunderlag) {
+                logger.info('Kontrollerar Beslutsunderlag');
 
-            promiseArray.push(page.fmbButtons.falt8.sendKeys(protractor.Key.SPACE).then(function() {
-                return expect(page.fmbDialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag);
-            }));
-        }
-        return Promise.all(promiseArray);
+                promiseArray.push(page.fmbButtons.falt8.sendKeys(protractor.Key.SPACE)
+                    .then(function() {
+                        return browser.sleep(2000);
+                    })
+                    .then(function() {
+                        return expect(page.fmbDialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag);
+                    }));
+            }
+            return Promise.all(promiseArray);
 
-    });
+        });
 
 }
 
