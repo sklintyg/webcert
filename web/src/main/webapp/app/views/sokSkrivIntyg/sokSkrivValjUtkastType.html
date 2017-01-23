@@ -55,7 +55,7 @@
                   <span message key="{{viewState.createErrorMessageKey}}"></span>
                 </div>
 
-                <div class="alert alert-warning col-lg-7"
+                <div class="alert alert-info col-lg-7"
                      ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
                      id="intygTypeWarning">
                   <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
@@ -69,7 +69,7 @@
 
         <!-- Tidigare intyg table -->
         <div class="webcert-col-section">
-          <h2 class="col-head">Tidigare intyg för {{patientModel.fornamn}} {{patientModel.efternamn}}</h2>
+          <h2 class="col-head">Tidigare intyg för {{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</h2>
           <div class="form-group" ng-if="patientModel.sekretessmarkering">
             <div class="alert alert-warning col-lg-7">
               <span message key='label.copyutkast.sekretessmarkering'></span>
