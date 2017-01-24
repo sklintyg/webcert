@@ -45,6 +45,9 @@ function valueOrNull(value) {
     return value !== null && value !== undefined ? value : null;
 }
 
+function timeInMillis() {
+    return new Date().getTime();
+}
 
 var DEFAULT_QUESTION = {
     intygsId: '',
@@ -62,7 +65,7 @@ var DEFAULT_QUESTION = {
       {
         text: 'Detta är kompletteringstexten...',
         frageId: '1',
-        instans: undefined
+        instans: 1
       }
     ],
     meddelandeNr: 1,
@@ -98,9 +101,19 @@ angular.module('rhsIndexApp')
     .controller('IndexController', ['$scope', '$http', function($scope, $http) {
         'use strict';
 
-
+        new Clipboard('.clipboardBtn');
+        $scope.clipboardXml = '';
+        $scope.copiedText = '';
         $scope.selectedEnhet = '';
         $scope.q = DEFAULT_QUESTION;
+
+        $scope.hasRequestXml = function() {
+            return !isEmpty($scope.clipboardXml);
+        };
+
+        $scope.copiedToClipboard = function() {
+            $scope.copiedText = '' + $scope.clipboardXml.length + ' bytes kopierade till urklipp.';
+        };
 
         $scope.deleteAllArendenOnUnit = function() {
             if ($scope.selectedEnhet !== '' && window.confirm('Är du verkligen helt säker på att du vill radera alla ärenden på ' + $scope.selectedEnhet + ' ur databasen?')) {
@@ -130,7 +143,7 @@ angular.module('rhsIndexApp')
             var kompl = {
                 text: 'Detta är kompletteringstexten...',
                 frageId: '1',
-                instans: undefined
+                instans: 1
             };
 
             $scope.q.kompletteringar.push(kompl);
@@ -148,7 +161,7 @@ angular.module('rhsIndexApp')
         $scope.loadIntyg = function() {
             $http({
                 method: 'GET',
-                url: '/testability/intyg/' + $scope.selectedEnhet
+                url: '/testability/intyg/' + $scope.selectedEnhet + '?cachekiller=' + timeInMillis()
             }).then(function successCallback(response) {
                 $scope.resultat = '';
                 $scope.data = response.data;
@@ -158,7 +171,7 @@ angular.module('rhsIndexApp')
         $scope.loadUnits = function() {
             $http({
                 method: 'GET',
-                url: '/testability/intyg/signingunits'
+                url: '/testability/intyg/signingunits?cachekiller=' + timeInMillis()
             }).then(function successCallback(response) {
                 $scope.units = response.data;
             });
@@ -166,6 +179,8 @@ angular.module('rhsIndexApp')
 
         $scope.openForm = function(intyg) {
             $scope.formToDisplay = '';
+            $scope.copiedText = '';
+            $scope.clipboardXml = '';
 
             // re-initialize as empty.
             $scope.pendingActionQuestions = [];
@@ -195,21 +210,21 @@ angular.module('rhsIndexApp')
                 $scope.formToDisplay = 'arende';
                 $http({
                     method: 'GET',
-                    url: '/testability/intyg/questions/' + intyg.intygsTyp
+                    url: '/testability/intyg/questions/' + intyg.intygsTyp + '?cachekiller=' + timeInMillis()
                 }).then(function successCallback(response) {
                     $scope.questions = response.data;
                 });
 
                 $http({
                     method: 'GET',
-                    url: '/testability/arendetest/intyg/' + intyg.intygsId
+                    url: '/testability/arendetest/intyg/' + intyg.intygsId + '?cachekiller=' + timeInMillis()
                 }).then(function successCallback(response) {
                     $scope.pendingActionQuestions = response.data;
                 });
 
                 $http({
                     method: 'GET',
-                    url: '/testability/arendetest/intyg/' + intyg.intygsId + '/internal'
+                    url: '/testability/arendetest/intyg/' + intyg.intygsId + '/internal?cachekiller=' + timeInMillis()
                 }).then(function successCallback(response) {
                     $scope.pendingInternalActionQuestions = response.data;
                 });
@@ -319,6 +334,8 @@ angular.module('rhsIndexApp')
                 </soapenv:Body>  \
             </soapenv:Envelope>';
 
+            $scope.clipboardXml = msg;
+
             $http({
                 method: 'POST',
                 url: '/services/send-message-to-care/v1.0',
@@ -396,6 +413,8 @@ angular.module('rhsIndexApp')
                </urn:ReceiveMedicalCertificateQuestion>\
             </soapenv:Body>\
          </soapenv:Envelope>';
+
+            $scope.clipboardXml = msg;
 
             $http({
                 method: 'POST',
