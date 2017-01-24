@@ -36,9 +36,11 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
 
         this.identitetForm = element(by.id('identitetForm'));
 
+
         this.allmant = {
             form: element(by.id('allmantForm')),
-            insulinbehandlingsperiod: element(by.id('insulinBehandlingsperiod'))
+            insulinbehandlingsperiod: element(by.id('insulinBehandlingsperiod')),
+            insulin: element(by.id('diabetestreat3'))
         };
         this.allmant.diabetesyear = this.allmant.form.element(by.id('diabetesyear'));
 
@@ -76,13 +78,31 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             }
         };
 
+        this.validering = {
+            intygAvser: element(by.css('[data-validation-section="intygavser"]')),
+
+        }
+
         this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
 
         this.syn = {
             a: {
                 yes: element(by.id('synay')),
                 no: element(by.id('synan'))
+            },
+            hoger: {
+                utan: element(by.id('synHogerOgaUtanKorrektion')),
+                med: element(by.id('synHogerOgaMedKorrektion'))
+            },
+            vanster: {
+                utan: element(by.id('synVansterOgaUtanKorrektion')),
+                med: element(by.id('synVansterOgaMedKorrektion'))
+            },
+            binokulart: {
+                utan: element(by.id('synBinokulartUtanKorrektion')),
+                med: element(by.id('synBinokulartMedKorrektion'))
             }
+
         };
 
         this.patientAdress = {

@@ -205,4 +205,19 @@ module.exports = function() {
     this.Given(/^jag trycker på knappen med texten "([^"]*)"$/, function(BtnText) {
         return element(by.cssContainingText('.btn', BtnText)).sendKeys(protractor.Key.SPACE);
     });
+
+    this.Given(/^jag trycker på checkboxen med texten "([^"]*)"$/, function(BtnText) {
+        return element(by.cssContainingText('label.checkbox', BtnText)).sendKeys(protractor.Key.SPACE);
+    });
+
+    this.Given(/^jag anger "([^"]*)" i valet "([^"]*)"$/, function(svar, text) {
+
+        var tr = element(by.cssContainingText('tr', text));
+
+        if (svar === 'Ja') {
+            return tr.all(by.css('td')).get(0).element(by.css('input')).sendKeys(protractor.Key.SPACE);
+        } else {
+            return tr.all(by.css('td')).get(1).element(by.css('input')).sendKeys(protractor.Key.SPACE);
+        }
+    });
 };

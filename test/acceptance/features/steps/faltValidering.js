@@ -31,8 +31,9 @@ var fillInIntyg = require('./fillIn/fill_in_intyg_steps');
 var testdata = wcTestTools.testdata;
 var testdataHelpers = wcTestTools.helpers.testdata;
 
+var synVar = tsdUtkastPage.syn;
 var anhorigIgnoreKeys = ['forsakringsmedicinsktBeslutsstodBeskrivning', 'arbetstidsforlaggning', 'arbetsresor', 'formagaTrotsBegransningBeskrivning', 'prognos'];
-
+var synVarArray = [synVar.hoger.utan, synVar.hoger.med, synVar.vanster.utan, synVar.vanster.med, synVar.binokulart.utan, synVar.binokulart.med];
 
 function populateFieldArray(object, ignoreKeys) {
     var re = [];
@@ -48,6 +49,46 @@ function populateFieldArray(object, ignoreKeys) {
         }
     }
     return re;
+}
+
+function antalAvLoop(array, str1) {
+    var counter = 0;
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] === str1) {
+            counter++;
+        }
+    }
+    return String(counter);
+}
+
+function synLoop(array, keyToSend) {
+    var counter = 0;
+    array.forEach(function(el) {
+        el.sendKeys(keyToSend);
+        counter++;
+        if (counter === array.length) {
+            return Promise.resolve();
+        }
+
+    });
+    synVar.binokulart.med.sendKeys(protractor.Key.TAB);
+}
+
+function populateSynTSD(typAvSyn) {
+
+    var slumpatSynFalt = testdataHelpers.shuffle([synVar.hoger, synVar.vanster, synVar.binokulart])[0];
+
+    if (typAvSyn === 'slumpat synfält') {
+        // return synVar.a.no.sendKeys(protractor.Key.SPACE).then(function() {
+        return slumpatSynFalt.utan.sendKeys('9').then(function() {
+            return slumpatSynFalt.med.sendKeys('8').sendKeys(protractor.Key.TAB);
+        });
+        // });
+    } else if (typAvSyn === 'alla synfält') {
+        // return synVar.a.no.sendKeys(protractor.Key.SPACE).then(function() {
+        return synLoop(synVarArray, 9);
+        // });
+    }
 }
 
 function checkFMB(fmbDiagnos) {
@@ -195,8 +236,44 @@ module.exports = function() {
             return elm.getText();
         });
         return alertTexts.then(function(result) {
+            // console.log(result);
             return expect(result.join('\n')).to.have.string(arg1);
         });
+    });
+
+    this.Given(/^ska valideringsfelet "([^"]*)" visas "([^"]*)" gånger$/, function(arg1, arg2) {
+        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
+            return elm.getText();
+        });
+        return alertTexts.then(function(result) {
+            // console.log(result);
+            return expect(antalAvLoop(result, arg1)).to.equal(arg2);
+        });
+
+    });
+
+    this.Given(/^ska alla (standard|utökade) valideringsfel för "([^"]*)" visas*$/, function(arg1, intygsTyp) {
+        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
+            return elm.getText();
+        });
+        if (arg1 === 'standard' && intygsTyp === 'Transportstyrelsens läkarintyg, diabetes') {
+            return alertTexts.then(function(result) {
+                // console.log(result);
+                expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['1', '4']);
+                expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
+                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('4');
+                expect(antalAvLoop(result, 'Minst en behandling måste väljas.')).to.equal('1');
+            });
+        }
+        if (arg1 === 'utökade' && intygsTyp === 'Transportstyrelsens läkarintyg, diabetes') {
+            return alertTexts.then(function(result) {
+                // console.log(result);
+                expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['6', '9']);
+                expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
+                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('5');
+                expect(antalAvLoop(result, 'År då behandling med insulin påbörjades måste anges.')).to.equal('1');
+            });
+        }
     });
 
     this.Given(/^ska varken "([^"]*)" eller info om det saknade "([^"]*)" finnas kvar$/, function(feltext, fältet) {
@@ -228,15 +305,30 @@ module.exports = function() {
         } else if (isSMIIntyg && fieldtype === 'arbetsförmåga-datum') {
             var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
             return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].sendKeys(date);
-        } else if (fieldtype === 'insulin-datum') {
-            return tsdUtkastPage.fillInAllmant({
-                year: Math.floor((Math.random() * 20) + 1980),
-                typ: 'Typ 1',
-                behandling: {
-                    typer: ['Insulin'],
-                    insulinYear: 'text'
-                }
+        }
+        // else if (fieldtype === 'diabetes-artal') {
+        //     return tsdUtkastPage.fillInAllmant({
+        //         year: 'text',
+        //         typ: 'Typ 1',
+        //         behandling: {
+        //             typer: ['Insulin'],
+        //             insulinYear: 'text'
+        //         }
+        //     }).then(function() {
+        //         return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
+        //     });
+
+        // } 
+        else if (fieldtype === 'diabetes-årtal') {
+
+            return tsdUtkastPage.allmant.diabetesyear.sendKeys('text').then(function() {
+                return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys('text').then(function() {
+                    return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
+                });
             });
+
+
+
         } else if (fieldtype === 'UndersökningsDatum') {
 
             return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('10/12-2017').then(function() {
@@ -245,6 +337,8 @@ module.exports = function() {
             });
 
 
+        } else if (fieldtype === 'slumpat synfält' || fieldtype === 'alla synfält') {
+            return populateSynTSD(fieldtype);
         } else {
             return fkUtkastPage.diagnosKod.sendKeys(date);
         }
