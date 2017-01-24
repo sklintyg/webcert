@@ -9,7 +9,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
 
 @validering_alla_fält_diabetes
-Scenario: test test test test test test
+Scenario: Validerar alla fält i TS diabetes intyget
 	När jag klickar på signera-knappen
 	Så ska alla standard valideringsfel för "Transportstyrelsens läkarintyg, diabetes" visas
 
