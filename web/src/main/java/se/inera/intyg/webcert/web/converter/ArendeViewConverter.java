@@ -166,7 +166,7 @@ public class ArendeViewConverter {
 
         // Find oldest intyg among kompletterande intyg, that's newer than the fraga
         BesvaratMedIntyg komplt = null;
-        if (!svar.isPresent()) {
+        if (!svar.isPresent() && fraga.get().getAmne() == ArendeAmne.KOMPLT) {
             komplt = BesvaratMedIntygUtil.returnOldestKompltOlderThan(fraga.get().getTimestamp(), kompltForIntyg);
         }
         return convertToArendeConversationView(fraga.get(), svar.orElse(null), komplt, paminnelser);
