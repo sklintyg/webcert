@@ -70,7 +70,7 @@ import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
-import se.inera.intyg.webcert.web.converter.util.BesvaratMedIntygUtil;
+import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -83,8 +83,8 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
+import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-import se.inera.intyg.webcert.web.web.controller.api.dto.BesvaratMedIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 
 /**
@@ -221,10 +221,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         Collections.sort(fragaSvarList, SENASTE_HANDELSE_DATUM_COMPARATOR);
 
         // INTYG-3318
-        List<BesvaratMedIntyg> bmi = BesvaratMedIntygUtil.findAllKomplementForGivenIntyg(intygId, utkastRepository);
+        List<AnsweredWithIntyg> bmi = AnsweredWithIntygUtil.findAllKomplementForGivenIntyg(intygId, utkastRepository);
         List<FragaSvarView> fragaSvarWithBesvaratMedIntygInfo = fragaSvarList.stream()
                 .map(fs -> FragaSvarView.create(fs,
-                        fs.getFrageSkickadDatum() == null ? null : BesvaratMedIntygUtil.returnOldestKompltOlderThan(fs.getFrageSkickadDatum(), bmi)))
+                        fs.getFrageSkickadDatum() == null ? null : AnsweredWithIntygUtil.returnOldestKompltOlderThan(fs.getFrageSkickadDatum(), bmi)))
                 .collect(Collectors.toList());
         return fragaSvarWithBesvaratMedIntygInfo;
     }

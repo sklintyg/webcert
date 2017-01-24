@@ -35,9 +35,9 @@ public abstract class FragaSvarView {
     public abstract FragaSvar getFragaSvar();
 
     @Nullable
-    public abstract BesvaratMedIntyg getBesvaratMedIntyg();
+    public abstract AnsweredWithIntyg getAnsweredWithIntyg();
 
-    public static FragaSvarView create(FragaSvar fragaSvar, BesvaratMedIntyg besvaratMedIntyg) {
+    public static FragaSvarView create(FragaSvar fragaSvar, AnsweredWithIntyg besvaratMedIntyg) {
         return new AutoValue_FragaSvarView(fragaSvar, besvaratMedIntyg);
     }
 

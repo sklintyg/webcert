@@ -27,12 +27,12 @@ import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.web.controller.api.dto.BesvaratMedIntyg;
+import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 
 @Component
-public final class BesvaratMedIntygUtil {
+public final class AnsweredWithIntygUtil {
 
-    private BesvaratMedIntygUtil() {
+    private AnsweredWithIntygUtil() {
     }
 
     /**
@@ -46,13 +46,13 @@ public final class BesvaratMedIntygUtil {
      * @param utkastRepository
      * @return
      */
-    public static BesvaratMedIntyg findIntygKompletteringForMessage(String intygsId, LocalDateTime messageSendDate,
+    public static AnsweredWithIntyg findIntygKompletteringForMessage(String intygsId, LocalDateTime messageSendDate,
             UtkastRepository utkastRepository) {
         return returnOldestKompltOlderThan(messageSendDate, findAllKomplementForGivenIntyg(intygsId, utkastRepository));
     }
 
-    public static BesvaratMedIntyg returnOldestKompltOlderThan(LocalDateTime fragaSendDate,
-            List<BesvaratMedIntyg> kompltForIntyg) {
+    public static AnsweredWithIntyg returnOldestKompltOlderThan(LocalDateTime fragaSendDate,
+            List<AnsweredWithIntyg> kompltForIntyg) {
         return kompltForIntyg.stream()
                 .reduce(null, (saved, current) -> {
                     if (saved == null) {
@@ -74,11 +74,11 @@ public final class BesvaratMedIntygUtil {
      * @param utkastRepository
      * @return
      */
-    public static List<BesvaratMedIntyg> findAllKomplementForGivenIntyg(String intygsId, UtkastRepository utkastRepository) {
+    public static List<AnsweredWithIntyg> findAllKomplementForGivenIntyg(String intygsId, UtkastRepository utkastRepository) {
         return utkastRepository.findAllByRelationIntygsId(intygsId).stream()
                 .filter(u -> Objects.equals(u.getRelationKod(), RelationKod.KOMPLT))
                 .filter(u -> u.getSignatur() != null)
-                .map(BesvaratMedIntyg::create)
+                .map(AnsweredWithIntyg::create)
                 .collect(Collectors.toList());
     }
 

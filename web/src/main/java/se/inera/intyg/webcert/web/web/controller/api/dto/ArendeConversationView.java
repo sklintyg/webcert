@@ -34,7 +34,7 @@ public abstract class ArendeConversationView {
     public abstract ArendeView getSvar();
 
     @Nullable
-    public abstract BesvaratMedIntyg getBesvaradMedIntyg();
+    public abstract AnsweredWithIntyg getAnsweredWithIntyg();
 
     @Nullable
     public abstract LocalDateTime getSenasteHandelse();
@@ -55,7 +55,7 @@ public abstract class ArendeConversationView {
 
         public abstract Builder setSvar(ArendeView svar);
 
-        public abstract Builder setBesvaradMedIntyg(BesvaratMedIntyg besvaradMedIntyg);
+        public abstract Builder setAnsweredWithIntyg(AnsweredWithIntyg answeredWithIntyg);
 
         public abstract Builder setSenasteHandelse(LocalDateTime senasteHandelse);
 

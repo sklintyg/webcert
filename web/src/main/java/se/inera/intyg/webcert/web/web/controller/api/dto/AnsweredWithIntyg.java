@@ -25,7 +25,7 @@ import com.google.auto.value.AutoValue;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @AutoValue
-public abstract class BesvaratMedIntyg {
+public abstract class AnsweredWithIntyg {
 
     public abstract String getIntygsId();
 
@@ -37,13 +37,13 @@ public abstract class BesvaratMedIntyg {
 
     public abstract String getNamnetPaSkapareAvIntyg();
 
-    public static BesvaratMedIntyg create(String intygsId, String signeratAv, LocalDateTime signeratDatum, LocalDateTime skickatDatum,
+    public static AnsweredWithIntyg create(String intygsId, String signeratAv, LocalDateTime signeratDatum, LocalDateTime skickatDatum,
             String namnetPaSkapareAvIntyg) {
-        return new AutoValue_BesvaratMedIntyg(intygsId, signeratAv, signeratDatum, skickatDatum, namnetPaSkapareAvIntyg);
+        return new AutoValue_AnsweredWithIntyg(intygsId, signeratAv, signeratDatum, skickatDatum, namnetPaSkapareAvIntyg);
     }
 
-    public static BesvaratMedIntyg create(Utkast intyg) {
-        return new AutoValue_BesvaratMedIntyg(intyg.getIntygsId(), intyg.getSignatur().getSigneradAv(),
+    public static AnsweredWithIntyg create(Utkast intyg) {
+        return new AutoValue_AnsweredWithIntyg(intyg.getIntygsId(), intyg.getSignatur().getSigneradAv(),
                 intyg.getSignatur().getSigneringsDatum(), intyg.getSkickadTillMottagareDatum(), intyg.getSkapadAv().getNamn());
     }
 }

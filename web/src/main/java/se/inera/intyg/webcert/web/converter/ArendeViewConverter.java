@@ -42,12 +42,12 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
-import se.inera.intyg.webcert.web.converter.util.BesvaratMedIntygUtil;
+import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
+import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.BesvaratMedIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 
 @Component
@@ -89,12 +89,12 @@ public class ArendeViewConverter {
                 .build();
     }
 
-    public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, BesvaratMedIntyg komplt,
+    public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, AnsweredWithIntyg komplt,
             List<Arende> paminnelser) {
         return ArendeConversationView.builder()
                 .setFraga(convertToDto(fraga))
                 .setSvar(convertToDto(svar))
-                .setBesvaradMedIntyg(komplt)
+                .setAnsweredWithIntyg(komplt)
                 .setPaminnelser(
                         paminnelser.stream()
                                 .map(this::convertToDto)
@@ -121,7 +121,7 @@ public class ArendeViewConverter {
      *         same intyg
      */
     public List<ArendeConversationView> buildArendeConversations(String intygsId, List<Arende> intygMessages,
-            List<BesvaratMedIntyg> kompltToIntyg) {
+            List<AnsweredWithIntyg> kompltToIntyg) {
         // Group by conversation thread.
         Map<String, List<Arende>> threads = intygMessages.stream().collect(Collectors.groupingBy(ArendeViewConverter::getThreadRootMessageId));
 
@@ -145,7 +145,7 @@ public class ArendeViewConverter {
     }
 
     private ArendeConversationView createConversationViewFromArendeList(List<Arende> messagesInThread,
-            List<BesvaratMedIntyg> kompltForIntyg) {
+            List<AnsweredWithIntyg> kompltForIntyg) {
         Optional<Arende> fraga = messagesInThread.stream()
                 .filter(a -> getArendeType(a) == ArendeType.FRAGA)
                 .reduce((element, otherElement) -> {
@@ -165,9 +165,9 @@ public class ArendeViewConverter {
         }
 
         // Find oldest intyg among kompletterande intyg, that's newer than the fraga
-        BesvaratMedIntyg komplt = null;
+        AnsweredWithIntyg komplt = null;
         if (!svar.isPresent() && fraga.get().getAmne() == ArendeAmne.KOMPLT) {
-            komplt = BesvaratMedIntygUtil.returnOldestKompltOlderThan(fraga.get().getTimestamp(), kompltForIntyg);
+            komplt = AnsweredWithIntygUtil.returnOldestKompltOlderThan(fraga.get().getTimestamp(), kompltForIntyg);
         }
         return convertToArendeConversationView(fraga.get(), svar.orElse(null), komplt, paminnelser);
     }
