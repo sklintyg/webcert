@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "fragaSvar": {
+        "$ref": "webcert-fragasvar-for-intyg-schema.json"
+      },
+      "answeredWithIntyg": {
+        "$ref": "webcert-answered-with-intyg-schema.json"
+      }
+    },
+    "required": [
+      "fragaSvar"
+    ]
+  }
+}

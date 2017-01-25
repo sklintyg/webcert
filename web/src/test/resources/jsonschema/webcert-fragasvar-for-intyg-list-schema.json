@@ -1,8 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "array",
-  "additionalProperties": false,
   "items": {
-    "$ref": "webcert-arende-schema.json"
+    "$ref": "webcert-fragasvar-for-intyg-schema.json"
   }
 }

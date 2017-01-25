@@ -47,7 +47,7 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
                 .pathParameters("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId)
                 .expect().statusCode(200)
                 .when().get("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-schema.json"))
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-with-extra-info-for-intyg-list-schema.json"))
                 .body("$", hasSize(1));
 
         deleteQuestion(internId);
@@ -133,7 +133,7 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).body(requests)
                 .expect().statusCode(200)
                 .when().put("moduleapi/fragasvar/stang")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-schema.json"))
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-list-schema.json"))
                 .body("$", hasSize(requests.size()));
         deleteQuestion(internId);
     }
