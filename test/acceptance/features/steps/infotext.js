@@ -86,8 +86,14 @@ module.exports = function() {
 
     });
 
-    this.Given(/^ska jag se en lista med vad som saknas$/, function() {
-        return expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(true);
+    this.Given(/^ska jag (se|inte se) en lista med vad som saknas$/, function(synlighet) {
+        if (synlighet === 'se') {
+            return expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(true);
+        } else {
+            return expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(false);
+        }
+
+
     });
 
     this.Given(/^ska jag se en lista med endast det saknade "([^"]*)"$/, function(saknat) {
@@ -101,6 +107,11 @@ module.exports = function() {
     this.Given(/^ska utkastets statusheader meddela "([^"]*)"$/, function(meddelande) {
         return expect(element(by.id('intyget-sparat-och-ej-komplett-meddelande')).getText()).to.eventually.contain(meddelande);
     });
+    this.Given(/^ska inget valideringsfel visas$/, function() {
+        return expect(element(by.css('.alert-danger')).isDisplayed()).to.eventually.equal(false);
+
+    });
+
 
 
 
