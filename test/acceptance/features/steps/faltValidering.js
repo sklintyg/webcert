@@ -16,13 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-<< << << < HEAD
 
 /*globals pages,intyg,protractor,wcTestTools,Promise,browser,logger*/
 
-=== === =
-/*globals pages,intyg,protractor,wcTestTools,Promise,browser, logger*/
->>> >>> > Delar av testet i TI - 155
 
 'use strict';
 var luseUtkastPage = pages.intyg.luse.utkast;
@@ -247,7 +243,7 @@ module.exports = function() {
         });
     });
 
-    << << << < HEAD
+
     this.Given(/^ska valideringsfelet "([^"]*)" visas "([^"]*)" gånger$/, function(arg1, arg2) {
         var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
@@ -283,116 +279,106 @@ module.exports = function() {
         }
     });
 
-    this.Given(/^ska varken "([^"]*)" eller info om det saknade "([^"]*)" finnas kvar$/, function(feltext, fältet) {
-            // Write code here that turns the phrase above into concrete actions
-            === === = >>> >>> > Delar av testet i TI - 155
 
 
 
-            this.Given(/^jag fyller i text i "([^"]*)" fältet$/, function(fieldtype) {
-                var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+
+    this.Given(/^jag fyller i text i "([^"]*)" fältet$/, function(fieldtype) {
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
 
 
-                var date = helpers.randomTextString().substring(0, 4);
+        var date = helpers.randomTextString().substring(0, 4);
 
-                if (isSMIIntyg && fieldtype === 'kännedom-datum') {
-                    return luseUtkastPage.baseratPa.kannedomOmPatient.datum.sendKeys(date);
-                } else if (isSMIIntyg && fieldtype === 'slumpat-datum') {
-                    return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.baseratPa, ['anhorigBeskrivning', 'kannedomOmPatient']))[0].datum.sendKeys(date);
+        if (isSMIIntyg && fieldtype === 'kännedom-datum') {
+            return luseUtkastPage.baseratPa.kannedomOmPatient.datum.sendKeys(date);
+        } else if (isSMIIntyg && fieldtype === 'slumpat-datum') {
+            return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.baseratPa, ['anhorigBeskrivning', 'kannedomOmPatient']))[0].datum.sendKeys(date);
 
-                } else if (isSMIIntyg && fieldtype === 'underlag-datum') {
-                    luseUtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
-                    return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.underlag))[0].datum.sendKeys(date);
+        } else if (isSMIIntyg && fieldtype === 'underlag-datum') {
+            luseUtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
+            return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.underlag))[0].datum.sendKeys(date);
 
-                } else if (isSMIIntyg && fieldtype === 'postnummer') {
-                    return luseUtkastPage.enhetensAdress.postNummer.sendKeys(date);
-                } else if (isSMIIntyg && fieldtype === 'arbetsförmåga-datum') {
-                    var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
-                    return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].sendKeys(date);
-                }
-                // else if (fieldtype === 'diabetes-artal') {
-                //     return tsdUtkastPage.fillInAllmant({
-                //         year: 'text',
-                //         typ: 'Typ 1',
-                //         behandling: {
-                //             typer: ['Insulin'],
-                //             insulinYear: 'text'
-                //         }
-                //     }).then(function() {
-                //         return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
-                //     });
+        } else if (isSMIIntyg && fieldtype === 'postnummer') {
+            return luseUtkastPage.enhetensAdress.postNummer.sendKeys(date);
+        } else if (isSMIIntyg && fieldtype === 'arbetsförmåga-datum') {
+            var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
+            return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].sendKeys(date);
+        }
+        // else if (fieldtype === 'diabetes-artal') {
+        //     return tsdUtkastPage.fillInAllmant({
+        //         year: 'text',
+        //         typ: 'Typ 1',
+        //         behandling: {
+        //             typer: ['Insulin'],
+        //             insulinYear: 'text'
+        //         }
+        //     }).then(function() {
+        //         return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
+        //     });
 
-                // } 
-                else if (fieldtype === 'diabetes-årtal') {
+        // } 
+        else if (fieldtype === 'diabetes-årtal') {
 
-                    return tsdUtkastPage.allmant.diabetesyear.sendKeys('text').then(function() {
-                        return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys('text').then(function() {
-                            return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
-                        });
-                    });
-
-
-
-                } else if (fieldtype === 'UndersökningsDatum') {
-
-                    return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('10/12-2017').then(function() {
-                        logger.info('Fyller i felaktigt formaterat datum: 10/12-2017');
-                        var enter = browser.actions().sendKeys(protractor.Key.ENTER);
-                        return enter.perform();
-                    });
-
-
-                } else if (fieldtype === 'slumpat synfält' || fieldtype === 'alla synfält') {
-                    return populateSynTSD(fieldtype);
-                } else {
-                    return fkUtkastPage.diagnosKod.sendKeys(date);
-                }
-
-            });
-
-            this.Given(/^jag raderar ett  slumpat obligatoriskt fält$/, function(callback) {
-
-                var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-                var intygShortcode = helpers.getAbbrev(intyg.typ);
-
-                fillInIntyg.changingFields(isSMIIntyg, intygShortcode, callback, true);
-                //fillInIntyg.chooseRandomFieldBasedOnIntyg(isSMIIntyg, false, callback, true);
-
-
-            });
-
-            this.Given(/^jag kryssar i Prognos Går ej att bedöma utan beskrivning$/, function(callback) {
-
-                fkUtkastPage.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE).then(function() {
-                    fkUtkastPage.prognos.fortydligande.clear().then(callback);
+            return tsdUtkastPage.allmant.diabetesyear.sendKeys('text').then(function() {
+                return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys('text').then(function() {
+                    return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
                 });
-
-
-
-            });
-            this.Given(/^jag ändrar till giltig text i "([^"]*)"$/, function(fieldtype) {
-                if (fieldtype === 'UndersökningsDatum') {
-                    return fkUtkastPage.baserasPa.minUndersokning.datum.clear().then(function() {
-                        return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2017-01-12').then(function() {
-                            var enter = browser.actions().sendKeys(protractor.Key.ENTER);
-                            console.log('Ändrar datum');
-                            return enter.perform();
-
-                        });
-                    });
-                }
-
-            });
-
-
-            this.Given(/^ska jag kunna klicka på slumpad länk$/, function(callback) {
-                var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-                var intygShortcode = helpers.getAbbrev(intyg.typ);
-                goToRandomLink(isSMIIntyg, intygShortcode, callback);
-                //callback(null, 'pending');
             });
 
 
 
+        } else if (fieldtype === 'UndersökningsDatum') {
 
-        };
+            return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('10/12-2017').then(function() {
+                logger.info('Fyller i felaktigt formaterat datum: 10/12-2017');
+                var enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                return enter.perform();
+            });
+
+
+        } else if (fieldtype === 'slumpat synfält' || fieldtype === 'alla synfält') {
+            return populateSynTSD(fieldtype);
+        } else {
+            return fkUtkastPage.diagnosKod.sendKeys(date);
+        }
+
+    });
+
+    this.Given(/^jag raderar ett  slumpat obligatoriskt fält$/, function(callback) {
+
+        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var intygShortcode = helpers.getAbbrev(intyg.typ);
+
+        fillInIntyg.changingFields(isSMIIntyg, intygShortcode, callback, true);
+        //fillInIntyg.chooseRandomFieldBasedOnIntyg(isSMIIntyg, false, callback, true);
+
+
+    });
+
+    this.Given(/^jag kryssar i Prognos Går ej att bedöma utan beskrivning$/, function(callback) {
+
+        fkUtkastPage.prognos.GAR_EJ_ATT_BEDOMA.sendKeys(protractor.Key.SPACE).then(function() {
+            fkUtkastPage.prognos.fortydligande.clear().then(callback);
+        });
+
+
+
+    });
+    this.Given(/^jag ändrar till giltig text i "([^"]*)"$/, function(fieldtype) {
+        if (fieldtype === 'UndersökningsDatum') {
+            return fkUtkastPage.baserasPa.minUndersokning.datum.clear().then(function() {
+                return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2017-01-12').then(function() {
+                    var enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                    console.log('Ändrar datum');
+                    return enter.perform();
+
+                });
+            });
+        }
+
+    });
+
+
+
+
+};
