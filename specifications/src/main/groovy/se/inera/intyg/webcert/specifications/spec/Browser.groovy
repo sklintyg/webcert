@@ -64,6 +64,10 @@ public class Browser {
         browser.getDriver().manage().getCookieNamed("JSESSIONID").getValue()
     }
 
+    static String getRouteId() {
+        browser.getDriver().manage().getCookieNamed("ROUTEID").getValue()
+    }
+
     static String deleteCookie(cookieName) {
         Cookie cookie = new Cookie(cookieName, "")
         browser.getDriver().manage().deleteCookie(cookie)

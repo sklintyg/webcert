@@ -236,7 +236,10 @@ public class WebcertRestUtils extends RestClientFixture {
     public static Integer getNumberOfUnsignedCertificates() {
         def restPath = "/api/utkast"
         def response = webcert.get(path : restPath, requestContentType : JSON, query: ["complete":"false"],
-                headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
+                headers: [
+                        "Cookie":["JSESSIONID="+Browser.getJSession(),
+                        "ROUTEID="+Browser.getRouteId()].join(";")
+                ])
         return response.data.totalCount;
     }
 
@@ -248,7 +251,10 @@ public class WebcertRestUtils extends RestClientFixture {
     public static void deleteUserPreference(String key) {
         def restPath = "/api/anvandare/preferences/" + key
         def response = webcert.delete(path : restPath,
-                headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
+                headers: [
+                        "Cookie":["JSESSIONID="+Browser.getJSession(),
+                                  "ROUTEID="+Browser.getRouteId()].join(";")
+                ])
     }
 
     /**
@@ -303,7 +309,10 @@ public class WebcertRestUtils extends RestClientFixture {
      */
     public static HttpResponseDecorator signUtkastUsingBrowserSesssion(String intygsTyp, String intygsId, Long version) {
         def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType : JSON,
-                headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
+                headers: [
+                        "Cookie":["JSESSIONID="+Browser.getJSession(),
+                                  "ROUTEID="+Browser.getRouteId()].join(";")
+                ])
         response
     }
 }
