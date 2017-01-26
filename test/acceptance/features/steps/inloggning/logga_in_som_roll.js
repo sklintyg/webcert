@@ -77,6 +77,17 @@ module.exports = function() {
         return logInAsUserRole(userObj, 'Vårdadministratör');
     });
 
+    this.Given(/^att jag är inloggad som djupintegrerad vårdadministratör$/, function() {
+        var userObj = {
+            fornamn: 'Susanne',
+            efternamn: 'Johansson Karlsson',
+            hsaId: 'TSTNMT2321000156-105J',
+            enhetId: 'TSTNMT2321000156-105F',
+            origin: 'DJUPINTEGRATION'
+        };
+        return logInAsUserRole(userObj, 'Vårdadministratör');
+    });
+
     this.Given(/^att jag är inloggad som läkare som inte accepterat kakor$/, function() {
         var userObj = {
             fornamn: 'Erik',
