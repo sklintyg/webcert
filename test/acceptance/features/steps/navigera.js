@@ -220,4 +220,17 @@ module.exports = function() {
             return tr.all(by.css('td')).get(1).element(by.css('input')).sendKeys(protractor.Key.SPACE);
         }
     });
+
+
+    this.Given(/^jag går in på healthcheck\-sidan$/, function() {
+        browser.ignoreSynchronization = true;
+        return browser.get('healthcheck.jsp');
+    });
+
+    this.Given(/^ska status för "([^"]*)" vara "([^"]*)"$/, function(checknamn, varaText) {
+        var tr = element(by.cssContainingText('tr', checknamn));
+        return expect(tr.getText()).to.eventually.contain(varaText);
+    });
+
+
 };
