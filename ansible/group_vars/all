@@ -19,7 +19,7 @@ feature_file_folder: "{{ config_folder }}/{{ environment_name }}/feature"
 # Application resources
 # Note: end with slash, in order to copy only files inside the source folder, not the folder itself
 app_resources_src: "{{ playbook_dir }}/../src/main/resources/"
-app_resources_folder: "{{ inera_root }}{{ inventory_hostname }}-resources"
+app_resources_folder: "{{ inera_root }}/{{ inventory_hostname }}-resources"
 
 # Tomcat installation
 tomcat_service: "{{ inventory_hostname }}-tomcat"
