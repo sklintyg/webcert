@@ -1,8 +1,8 @@
 #!groovy
 
-def buildVersion = "5.1.${BUILD_NUMBER}"
-def commonVersion = "3.1.+"
-def infraVersion = "3.1.+"
+def buildVersion = "5.2.${BUILD_NUMBER}"
+def commonVersion = "3.2.+"
+def infraVersion = "3.2.+"
 
 stage('checkout') {
     node {
