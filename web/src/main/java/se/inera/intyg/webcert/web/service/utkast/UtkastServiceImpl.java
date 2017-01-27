@@ -146,14 +146,17 @@ public class UtkastServiceImpl implements UtkastService {
         // Create a PDL log for this action
         Vardenhet vardenhet = request.getHosPerson().getVardenhet();
 
-        // CHECKSTYLE: ParameterNumber OFF
-        LogUser logUser = new LogUser(request.getHosPerson().getPersonId(), request.getHosPerson().getFullstandigtNamn(),
-                request.getHosPerson().getBefattningar().stream().collect(Collectors.joining(", ")), null,
-                vardenhet.getEnhetsid(), vardenhet.getEnhetsnamn(), vardenhet.getVardgivare().getVardgivarid(), vardenhet.getVardgivare().getVardgivarnamn());
-        // CHECKSTYLE: ParameterNumber ON
+        LogUser logUser = new LogUser.Builder(
+                request.getHosPerson().getPersonId(),
+                vardenhet.getEnhetsid(),
+                vardenhet.getVardgivare().getVardgivarid())
+                .userName(request.getHosPerson().getFullstandigtNamn())
+                .userAssignment(request.getHosPerson().getBefattningar().stream().collect(Collectors.joining(", ")))
+                .enhetsNamn(vardenhet.getEnhetsnamn())
+                .vardgivareNamn(vardenhet.getVardgivare().getVardgivarnamn())
+                .build();
 
         logCreateDraftPDL(savedUtkast, logUser);
-
         return savedUtkast;
     }
 
