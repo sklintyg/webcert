@@ -89,6 +89,8 @@ var BaseIntyg = JClass._extend({
             enhetsTelefon: element(by.id('vardenhet_telefonnummer'))
         };
 
+        this.selectUtskriftButton = element(by.id('intyg-header-dropdown-select-pdf-type'));
+
 
     },
     get: function(intygId) {

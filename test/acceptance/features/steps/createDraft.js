@@ -135,4 +135,14 @@ module.exports = function() {
         createBody(randomIntygType, callback);
     });
 
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat TS\-intyg$/, function(callback) {
+        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+        var randomIntygType = testdataHelpers.shuffle([
+            'Transportstyrelsens läkarintyg',
+            'Transportstyrelsens läkarintyg, diabetes'
+
+        ])[0];
+        logger.info('Intyg typ: ' + randomIntygType + '\n');
+        createBody(randomIntygType, callback);
+    });
 };

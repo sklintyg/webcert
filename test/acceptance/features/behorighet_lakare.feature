@@ -2,7 +2,6 @@
 @behorighet @lakare @hurr
 Egenskap: Behörigheter för en läkare
 
-@testtest
 Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-102R"
 	När jag går in på en patient
@@ -24,10 +23,14 @@ Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enh
 	Och går till den sparade länken
 	Så ska intygets status vara "Intyget är signerat"
 
+@skriv-ut @annan-enhet
 Scenario: Kan inte se intyg på överliggande enhet när jag är inne på underenhet
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-1003"
 	När jag går in på en patient
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+
+	Så ska det finnas en knapp för att skriva ut utkastet
+	
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Och sparar länken till aktuell sida

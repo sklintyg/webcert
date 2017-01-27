@@ -90,7 +90,7 @@ var TsBasIntyg = BaseIntyg._extend({
 
         this.hogerOgakontaktlins = element(by.id('hogerOgakontaktlins'));
         this.vansterOgakontaktlins = element(by.id('vansterOgakontaktlins'));
-
+        this.printBtn = element(by.id('downloadprint'));
         this.falt1 = {
             bedomningKanInteTaStallning: element(by.id('bedomningKanInteTaStallning')),
             bedomning: element(by.id('bedomning'))

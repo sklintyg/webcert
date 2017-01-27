@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, logger, Promise */
+/* globals pages, protractor, logger, Promise, intyg */
 'use strict';
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var tsIntygPage = pages.intyg.ts.bas.intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var basePage = pages.webcertBase;
 var utkastPage = pages.intyg.base.utkast;
@@ -53,6 +54,18 @@ module.exports = function() {
         }, function(reason) {
             throw ('FEL : ' + reason);
         });
+    });
+
+    this.Given(/^ska det finnas en knapp för att skriva ut utkastet$/, function() {
+        return expect(fkUtkastPage.skrivUtBtn.isPresent()).to.become(true);
+    });
+
+    this.Given(/^ska det finnas en knapp för att skriva ut intyget$/, function() {
+        if (intyg.typ.indexOf('Transportstyrelsen') >= 0) {
+            return expect(tsIntygPage.printBtn.isPresent()).to.become(true);
+        } else {
+            return expect(fkIntygPage.selectUtskriftButton.isPresent()).to.become(true);
+        }
     });
 
     this.Given(/^är kopieraknappen inte tillgänglig$/, function() {

@@ -47,6 +47,8 @@ var BaseUtkast = JClass._extend({
             knapp: element(by.id('ta-bort-utkast')),
             bekrafta: element(by.id('confirm-draft-delete-button'))
         };
+        this.skrivUtBtn = element(by.id('skriv-ut-utkast'));
+
         this.newTextVersionAlert = element(by.id('newTextVersion'));
         this.backBtn = element(by.id('tillbakaButton'));
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));

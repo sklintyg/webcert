@@ -24,16 +24,21 @@ Scenario: Kan inte signera Läkarintyg FK 7263
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
+@skriv-ut
 Scenario: Kan inte signera Transportstyrelsens läkarintyg
 	När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
-@diabetes
+	Och ska det finnas en knapp för att skriva ut utkastet
+
+@diabetes @skriv-ut
 Scenario: Kan inte signera Transportstyrelsens läkarintyg, diabetes
 	När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
+
+	Och ska det finnas en knapp för att skriva ut utkastet
 
 
 
