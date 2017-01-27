@@ -233,13 +233,22 @@ module.exports = function() {
 
     });
 
-    this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(arg1) {
+    this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(fel) {
         var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         });
         return alertTexts.then(function(result) {
             // console.log(result);
-            return expect(result.join('\n')).to.have.string(arg1);
+            return expect(result.join('\n')).to.have.string(fel);
+        });
+    });
+    this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
+        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
+            return elm.getText();
+        });
+        return alertTexts.then(function(result) {
+            // console.log(result);
+            return expect(result.join('\n')).to.not.have.string(fel);
         });
     });
 
@@ -325,8 +334,6 @@ module.exports = function() {
                 });
             });
 
-
-
         } else if (fieldtype === 'UndersökningsDatum') {
 
             return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('10/12-2017').then(function() {
@@ -335,13 +342,63 @@ module.exports = function() {
                 return enter.perform();
             });
 
-
         } else if (fieldtype === 'slumpat synfält' || fieldtype === 'alla synfält') {
             return populateSynTSD(fieldtype);
         } else {
             return fkUtkastPage.diagnosKod.sendKeys(date);
         }
 
+    });
+    this.Given(/^jag lägger till fältet "([^"]*)"$/, function(fieldtype) {
+        var enter = browser.actions().sendKeys(protractor.Key.ENTER);
+        if (fieldtype === 'Intyget baseras på') {
+            return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2016-12-10').then(function() {
+                logger.info('Fyller i rätt datum: 2016-12-10');
+                enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                return enter.perform();
+            });
+        } else if (fieldtype === 'Arbete') {
+            return fkUtkastPage.nuvarandeArbete.sendKeys('Testare');
+
+        } else if (fieldtype === 'Aktivitetsbegransning') {
+            logger.info('Ändrar Aktivitetsbegransning');
+            return fkUtkastPage.aktivitetsBegransning.sendKeys('Aktivitetsbegransning');
+
+        } else if (fieldtype === 'Funktionsnedsattning') {
+            logger.info('Ändrar Funktionsnedsattning');
+            return fkUtkastPage.funktionsNedsattning.sendKeys('Funktionsnedsättning');
+
+        } else if (fieldtype === 'Diagnoskod') {
+            logger.info('Ändrar Aktivitetsbegransning');
+            return fkUtkastPage.diagnosKod.sendKeys('A00').then(function() {
+                enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                return enter.perform();
+            });
+
+        } else if (fieldtype === 'Arbetsförmåga') {
+            logger.info('Ändrar Funktionsnedsattning');
+            return fkUtkastPage.nedsatt.med100.checkbox.sendKeys(protractor.Key.SPACE);
+
+        } else {
+            logger.info('Felaktigt Fält valt');
+
+        }
+    });
+    this.Given(/^jag fyller i blanksteg i "([^"]*)" fältet$/, function(field) {
+        var enter = browser.actions().sendKeys(protractor.Key.ENTER);
+        if (field === 'Funktionsnedsattning') {
+            fkUtkastPage.funktionsNedsattning.sendKeys(protractor.Key.SPACE);
+
+            return enter.perform();
+        } else if (field === 'Aktivitetsbegransning') {
+            fkUtkastPage.aktivitetsbegransning.sendKeys(protractor.Key.SPACE);
+
+            return enter.perform();
+        } else if (field === 'Arbete') {
+            fkUtkastPage.nuvarandeArbete.sendKeys(protractor.Key.SPACE);
+
+            return enter.perform();
+        }
     });
 
     this.Given(/^jag raderar ett  slumpat obligatoriskt fält$/, function(callback) {
@@ -350,8 +407,6 @@ module.exports = function() {
         var intygShortcode = helpers.getAbbrev(intyg.typ);
 
         fillInIntyg.changingFields(isSMIIntyg, intygShortcode, callback, true);
-        //fillInIntyg.chooseRandomFieldBasedOnIntyg(isSMIIntyg, false, callback, true);
-
 
     });
 
