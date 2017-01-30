@@ -83,7 +83,10 @@
 
      this.Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
          global.intyg.id = testdataHelper.generateTestGuid();
-         global.person = testdataHelper.shuffle(testvalues.patienter)[0];
+
+         if (!global.person) {
+             global.person = testdataHelper.shuffle(testvalues.patienter)[0];
+         }
 
          //console.log(personId);
          //                'patientFornamn': 'Tolvan',

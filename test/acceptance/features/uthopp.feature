@@ -6,8 +6,8 @@ Egenskap: Uthoppsläge Fk7263
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som uthoppsläkare
 
-@fråga-uthopp @mailnotifikation @notReady
-Scenario: Ska gå in på intyg som är skickat till intygstjänsten
+@fråga-uthopp @mailnotifikation @waitingForFix
+Scenario: Mail när fråga på intyg inkommer
 När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
 Och jag skickar intyget direkt till Försäkringskassan
 Och Försäkringskassan ställer en "Kontakt" fråga om intyget 

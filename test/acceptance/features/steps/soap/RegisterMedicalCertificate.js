@@ -17,12 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 'use strict';
-//var testdataHelper = wcTestTools.helpers.testdata;
-//var helpers = require('../helpers');
-module.exports.RegisterMedicalCertificate = function(personId, personNamn, personEfternamn, doctorHsa, doctorName, unitHsa, unitName, intygsId) {
 
+//var generateIntygByType = require('../helpers.js').generateIntygByType;
+
+
+module.exports.RegisterMedicalCertificate = function(personId, personNamn, personEfternamn, doctorHsa, doctorName, unitHsa, unitName, intygsId) {
+    //global.intyg = generateIntygByType(intyg.typ);
 
     return '    <ns3:RegisterMedicalCertificate\n' +
         ' xmlns="urn:riv:insuranceprocess:healthreporting:mu7263:3"\n' +
