@@ -24,12 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -484,6 +479,40 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         verifyNoMoreInteractions(mockUtkastRepository, notificationService);
 
+    }
+        @Test
+    public void testSaveDoesNotUpdateOnEmptyFornamn() throws Exception {
+        final String utkastFornamn = "fornamn";
+        final String utkastEfternamn = "efternamn";
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList());
+
+        WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+        grunddata.setSkapadAv(new HoSPersonal());
+        grunddata.setPatient(buildPatient("19121212-1212", null, "Tolvansson"));
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+
+        utkast.setPatientFornamn(utkastFornamn);
+        utkast.setPatientEfternamn(utkastEfternamn);
+
+        // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
+        utkast = spy(utkast);
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(userService.getUser()).thenReturn(user);
+        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+
+        draftService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
+
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(utkast, times(0)).setPatientFornamn(null);
+        verify(utkast, times(0)).setPatientEfternamn("Tolvansson");
+        verify(utkast).setPatientPersonnummer(any(Personnummer.class));
     }
 
     private Patient getUpdatedPatient() {

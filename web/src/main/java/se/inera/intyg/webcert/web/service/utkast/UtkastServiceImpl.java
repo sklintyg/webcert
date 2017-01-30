@@ -680,9 +680,13 @@ public class UtkastServiceImpl implements UtkastService {
      * In the rare occurance that a patient has a name change after the initial utkast was created - e.g. the utkast
      * was continued on at a subsequent date - this method makes sure that the three "metadata" 'name' columns in the
      * INTYG table reflects the actual model.
+     *
+     * The one exception is when the utkast is of type fk7263 and copied from Intygstjänsten (or have an ancestor which
+     * is created as a copy of an intyg in Intygstjänsten). In this case the JSON will not have a fornamn and we cannot
+     * save null in UTKAST.PATIENT_FORNAMN.
      */
     private void updatePatientNameFromModel(Utkast utkast, Patient patient) {
-        if (patient == null) {
+        if (patient == null || patient.getFornamn() == null) {
             return;
         }
         if (utkast.getPatientFornamn() != null && !utkast.getPatientFornamn().equals(patient.getFornamn())) {
@@ -699,6 +703,6 @@ public class UtkastServiceImpl implements UtkastService {
     public enum Event {
         CHANGED,
         CREATED,
-        DELETED;
+        DELETED
     }
 }
