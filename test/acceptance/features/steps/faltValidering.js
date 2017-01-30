@@ -288,9 +288,18 @@ module.exports = function() {
         }
     });
 
-
-
-
+    this.Given(/^jag fyller i text i insulin\-datum fältet$/, function() {
+        return tsdUtkastPage.fillInAllmant({
+            year: 'text',
+            typ: 'Typ 1',
+            behandling: {
+                typer: ['Insulin'],
+                insulinYear: 'text'
+            }
+        }).then(function() {
+            return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
+        });
+    });
 
     this.Given(/^jag fyller i text i "([^"]*)" fältet$/, function(fieldtype) {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
@@ -312,21 +321,7 @@ module.exports = function() {
         } else if (isSMIIntyg && fieldtype === 'arbetsförmåga-datum') {
             var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
             return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].sendKeys(date);
-        }
-        // else if (fieldtype === 'diabetes-artal') {
-        //     return tsdUtkastPage.fillInAllmant({
-        //         year: 'text',
-        //         typ: 'Typ 1',
-        //         behandling: {
-        //             typer: ['Insulin'],
-        //             insulinYear: 'text'
-        //         }
-        //     }).then(function() {
-        //         return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
-        //     });
-
-        // } 
-        else if (fieldtype === 'diabetes-årtal') {
+        } else if (fieldtype === 'diabetes-årtal') {
 
             return tsdUtkastPage.allmant.diabetesyear.sendKeys('text').then(function() {
                 return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys('text').then(function() {

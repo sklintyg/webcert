@@ -37,7 +37,7 @@ module.exports.RegisterMedicalCertificate = function(personId, personNamn, perso
         '        <skickatDatum>2016-09-08T10:29:15</skickatDatum>\n' +
         '        <patient>\n' +
         '            <ns2:person-id root="1.2.752.129.2.1.3.1" extension="' + personId + '"/>\n' +
-        '            <ns2:fullstandigtNamn>' + personNamn + ' ' + personEfternamn + '</ns2:fullstandigtNamn>\n' +
+        '            <ns2:fullstandigtNamn>' + 'test' + ' ' + 'testsson' + '</ns2:fullstandigtNamn>\n' +
         '        </patient>\n' +
         '        <skapadAvHosPersonal>\n' +
         '            <ns2:personal-id root="1.2.752.129.2.1.4.1" extension="' + doctorHsa + '"/>\n' +

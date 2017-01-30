@@ -14,7 +14,7 @@ Scenariomall: Validera felaktigt <typAvFält> i <intygsTyp>
 	Så ska valideringsfelet <feltext> visas
 
 Exempel:
- 	| intygsTyp                     |	 typAvFält		     	| feltext       				    |
-    |"Transportstyrelsens läkarintyg, diabetes"	|	"insulin-datum"	| "År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än år 1900."			|
+ 	| intygsTyp                     			|	 typAvFält		     	| feltext       				    |
+    |"Transportstyrelsens läkarintyg, diabetes"	|	insulin-datum			| "År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än år 1900."			|
 
 
