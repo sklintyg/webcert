@@ -20,17 +20,19 @@ package se.inera.intyg.webcert.web.service.log.dto;
 
 /**
  * Immutable representation of a Webcert user for PDL logging purposes.
+ *
+ * @author mekstrand
  */
 public final class LogUser {
 
-    private String userId;
-    private String userName;
-    private String userAssignment;
-    private String userTitle;
-    private String enhetsId;
-    private String enhetsNamn;
-    private String vardgivareId;
-    private String vardgivareNamn;
+    private final String userId;
+    private final String userName;
+    private final String userAssignment;
+    private final String userTitle;
+    private final String enhetsId;
+    private final String enhetsNamn;
+    private final String vardgivareId;
+    private final String vardgivareNamn;
 
     private LogUser(Builder builder) {
         this.userId = builder.userId;
@@ -87,14 +89,24 @@ public final class LogUser {
         private String vardgivareId;
         private String vardgivareNamn;
 
-        /*
-            Enligt tjänstekontraktsbeskrivningen ska det i anrop till tjänsten "StoreLog"
-            komma information om användaren som är upphov till loggposten. De fält som är
-            obligatoriska är användarens id, vårdenhetens id och vårdgivarens id.
-
-            Se https://bitbucket.org/rivta-domains/riv.ehr.log/raw/master/docs/TKB_ehr_log.docx
+        /**
+         * Enligt tjänstekontraktsbeskrivningen ska det i anrop till tjänsten "StoreLog"
+         * komma information om användaren som är upphov till loggposten. De fält som är
+         * obligatoriska är användarens id, vårdenhetens id och vårdgivarens id.
+         *
+         * Se https://bitbucket.org/rivta-domains/riv.ehr.log/raw/master/docs/TKB_ehr_log.docx
+         *
+         * @param userId
+         *          HsaId of the logged in user.
+         * @param enhetsId
+         *          HsaId of the enhet.
+         * @param vardgivareId
+         *          HsaId of the vardgivare.
          */
         public Builder(String userId, String enhetsId, String vardgivareId) {
+            if (userId == null || enhetsId == null || vardgivareId == null) {
+                throw new IllegalArgumentException("LogUser builder requires all constructor arguments to be non-null");
+            }
             this.userId = userId;
             this.enhetsId = enhetsId;
             this.vardgivareId = vardgivareId;
