@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +26,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -47,6 +43,10 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -206,6 +206,10 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
         webCertUser.setValdVardenhet(vardenhet);
         webCertUser.setValdVardgivare(vardgivare);
+
+        // Since privatläkare doesn't have "Medarbetaruppdrag" we cannot reliably populate "miuNamnPerVardenhetsId".
+        // Populate with an empty map.
+        webCertUser.setMiuNamnPerEnhetsId(new HashMap<>());
     }
 
     private void decorateWebCertUserWithLegitimeradeYrkesgrupper(HoSPersonType hosPerson, WebCertUser webCertUser) {
