@@ -34,6 +34,9 @@ module.exports = {
         if (nyBedomningDiagnos) {
             diagnosForNyBedomning = testdataHelper.randomTextString();
         }
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
 
         return {
             id: intygsID,

@@ -27,6 +27,9 @@ var today = testdataHelper.dateFormat(new Date());
 
 module.exports = {
     getRandom: function(intygsID) {
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
         return {
             id: intygsID,
             typ: 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',

@@ -134,6 +134,9 @@ function getRandomPrognosForArbetsformaga() {
 module.exports = {
     getRandom: function(intygsID) {
         var arbetsformaga = fkValues.getRandomArbetsformaga();
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
         return {
             id: intygsID,
             typ: 'Läkarintyg för sjukpenning',

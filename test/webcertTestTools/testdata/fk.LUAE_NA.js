@@ -28,6 +28,9 @@ var today = testdataHelper.dateFormat(new Date());
 
 module.exports = {
     getRandom: function(intygsID) {
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
         return {
             id: intygsID,
             typ: 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
@@ -46,7 +49,7 @@ module.exports = {
                     bakgrund: testdataHelper.randomTextString()
                 }],
                 narOchVarStalldesDiagnoserna: testdataHelper.randomTextString(),
-                nyBedomning: true,//testdataHelper.randomTrueFalse(),
+                nyBedomning: true, //testdataHelper.randomTrueFalse(),
                 diagnosForNyBedomning: testdataHelper.randomTextString()
             },
             sjukdomsForlopp: testdataHelper.randomTextString(),

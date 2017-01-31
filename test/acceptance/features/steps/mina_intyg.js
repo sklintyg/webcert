@@ -23,6 +23,15 @@
 
 var miCheckValues = require('./checkValues/minaintyg');
 
+var STATUS_REGEX;
+
+function matchString(element) {
+    return element.match(STATUS_REGEX);
+}
+
+function stringToArray(text) {
+    return text.split(/\n/g);
+}
 
 module.exports = function() {
 
@@ -61,9 +70,14 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status, callback) {
+    this.Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
+        STATUS_REGEX = status.replace(/(\{).+?(\})/g, '(.*)');
         var intygElement = element(by.id('certificate-' + intyg.id));
-        expect(intygElement.getText()).to.eventually.contain(status).and.notify(callback);
+        return intygElement.getText().then(function(text) {
+            text = stringToArray(text);
+            var match = text.find(matchString);
+            return expect(match).to.be.ok;
+        });
     });
 
     this.Given(/^jag går in på intyget i Mina intyg$/, function(callback) {
