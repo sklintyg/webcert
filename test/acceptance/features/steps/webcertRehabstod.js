@@ -205,10 +205,10 @@ module.exports = function() {
         return fillIn(global.intyg);
     });
 
-    this.Given(/^ska antalet intyg ökat med "([^"]*)" på patient som sparats från Rehabstöd$/, function(antal) {
-        createUserArr(getObjFromList).then(function(personArr) {
-            logger.info('Saved rehab user ( ssn: ' + global.rehabstod.user.ssn + ', noOfIntyg: ' + personArr[0].noOfIntyg + ').');
-            return expect(global.rehabstod.user.noOfIntyg + parseInt(antal, 10)).to.equal(personArr[0].noOfIntyg);
+    this.Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabstöd$/, function(antal) {
+        return createUserArr(getObjFromList).then(function(personArr) {
+            logger.info('Rehabpatient: ( ssn: ' + global.rehabstod.user.ssn + ', Antal intyg: ' + personArr[0].noOfIntyg + ').');
+            return expect(global.rehabstod.user.noOfIntyg + antal).to.equal(personArr[0].noOfIntyg);
         });
     });
 
