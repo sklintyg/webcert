@@ -10,6 +10,3 @@ Scenario: Kontrollera applikationens status
 	Och ska status för "Koppling HSA" vara "Ej implementerat"
 	Och ska status för "Koppling till Intygstjänst" vara "OK"
 	Och ska status för "Koppling till Privatläkarportal" vara "OK"
-	Och ska status för "Antal signerade intyg som ska skickas till Intygstjänst" vara "OK"
-
-	
