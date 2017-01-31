@@ -19,7 +19,7 @@ Exempel:
     |   "postnummer"            |  "Postnummer måste anges med fem siffror"         |
     |   "kännedom-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |
     |   "slumpat-datum"         |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |
-    |   "underlag-datum"        |  "Fel datumformat för underlag"                   |
+    |   "underlag-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"                   |
 
 
 Scenariomall: Validera felaktigt <typAvFält> i <intygsTyp>
