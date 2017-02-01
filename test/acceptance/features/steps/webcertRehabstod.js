@@ -131,7 +131,7 @@ function findSsn(obj) {
 module.exports = function() {
 
     this.Given(/^jag går in på Rehabstöd$/, function() {
-        var url = 'https://rehabstod.ip30.nordicmedtest.sjunet.org/welcome.html';
+        var url = process.env.REHABSTOD_URL + 'welcome.html';
         return browser.get(url).then(function() {
             logger.info('Går till url: ' + url);
         });
@@ -174,7 +174,7 @@ module.exports = function() {
 
     this.Given(/^jag är inloggad som läkare i Rehabstöd$/, function() {
         // Setting rehabstod to new bas url
-        browser.baseUrl = 'https://rehabstod.ip30.nordicmedtest.sjunet.org/';
+        browser.baseUrl = process.env.REHABSTOD_URL;
         var userObj = {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
@@ -200,6 +200,7 @@ module.exports = function() {
 
     this.Given(/^jag fyller i ett intyg som inte är smitta med ny sjukskrivningsperiod$/, function() {
         global.intyg = testdata.fk['7263'].getRandom(intyg.id, false);
+        global.rehabstod.user.intygId = global.intyg.id;
         logger.info(global.intyg);
         sattNySjukskrivningsPeriod(global.intyg);
         return fillIn(global.intyg);
@@ -209,6 +210,13 @@ module.exports = function() {
         return createUserArr(getObjFromList).then(function(personArr) {
             logger.info('Rehabpatient: ( ssn: ' + global.rehabstod.user.ssn + ', Antal intyg: ' + personArr[0].noOfIntyg + ').');
             return expect(global.rehabstod.user.noOfIntyg + parseInt(antal, 10)).to.equal(personArr[0].noOfIntyg);
+        });
+    });
+
+    this.Given(/^jag går in på intyget som tidigare skapats$/, function() {
+        var url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.rehabstod.user.intygId;
+        return browser.get(url).then(function() {
+            logger.info('Går till url: ' + url);
         });
     });
 

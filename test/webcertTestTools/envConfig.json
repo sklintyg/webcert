@@ -39,6 +39,7 @@
     "ip30": {
         "WEBCERT_URL": "https://webcert.ip30.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip30.nordicmedtest.sjunet.org",
+        "REHABSTOD_URL": "https://rehabstod.ip30.nordicmedtest.sjunet.org/",
         "INTYGTJANST_URL": "https://intyg.ip30.nordicmedtest.sjunet.org/inera-certificate",
         "DATABASE_NAME": "webcert_ip30",
         "DATABASE_HOST": "mysql.sm.nordicmedtest.se",
