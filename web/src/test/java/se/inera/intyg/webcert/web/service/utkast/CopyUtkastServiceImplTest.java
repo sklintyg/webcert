@@ -18,24 +18,20 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
 import se.inera.intyg.webcert.integration.pu.services.PUService;
@@ -44,13 +40,31 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -80,6 +94,9 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private UtkastRepository mockUtkastRepository;
+
+    @Mock
+    private IntygService intygService;
 
     @Mock
     private PUService mockPUService;
@@ -153,6 +170,11 @@ public class CopyUtkastServiceImplTest {
         });
     }
 
+    @Before
+    public void expectIsRevokedCallToIntygService() {
+        when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(false);
+    }
+
     @Test
     public void testCreateCopy() throws Exception {
 
@@ -181,6 +203,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
         verify(userService).getUser();
+        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
 
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
@@ -215,6 +238,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
         verify(userService).getUser();
         verify(logService).logCreateIntyg(any(LogRequest.class));
+        verifyZeroInteractions(intygService);
     }
 
     @Test
@@ -246,6 +270,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
         verify(userService).getUser();
+        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 
     @Test
@@ -277,6 +302,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
         verify(userService).getUser();
+        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 
     @Test
@@ -309,6 +335,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class), anyString());
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
         verify(userService).getUser();
+        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
 
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
@@ -345,10 +372,35 @@ public class CopyUtkastServiceImplTest {
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class), anyString());
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
         verify(userService).getUser();
+        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
 
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
 
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testCopyThrowsExceptionWhenOriginalCertificateIsRevoked() throws ModuleException, ModuleNotFoundException {
+        when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
+
+        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+        copyService.createCopy(copyReq);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testCompletionThrowsExceptionWhenOriginalCertificateIsRevoked() throws ModuleException, ModuleNotFoundException {
+        when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
+
+        CreateCompletionCopyRequest completionRequest = buildCompletionRequest();
+        copyService.createCompletion(completionRequest);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRenewalThrowsExceptionWhenOriginalCertificateIsRevoked() throws ModuleException, ModuleNotFoundException {
+        when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
+
+        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
+        copyService.createRenewalCopy(renewalRequest);
     }
 
     private CopyUtkastBuilderResponse createCopyUtkastBuilderResponse() {

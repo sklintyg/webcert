@@ -18,14 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.util.List;
-
 import org.apache.commons.lang3.tuple.Pair;
-
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.*;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+
+import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -100,4 +101,22 @@ public interface IntygService {
      *      The HSA Id of the vardenhet where the intyg was created/issued.
      */
     String getIssuingVardenhetHsaId(String intygId, String intygsTyp);
+
+    /**
+     * Checks if the specified Intyg is revoked or not. If the Intygstjanst couldn't find the intyg or the Intygstjanst
+     * is not available, an attempt to find the revoke status on an utkast stored in Webcert will be performed.
+     *
+     * This method will not yield a PDL statement as it doesn't actually show anything to an end-user. It will however
+     * log using {@link se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService#logIntygRevokeStatusRead}.
+     *
+     * @param intygsId
+     *      ID of the intyg to check revoke status for.
+     * @param intygsTyp
+     *      Type of the intyg.
+     * @param coherentJournaling
+     *      true or false.
+     * @return
+     *      true if the intyg is revoked, false if not.
+     */
+    boolean isRevoked(String intygsId, String intygsTyp, boolean coherentJournaling);
 }
