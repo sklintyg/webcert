@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, logger, JSON, Promise */
+/* globals pages, logger, JSON, Promise,intyg */
 
 'use strict';
 var utkastPage;
@@ -33,7 +33,7 @@ module.exports = {
     },
     setPatientAdressIfNotGiven: function() {
         var isFk7263 = global.intyg.typ.indexOf('7263') >= 0;
-
+        utkastPage = pages.getUtkastPageByType(intyg.typ);
         if (global.person.adress && !isFk7263 && global.user.origin !== 'DJUPINTEGRATION') {
             return utkastPage.angePatientAdress(global.person.adress).then(function() {
                 logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
