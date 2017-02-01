@@ -5,7 +5,7 @@ Egenskap: FK7263-integration med rehabstöd
 
 Bakgrund: Jag befinner mig på Rehabstöds förstasida
 
-@integration @webcertRehanstod
+@integration
 Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
     När jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-105F"
@@ -22,4 +22,4 @@ Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
     Och jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-105F"
     Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
-    Så ska antalet intyg ökat med "1" på patient som sparats från Rehabstöd
+    Så ska antalet intyg ökat med 1 på patient som sparats från Rehabstöd
