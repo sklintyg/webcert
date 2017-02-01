@@ -18,15 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
@@ -40,6 +38,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -59,6 +58,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
+
+    @Autowired
+    private IntygService intygService;
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -114,6 +116,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating copy of intyg '{}'", originalIntygId);
 
         try {
+
+            if (intygService.isRevoked(originalIntygId, copyRequest.getTyp(), copyRequest.isCoherentJournaling())) {
+                LOG.debug("Cannot create copy of certificate with id '{}', the certificate is revoked", originalIntygId);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+            }
+
             CopyUtkastBuilderResponse builderResponse;
 
             builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId);
@@ -134,6 +142,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
+
     /*
      * (non-Javadoc)
      *
@@ -149,6 +158,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating completion to intyg '{}'", originalIntygId);
 
         try {
+            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
+                LOG.debug("Cannot create completion copy of certificate with id '{}', the certificate is revoked", originalIntygId);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+            }
             CopyUtkastBuilderResponse builderResponse = buildCompletionUtkastBuilderResponse(copyRequest, originalIntygId, true);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
@@ -182,6 +195,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating renewal for intyg '{}'", originalIntygId);
 
         try {
+            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
+                LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+            }
             CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
@@ -200,6 +217,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
+    /**
+     * @deprecated The functionality for "makulera & ersätt" has been deactivated in Webcert 5.1.
+     */
     @Override
     @Transactional("jpaTransactionManager")
     public CreateNewDraftCopyResponse createReplacementCopy(CreateNewDraftCopyRequest copyRequest) {

@@ -18,21 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
-
-import java.util.List;
-
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Joiner;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.inera.intyg.common.util.logging.LogMarkers;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+
+import java.util.List;
+
+import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
 
 @Service
 public class MonitoringLogServiceImpl implements MonitoringLogService {
@@ -105,6 +103,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logIntygRead(String intygsId, String intygsTyp) {
         logEvent(MonitoringEvent.INTYG_READ, intygsId, intygsTyp);
+    }
+
+    @Override
+    public void logIntygRevokeStatusRead(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.INTYG_REVOKE_STATUS_READ, intygsId, intygsTyp);
     }
 
     @Override
@@ -274,6 +277,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         ANSWER_SENT(
                 "Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
+        INTYG_REVOKE_STATUS_READ("Revoke status of Intyg '{}' of type '{}' was read."),
         INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF"),
         INTYG_SIGNED("Intyg '{}' of type '{}' signed by '{}' using scheme '{}' and relation code '{}'"),
         INTYG_REGISTERED("Intyg '{}' of type '{}' registered with Intygstjänsten"),
