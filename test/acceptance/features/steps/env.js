@@ -25,7 +25,13 @@ var hasFoundConsoleErrors = false;
 function checkConsoleErrors(cb) {
     if (hasFoundConsoleErrors) {
         logger.info(hasFoundConsoleErrors);
-        throw ('Hittade script-fel under körning');
+
+        // 500-error är ett godkänt fel i detta test, se INTYG-3524
+        if (global.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
+            logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
+        } else {
+            throw ('Hittade script-fel under körning');
+        }
     }
     cb();
 }
