@@ -42,6 +42,7 @@ subprojects {
     }
 
     pmdMain.onlyIf { project.hasProperty('codeQuality') }
+    pmdMain.dependsOn unzipBuildTools
     pmdTest.enabled = false
 
     // Errorprone ===========================================================
