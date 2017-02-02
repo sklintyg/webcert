@@ -121,7 +121,7 @@ module.exports = {
             funktionsnedsattning: 'Skadorna minskar förmågan',
             aktivitetsbegransning: null,
             beslutsunderlag: 'I arbeten som kan utföras mestadels stillasittande',
-            overliggande: 'För S830 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S83'
+            overliggande: 'Det FMB-stöd som visas är för koden S83'
 
         }, {
             kod: 'S831',
@@ -130,7 +130,7 @@ module.exports = {
             funktionsnedsattning: 'Skadorna minskar förmågan',
             aktivitetsbegransning: null,
             beslutsunderlag: 'I arbeten som kan utföras mestadels stillasittande',
-            overliggande: 'För S831 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S83'
+            overliggande: 'Det FMB-stöd som visas är för koden S83'
 
         }, {
             kod: 'R010',
@@ -139,7 +139,7 @@ module.exports = {
             funktionsnedsattning: null,
             aktivitetsbegransning: null,
             beslutsunderlag: null,
-            overliggande: 'För R010 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden R01'
+            overliggande: 'Det FMB-stöd som visas är för koden R01'
         }, {
             kod: 'R090',
             symptomPrognosBehandling: null,
@@ -147,7 +147,7 @@ module.exports = {
             funktionsnedsattning: null,
             aktivitetsbegransning: null,
             beslutsunderlag: null,
-            overliggande: 'För R090 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden R09'
+            overliggande: 'Det FMB-stöd som visas är för koden R09'
         }, {
             kod: 'N210',
             symptomPrognosBehandling: 'Symtomen vid njursten är svåra smärtor',
@@ -155,7 +155,7 @@ module.exports = {
             funktionsnedsattning: 'Vid akuta njurstensanfall',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Vid akut njurstensanfall',
-            overliggande: 'För N210 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden N21'
+            overliggande: 'Det FMB-stöd som visas är för koden N21'
 
         }, {
             kod: 'S302',
@@ -164,7 +164,7 @@ module.exports = {
             funktionsnedsattning: 'Skadorna minskar förmågan att gå och stå',
             aktivitetsbegransning: null,
             beslutsunderlag: null,
-            overliggande: 'För S302 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden S30'
+            overliggande: 'Det FMB-stöd som visas är för koden S30'
 
         }, {
             kod: 'F420',
@@ -173,7 +173,7 @@ module.exports = {
             funktionsnedsattning: 'Tvångssyndrom kan medföra',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Sjukskrivning kan i många fall undvikas',
-            overliggande: 'För F420 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden F42'
+            overliggande: 'Det FMB-stöd som visas är för koden F42'
 
         }, {
             kod: 'G359',
@@ -182,7 +182,7 @@ module.exports = {
             funktionsnedsattning: 'Hur MS påverkar',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Vid sjukdomsdebut',
-            overliggande: 'För G359 finns inget FMB-stöd. Det FMB-stöd som visas nedan gäller den mindre specifika koden G35'
+            overliggande: 'Det FMB-stöd som visas är för koden G35'
 
         }]
 
