@@ -71,7 +71,8 @@ module.exports = function() {
     });
 
     this.Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
-        STATUS_REGEX = status.replace(/(\{).+?(\})/g, '(.*)');
+        // STATUS_REGEX = status.replace(/(\{).+?(\})/g, '(.*)');
+        STATUS_REGEX = status;
         var intygElement = element(by.id('certificate-' + intyg.id));
         return intygElement.getText().then(function(text) {
             text = stringToArray(text);

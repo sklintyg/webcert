@@ -22,7 +22,7 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	Och jag skickar intyget till Försäkringskassan
 	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system"
 	När jag går till Mina intyg för patienten
-	Så ska intygets status i Mina intyg visa "Skickat av {vårdenhet} till Försäkringskassan"
+	Så ska intygets status i Mina intyg visa "Skickat till Försäkringskassan"
 
 @RevokeMedicalCertificate
 Scenario: Makulera ett skickat intyg

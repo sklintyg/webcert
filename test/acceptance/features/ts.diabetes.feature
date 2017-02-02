@@ -22,7 +22,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
     När jag går till Mina intyg för patienten
-    Så ska intygets status i Mina intyg visa "Skickat av {vårdenhet} till Transportstyrelsen"
+    Så ska intygets status i Mina intyg visa "Skickat till Transportstyrelsen"
 
 @makulera
 Scenario: Makulera ett skickat intyg
