@@ -198,11 +198,14 @@ module.exports = function() {
         return logInAsUserRole(userObj, 'Läkare', true);
     });
 
-    this.Given(/^jag fyller i ett intyg som inte är smitta med ny sjukskrivningsperiod$/, function() {
-        global.intyg = testdata.fk['7263'].getRandom(intyg.id, false);
+    this.Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsKod) {
+        if ('FK7263' === intygsKod) {
+            global.intyg = testdata.fk['7263'].getRandom(intyg.id, false);
+        }
+
         global.rehabstod.user.intygId = global.intyg.id;
-        logger.info(global.intyg);
         sattNySjukskrivningsPeriod(global.intyg);
+        logger.info(global.intyg);
         return fillIn(global.intyg);
     });
 

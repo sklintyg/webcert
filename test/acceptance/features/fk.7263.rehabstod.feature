@@ -15,7 +15,7 @@ Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
     När jag är inloggad som läkare i Webcert
     Och jag går in på en patient som sparats från Rehabstöd
     Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
-    Och jag fyller i ett intyg som inte är smitta med ny sjukskrivningsperiod
+    Och jag fyller i ett "FK7263" intyg som inte är smitta med ny sjukskrivningsperiod
     Och jag signerar intyget
 
     När jag går in på Rehabstöd
