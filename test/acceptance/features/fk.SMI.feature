@@ -41,10 +41,14 @@ Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
 	När jag går till Mina intyg för patienten
 	Så ska intygets status i Mina intyg visa "Skickat till Försäkringskassan"
 
+@luaeFS
+Exempel:
+    |intygKod   | 	intyg 																|
+    |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
+
 Exempel:
     |intygKod   | 	intyg                                                               |
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
-    |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 

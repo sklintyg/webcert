@@ -51,9 +51,16 @@ function writeNewIntyg(typ, status) {
                 .then(function() { // Klicka på skapa nytt utkast
                     console.log('Klickar på nytt utkast knapp');
                     return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
-                }).
-            then(function() {
+                })
+                .then(function() {
                     return browser.sleep(6000);
+                })
+                .then(function() { // Spara intygsid för kommande steg
+                    return browser.getCurrentUrl().then(function(text) {
+                        intyg.id = text.split('/').slice(-1)[0];
+                        return logger.info('intyg.id: ' + intyg.id);
+                    });
+
                 })
                 .then(function() { // Ange intygsdata
                     console.log('Anger intygsdata..');
@@ -64,6 +71,9 @@ function writeNewIntyg(typ, status) {
                 .then(function() { //Klicka på signera
                     console.log('Klickar på signera..');
                     return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+                })
+                .then(function() {
+                    return browser.sleep(2000);
                 })
                 .then(function() { // Skicka till mottagare om intyget ska vara Mottaget
                     if (status === 'Mottaget') {
