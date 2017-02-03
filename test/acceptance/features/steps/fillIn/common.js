@@ -28,13 +28,11 @@ module.exports = {
         }, function(reason) {
             throw ('FEL, angeEnhetAdress,' + reason);
         });
-
-
     },
     setPatientAdressIfNotGiven: function() {
         var isFk7263 = global.intyg.typ.indexOf('7263') >= 0;
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        if (global.person.adress && !isFk7263 && global.user.origin !== 'DJUPINTEGRATION') {
+        if (global.person.adress && global.person.adress.postadress && !isFk7263 && global.user.origin !== 'DJUPINTEGRATION') {
             return utkastPage.angePatientAdress(global.person.adress).then(function() {
                 logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
             }, function(reason) {
@@ -42,7 +40,22 @@ module.exports = {
             });
         } else {
             logger.info('Ingen adress ändras');
-            return Promise.resolve();
+            if (!isFk7263 && global.user.origin !== 'DJUPINTEGRATION') {
+                global.person.adress = {};
+                return Promise.all([
+                    utkastPage.patientAdress.postAdress.getText().then(function(text) {
+                        global.person.adress.postadress = text;
+                    }),
+                    utkastPage.patientAdress.postNummer.getText().then(function(text) {
+                        global.person.adress.postnummer = text;
+                    }),
+                    utkastPage.patientAdress.postOrt.getText().then(function(text) {
+                        global.person.adress.postort = text;
+                    })
+                ]);
+            } else {
+                return Promise.resolve();
+            }
         }
 
     },

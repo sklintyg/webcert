@@ -64,7 +64,7 @@ function writeNewIntyg(typ, status) {
                 })
                 .then(function() { // Ange intygsdata
                     console.log('Anger intygsdata..');
-                    global.intyg = require('./helpers').generateIntygByType(typ);
+                    global.intyg = require('./helpers').generateIntygByType(typ, intyg.id);
                     console.log(global.intyg);
                     return require('./fillIn').fillIn(intyg);
                 })

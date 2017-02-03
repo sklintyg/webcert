@@ -25,6 +25,7 @@ var helpers = require('./helpers');
 var testdataHelpers = wcTestTools.helpers.testdata;
 var testdata = wcTestTools.testdata;
 var testpatienter = testdata.values.patienter;
+var intygURL = helpers.intygURL;
 
 module.exports = function() {
     this.Given(/^jag trycker på visa intyget$/, function() {
@@ -74,24 +75,6 @@ module.exports = function() {
     this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin) {
         return gotoIntyg(intygstyp, origin);
     });
-
-    function intygURL(typAvIntyg) {
-        if (typAvIntyg === 'Läkarutlåtande för sjukersättning') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
-        } else if (typAvIntyg === 'Läkarintyg för sjukpenning') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + global.intyg.id;
-        } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + global.intyg.id;
-        } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + global.intyg.id;
-        } else if (typAvIntyg === 'Läkarintyg FK 7263') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
-
-        }
-    }
-
-
-
 
     function gotoIntyg(intygstyp, origin, addToUrl) {
         var url;

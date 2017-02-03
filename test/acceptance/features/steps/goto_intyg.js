@@ -17,12 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, intyg, logger, person, protractor, pages, JSON,wcTestTools */
+/*global browser, intyg, logger,protractor, JSON,wcTestTools */
 'use strict';
-
-var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var createIntygWithStatus = require('./helpers_create_intyg.js').createIntygWithStatus;
-var getIntygElementRow = require('./helpers.js').getIntygElementRow;
+var helpers = require('./helpers.js');
+var getIntygElementRow = helpers.getIntygElementRow;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 
 function gotoIntyg(intygstyp, status, intygRadElement, cb) {
@@ -31,17 +30,11 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
     if (!intygRadElement) {
         logger.info('Hittade inget intyg, skapar ett nytt..');
         createIntygWithStatus(intygstyp, status).then(function() {
-            //Uppdatera sidan och gå in på patienten igen
-            browser.refresh().then(function() {
-                browser.get('/web/dashboard#/create/choose-patient/index').then(function() {
-                    sokSkrivIntygPage.selectPersonnummer(person.id).then(function() {
-                        getIntygElementRow(intygstyp, status, function(el) {
-                            el.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
-                            cb();
-                        });
-                    });
-                });
 
+            //Gå till det nyskapade intyget
+            console.log(helpers.intygURL(intygstyp));
+            browser.get(helpers.intygURL(intygstyp)).then(function() {
+                cb();
             });
         });
     }

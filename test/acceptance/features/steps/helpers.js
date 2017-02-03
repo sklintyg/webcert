@@ -250,6 +250,24 @@ module.exports = {
     },
     injectConsoleTracing: function() {
         return browser.executeScript('window.errs=typeof(errs)=="undefined" ? [] : window.errs; window.console.error = function(msg){window.errs.push(msg); }; ');
+    },
+
+    intygURL: function(typAvIntyg) {
+        if (typAvIntyg === 'Läkarutlåtande för sjukersättning') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
+        } else if (typAvIntyg === 'Läkarintyg för sjukpenning') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + global.intyg.id;
+        } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + global.intyg.id;
+        } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + global.intyg.id;
+        } else if (typAvIntyg === 'Läkarintyg FK 7263') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
+        } else if (typAvIntyg === 'Transportstyrelsens läkarintyg, diabetes') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-diabetes/' + global.intyg.id;
+        } else if (typAvIntyg === 'Transportstyrelsens läkarintyg') {
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + global.intyg.id;
+        }
     }
 
 

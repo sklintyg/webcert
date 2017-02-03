@@ -45,10 +45,13 @@ Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
 Exempel:
     |intygKod   | 	intyg 																|
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
-
+@luaeNA
 Exempel:
     |intygKod   | 	intyg                                                               |
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
+@luse
+Exempel:
+    |intygKod   | 	intyg                                                               |
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 

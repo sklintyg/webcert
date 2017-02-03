@@ -45,7 +45,7 @@ module.exports = {
 
 
         // if (intyg.isKopia) {
-        logger.info('Kontrollerar inte angiven adress pga att intyget är en kopia och kan ha automatiskt uppdaterad adress');
+        //logger.info('Kontrollerar inte angiven patientadress pga att intyget är en kopia och kan ha automatiskt uppdaterad adress');
         promiseArr.push(checkPatientadress(person.adress).then(function(value) {
             logger.info('OK - checkPatientadress = ' + value);
         }, function(reason) {

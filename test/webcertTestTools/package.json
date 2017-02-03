@@ -1,13 +1,15 @@
 {
-    "name": "webcert-testtools",
-    "version": "1.0.151",
-    "description": "",
-    "main": "webcertTestTools.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "",
-    "dependencies": {
-        "jclass": "^1.2.1"
-    }
+  "name": "webcert-testtools",
+  "version": "1.0.152",
+  "description": "",
+  "main": "webcertTestTools.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {
+    "jclass": "^1.2.1",
+    "request": "^2.79.0",
+    "xml2js": "^0.4.17"
+  }
 }
