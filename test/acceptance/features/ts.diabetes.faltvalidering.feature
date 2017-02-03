@@ -28,4 +28,10 @@ Scenario: Validerar alla fält i TS diabetes intyget
 	När jag fyller i text i "alla synfält" fältet
 	Så ska valideringsfelet "Måste ligga i intervallet 0,0 till 2,0." visas "6" gånger
 
+	När jag tar bort information i "diabetes-allmant" fältet
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag byter fokus från fält
+    Så ska inga valideringsfel visas
+
+
 

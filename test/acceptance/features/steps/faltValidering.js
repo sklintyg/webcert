@@ -288,6 +288,20 @@ module.exports = function() {
         }
     });
 
+    this.Given(/^ska inga valideringsfel visas$/, function() {
+        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
+            return elm.getText();
+        });
+        return alertTexts.then(function(result) {
+            //console.log(result);
+            result.forEach(function(n) {
+                //console.log(n += 'H');
+                expect(n).to.have.string('');
+            });
+        });
+    });
+
+
     this.Given(/^jag fyller i text i insulin\-datum fältet$/, function() {
         return tsdUtkastPage.fillInAllmant({
             year: 'text',
@@ -329,6 +343,10 @@ module.exports = function() {
                 });
             });
 
+
+
+
+
         } else if (fieldtype === 'UndersökningsDatum') {
 
             return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('10/12-2017').then(function() {
@@ -344,6 +362,22 @@ module.exports = function() {
         }
 
     });
+
+    this.Given(/^jag tar bort information i "([^"]*)" fältet$/, function(fieldtype) {
+        if (fieldtype === 'diabetes-allmant') {
+            return tsdUtkastPage.allmant.diabetesyear.clear().then(function() {
+                return tsdUtkastPage.allmant.insulinbehandlingsperiod.clear().then(function() {
+                    return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB).then(function() {
+                        return element(by.cssContainingText('label.checkbox', 'Insulin')).sendKeys(protractor.Key.SPACE);
+                    });
+
+                });
+            });
+        }
+
+    });
+
+
     this.Given(/^jag lägger till fältet "([^"]*)"$/, function(fieldtype) {
         var enter = browser.actions().sendKeys(protractor.Key.ENTER);
         if (fieldtype === 'Intyget baseras på') {

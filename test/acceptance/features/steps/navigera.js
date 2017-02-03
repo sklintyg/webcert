@@ -232,5 +232,11 @@ module.exports = function() {
         return expect(tr.getText()).to.eventually.contain(varaText);
     });
 
+    this.Given(/^jag byter fokus från fält$/, function() {
+        var activeEle = browser.driver.switchTo().activeElement();
+        return activeEle.sendKeys(protractor.Key.TAB);
+    });
+
+
 
 };
