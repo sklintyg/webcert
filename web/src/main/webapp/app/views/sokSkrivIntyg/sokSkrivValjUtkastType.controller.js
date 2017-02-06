@@ -21,10 +21,12 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'common.IntygCopyFornya', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
+        'common.messageService',
+
         function($window, $filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             CommonIntygCopyFornya, IntygFornyaRequestModel, IntygCopyRequestModel,
-            IntygProxy, UtkastProxy, Service, ObjectHelper) {
+            IntygProxy, UtkastProxy, Service, ObjectHelper, messageService) {
             'use strict';
 
             /**
@@ -33,8 +35,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             var choosePatientStateName = 'webcert.create-choosepatient-index';
 
-            $scope.viewState = Viewstate.build();
             $scope.intygTypeModel = IntygTypeSelectorModel.build();
+            $scope.messageService = messageService;
+            $scope.viewState = Viewstate.build();
 
             // In case callers do not know the patientId they can use 'default' in which case the controller
             // will use what's currently in PatientModel, or, if that's not available, redirect user to enter a

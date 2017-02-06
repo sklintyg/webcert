@@ -6,18 +6,7 @@
 </div>
 <div class="modal-body">
   <p>
-    Vid kopiering skapas ett nytt intygsutkast med samma information som i det ursprungliga intyget. Uppgifterna i ett kopierat intygsutkast går att ändra innan det signeras.
-    <span ng-show="model.otherCareUnit == true" id="annanVardenhet" wc-authority role="!PRIVATLAKARE">
-      Om intyget är utfärdat på en annan vårdenhet kommer adressuppgifterna att ersättas med de för den vårdenhet du är inloggad på.
-    </span>
-    <span wc-authority="HANTERA_PERSONUPPGIFTER" id="msgInteFranJournalSystem">
-      I de fall patienten har ändrat namn eller adress så uppdateras den informationen.
-    </span>
-  </p>
-  <p ng-show="model.patientId != undefined && model.patientId.length > 0">
-    <span id="msgNyttPersonId">
-      För denna patient finns nytt person-id och informationen kommer därför uppdateras i det nya intyget.
-    </span>
+    <span message key="{{bodyText}}"></span>
   </p>
 </div>
 <div class="modal-footer">

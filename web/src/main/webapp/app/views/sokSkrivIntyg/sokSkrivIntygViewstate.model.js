@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').factory('webcert.SokSkrivIntygViewstate',
-    ['$log', 'common.messageService',
-        function($log, messageService) {
+    ['$log',
+        function($log) {
             'use strict';
 
             return {
@@ -37,7 +37,7 @@ angular.module('webcert').factory('webcert.SokSkrivIntygViewstate',
                     this.currentList = undefined;
                     this.unsigned = 'intyglist-empty'; // unsigned, unsigned-mixed,
                     this.intygFilter = 'current'; // possible values: current, revoked, all
-                    this.fornyaTitleText = messageService.getProperty('fk7263.label.fornya.text');
+
                     return this;
                 }
             };
