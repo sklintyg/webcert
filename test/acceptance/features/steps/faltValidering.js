@@ -280,9 +280,9 @@ module.exports = function() {
         if (arg1 === 'utökade' && intygsTyp === 'Transportstyrelsens läkarintyg, diabetes') {
             return alertTexts.then(function(result) {
                 // console.log(result);
-                expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['6', '9']);
-                expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
-                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('5');
+                expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['7', '10']);
+                expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('2');
+                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('7');
                 expect(antalAvLoop(result, 'År då behandling med insulin påbörjades måste anges.')).to.equal('1');
             });
         }

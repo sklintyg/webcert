@@ -16,9 +16,11 @@ Scenario: Validerar alla fält i TS diabetes intyget
 	
 	När jag anger "Nej" i valet "a) Ögonläkarintyg kommer att skickas in separat"
 	Och jag anger "Ja" i valet "b) Förekommer hypoglykemier med tecken på nedsatt hjärnfunktion (neuroglukopena symtom) som bedöms kunna innebära en trafiksäkerhetsrisk?"
-	Så ska valideringsfelet "Du måste välja ett alternativ." visas "7" gånger
+	Och jag trycker på checkboxen med texten "Taxi"
+	Så ska valideringsfelet "Du måste välja ett alternativ." visas "10" gånger
 	Och jag anger "Ja" i valet "d) Har patienten haft allvarlig hypoglykemi (som krävt hjälp av annan för att hävas) under det senaste året?"
 	Och jag anger "Ja" i valet "e) Har patienten haft allvarlig hypoglykemi i trafiken under det senaste året?"
+	Och jag anger "Ja" i valet "g) Har patienten haft allvarlig hypoglykemi (som krävt hjälp av annan för att hävas) under vaken tid det senaste året?"
 	Och jag trycker på checkboxen med texten "Insulin"
 	Så ska alla utökade valideringsfel för "Transportstyrelsens läkarintyg, diabetes" visas
 
