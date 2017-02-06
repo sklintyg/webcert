@@ -276,6 +276,11 @@ public class IntygServiceImpl implements IntygService {
         Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
         verifyEnhetsAuth(intyg, true);
 
+        if (isRevoked(intygsId, typ, false)) {
+            LOG.debug("Cannot send certificate with id '{}', the certificate is revoked", intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is revoked");
+        }
+
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, webCertUserService.getUser());
 
         monitoringService.logIntygSent(intygsId, recipient);
