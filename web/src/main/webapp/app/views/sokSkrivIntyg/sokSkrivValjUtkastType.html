@@ -124,25 +124,50 @@
                   </tr>
                   <tr ng-repeat="intyg in viewState.currentList">
                     <td>
-                      <button type="button" class="btn btn-info" title="Visa intyget" ng-click="openIntyg(intyg)"
-                              id="showBtn-{{intyg.intygId}}">Visa
+                      <button type="button"
+                              id="showBtn-{{intyg.intygId}}"
+                              class="btn btn-info"
+                              ng-click="openIntyg(intyg)"
+                              uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
+                              popover-trigger="mouseenter"
+                              popover-popup-delay="300"
+                              popover-append-to-body="true"
+                              popover-placement="auto top">
+                        {{messageService.getProperty('common.show')}}
                       </button>
                     </td>
                     <td ng-switch on="intyg.intygType">
-                      <button type="button" ng-switch-when="fk7263"
-                              ng-show="!patientModel.sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
-                              class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
-                              intygstyp="{{intyg.intygType}}" title="{{fornyaTitleText}}" ng-click="fornyaIntyg(intyg)"
-                              id="fornyaBtn-{{intyg.intygId}}">
-                        Förnya
-                      </button>
-                      <button type="button" ng-switch-default
-                              ng-show="!patientModel.sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
-                              class="btn btn-info" wc-authority="KOPIERA_INTYG" feature="kopieraIntyg"
+                      <button type="button"
+                              wc-authority="KOPIERA_INTYG"
+                              feature="kopieraIntyg"
                               intygstyp="{{intyg.intygType}}"
-                              title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras."
-                              ng-click="copyIntyg(intyg)" id="copyBtn-{{intyg.intygId}}">
-                        Kopiera
+                              id="fornyaBtn-{{intyg.intygId}}"
+                              class="btn btn-info"
+                              ng-switch-when="fk7263"
+                              ng-id="!patientModel.sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
+                              ng-click="fornyaIntyg(intyg)"
+                              uib-popover="{{messageService.getProperty('common.fornya.tooltip')}}"
+                              popover-trigger="mouseenter"
+                              popover-popup-delay="300"
+                              popover-append-to-body="true"
+                              popover-placement="auto top">
+                        {{messageService.getProperty('common.fornya')}}
+                      </button>
+                      <button type="button"
+                              wc-authority="KOPIERA_INTYG"
+                              feature="kopieraIntyg"
+                              intygstyp="{{intyg.intygType}}"
+                              id="copyBtn-{{intyg.intygId}}"
+                              class="btn btn-info"
+                              ng-switch-default
+                              ng-if="!patientModel.sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
+                              ng-click="copyIntyg(intyg)"
+                              uib-popover="{{messageService.getProperty('common.copy.tooltip')}}"
+                              popover-trigger="mouseenter"
+                              popover-popup-delay="300"
+                              popover-append-to-body="true"
+                              popover-placement="auto top">
+                        {{messageService.getProperty('common.copy')}}
                       </button>
                     </td>
                     <td>{{getTypeName(intyg.intygType)}}</td>
