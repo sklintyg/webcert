@@ -199,6 +199,9 @@ module.exports = function() {
 
         if (svar === 'Ja') {
             return tr.all(by.css('td')).get(0).element(by.css('input')).sendKeys(protractor.Key.SPACE);
+        } else if (svar === 'Typ 2') {
+            var typVal = tr.all(by.css('td')).get(2).all(by.css('input')).get(1);
+            return typVal.sendKeys(protractor.Key.SPACE);
         } else {
             return tr.all(by.css('td')).get(1).element(by.css('input')).sendKeys(protractor.Key.SPACE);
         }

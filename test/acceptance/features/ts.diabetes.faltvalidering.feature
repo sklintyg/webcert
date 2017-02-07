@@ -1,5 +1,5 @@
 # language: sv
-@faltvalidering @ts_diabets
+@faltvalidering @ts_diabets 
 
 Egenskap: Fältvalidering TS-Diabetes
 
