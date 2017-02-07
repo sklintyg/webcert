@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <properties>
-   <Edit>true</Edit>
-   <Files>true</Files>
+   <Edit/>
+   <Files/>
    <Help>Kopiera tooltip och dialog innehåller rätt text (WEBCERT-1449 / -1447)</Help>
-   <Properties>true</Properties>
-   <RecentChanges>true</RecentChanges>
-   <Refactor>true</Refactor>
-   <Search>true</Search>
+   <Properties/>
+   <Prune/>
+   <RecentChanges/>
+   <Refactor/>
+   <Search/>
    <Suites>1449</Suites>
    <Test/>
-   <Versions>true</Versions>
-   <WhereUsed>true</WhereUsed>
+   <Versions/>
+   <WhereUsed/>
 </properties>
