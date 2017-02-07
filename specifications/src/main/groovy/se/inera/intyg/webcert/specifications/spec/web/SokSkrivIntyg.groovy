@@ -328,14 +328,6 @@ class SokSkrivIntyg extends ExceptionHandlingFixture {
         result
     }
 
-    boolean annanEnhetTextVisas() {
-        boolean result
-        Browser.drive {
-            result = page.annanEnhetText
-        }
-        result
-    }
-
     void makuleraVisatIntyg() {
         Browser.drive {
             page.makulera()
