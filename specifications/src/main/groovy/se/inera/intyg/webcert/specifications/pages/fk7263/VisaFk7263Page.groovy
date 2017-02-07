@@ -38,17 +38,10 @@ class VisaFk7263Page extends AbstractViewCertPage {
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
         visaVadSomSaknasListaNoWait{$("#visa-vad-som-saknas-lista")}
 
-        // copy dialog
-        annanEnhetText(wait: true) { $("#annanVardenhet") }
-
-        // intyg top panel
-
         skickaDialogBody { $("span[key=\"fk7263.label.send.body\"]") }
 
         // kopiera dialog text webcert-1449
         copyDialog { $("#copy-dialog") }
-        kopieraDialogMsgInteFranJournalSystem(required: false) { $("#msgInteFranJournalSystem") }
-        kopieraDialogMsgNyttPersonId { $("#msgNyttPersonId") }
 
         // Vidarebefordra utkast
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }

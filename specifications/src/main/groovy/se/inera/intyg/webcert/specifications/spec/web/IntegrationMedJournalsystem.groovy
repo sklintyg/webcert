@@ -342,17 +342,6 @@ class IntegrationMedJournalsystem extends ExceptionHandlingFixture {
         result
     }
 
-    boolean textInteFranJournalsystemVisas() {
-        def result
-        Browser.drive {
-            waitFor{
-                VisaFk7263Page
-            }
-            result = page.kopieraDialogMsgInteFranJournalSystem?.isDisplayed()
-        }
-        result
-    }
-
     boolean textNyttPersonnummerVisas() {
         def result
         Browser.drive {
