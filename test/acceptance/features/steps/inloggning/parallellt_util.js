@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser,Promise*/
+/*global browser,Promise,protractor*/
 'use strict';
 var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
 var helpers = require('../helpers.js');
@@ -69,6 +69,19 @@ module.exports = {
                 console.log('Forked browser closed (quit)');
                 return Promise.resolve();
             }
+        });
+    },
+    findErrorMsg: function(secondBrowser, elementIds, msg) {
+        return secondBrowser.findElement(by.id(elementIds.copyBtn)).sendKeys(protractor.Key.SPACE).then(function() {
+            return secondBrowser.findElement(by.id(elementIds.button1copyDialog)).sendKeys(protractor.Key.SPACE).then(function() {
+                return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
+                    return browser.sleep(2000).then(function() {
+                        return elem.getText().then(function(text) {
+                            return expect(text).to.have.string(msg);
+                        });
+                    });
+                });
+            });
         });
     }
 

@@ -213,6 +213,20 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^ska varningen "([^"]*)" visas om man försöker kopiera intyget i andra webbläsarinstansen$/, function(msg, callback) {
+        var elemntIds = {
+            copyBtn: 'copyBtn',
+            button1copyDialog: 'button1copy-dialog',
+            alertDanger: '.alert-danger'
+        };
+
+        parallell.findErrorMsg(forkedBrowser, elemntIds, msg).then(function() {
+            console.log('notCoptyErrorMessage found');
+            parallell.closeBrowser(forkedBrowser).then(callback);
+        });
+
+    });
+
     this.Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {
         expect(fk7263Intyg.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
         // expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);

@@ -83,3 +83,18 @@ Exempel:
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
+
+@samtidaanvandare @makulera
+Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>)
+	När jag går in på att skapa ett <intyg> intyg
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag klickar på signera-knappen
+	Och sedan öppnar intyget i två webbläsarinstanser
+	Och jag makulerar intyget
+	Så ska varningen "Kunde inte kopiera intyget" visas om man försöker kopiera intyget i andra webbläsarinstansen
+
+Exempel:
+	|intygKod   | 	intyg                                                               |
+	|LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
+	|LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
+	|LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
