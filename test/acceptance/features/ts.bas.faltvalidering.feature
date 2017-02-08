@@ -26,3 +26,11 @@ Scenario: Validerar alla fält i TS diabetes intyget
 	Och jag anger "Ja" i valet "Har patienten någon stadigvarande medicinering?"
 	Så ska alla utökade valideringsfel för "Transportstyrelsens läkarintyg" visas
 
+	När jag fyller i text i "alla synfält" fältet
+	Och jag byter fokus från fält
+	Så ska valideringsfelet "Måste ligga i intervallet 0,0 till 2,0." visas "3" gånger
+
+	När jag tar bort information i "synfälten" fältet
+	Och jag fyller i alla nödvändiga fält för intyget
+    Och jag byter fokus från fält
+    Så ska inga valideringsfel visas

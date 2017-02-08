@@ -44,16 +44,28 @@ var TsBasUtkast = BaseTsUtkast._extend({
             dNo: element(by.id('syndn')),
             eYes: element(by.id('syney')),
             eNo: element(by.id('synen')),
-            utanKorrektion: {
-                hoger: element(by.id('synHogerOgaUtanKorrektion')),
-                vanster: element(by.id('synVansterOgaUtanKorrektion')),
-                binokulart: element(by.id('synBinokulartUtanKorrektion'))
+            hoger: {
+                utan: element(by.id('synHogerOgaUtanKorrektion')),
+                med: element(by.id('synHogerOgaMedKorrektion'))
             },
-            medKorrektion: {
-                hoger: element(by.id('synHogerOgaMedKorrektion')),
-                vanster: element(by.id('synVansterOgaMedKorrektion')),
-                binokulart: element(by.id('synBinokulartMedKorrektion'))
+            vanster: {
+                utan: element(by.id('synVansterOgaUtanKorrektion')),
+                med: element(by.id('synVansterOgaMedKorrektion'))
             },
+            binokulart: {
+                utan: element(by.id('synBinokulartUtanKorrektion')),
+                med: element(by.id('synBinokulartMedKorrektion'))
+            },
+            // utanKorrektion: {
+            //     hoger: element(by.id('synHogerOgaUtanKorrektion')),
+            //     vanster: element(by.id('synVansterOgaUtanKorrektion')),
+            //     binokulart: element(by.id('synBinokulartUtanKorrektion'))
+            // },
+            // medKorrektion: {
+            //     hoger: element(by.id('synHogerOgaMedKorrektion')),
+            //     vanster: element(by.id('synVansterOgaMedKorrektion')),
+            //     binokulart: element(by.id('synBinokulartMedKorrektion'))
+            // },
             kontaktlins: {
                 hoger: element(by.id('synHogerOgaKontaktlins')),
                 vanster: element(by.id('synVasterOgaKontaktlins'))
@@ -153,13 +165,13 @@ var TsBasUtkast = BaseTsUtkast._extend({
             promiseArr.push(this.syn.kontaktlins.vanster.sendKeys(protractor.Key.SPACE));
         }
 
-        promiseArr.push(this.syn.utanKorrektion.hoger.sendKeys(utkast.styrkor.houk));
-        promiseArr.push(this.syn.utanKorrektion.vanster.sendKeys(utkast.styrkor.vouk));
-        promiseArr.push(this.syn.utanKorrektion.binokulart.sendKeys(utkast.styrkor.buk));
+        promiseArr.push(this.syn.hoger.utan.sendKeys(utkast.styrkor.houk));
+        promiseArr.push(this.syn.vanster.utan.sendKeys(utkast.styrkor.vouk));
+        promiseArr.push(this.syn.binokulart.utan.sendKeys(utkast.styrkor.buk));
 
-        promiseArr.push(this.syn.medKorrektion.hoger.sendKeys(utkast.styrkor.homk));
-        promiseArr.push(this.syn.medKorrektion.vanster.sendKeys(utkast.styrkor.vomk));
-        promiseArr.push(this.syn.medKorrektion.binokulart.sendKeys(utkast.styrkor.bmk));
+        promiseArr.push(this.syn.hoger.med.sendKeys(utkast.styrkor.homk));
+        promiseArr.push(this.syn.vanster.med.sendKeys(utkast.styrkor.vomk));
+        promiseArr.push(this.syn.binokulart.med.sendKeys(utkast.styrkor.bmk));
 
         return Promise.all(promiseArr);
     },

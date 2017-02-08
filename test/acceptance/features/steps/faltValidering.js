@@ -24,6 +24,7 @@
 var luseUtkastPage = pages.intyg.luse.utkast;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 var tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
+var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var helpers = require('./helpers');
@@ -31,10 +32,12 @@ var fillInIntyg = require('./fillIn/fill_in_intyg_steps');
 var testdata = wcTestTools.testdata;
 var testdataHelpers = wcTestTools.helpers.testdata;
 
-var synVar = tsdUtkastPage.syn;
+var synVarTSD = tsdUtkastPage.syn;
+var synVarBAS = tsBasUtkastPage.syn;
 
 var anhorigIgnoreKeys = ['forsakringsmedicinsktBeslutsstodBeskrivning', 'arbetstidsforlaggning', 'arbetsresor', 'formagaTrotsBegransningBeskrivning', 'prognos'];
-var synVarArray = [synVar.hoger.utan, synVar.hoger.med, synVar.vanster.utan, synVar.vanster.med, synVar.binokulart.utan, synVar.binokulart.med];
+var synVarArrayTSD = [synVarTSD.hoger.utan, synVarTSD.hoger.med, synVarTSD.vanster.utan, synVarTSD.vanster.med, synVarTSD.binokulart.utan, synVarTSD.binokulart.med];
+var synVarArrayBAS = [synVarBAS.hoger.utan, synVarBAS.hoger.med, synVarBAS.vanster.utan, synVarBAS.vanster.med, synVarBAS.binokulart.utan, synVarBAS.binokulart.med];
 
 function populateFieldArray(object, ignoreKeys) {
     var re = [];
@@ -72,22 +75,33 @@ function synLoop(array, keyToSend) {
         }
 
     });
-    synVar.binokulart.med.sendKeys(protractor.Key.TAB);
+    // synVar.binokulart.med.sendKeys(protractor.Key.TAB);
 }
 
-function populateSynTSD(typAvSyn) {
+function populateSyn(typAvSyn) {
 
-    var slumpatSynFalt = testdataHelpers.shuffle([synVar.hoger, synVar.vanster, synVar.binokulart])[0];
+    var slumpatSynFaltTSD = testdataHelpers.shuffle([synVarTSD.hoger, synVarTSD.vanster, synVarTSD.binokulart])[0];
+    var slumpatSynFaltBAS = testdataHelpers.shuffle([synVarBAS.hoger, synVarBAS.vanster, synVarBAS.binokulart])[0];
 
-    if (typAvSyn === 'slumpat synfält') {
+    if (typAvSyn === 'slumpat synfält' && intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
         // return synVar.a.no.sendKeys(protractor.Key.SPACE).then(function() {
-        return slumpatSynFalt.utan.sendKeys('9').then(function() {
-            return slumpatSynFalt.med.sendKeys('8').sendKeys(protractor.Key.TAB);
+        return slumpatSynFaltTSD.utan.sendKeys('9').then(function() {
+            return slumpatSynFaltTSD.med.sendKeys('8').sendKeys(protractor.Key.TAB);
         });
         // });
-    } else if (typAvSyn === 'alla synfält') {
+    } else if (typAvSyn === 'alla synfält' && intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
         // return synVar.a.no.sendKeys(protractor.Key.SPACE).then(function() {
-        return synLoop(synVarArray, 9);
+        return synLoop(synVarArrayTSD, 9);
+        // });
+    } else if (typAvSyn === 'slumpat synfält' && intyg.typ === 'Transportstyrelsens läkarintyg') {
+        // return synVar.a.no.sendKeys(protractor.Key.SPACE).then(function() {
+        return slumpatSynFaltBAS.utan.sendKeys('9').then(function() {
+            return slumpatSynFaltBAS.med.sendKeys('8').sendKeys(protractor.Key.TAB);
+        });
+        // });
+    } else if (typAvSyn === 'alla synfält' && intyg.typ === 'Transportstyrelsens läkarintyg') {
+        // return synVar.a.no.sendKeys(protractor.Key.SPACE).then(function() {
+        return synLoop(synVarArrayBAS, 9);
         // });
     }
 }
@@ -312,10 +326,10 @@ module.exports = function() {
             return elm.getText();
         });
         return alertTexts.then(function(result) {
-            //console.log(result);
+            // console.log(result);
             result.forEach(function(n) {
-                //console.log(n += 'H');
-                expect(n).to.have.string('');
+                // console.log(n += 'H');
+                expect(n.length).to.be.at.most(1);
             });
         });
     });
@@ -374,8 +388,8 @@ module.exports = function() {
                 return enter.perform();
             });
 
-        } else if (fieldtype === 'slumpat synfält' || fieldtype === 'alla synfält') {
-            return populateSynTSD(fieldtype);
+        } else if (fieldtype === 'alla synfält' || fieldtype === 'slumpat synfält') {
+            return populateSyn(fieldtype);
         } else {
             return fkUtkastPage.diagnosKod.sendKeys(date);
         }
@@ -388,6 +402,22 @@ module.exports = function() {
                 return tsdUtkastPage.allmant.insulinbehandlingsperiod.clear().then(function() {
                     return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB).then(function() {
                         return element(by.cssContainingText('label.checkbox', 'Insulin')).sendKeys(protractor.Key.SPACE);
+                    });
+
+                });
+            });
+        }
+        if (fieldtype === 'synfälten' && intyg.typ === 'Transportstyrelsens läkarintyg') {
+            return tsBasUtkastPage.syn.hoger.utan.clear().then(function() {
+                return tsBasUtkastPage.syn.hoger.med.clear().then(function() {
+                    return tsBasUtkastPage.syn.vanster.utan.clear().then(function() {
+                        return tsBasUtkastPage.syn.vanster.med.clear().then(function() {
+                            return tsBasUtkastPage.syn.binokulart.utan.clear().then(function() {
+                                return tsBasUtkastPage.syn.binokulart.med.clear().then(function() {
+
+                                });
+                            });
+                        });
                     });
 
                 });

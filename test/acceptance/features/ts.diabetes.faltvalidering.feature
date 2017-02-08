@@ -28,6 +28,7 @@ Scenario: Validerar alla fält i TS diabetes intyget
 	Så ska valideringsfelet "År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än år 1900." visas "2" gånger
 
 	När jag fyller i text i "alla synfält" fältet
+	Och jag byter fokus från fält
 	Så ska valideringsfelet "Måste ligga i intervallet 0,0 till 2,0." visas "6" gånger
 
 	När jag tar bort information i "diabetes-allmant" fältet

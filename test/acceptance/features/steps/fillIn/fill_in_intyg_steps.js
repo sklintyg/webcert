@@ -137,7 +137,7 @@ function changeField(intygShortcode, field, callback, clearFlag) {
 
 
             } else if (field === 'utanKorrektion') {
-                tsBasUtkastPage.syn.utanKorrektion.hoger.clear().then(callback);
+                tsBasUtkastPage.syn.hoger.utan.clear().then(callback);
 
             } else {
                 callback(null, 'pending');
