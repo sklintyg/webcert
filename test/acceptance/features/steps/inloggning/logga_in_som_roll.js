@@ -167,6 +167,15 @@ module.exports = function() {
         return logInAsUserRole(userObj, 'Läkare');
     });
 
+    this.Given(/^att jag loggar in som läkare utan medarbetaruppdrag$/, function() {
+        var userObj = {
+            fornamn: 'Johnny',
+            efternamn: 'Drama',
+            hsaId: 'TSTNMT2321000156-6789',
+            enhetId: 'TSTNMT2321000156-107P'
+        };
+        return logInAsUser(userObj);
+    });
 
     this.Given(/^att jag är inloggad som läkare på (underenhet|vårdenhet) "([^"]*)" och inte har uppdrag på "([^"]*)"$/, function(typ, harEnhet, harInteEnhet) {
 
