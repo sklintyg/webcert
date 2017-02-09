@@ -68,7 +68,7 @@ module.exports = function() {
 
     this.Given(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighet, text) {
 
-        var header3s = element.all(by.css('h3')).map(function(elm, index) {
+        var header3s = element.all(by.css('h3, h1')).map(function(elm, index) {
             return elm.getText();
         });
 
