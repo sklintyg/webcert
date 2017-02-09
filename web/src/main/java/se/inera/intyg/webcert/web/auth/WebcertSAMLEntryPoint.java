@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.web.auth.common.AuthConstants;
  *
  * For SITHS (defaultAlias), we only supply the {@link AuthConstants#URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT}
  *
- * For ELEG  (eleg), we do not specify anything. This is due to SSO problems at CGIs end when a previously authenticated
+ * For ELEG (eleg), we do not specify anything. This is due to SSO problems at CGIs end when a previously authenticated
  * identity is validated against the IdP to access another system in the same federation.
  *
  * Created by eriklupander on 2015-11-24.
@@ -45,13 +45,17 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
     /**
      * Override from superclass, see class comment for details.
      *
-     * @param context   containing local entity
-     * @param exception exception causing invocation of this entry point (can be null)
+     * @param context
+     *            containing local entity
+     * @param exception
+     *            exception causing invocation of this entry point (can be null)
      * @return populated webSSOprofile
-     * @throws MetadataProviderException in case metadata loading fails
+     * @throws MetadataProviderException
+     *             in case metadata loading fails
      */
     @Override
-    protected WebSSOProfileOptions getProfileOptions(SAMLMessageContext context, AuthenticationException exception) throws MetadataProviderException {
+    protected WebSSOProfileOptions getProfileOptions(SAMLMessageContext context, AuthenticationException exception)
+            throws MetadataProviderException {
 
         WebSSOProfileOptions ssoProfileOptions;
         if (defaultOptions != null) {

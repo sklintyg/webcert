@@ -38,7 +38,7 @@ public class CgiElegAssertion {
     public static final String UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE = "Issuer_OrganizationName";
     public static final String UTFARDARE_CA_NAMN_ATTRIBUTE = "Issuer_CommonName";
     public static final String SECURITY_LEVEL_ATTRIBUTE = "SecurityLevel"; // 3 == e-leg på fil, 4 == e-leg på kort.
-    public static final String LOGIN_METHOD = "LoginMethod";  // ccp1,2,8,10,11,12,13
+    public static final String LOGIN_METHOD = "LoginMethod"; // ccp1,2,8,10,11,12,13
 
     private String personId;
     private String fornamn;
@@ -59,36 +59,37 @@ public class CgiElegAssertion {
         }
 
         if (!assertion.getAuthnStatements().isEmpty()) {
-            authenticationScheme = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
+            authenticationScheme = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
+                    .getAuthnContextClassRef();
         }
     }
 
     private void extractAttributes(List<Attribute> attributes) {
         for (Attribute attribute : attributes) {
             switch (attribute.getName()) {
-                case PERSON_ID_ATTRIBUTE:
-                    personId = getValue(attribute);
-                    break;
-                case FORNAMN_ATTRIBUTE:
-                    fornamn = getValue(attribute);
-                    break;
-                case MELLAN_OCH_EFTERNAMN_ATTRIBUTE:
-                    efternamn = getValue(attribute);
-                    break;
-                case UTFARDARE_CA_NAMN_ATTRIBUTE:
-                    utfardareCANamn = getValue(attribute);
-                    break;
-                case UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE:
-                    utfardareOrganisationsNamn = getValue(attribute);
-                    break;
-                case SECURITY_LEVEL_ATTRIBUTE:
-                    securityLevel = getValue(attribute);
-                    break;
-                case LOGIN_METHOD:
-                    loginMethod = getValue(attribute);
-                    break;
-                default:
-                    // Ignore.
+            case PERSON_ID_ATTRIBUTE:
+                personId = getValue(attribute);
+                break;
+            case FORNAMN_ATTRIBUTE:
+                fornamn = getValue(attribute);
+                break;
+            case MELLAN_OCH_EFTERNAMN_ATTRIBUTE:
+                efternamn = getValue(attribute);
+                break;
+            case UTFARDARE_CA_NAMN_ATTRIBUTE:
+                utfardareCANamn = getValue(attribute);
+                break;
+            case UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE:
+                utfardareOrganisationsNamn = getValue(attribute);
+                break;
+            case SECURITY_LEVEL_ATTRIBUTE:
+                securityLevel = getValue(attribute);
+                break;
+            case LOGIN_METHOD:
+                loginMethod = getValue(attribute);
+                break;
+            default:
+                // Ignore.
             }
         }
     }

@@ -181,7 +181,8 @@ public class IntygServiceImpl implements IntygService {
             ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress, request);
 
             if (response.getResult().getResultCode() == ResultCodeType.OK) {
-                List<ListIntygEntry> fullIntygItemList = intygConverter.convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
+                List<ListIntygEntry> fullIntygItemList = intygConverter
+                        .convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
                 fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList);
                 addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
                 return Pair.of(fullIntygItemList, Boolean.FALSE);
@@ -225,7 +226,8 @@ public class IntygServiceImpl implements IntygService {
         Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
                 AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
-        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer), enhetId, statuses,
+        List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer), enhetId,
+                statuses,
                 intygsTyper);
 
         return IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
@@ -240,7 +242,8 @@ public class IntygServiceImpl implements IntygService {
 
             verifyEnhetsAuth(intyg.getUtlatande(), true);
 
-            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(), isEmployer);
+            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
+                    isEmployer);
 
             // Log print as PDF to PDL log
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
@@ -396,7 +399,8 @@ public class IntygServiceImpl implements IntygService {
 
     protected void verifyEnhetsAuth(Utlatande utlatande, boolean isReadOnlyOperation) {
         Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), isReadOnlyOperation)) {
+        if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(),
+                isReadOnlyOperation)) {
             String msg = "User not authorized for enhet " + vardenhet.getEnhetsid();
             LOG.debug(msg);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
@@ -434,7 +438,9 @@ public class IntygServiceImpl implements IntygService {
                     certificate.getMetaData().getStatus(),
                     certificate.isRevoked(),
                     relations ? relationService.getRelations(intygId)
-                            .orElse(RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name())) : null);
+                            .orElse(RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(),
+                                    CertificateState.RECEIVED.name()))
+                            : null);
 
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing

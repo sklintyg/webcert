@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
+// CHECKSTYLE:OFF LineLength
 @Transactional(value = "jpaTransactionManager", readOnly = true)
 public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
 

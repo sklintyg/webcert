@@ -126,7 +126,8 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
         } else {
-            se.inera.intyg.common.support.model.common.internal.Patient patient = signedIntygHolder.getUtlatande().getGrundData().getPatient();
+            se.inera.intyg.common.support.model.common.internal.Patient patient = signedIntygHolder.getUtlatande().getGrundData()
+                    .getPatient();
             populatePatientDetailsFromPatient(utkast, patient);
         }
 

@@ -43,7 +43,9 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.intyg.webcert.web.
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.
+     * intyg.webcert.web.
      * persistence.utkast.model.Utkast, se.inera.intyg.common.support.common.enumerations.HandelsekodEnum)
      */
     @Override
@@ -65,7 +67,8 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
                 arenden = fragorOchSvarCreator.createArenden(intygsId, intygsTyp);
             }
 
-            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, null, arenden.getLeft(), arenden.getRight(), version, reference);
+            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, null, arenden.getLeft(),
+                    arenden.getRight(), version, reference);
         } else {
             FragorOchSvar fragaSvar = FragorOchSvar.getEmpty();
 
@@ -74,7 +77,8 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
                 fragaSvar = fragorOchSvarCreator.createFragorOchSvar(intygsId);
             }
 
-            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar, null, null, version, reference);
+            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar, null, null,
+                    version, reference);
         }
     }
 

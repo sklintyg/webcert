@@ -62,7 +62,7 @@ public class LogMessageSendProcessor {
      * The body must be a String with a JSON encoded array of {@link PdlLogMessage}(s)
      *
      * @param groupedLogEntries
-     *      A String containing a JSON encoded array of {@link PdlLogMessage}(s)
+     *            A String containing a JSON encoded array of {@link PdlLogMessage}(s)
      * @throws IOException
      * @throws BatchValidationException
      * @throws TemporaryException
@@ -84,17 +84,19 @@ public class LogMessageSendProcessor {
             final String resultText = result.getResultText();
 
             switch (result.getResultCode()) {
-                case OK:
-                    break;
-                case ERROR:
-                case VALIDATION_ERROR:
-                    LOG.error("Loggtjänsten rejected PDL message batch with {}, batch will be moved to DLQ. Result text: '{}'", result.getResultCode().value(), resultText);
-                    throw new BatchValidationException("Loggtjänsten rejected PDL message batch with error: " + resultText + ". Batch will be moved directly to DLQ.");
-                case INFO:
-                    LOG.warn("Warning of type INFO occured when sending PDL log message batch: '{}'. Will not requeue.", resultText);
-                    break;
-                default:
-                    throw new TemporaryException(resultText);
+            case OK:
+                break;
+            case ERROR:
+            case VALIDATION_ERROR:
+                LOG.error("Loggtjänsten rejected PDL message batch with {}, batch will be moved to DLQ. Result text: '{}'",
+                        result.getResultCode().value(), resultText);
+                throw new BatchValidationException(
+                        "Loggtjänsten rejected PDL message batch with error: " + resultText + ". Batch will be moved directly to DLQ.");
+            case INFO:
+                LOG.warn("Warning of type INFO occured when sending PDL log message batch: '{}'. Will not requeue.", resultText);
+                break;
+            default:
+                throw new TemporaryException(resultText);
             }
 
         } catch (IllegalArgumentException e) {

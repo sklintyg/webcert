@@ -136,7 +136,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")
     @Produces("application/pdf")
-    public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
+    public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp,
+            @PathParam(value = "intygsId") final String intygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
                 .features(WebcertFeature.ARBETSGIVARUTSKRIFT)
@@ -154,7 +155,8 @@ public class IntygModuleApiController extends AbstractApiController {
 
         IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygsId, intygsTyp, isEmployerCopy);
 
-        return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(intygPdfResponse.getFilename())).build();
+        return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(intygPdfResponse.getFilename()))
+                .build();
     }
 
     private String buildPdfHeader(String pdfFileName) {
@@ -212,7 +214,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/kopiera")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
+    public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
+            @PathParam("intygsId") String orgIntygsId) {
 
         validateCopyAuthority(intygsTyp);
 
@@ -240,7 +243,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{meddelandeId}/komplettera")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId,
+    public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
+            @PathParam("intygsId") String orgIntygsId,
             @PathParam("meddelandeId") String meddelandeId) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
@@ -258,7 +262,8 @@ public class IntygModuleApiController extends AbstractApiController {
         CreateCompletionCopyRequest serviceRequest = createCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
         CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
 
-        LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.", serviceResponse.getNewDraftIntygId(),
+        LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.",
+                serviceResponse.getNewDraftIntygId(),
                 serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
@@ -278,7 +283,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/fornya")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
+    public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
+            @PathParam("intygsId") String orgIntygsId) {
         validateCopyAuthority(intygsTyp);
 
         LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);

@@ -115,7 +115,8 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         private final String recipientId;
         private final String logicalAddress;
 
-        private SendCertificateMessageCreator(String intygsId, Personnummer personId, String body, String recipientId, String logicalAddress) {
+        private SendCertificateMessageCreator(String intygsId, Personnummer personId, String body, String recipientId,
+                String logicalAddress) {
             this.intygsId = intygsId;
             this.personId = personId;
             this.body = body;

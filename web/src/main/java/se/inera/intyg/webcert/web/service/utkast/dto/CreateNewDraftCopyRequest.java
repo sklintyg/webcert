@@ -24,7 +24,9 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 public class CreateNewDraftCopyRequest extends CreateCopyRequest {
 
     private boolean coherentJournaling = false;
-    public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson, boolean coherentJournaling) {
+
+    public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson,
+            boolean coherentJournaling) {
         super(orginalIntygsId, intygsTyp, patient, hosPerson);
         this.coherentJournaling = coherentJournaling;
     }

@@ -38,7 +38,8 @@ public class AnvandarPreferenceRepositoryImpl implements AnvandarPreferenceRepos
 
     @Override
     public Map<String, String> getAnvandarPreference(String hsaId) {
-        List<AnvandarPreference> anvandarMetadataList = entityManager.createQuery("SELECT am FROM AnvandarPreference am WHERE am.hsaId = :hsaId", AnvandarPreference.class)
+        List<AnvandarPreference> anvandarMetadataList = entityManager
+                .createQuery("SELECT am FROM AnvandarPreference am WHERE am.hsaId = :hsaId", AnvandarPreference.class)
                 .setParameter("hsaId", hsaId)
                 .getResultList();
 
@@ -51,7 +52,8 @@ public class AnvandarPreferenceRepositoryImpl implements AnvandarPreferenceRepos
 
     @Override
     public boolean exists(String hsaId, String key) {
-        Number number = entityManager.createQuery("SELECT COUNT(am) FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key", Number.class)
+        Number number = entityManager
+                .createQuery("SELECT COUNT(am) FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key", Number.class)
                 .setParameter("hsaId", hsaId)
                 .setParameter("key", key)
                 .getSingleResult();
@@ -62,14 +64,16 @@ public class AnvandarPreferenceRepositoryImpl implements AnvandarPreferenceRepos
     @Override
     public AnvandarPreference findByHsaIdAndKey(String hsaId, String key) {
         try {
-            return entityManager.createQuery("SELECT am FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key", AnvandarPreference.class)
+            return entityManager
+                    .createQuery("SELECT am FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key", AnvandarPreference.class)
                     .setParameter("hsaId", hsaId)
                     .setParameter("key", key)
                     .getSingleResult();
         } catch (NoResultException nre) {
             return null;
         } catch (NonUniqueResultException nure) {
-            throw new IllegalStateException("Query for AnvandarPreference returned multiple records, should never occur. hsaId: " + hsaId + ", key: " + key);
+            throw new IllegalStateException(
+                    "Query for AnvandarPreference returned multiple records, should never occur. hsaId: " + hsaId + ", key: " + key);
         }
     }
 }

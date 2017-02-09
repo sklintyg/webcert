@@ -33,6 +33,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+// CHECKSTYLE:OFF LineLength
 import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
@@ -53,6 +54,7 @@ import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.OvrigFmbInformationType;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionType;
 import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionerType;
+// CHECKSTYLE:ON LineLength
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,7 +63,7 @@ import javax.annotation.Nullable;
 @Transactional("jpaTransactionManager")
 @Configuration
 @EnableScheduling
-@Profile({"dev", "test", "webcertMainNode"})
+@Profile({ "dev", "test", "webcertMainNode" })
 public class FmbServiceImpl implements FmbService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FmbServiceImpl.class);
@@ -159,7 +161,8 @@ public class FmbServiceImpl implements FmbService {
         final String diagnosInfoDate = versioner.getDiagnosInformationSenateAndring();
         final List<Fmb> diagnosInfos = fmbRepository.findByUrsprung(FmbCallType.DIAGNOSINFORMATION);
         final boolean diagnosInfoIsUpToDate = isUpToDate(diagnosInfoDate, diagnosInfos);
-        LOG.info("Latest diagnosInfo version is '{}'. 'The database is up to date with this version'='{}'", diagnosInfoDate, diagnosInfoIsUpToDate);
+        LOG.info("Latest diagnosInfo version is '{}'. 'The database is up to date with this version'='{}'", diagnosInfoDate,
+                diagnosInfoIsUpToDate);
         return diagnosInfoIsUpToDate;
     }
 
@@ -181,7 +184,8 @@ public class FmbServiceImpl implements FmbService {
     @Nonnull
     private List<Fmb> getUpdatedDiagnosinfos() {
         final List<Fmb> fmbs = new ArrayList<>();
-        final GetDiagnosInformationResponseType diagnosInformation = getDiagnosInformationResponder.getDiagnosInformation(logicalAddress, new GetDiagnosInformationType());
+        final GetDiagnosInformationResponseType diagnosInformation = getDiagnosInformationResponder.getDiagnosInformation(logicalAddress,
+                new GetDiagnosInformationType());
         if (diagnosInformation == null) {
             LOG.warn("Diagnosinformation is null");
             return fmbs;
@@ -212,16 +216,19 @@ public class FmbServiceImpl implements FmbService {
         final List<String> formatedIcd10Codes = getFormatedIcd10Codes(huvuddxs);
         for (String code : formatedIcd10Codes) {
             if (symptomPrognosBehandling != null) {
-                fmbs.add(new Fmb(code, FmbType.SYMPTOM_PROGNOS_BEHANDLING, FmbCallType.DIAGNOSINFORMATION, symptomPrognosBehandling, senateAndring));
+                fmbs.add(new Fmb(code, FmbType.SYMPTOM_PROGNOS_BEHANDLING, FmbCallType.DIAGNOSINFORMATION, symptomPrognosBehandling,
+                        senateAndring));
             }
             if (generellInformation != null) {
                 fmbs.add(new Fmb(code, FmbType.GENERELL_INFO, FmbCallType.DIAGNOSINFORMATION, generellInformation, senateAndring));
             }
             if (funktionsnedsattningBeskrivning != null) {
-                fmbs.add(new Fmb(code, FmbType.FUNKTIONSNEDSATTNING, FmbCallType.DIAGNOSINFORMATION, funktionsnedsattningBeskrivning, senateAndring));
+                fmbs.add(new Fmb(code, FmbType.FUNKTIONSNEDSATTNING, FmbCallType.DIAGNOSINFORMATION, funktionsnedsattningBeskrivning,
+                        senateAndring));
             }
             if (aktivitetsbegransningBeskrivning != null) {
-                fmbs.add(new Fmb(code, FmbType.AKTIVITETSBEGRANSNING, FmbCallType.DIAGNOSINFORMATION, aktivitetsbegransningBeskrivning, senateAndring));
+                fmbs.add(new Fmb(code, FmbType.AKTIVITETSBEGRANSNING, FmbCallType.DIAGNOSINFORMATION, aktivitetsbegransningBeskrivning,
+                        senateAndring));
             }
         }
         return fmbs;

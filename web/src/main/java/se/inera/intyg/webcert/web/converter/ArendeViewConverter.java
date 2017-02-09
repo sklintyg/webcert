@@ -123,7 +123,8 @@ public class ArendeViewConverter {
     public List<ArendeConversationView> buildArendeConversations(String intygsId, List<Arende> intygMessages,
             List<AnsweredWithIntyg> kompltToIntyg) {
         // Group by conversation thread.
-        Map<String, List<Arende>> threads = intygMessages.stream().collect(Collectors.groupingBy(ArendeViewConverter::getThreadRootMessageId));
+        Map<String, List<Arende>> threads = intygMessages.stream()
+                .collect(Collectors.groupingBy(ArendeViewConverter::getThreadRootMessageId));
 
         List<ArendeConversationView> arendeConversations = threads.values().stream()
                 .filter(ArendeViewConverter::conversationContainsFraga)
@@ -181,7 +182,8 @@ public class ArendeViewConverter {
         return thread.stream().filter(a -> getArendeType(a) == ArendeType.FRAGA).findAny().isPresent();
     }
 
-    private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId, String intygsTyp) {
+    private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId,
+            String intygsTyp) {
         List<MedicinsktArendeView> medicinskaArendenViews = new ArrayList<>();
         if (CollectionUtils.isEmpty(medicinskaArenden)) {
             return medicinskaArendenViews;
@@ -212,7 +214,8 @@ public class ArendeViewConverter {
             return filledPositions.get(position < filledPositions.size() ? position : 0);
         }
         LOG.error(
-                "The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId() + " must be a intygMessages of Strings.");
+                "The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId()
+                        + " must be a intygMessages of Strings.");
         return "";
     }
 

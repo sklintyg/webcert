@@ -52,7 +52,8 @@ import java.util.List;
  * successfully finished (e.g. the user has used BankID or Mobilt BankID and successfully authenticated themselves) and
  * we can notify waiting parties about the success.
  *
- * Note that we set the copied {@link SecurityContext} onto the ThreadLocal since the "skickaIntyg" requires the Principal to be
+ * Note that we set the copied {@link SecurityContext} onto the ThreadLocal since the "skickaIntyg" requires the
+ * Principal to be
  * available on the {@link SecurityContextHolder}.
  */
 @Component(value = "grpCollectPoller")
@@ -104,7 +105,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                         String subjectSerialNumber = getCollectResponseAttribute(resp.getAttributes());
                         if (!subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getPersonId().replaceAll("\\-", ""))) {
                             throw new IllegalStateException(
-                                    "Could not process GRP Collect COMPLETE response, subject serialNumber did not match issuing WebCertUser.");
+                                    "Could not process GRP Collect COMPLETE response, subject serialNumber did not match "
+                                    + "issuing WebCertUser.");
                         }
 
                         String signature = resp.getSignature();
@@ -120,7 +122,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                         break;
                     case NO_CLIENT:
                         signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.NO_CLIENT);
-                        LOG.info("GRP collect returned ProgressStatusType: {}, " + "has the user started their BankID or Mobilt BankID application?",
+                        LOG.info("GRP collect returned ProgressStatusType: {}, "
+                                + "has the user started their BankID or Mobilt BankID application?",
                                 resp.getProgressStatus());
                         break;
                     default:
@@ -152,7 +155,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
      */
     private void applySecurityContextToThreadLocal() {
         if (securityContext == null) {
-            throw new IllegalStateException("Cannot start GRP poller thread, no securityContext was bound to the GrpCollectPollerImpl instance.");
+            throw new IllegalStateException(
+                    "Cannot start GRP poller thread, no securityContext was bound to the GrpCollectPollerImpl instance.");
         }
         SecurityContextHolder.setContext(securityContext);
     }
@@ -164,7 +168,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
             }
         }
         throw new IllegalStateException(
-                "Cannot use GRP collect to sign certificate, the signing identity is not the same as the user who initiated the GRP authentication request");
+                "Cannot use GRP collect to sign certificate, the signing identity is not the same as the user who initiated "
+                + "the GRP authentication request");
     }
 
     private void handleGrpFault(GrpFault grpFault) {

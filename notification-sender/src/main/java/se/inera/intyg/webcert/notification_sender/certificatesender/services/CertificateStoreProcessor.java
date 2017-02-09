@@ -44,7 +44,8 @@ public class CertificateStoreProcessor {
 
     public void process(@Body String utkastAsJson,
             @Header(Constants.INTYGS_TYP) String intygsTyp,
-            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException, ModuleNotFoundException {
+            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
+            throws TemporaryException, PermanentException, ModuleNotFoundException {
 
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 

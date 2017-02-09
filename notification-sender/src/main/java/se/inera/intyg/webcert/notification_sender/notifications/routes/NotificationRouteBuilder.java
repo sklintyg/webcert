@@ -69,7 +69,8 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         JaxbDataFormat jaxbMessageDataFormatV2 = initializeJaxbMessageDataFormatV2();
 
         // Start for aggregation route. All notifications enter this route. Draft saved and signed for non fk7263
-        // goes into an aggregation state where we once per minute perform filtering so only the newest ANDRAD per intygsId
+        // goes into an aggregation state where we once per minute perform filtering so only the newest ANDRAD per
+        // intygsId
         // forwarded to the 'receiveNotificationRequestEndpoint' queue. The others are discarded.
         // Do note that the above only applies to non-fk7263 ANDRAD, all others will be forwarded directly.
 
@@ -78,30 +79,31 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .transacted()
                 .choice()
                 .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(Fk7263EntryPoint.MODULE_ID))
-                    .to(notificationQueue)
+                .to(notificationQueue)
                 .when(directRoutingPredicate())
-                    .to(notificationQueue)
+                .to(notificationQueue)
                 .otherwise()
-                    .wireTap("direct:signatWireTap")
-                    .aggregate(new GroupedExchangeAggregationStrategy())
-                    .constant(true)
-                    .completionInterval(batchAggregationTimeout)
-                    .forceCompletionOnStop()
-                    .to("bean:notificationAggregator")
-                    .split(body())
-                    .to(notificationQueue).end()
+                .wireTap("direct:signatWireTap")
+                .aggregate(new GroupedExchangeAggregationStrategy())
+                .constant(true)
+                .completionInterval(batchAggregationTimeout)
+                .forceCompletionOnStop()
+                .to("bean:notificationAggregator")
+                .split(body())
+                .to(notificationQueue).end()
 
-        .end();
+                .end();
 
         // The wiretap is used to directly forward SIGNAT messages (see INTYG-2744) to the send queue while the original
         // SIGNAT is passed on into the aggregation phase. The aggregation phase never emits any SIGNAT, only ANDRAT.
         from("direct:signatWireTap")
                 .choice()
                 .when(header(NotificationRouteHeaders.HANDELSE).isEqualTo(HandelsekodEnum.SIGNAT.value()))
-                    .to(notificationQueue)
+                .to(notificationQueue)
                 .end();
 
-        // All routes below relate to pre WC 5.0 notification sending, e.g. all that enters 'receiveNotificationRequestEndpoint'
+        // All routes below relate to pre WC 5.0 notification sending, e.g. all that enters
+        // 'receiveNotificationRequestEndpoint'
         // should have normal resend semantics etc. Reads from the notificationQueue.
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
@@ -109,10 +111,10 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:notificationTransformer")
                 .choice()
-                    .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
-                        .marshal(jaxbMessageDataFormatV2)
-                    .otherwise()
-                        .marshal("jaxbMessageDataFormat")
+                .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
+                .marshal(jaxbMessageDataFormatV2)
+                .otherwise()
+                .marshal("jaxbMessageDataFormat")
                 .end()
                 .to("sendNotificationWSEndpoint");
 
@@ -122,24 +124,32 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
                 .choice()
-                    .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
-                        .unmarshal(jaxbMessageDataFormatV2)
-                        .to("bean:notificationWSClientV2")
-                    .otherwise()
-                        .unmarshal("jaxbMessageDataFormat")
-                        .to("bean:notificationWSClient")
+                .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
+                .unmarshal(jaxbMessageDataFormatV2)
+                .to("bean:notificationWSClientV2")
+                .otherwise()
+                .unmarshal("jaxbMessageDataFormat")
+                .to("bean:notificationWSClient")
                 .end();
 
         from("direct:permanentErrorHandlerEndpoint").routeId("errorLogging")
-                .log(LoggingLevel.ERROR, LOG, simple("Permanent exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG,
+                        simple("Permanent exception for intygs-id: ${header[intygsId]}, with message: "
+                                + "${exception.message}\n ${exception.stacktrace}")
+                                .getText())
                 .stop();
 
         from("direct:temporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
                 .choice()
                 .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
-                .log(LoggingLevel.ERROR, LOG, simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG,
+                        simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: "
+                                + "${exception.message}\n ${exception.stacktrace}")
+                                .getText())
                 .otherwise()
-                .log(LoggingLevel.WARN, LOG, simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}").getText())
+                .log(LoggingLevel.WARN, LOG,
+                        simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: "
+                                + "${exception.message}").getText())
                 .stop();
     }
 
@@ -151,15 +161,20 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
     private Predicate directRoutingPredicate() {
         return PredicateBuilder
                 .and(
-                    header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.ANDRAT.value()),
-                    header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.SIGNAT.value()));
+                        header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.ANDRAT.value()),
+                        header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.SIGNAT.value()));
     }
 
+    // CHECKSTYLE:OFF LineLength
     private JaxbDataFormat initializeJaxbMessageDataFormatV2() throws JAXBException {
         // We need to register DatePeriodType with the JAXBContext explicitly for some reason.
-        JaxbDataFormat jaxbMessageDataFormatV2 = new JaxbDataFormat(JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class));
-        jaxbMessageDataFormatV2.setPartClass("se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType");
-        jaxbMessageDataFormatV2.setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:2", "CertificateStatusUpdateForCare"));
+        JaxbDataFormat jaxbMessageDataFormatV2 = new JaxbDataFormat(
+                JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class));
+        jaxbMessageDataFormatV2.setPartClass(
+                "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType");
+        jaxbMessageDataFormatV2
+                .setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:2",
+                        "CertificateStatusUpdateForCare"));
         return jaxbMessageDataFormatV2;
     }
 

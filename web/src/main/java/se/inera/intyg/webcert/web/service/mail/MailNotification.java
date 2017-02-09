@@ -27,7 +27,8 @@ public class MailNotification {
     private String careUnitName;
     private String signedByHsaId;
 
-    public MailNotification(String qaId, String certificateId, String certificateType, String careUnitId, String careUnitName, String signedByHsaId) {
+    public MailNotification(String qaId, String certificateId, String certificateType, String careUnitId, String careUnitName,
+            String signedByHsaId) {
         this.qaId = qaId;
         this.certificateId = certificateId;
         this.certificateType = certificateType;

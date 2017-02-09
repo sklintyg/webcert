@@ -142,7 +142,8 @@ public final class ArendeConverter {
     private static String getSignedByName(Utkast utkast, HsaEmployeeService hsaEmployeeService) {
         if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSkapadAv().getNamn();
-        } else if (utkast.getSenastSparadAv() != null && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+        } else if (utkast.getSenastSparadAv() != null
+                && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
         } else {
             try {
@@ -153,7 +154,8 @@ public final class ArendeConverter {
                                 ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
                                 : pit.getMiddleAndSurName())
                         .findFirst()
-                        .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+                        .orElseThrow(
+                                () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
             } catch (WebServiceException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                         "Could not communicate with HSA. Cause: " + e.getMessage());

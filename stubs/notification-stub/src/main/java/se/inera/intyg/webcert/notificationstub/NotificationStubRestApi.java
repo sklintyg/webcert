@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-
+// CHECKSTYLE:OFF LineLength
 public class NotificationStubRestApi {
 
     @Autowired
@@ -63,19 +63,20 @@ public class NotificationStubRestApi {
     @Path("/notifieringar/v2/stats")
     @Produces(MediaType.APPLICATION_JSON)
     public Response notifieringarV2Stats() {
-        Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType> notifs = notificationStoreV2.getNotifications();
+        Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType> notifs = notificationStoreV2
+                .getNotifications();
         Map<String, List<NotificationStubEntry>> stringListMap = new StatTransformerUtil().toStat(notifs);
         StringBuilder buf = new StringBuilder();
         for (Map.Entry<String, List<NotificationStubEntry>> entry : stringListMap.entrySet()) {
             buf.append("---- ").append(entry.getKey()).append(" ----\n");
             entry.getValue().stream()
                     .sorted((a, b) -> a.getHandelseTid().compareTo(b.getHandelseTid()))
-                    .forEach(ie -> buf.append(ie.getHandelseTid().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).append("\t").append(ie.getHandelseKod()).append("\n"));
+                    .forEach(ie -> buf.append(ie.getHandelseTid().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).append("\t")
+                            .append(ie.getHandelseKod()).append("\n"));
             buf.append("-----------------------------------------------\n\n");
         }
         return Response.ok(buf.toString()).build();
     }
-
 
     @POST
     @Path("/clear")

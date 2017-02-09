@@ -101,7 +101,8 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
             IntygUser user = (IntygUser) details;
             if (user.getNamn() == null || user.getNamn().isEmpty()) {
                 user.setNamn(
-                        ((FakeCredentials) token.getCredentials()).getFornamn() + " " + ((FakeCredentials) token.getCredentials()).getEfternamn());
+                        ((FakeCredentials) token.getCredentials()).getFornamn() + " "
+                                + ((FakeCredentials) token.getCredentials()).getEfternamn());
             }
         }
     }

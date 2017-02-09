@@ -53,7 +53,8 @@ public class GetMedicalCertificateForCareResponderStub implements
             attachCertificateDocument(intygResponse, response);
             if (intygResponse.isRevoked()) {
                 response.setResult(
-                        ResultTypeUtil.errorResult(ErrorIdType.REVOKED, String.format("Certificate '%s' has been revoked", intygResponse.getId())));
+                        ResultTypeUtil.errorResult(ErrorIdType.REVOKED,
+                                String.format("Certificate '%s' has been revoked", intygResponse.getId())));
             } else {
                 response.setResult(ResultTypeUtil.okResult());
             }

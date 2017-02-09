@@ -29,9 +29,11 @@ import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.RO
 /**
  * Created by eriklupander on 2015-10-08.
  */
+// CHECKSTYLE:OFF LineLength
 @Path("/pp-certificate")
 @Api(value = "webcert web user pp-certificate (Fråga/Svar, uthopp privatläkare)", description = "REST API för fråga/svar via uthoppslänk, privatläkare", produces = MediaType.APPLICATION_JSON)
 public class PrivatePractitionerFragaSvarUthoppController extends FragaSvarUthoppController {
+// CHECKSTYLE:ON LineLength
 
     @Override
     protected String[] getGrantedRoles() {

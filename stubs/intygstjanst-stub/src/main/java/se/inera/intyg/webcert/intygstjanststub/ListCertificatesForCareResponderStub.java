@@ -52,7 +52,8 @@ public class ListCertificatesForCareResponderStub implements ListCertificatesFor
         response.getIntygsLista().getIntyg();
 
         List<CertificateHolder> intygForEnhetAndPersonnummer = intygStore.getIntygForEnhetAndPersonnummer(
-                parameters.getEnhetsId().stream().map(HsaId::getExtension).collect(Collectors.toList()), parameters.getPersonId().getExtension());
+                parameters.getEnhetsId().stream().map(HsaId::getExtension).collect(Collectors.toList()),
+                parameters.getPersonId().getExtension());
 
         for (CertificateHolder cert : intygForEnhetAndPersonnummer) {
             Intyg intyg = getIntyg(cert);

@@ -75,6 +75,8 @@ public class FmbApiController extends AbstractApiController {
     @Autowired
     private DiagnosService diagnosService;
 
+    // CHECKSTYLE:OFF LineLength
+
     @GET
     @Path("/{icd10}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -90,6 +92,7 @@ public class FmbApiController extends AbstractApiController {
         final FmbResponse result = getFmbResponse(icd10.toUpperCase(Locale.ENGLISH));
         return Response.ok(result).build();
     }
+    // CHECKSTYLE:ON LineLength
 
     /**
      * Create response structure, mapping fmb specific names to external generic naming to be used for many intygstypes.

@@ -144,7 +144,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version,
+    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            @PathParam("version") long version,
             @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
@@ -309,7 +310,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/grp/signeraserver")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse serverSigneraUtkastMedGrp(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+    public SignaturTicketResponse serverSigneraUtkastMedGrp(@PathParam("intygsTyp") String intygsTyp,
+            @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, @Context HttpServletRequest request) {
 
         verifyIsAuthorizedToSignIntyg(intygsTyp);

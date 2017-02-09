@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.fragasvar;
 
+// CHECKSTYLE:OFF LineLength
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,7 +147,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         validateAcceptsQuestions(fragaSvar);
 
         monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
-                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()), fragaSvar.getExternReferens(),
+                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()),
+                fragaSvar.getExternReferens(),
                 fragaSvar.getInternReferens(), fragaSvar.getVardAktorHsaId(), fragaSvar.getAmne(),
                 fragaSvar.getKompletteringar().stream().map(Komplettering::getFalt).collect(Collectors.toList()));
 
@@ -173,7 +176,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setStatus(Status.ANSWERED);
 
         monitoringService.logAnswerReceived(fragaSvar.getExternReferens(), fragaSvar.getInternReferens(),
-                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()), fragaSvar.getVardAktorHsaId(),
+                ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()),
+                fragaSvar.getVardAktorHsaId(),
                 fragaSvar.getAmne());
 
         // update the FragaSvar
@@ -224,7 +228,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         List<AnsweredWithIntyg> bmi = AnsweredWithIntygUtil.findAllKomplementForGivenIntyg(intygId, utkastRepository);
         List<FragaSvarView> fragaSvarWithBesvaratMedIntygInfo = fragaSvarList.stream()
                 .map(fs -> FragaSvarView.create(fs,
-                        fs.getFrageSkickadDatum() == null ? null : AnsweredWithIntygUtil.returnOldestKompltOlderThan(fs.getFrageSkickadDatum(), bmi)))
+                        fs.getFrageSkickadDatum() == null ? null
+                                : AnsweredWithIntygUtil.returnOldestKompltOlderThan(fs.getFrageSkickadDatum(), bmi)))
                 .collect(Collectors.toList());
         return fragaSvarWithBesvaratMedIntygInfo;
     }
@@ -304,7 +309,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         monitoringService.logAnswerSent(saved.getExternReferens(), saved.getInternReferens(),
-                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardAktorHsaId(), saved.getAmne());
+                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardAktorHsaId(),
+                saved.getAmne());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_ANSWER_FROM_CARE);
@@ -398,7 +404,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         monitoringService.logQuestionSent(fraga.getExternReferens(), fraga.getInternReferens(),
-                (fraga.getIntygsReferens() == null) ? null : fraga.getIntygsReferens().getIntygsId(), fraga.getVardAktorHsaId(), fraga.getAmne());
+                (fraga.getIntygsReferens() == null) ? null : fraga.getIntygsReferens().getIntygsId(), fraga.getVardAktorHsaId(),
+                fraga.getAmne());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_QUESTION_FROM_CARE);

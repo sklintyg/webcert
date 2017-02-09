@@ -228,7 +228,8 @@ public class IntygResource {
         utkast.setStatus(intygContents.getUtkastStatus());
         utkast.setVidarebefordrad(false);
         if (utkast.getStatus() == UtkastStatus.SIGNED) {
-            Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(), model,
+            Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(),
+                    model,
                     "ruffel", "fusk");
             utkast.setSignatur(signatur);
         }

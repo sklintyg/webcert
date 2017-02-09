@@ -30,7 +30,8 @@ import java.util.Date;
  * credential.
  *
  * For SITHS-based authentications we typically get 60 minutes from the IdP, but we can safely ignore this by setting
- * the expiration to null which mitigates the problem of users being automatically logged out after 60 minutes regardless
+ * the expiration to null which mitigates the problem of users being automatically logged out after 60 minutes
+ * regardless
  * of user activity.
  *
  * Created by eriklupander on 2016-08-18.
@@ -38,12 +39,14 @@ import java.util.Date;
 public class WebcertAuthenticationProvider extends SAMLAuthenticationProvider {
 
     /**
-     * Retrieves the expirationDate per the SAML credential using the superclass method, but then overrides its value with null
+     * Retrieves the expirationDate per the SAML credential using the superclass method, but then overrides its value
+     * with null
      * if there is a "SITHS" authenticationStatement.
      *
-     * @param credential credential to use for expiration parsing.
+     * @param credential
+     *            credential to use for expiration parsing.
      * @return null if no expiration is present OR if this is a SITHS-based authentication. Otherwise, expiration time
-     *          based on SAML attribute onOrAfter.
+     *         based on SAML attribute onOrAfter.
      */
     @Override
     protected Date getExpirationDate(SAMLCredential credential) {
@@ -69,6 +72,7 @@ public class WebcertAuthenticationProvider extends SAMLAuthenticationProvider {
         if (statement.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef() == null) {
             return false;
         }
-        return statement.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef().equals(AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT);
+        return statement.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef()
+                .equals(AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT);
     }
 }

@@ -54,10 +54,12 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, CommissionType miuOnUnit) {
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(), createVardenhetFromMIU(miuOnUnit));
         enrichHoSPerson(hosPerson);
-        return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), null, hosPerson, TransportConverterUtil.getPatient(intyg.getPatient()));
+        return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), null, hosPerson,
+                TransportConverterUtil.getPatient(intyg.getPatient()));
     }
 
-    private HoSPersonal createHoSPerson(se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal hoSPersonType,
+    private HoSPersonal createHoSPerson(
+            se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal hoSPersonType,
             Vardenhet vardenhet) {
         HoSPersonal hoSPerson = new HoSPersonal();
         hoSPerson.setFullstandigtNamn(hoSPersonType.getFullstandigtNamn());
@@ -77,7 +79,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private Vardenhet createVardenhetFromMIU(CommissionType miu) {
 
-        se.inera.intyg.infra.integration.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getHealthCareUnitHsaId());
+        se.inera.intyg.infra.integration.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService
+                .getVardenhet(miu.getHealthCareUnitHsaId());
 
         Vardenhet vardenhet = new Vardenhet();
         vardenhet.setEnhetsnamn(hsaVardenhet.getNamn());

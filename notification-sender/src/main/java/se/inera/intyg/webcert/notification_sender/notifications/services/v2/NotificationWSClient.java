@@ -40,7 +40,8 @@ public class NotificationWSClient {
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
             @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
-        LOG.debug("Sending status update with version 2 to '{}' for intyg '{}'", logicalAddress, request.getIntyg().getIntygsId().getExtension());
+        LOG.debug("Sending status update with version 2 to '{}' for intyg '{}'", logicalAddress,
+                request.getIntyg().getIntygsId().getExtension());
 
         CertificateStatusUpdateForCareResponseType response = null;
 

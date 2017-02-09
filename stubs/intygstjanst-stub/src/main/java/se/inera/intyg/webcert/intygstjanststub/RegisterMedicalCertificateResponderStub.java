@@ -44,7 +44,8 @@ public class RegisterMedicalCertificateResponderStub implements RegisterMedicalC
     @Override
     @StubLatencyAware
     @StubModeAware
-    public RegisterMedicalCertificateResponseType registerMedicalCertificate(AttributedURIType attributedURIType, RegisterMedicalCertificateType registerMedicalCertificateType) {
+    public RegisterMedicalCertificateResponseType registerMedicalCertificate(AttributedURIType attributedURIType,
+            RegisterMedicalCertificateType registerMedicalCertificateType) {
 
         intygStore.addIntyg(buildStubInternalCertificate(registerMedicalCertificateType));
 
@@ -69,7 +70,8 @@ public class RegisterMedicalCertificateResponderStub implements RegisterMedicalC
         certificate.setCareUnitName(source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getEnhetsnamn());
         certificate.setSigningDoctorName(source.getLakarutlatande().getSkapadAvHosPersonal().getFullstandigtNamn());
         certificate.setAdditionalInfo(source.getLakarutlatande().getKommentar());
-        certificate.setCareGiverId(source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
+        certificate.setCareGiverId(
+                source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
         return certificate;
     }
 }

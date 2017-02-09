@@ -46,8 +46,9 @@ public final class PatientValidator {
     }
 
     /**
-     *  Validate and correct patient information.
-     *  @return true if valid enough to continue
+     * Validate and correct patient information.
+     *
+     * @return true if valid enough to continue
      */
     public static boolean validateAndCorrect(String certificateId, PatientType patient, List<String> validationErrors) {
         if (patient == null) {
@@ -57,16 +58,17 @@ public final class PatientValidator {
 
         // Check patient id - mandatory
         if (patient.getPersonId() == null
-            || patient.getPersonId().getExtension() == null
-            || patient.getPersonId().getExtension().isEmpty()) {
+                || patient.getPersonId().getExtension() == null
+                || patient.getPersonId().getExtension().isEmpty()) {
             validationErrors.add("No Patient Id found!");
             return false;
         }
-        //Correct personnummer without dashes
+        // Correct personnummer without dashes
         String personNumber = patient.getPersonId().getExtension();
         if (Pattern.matches(PERSON_NUMBER_WITHOUT_DASH_REGEX, personNumber)) {
             patient.getPersonId().setExtension(formatWithDash(personNumber));
-            LOG.warn(LogMarkers.VALIDATION, "Validation warning for intyg " + certificateId + ": Person-id " + personNumber + " is lacking a separating dash - corrected.");
+            LOG.warn(LogMarkers.VALIDATION, "Validation warning for intyg " + certificateId + ": Person-id " + personNumber
+                    + " is lacking a separating dash - corrected.");
         }
         // Check patient o.i.d.
         if (patient.getPersonId().getRoot() == null || !PATIENT_ID_OIDS.contains(patient.getPersonId().getRoot())) {

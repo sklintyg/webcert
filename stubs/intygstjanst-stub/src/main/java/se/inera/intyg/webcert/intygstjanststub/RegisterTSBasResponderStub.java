@@ -55,13 +55,16 @@ public class RegisterTSBasResponderStub implements RegisterTSBasResponderInterfa
         CertificateHolder certificate = new CertificateHolder();
         certificate.setId(source.getIntyg().getIntygsId());
         certificate.setType(source.getIntyg().getIntygsTyp());
-        certificate.setCivicRegistrationNumber(new Personnummer(source.getIntyg().getGrundData().getPatient().getPersonId().getExtension()));
-        certificate.setSignedDate(LocalDateTime.parse(source.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        certificate
+                .setCivicRegistrationNumber(new Personnummer(source.getIntyg().getGrundData().getPatient().getPersonId().getExtension()));
+        certificate.setSignedDate(
+                LocalDateTime.parse(source.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         certificate.setCareUnitId(source.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsId().getExtension());
         certificate.setCareUnitName(source.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
         certificate.setSigningDoctorName(source.getIntyg().getGrundData().getSkapadAv().getFullstandigtNamn());
         certificate.setAdditionalInfo(source.getIntyg().getOvrigKommentar());
-        certificate.setCareGiverId(source.getIntyg().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().getExtension());
+        certificate.setCareGiverId(
+                source.getIntyg().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().getExtension());
         return certificate;
     }
 }

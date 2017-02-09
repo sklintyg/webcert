@@ -114,7 +114,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         } else {
             try {
                 String reason = "incoming question '" + mailNotification.getQaId() + "'";
-                sendNotificationMailToEnhet(type, mailNotification, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, mailNotification), recipient, reason);
+                sendNotificationMailToEnhet(type, mailNotification, INCOMING_QUESTION_SUBJECT,
+                        mailBodyForFraga(recipient, mailNotification), recipient, reason);
             } catch (MailSendException | MessagingException e) {
                 logError(type, mailNotification, e);
             }
@@ -132,7 +133,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         } else {
             try {
                 String reason = "incoming answer on question '" + mailNotification.getQaId() + "'";
-                sendNotificationMailToEnhet(type, mailNotification, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, mailNotification), recipient, reason);
+                sendNotificationMailToEnhet(type, mailNotification, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, mailNotification),
+                        recipient, reason);
             } catch (MailSendException | MessagingException e) {
                 logError(type, mailNotification, e);
             }
@@ -147,7 +149,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         this.webCertHostUrl = webCertHostUrl;
     }
 
-    private void sendNotificationMailToEnhet(String type, MailNotification mailNotification, String subject, String body, MailNotificationEnhet receivingEnhet,
+    private void sendNotificationMailToEnhet(String type, MailNotification mailNotification, String subject, String body,
+            MailNotificationEnhet receivingEnhet,
             String reason) throws MessagingException {
 
         String recipientAddress = receivingEnhet.getEmail();
@@ -188,12 +191,14 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private String mailBodyForFraga(MailNotificationEnhet unit, MailNotification mailNotification) {
         return "<p>" + unit.getName() + " har fått en fråga från Försäkringskassan angående ett intyg."
-                + "<br><a href=\"" + intygsUrl(mailNotification) + "\">Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
+                + "<br><a href=\"" + intygsUrl(mailNotification)
+                + "\">Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
     }
 
     private String mailBodyForSvar(MailNotificationEnhet unit, MailNotification mailNotification) {
         return "<p>Det har kommit ett svar från Försäkringskassan på en fråga som " + unit.getName() + " har ställt"
-                + ".<br><a href=\"" + intygsUrl(mailNotification) + "\">Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
+                + ".<br><a href=\"" + intygsUrl(mailNotification)
+                + "\">Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
     }
 
     private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
@@ -250,7 +255,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             UnitType response = organizationUnitService.getUnit(careUnitId);
             if (response == null) {
                 throw new IllegalArgumentException(
-                        "HSA Id " + careUnitId + " does not exist in HSA catalogue, fetched over infrastructure:directory:organization:getunit.");
+                        "HSA Id " + careUnitId
+                                + " does not exist in HSA catalogue, fetched over infrastructure:directory:organization:getunit.");
             }
             return new MailNotificationEnhet(response.getUnitHsaId(), response.getUnitName(), response.getMail());
         } catch (WebServiceException | HsaServiceCallException e) {

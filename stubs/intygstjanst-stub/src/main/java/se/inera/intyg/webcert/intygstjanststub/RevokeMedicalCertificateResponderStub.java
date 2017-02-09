@@ -40,8 +40,10 @@ public class RevokeMedicalCertificateResponderStub implements RevokeMedicalCerti
 
     @Override
     @StubModeAware
-    public RevokeMedicalCertificateResponseType revokeMedicalCertificate(AttributedURIType attributedURIType, RevokeMedicalCertificateRequestType revokeMedicalCertificateRequestType) {
-        CertificateHolder certResponseType = intygStore.getIntygForCertificateId(revokeMedicalCertificateRequestType.getRevoke().getLakarutlatande().getLakarutlatandeId());
+    public RevokeMedicalCertificateResponseType revokeMedicalCertificate(AttributedURIType attributedURIType,
+            RevokeMedicalCertificateRequestType revokeMedicalCertificateRequestType) {
+        CertificateHolder certResponseType = intygStore
+                .getIntygForCertificateId(revokeMedicalCertificateRequestType.getRevoke().getLakarutlatande().getLakarutlatandeId());
 
         RevokeMedicalCertificateResponseType responseType = new RevokeMedicalCertificateResponseType();
         ResultOfCall resultOfCall = new ResultOfCall();
@@ -54,7 +56,8 @@ public class RevokeMedicalCertificateResponderStub implements RevokeMedicalCerti
         }
 
         if (!isRevoked(certResponseType.getCertificateStates())) {
-            intygStore.addStatus(certResponseType.getId(), new CertificateStateHolder(attributedURIType.getValue(), CertificateState.CANCELLED, LocalDateTime.now()));
+            intygStore.addStatus(certResponseType.getId(),
+                    new CertificateStateHolder(attributedURIType.getValue(), CertificateState.CANCELLED, LocalDateTime.now()));
         }
 
         resultOfCall.setResultCode(ResultCodeEnum.OK);

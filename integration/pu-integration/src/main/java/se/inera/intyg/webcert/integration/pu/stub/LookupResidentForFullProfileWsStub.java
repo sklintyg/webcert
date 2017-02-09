@@ -30,14 +30,14 @@ import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1
 import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v11.LookupResidentForFullProfileResponderInterface;
 import se.riv.population.residentmaster.types.v1.ResidentType;
 
-
 public class LookupResidentForFullProfileWsStub implements LookupResidentForFullProfileResponderInterface {
 
     @Autowired
     private ResidentStore personer;
 
     @Override
-    public LookupResidentForFullProfileResponseType lookupResidentForFullProfile(String logicalAddress, LookupResidentForFullProfileType parameters) {
+    public LookupResidentForFullProfileResponseType lookupResidentForFullProfile(String logicalAddress,
+            LookupResidentForFullProfileType parameters) {
         validate(logicalAddress, parameters);
         LookupResidentForFullProfileResponseType response = new LookupResidentForFullProfileResponseType();
         for (String id : parameters.getPersonId()) {

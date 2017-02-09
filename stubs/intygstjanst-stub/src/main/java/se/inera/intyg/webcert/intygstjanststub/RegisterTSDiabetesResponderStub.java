@@ -55,13 +55,16 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
         CertificateHolder certificate = new CertificateHolder();
         certificate.setId(parameters.getIntyg().getIntygsId());
         certificate.setType(parameters.getIntyg().getIntygsTyp());
-        certificate.setCivicRegistrationNumber(new Personnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension()));
-        certificate.setSignedDate(LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        certificate.setCivicRegistrationNumber(
+                new Personnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension()));
+        certificate.setSignedDate(
+                LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         certificate.setCareUnitId(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsId().getExtension());
         certificate.setCareUnitName(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
         certificate.setSigningDoctorName(parameters.getIntyg().getGrundData().getSkapadAv().getFullstandigtNamn());
         certificate.setAdditionalInfo(parameters.getIntyg().getOvrigKommentar());
-        certificate.setCareGiverId(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().getExtension());
+        certificate.setCareGiverId(
+                parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().getExtension());
         return certificate;
     }
 }

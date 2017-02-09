@@ -55,16 +55,19 @@ import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationCont
  *
  * @author nikpet
  */
+// CHECKSTYLE:OFF LineLength
 @Path("/certificate")
 @Api(value = "webcert web user certificate (Fråga/Svar uthopp)", description = "REST API för fråga/svar via uthoppslänk, landstingspersonal", produces = MediaType.APPLICATION_JSON)
 public class FragaSvarUthoppController extends BaseIntegrationController {
+// CHECKSTYLE:ON LineLength
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarUthoppController.class);
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
 
-    private static final String[] GRANTED_ROLES = new String[] {AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE };
+    private static final String[] GRANTED_ROLES = new String[] { AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
+            AuthoritiesConstants.ROLE_TANDLAKARE };
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
     private static final String DEFAULT_TYPE = Fk7263EntryPoint.MODULE_ID;
 
@@ -92,7 +95,8 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
      */
     @GET
     @Path("/{type}/{intygId}/questions")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("type") String type, @PathParam("intygId") String intygId, @QueryParam("enhet") String enhetHsaId) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("type") String type, @PathParam("intygId") String intygId,
+            @QueryParam("enhet") String enhetHsaId) {
 
         super.validateRedirectToIntyg(intygId);
         this.validateAndChangeEnhet(intygId, type, enhetHsaId);
@@ -111,7 +115,8 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
      */
     @GET
     @Path("/{intygId}/questions")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @QueryParam("enhet") String enhetHsaId) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId,
+            @QueryParam("enhet") String enhetHsaId) {
 
         super.validateRedirectToIntyg(intygId);
 
@@ -136,19 +141,22 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         WebCertUser user = webCertUserService.getUser();
         if (user == null) {
             LOG.error("No user in session, cannot continue");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "No user session, cannot view questions for intyg " + intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "No user session, cannot view questions for intyg " + intygsId);
         }
 
         if (!Strings.nullToEmpty(enhetHsaId).trim().isEmpty()) {
             // Link contained not empty ?enhet= query param, try to set on user!
             if (!user.changeValdVardenhet(enhetHsaId)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User does not have access to enhet " + enhetHsaId);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                        "User does not have access to enhet " + enhetHsaId);
             }
         } else {
             // No enhet on link (legacy fallback for pre WC 5.0 links)
             String enhet = intygService.getIssuingVardenhetHsaId(intygsId, intygsTyp);
             if (!user.changeValdVardenhet(enhet)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User does not have access to enhet " + enhetHsaId);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                        "User does not have access to enhet " + enhetHsaId);
             }
         }
     }

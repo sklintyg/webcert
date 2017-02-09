@@ -42,8 +42,8 @@ public class IntygDraftsConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
-    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC =
-            (ie1, ie2) -> ie2.getLastUpdatedSigned().compareTo(ie1.getLastUpdatedSigned());
+    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdatedSigned()
+            .compareTo(ie1.getLastUpdatedSigned());
 
     private static final Comparator<IntygsStatus> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTidpunkt().compareTo(c2.getTidpunkt());
 
@@ -127,7 +127,8 @@ public class IntygDraftsConverter {
             return utkast.getSenastSparadAv().getNamn();
         } else if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSkapadAv().getNamn();
-        } else if (utkast.getSenastSparadAv() != null && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+        } else if (utkast.getSenastSparadAv() != null
+                && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
         } else {
             return utkast.getSignatur().getSigneradAv();

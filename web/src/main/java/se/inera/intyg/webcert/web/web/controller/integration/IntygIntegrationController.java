@@ -123,8 +123,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
             @QueryParam(PARAM_REFERENCE) String reference) {
-        return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress,
-                postnummer, postort, coherentJournaling, reference);
+        return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn,
+                mellannamn, postadress, postnummer, postort, coherentJournaling, reference);
     }
     // CHECKSTYLE:OFF ParameterNumber
 
@@ -190,13 +190,15 @@ public class IntygIntegrationController extends BaseIntegrationController {
         if (isUtkast) {
             // INTYG-3212: Draft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
-            ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer,
+            ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn, fornamn, mellannamn, efternamn,
+                    postadress, postnummer,
                     postort);
         }
 
         PatientParameter patientDetails = new PatientParameter(fornamn, efternamn, mellannamn, postadress, postnummer, postort);
         LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, intygsTyp, coherentJournaling);
-        return buildRedirectResponse(uriInfo, intygsTyp, intygId, alternatePatientSSn, responsibleHospName, patientDetails, isUtkast, coherentJournaling);
+        return buildRedirectResponse(uriInfo, intygsTyp, intygId, alternatePatientSSn, responsibleHospName, patientDetails, isUtkast,
+                coherentJournaling);
     }
 
     /**
@@ -214,7 +216,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * @param postnummer
      * @param postort
      */
-    private void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, String alternatePatientSSn, String fornamn,
+    private void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, String alternatePatientSSn,
+            String fornamn,
             String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
 
         // To be allowed to update utkast, we need to have the same authority as when saving a draft..
@@ -259,7 +262,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private void verifyQueryString(String queryStringName, String queryStringValue) {
         if (Strings.nullToEmpty(queryStringValue).trim().isEmpty()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Missing required parameter '" + queryStringName + "'");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    "Missing required parameter '" + queryStringName + "'");
         }
     }
     // CHECKSTYLE:OFF ParameterNumber

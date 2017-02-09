@@ -70,7 +70,8 @@ public class PPBootstrapBean {
         LOG.debug("Loading private practitioners from " + res.getFilename());
         HoSPersonType personType = objectMapper.readValue(res.getInputStream(), HoSPersonType.class);
         personStub.add(personType);
-        LOG.debug(String.format("Loaded private practitioner %s (%s)", personType.getFullstandigtNamn(), personType.getPersonId().getExtension()));
+        LOG.debug(String.format("Loaded private practitioner %s (%s)", personType.getFullstandigtNamn(),
+                personType.getPersonId().getExtension()));
     }
 
 }

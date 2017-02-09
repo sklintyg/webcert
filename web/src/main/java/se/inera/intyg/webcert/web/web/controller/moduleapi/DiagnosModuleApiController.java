@@ -67,7 +67,8 @@ public class DiagnosModuleApiController extends AbstractApiController {
 
         LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
 
-        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getCodeSystem(), parameter.getNbrOfResults());
+        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getCodeSystem(),
+                parameter.getNbrOfResults());
         return Response.ok(diagnosResponse).build();
     }
 
@@ -84,7 +85,8 @@ public class DiagnosModuleApiController extends AbstractApiController {
 
         LOG.debug("Searching for diagnosises using description fragment: {}", parameter.getDescriptionSearchString());
 
-        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByDescription(parameter.getDescriptionSearchString(), parameter.getCodeSystem(), parameter.getNbrOfResults());
+        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByDescription(parameter.getDescriptionSearchString(),
+                parameter.getCodeSystem(), parameter.getNbrOfResults());
         return Response.ok(diagnosResponse).build();
     }
 }

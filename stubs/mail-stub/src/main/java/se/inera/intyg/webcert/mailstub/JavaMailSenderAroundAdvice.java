@@ -66,7 +66,9 @@ public class JavaMailSenderAroundAdvice {
                     LOG.info("\n*********************************************************************************\n"
                             + " Intercepting mail to : '{}' subject: '{}' from: '{}'.\n"
                             + "{}\n"
-                            + "*********************************************************************************", outgoingMail.getRecipients().stream().collect(Collectors.joining(", ")), outgoingMail.getSubject(), outgoingMail.getFrom(), outgoingMail.getBody());
+                            + "*********************************************************************************",
+                            outgoingMail.getRecipients().stream().collect(Collectors.joining(", ")), outgoingMail.getSubject(),
+                            outgoingMail.getFrom(), outgoingMail.getBody());
 
                     mailStore.waitToContinue();
                 }

@@ -51,22 +51,22 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
     private Long batchAggregationTimeout;
 
     /*
-      * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
-      * by any component in this route is NOT handled by the route, but triggers a transaction rollback in the
-      * MQ provider. The MQ provider will then, if properly configured, put the message back into the queue after
-      * the proper redelivery wait time has passed.
-      *
-      * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
-      */
+     * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
+     * by any component in this route is NOT handled by the route, but triggers a transaction rollback in the
+     * MQ provider. The MQ provider will then, if properly configured, put the message back into the queue after
+     * the proper redelivery wait time has passed.
+     *
+     * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
+     */
     @Override
     public void configure() {
         errorHandler(transactionErrorHandler().logExhausted(false));
 
         // 1. Starts by splitting any inbound PdlLogMessage instances having more than one PdlResource into separate
-        //    PdlLogMessage instances, one per each PdlResource.
-        //    Then the route Aggregates (n) messages together and passes them to a custom bean which will transform the content
-        //    into a single list of PdlLogMessage.
-        //    The bean:logMessageAggregationProcessor outputs a List of PdlLogMessage which is passed to a JMS queue.
+        // PdlLogMessage instances, one per each PdlResource.
+        // Then the route Aggregates (n) messages together and passes them to a custom bean which will transform the
+        // content into a single list of PdlLogMessage.
+        // The bean:logMessageAggregationProcessor outputs a List of PdlLogMessage which is passed to a JMS queue.
         from("receiveLogMessageEndpoint").routeId("aggregatorRoute")
                 .split().method("logMessageSplitProcessor")
                 .aggregate(new GroupedExchangeAggregationStrategy())
@@ -77,9 +77,8 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
                 .to(newAggregatedLogMessageQueue)
                 .stop();
 
-
         // 2. In a transaction, reads from jms/AggregatedLogSenderQueue and uses custom bean:logMessageProcessor
-        //    to convert into ehr:logstore format and send. Exception handling delegates resends to AMQ.
+        // to convert into ehr:logstore format and send. Exception handling delegates resends to AMQ.
         from("receiveAggregatedLogMessageEndpoint").routeId("aggregatedJmsToSenderRoute")
                 .onException(TemporaryException.class).to("direct:logMessageTemporaryErrorHandlerEndpoint").end()
                 .onException(BatchValidationException.class).handled(true).to("direct:logMessageBatchValidationErrorHandlerEndpoint").end()
@@ -87,23 +86,29 @@ public class LogSenderRouteBuilder extends SpringRouteBuilder {
                 .transacted()
                 .to("bean:logMessageSendProcessor").stop();
 
-
         // Error handling
         from("direct:logMessagePermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")
-                .log(LoggingLevel.ERROR, LOG, simple("ENTER - Permanent exception for LogMessage batch: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG,
+                        simple("ENTER - Permanent exception for LogMessage batch: ${exception.message}\n ${exception.stacktrace}")
+                                .getText())
                 .stop();
 
         from("direct:logMessageBatchValidationErrorHandlerEndpoint").routeId("batchValidationErrorLogging")
-                .log(LoggingLevel.ERROR, LOG, simple("ENTER - Batch validation exception for LogMessage batch: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG,
+                        simple("ENTER - Batch validation exception for LogMessage batch: ${exception.message}\n ${exception.stacktrace}")
+                                .getText())
                 .to(newAggregatedLogMessageDLQ)
                 .stop();
 
         from("direct:logMessageTemporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
                 .choice()
                 .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
-                .log(LoggingLevel.ERROR, LOG, simple("ENTER - Temporary exception for logMessage batch: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG,
+                        simple("ENTER - Temporary exception for logMessage batch: ${exception.message}\n ${exception.stacktrace}")
+                                .getText())
                 .otherwise()
-                .log(LoggingLevel.WARN, LOG, simple("ENTER - Temporary exception (redelivered) for logMessage batch: ${exception.message}").getText())
+                .log(LoggingLevel.WARN, LOG,
+                        simple("ENTER - Temporary exception (redelivered) for logMessage batch: ${exception.message}").getText())
                 .stop();
     }
 

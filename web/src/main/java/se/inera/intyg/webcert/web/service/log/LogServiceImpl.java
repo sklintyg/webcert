@@ -82,7 +82,6 @@ public class LogServiceImpl implements LogService {
     @Autowired
     private WebCertUserService webCertUserService;
 
-
     @PostConstruct
     public void checkJmsTemplate() {
         if (jmsTemplate == null) {
@@ -194,7 +193,6 @@ public class LogServiceImpl implements LogService {
                 .build();
     }
 
-
     private PdlLogMessage populateLogMessage(LogRequest logRequest, PdlLogMessage logMsg, LogUser user) {
 
         populateWithCurrentUserAndCareUnit(logMsg, user);
@@ -205,7 +203,8 @@ public class LogServiceImpl implements LogService {
         String careGiverId = logRequest.getIntygCareGiverId();
         String careGiverName = logRequest.getIntygCareGiverName();
 
-        Patient patient = new Patient(logRequest.getPatientId().getPersonnummer().replace("-", "").replace("+", ""), logRequest.getPatientName());
+        Patient patient = new Patient(logRequest.getPatientId().getPersonnummer().replace("-", "").replace("+", ""),
+                logRequest.getPatientName());
         Enhet resourceOwner = new Enhet(careUnitId, careUnitName, careGiverId, careGiverName);
 
         PdlResource pdlResource = new PdlResource();
@@ -264,7 +263,8 @@ public class LogServiceImpl implements LogService {
             try {
                 return session.createTextMessage(objectMapper.writeValueAsString(logMsg));
             } catch (JsonProcessingException e) {
-                throw new IllegalArgumentException("Could not serialize log message of type '" + logMsg.getClass().getName() + "' into JSON, message: " + e.getMessage());
+                throw new IllegalArgumentException("Could not serialize log message of type '" + logMsg.getClass().getName()
+                        + "' into JSON, message: " + e.getMessage());
             }
         }
     }

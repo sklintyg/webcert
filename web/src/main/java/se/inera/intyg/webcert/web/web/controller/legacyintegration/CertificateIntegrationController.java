@@ -32,9 +32,11 @@ import javax.ws.rs.core.MediaType;
  * NORMAL instead of UTHOPP. This inheritance is somewhat confusing but it make
  * sense if we look at it from a functional perspective.
  */
+// CHECKSTYLE:OFF LineLength
 @Path("/basic-certificate")
 @Api(value = "/webcert/web/user/basic-certificate", description = "REST API för fråga/svar via normal link, landstingspersonal", produces = MediaType.APPLICATION_JSON)
 public class CertificateIntegrationController extends FragaSvarUthoppController {
+    // CHECKSTYLE:ON LineLength
 
     @Override
     protected UserOriginType getGrantedRequestOrigin() {

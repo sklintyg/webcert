@@ -60,7 +60,8 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
     private SavedRequestFactory savedRequestFactory;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain filterChain)
+            throws ServletException, IOException {
 
         // Check if we're logged in, e.g. have a useful session
         HttpSession session = req.getSession(true);
@@ -83,13 +84,13 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
         // Finally, send redirect to explicit login path for the appropriate IDP depending on the requestURI
         String requestURI = req.getRequestURI();
         if (isAuthenticateWithSiths(requestURI)) {
-             resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_SITHS + "?idp=" + sithsIdp);
+            resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_SITHS + "?idp=" + sithsIdp);
         }
         if (isAuthenticateWithEleg(requestURI)) {
             resp.sendRedirect("/saml/login/alias/" + AuthConstants.ALIAS_ELEG + "?idp=" + elegIdp);
         }
         // We never continue down the filter chain if we've come this far...
-   }
+    }
 
     private boolean isAuthenticateWithEleg(String requestURI) {
         return requestURI.contains("/webcert/web/user/pp-certificate/");

@@ -142,7 +142,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-
     /*
      * (non-Javadoc)
      *
@@ -285,9 +284,11 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation, false);
+            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
+                    false);
         } else {
-            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation, false);
+            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
+                    false);
         }
 
         return builderResponse;
@@ -300,7 +301,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation, false);
+            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
+                    false);
         } else {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation, false);
         }
@@ -390,7 +392,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         String orginalEnhetsId = builderResponse.getOrginalEnhetsId();
         Utkast utkastCopy = builderResponse.getUtkastCopy();
 
-        IntegreradEnhetEntry newEntry = new IntegreradEnhetEntry(utkastCopy.getEnhetsId(), utkastCopy.getEnhetsNamn(), utkastCopy.getVardgivarId(),
+        IntegreradEnhetEntry newEntry = new IntegreradEnhetEntry(utkastCopy.getEnhetsId(), utkastCopy.getEnhetsNamn(),
+                utkastCopy.getVardgivarId(),
                 utkastCopy.getVardgivarNamn());
 
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());

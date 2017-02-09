@@ -57,7 +57,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     public CreateNewDraftRequest buildCreateNewDraftRequest(Utlatande utlatande, CommissionType miuOnUnit) {
         HoSPersonal hosPerson = createHoSPerson(utlatande.getSkapadAv(), createVardenhetFromMIU(miuOnUnit));
         enrichHoSPerson(hosPerson);
-        return new CreateNewDraftRequest(null, utlatande.getTypAvUtlatande().getCode(), null, hosPerson, createPatient(utlatande.getPatient()));
+        return new CreateNewDraftRequest(null, utlatande.getTypAvUtlatande().getCode(), null, hosPerson,
+                createPatient(utlatande.getPatient()));
     }
 
     private void enrichHoSPerson(HoSPersonal hosPerson) {
@@ -71,7 +72,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private Vardenhet createVardenhetFromMIU(CommissionType miu) {
 
-        se.inera.intyg.infra.integration.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getHealthCareUnitHsaId());
+        se.inera.intyg.infra.integration.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService
+                .getVardenhet(miu.getHealthCareUnitHsaId());
 
         Vardenhet vardenhet = new Vardenhet();
         vardenhet.setEnhetsnamn(hsaVardenhet.getNamn());
@@ -104,7 +106,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         patient.setFornamn(joinNames(patientType.getFornamn()));
         patient.setMellannamn(joinNames(patientType.getMellannamn()));
         patient.setEfternamn(patientType.getEfternamn());
-        patient.setFullstandigtNamn(IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
+        patient.setFullstandigtNamn(
+                IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
         return patient;
     }
 

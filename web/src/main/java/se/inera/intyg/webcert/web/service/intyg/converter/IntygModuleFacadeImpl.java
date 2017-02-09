@@ -53,7 +53,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     private String logicalAddress;
 
     @Override
-    public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses, boolean isEmployer)
+    public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses,
+            boolean isEmployer)
             throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);

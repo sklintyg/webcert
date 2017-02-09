@@ -33,7 +33,8 @@ public class AvtalRepositoryImpl implements AvtalRepositoryCustom {
     @Override
     public Integer getLatestAvtalVersion() {
         try {
-            Integer latestAvtalVersion = entityManager.createQuery("SELECT MAX(a.avtalVersion) FROM Avtal a", Integer.class).getSingleResult();
+            Integer latestAvtalVersion = entityManager.createQuery("SELECT MAX(a.avtalVersion) FROM Avtal a", Integer.class)
+                    .getSingleResult();
             return latestAvtalVersion == null ? -1 : latestAvtalVersion;
         } catch (NoResultException e) {
             return -1;

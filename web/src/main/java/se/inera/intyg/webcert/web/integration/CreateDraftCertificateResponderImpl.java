@@ -158,7 +158,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         monitoringLogService.logMissingMedarbetarUppdrag(invokingUserHsaId, invokingUnitHsaId);
 
-        String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId, invokingUnitHsaId);
+        String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId,
+                invokingUnitHsaId);
         return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
     }
 

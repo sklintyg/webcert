@@ -111,7 +111,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         enableModuleFeatures(getUser(), moduleName, modulefeaturesToEnable);
     }
 
-        // Return the privilege's intygstyper
+    // Return the privilege's intygstyper
     @Override
     public boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
         return checkIfAuthorizedForUnit(getUser(), vardgivarHsaId, enhetsHsaId, isReadOnlyOperation);
@@ -178,7 +178,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             String moduleFeatureStr = Joiner.on(".").join(moduleFeatureName, moduleName.toLowerCase());
 
             if (!user.isFeatureActive(moduleFeatureName)) {
-                LOG.warn("Could not add module feature '{}' to user {} since corresponding webcert feature is not enabled", moduleFeatureStr,
+                LOG.warn("Could not add module feature '{}' to user {} since corresponding webcert feature is not enabled",
+                        moduleFeatureStr,
                         user.getHsaId());
                 continue;
             }

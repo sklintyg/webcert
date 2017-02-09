@@ -34,7 +34,8 @@ public class StatTransformerUtil {
 
     public Map<String, List<NotificationStubEntry>> toStat(Collection<CertificateStatusUpdateForCareType> notifs) {
         Map<String, List<NotificationStubEntry>> listMap = notifs.stream()
-                .map(model -> new NotificationStubEntry(model.getIntyg().getIntygsId().getExtension(), model.getHandelse().getHandelsekod().getCode(), model.getHandelse().getTidpunkt()))
+                .map(model -> new NotificationStubEntry(model.getIntyg().getIntygsId().getExtension(),
+                        model.getHandelse().getHandelsekod().getCode(), model.getHandelse().getTidpunkt()))
                 .collect(Collectors.groupingBy(NotificationStubEntry::getIntygsId));
 
         return listMap;

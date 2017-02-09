@@ -56,7 +56,9 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
     @Override
     public boolean userHasApprovedAvtal(String hsaId, Integer avtalVersion) {
         try {
-            GodkantAvtal godkantAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion", GodkantAvtal.class)
+            GodkantAvtal godkantAvtal = entityManager
+                    .createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion",
+                            GodkantAvtal.class)
                     .setParameter("hsaId", hsaId)
                     .setParameter("avtalVersion", avtalVersion)
                     .getSingleResult();
@@ -72,7 +74,9 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
     @Override
     public void removeUserApprovement(String hsaId, Integer avtalVersion) {
         try {
-            GodkantAvtal godkantAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion", GodkantAvtal.class)
+            GodkantAvtal godkantAvtal = entityManager
+                    .createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion",
+                            GodkantAvtal.class)
                     .setParameter("hsaId", hsaId)
                     .setParameter("avtalVersion", avtalVersion)
                     .getSingleResult();
@@ -81,13 +85,15 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
                 entityManager.remove(godkantAvtal);
             }
         } catch (NoResultException e) {
-            LOG.warn("Could not remove GodkantAvtal for user with hsaId '" + hsaId + "', avtal version '" + avtalVersion + "'. No approval found.");
+            LOG.warn("Could not remove GodkantAvtal for user with hsaId '" + hsaId + "', avtal version '" + avtalVersion
+                    + "'. No approval found.");
         }
     }
 
     @Override
     public void removeAllUserApprovments(String hsaId) {
-        List<GodkantAvtal> godkandaAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId", GodkantAvtal.class)
+        List<GodkantAvtal> godkandaAvtal = entityManager
+                .createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId", GodkantAvtal.class)
                 .setParameter("hsaId", hsaId)
                 .getResultList();
 

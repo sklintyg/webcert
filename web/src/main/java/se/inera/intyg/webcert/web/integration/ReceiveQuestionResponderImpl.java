@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration;
 
+// CHECKSTYLE:OFF LineLength
+
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -36,6 +38,8 @@ import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+
+// CHECKSTYLE:ON LineLength
 
 /**
  * @author andreaskaltenbach

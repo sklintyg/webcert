@@ -63,7 +63,6 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
                 .build();
     }
 
-
     /**
      * Exceptions thrown by us should be logged as warnings as they are thrown deliberately.
      *
@@ -91,7 +90,8 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
      */
     private Response handleRuntimeException(RuntimeException re) {
         LOG.error("Unhandled RuntimeException occured!", re);
-        WebcertRestExceptionResponse exceptionResponse = new WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+        WebcertRestExceptionResponse exceptionResponse = new WebcertRestExceptionResponse(
+                WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
                 re.getMessage());
         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exceptionResponse).type(MediaType.APPLICATION_JSON)
                 .build();

@@ -78,7 +78,8 @@ public class PageController {
     /**
      * Select Starting point view depending on user properties.
      *
-     * @param user user
+     * @param user
+     *            user
      * @return String
      */
     protected String resolveStartView(WebCertUser user) {
@@ -117,7 +118,8 @@ public class PageController {
         // WC 5.0 new: change vårdenhet
         String enhetHsaId = intygService.getIssuingVardenhetHsaId(intygId, typ);
         if (enhetHsaId == null) {
-            LOG.error("Could not redirect user to utkast using /maillink for intygsId '" + intygId + "'. No enhetsId found for utkast. Does the utkast exist?");
+            LOG.error("Could not redirect user to utkast using /maillink for intygsId '" + intygId
+                    + "'. No enhetsId found for utkast. Does the utkast exist?");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 

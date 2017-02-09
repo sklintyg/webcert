@@ -43,7 +43,8 @@ public class SendCertificateToRecipientResponderStub implements SendCertificateT
     @Override
     @StubLatencyAware
     @StubModeAware
-    public SendCertificateToRecipientResponseType sendCertificateToRecipient(String logicalAddress, SendCertificateToRecipientType parameters) {
+    public SendCertificateToRecipientResponseType sendCertificateToRecipient(String logicalAddress,
+            SendCertificateToRecipientType parameters) {
         CertificateHolder fromStore = intygStore.getIntygForCertificateId(parameters.getIntygsId().getExtension());
 
         SendCertificateToRecipientResponseType responseType = new SendCertificateToRecipientResponseType();
@@ -56,7 +57,8 @@ public class SendCertificateToRecipientResponderStub implements SendCertificateT
             return responseType;
         }
 
-        intygStore.addStatus(parameters.getIntygsId().getExtension(), new CertificateStateHolder("FK", CertificateState.SENT, LocalDateTime.now()));
+        intygStore.addStatus(parameters.getIntygsId().getExtension(),
+                new CertificateStateHolder("FK", CertificateState.SENT, LocalDateTime.now()));
 
         ResultType resultType = new ResultType();
         resultType.setResultCode(ResultCodeType.OK);

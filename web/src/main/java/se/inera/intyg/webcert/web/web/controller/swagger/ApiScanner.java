@@ -43,9 +43,11 @@ import io.swagger.models.Swagger;
  *
  * Created by eriklupander on 2015-11-09.
  */
+// CHECKSTYLE:OFF LineLength
 @Path("/")
 @Api(value = "/services/swagger", description = "REST API för att generera swagger-beskrivning av våra REST API:er", produces = MediaType.APPLICATION_JSON)
 public class ApiScanner {
+    // CHECKSTYLE:ON LineLength
 
     private static final String SWAGGER_TOKEN = "swagger";
     private static final String BASE_REST_PACKAGE_NAME = "se.inera.intyg.webcert.web.web.controller.";
@@ -60,11 +62,12 @@ public class ApiScanner {
     private Map<String, String> basepathMap = new HashMap<>();
 
     /**
-     * Returns a list of key->value pairs of REST APIs declared in swagger-cxf-servlet.xml. Primarily used by our customized
+     * Returns a list of key->value pairs of REST APIs declared in swagger-cxf-servlet.xml. Primarily used by our
+     * customized
      * swagger-ui to list available endpoints.
      *
      * @return
-     *      List of serialized Map.Entry items.
+     *         List of serialized Map.Entry items.
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
@@ -74,13 +77,12 @@ public class ApiScanner {
         return Response.ok().entity(basepathMap.entrySet()).build();
     }
 
-
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Path("/{api}")
     @ApiOperation(value = "The swagger definition in JSON", hidden = true)
     public Response getListingJson(@PathParam("api") String api, @Context Application app, @Context ServletConfig sc,
-                                   @Context HttpHeaders headers, @Context UriInfo uriInfo) {
+            @Context HttpHeaders headers, @Context UriInfo uriInfo) {
         Swagger swagger = process(app, sc, headers, uriInfo, api);
 
         if (swagger != null) {
@@ -89,7 +91,6 @@ public class ApiScanner {
             return Response.status(Response.Status.NOT_FOUND.getStatusCode()).build();
         }
     }
-
 
     private synchronized Swagger scan(Application app, ServletConfig sc, String api) {
         Swagger swagger = null;
@@ -129,7 +130,8 @@ public class ApiScanner {
         if (basepathMap.containsKey(api)) {
             return basepathMap.get(api);
         } else {
-            throw new IllegalArgumentException("Cannot generate Swagger docs for API '" + api + "'. Its basepath must be mapped in swagger-cxf-servlet.xml");
+            throw new IllegalArgumentException(
+                    "Cannot generate Swagger docs for API '" + api + "'. Its basepath must be mapped in swagger-cxf-servlet.xml");
         }
     }
 
@@ -149,7 +151,6 @@ public class ApiScanner {
         }
         return swagger;
     }
-
 
     protected Map<String, List<String>> getQueryParams(MultivaluedMap<String, String> params) {
         Map<String, List<String>> output = new HashMap<>();

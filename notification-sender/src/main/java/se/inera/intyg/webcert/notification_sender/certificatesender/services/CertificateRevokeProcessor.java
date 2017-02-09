@@ -41,10 +41,12 @@ public class CertificateRevokeProcessor {
     @Autowired
     private IntygModuleRegistry registry;
 
-    public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
+    public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId,
+            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
             @Header(Constants.INTYGS_TYP) String intygsTyp) throws TemporaryException, PermanentException {
 
-        checkArgument(!Strings.isNullOrEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE, Constants.INTYGS_ID);
+        checkArgument(!Strings.isNullOrEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
+                Constants.INTYGS_ID);
         checkArgument(!Strings.isNullOrEmpty(logicalAddress), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
                 Constants.LOGICAL_ADDRESS);
         checkArgument(!Strings.isNullOrEmpty(intygsTyp), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,

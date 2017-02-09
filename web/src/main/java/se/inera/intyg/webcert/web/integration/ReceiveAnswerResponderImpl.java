@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration;
 
+// CHECKSTYLE:OFF LineLength
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,6 +39,7 @@ import se.inera.intyg.webcert.web.integration.validator.QuestionAnswerValidator;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
+// CHECKSTYLE:ON LineLength
 
 /**
  * @author andreaskaltenbach
@@ -94,6 +97,7 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
 
     private void sendNotification(FragaSvar fragaSvar) {
         notificationService.sendNotificationForAnswerRecieved(fragaSvar);
-        LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
+        LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.",
+                fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
     }
 }

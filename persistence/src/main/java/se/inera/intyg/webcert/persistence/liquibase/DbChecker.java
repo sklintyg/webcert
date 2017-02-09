@@ -62,7 +62,8 @@ public class DbChecker {
                 for (ChangeSet changeSet : changeSets) {
                     errors.append('>').append(changeSet.toString()).append('\n');
                 }
-                throw new Error("Database version mismatch. Check liquibase status. Errors:\n" + errors.toString() + database.getDatabaseProductName() + ", " + database);
+                throw new Error("Database version mismatch. Check liquibase status. Errors:\n" + errors.toString()
+                        + database.getDatabaseProductName() + ", " + database);
             }
         } catch (liquibase.exception.LiquibaseException | SQLException e) {
             throw new Error("Database not ok, aborting startup.", e);

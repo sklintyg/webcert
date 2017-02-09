@@ -54,7 +54,6 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
 
-
 /**
  * Bean for inserting questions directly into the database.
  * <p/>
@@ -88,7 +87,6 @@ public class QuestionResource {
 
     @Autowired
     private CommonAuthoritiesResolver authoritiesResolver;
-
 
     @GET
     @Path("/extern/{externReferens}")
@@ -143,11 +141,12 @@ public class QuestionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     public Response askQuestion(@PathParam("vardgivare") final String vardgivarId,
-            @PathParam("enhet") final String enhetsId, @PathParam("intygId") final String intygId, @PathParam("typ") final String typ, CreateQuestionParameter parameter) {
+            @PathParam("enhet") final String enhetsId, @PathParam("intygId") final String intygId, @PathParam("typ") final String typ,
+            CreateQuestionParameter parameter) {
         SecurityContext originalContext = SecurityContextHolder.getContext();
         SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
         try {
-            FragaSvar fragaSvarResponse =  fragaSvarService.saveNewQuestion(intygId, typ, parameter.getAmne(), parameter.getFrageText());
+            FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygId, typ, parameter.getAmne(), parameter.getFrageText());
             return Response.ok(fragaSvarResponse).build();
         } finally {
             SecurityContextHolder.setContext(originalContext);

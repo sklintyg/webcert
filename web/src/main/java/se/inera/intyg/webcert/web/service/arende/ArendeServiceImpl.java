@@ -143,7 +143,8 @@ public class ArendeServiceImpl implements ArendeService {
         updateRelated(arende);
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
-                arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()), arende.getSvarPaId() != null);
+                arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
+                arende.getSvarPaId() != null);
 
         Arende saved = arendeRepository.save(arende);
 

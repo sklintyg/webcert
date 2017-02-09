@@ -46,10 +46,11 @@ public class ElegRedirectFilter extends OncePerRequestFilter {
     private String elegIdpUrl;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)
+            throws ServletException, IOException {
         if (elegIdpUrl == null || elegIdpUrl.trim().length() == 0) {
             throw new IllegalStateException("Cannot redirect to e-leg Identity Provider, "
-                   + "no 'cgi.funktionstjanster.saml.idp.metadata.url' configured. Check your webcert.properties file.");
+                    + "no 'cgi.funktionstjanster.saml.idp.metadata.url' configured. Check your webcert.properties file.");
         }
 
         httpServletResponse.sendRedirect("/saml/login/alias/eleg?idp=" + elegIdpUrl);

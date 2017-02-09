@@ -73,7 +73,8 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         LOG.info("\n*********************************************************************************\n"
                 + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
                 + "{}"
-                + "*********************************************************************************", logicalAddress, intygsId, handelseKod, sb.toString());
+                + "*********************************************************************************", logicalAddress, intygsId,
+                handelseKod, sb.toString());
 
         notificationStoreV2.put(intygsId, request);
 

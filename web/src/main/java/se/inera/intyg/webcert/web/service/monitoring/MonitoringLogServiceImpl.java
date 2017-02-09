@@ -75,13 +75,15 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, Amne amne,
+    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet,
+            Amne amne,
             List<String> frageIds) {
         if (KOMPLETTERING_AV_LAKARINTYG == amne) {
             logEvent(MonitoringEvent.QUESTION_RECEIVED_COMPLETION, fragestallare, externReferens, internReferens, intygsId, enhet,
                     Joiner.on(",").join(frageIds));
         } else {
-            logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, amne != null ? amne.name() : "NO AMNE");
+            logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet,
+                    amne != null ? amne.name() : "NO AMNE");
         }
     }
 
@@ -117,7 +119,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logIntygSigned(String intygsId, String intygsTyp, String userHsaId, String authScheme, RelationKod relationCode) {
-        logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, intygsTyp, userHsaId, authScheme, relationCode != null ? relationCode.name() : "NO RELATION");
+        logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, intygsTyp, userHsaId, authScheme,
+                relationCode != null ? relationCode.name() : "NO RELATION");
     }
 
     @Override
@@ -201,7 +204,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer) {
+    public void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds,
+            boolean isAnswer) {
         if (ArendeAmne.KOMPLT == amne) {
             logEvent(MonitoringEvent.MEDICINSKT_ARENDE_RECEIVED, intygsId, intygsTyp, unitHsaId, frageIds);
         } else if (isAnswer) {
@@ -266,16 +270,16 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),
-        QUESTION_RECEIVED(
-                "Received question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
-        QUESTION_RECEIVED_COMPLETION(
-                "Received completion question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with completion for questions '{}'"),
-        ANSWER_RECEIVED(
-                "Received answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
-        QUESTION_SENT(
-                "Sent question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
-        ANSWER_SENT(
-                "Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        QUESTION_RECEIVED("Received question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' "
+                + "to unit '{}' with subject '{}'"),
+        QUESTION_RECEIVED_COMPLETION("Received completion question from '{}' with external reference '{}' and internal reference '{}' "
+                + "regarding intyg '{}' to unit '{}' with completion for questions '{}'"),
+        ANSWER_RECEIVED("Received answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' "
+                + "to unit '{}' with subject '{}'"),
+        QUESTION_SENT("Sent question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' "
+                + "with subject '{}'"),
+        ANSWER_SENT("Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' "
+                + "with subject '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
         INTYG_REVOKE_STATUS_READ("Revoke status of Intyg '{}' of type '{}' was read."),
         INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF"),

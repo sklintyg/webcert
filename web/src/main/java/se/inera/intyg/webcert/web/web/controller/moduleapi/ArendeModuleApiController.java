@@ -77,7 +77,8 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{meddelandeId}/besvara")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response answer(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId, String svarsText) {
+    public Response answer(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId,
+            String svarsText) {
         LOGGER.debug("Answer arende {}", meddelandeId);
         abortIfHanteraFragorNotActive(intygsTyp);
         ArendeConversationView response = arendeService.answer(meddelandeId, svarsText);

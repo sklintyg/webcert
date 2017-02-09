@@ -26,12 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
+// CHECKSTYLE:OFF LineLength
 import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitioner.v1.rivtabp21.ValidatePrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerType;
+// CHECKSTYLE:ON LineLength
 
 /**
  * Created by Erik Lupander 13/08/15.
@@ -42,22 +44,25 @@ public class ValidatePrivatePractitionerResponderStub implements ValidatePrivate
     private HoSPersonStub personStub;
 
     @Override
-    public ValidatePrivatePractitionerResponseType validatePrivatePractitioner(String logicalAddress, ValidatePrivatePractitionerType parameters) {
+    public ValidatePrivatePractitionerResponseType validatePrivatePractitioner(String logicalAddress,
+            ValidatePrivatePractitionerType parameters) {
         // Do validation of parameters object
         validate(parameters);
 
         String id = parameters.getPersonalIdentityNumber();
         ValidatePrivatePractitionerResponseType response = new ValidatePrivatePractitionerResponseType();
-        HoSPersonType person  = personStub.get(id);
+        HoSPersonType person = personStub.get(id);
 
         if (person == null) {
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("No private practitioner with personal identity number: " + Personnummer.getPnrHashSafe(new Personnummer(id)) + " exists.");
+            response.setResultText("No private practitioner with personal identity number: "
+                    + Personnummer.getPnrHashSafe(new Personnummer(id)) + " exists.");
         } else if (person.isGodkandAnvandare()) {
             response.setResultCode(ResultCodeEnum.OK);
         } else {
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("Private practitioner with personal identity number: " + Personnummer.getPnrHashSafe(new Personnummer(id)) + " is not authorized to use webcert.");
+            response.setResultText("Private practitioner with personal identity number: "
+                    + Personnummer.getPnrHashSafe(new Personnummer(id)) + " is not authorized to use webcert.");
         }
         return response;
     }

@@ -216,7 +216,8 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
 
-        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(), utkast.getRelationKod());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
+                utkast.getRelationKod());
 
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
@@ -239,12 +240,15 @@ public class SignaturServiceImpl implements SignaturService {
         String payload = utkast.getModel();
 
         if (!ticket.getHash().equals(createHash(payload))) {
-            LOG.error("Signing of utkast '{}' failed since the payload has been modified since signing was initialized", utkast.getIntygsId());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Internal error signing utkast, the payload of utkast "
-                    + utkast.getIntygsId() + " has been modified since signing was initialized");
+            LOG.error("Signing of utkast '{}' failed since the payload has been modified since signing was initialized",
+                    utkast.getIntygsId());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Internal error signing utkast, the payload of utkast "
+                            + utkast.getIntygsId() + " has been modified since signing was initialized");
         }
 
-        Signatur signatur = new Signatur(ticket.getSigneringstid(), user.getHsaId(), ticket.getIntygsId(), payload, ticket.getHash(), rawSignature);
+        Signatur signatur = new Signatur(ticket.getSigneringstid(), user.getHsaId(), ticket.getIntygsId(), payload, ticket.getHash(),
+                rawSignature);
 
         // Update user information ("senast sparat av")
         // Add signature to the utkast and set status as signed
@@ -277,7 +281,8 @@ public class SignaturServiceImpl implements SignaturService {
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
         // Audit signing
-        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(), utkast.getRelationKod());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
+                utkast.getRelationKod());
 
         // Notify stakeholders when a draft has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
@@ -295,8 +300,9 @@ public class SignaturServiceImpl implements SignaturService {
 
         if (utkast == null) {
             LOG.warn("Utkast '{}' was not found", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Internal error signing utkast, the utkast '" + intygId
-                    + "' could not be found");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "Internal error signing utkast, the utkast '" + intygId
+                            + "' could not be found");
         } else if (!user.getIdsOfAllVardenheter().contains(utkast.getEnhetsId())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User does not have privileges to sign utkast '" + intygId + "'");
@@ -306,8 +312,9 @@ public class SignaturServiceImpl implements SignaturService {
         } else if (utkast.getStatus() != UtkastStatus.DRAFT_COMPLETE) {
             LOG.warn("Utkast '{}' med status '{}' kunde inte signeras. Måste vara i status {}", intygId, utkast.getStatus(),
                     UtkastStatus.DRAFT_COMPLETE);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Internal error signing utkast, the utkast '" + intygId
-                    + "' was not in state " + UtkastStatus.DRAFT_COMPLETE);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Internal error signing utkast, the utkast '" + intygId
+                            + "' was not in state " + UtkastStatus.DRAFT_COMPLETE);
         }
 
         return utkast;

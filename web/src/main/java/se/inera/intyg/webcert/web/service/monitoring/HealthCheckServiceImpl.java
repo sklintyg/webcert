@@ -132,7 +132,6 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         }
     }
 
-
     @Override
     public HealthStatus checkIntygstjanst() {
         Stopwatch stopWatch = Stopwatch.createStarted();
@@ -187,7 +186,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     private boolean pingPrivatlakarportal() {
         try {
             PingForConfigurationType parameters = new PingForConfigurationType();
-            PingForConfigurationResponseType pingResponse = privatlakarportalPingForConfiguration.pingForConfiguration(ppLogicalAddress, parameters);
+            PingForConfigurationResponseType pingResponse = privatlakarportalPingForConfiguration.pingForConfiguration(ppLogicalAddress,
+                    parameters);
             return pingResponse != null;
         } catch (Exception e) {
             LOG.error("pingPrivatlakarportal failed with exception: " + e.getMessage());
@@ -195,11 +195,11 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         }
     }
 
-
     private boolean pingIntygstjanst() {
         try {
             PingForConfigurationType parameters = new PingForConfigurationType();
-            PingForConfigurationResponseType pingResponse = intygstjanstPingForConfiguration.pingForConfiguration(itLogicalAddress, parameters);
+            PingForConfigurationResponseType pingResponse = intygstjanstPingForConfiguration.pingForConfiguration(itLogicalAddress,
+                    parameters);
             return pingResponse != null;
         } catch (Exception e) {
             LOG.error("pingIntygstjanst failed with exception: " + e.getMessage());

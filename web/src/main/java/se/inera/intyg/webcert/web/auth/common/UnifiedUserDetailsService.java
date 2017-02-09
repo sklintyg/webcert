@@ -53,10 +53,12 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) {
         if (samlCredential.getAuthenticationAssertion() == null) {
-            throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. Must contain an authenticationAssertion");
+            throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. "
+                    + "Must contain an authenticationAssertion");
         }
 
-        String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
+        String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
+                .getAuthnContextClassRef().getAuthnContextClassRef();
         if (authnContextClassRef == null || authnContextClassRef.trim().length() == 0) {
             throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. "
                     + "AuthenticationContextClassRef was null or empty. Should be one of:\n"
@@ -65,14 +67,14 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
         }
 
         switch (authnContextClassRef) {
-            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
-                return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
-            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT:
-                return webcertUserDetailsService.loadUserBySAML(samlCredential);
-            default:
-                throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
-                        + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
-                        + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI);
+        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
+            return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
+        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT:
+            return webcertUserDetailsService.loadUserBySAML(samlCredential);
+        default:
+            throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI);
         }
 
     }

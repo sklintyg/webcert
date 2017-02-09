@@ -265,7 +265,8 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(), null);
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(),
+                null);
         send(notificationMessage, utkast.getEnhetsId());
     }
 
@@ -325,7 +326,8 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(), reference);
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(),
+                reference);
         send(notificationMessage, utkast.getEnhetsId());
     }
 

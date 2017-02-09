@@ -53,25 +53,26 @@ public class NotificationMessageDiscardFilter {
             }
 
             switch (msg.getHandelse()) {
-                case SIGNAT:
-                    handleSigneratNotification(latestMessage, camelMsg, msg);
-                    break;
+            case SIGNAT:
+                handleSigneratNotification(latestMessage, camelMsg, msg);
+                break;
 
-                case ANDRAT:
-                    handleAndratNotification(latestMessage, camelMsg, msg);
-                    break;
+            case ANDRAT:
+                handleAndratNotification(latestMessage, camelMsg, msg);
+                break;
 
-                default:
-                    // If some unknown type accidently makes its way in here, just forward it.
-                    latestMessage.get(msg.getIntygsId()).add(camelMsg);
-                    break;
+            default:
+                // If some unknown type accidently makes its way in here, just forward it.
+                latestMessage.get(msg.getIntygsId()).add(camelMsg);
+                break;
             }
         }
 
         // Flatten out the hashmap values and return as list.
         return latestMessage.values().stream()
                 .flatMap(Collection::stream)
-                .filter(msg -> getNotificationFromBody(msg).getHandelse() != HandelsekodEnum.SIGNAT)     // Makes sure no SIGNAT may leave this filter.
+                .filter(msg -> getNotificationFromBody(msg).getHandelse() != HandelsekodEnum.SIGNAT) // Makes sure no SIGNAT may leave
+                                                                                                     // this filter.
                 .collect(Collectors.toList());
     }
 
@@ -81,7 +82,7 @@ public class NotificationMessageDiscardFilter {
         // If SIGNERAT entry exists, do nothing
         if (existingMessagesForIntygsId.stream()
                 .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.SIGNAT)
-            .count() > 0) {
+                .count() > 0) {
             return;
         }
 
@@ -106,7 +107,7 @@ public class NotificationMessageDiscardFilter {
         latestMessage.get(msg.getIntygsId()).add(camelMsg);
 
         // Remove any "ANDRAT" messages
-        Iterator<Message> i =  latestMessage.get(msg.getIntygsId()).iterator();
+        Iterator<Message> i = latestMessage.get(msg.getIntygsId()).iterator();
         while (i.hasNext()) {
             Message existingMsg = i.next();
             if (getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT) {

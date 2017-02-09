@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.fkstub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
 
+// CHECKSTYLE:OFF LineLength
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
@@ -28,7 +29,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.webcert.fkstub.validation.SendMedicalCertificateQuestionValidator;
 import se.inera.intyg.webcert.fkstub.validation.ValidationException;
-
+// CHECKSTYLE:ON LineLength
 
 /**
  * @author andreaskaltenbach
@@ -54,8 +55,7 @@ public class SendQuestionStub implements
             response.setResult(ResultOfCallUtil.failResult("LogicalAddress '"
                     + logicalAddress.getValue() + "' är inte samma som '"
                     + LOGICAL_ADDRESS + "'"));
-        } else if (parameters.getQuestion().getFraga().getMeddelandeText()
-                .equalsIgnoreCase("error")) {
+        } else if ("error".equalsIgnoreCase(parameters.getQuestion().getFraga().getMeddelandeText())) {
             response.setResult(ResultOfCallUtil
                     .failResult("Du ville ju få ett fel"));
         } else {

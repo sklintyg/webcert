@@ -31,7 +31,8 @@ public class IntegreradEnhetEntryWithSchemaVersion extends IntegreradEnhetEntry 
     private String schemaVersion;
 
     public IntegreradEnhetEntryWithSchemaVersion(IntegreradEnhet integreradEnhet) {
-        super(integreradEnhet.getEnhetsId(), integreradEnhet.getEnhetsNamn(), integreradEnhet.getVardgivarId(), integreradEnhet.getVardgivarNamn());
+        super(integreradEnhet.getEnhetsId(), integreradEnhet.getEnhetsNamn(), integreradEnhet.getVardgivarId(),
+                integreradEnhet.getVardgivarNamn());
         this.schemaVersion = integreradEnhet.isSchemaVersion2() ? "2.0" : "1.0";
     }
 

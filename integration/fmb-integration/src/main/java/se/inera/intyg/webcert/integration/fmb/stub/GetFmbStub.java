@@ -62,7 +62,9 @@ public class GetFmbStub implements GetFmbResponderInterface {
         version.setSenateAndring(String.valueOf(System.currentTimeMillis()));
         fmbResponse.setVersion(version);
         final BeslutsunderlagType beslutsunderlag = new BeslutsunderlagType();
-        beslutsunderlag.setTextuelltUnderlag("Akut bronkit nedsätter normalt inte arbetsförmågan. Om patienten har långvarig svår hosta kan det möjligen påverka allmäntillståndet genom att patienten blir trött. Sjukskrivning enbart i undantagsfall vid tydligt nedsatt allmäntillstånd i upp till 2 veckor. Röstkrävande yrken kan behöva längre sjukskrivning.");
+        beslutsunderlag.setTextuelltUnderlag("Akut bronkit nedsätter normalt inte arbetsförmågan. Om patienten har långvarig svår hosta "
+                + "kan det möjligen påverka allmäntillståndet genom att patienten blir trött. Sjukskrivning enbart i undantagsfall "
+                + "vid tydligt nedsatt allmäntillstånd i upp till 2 veckor. Röstkrävande yrken kan behöva längre sjukskrivning.");
         beslutsunderlag.getHuvuddiagnos().add(createHuvuddiagnos("J20"));
         beslutsunderlag.getHuvuddiagnos().add(createHuvuddiagnos("J22"));
         fmbResponse.getBeslutsunderlag().add(beslutsunderlag);

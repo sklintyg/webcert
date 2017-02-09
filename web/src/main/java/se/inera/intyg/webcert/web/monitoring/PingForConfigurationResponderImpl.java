@@ -58,10 +58,12 @@ public class PingForConfigurationResponderImpl implements PingForConfigurationRe
     @Autowired
     private HealthCheckService healthCheck;
 
+    // CHECKSTYLE:OFF LineLength
     @Override
     public PingForConfigurationResponseType pingForConfiguration(
             @WebParam(partName = "LogicalAddress", name = "LogicalAddress", targetNamespace = "urn:riv:itintegration:registry:1", header = true) String logicalAddress,
             @WebParam(partName = "parameters", name = "PingForConfiguration", targetNamespace = "urn:riv:itintegration:monitoring:PingForConfigurationResponder:1") PingForConfigurationType parameters) {
+        // CHECKSTYLE:ON LineLength
         PingForConfigurationResponseType response = new PingForConfigurationResponseType();
         response.setPingDateTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         LOG.info("Version String: " + projectVersion);

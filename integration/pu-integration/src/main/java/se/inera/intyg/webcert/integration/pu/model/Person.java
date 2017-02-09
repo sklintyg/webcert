@@ -31,7 +31,8 @@ public class Person {
     private final String postort;
 
     // CHECKSTYLE:OFF ParameterNumber
-    public Person(Personnummer personnummer, boolean sekretessmarkering, String fornamn, String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
+    public Person(Personnummer personnummer, boolean sekretessmarkering, String fornamn, String mellannamn, String efternamn,
+            String postadress, String postnummer, String postort) {
         this.personnummer = personnummer;
         this.sekretessmarkering = sekretessmarkering;
         this.fornamn = fornamn;

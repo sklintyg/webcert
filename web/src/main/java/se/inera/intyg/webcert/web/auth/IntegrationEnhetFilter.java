@@ -64,7 +64,8 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
             return;
         }
 
-        WebCertUser webCertUser = (WebCertUser) ((SecurityContextImpl) session.getAttribute(SPRING_SECURITY_CONTEXT)).getAuthentication().getPrincipal();
+        WebCertUser webCertUser = (WebCertUser) ((SecurityContextImpl) session.getAttribute(SPRING_SECURITY_CONTEXT)).getAuthentication()
+                .getPrincipal();
         Map<String, List<String>> queryMap = splitQuery(request.getQueryString());
         if (!queryMap.containsKey(ENHET)) {
 
@@ -84,7 +85,10 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
             if (webCertUser.changeValdVardenhet(enhet.get(0))) {
                 filterChain.doFilter(request, response);
             } else {
-                LOG.warn("Authorization Validation failed for deep-integration request for intyg because user {} is not authorized for enhet {}", webCertUser.getHsaId(), enhet.get(0));
+                LOG.warn(
+                        "Authorization Validation failed for deep-integration request for intyg because user {} is not authorized "
+                                + "for enhet {}",
+                        webCertUser.getHsaId(), enhet.get(0));
                 response.sendRedirect("/error.jsp?reason=login.medarbetaruppdrag");
             }
         }
@@ -112,7 +116,8 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
         }
         return Arrays.stream(query.split("&"))
                 .map(this::splitQueryParameter)
-                .collect(Collectors.groupingBy(AbstractMap.SimpleImmutableEntry::getKey, LinkedHashMap::new, mapping(Map.Entry::getValue, toList())));
+                .collect(Collectors.groupingBy(AbstractMap.SimpleImmutableEntry::getKey, LinkedHashMap::new,
+                        mapping(Map.Entry::getValue, toList())));
     }
 
     private AbstractMap.SimpleImmutableEntry<String, String> splitQueryParameter(String it) {

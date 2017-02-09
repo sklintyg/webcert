@@ -150,11 +150,11 @@ public class UtkastServiceImpl implements UtkastService {
                 request.getHosPerson().getPersonId(),
                 vardenhet.getEnhetsid(),
                 vardenhet.getVardgivare().getVardgivarid())
-                .userName(request.getHosPerson().getFullstandigtNamn())
-                .userAssignment(request.getHosPerson().getBefattningar().stream().collect(Collectors.joining(", ")))
-                .enhetsNamn(vardenhet.getEnhetsnamn())
-                .vardgivareNamn(vardenhet.getVardgivare().getVardgivarnamn())
-                .build();
+                        .userName(request.getHosPerson().getFullstandigtNamn())
+                        .userAssignment(request.getHosPerson().getBefattningar().stream().collect(Collectors.joining(", ")))
+                        .enhetsNamn(vardenhet.getEnhetsnamn())
+                        .vardgivareNamn(vardenhet.getVardgivare().getVardgivarnamn())
+                        .build();
 
         logCreateDraftPDL(savedUtkast, logUser);
         return savedUtkast;
@@ -276,7 +276,8 @@ public class UtkastServiceImpl implements UtkastService {
         Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
                 AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
-        List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES, intygsTyper);
+        List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES,
+                intygsTyper);
         for (Object[] resultArr : countResults) {
             resultsMap.put((String) resultArr[0], (Long) resultArr[1]);
         }
@@ -386,7 +387,8 @@ public class UtkastServiceImpl implements UtkastService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
         }
 
-        if (webCertUserService.getUser().getIdsOfAllVardenheter().stream().noneMatch(enhet -> enhet.equalsIgnoreCase(utkast.getEnhetsId()))) {
+        if (webCertUserService.getUser().getIdsOfAllVardenheter().stream()
+                .noneMatch(enhet -> enhet.equalsIgnoreCase(utkast.getEnhetsId()))) {
             LOG.error("User did not have any medarbetaruppdrag for enhet '{}'", utkast.getEnhetsId());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User did not have any medarbetaruppdrag for enhet " + utkast.getEnhetsId());
@@ -507,7 +509,8 @@ public class UtkastServiceImpl implements UtkastService {
         // Always return the warning messages
         for (ValidationMessage validationWarning : dr.getValidationWarnings()) {
             draftValidation.addWarning(new DraftValidationMessage(
-                    validationWarning.getField(), validationWarning.getType(), validationWarning.getMessage(), validationWarning.getDynamicKey()));
+                    validationWarning.getField(), validationWarning.getType(), validationWarning.getMessage(),
+                    validationWarning.getDynamicKey()));
         }
 
         if (ValidationStatus.VALID.equals(validationStatus)) {
@@ -646,7 +649,9 @@ public class UtkastServiceImpl implements UtkastService {
             notificationService.sendNotificationForDraftDeleted(utkast);
             break;
         default:
-            LOG.debug("IntygDraftServiceImpl.sendNotification(Intyg, Event) was called but with an unhandled event. No notification was sent.",
+            LOG.debug(
+                    "IntygDraftServiceImpl.sendNotification(Intyg, Event) was called but with an unhandled event. "
+                            + "No notification was sent.",
                     utkast.getIntygsId());
             break;
         }

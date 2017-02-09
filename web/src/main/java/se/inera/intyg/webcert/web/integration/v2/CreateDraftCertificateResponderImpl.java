@@ -84,7 +84,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
-        LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastsParams.getSkapadAv().getPersonalId().getExtension(), invokingUnitHsaId);
+        LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastsParams.getSkapadAv().getPersonalId().getExtension(),
+                invokingUnitHsaId);
 
         // Check if the invoking health personal has MIU rights on care unit
         CommissionType unitMIU = checkMIU(utkastsParams);
@@ -161,7 +162,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         monitoringLogService.logMissingMedarbetarUppdrag(invokingUserHsaId, invokingUnitHsaId);
 
-        String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId, invokingUnitHsaId);
+        String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId,
+                invokingUnitHsaId);
         return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
     }
 

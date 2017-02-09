@@ -41,34 +41,36 @@ public class SendMessageToRecipientProcessor {
     @Autowired
     private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
 
-    public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
+    public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId,
+            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
         try {
             SendMessageToRecipientType parameters = SendMessageToRecipientTypeConverter.fromXml(xmlBody);
-            SendMessageToRecipientResponseType response = sendMessageToRecipientResponder.sendMessageToRecipient(logicalAddress, parameters);
+            SendMessageToRecipientResponseType response = sendMessageToRecipientResponder.sendMessageToRecipient(logicalAddress,
+                    parameters);
 
             ResultType result = response.getResult();
 
             switch (result.getResultCode()) {
-                case OK:
-                case INFO:
-                    return;
-                case ERROR:
-                    switch (result.getErrorId()) {
-                        case REVOKED:
-                        case VALIDATION_ERROR:
-                            LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as PermanentException",
-                                    intygsId, result.getResultText(), result.getErrorId());
-                            throw new PermanentException(result.getResultText());
-                        case APPLICATION_ERROR:
-                        case TECHNICAL_ERROR:
-                        default:
-                            LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as TemporaryException",
-                                    intygsId, result.getResultText(), result.getErrorId());
-                            throw new TemporaryException(result.getResultText());
-                    }
+            case OK:
+            case INFO:
+                return;
+            case ERROR:
+                switch (result.getErrorId()) {
+                case REVOKED:
+                case VALIDATION_ERROR:
+                    LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as PermanentException",
+                            intygsId, result.getResultText(), result.getErrorId());
+                    throw new PermanentException(result.getResultText());
+                case APPLICATION_ERROR:
+                case TECHNICAL_ERROR:
                 default:
+                    LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as TemporaryException",
+                            intygsId, result.getResultText(), result.getErrorId());
                     throw new TemporaryException(result.getResultText());
+                }
+            default:
+                throw new TemporaryException(result.getResultText());
             }
         } catch (JAXBException e) {
             LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}. Rethrowing as PermanentException",

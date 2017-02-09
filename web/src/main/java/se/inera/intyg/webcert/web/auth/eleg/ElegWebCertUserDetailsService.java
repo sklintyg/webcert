@@ -74,7 +74,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     @Autowired
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
-
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) {
 
@@ -89,7 +88,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
             throw new HsaServiceException("privatlakare, ej hsa", e);
         }
     }
-
 
     // - - - - - Default scope - - - - -
 
@@ -118,14 +116,14 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
     }
 
-
     // - - - - - Private scope - - - - -
 
     private void assertHosPersonIsAuthorized(String personId) {
         boolean authorized = ppService.validatePrivatePractitioner(logicalAddress, null, personId);
         if (!authorized) {
             // Throw exception that spring-security can pick up and redirect user to privatläkarportalen
-            throw new PrivatePractitionerAuthorizationException("User is not authorized to access webcert according to private practitioner portal");
+            throw new PrivatePractitionerAuthorizationException(
+                    "User is not authorized to access webcert according to private practitioner portal");
         }
     }
 
@@ -173,7 +171,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private void decorateWebCertUserWithAuthenticationScheme(SAMLCredential samlCredential, WebCertUser webCertUser) {
         if (samlCredential.getAuthenticationAssertion() != null) {
-            String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
+            String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
+                    .getAuthnContextClassRef().getAuthnContextClassRef();
             webCertUser.setAuthenticationScheme(authnContextClassRef);
         }
     }
@@ -245,7 +244,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
      * (See Informationspecification Webcert, version 4.6, page 83)
      */
     private void resolveArbetsplatsKod(HoSPersonType hosPerson, Vardenhet vardenhet) {
-        if (hosPerson.getEnhet().getArbetsplatskod() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().length() == 0) {
+        if (hosPerson.getEnhet().getArbetsplatskod() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension() == null
+                || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().length() == 0) {
             vardenhet.setArbetsplatskod(hosPerson.getHsaId().getExtension());
         } else {
             vardenhet.setArbetsplatskod(hosPerson.getEnhet().getArbetsplatskod().getExtension());

@@ -30,21 +30,6 @@ subprojects {
     checkstyleMain.source = "src/main/java"
     checkstyleTest.enabled = false
 
-    // PMD ==================================================================
-
-    apply plugin: 'pmd'
-
-    pmd {
-        ignoreFailures = false
-        ruleSetFiles = rootProject.files("${buildDir}/build-tools/pmd/pmdRuleSet.xml")
-        ruleSets = []
-        sourceSets = [ sourceSets.main ]
-    }
-
-    pmdMain.onlyIf { project.hasProperty('codeQuality') }
-    pmdMain.dependsOn unzipBuildTools
-    pmdTest.enabled = false
-
     // Errorprone ===========================================================
 
     apply plugin: 'net.ltgt.errorprone-base'

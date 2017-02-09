@@ -93,7 +93,8 @@ public class UtkastBootstrapBean {
             try {
                 String moduleName = resource.getFilename().split("__")[0];
                 LOG.info("Bootstrapping certificate '{}' from module ", resource.getFilename(), moduleName);
-                Utlatande utlatande = registry.getModuleApi(moduleName).getUtlatandeFromXml(Resources.toString(resource.getURL(), Charsets.UTF_8));
+                Utlatande utlatande = registry.getModuleApi(moduleName)
+                        .getUtlatandeFromXml(Resources.toString(resource.getURL(), Charsets.UTF_8));
                 if (utkastRepo.findOne(utlatande.getId()) == null) {
                     utkastRepo.save(createUtkast(utlatande));
                     switch (utlatande.getTyp()) {
@@ -223,7 +224,8 @@ public class UtkastBootstrapBean {
         utkast.setPatientEfternamn(json.getGrundData().getPatient().getEfternamn());
         // This is a required field. However we do not supply it in RegisterMedicalCertificate so we put empty string if
         // this is null.
-        utkast.setPatientFornamn(json.getGrundData().getPatient().getFornamn() == null ? "" : json.getGrundData().getPatient().getFornamn());
+        utkast.setPatientFornamn(
+                json.getGrundData().getPatient().getFornamn() == null ? "" : json.getGrundData().getPatient().getFornamn());
         utkast.setPatientMellannamn(json.getGrundData().getPatient().getMellannamn());
         utkast.setPatientPersonnummer(json.getGrundData().getPatient().getPersonId());
         utkast.setRelationIntygsId(null);
@@ -236,7 +238,8 @@ public class UtkastBootstrapBean {
         utkast.setSenastSparadAv(vardRef);
         utkast.setSkapadAv(vardRef);
 
-        utkast.setSignatur(new Signatur(json.getGrundData().getSigneringsdatum(), json.getGrundData().getSkapadAv().getPersonId(), json.getId(), "intygData",
+        utkast.setSignatur(new Signatur(json.getGrundData().getSigneringsdatum(), json.getGrundData().getSkapadAv().getPersonId(),
+                json.getId(), "intygData",
                 "intygHash", "signatur"));
         utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSenastSparadDatum(json.getGrundData().getSigneringsdatum());

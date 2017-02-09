@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
 
+// CHECKSTYLE:OFF LineLength
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
@@ -35,6 +36,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitioner.v1.rivtabp21.ValidatePrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitionerresponder.v1.ValidatePrivatePractitionerType;
+// CHECKSTYLE:ON LineLength
 
 /**
  * Interfaces with the get and validate private practitioner services.
@@ -63,12 +65,10 @@ public class PPServiceImpl implements PPService {
         return getPrivatePractitioner(logicalAddress, request);
     }
 
-
     @Override
     public boolean validatePrivatePractitioner(String logicalAddress, String hsaIdentityNumber, String personalIdentityNumber) {
         LOG.debug("Validating person information from Privatläkarportalen.");
         validateIdentifier(hsaIdentityNumber, personalIdentityNumber);
-
 
         ValidatePrivatePractitionerType request = createValidatePrivatePractitionerType(hsaIdentityNumber, personalIdentityNumber);
         return validatePrivatePractitioner(logicalAddress, request);
@@ -76,7 +76,8 @@ public class PPServiceImpl implements PPService {
 
     private boolean validatePrivatePractitioner(String logicalAddress, ValidatePrivatePractitionerType parameters) {
         try {
-            ValidatePrivatePractitionerResponseType response = validatePrivatePractitionerService.validatePrivatePractitioner(logicalAddress, parameters);
+            ValidatePrivatePractitionerResponseType response = validatePrivatePractitionerService
+                    .validatePrivatePractitioner(logicalAddress, parameters);
 
             if (response.getResultCode() == ResultCodeEnum.ERROR) {
                 LOG.error(response.getResultText());
@@ -96,7 +97,8 @@ public class PPServiceImpl implements PPService {
     private void validateIdentifier(String hsaIdentityNumber, String personalIdentityNumber) {
         // Exakt ett av fälten hsaIdentityNumber och personalIdentityNumber ska anges.
         if (Strings.isNullOrEmpty(hsaIdentityNumber) && Strings.isNullOrEmpty(personalIdentityNumber)) {
-            throw new IllegalArgumentException("Inget av argumenten hsaIdentityNumber och personalIdentityNumber är satt. Ett av dem måste ha ett värde.");
+            throw new IllegalArgumentException(
+                    "Inget av argumenten hsaIdentityNumber och personalIdentityNumber är satt. Ett av dem måste ha ett värde.");
         }
 
         if (!Strings.isNullOrEmpty(hsaIdentityNumber) && !Strings.isNullOrEmpty(personalIdentityNumber)) {

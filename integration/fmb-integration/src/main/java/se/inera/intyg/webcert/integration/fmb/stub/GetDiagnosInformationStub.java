@@ -65,15 +65,22 @@ public class GetDiagnosInformationStub implements GetDiagnosInformationResponder
 
         final DiagnosInformationType diagnosInformation1 = new DiagnosInformationType();
         diagnosInformation1.setAktivitetsbegransningBeskrivning(
-                "Akut bronkit påverkar inte funktionstillståndet, bortsett från irriterande hosta i normalfallet. Bakteriell sekundärinfektion kan påverka allmäntillståndet genom att patienten blir trött.");
+                "Akut bronkit påverkar inte funktionstillståndet, bortsett från irriterande hosta i normalfallet. "
+                        + "Bakteriell sekundärinfektion kan påverka allmäntillståndet genom att patienten blir trött.");
         diagnosInformation1.setFunktionsnedsattningBeskrivning(
-                "Tillståndet är vanligtvis kortvarigt och varar några dagar till några veckor. Ibland får patienten hosta under flera månader vilket är ett uttryck för en sekundärinfektion.");
+                "Tillståndet är vanligtvis kortvarigt och varar några dagar till några veckor. "
+                        + "Ibland får patienten hosta under flera månader vilket är ett uttryck för en sekundärinfektion.");
 
         final OvrigFmbInformationType ovrigFmbInformation1 = new OvrigFmbInformationType();
         ovrigFmbInformation1.setGenrellInformation(
-                "Återkommande akuta bronkiter hos rökare bör medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med mykoplasma pneumoni. \n\nHos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller kol kan symtomen vid akut bronkit bli mer uttalade och funktionsnedsättningen bli mer långdragen.");
+                "Återkommande akuta bronkiter hos rökare bör medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom "
+                        + "återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med mykoplasma pneumoni. "
+                        + "\n\nHos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller kol kan symtomen "
+                        + "vid akut bronkit bli mer uttalade och funktionsnedsättningen bli mer långdragen.");
         ovrigFmbInformation1.setSymtomPrognosBehandling(
-                "Akut bronkit orsakas vanligen av luftvägsinflammation och epitelskada (skador på hud och slemhinnor i kroppen) efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta tecken på inflammation i bronkerna. Symtom är akut påkommande torr eller slemmig hosta.");
+                "Akut bronkit orsakas vanligen av luftvägsinflammation och epitelskada (skador på hud och slemhinnor i kroppen) "
+                        + "efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta tecken på inflammation "
+                        + "i bronkerna. Symtom är akut påkommande torr eller slemmig hosta.");
 
         diagnosInformation1.setOvrigFmbInformation(ovrigFmbInformation1);
         diagnosInformation1.getHuvuddiagnos().add(GetFmbStub.createHuvuddiagnos("J20"));
@@ -105,7 +112,8 @@ public class GetDiagnosInformationStub implements GetDiagnosInformationResponder
 
         // Gör en 5-ställig diagnos
         final DiagnosInformationType diagnosInformation5 = new DiagnosInformationType();
-        diagnosInformation5.setAktivitetsbegransningBeskrivning("Ett träben kan svårgöra fysiskt arbete, men arbete till sjöss påverkas inte.");
+        diagnosInformation5
+                .setAktivitetsbegransningBeskrivning("Ett träben kan svårgöra fysiskt arbete, men arbete till sjöss påverkas inte.");
         diagnosInformation5.setFunktionsnedsattningBeskrivning("Normal funktionsnedsättning vid träben.");
 
         final OvrigFmbInformationType ovrigFmbInformation5 = new OvrigFmbInformationType();

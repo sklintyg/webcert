@@ -26,6 +26,7 @@ import org.springframework.data.repository.query.Param;
 
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
+// CHECKSTYLE:OFF LineLength
 public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
 
     /**

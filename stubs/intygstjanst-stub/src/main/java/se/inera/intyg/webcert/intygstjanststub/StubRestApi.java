@@ -69,7 +69,9 @@ public class StubRestApi {
         if (intygstjanstStubBootstrapBean != null) {
             intygstjanstStubBootstrapBean.initData();
         } else {
-            LOG.warn("Could not reset intyg stub store. Bootstrap bean not available in the current spring profile. (E.g. dev or dev,wc-all-stubs or wc-it-stub required)");
+            LOG.warn(
+                    "Could not reset intyg stub store. Bootstrap bean not available in the current spring profile. "
+                            + "(E.g. dev or dev,wc-all-stubs or wc-it-stub required)");
         }
         return Response.noContent().build();
     }
@@ -77,7 +79,8 @@ public class StubRestApi {
     /**
      * Sets the @{StubMode} of this stub.
      *
-     * @param mode ONLINE or OFFLINE
+     * @param mode
+     *            ONLINE or OFFLINE
      * @return 204 No Content if OK, 400 Bad Request if fail.
      */
     @PUT
@@ -98,7 +101,8 @@ public class StubRestApi {
     /**
      * Sets the artifical latency of the stub for serving annotated requests.
      *
-     * @param millis 0 to Long.MAX_VALUE
+     * @param millis
+     *            0 to Long.MAX_VALUE
      * @return 204 No Content if OK, 400 Bad Request if fail.
      */
     @PUT

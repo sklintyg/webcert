@@ -26,7 +26,6 @@ import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certifica
 import se.inera.intyg.webcert.notificationstub.NotificationStore;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.*;
 
-
 public class CertificateStatusUpdateForCareResponderStub implements CertificateStatusUpdateForCareResponderInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
@@ -80,7 +79,8 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         LOG.info("\n*********************************************************************************\n"
                 + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
                 + "{}"
-                + "*********************************************************************************", logicalAddress, utlatandeId, handelseKod, sb.toString());
+                + "*********************************************************************************", logicalAddress, utlatandeId,
+                handelseKod, sb.toString());
 
         notificationStore.put(utlatandeId, request);
 
