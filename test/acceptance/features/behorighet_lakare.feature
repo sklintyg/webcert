@@ -3,8 +3,12 @@
 Egenskap: Behörigheter för en läkare
 
 Scenario: Kan endast nå intyg på inloggad vårdenhet
-	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-102R"
+	Givet att jag är inloggad som läkare på vårdenhet "ingen enhet"
+	Så ska jag se en rubrik med texten "Välj din vårdenhet"
+
+	När jag väljer vårdenheten "TSTNMT2321000156-102R"
 	Så ska jag se en rubrik med texten "Sök/skriv intyg"
+
 	När jag går in på en patient
 	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och sparar länken till aktuell sida

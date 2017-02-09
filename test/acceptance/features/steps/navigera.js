@@ -44,6 +44,15 @@ module.exports = function() {
         return browser.get(link);
     });
 
+    this.Given(/^jag väljer vårdenheten "([^"]*)"$/, function(enhetHSA) {
+        var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + enhetHSA + '-link'));
+
+        return enhetSelectorLink.click().then(function() {
+            return browser.sleep(3000);
+        });
+        //return element.all(by.cssContainingText('.enhet', ve)).sendKeys(protractor.Key.ENTER);
+    });
+
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn$/, function() {
         person.fornamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
         person.efternamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];

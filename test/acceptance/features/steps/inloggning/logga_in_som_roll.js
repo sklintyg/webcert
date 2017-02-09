@@ -122,12 +122,18 @@ module.exports = function() {
     });
 
     this.Given(/^att jag är inloggad som läkare på (vårdenhet|underenhet) "([^"]*)"$/, function(enhettyp, ve) {
+        var enhet = function(ve) {
+            if (ve === 'ingen enhet') {
+                return '';
+            } else {
+                return ve;
+            }
+        };
         var userObj = {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
             hsaId: 'TSTNMT2321000156-105H',
-            enhetId: ve,
-            origin: 'DJUPINTEGRATION'
+            enhetId: enhet(ve)
         };
         return logInAsUserRole(userObj, 'Läkare');
     });
