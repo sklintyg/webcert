@@ -51,27 +51,27 @@ angular.module('webcert').constant('webcert.messages', {
         'print.label.revoked': 'Observera! Intyget är makulerat och därför inte giltigt.',
 
         'label.makulera': 'Makulera intyg',
-        'label.makulera.body' : 'Intyg som innehåller allvarliga fel kan makuleras. Exempel på ett allvarligt fel är om intyget är utfärdat för fel patient. Om intyget har skickats elektroniskt till en mottagare kommer mottagaren att informeras om makuleringen.<br><br>Om du fått ny information om patienten eller av annan anledning behöver korrigera innehållet i intyget, ska det inte makuleras. Du kan då välja att skapa ett nytt intyg genom att använda funktionen Kopiera och korrigera de felaktiga uppgifterna.',
+        'label.makulera.body': 'Intyg som innehåller allvarliga fel kan makuleras. Exempel på ett allvarligt fel är om intyget är utfärdat för fel patient. Om intyget har skickats elektroniskt till en mottagare kommer mottagaren att informeras om makuleringen.<br><br>Om du fått ny information om patienten eller av annan anledning behöver korrigera innehållet i intyget, ska det inte makuleras. Du kan då välja att skapa ett nytt intyg genom att använda funktionen Kopiera och korrigera de felaktiga uppgifterna.',
         'label.makulera.confirmation': 'Kvittens - Återtaget intyg',
 
-        'label.qaonlywarning' : 'Du har valt att lämna frågor och svar',
-        'label.qaonlywarning.body' : '<p>Observera att intyg ska utfärdas via journalsystemet och inte via Webcert.</p><p>Information i Webcert som inte är frågor och svar kan inte visas i journalsystemet.</p>',
+        'label.qaonlywarning': 'Du har valt att lämna frågor och svar',
+        'label.qaonlywarning.body': '<p>Observera att intyg ska utfärdas via journalsystemet och inte via Webcert.</p><p>Information i Webcert som inte är frågor och svar kan inte visas i journalsystemet.</p>',
 
-        'label.qacheckhanterad.title' : 'Markera besvarade frågor som hanterade',
-        'label.qacheckhanterad.body' : '<p>Det finns besvarade frågor som inte är markerade som hanterade.<br>En besvarad fråga som markeras som hanterad anses avslutad och flyttas till \"Hanterade frågor och svar\"</p>',
-        'label.qacheckhanterad.igen' : 'Visa inte det här meddelandet igen',
-        'label.qacheckhanterad.checkbox' : 'Visa inte det här meddelandet igen',
-        'label.qacheckhanterad.help.checkbox' : 'Visa inte det här meddelandet igen',
-        'label.qacheckhanterad.hanterad' : 'Hanterade',
-        'label.qacheckhanterad.ejhanterad' : 'Ej Hanterade',
-        'label.qacheckhanterad.tillbaka' : 'Tillbaka',
+        'label.qacheckhanterad.title': 'Markera besvarade frågor som hanterade',
+        'label.qacheckhanterad.body': '<p>Det finns besvarade frågor som inte är markerade som hanterade.<br>En besvarad fråga som markeras som hanterad anses avslutad och flyttas till \"Hanterade frågor och svar\"</p>',
+        'label.qacheckhanterad.igen': 'Visa inte det här meddelandet igen',
+        'label.qacheckhanterad.checkbox': 'Visa inte det här meddelandet igen',
+        'label.qacheckhanterad.help.checkbox': 'Visa inte det här meddelandet igen',
+        'label.qacheckhanterad.hanterad': 'Hanterade',
+        'label.qacheckhanterad.ejhanterad': 'Ej Hanterade',
+        'label.qacheckhanterad.tillbaka': 'Tillbaka',
 
         //about texts
         'about.cookies': '<h3>Om kakor (cookies)</h3><p>Så kallade kakor (cookies) används för att underlätta för besökaren på webbplatsen. En kaka är en textfil som lagras på din dator och som innehåller information. Denna webbplats använder så kallade sessionskakor. Sessionskakor lagras temporärt i din dators minne under tiden du är inne på en webbsida. Sessionskakor försvinner när du stänger din webbläsare. Ingen personlig information om dig sparas vid användning av sessionskakor.</p><p>Om du inte accepterar användandet av kakor kan du stänga av det via din webbläsares säkerhetsinställningar. Du kan även ställa in webbläsaren så att du får en varning varje gång webbplatsen försöker sätta en kaka på din dator.</p><p><strong>Observera!</strong> Om du stänger av kakor i din webbläsare kan du inte logga in i Webcert.</p><p>Allmän information om kakor (cookies) och lagen om elektronisk kommunikation finns på Post- och telestyrelsens webbplats.</p><p><a href="https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/" target="_blank">Mer om kakor (cookies) på Post- och telestyrelsens webbplats</a></p>',
 
         // validation messages
         'validation.invalidfromdate': 'Från-datum är felaktigt. Använd formatet ÅÅÅÅ-MM-DD',
-        'validation.invalidtodate':   'Till-datum är felaktigt. Använd formatet ÅÅÅÅ-MM-DD',
+        'validation.invalidtodate': 'Till-datum är felaktigt. Använd formatet ÅÅÅÅ-MM-DD',
         'validation.invalidtobeforefromdate': 'Till-datum är före från-datum.',
 
         //info messages
@@ -111,8 +111,8 @@ angular.module('webcert').constant('webcert.messages', {
         'th.help.intyg-type': 'Typ av intyg',
         'th.label.status': 'Status',
         'th.help.status': 'Visar utkastets/intygets status.<ul> <li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = Utkastet är sparat och kan signeras.</li><li>Signerat = Intyget är signerat.</li><li>Skickat = Intyget är signerat och skickat till mottagaren.</li> <li>Mottaget = Intyget är signerat, skickat och mottaget av mottagarens system.</li><li>Makulerat = Intyget är makulerat.</li></ul>',
-        'th.label.saved-date': 'Sparat datum',
-        'th.help.saved-date': 'Datum då utkastet/intyget senast sparades.',
+        'th.label.saved-date': 'Senast sparat',
+        'th.help.saved-date': 'Datum och klockslag då utkastet senast sparades.',
         'th.label.saved-signed-by': 'Sparat/signerat av',
         'th.help.saved-signed-by': 'Person som senast sparade utkastet/intyget alternativt person som signerade intyget.',
 
@@ -123,7 +123,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.help.draft-type': 'Typ av intyg',
         'th.label.draft-status': 'Status',
         'th.help.draft-status': 'Visar utkastets status.<ul><li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = Utkastet är sparat och kan signeras.</li><li>Signerat = Intyget är signerat.</li><li>Skickat = Intyget är signerat och skickat till mottagaren.</li> <li>Mottaget = Intyget är signerat, skickat och mottaget av mottagarens system.</li><li>Makulerat = Intyget är makulerat.</li></ul>',
-        'th.label.draft-saved-date': 'Sparat datum',
+        'th.label.draft-saved-date': 'Senast sparat',
         'th.help.draft-saved-date': 'Datum då utkastet senast sparades.',
         'th.label.draft-patient': 'Patient',
         'th.help.draft-patient': 'Personnummer för patient som utkastet gäller.',
