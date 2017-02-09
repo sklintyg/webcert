@@ -42,6 +42,16 @@ Scenario: Kopiera ett signerat intyg
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
 
+@samtidaanvandare
+Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>)
+	När jag går in på att skapa ett <intyg> intyg
+	Och sedan öppnar intyget i två webbläsarinstanser
+	Så ska ett felmeddelande visas
+
+Exempel:
+	|	intygKod   | 	intyg					|
+	|	FK7263     | 	"Läkarintyg FK 7263" 	|
+
 # @makulera @ersatt
 # Scenario: Makulera ett signerat intyg och ersätt det
 #	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg

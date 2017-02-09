@@ -172,16 +172,17 @@ module.exports = function() {
 
     this.Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var intygtyp, userObj, inteAccepteratKakor, forkedBrowser, intygEditUrl;
         if (isSMIIntyg) {
-            var intygtyp = helpers.getAbbrev(intyg.typ);
+            intygtyp = helpers.getAbbrev(intyg.typ);
 
             // User
-            var userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
-            var inteAccepteratKakor = true;
+            userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
+            inteAccepteratKakor = true;
 
             // Browser & URL
-            var forkedBrowser = browser.forkNewDriverInstance(true);
-            var intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
+            forkedBrowser = browser.forkNewDriverInstance(true);
+            intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
 
             parallell.login({
                 userObj: userObj,
@@ -192,7 +193,25 @@ module.exports = function() {
                 callback();
             });
         } else {
-            throw new Error(intyg.typ + ' is not implemented.');
+            // throw new Error(intyg.typ + ' is not implemented.');
+            intygtyp = helpers.getAbbrev(intyg.typ);
+
+            // User
+            userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
+            inteAccepteratKakor = true;
+
+            // Browser & URL
+            forkedBrowser = browser.forkNewDriverInstance(true);
+            intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
+
+            parallell.login({
+                userObj: userObj,
+                role: helpers.userObj.Role.DOCTOR,
+                cookies: inteAccepteratKakor
+            }, intygEditUrl, forkedBrowser).then(function() {
+                setForkedBrowser(forkedBrowser);
+                callback();
+            });
         }
 
     });
@@ -203,7 +222,10 @@ module.exports = function() {
         var elemntId = 'aktivitetsbegransning';
         if ('LUAE_FS' === intygShortCode) {
             elemntId = 'funktionsnedsattningDebut';
+        } else if ('FK7263' === intygShortCode) {
+            elemntId = 'diseaseCause';
         }
+
         parallell.changeFields(forkedBrowser, elemntId).then(function() {
             console.log('saveErrorMessage found');
             return parallell.refreshBroswer(forkedBrowser);
