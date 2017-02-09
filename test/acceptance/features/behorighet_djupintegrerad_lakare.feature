@@ -29,8 +29,12 @@ Scenario: Signera ett ts-intyg
    När jag signerar intyget
    Så ska det finnas en knapp för att skriva ut intyget
 
-Scenario: Det går att förnya signerade och mottagna intyg från intygslistan
+@fornya-utkast
+Scenario: Det går att förnya signerade och mottagna intyg från intygslistan men inte utkast
 	Så ska Förnya-knappen visas för alla signerade eller mottagna "Läkarintyg FK 7263"-intyg
+
+   Givet att det finns intygsutkast
+   Så ska Förnya-knappen inte visas för något utkast
 
 Scenario: Besvara kompletteringsfråga
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"

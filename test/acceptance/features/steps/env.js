@@ -50,6 +50,7 @@ module.exports = function() {
                     href.includes('javascript') !== true &&
                     href.indexOf(process.env.WEBCERT_URL) === -1 &&
                     href.indexOf(process.env.MINAINTYG_URL) === -1 &&
+                    href.indexOf(process.env.REHABSTOD_URL) === -1 &&
                     global.externalPageLinks.indexOf(href) === -1) {
                     console.log('Found one: ' + href);
                     global.externalPageLinks.push(href);

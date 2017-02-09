@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, logger, Promise, intyg */
+/* globals pages, protractor, logger, Promise, intyg, browser */
 'use strict';
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -95,6 +95,66 @@ module.exports = function() {
             callback('FEL, Filter \"Sparat av\" tillgängligt för uthoppsläkare,' + reason);
         }).then(callback);
     });
+
+    this.Given(/^att det finns intygsutkast$/, function() {
+        var utkastRows = element.all(by.cssContainingText('tr', 'Utkast')).map(function(elm, index) {
+            return elm.getText();
+        });
+
+        return utkastRows
+            .then(function(rows) {
+                var url;
+
+                if (rows.length <= 0) {
+                    // Skapa slumpat utkast
+                    logger.info('Skapar utkast..');
+                    var allOptions = element(by.id('intygType')).all(by.tagName('option'));
+
+                    return browser.getCurrentUrl()
+                        .then(function(currentURL) {
+                            url = currentURL;
+
+                            return allOptions.filter(function(elem, index) {
+                                    return elem.getText().then(function(text) {
+                                        return text.indexOf('Välj') === -1; // ta bort felaktigt val
+                                    });
+                                }).count()
+                                .then(function(numberOfItems) {
+                                    return Math.floor(Math.random() * numberOfItems) + 1;
+                                }).then(function(randomNumber) {
+                                    return allOptions.get(randomNumber).click();
+                                })
+                                .then(function() {
+                                    return element(by.id('intygTypeFortsatt')).sendKeys(protractor.Key.SPACE);
+                                })
+                                .then(function() {
+                                    return browser.get(url); // gå tillbaka till översikt
+                                });
+                        });
+                }
+            });
+
+    });
+
+    this.Given(/^ska Förnya\-knappen inte visas för något utkast$/, function() {
+        var utkastRows = element.all(by.cssContainingText('tr', 'Utkast')).map(function(elm, index) {
+            return elm.getText();
+        });
+
+        return utkastRows.then(function(rowTexts) {
+            if (rowTexts.length <= 0) {
+                throw ('Hittade inga utkast-rader. Testet kan inte genomföras');
+            }
+            var joinedTexts = rowTexts.join('\n');
+            logger.info('Hittade utkast-rader: ' + joinedTexts);
+            return Promise.all([
+                expect(joinedTexts).to.not.include('Förnya'),
+                expect(joinedTexts).to.not.include('Kopiera')
+            ]);
+            // Även om inte steget explicit säger det så lägger jag med en check att inte kopiera knappen visas också. TODO: Snygga till
+        });
+    });
+
 
     this.Given(/^ska Förnya\-knappen visas för alla signerade eller mottagna "([^"]*)"\-intyg$/, function(intygstyp) {
 
