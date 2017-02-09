@@ -72,8 +72,8 @@ module.exports = {
         });
     },
     findErrorMsg: function(secondBrowser, elementIds, msg) {
-        return secondBrowser.findElement(by.id(elementIds.copyBtn)).sendKeys(protractor.Key.SPACE).then(function() {
-            return secondBrowser.findElement(by.id(elementIds.button1copyDialog)).sendKeys(protractor.Key.SPACE).then(function() {
+        return secondBrowser.findElement(by.id(elementIds.firstBtn)).sendKeys(protractor.Key.SPACE).then(function() {
+            return secondBrowser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
                 return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
                     return browser.sleep(2000).then(function() {
                         return elem.getText().then(function(text) {

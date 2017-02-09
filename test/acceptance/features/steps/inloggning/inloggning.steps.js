@@ -215,8 +215,8 @@ module.exports = function() {
 
     this.Given(/^ska varningen "([^"]*)" visas om man försöker kopiera intyget i andra webbläsarinstansen$/, function(msg, callback) {
         var elemntIds = {
-            copyBtn: 'copyBtn',
-            button1copyDialog: 'button1copy-dialog',
+            firstBtn: 'copyBtn',
+            btnDialog: 'button1copy-dialog',
             alertDanger: '.alert-danger'
         };
 
@@ -224,7 +224,19 @@ module.exports = function() {
             console.log('notCoptyErrorMessage found');
             parallell.closeBrowser(forkedBrowser).then(callback);
         });
+    });
 
+    this.Given(/^ska varningen "([^"]*)" visas om man försöker skicka intyget i andra webbläsarinstansen$/, function(msg, callback) {
+        var elemntIds = {
+            firstBtn: 'copyBtn',
+            btnDialog: 'button1copy-dialog',
+            alertDanger: '.alert-danger'
+        };
+
+        parallell.findErrorMsg(forkedBrowser, elemntIds, msg).then(function() {
+            console.log('notSendErrorMessage found');
+            parallell.closeBrowser(forkedBrowser).then(callback);
+        });
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {
