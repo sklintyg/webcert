@@ -50,9 +50,24 @@
      return scenarioResult;
  }
 
+ function compare(a, b) {
+     if (a.name < b.name) {
+         return -1;
+     }
+     if (a.name > b.name) {
+         return 1;
+     }
+     return 0;
+ }
+
  function drawResults(features) {
      var template = $('#tpl').html();
 
+
+     //Sortera features
+
+
+     features.sort(compare);
 
      //Loop features
      var featureResult = '';
@@ -73,10 +88,24 @@
          features[fIndex].status = featureResult;
      });
      var stone = Handlebars.compile(template)(features);
-     $('#anchor').append(stone);
+     $('#right').append(stone);
+
+
+
+     // Draw left
+     var leftTemplate = $('#tplLeft').html();
+     var leftRendered = Handlebars.compile(leftTemplate)(features);
+     $('#left').append(leftRendered);
+
 
      $('img').click(function() {
          $(this).toggleClass('bigger');
+     });
+
+     $('.featureTitle').click(function() {
+         var featureID = $(this).attr('featureID');
+         var element = document.getElementById(featureID);
+         element.scrollIntoView();
      });
 
 
@@ -87,7 +116,7 @@
      var percentSuccess = Math.round((totSuccess / totAntal) * 100);
      var precentFailed = 100 - percentSuccess;
 
-     $('#anchor').prepend('<br>' +
+     $('#left').prepend('<br>' +
          '<div class="progress">' +
          '<div class="progress-bar progress-bar-success" style="width: ' + percentSuccess + '%;">' +
          totSuccess +

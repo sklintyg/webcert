@@ -16,14 +16,25 @@
   </head>
   
   <body>
-    <!-- 2. Anchor -->
-    <div id="anchor" class='container'></div>
 
+    <div class="row">
+      <div id="left" class="col-md-3"></div>
+      <div id="right" class='col-md-9'></div>
+    <div>
+
+
+
+
+    <script id="tplLeft" type="text/template">
+      {{#each this}}
+        <span class="featureTitle text-{{statusAsBoostrap}}" featureID="{{id}}">{{name}}</span><br>
+      {{/each}}
+    </script>
     
     <!-- 3. Template -->
     <script id="tpl" type="text/template">
     {{#each this}}
-    <h3>{{name}}</h3>
+    <h3 id="{{id}}">{{name}} </h3>
     
 
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">

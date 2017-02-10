@@ -56,4 +56,51 @@ img{
 .panel-heading a.collapsed:after {
     content:"\e080";
 }
-*/
+
+.row{
+  height:100%;
+}
+
+#right{
+    height:100%;
+    overflow:scroll;
+}
+
+#left{
+  background-color: #F0F0F0;
+  border-right:1px solid #C8C8C8 ;
+  margin-right:0px;
+
+}
+
+@media (min-width: 800px){
+  #left {
+    position: absolute;
+    top: 0px;
+    bottom: 0;
+    left: 0;
+    overflow-y: hidden; 
+  }
+  
+  #right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    overflow-y: scroll;
+  }
+}
+
+@media (max-width: 1000px){
+  #left {
+    display:none;
+  }
+}
+
+
+.featureTitle{
+  cursor:pointer;
+}
+.featureTitle:hover{
+  text-decoration: underline;
+}
