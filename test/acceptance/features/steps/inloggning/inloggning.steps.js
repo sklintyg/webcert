@@ -227,7 +227,7 @@ module.exports = function() {
         }
 
         parallell.changeFields(forkedBrowser, elemntId).then(function() {
-            console.log('saveErrorMessage found');
+            logger.info('saveErrorMessage found');
             return parallell.refreshBroswer(forkedBrowser);
         }).then(function() {
             // Known issue - https://github.com/angular/protractor/issues/2203
@@ -243,21 +243,42 @@ module.exports = function() {
         };
 
         parallell.findErrorMsg(forkedBrowser, elemntIds, msg).then(function() {
-            console.log('notCoptyErrorMessage found');
+            logger.info('notCoptyErrorMessage found');
             parallell.closeBrowser(forkedBrowser).then(callback);
         });
     });
 
     this.Given(/^ska varningen "([^"]*)" visas om man försöker skicka intyget i andra webbläsarinstansen$/, function(msg, callback) {
         var elemntIds = {
-            firstBtn: 'copyBtn',
-            btnDialog: 'button1copy-dialog',
+            firstBtn: 'sendBtn',
+            btnDialog: 'button1send-dialog',
             alertDanger: '.alert-danger'
         };
 
         parallell.findErrorMsg(forkedBrowser, elemntIds, msg).then(function() {
-            console.log('notSendErrorMessage found');
+            logger.info('notSendErrorMessage found');
             parallell.closeBrowser(forkedBrowser).then(callback);
+        });
+    });
+
+    this.Then(/^jag klickar på skicka knappen$/, function() {
+        var elemntIds = {
+            firstBtn: 'sendBtn',
+            btnDialog: 'button1send-dialog'
+        };
+
+        return parallell.clickModalBtn(browser, elemntIds).then(function() {
+            return parallell.refreshBroswer(forkedBrowser);
+        });
+    });
+
+    this.Then(/^jag skickar en fråga till Försäkringskassan$/, function() {
+        return parallell.askNewQuestion(forkedBrowser);
+    });
+    this.Then(/^ska varningen "([^"]*)" visas$/, function(msg) {
+        var errorModal = forkedBrowser.findElement(by.id('arendeNewModel-load-error'));
+        return expect(errorModal.getText()).to.eventually.contain(msg).then(function() {
+            return parallell.closeBrowser(forkedBrowser);
         });
     });
 

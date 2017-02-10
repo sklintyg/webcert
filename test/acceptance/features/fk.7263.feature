@@ -52,6 +52,22 @@ Exempel:
 	|	intygKod   | 	intyg					|
 	|	FK7263     | 	"Läkarintyg FK 7263" 	|
 
+@samtidaanvandare @skicka-makulera
+Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>) om fråga/svar skickas efter makulering
+		När jag går in på att skapa ett <intyg> intyg
+		Och jag fyller i alla nödvändiga fält för intyget
+		Och jag klickar på signera-knappen
+		Och sedan öppnar intyget i två webbläsarinstanser
+		Och jag klickar på skicka knappen
+		Och jag makulerar intyget
+		Och jag skickar en fråga till Försäkringskassan
+		Så ska varningen "internal_problem" visas
+		#Så ska varningen "Kunde inte kopiera intyget" visas om man försöker skicka intyget i andra webbläsarinstansen
+
+Exempel:
+	|	intygKod   | 	intyg					|
+	|	FK7263     | 	"Läkarintyg FK 7263" 	|
+
 # @makulera @ersatt
 # Scenario: Makulera ett signerat intyg och ersätt det
 #	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
