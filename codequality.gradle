@@ -47,15 +47,17 @@ subprojects {
 
     // Jacoco ===============================================================
 
-    apply plugin: 'jacoco'
+    if (project.hasProperty('codeQuality')) {
+        apply plugin: 'jacoco'
 
-    jacoco {
-        toolVersion = "0.7.6.201602180812"
-    }
-
-    test {
         jacoco {
-            destinationFile = file("$buildDir/jacoco/test.exec")
+            toolVersion = "0.7.6.201602180812"
+        }
+
+        test {
+            jacoco {
+                destinationFile = file("$buildDir/jacoco/test.exec")
+            }
         }
     }
 
