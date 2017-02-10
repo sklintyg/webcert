@@ -62,3 +62,11 @@ Scenario: Validera att intyget inte kan signeras utan fält 4b Text för Annat
 	Och jag klickar på signera-knappen
 	Så ska valideringsfelet "Intyget baseras på" visas
 	Så ska valideringsfelet "Fältet får inte vara tomt" visas
+
+Scenario: Validera att intyget inte kan signeras utan förtydligande om Går ej att bedöma är ifyllt
+	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Och jag fyller i ett intyg som inte är smitta
+	Och jag kryssar i Prognos Går ej att bedöma utan beskrivning	
+	Och jag klickar på signera-knappen
+	Så ska valideringsfelet "Prognos" visas
+	Så ska valideringsfelet "Fältet får inte vara tomt" visas

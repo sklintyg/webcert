@@ -446,6 +446,10 @@ module.exports = function() {
             logger.info('Ändrar Funktionsnedsattning');
             return fkUtkastPage.funktionsNedsattning.sendKeys('Funktionsnedsättning');
 
+        } else if (fieldtype === 'Går ej att bedöma') {
+            logger.info('Ändrar Går ej att bedöma');
+            return fkUtkastPage.prognos.GAR_EJ_ATT_BEDOMA.click();
+
         } else if (fieldtype === 'Diagnoskod') {
             logger.info('Ändrar Aktivitetsbegransning');
             return fkUtkastPage.diagnosKod.sendKeys('A00').then(function() {
@@ -498,6 +502,8 @@ module.exports = function() {
     this.Given(/^jag raderar fältet "([^"]*)" fältet$/, function(field, callback) {
         if (field === 'Annat Intyget Baseras på') {
             fkUtkastPage.baserasPa.annat.text.clear().then(callback);
+        } else if (field === 'Förtydligande') {
+            fkUtkastPage.prognos.fortydligande.clear().then(callback);
         }
 
     });
