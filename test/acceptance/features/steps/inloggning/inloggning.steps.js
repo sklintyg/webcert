@@ -235,25 +235,27 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska varningen "([^"]*)" visas om man försöker kopiera intyget i andra webbläsarinstansen$/, function(msg, callback) {
-        var elemntIds = {
-            firstBtn: 'copyBtn',
-            btnDialog: 'button1copy-dialog',
-            alertDanger: '.alert-danger'
-        };
-
-        parallell.findErrorMsg(forkedBrowser, elemntIds, msg).then(function() {
-            logger.info('notCoptyErrorMessage found');
-            parallell.closeBrowser(forkedBrowser).then(callback);
-        });
-    });
-
-    this.Given(/^ska varningen "([^"]*)" visas om man försöker skicka intyget i andra webbläsarinstansen$/, function(msg, callback) {
-        var elemntIds = {
-            firstBtn: 'sendBtn',
-            btnDialog: 'button1send-dialog',
-            alertDanger: '.alert-danger'
-        };
+    this.Given(/^ska varningen "([^"]*)" visas om man försöker (skicka|förnya|kopiera) intyget i andra webbläsarinstansen$/, function(msg, action, callback) {
+        var elemntIds;
+        if ('förnya' === action) {
+            elemntIds = {
+                firstBtn: 'fornyaBtn',
+                btnDialog: 'button1fornya-dialog',
+                alertDanger: '.alert-danger'
+            };
+        } else if ('skicka' === action) {
+            elemntIds = {
+                firstBtn: 'sendBtn',
+                btnDialog: 'button1send-dialog',
+                alertDanger: '.alert-danger'
+            };
+        } else if ('kopiera' === action) {
+            elemntIds = {
+                firstBtn: 'copyBtn',
+                btnDialog: 'button1copy-dialog',
+                alertDanger: '.alert-danger'
+            };
+        }
 
         parallell.findErrorMsg(forkedBrowser, elemntIds, msg).then(function() {
             logger.info('notSendErrorMessage found');

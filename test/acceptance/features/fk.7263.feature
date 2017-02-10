@@ -62,7 +62,19 @@ Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>) om frå
 		Och jag makulerar intyget
 		Och jag skickar en fråga till Försäkringskassan
 		Så ska varningen "internal_problem" visas
-		#Så ska varningen "Kunde inte kopiera intyget" visas om man försöker skicka intyget i andra webbläsarinstansen
+
+Exempel:
+	|	intygKod   | 	intyg					|
+	|	FK7263     | 	"Läkarintyg FK 7263" 	|
+
+@samtidaanvandare @fornya
+Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>) om man förnyar efter makulering
+		När jag går in på att skapa ett <intyg> intyg
+		Och jag fyller i alla nödvändiga fält för intyget
+		Och jag klickar på signera-knappen
+		Och sedan öppnar intyget i två webbläsarinstanser
+		Och jag makulerar intyget
+		Så ska varningen "Kunde inte förnya intyget" visas om man försöker förnya intyget i andra webbläsarinstansen
 
 Exempel:
 	|	intygKod   | 	intyg					|
