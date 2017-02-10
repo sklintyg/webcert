@@ -27,6 +27,7 @@ var testdata = wcTestTools.testdata;
 var testpatienter = testdata.values.patienter;
 var intygURL = helpers.intygURL;
 
+
 module.exports = function() {
     this.Given(/^jag trycker på visa intyget$/, function() {
         return element(by.id('showBtn-' + intyg.id)).sendKeys(protractor.Key.SPACE);
@@ -37,15 +38,28 @@ module.exports = function() {
         return fkUtkastPage.backBtn.sendKeys(protractor.Key.SPACE);
     });
 
-    this.Given(/^jag går in på utkastet$/, function() {
+    this.Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, function(arg1) {
         var intygShortcode = helpers.getAbbrev(intyg.typ).toLowerCase();
         var link = '/web/dashboard#/' + intygShortcode + '/edit/' + intyg.id;
         logger.info('Går till ' + link);
         return browser.get(link);
     });
 
+    this.Given(/^ska jag komma till intygssidan$/, function() {
+        var intygShortcode = helpers.getAbbrev(intyg.typ).toLowerCase();
+        var link = '/web/dashboard#/intyg/' + intygShortcode + '/' + intyg.id;
+        return browser.getCurrentUrl().then(function(currentUrl) {
+            expect(currentUrl).to.contain(link);
+            logger.info('Sida som verifieras: ' + currentUrl);
+
+
+        });
+
+    });
+
     this.Given(/^jag väljer vårdenheten "([^"]*)"$/, function(enhetHSA) {
         var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + enhetHSA + '-link'));
+        global.user.enhetId = enhetHSA;
 
         return enhetSelectorLink.click().then(function() {
             return browser.sleep(3000);
@@ -175,7 +189,7 @@ module.exports = function() {
         return element(by.id('menu-unsigned')).click();
     });
     var savedLink;
-    this.Given(/^sparar länken till aktuell sida$/, function() {
+    this.Given(/^jag sparar länken till aktuell sida$/, function() {
         return browser.getCurrentUrl().then(function(currentUrl) {
             logger.info('Aktuell sida: ' + currentUrl);
             savedLink = currentUrl;

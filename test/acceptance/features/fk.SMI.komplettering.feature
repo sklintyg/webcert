@@ -29,7 +29,7 @@ Scenario: Ska kunna fortsätta besvara kompletterande intyg
    När Försäkringskassan skickar ett "KOMPLT" meddelande på intyget
    Och jag går in på intyget
    Och jag väljer att svara med ett nytt intyg
-   Och sparar länken till aktuell sida
+   Och jag sparar länken till aktuell sida
    Och jag går tillbaka till intyget som behöver kompletteras
    Så ska det finnas en knapp med texten "Fortsätt på intygsutkast"
    Och jag trycker på knappen med texten "Fortsätt på intygsutkast"

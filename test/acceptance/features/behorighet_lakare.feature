@@ -3,7 +3,7 @@
 Egenskap: Behörigheter för en läkare
 
 Scenario: Kan endast nå intyg på inloggad vårdenhet
-	Givet att jag är inloggad som läkare på vårdenhet "ingen enhet"
+	Givet att jag är inloggad som läkare utan angiven vårdenhet
 	Så ska jag se en rubrik med texten "Välj din vårdenhet"
 
 	När jag väljer vårdenheten "TSTNMT2321000156-102R"
@@ -11,7 +11,7 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 
 	När jag går in på en patient
 	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
-	Och sparar länken till aktuell sida
+	Och jag sparar länken till aktuell sida
 
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-1004"
 	Och går till den sparade länken
@@ -22,7 +22,7 @@ Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enh
 	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-107J"
 	När jag går in på en patient
 	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
-	Och sparar länken till aktuell sida
+	Och jag sparar länken till aktuell sida
 
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-1003"
 	Och går till den sparade länken
@@ -38,7 +38,7 @@ Scenario: Kan inte se intyg på överliggande enhet när jag är inne på undere
 	
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
-	Och sparar länken till aktuell sida
+	Och jag sparar länken till aktuell sida
 
 	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-107J" och inte har uppdrag på "TSTNMT2321000156-1003"
 	Och går till den sparade länken

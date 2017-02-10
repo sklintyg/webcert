@@ -121,19 +121,23 @@ module.exports = function() {
         return logInAsUserRole(userObj, 'Läkare');
     });
 
-    this.Given(/^att jag är inloggad som läkare på (vårdenhet|underenhet) "([^"]*)"$/, function(enhettyp, ve) {
-        var enhet = function(ve) {
-            if (ve === 'ingen enhet') {
-                return '';
-            } else {
-                return ve;
-            }
-        };
+    this.Given(/^att jag är inloggad som läkare utan angiven vårdenhet$/, function() {
+
         var userObj = {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
             hsaId: 'TSTNMT2321000156-105H',
-            enhetId: enhet(ve)
+            enhetId: ''
+        };
+        return logInAsUserRole(userObj, 'Läkare');
+    });
+
+    this.Given(/^att jag är inloggad som läkare på (vårdenhet|underenhet) "([^"]*)"$/, function(enhettyp, ve) {
+        var userObj = {
+            fornamn: 'Erik',
+            efternamn: 'Nilsson',
+            hsaId: 'TSTNMT2321000156-105H',
+            enhetId: ve
         };
         return logInAsUserRole(userObj, 'Läkare');
     });
