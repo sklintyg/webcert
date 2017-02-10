@@ -55,4 +55,10 @@ Scenario: Validera att meddelande visas angående vad intyget saknar
 	Och jag signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 
-
+Scenario: Validera att intyget inte kan signeras utan fält 4b Text för Annat
+	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Och jag fyller i ett intyg som inte är smitta
+	När jag raderar fältet "Annat Intyget Baseras på" fältet
+	Och jag klickar på signera-knappen
+	Så ska valideringsfelet "Intyget baseras på" visas
+	Så ska valideringsfelet "Fältet får inte vara tomt" visas

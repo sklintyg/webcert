@@ -457,6 +457,13 @@ module.exports = function() {
             logger.info('Ändrar Funktionsnedsattning');
             return fkUtkastPage.nedsatt.med100.checkbox.sendKeys(protractor.Key.SPACE);
 
+        } else if (fieldtype === 'Intyget baseras på Annat') {
+            return fkUtkastPage.baserasPa.annat.datum.sendKeys('2016-12-10').then(function() {
+                logger.info('Fyller i rätt datum: 2016-12-10');
+                enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                return enter.perform();
+            });
+
         } else {
             logger.info('Felaktigt Fält valt');
 
@@ -477,6 +484,7 @@ module.exports = function() {
 
             return enter.perform();
         }
+
     });
 
     this.Given(/^jag raderar ett  slumpat obligatoriskt fält$/, function(callback) {
@@ -487,6 +495,13 @@ module.exports = function() {
         fillInIntyg.changingFields(isSMIIntyg, intygShortcode, callback, true);
 
     });
+    this.Given(/^jag raderar fältet "([^"]*)" fältet$/, function(field, callback) {
+        if (field === 'Annat Intyget Baseras på') {
+            fkUtkastPage.baserasPa.annat.text.clear().then(callback);
+        }
+
+    });
+
 
     this.Given(/^jag kryssar i Prognos Går ej att bedöma utan beskrivning$/, function(callback) {
 
