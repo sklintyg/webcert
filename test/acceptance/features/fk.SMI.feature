@@ -91,7 +91,7 @@ Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>) om inty
 	Och jag klickar på signera-knappen
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Och jag makulerar intyget
-	Så ska varningen "Kunde inte kopiera intyget" visas om man försöker kopiera intyget i andra webbläsarinstansen
+	Så ska varningen "Kunde inte makulera intyget" visas om man försöker kopiera intyget i andra webbläsarinstansen
 
 Exempel:
 	|intygKod   | 	intyg                                                               |
