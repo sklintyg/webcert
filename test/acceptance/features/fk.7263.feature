@@ -43,13 +43,13 @@ Scenario: Kopiera ett signerat intyg
     Och jag ska se den data jag angett för intyget
 
 @samtidaanvandare
-Scenariomall: Samtida användare ska generera felmeddelande (FK7263)
+Scenario: Samtida användare ska generera felmeddelande (FK7263)
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
 
 @samtidaanvandare @skicka-makulera
-Scenariomall: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (FK7263)
+Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (FK7263)
 		När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
