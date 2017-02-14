@@ -32,7 +32,9 @@
     <bean class="se.inera.intyg.infra.cache.core.BasicCacheConfiguration"/>
     <bean class="se.inera.intyg.webcert.integration.pu.cache.PuCacheConfiguration" />
   </beans>
-  <beans profile="!caching-enabled">
-    <bean id="cacheManager" class="org.springframework.cache.support.NoOpCacheManager"/>
+  <beans profile="!prod">
+    <beans profile="!caching-enabled">
+      <bean id="cacheManager" class="org.springframework.cache.support.NoOpCacheManager"/>
+    </beans>
   </beans>
 </beans>
