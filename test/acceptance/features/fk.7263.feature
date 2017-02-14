@@ -53,8 +53,8 @@ Exempel:
 	|	FK7263     | 	"Läkarintyg FK 7263" 	|
 
 @samtidaanvandare @skicka-makulera
-Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>) om fråga/svar skickas efter makulering
-		När jag går in på att skapa ett <intyg> intyg
+Scenariomall: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (FK7263)
+		När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
 		Och sedan öppnar intyget i två webbläsarinstanser
@@ -63,22 +63,14 @@ Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>) om frå
 		Och jag skickar en fråga till Försäkringskassan
 		Så ska varningen "internal_problem" visas
 
-Exempel:
-	|	intygKod   | 	intyg					|
-	|	FK7263     | 	"Läkarintyg FK 7263" 	|
-
 @samtidaanvandare @fornya
-Scenariomall: Samtida användare ska generera felmeddelande (<intygKod>) om man förnyar efter makulering
-		När jag går in på att skapa ett <intyg> intyg
+Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
+		När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
 		Och sedan öppnar intyget i två webbläsarinstanser
 		Och jag makulerar intyget
 		Så ska varningen "Kunde inte förnya intyget" visas om man försöker förnya intyget i andra webbläsarinstansen
-
-Exempel:
-	|	intygKod   | 	intyg					|
-	|	FK7263     | 	"Läkarintyg FK 7263" 	|
 
 # @makulera @ersatt
 # Scenario: Makulera ett signerat intyg och ersätt det
