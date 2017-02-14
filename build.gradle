@@ -54,6 +54,26 @@ ext {
     h2Version = "1.3.176"
 }
 
+buildscript {
+    repositories {
+        mavenLocal()
+        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
+    dependencies {
+        classpath 'se.inera.intyg:gradle-intyg-plugin:1.0.+'
+        classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0.+'
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.+'
+        classpath 'org.ajoberstar:gradle-git:1.+'
+        classpath 'org.akhikhl.gretty:gretty:+'
+        classpath 'com.moowork.gradle:gradle-node-plugin:0.+'
+        classpath 'com.moowork.gradle:gradle-grunt-plugin:0.+'
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.+'
+        classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.8'
+    }
+}
+
 allprojects {
     group = 'se.inera.intyg.webcert'
     version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
@@ -64,6 +84,17 @@ allprojects {
 }
 
 subprojects {
+    repositories {
+        mavenLocal()
+        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.+'
+        testCompile "org.mockito:mockito-core:${mockitoVersion}"
+    }
+
     apply plugin: 'java'
 
     sourceCompatibility = 1.8
@@ -85,17 +116,6 @@ subprojects {
             it.version = findResolvedVersion(project, 'se.inera.intyg.infra')
         }
     }
-
-    dependencies {
-        testCompile 'junit:junit:4.+'
-        testCompile "org.mockito:mockito-core:${mockitoVersion}"
-    }
-
-    repositories {
-        mavenLocal()
-        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-        maven { url "http://repo.maven.apache.org/maven2" }
-    }
 }
 
 task tagRelease(type: TagReleaseTask)
@@ -103,23 +123,3 @@ task tagRelease(type: TagReleaseTask)
 task testReport(type: SharedTestReportTask)
 
 apply from: file("codequality.gradle")
-
-buildscript {
-    dependencies {
-        classpath 'se.inera.intyg:gradle-intyg-plugin:1.0.+'
-        classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0.+'
-        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.+'
-        classpath 'org.ajoberstar:gradle-git:1.+'
-        classpath 'org.akhikhl.gretty:gretty:+'
-        classpath 'com.moowork.gradle:gradle-node-plugin:0.+'
-        classpath 'com.moowork.gradle:gradle-grunt-plugin:0.+'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.+'
-        classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.8'
-    }
-
-    repositories {
-        mavenLocal()
-        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-}

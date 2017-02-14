@@ -1,5 +1,3 @@
-description = 'Webcert (Liquibase Runner)'
-
 apply plugin: 'application'
 
 mainClassName = "liquibase.integration.commandline.Main"

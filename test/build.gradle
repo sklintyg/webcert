@@ -1,5 +1,3 @@
-description = 'Webcert (Protactor Tests)'
-
 apply plugin: 'com.moowork.grunt'
 
 grunt {

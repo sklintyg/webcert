@@ -1,5 +1,3 @@
-description = 'Webcert (FMB-integration)'
-
 dependencies {
   compile project(':webcert-persistence')
 

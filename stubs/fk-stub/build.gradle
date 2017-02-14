@@ -1,5 +1,3 @@
-description = 'Webcert (FK Stub)'
-
 dependencies {
   compile project(":webcert-common")
 

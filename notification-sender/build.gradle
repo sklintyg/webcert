@@ -1,5 +1,3 @@
-description = 'Webcert (Notification Sender)'
-
 test {
     exclude '**/*IT*'
 }
