@@ -235,7 +235,7 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska varningen "([^"]*)" visas om man försöker (skicka|förnya|kopiera) intyget i andra webbläsarinstansen$/, function(msg, action, callback) {
+    this.Given(/^ska varningen "([^"]*)" visas om man försöker (skicka|förnya|kopiera|makulera) intyget i andra webbläsarinstansen$/, function(msg, action, callback) {
         var elemntIds;
         if ('förnya' === action) {
             elemntIds = {
@@ -253,6 +253,13 @@ module.exports = function() {
             elemntIds = {
                 firstBtn: 'copyBtn',
                 btnDialog: 'button1copy-dialog',
+                alertDanger: '.alert-danger'
+            };
+        } else if ('makulera' === action) {
+            elemntIds = {
+                firstBtn: 'makuleraBtn',
+                radioBtn: 'reason-FEL_PATIENT',
+                btnDialog: 'button1makulera-dialog',
                 alertDanger: '.alert-danger'
             };
         }

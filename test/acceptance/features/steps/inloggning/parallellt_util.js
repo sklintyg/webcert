@@ -79,15 +79,29 @@ module.exports = {
     },
     findErrorMsg: function(secondBrowser, elementIds, msg) {
         return secondBrowser.findElement(by.id(elementIds.firstBtn)).sendKeys(protractor.Key.SPACE).then(function() {
-            return secondBrowser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
-                return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
-                    return browser.sleep(2000).then(function() {
-                        return elem.getText().then(function(text) {
-                            return expect(text).to.have.string(msg);
+            if (elementIds.radioBtn) {
+                return secondBrowser.findElement(by.id(elementIds.radioBtn)).sendKeys(protractor.Key.SPACE).then(function() {
+                    return secondBrowser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
+                        return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
+                            return browser.sleep(2000).then(function() {
+                                return elem.getText().then(function(text) {
+                                    return expect(text).to.have.string(msg);
+                                });
+                            });
                         });
                     });
                 });
-            });
+            } else {
+                return secondBrowser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
+                    return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
+                        return browser.sleep(2000).then(function() {
+                            return elem.getText().then(function(text) {
+                                return expect(text).to.have.string(msg);
+                            });
+                        });
+                    });
+                });
+            }
         });
     },
     clickModalBtn: function(browser, elementIds) {

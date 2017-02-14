@@ -56,32 +56,25 @@ Exempel:
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @makulera
-Scenariomall: Makulera ett skickat ett <intygKod> intyg
-	När jag går in på ett <intyg> med status "Mottaget"
+Scenario: Makulera ett skickat ett SMI-intyg
+	När jag går in på ett slumpat SMI-intyg med status "Mottaget"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
 
 	När jag går till Mina intyg för patienten
 	Så ska intygets status i Mina intyg visa "Makulerat"
 
-Exempel:
-    |intygKod   | 	intyg                                                               |
-    |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
-    |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
-    |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
-    #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
-
 @samtidaanvandare
-Scenario: Samtida användare ska generera felmeddelande (<intygKod>)
+Scenario: Samtida användare ska generera felmeddelande (SMI-intyg)
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
 
 @samtidaanvandare @makulera
-Scenario: Samtida användare ska generera felmeddelande (<intygKod>) om intyg kopieras efter makulera
+Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) om intyg kopieras efter makulera
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag klickar på signera-knappen
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Och jag makulerar intyget
-	Så ska varningen "Kunde inte makulera intyget" visas om man försöker kopiera intyget i andra webbläsarinstansen
+	Så ska varningen "Kunde inte makulera intyget" visas om man försöker makulera intyget i andra webbläsarinstansen
