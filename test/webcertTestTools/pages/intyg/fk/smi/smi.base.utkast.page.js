@@ -38,6 +38,12 @@ function sendEnterToElement(el) {
     };
 }
 
+function sleep(time) {
+    return function() {
+        return browser.sleep(time);
+    };
+}
+
 var intellektuellForm = element(by.id('form_funktionsnedsattningIntellektuell'));
 var kommunikationForm = element(by.id('form_funktionsnedsattningKommunikation'));
 var koncentrationForm = element(by.id('form_funktionsnedsattningKoncentration'));
@@ -282,7 +288,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var promiseArr = [];
         for (var i = 0; i < diagnoser.length; i++) {
             var row = this.diagnos.diagnosRow(i);
-            promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sendEnterToElement(row.kod)));
+            promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sleep(2000)).then(sendEnterToElement(row.kod)));
 
         }
         return Promise.all(promiseArr);
