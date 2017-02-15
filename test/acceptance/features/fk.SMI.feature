@@ -25,6 +25,11 @@ Exempel:
     |intygKod   | 	intyg 																|
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
 
+@luaena
+Exempel:
+    |intygKod   | 	intyg 																|
+    |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
+
 Exempel:
     |intygKod   | 	intyg                                                               |
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |

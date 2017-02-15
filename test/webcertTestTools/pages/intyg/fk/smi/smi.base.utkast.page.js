@@ -34,7 +34,7 @@ function sendKeysWithBackspaceFix(el, text) {
 
 function sendEnterToElement(el) {
     return function() {
-        el.sendKeys(protractor.Key.ENTER);
+        return el.sendKeys(protractor.Key.ENTER);
     };
 }
 
