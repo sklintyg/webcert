@@ -62,44 +62,46 @@ buildscript {
     }
 
     dependencies {
-        classpath 'se.inera.intyg:gradle-intyg-plugin:1.0.+'
+        classpath 'se.inera.intyg:gradle-intyg-plugin:1.1-SNAPSHOT'
         classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0.+'
-        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.+'
-        classpath 'org.ajoberstar:gradle-git:1.+'
         classpath 'org.akhikhl.gretty:gretty:+'
         classpath 'com.moowork.gradle:gradle-node-plugin:0.+'
         classpath 'com.moowork.gradle:gradle-grunt-plugin:0.+'
-        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.+'
-        classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.8'
     }
 }
 
 allprojects {
-    group = 'se.inera.intyg.webcert'
-    version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
-
-    apply plugin: 'inera-intyg'
-    apply plugin: 'maven'
-    apply plugin: 'org.ajoberstar.grgit'
-}
-
-subprojects {
     repositories {
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
 
+    apply plugin: 'inera-intyg'
+    apply plugin: 'maven'
+
     dependencies {
         testCompile 'junit:junit:4.+'
         testCompile "org.mockito:mockito-core:${mockitoVersion}"
     }
 
-    apply plugin: 'java'
+    group = 'se.inera.intyg.webcert'
+    version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
+    checkstyle {
+        configProperties = ['package_name': 'webcert']
+    }
+
+    sonarqube {
+        properties {
+            property "sonar.projectName", "Webcert"
+            property "sonar.projectKey", "webcert"
+        }
+    }
+    
     task createVersionPropertyFile(type: VersionPropertyFileTask)
 
     uploadArchives.repositories.mavenDeployer {
@@ -121,5 +123,3 @@ subprojects {
 task tagRelease(type: TagReleaseTask)
 
 task testReport(type: SharedTestReportTask)
-
-apply from: file("codequality.gradle")

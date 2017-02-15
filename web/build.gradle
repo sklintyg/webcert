@@ -31,7 +31,7 @@ task jsTests(type: NodeTask, dependsOn: npmInstall) {
 
 test.dependsOn(jsTests)
 
-task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
+task jsInclude(type: NodeTask, dependsOn: npmInstall) {
     inputs.dir("$projectDir/src/main/resources")
     inputs.dir("$projectDir/src/main/webapp")
     inputs.files(fileTree(projectDir).include('*.js'))
@@ -46,15 +46,15 @@ task jsInclude(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
 war.dependsOn(jsInclude)
 war.dependsOn createVersionPropertyFile
 
-task jsCodeQuality(type: NodeTask, dependsOn: [npmInstall]) {
-    outputs.upToDateWhen { false }
+// task jsCodeQuality(type: NodeTask, dependsOn: [npmInstall]) {
+//     outputs.upToDateWhen { false }
 
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['lint']
-}
+//     script = file('node_modules/grunt-cli/bin/grunt')
+//     args = ['lint']
+// }
 
-checkstyleMain.dependsOn jsCodeQuality
-jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
+// checkstyleMain.dependsOn jsCodeQuality
+// jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
 
 war {
     from("${buildDir}/apps")
@@ -84,8 +84,7 @@ gretty {
 
     def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
 
-    jvmArgs = [
-               "-Dcatalina.base=${buildDir}/catalina.base",
+    jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled",
                "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
@@ -94,14 +93,12 @@ gretty {
                "-Dwebcert.useMinifiedJavaScript=${minified}",
                "-Dh2.tcp.port=9094",
                "-Dh2.web.port=9090",
-               "-Djetty.port=9088"
-               ]
+               "-Djetty.port=9088"]
 
     extraResourceBase webappOutputDir
 }
 
 configurations {
-    buildtools
     // This is required to make the Schematron implementation pick up Saxon instead of Xalan.
     runtime {
         exclude group: 'xalan', module: 'xalan'
@@ -109,8 +106,6 @@ configurations {
 }
 
 dependencies {
-    buildtools "se.inera.intyg.common:common-build-tools:${commonVersion}"
-
     compile project(':fmb-integration')
     compile project(':pu-integration')
     compile project(':pp-integration')

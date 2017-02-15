@@ -54,9 +54,8 @@ public class MonitoringRequest {
             return info != null && info.get(WIDTH) != null && info.get(HEIGHT) != null;
         case DIAGNOSKODVERK_CHANGED:
             return info != null && info.get(INTYG_ID) != null && info.get(INTYG_TYPE) != null;
-        default:
-            return true;
         }
+        return true;
     }
 
     public enum MonitoringRequestEvent {

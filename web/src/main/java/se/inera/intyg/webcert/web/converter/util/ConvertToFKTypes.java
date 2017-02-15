@@ -72,10 +72,8 @@ public final class ConvertToFKTypes {
             return Amnetyp.OVRIGT;
         case PAMINNELSE:
             return Amnetyp.PAMINNELSE;
-        default:
-            return null;
         }
-
+        return null;
     }
 
     public static InnehallType toInnehallType(String text, LocalDateTime singeringsDatum) {

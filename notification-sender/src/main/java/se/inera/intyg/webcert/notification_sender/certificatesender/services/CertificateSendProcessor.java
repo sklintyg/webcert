@@ -66,8 +66,6 @@ public class CertificateSendProcessor {
                     case REVOKED:
                     case VALIDATION_ERROR:
                         throw new PermanentException(resultText);
-                    default:
-                        throw new PermanentException("Unhandled error type: " + result.getErrorId() + " - " + resultText);
                 }
 
             } else {

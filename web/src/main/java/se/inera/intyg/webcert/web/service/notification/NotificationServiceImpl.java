@@ -287,9 +287,9 @@ public class NotificationServiceImpl implements NotificationService {
             return NYFRFV;
         case QUESTION_FROM_CARE_HANDLED:
         case QUESTION_FROM_CARE_UNHANDLED:
-        default:
             return null;
         }
+        return null;
     }
 
     private HandelsekodEnum getHandelseV2(NotificationEvent event) {
@@ -309,9 +309,8 @@ public class NotificationServiceImpl implements NotificationService {
             return NYFRFM;
         case NEW_ANSWER_FROM_RECIPIENT:
             return NYSVFM;
-        default:
-            return null;
         }
+        return null;
     }
 
     protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse) {

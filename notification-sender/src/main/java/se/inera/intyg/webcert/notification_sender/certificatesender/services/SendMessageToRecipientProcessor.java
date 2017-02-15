@@ -64,13 +64,10 @@ public class SendMessageToRecipientProcessor {
                     throw new PermanentException(result.getResultText());
                 case APPLICATION_ERROR:
                 case TECHNICAL_ERROR:
-                default:
                     LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as TemporaryException",
                             intygsId, result.getResultText(), result.getErrorId());
                     throw new TemporaryException(result.getResultText());
                 }
-            default:
-                throw new TemporaryException(result.getResultText());
             }
         } catch (JAXBException e) {
             LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}. Rethrowing as PermanentException",

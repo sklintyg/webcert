@@ -140,7 +140,6 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
                 pred = builder.and(pred, builder.or(amnePred, builder.equal(root.get("status"), Status.ANSWERED)));
                 break;
             case ALLA:
-            default:
                 break;
         }
         return pred;

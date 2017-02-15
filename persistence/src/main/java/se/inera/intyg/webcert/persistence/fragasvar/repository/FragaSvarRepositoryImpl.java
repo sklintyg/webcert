@@ -149,7 +149,6 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
             pred = builder.and(pred, builder.or(amnePred1, amnePred2, builder.equal(root.<Status> get("status"), Status.ANSWERED)));
             break;
         case ALLA:
-        default:
             break;
         }
         return pred;

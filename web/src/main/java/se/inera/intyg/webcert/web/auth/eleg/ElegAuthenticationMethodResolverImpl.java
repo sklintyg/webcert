@@ -78,8 +78,6 @@ public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationM
         case CCP11:
         case CCP13:
             return AuthenticationMethod.MOBILT_BANK_ID;
-        default:
-            break;
         }
         throw new IllegalArgumentException("Could not parse AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
     }
