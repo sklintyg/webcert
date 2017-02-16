@@ -46,15 +46,23 @@ task jsInclude(type: NodeTask, dependsOn: npmInstall) {
 war.dependsOn(jsInclude)
 war.dependsOn createVersionPropertyFile
 
-// task jsCodeQuality(type: NodeTask, dependsOn: [npmInstall]) {
-//     outputs.upToDateWhen { false }
+task unzipBuildTools(type: Copy) {
+    into "$buildDir/build-tools/"
+    from {
+        def intygJar = project.rootProject.buildscript.configurations.classpath.find { it.name.contains("gradle-intyg") }
+        zipTree(intygJar)
+    }
+}
 
-//     script = file('node_modules/grunt-cli/bin/grunt')
-//     args = ['lint']
-// }
+task jsCodeQuality(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
+    outputs.upToDateWhen { false }
 
-// checkstyleMain.dependsOn jsCodeQuality
-// jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
+    script = file('node_modules/grunt-cli/bin/grunt')
+    args = ['lint']
+}
+
+checkstyleMain.dependsOn jsCodeQuality
+jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
 
 war {
     from("${buildDir}/apps")

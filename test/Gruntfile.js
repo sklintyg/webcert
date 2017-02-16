@@ -42,7 +42,7 @@ module.exports = function(grunt) {
             ],
             options: {
                 force: false,
-                jshintrc: '../../common/build-tools/src/main/resources/jshint/.jshintrc'
+                jshintrc: '../../common/build-tools/src/main/resources/jshint/jshintrc'
             }
         },
         jsbeautifier: {
