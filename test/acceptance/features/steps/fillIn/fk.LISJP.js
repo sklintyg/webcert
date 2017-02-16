@@ -25,7 +25,6 @@
  module.exports = {
      fillIn: function(intyg) {
          logger.info('intyg.typ:' + intyg.typ);
-         browser.ignoreSynchronization = true;
          var promiseArr = [];
 
          //Baserat på

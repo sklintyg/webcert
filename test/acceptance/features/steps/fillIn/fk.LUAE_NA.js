@@ -27,8 +27,6 @@ module.exports = {
         var promiseArr = [];
         console.log(intyg);
 
-        browser.ignoreSynchronization = true;
-
         //Baserat på
         promiseArr.push(luaenaUtkastPage.angeBaseratPa(intyg.baseratPa)
             .then(function(value) {
@@ -58,15 +56,13 @@ module.exports = {
         );
 
         //Diagnoser
-        browser.ignoreSynchronization = false;
         promiseArr.push(luaenaUtkastPage.angeDiagnos(intyg.diagnos)
             .then(function(value) {
-                logger.info('Diagnos: ' + JSON.stringify(intyg.diagnos));
+                logger.info('angeDiagnos: ' + JSON.stringify(intyg.diagnos));
             }, function(reason) {
-                return Promise.reject('FEL, Diagnos: ' + reason);
+                return Promise.reject('FEL, angeDiagnos: ' + reason);
             })
         );
-        browser.ignoreSynchronization = true;
 
         //Funktionsnedsättning
         promiseArr.push(luaenaUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
