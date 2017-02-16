@@ -98,8 +98,9 @@ function changeField(intygShortcode, field, callback, clearFlag) {
         }
     } else if (intygShortcode === 'LUAE_FS') {
         if (field === 'funktionsnedsattningDebut') {
+            intyg.funktionsnedsattning = {};
             intyg.funktionsnedsattning.debut = helpers.randomTextString();
-            luaeFSUtkastPage.funktionsnedsattning.debut.sendKeys(intyg.funktionsnedsattning.debut).then(callback);
+            browser.findElement(by.id('funktionsnedsattningDebut')).sendKeys(intyg.funktionsnedsattning.debut).then(callback);
         } else if (field === 'funktionsnedsattningPaverkan') {
             intyg.funktionsnedsattning.paverkan = helpers.randomTextString();
             luaeFSUtkastPage.funktionsnedsattning.paverkan.sendKeys(intyg.funktionsnedsattning.paverkan).then(callback);
