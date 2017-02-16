@@ -51,6 +51,11 @@ function checkAllmant(allmant) {
     }, function(reason) {
         throw ('FEL - diagnostyp: ' + reason);
     }));
+    promiseArr.push(expect(tsDiabIntyg.falt1.annanBehandling.getText()).to.eventually.equal(allmant.annanbehandling).then(function(value) {
+        logger.info('OK - annan behandling = ' + value);
+    }, function(reason) {
+        throw ('FEL - annan behandling: ' + reason);
+    }));
     return Promise.all(promiseArr);
 }
 
@@ -94,10 +99,21 @@ function checkHypoglykemier(hypo) {
 
         expect(tsDiabIntyg.allvarligForekomstVakenTid.getText()).to.eventually.equal(ejAngivetIfUndef(hypo.g)).then(function(value) {
             logger.info('OK -(Hypo G) Allvarlig förekomst vaken tid = ' + value);
+            if (value === 'Ja') {
+                var text = tsDiabIntyg.vakenTidObservationsTid.getText();
+                return expect(text).to.eventually.equal(hypo.gDatum).then(function(val) {
+                    logger.info('OK -(Hypo G datum) Allvarlig förekomst vaken tid observationstid = ' + val);
+                }, function(orsak) {
+                    throw ('Fel -(Hypo G datum) Allvarlig förekomst vaken tid observationstid = ' + orsak);
+                });
+            }
+
         }, function(reason) {
             throw ('FEL -(Hypo G) Allvarlig förekomst vaken tid: ' + reason);
         })
+
     ]);
+
 }
 
 module.exports = {

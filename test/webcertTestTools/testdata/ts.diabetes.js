@@ -40,7 +40,8 @@ module.exports = {
             allmant: {
                 year: Math.floor((Math.random() * 20) + 1980),
                 typ: shuffle(testValues.diabetestyp)[0],
-                behandling: testValues.getRandomBehandling()
+                behandling: testValues.getRandomBehandling(),
+                annanbehandling: 'Hypnos behandling'
             },
 
             // TODO: Gör dessa slumpade likt ovanstående

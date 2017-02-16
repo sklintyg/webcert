@@ -43,6 +43,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             insulin: element(by.id('diabetestreat3'))
         };
         this.allmant.diabetesyear = this.allmant.form.element(by.id('diabetesyear'));
+        this.allmant.annanbehandling = this.allmant.form.element(by.id('annanBehandlingBeskrivning'));
 
         this.hypoglykemier = {
             a: {
@@ -79,9 +80,9 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         };
 
         this.validering = {
-            intygAvser: element(by.css('[data-validation-section="intygavser"]')),
+            intygAvser: element(by.css('[data-validation-section="intygavser"]'))
 
-        }
+        };
 
         this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
 
@@ -146,7 +147,8 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         var promisesArr = [];
 
         // Ange år då diagnos ställts
-        this.allmant.diabetesyear.sendKeys(allmant.year);
+        promisesArr.push(this.allmant.diabetesyear.sendKeys(allmant.year));
+        promisesArr.push(this.allmant.annanbehandling.sendKeys(allmant.annanbehandling));
 
         var form = this.allmant.form;
 
@@ -163,11 +165,11 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             promisesArr.push(this.allmant.insulinbehandlingsperiod.sendKeys(allmant.behandling.insulinYear));
         }
 
+
         return Promise.all(promisesArr);
 
     },
     fillInHypoglykemier: function(hypoglykemierObj) {
-
         //console.log('Anger hypoglykemier:' + hypoglykemierObj.toString());
         var promisesArr = [];
         var hypoglykemierEl = this.hypoglykemier;

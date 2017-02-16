@@ -40,6 +40,7 @@ var TsDiabetesIntyg = BaseIntyg._extend({
         this.allvarligForekomstTrafiken = element(by.id('allvarligForekomstTrafiken'));
         this.egenkontrollBlodsocker = element(by.id('egenkontrollBlodsocker'));
         this.allvarligForekomstVakenTid = element(by.id('allvarligForekomstVakenTid'));
+        this.vakenTidObservationsTid = element(by.id('allvarligForekomstVakenTidObservationstid'));
 
         this.synIntyg = element(by.id('separatOgonlakarintyg'));
 
@@ -48,7 +49,8 @@ var TsDiabetesIntyg = BaseIntyg._extend({
             bedomning: element(by.id('bedomning')),
             endastKost: element(by.id('endastKost')),
             tabletter: element(by.id('tabletter')),
-            insulin: element(by.id('insulin'))
+            insulin: element(by.id('insulin')),
+            annanBehandling: element(by.id('annanBehandlingBeskrivning'))
         };
 
         this.kommentar = element(by.id('kommentar'));
