@@ -142,8 +142,6 @@ var LuaefsUtkast = FkBaseUtkast._extend({
         }
 
         return Promise.all(promiseArr);
-
-        s
     },
 
     angeDiagnosKoder: function(diagnoser) {
