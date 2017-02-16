@@ -81,12 +81,30 @@ function checkHypoglykemier(hypo) {
 
         expect(tsDiabIntyg.allvarligForekomst.getText()).to.eventually.equal(ejAngivetIfUndef(ejAngivetIfUndef(hypo.d))).then(function(value) {
             logger.info('OK -(Hypo D) ' + value);
+            if (value === 'Ja') {
+                var text = tsDiabIntyg.allvarligForekomstBeskrivning.getText();
+                return expect(text).to.eventually.equal(hypo.dAntalEpisoder).then(function(val) {
+                    logger.info('OK -(Hypo D antal episoder) Allvarlig förekomst = ' + val);
+                }, function(orsak) {
+                    throw ('Fel -(Hypo D antal episoder) Allvarlig förekomst = ' + orsak);
+                });
+
+            }
         }, function(reason) {
             throw ('FEL -(Hypo D) allvarligForekomst: ' + reason);
         }),
 
         expect(tsDiabIntyg.allvarligForekomstTrafiken.getText()).to.eventually.equal(ejAngivetIfUndef(hypo.e)).then(function(value) {
             logger.info('OK -(Hypo E) Allvarlig förekomst trafiken = ' + value);
+            if (value === 'Ja') {
+                var text = tsDiabIntyg.allvarligForekomstTrafikenBeskrivning.getText();
+                return expect(text).to.eventually.equal(hypo.eAntalEpisoder).then(function(val) {
+                    logger.info('OK -(Hypo E antal episoder) Allvarlig förekomst trafiken = ' + val);
+                }, function(orsak) {
+                    throw ('Fel -(Hypo E antal episoder) Allvarlig förekomst trafiken= ' + orsak);
+                });
+
+            }
         }, function(reason) {
             throw ('FEL -(Hypo E) Allvarlig förekomst trafiken: ' + reason);
         }),
