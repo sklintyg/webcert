@@ -70,14 +70,12 @@ module.exports = {
         });
     },
     closeBrowser: function(forkedBrowser) {
-        //Browser.quit() orsakar problem i selenium-grid. TODO
-        return 0;
-        /*return forkedBrowser.quit().then(function() {
+        return forkedBrowser.quit().then(function() {
             if (!forkedBrowser.getSession()) {
                 logger.info('Forked browser closed (quit)');
                 return Promise.resolve();
             }
-        });*/
+        });
     },
     findErrorMsg: function(secondBrowser, elementIds, msg) {
         return secondBrowser.findElement(by.id(elementIds.firstBtn)).sendKeys(protractor.Key.SPACE).then(function() {
