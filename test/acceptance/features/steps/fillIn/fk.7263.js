@@ -105,6 +105,12 @@ module.exports = {
             throw ('FEL, angeRekommendationer,' + reason);
         }));
 
+        promisesArr.push(fkUtkastPage.angeFaktiskTjanstgoring('37,5').then(function() {
+            logger.info('OK - angeFaktiskTjanstgoring :' + JSON.stringify('37,5'));
+        }, function(reason) {
+            throw ('FEL, angeFaktiskTjanstgoring,' + reason);
+        }));
+
         // //Ange enhetadress
         // promisesArr.push(fkUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
         //     logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
