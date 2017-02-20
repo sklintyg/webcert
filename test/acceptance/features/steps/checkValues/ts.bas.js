@@ -23,14 +23,13 @@ var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 var helpers = require('./helpers.js');
 
 function checkDiabetes(intyg) {
-
-    logger.info('-- Kontrollerar Transportstyrelsens läkarintyg --');
     var promiseArr = [];
 
-    if (intyg.diabetes.typ === 'Typ 2' && intyg.diabetes === 'Ja') {
+    if (intyg.diabetes.typ === 'Typ 2' && intyg.diabetes.hasDiabetes === 'Ja') {
         var typer = intyg.diabetes.behandlingsTyper;
-        promiseArr.push(expect(tsBasIntygPage.diabeteTyp.getText()).to.eventually.equal(intyg.diabetes.typ).then(function(value) {
+        promiseArr.push(expect(tsBasIntygPage.diabetesTyp.getText()).to.eventually.equal(intyg.diabetes.typ).then(function(value) {
             logger.info('OK - Patient diabetes typ = ' + value);
+
         }, function(reason) {
             throw ('FEL - Patient diabetes typ : ' + reason);
         }));
@@ -88,6 +87,7 @@ function checkKorrektionsglasensStyrka(styrkor) {
 
 module.exports = {
     checkValues: function(intyg, callback) {
+        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg --');
         var promiseArr = [];
 
         promiseArr.push(expect(tsBasIntygPage.synfaltsdefekter.getText()).to.eventually.equal(intyg.synDonder).then(function(value) {
@@ -134,9 +134,9 @@ module.exports = {
             throw ('FEL - Vänster öga utan korrektion : ' + reason);
         }));
         promiseArr.push(expect(tsBasIntygPage.vansterOgamedKorrektion.getText()).to.eventually.equal(intyg.styrkor.vomk.toString().replace('.', ',')).then(function(value) {
-            logger.info('OK - Höger Öga med korrektion = ' + value);
+            logger.info('OK - Vänster Öga med korrektion = ' + value);
         }, function(reason) {
-            throw ('FEL - Höger Öga med korrektion: ' + reason);
+            throw ('FEL - Vänster Öga med korrektion: ' + reason);
         }));
         promiseArr.push(expect(tsBasIntygPage.binokulartutanKorrektion.getText()).to.eventually.equal(intyg.styrkor.buk.toString().replace('.', ',')).then(function(value) {
             logger.info('OK - Binokulärt utan klorrektion = ' + value);
