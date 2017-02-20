@@ -31,7 +31,6 @@ import org.opensaml.saml2.core.impl.NameIDBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 
@@ -49,13 +48,11 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-        FakeElegAuthenticationToken token = (FakeElegAuthenticationToken) authentication;
-
-        SAMLCredential credential = createSamlCredential(token);
+        SAMLCredential credential = createSamlCredential(authentication);
         Object details = elegWebCertUserDetailsService.loadUserBySAML(credential);
 
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
-                new ArrayList<GrantedAuthority>());
+                new ArrayList<>());
         result.setDetails(details);
 
         return result;
@@ -66,7 +63,7 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
         return FakeElegAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    private SAMLCredential createSamlCredential(FakeElegAuthenticationToken token) {
+    private SAMLCredential createSamlCredential(Authentication token) {
         FakeElegCredentials fakeCredentials = (FakeElegCredentials) token.getCredentials();
 
         Assertion assertion = new AssertionBuilder().buildObject();

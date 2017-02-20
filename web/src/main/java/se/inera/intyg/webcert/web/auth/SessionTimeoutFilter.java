@@ -29,7 +29,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class SessionTimeoutFilter extends OncePerRequestFilter {
 
     private static final String SESSION_LAST_ACCESS_TIME = "SessionLastAccessTime";
-    private static final int MILLISECONDS_PER_SECONDS = 1000;
+    private static final long MILLISECONDS_PER_SECONDS = 1000;
 
     private String ignoredUrl;
 
@@ -42,7 +42,7 @@ public class SessionTimeoutFilter extends OncePerRequestFilter {
             Long lastAccess = (Long) session.getAttribute(SESSION_LAST_ACCESS_TIME);
 
             long inactiveTime = lastAccess == null ? 0 : System.currentTimeMillis() - lastAccess;
-            long maxInactiveTime = session.getMaxInactiveInterval() * MILLISECONDS_PER_SECONDS;
+            long maxInactiveTime =  MILLISECONDS_PER_SECONDS * session.getMaxInactiveInterval();
 
             if (inactiveTime > maxInactiveTime) {
                 session.invalidate();

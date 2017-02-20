@@ -88,7 +88,7 @@ public class StubRestApi {
     public Response setStubMode(@PathParam("mode") String mode) {
         try {
             StubMode requestedStubMode = StubMode.valueOf(mode);
-            StubModeSingleton.getInstance().setStubMode(requestedStubMode);
+            StubModeSingleton.setStubMode(requestedStubMode);
             return Response.noContent().build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -112,7 +112,7 @@ public class StubRestApi {
             if (millis < 0L || millis > Long.MAX_VALUE) {
                 throw new IllegalArgumentException();
             }
-            StubModeSingleton.getInstance().setLatency(millis);
+            StubModeSingleton.setLatency(millis);
             return Response.noContent().build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)

@@ -33,8 +33,8 @@ public class MailStore {
     private static final Logger LOG = LoggerFactory.getLogger(MailStore.class);
 
     private static final long MAX_TIMEOUT = 5000;
-    public static final long POLL_INTERVAL = 10L;
-    public static final int MAX_POLLS = 100;
+    private static final long POLL_INTERVAL = 10L;
+    private static final int MAX_POLLS = 100;
     private List<OutgoingMail> mails = new CopyOnWriteArrayList<>();
     private boolean doWait;
 
@@ -55,7 +55,7 @@ public class MailStore {
         }
     }
 
-    public void waitToContinue() {
+    void waitToContinue() {
         synchronized (this) {
             if (doWait) {
                 try {

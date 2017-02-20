@@ -55,9 +55,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
     private SAMLUserDetailsService userDetails;
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
-        FakeAuthenticationToken token = (FakeAuthenticationToken) authentication;
+    public Authentication authenticate(Authentication token) throws AuthenticationException {
 
         SAMLCredential credential = createSamlCredential(token);
         Object details = userDetails.loadUserBySAML(credential);
@@ -73,7 +71,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         return result;
     }
 
-    private void applyReference(FakeAuthenticationToken token, Object details) {
+    private void applyReference(Authentication token, Object details) {
         if (details instanceof IntygUser) {
             if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getReference() != null) {
                 ((IntygUser) details).setReference(((FakeCredentials) token.getCredentials()).getReference());
@@ -81,7 +79,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         }
     }
 
-    private void applyUserOrigin(FakeAuthenticationToken token, Object details) {
+    private void applyUserOrigin(Authentication token, Object details) {
         if (details instanceof IntygUser) {
             if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
                 String origin = ((FakeCredentials) token.getCredentials()).getOrigin();
@@ -96,7 +94,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         }
     }
 
-    private void addAbsentAttributesFromFakeCredentials(FakeAuthenticationToken token, Object details) {
+    private void addAbsentAttributesFromFakeCredentials(Authentication token, Object details) {
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
             if (user.getNamn() == null || user.getNamn().isEmpty()) {
@@ -107,7 +105,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         }
     }
 
-    private void selectVardenhetFromFakeCredentials(FakeAuthenticationToken token, Object details) {
+    private void selectVardenhetFromFakeCredentials(Authentication token, Object details) {
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
             FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
@@ -165,7 +163,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         this.userDetails = userDetails;
     }
 
-    private SAMLCredential createSamlCredential(FakeAuthenticationToken token) {
+    private SAMLCredential createSamlCredential(Authentication token) {
         FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
 
         Assertion assertion = new AssertionBuilder().buildObject();

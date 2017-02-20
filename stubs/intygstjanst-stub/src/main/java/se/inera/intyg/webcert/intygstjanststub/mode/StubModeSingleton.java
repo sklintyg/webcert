@@ -42,7 +42,7 @@ public final class StubModeSingleton {
         return stubModeSingleton;
     }
 
-    public void setStubMode(StubMode requestedStubMode) {
+    public static void setStubMode(StubMode requestedStubMode) {
         stubMode = requestedStubMode;
     }
 
@@ -54,7 +54,7 @@ public final class StubModeSingleton {
         return latency;
     }
 
-    public void setLatency(long requestedLatency) {
+    public static void setLatency(long requestedLatency) {
         latency = requestedLatency;
     }
 }

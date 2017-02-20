@@ -28,6 +28,8 @@ import com.google.common.collect.*;
 
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
+import javax.annotation.Nonnull;
+
 
 public class NotificationStoreImpl implements NotificationStore {
 
@@ -74,7 +76,7 @@ public class NotificationStoreImpl implements NotificationStore {
         Ordering<CertificateStatusUpdateForCareType> order = new Ordering<CertificateStatusUpdateForCareType>() {
 
             @Override
-            public int compare(CertificateStatusUpdateForCareType left, CertificateStatusUpdateForCareType right) {
+            public int compare(@Nonnull CertificateStatusUpdateForCareType left, @Nonnull CertificateStatusUpdateForCareType right) {
                 LocalDateTime lDate = left.getUtlatande().getHandelse().getHandelsetidpunkt();
                 LocalDateTime rDate = right.getUtlatande().getHandelse().getHandelsetidpunkt();
 

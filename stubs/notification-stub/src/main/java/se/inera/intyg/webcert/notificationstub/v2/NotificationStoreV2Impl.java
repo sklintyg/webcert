@@ -19,12 +19,19 @@
 package se.inera.intyg.webcert.notificationstub.v2;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Ordering;
 
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
 
@@ -73,7 +80,7 @@ public class NotificationStoreV2Impl implements NotificationStoreV2 {
         Ordering<CertificateStatusUpdateForCareType> order = new Ordering<CertificateStatusUpdateForCareType>() {
 
             @Override
-            public int compare(CertificateStatusUpdateForCareType left, CertificateStatusUpdateForCareType right) {
+            public int compare(@Nonnull CertificateStatusUpdateForCareType left, @Nonnull CertificateStatusUpdateForCareType right) {
                 LocalDateTime lDate = left.getHandelse().getTidpunkt();
                 LocalDateTime rDate = right.getHandelse().getTidpunkt();
 
@@ -94,14 +101,6 @@ public class NotificationStoreV2Impl implements NotificationStoreV2 {
         }
 
         LOG.debug("Pruning done! NotificationStoreV2 now contains {} notifications", notificationsMap.size());
-    }
-
-    public int getMaxSize() {
-        return maxSize;
-    }
-
-    public int getMinSize() {
-        return minSize;
     }
 
     /*

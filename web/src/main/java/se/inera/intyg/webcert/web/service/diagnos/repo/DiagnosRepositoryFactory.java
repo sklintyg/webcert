@@ -108,22 +108,18 @@ public class DiagnosRepositoryFactory implements InitializingBean {
             }
 
             IndexWriterConfig idxWriterConfig = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
-            IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
+            try (IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding));) {
+                while (reader.ready()) {
+                    String line = reader.readLine();
+                    Diagnos diagnos = createDiagnosFromString(line);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding));
-
-            while (reader.ready()) {
-                String line = reader.readLine();
-                Diagnos diagnos = createDiagnosFromString(line);
-
-                Document doc = new Document();
-                doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
-                doc.add(new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
-                idxWriter.addDocument(doc);
+                    Document doc = new Document();
+                    doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
+                    doc.add(new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
+                    idxWriter.addDocument(doc);
+                }
             }
-
-            reader.close();
-            idxWriter.close();
 
         } catch (IOException ioe) {
             LOG.error("IOException occured when loading diagnosis file '{}'", fileUrl);
