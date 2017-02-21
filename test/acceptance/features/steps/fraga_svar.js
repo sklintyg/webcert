@@ -502,11 +502,9 @@ module.exports = function() {
         return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
             return row.all(by.css('td')).getText().then(function(text) {
                 console.log(text);
-                var utc = new Date().toJSON().slice(0, 10);
                 var hasPersonnummer = (text.indexOf(person.id) > -1);
                 var hasAtgard = (text.indexOf(atgard) > -1);
-                var hasDateToday = (text.indexOf(utc) > -1);
-                return hasAtgard && hasPersonnummer && hasDateToday;
+                return hasAtgard && hasPersonnummer;
             });
         }).then(function(rows) {
             matchingQARow = rows[0];
