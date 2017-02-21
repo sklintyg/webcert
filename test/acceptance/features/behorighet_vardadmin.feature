@@ -24,7 +24,8 @@ Scenario: Kan inte signera Läkarintyg FK 7263
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
-
+	Och ska ett info-meddelande visa "Endast läkare får signera intyget."
+	
 @skriv-ut
 Scenario: Kan inte signera Transportstyrelsens läkarintyg
 	När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
