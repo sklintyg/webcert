@@ -1,6 +1,6 @@
 {
     "name": "webcert-testtools",
-    "version": "1.0.159",
+    "version": "1.0.160",
     "description": "",
     "main": "webcertTestTools.js",
     "scripts": {
@@ -11,5 +11,8 @@
         "jclass": "^1.2.1",
         "request": "^2.79.0",
         "xml2js": "^0.4.17"
+    },
+    "publishConfig": {
+        "registry": "https://build-inera.nordicmedtest.se/nexus/content/repositories/npm-internal/"
     }
 }
