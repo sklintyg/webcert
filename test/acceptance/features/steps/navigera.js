@@ -129,7 +129,7 @@ module.exports = function() {
 
             } else {
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
-                // url = url + '?';
+                url = url + '?';
                 // url += 'enhet=' + global.user.enhetId + '&';
             }
         } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
