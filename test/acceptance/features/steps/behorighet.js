@@ -30,12 +30,12 @@ var unsignedPage = pages.unsignedPage;
 
 module.exports = function() {
 
-    this.Given(/^går in på Sök\/skriv intyg$/, function(callback) {
-        basePage.flikar.sokSkrivIntyg.sendKeys(protractor.Key.SPACE).then(callback);
+    this.Given(/^går in på Sök\/skriv intyg$/, function() {
+        return basePage.flikar.sokSkrivIntyg.click();
     });
 
-    this.Given(/^går in på Ej signerade utkast$/, function(callback) {
-        unsignedPage.flikar.notSigned.click().then(callback);
+    this.Given(/^går in på Ej signerade utkast$/, function() {
+        return unsignedPage.flikar.notSigned.click();
     });
 
     this.Given(/^är kopieraknappen tillgänglig$/, function(callback) {

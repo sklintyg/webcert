@@ -16,32 +16,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* globals browser,logger */
+/* globals browser,logger, wcTestTools */
 'use strict';
 var loginHelper = require('./login.helpers.js');
 var logInAsUserRole = loginHelper.logInAsUserRole;
 var logInAsUser = loginHelper.logInAsUser;
+var shuffle = wcTestTools.helpers.testdata.shuffle;
+
+
+var users = {
+    'Tandläkare': [{
+        fornamn: 'Louise',
+        efternamn: 'Ericsson',
+        hsaId: 'TSTNMT2321000156-103B',
+        enhetId: 'TSTNMT2321000156-1039'
+    }],
+    'Vårdadministratör': [{
+        fornamn: 'Susanne',
+        efternamn: 'Johansson Karlsson',
+        hsaId: 'TSTNMT2321000156-105J',
+        enhetId: 'TSTNMT2321000156-105F'
+    }],
+    'Läkare': [{
+        fornamn: 'Erik',
+        efternamn: 'Nilsson',
+        hsaId: 'TSTNMT2321000156-105H',
+        enhetId: 'TSTNMT2321000156-105F'
+    }]
+};
 
 module.exports = function() {
 
     this.Given(/^att jag är inloggad som tandläkare$/, function() {
-        var userObj = {
-            fornamn: 'Louise',
-            efternamn: 'Ericsson',
-            hsaId: 'TSTNMT2321000156-103B',
-            enhetId: 'TSTNMT2321000156-1039'
-        };
-        return logInAsUserRole(userObj, 'Tandläkare');
+        var roll = 'Tandläkare';
+        return logInAsUserRole(shuffle(users[roll])[0], roll);
     });
 
     this.Given(/^att jag är inloggad som tandläkare på vårdenhet "([^"]*)"$/, function(ve) {
-        var userObj = {
-            fornamn: 'Louise',
-            efternamn: 'Ericsson',
-            hsaId: 'TSTNMT2321000156-103B',
-            enhetId: ve
-        };
-        return logInAsUserRole(userObj, 'Tandläkare');
+        var roll = 'Tandläkare';
+        var user = shuffle(users[roll])[0];
+        user.enhetId = ve;
+        return logInAsUserRole(user, roll);
     });
     this.Given(/^att jag är inloggad som läkare utan adress till enheten$/, function() {
         var userObj = {
@@ -57,49 +72,38 @@ module.exports = function() {
 
 
     this.Given(/^att jag är inloggad som vårdadministratör$/, function() {
-        var userObj = {
-            fornamn: 'Susanne',
-            efternamn: 'Johansson Karlsson',
-            hsaId: 'TSTNMT2321000156-105J',
-            enhetId: 'TSTNMT2321000156-105F'
-        };
-        return logInAsUserRole(userObj, 'Vårdadministratör');
+        var roll = 'Vårdadministratör';
+        return logInAsUserRole(shuffle(users[roll])[0], roll);
     });
 
     this.Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function() {
-        var userObj = {
-            fornamn: 'Susanne',
-            efternamn: 'Johansson Karlsson',
-            hsaId: 'TSTNMT2321000156-105J',
-            enhetId: 'TSTNMT2321000156-105F',
-            origin: 'UTHOPP'
-        };
-        return logInAsUserRole(userObj, 'Vårdadministratör');
+        var roll = 'Vårdadministratör';
+        var user = shuffle(users[roll])[0];
+        user.origin = 'UTHOPP';
+        return logInAsUserRole(user, roll);
+    });
+
+    this.Given(/^att jag är inloggad i uthoppsläge$/, function() {
+        var roll = shuffle(['Läkare', 'Vårdadministratör', 'Tandläkare'])[0];
+        var user = shuffle(users[roll])[0];
+        logger.info('Loggar in som uthoppad ' + roll);
+        user.origin = 'UTHOPP';
+        return logInAsUserRole(user, roll);
     });
 
     this.Given(/^att jag är inloggad som djupintegrerad vårdadministratör$/, function() {
-        var userObj = {
-            fornamn: 'Susanne',
-            efternamn: 'Johansson Karlsson',
-            hsaId: 'TSTNMT2321000156-105J',
-            enhetId: 'TSTNMT2321000156-105F',
-            origin: 'DJUPINTEGRATION'
-        };
-        return logInAsUserRole(userObj, 'Vårdadministratör');
+        var roll = 'Vårdadministratör';
+        var user = shuffle(users[roll])[0];
+        user.origin = 'DJUPINTEGRATION';
+        return logInAsUserRole(user, roll);
     });
 
     this.Given(/^att jag är inloggad som läkare som inte accepterat kakor$/, function() {
-        var userObj = {
-            fornamn: 'Erik',
-            efternamn: 'Nilsson',
-            hsaId: 'TSTNMT2321000156-105H',
-            enhetId: 'TSTNMT2321000156-105F'
-        };
-        return logInAsUserRole(userObj, 'Läkare', true);
+        var roll = 'Läkare';
+        return logInAsUserRole(shuffle(users[roll])[0], roll, true);
     });
+
     this.Given(/^att jag är inloggad som läkare( "([^"]*)")?$/, function(hasLakarnamn, lakarNamn) {
-
-
         var userObj = {
             fornamn: 'Erik',
             efternamn: 'Nilsson',
@@ -122,14 +126,10 @@ module.exports = function() {
     });
 
     this.Given(/^att jag är inloggad som läkare utan angiven vårdenhet$/, function() {
-
-        var userObj = {
-            fornamn: 'Erik',
-            efternamn: 'Nilsson',
-            hsaId: 'TSTNMT2321000156-105H',
-            enhetId: ''
-        };
-        return logInAsUserRole(userObj, 'Läkare');
+        var roll = 'Läkare';
+        var user = shuffle(users[roll])[0];
+        user.enhetId = '';
+        return logInAsUserRole(user, roll);
     });
 
     this.Given(/^att jag är inloggad som läkare på (vårdenhet|underenhet) "([^"]*)"$/, function(enhettyp, ve) {

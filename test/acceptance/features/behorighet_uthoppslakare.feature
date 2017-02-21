@@ -44,6 +44,7 @@ Scenario: Kan inte makulera intyg
    Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Så ska makuleraknappen inte vara tillgänglig
 
+@filtrera @osignerade-intyg
 Scenario: Kan inte filtrera osignerade intyg på läkare
    När går in på Ej signerade utkast
    Och väljer att visa sökfilter

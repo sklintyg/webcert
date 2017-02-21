@@ -62,9 +62,20 @@ module.exports = function() {
             logger.info('Hittade fel-meddelanden: ' + joinedTexts);
             return expect(joinedTexts).to.include(text);
         });
-
-
     });
+
+    this.Given(/^ska jag få en dialog med texten "([^"]*)"$/, function(text) {
+        var alerts = element.all(by.css('.modal-content')).map(function(elm, index) {
+            return elm.getText();
+        });
+
+        return alerts.then(function(alertTexts) {
+            var joinedTexts = alertTexts.join('\n');
+            logger.info('Hittade modalinnehåll: ' + joinedTexts);
+            return expect(joinedTexts).to.include(text);
+        });
+    });
+
 
     this.Given(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighet, text) {
 
