@@ -178,7 +178,7 @@ var LisuUtkast = BaseSmiUtkast._extend({
     },
     angeArbetsformaga: function(arbetsformaga) {
         var promisesArr = [];
-        element(by.id('formly_1_sjukskrivningar_sjukskrivningar_0')).sendKeys('37,5');
+
         if (arbetsformaga.nedsattMed25) {
             var el25 = this.sjukskrivning['25'];
             promisesArr.push(el25.fran.sendKeys(arbetsformaga.nedsattMed25.from)
