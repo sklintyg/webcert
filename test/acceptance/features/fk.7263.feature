@@ -1,12 +1,12 @@
 # language: sv
-@smoke @fk7263
+@fk7263
 Egenskap: Hantera FK7263-intyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@RegisterMedicalCertificate @minaintyg @keepIntyg @signera
+@RegisterMedicalCertificate @minaintyg @keepIntyg @signera @smoke
 Scenario: Skapa och signera ett intyg
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -24,7 +24,7 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	När jag går till Mina intyg för patienten
 	Så ska intygets status i Mina intyg visa "Skickat till Försäkringskassan"
 
-@RevokeMedicalCertificate
+@RevokeMedicalCertificate @smoke
 Scenario: Makulera ett skickat intyg
 	När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
 	Och jag makulerar intyget

@@ -1,12 +1,12 @@
 # language: sv
-@smoke @nedsattarbetsformaga @smi
+ @nedsattarbetsformaga @smi
 Egenskap: Hantera SMI intyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@keepIntyg @signera
+@keepIntyg @signera @smoke
 Scenariomall: Skapa och signera ett intyg för <intygKod>
 	När jag går in på att skapa ett <intyg> intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -60,7 +60,7 @@ Exempel:
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
-@makulera
+@makulera @smoke
 Scenario: Makulera ett skickat ett SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Mottaget"
 	Och jag makulerar intyget
