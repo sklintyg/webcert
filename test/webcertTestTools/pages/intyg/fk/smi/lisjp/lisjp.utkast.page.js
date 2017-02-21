@@ -178,41 +178,40 @@ var LisuUtkast = BaseSmiUtkast._extend({
     },
     angeArbetsformaga: function(arbetsformaga) {
         var promisesArr = [];
-        element(by.id('formly_1_sjukskrivningar_sjukskrivningar_0')).sendKeys('37,5').then(function() {
-            if (arbetsformaga.nedsattMed25) {
-                var el25 = this.sjukskrivning['25'];
-                promisesArr.push(el25.fran.sendKeys(arbetsformaga.nedsattMed25.from)
-                    .then(function() {
-                        return el25.till.sendKeys(arbetsformaga.nedsattMed25.tom);
+        element(by.id('formly_1_sjukskrivningar_sjukskrivningar_0')).sendKeys('37,5');
+        if (arbetsformaga.nedsattMed25) {
+            var el25 = this.sjukskrivning['25'];
+            promisesArr.push(el25.fran.sendKeys(arbetsformaga.nedsattMed25.from)
+                .then(function() {
+                    return el25.till.sendKeys(arbetsformaga.nedsattMed25.tom);
 
-                    })
-                );
-            }
-            if (arbetsformaga.nedsattMed50) {
-                var el50 = this.sjukskrivning['50'];
-                promisesArr.push(el50.fran.sendKeys(arbetsformaga.nedsattMed50.from)
-                    .then(function() {
-                        return el50.till.sendKeys(arbetsformaga.nedsattMed50.tom);
-                    })
-                );
-            }
-            if (arbetsformaga.nedsattMed75) {
-                var el75 = this.sjukskrivning['75'];
-                promisesArr.push(el75.fran.sendKeys(arbetsformaga.nedsattMed75.from)
-                    .then(function() {
-                        return el75.till.sendKeys(arbetsformaga.nedsattMed75.tom);
-                    }));
-            }
-            if (arbetsformaga.nedsattMed100) {
-                var el100 = this.sjukskrivning['100'];
-                promisesArr.push(el100.fran.sendKeys(arbetsformaga.nedsattMed100.from)
-                    .then(function() {
-                        return el100.till.sendKeys(arbetsformaga.nedsattMed100.tom);
-                    })
-                );
-            }
-            return Promise.all(promisesArr);
-        });
+                })
+            );
+        }
+        if (arbetsformaga.nedsattMed50) {
+            var el50 = this.sjukskrivning['50'];
+            promisesArr.push(el50.fran.sendKeys(arbetsformaga.nedsattMed50.from)
+                .then(function() {
+                    return el50.till.sendKeys(arbetsformaga.nedsattMed50.tom);
+                })
+            );
+        }
+        if (arbetsformaga.nedsattMed75) {
+            var el75 = this.sjukskrivning['75'];
+            promisesArr.push(el75.fran.sendKeys(arbetsformaga.nedsattMed75.from)
+                .then(function() {
+                    return el75.till.sendKeys(arbetsformaga.nedsattMed75.tom);
+                }));
+        }
+        if (arbetsformaga.nedsattMed100) {
+            var el100 = this.sjukskrivning['100'];
+            promisesArr.push(el100.fran.sendKeys(arbetsformaga.nedsattMed100.from)
+                .then(function() {
+                    return el100.till.sendKeys(arbetsformaga.nedsattMed100.tom);
+                })
+            );
+        }
+        return Promise.all(promisesArr);
     },
     angeResorTillArbete: function(resor) {
         if (resor) {
