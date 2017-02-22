@@ -4,7 +4,7 @@ Egenskap: Sekretessmarkerad patient
 
 @varningsmeddelande
 Scenario: Varningmeddelanden när man går in på patient
-   Givet att jag är inloggad som djupintegrerad läkare
+   Givet att jag är inloggad som läkare
    Och jag går in på en patient med sekretessmarkering
    Så ska en varningsruta innehålla texten "Patienten har en sekretessmarkering."
    Och ska en varningsruta innehålla texten "På grund av sekretessmarkeringen går det inte att kopiera intyg."
@@ -19,3 +19,4 @@ Scenario: Kan inte kopiera eller förnya ett intyg på en sekretessmarkerad pati
 	Och ska det inte finnas en knapp med texten "Förnya"
 	Och ska en varningsruta innehålla texten "Patienten har en sekretessmarkering."
    	Och ska en varningsruta innehålla texten "På grund av sekretessmarkeringen går det inte att kopiera intyget."
+

@@ -5,7 +5,7 @@ Egenskap: Behörigheter för en djupintegrerad vårdadministratör
 Bakgrund: Logga in
 	Givet att jag är inloggad som djupintegrerad vårdadministratör
 
-@signera @skriv-ut @kristi
+@signera @skriv-ut 
 Scenario: Kan inte signera
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     Och jag går in på intygsutkastet via djupintegrationslänk
