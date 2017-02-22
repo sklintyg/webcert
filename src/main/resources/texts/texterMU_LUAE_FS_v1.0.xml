@@ -1,111 +1,52 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<texter typ="LUAE_FS" giltigFrom="2016-05-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
-	
-	<!-- Text före val av elektroniskt formulär -->
-	<text id="FRM_1.RBK">Vad är aktivitetsersättning vid förlängd skolgång?
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<texter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" giltigFrom="2016-11-29" typ="LUAE_FS" version="1.0" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard/texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
+<text id="DFR_1.3.RBK">Ange vad annat är:</text>
+<text id="DFR_26.1.RBK">Jag önskar att Försäkringskassan kontaktar mig</text>
+<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt</text>
+<text id="DFR_4.3.HLP">Skriv exempelvis Neuropsykiatriska kliniken på X-stads sjukhus eller om patienten själv kommer att bifoga utredningen till sin ansökan.</text>
+<text id="DFR_4.3.RBK">Från vilken vårdgivare kan Försäkringskassan hämta information om utredningen/underlaget?</text>
+<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
+<text id="FRG_1.RBK">Utlåtandet är baserat på</text>
+<text id="FRG_15.RBK">Beskriv när och hur patientens funktionsnedsättning debuterat, utvecklats och visar sig för närvarande</text>
+<text id="FRG_16.HLP">Beskriv om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång och att det inte finns några andra skäl än rent medicinska som är orsaken till de förlängda studierna.
+Funktionsnedsättning behöver inte finnas kvar när studierna påbörjas,
+det är tillräckligt att den orsakat behovet av förlängd skolgång.</text>
+<text id="FRG_16.RBK">Beskriv på vilket sätt funktionsnedsättningen påverkar eller har påverkat patientens förmåga att klara sin skolgång</text>
+<text id="FRG_2.RBK">Jag har känt patienten sedan den</text>
+<text id="FRG_25.RBK">Övriga upplysningar</text>
+<text id="FRG_26.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
+<text id="FRG_26.RBK">Kontakt med Försäkringskassan</text>
+<text id="FRG_3.RBK">Är utlåtandet även baserat på andra medicinska utredningar eller underlag?</text>
+<text id="FRG_4.RBK">Ange utredning eller underlag</text>
+<text id="FRG_6.RBK">Diagnos/diagnoser för sjukdom som orsakar eller har orsakat funktionsnedsättning</text>
+<text id="FRM_1.RBK">Vad är aktivitetsersättning vid förlängd skolgång?
 Aktivitetsersättning vid förlängd skolgång är en ersättning för unga personer, som på grund av funktionsnedsättning måste förlänga sin skolgång för att slutföra grundskola eller gymnasium. Det är möjligt att ansöka om ersättning även om studietiden är kortare än ett år. Man kan få ersättningen från juli månad det år man fyller 19 år fram till och med månaden innan man fyller 30 år. Ersättningen betalas alltid ut som hel ersättning, även om studierna till följd av funktionsnedsättningen måste bedrivas på deltid.</text>
-	
-	<!-- Text efter val av elektroniskt formulär, visas tillsammans med formulärat -->
-	<text id="FRM_2.RBK">Vad är aktivitetsersättning vid förlängd skolgång?
+<text id="FRM_2.RBK">Vad är aktivitetsersättning vid förlängd skolgång?
 Aktivitetsersättning vid förlängd skolgång är en ersättning för unga personer, som på grund av funktionsnedsättning måste förlänga sin skolgång för att slutföra grundskola eller gymnasium. Det är möjligt att ansöka om ersättning även om studietiden är kortare än ett år. Man kan få ersättningen från juli månad det år man fyller 19 år fram till och med månaden innan man fyller 30 år. Ersättningen betalas alltid ut som hel ersättning, även om studierna till följd av funktionsnedsättningen måste bedrivas på deltid.
 
 Förutsättningar för att få aktivitetsersättning vid förlängd skolgång.
-Försäkringskassan bedömer om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång. 
+Försäkringskassan bedömer om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång.
 
 Den som ansöker om aktivitetsersättning vid förlängd skolgång och studerar i ordinarie skolform ska, på begäran av Försäkringskassan, ge in ett medicinskt underlag som beskriver funktionsnedsättningen.
 
 Om du inte känner patienten ska hen styrka sin identitet genom legitimation med foto (SOSFS 2005:29).</text>
-	
-	<!--
-	===============================================
-	KATEGORI 1: Grund för medicinskt underlag
-	===============================================
-	-->
-	<text id="KAT_1.RBK">Grund för medicinskt underlag</text>
-	<text id="FRG_1.RBK">Utlåtandet är baserat på</text>
-	<text id="DFR_1.3.RBK">Ange vad annat är: </text>
-	<text id="FRG_2.RBK">Jag har känt patienten sedan den</text>
-
-	<!-- Text och hjälptext för typ av underlag ur kodverk -->
-	<text id="KV_FKMU_0001.UNDERSOKNING.RBK">Min undersökning av patienten</text>
-	<text id="KV_FKMU_0001.JOURNALUPPGIFTER.RBK">Journaluppgifter från den</text>
-	<text id="KV_FKMU_0001.ANHORIG.RBK">Anhörigs beskrivning av patienten</text>
-	<text id="KV_FKMU_0001.ANNAT.RBK">Annat</text>
-
-	<text id="FRG_3.RBK">Är utlåtandet även baserat på andra medicinska utredningar eller underlag?</text>
-	<text id="FRG_4.RBK">Ange utredning eller underlag</text>
-	<text id="DFR_4.1.RBK">Utredning/underlag</text>
-	<text id="DFR_4.2.RBK">Datum</text>
-	<text id="DFR_4.3.RBK">Från vilken vårdgivare kan Försäkringskassan hämta information om utredningen/underlaget?</text>
-	<text id="DFR_4.3.HLP">Skriv exempelvis Neuropsykiatriska kliniken på X-stads sjukhus eller om patienten själv kommer att bifoga utredningen till sin ansökan.</text>
-
-	<!-- Text och hjälptext för typ av underlag ur kodverk -->
-	<text id="KV_FKMU_0005.NEUROPSYKIATRISKT.RBK">Neuropsykiatriskt utlåtande</text>
-	<text id="KV_FKMU_0005.HABILITERING.RBK">Underlag från habiliteringen</text>
-	<text id="KV_FKMU_0005.ARBETSTERAPEUT.RBK">Underlag från arbetsterapeut</text>
-	<text id="KV_FKMU_0005.FYSIOTERAPEUT.RBK">Underlag från fysioterapeut</text>
-	<text id="KV_FKMU_0005.LOGOPED.RBK">Underlag från logoped</text>
-	<text id="KV_FKMU_0005.PSYKOLOG.RBK">Underlag från psykolog</text>
-	<text id="KV_FKMU_0005.SKOLHALSOVARD.RBK">Underlag från skolhälsovård</text>
-	<text id="KV_FKMU_0005.SPECIALISTKLINIK.RBK">Utredning av annan specialistklinik</text>
-	<text id="KV_FKMU_0005.VARD_UTOMLANDS.RBK">Utredning från vårdinrättning utomlands</text>
-	<text id="KV_FKMU_0005.OVRIGT_UTLATANDE.RBK">Övrigt</text>
-	
-	<!--
-	===============================================
-	KATEGORI 3: Diagnos
-	===============================================
-	-->
-	<text id="KAT_3.RBK">Diagnos</text>
-	<text id="FRG_6.RBK">Diagnos/diagnoser för sjukdom som orsakar eller har orsakat funktionsnedsättning </text>
-	<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
-
-	<!--
-	===============================================
-	KATEGORI 4: Funktionsnedsättning
-	===============================================
-	-->
-	<text id="KAT_4.RBK">Funktionsnedsättning</text>
-	<text id="FRG_15.RBK">Beskriv när och hur patientens funktionsnedsättning debuterat, utvecklats och visar sig för närvarande</text>
-	<text id="FRG_16.RBK">Beskriv på vilket sätt funktionsnedsättningen påverkar eller har påverkat patientens förmåga att klara sin skolgång</text>
-	<text id="FRG_16.HLP">Beskriv om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång och att det inte finns några andra skäl än rent medicinska som är orsaken till de förlängda studierna. Funktionsnedsättning behöver inte finnas kvar när studierna påbörjas, det är tillräckligt att den orsakat behovet av förlängd skolgång.</text>
-
-	<!--
-	===============================================
-	KATEGORI 5: Övrigt
-	===============================================
-	-->
-	<text id="KAT_5.RBK">Övrigt</text>
-	<text id="FRG_25.RBK">Övriga upplysningar</text>
-
-	<!--
-	===============================================
-	KATEGORI 6: Kontakt
-	===============================================
-	-->
-	<text id="KAT_6.RBK">Kontakt</text>
-	<text id="FRG_26.RBK">Kontakt med Försäkringskassan</text>
-	<text id="FRG_26.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
-	<text id="DFR_26.1.RBK">Jag önskar att Försäkringskassan kontaktar mig</text>
-	<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt</text>
-
-	<!--
-	===============================================
-	KATEGORI 9999: Tilläggsfrågor
-	===============================================
-	-->
-
-  <text id="KAT_9999.RBK">Tilläggsfrågor</text>
-  <text id="KAT_9999.HLP">TBD</text>
-
-  <tillagg>
-    <tillaggsfraga id="9001">
-      <text id="DFR_9001.1.RBK">Är patienten väldigt skoltrött?</text>
-      <text id="DFR_9001.1.HLP">Ange varför.</text>
-    </tillaggsfraga>
-    <tillaggsfraga id="9002">
-      <text id="DFR_9002.1.RBK">Hur långt är ett snöre?</text>
-      <text id="DFR_9002.1.HLP">Ange längd i centimeter (cm).</text>
-    </tillaggsfraga>
-  </tillagg>
+<text id="KAT_1.RBK">Grund för medicinskt underlag</text>
+<text id="KAT_3.RBK">Diagnos</text>
+<text id="KAT_4.RBK">Funktionsnedsättning</text>
+<text id="KAT_5.RBK">Övrigt</text>
+<text id="KAT_6.RBK">Kontakt</text>
+<text id="KV_FKMU_0001.ANHORIG.RBK">Anhörigs beskrivning av patienten</text>
+<text id="KV_FKMU_0001.ANNAT.RBK">Annat</text>
+<text id="KV_FKMU_0001.JOURNALUPPGIFTER.RBK">Journaluppgifter från den</text>
+<text id="KV_FKMU_0001.UNDERSOKNING.RBK">Min undersökning av patienten</text>
+<text id="KV_FKMU_0005.ARBETSTERAPEUT.RBK">Underlag från arbetsterapeut</text>
+<text id="KV_FKMU_0005.FYSIOTERAPEUT.RBK">Underlag från fysioterapeut</text>
+<text id="KV_FKMU_0005.HABILITERING.RBK">Underlag från habiliteringen</text>
+<text id="KV_FKMU_0005.LOGOPED.RBK">Underlag från logoped</text>
+<text id="KV_FKMU_0005.NEUROPSYKIATRISKT.RBK">Neuropsykiatriskt utlåtande</text>
+<text id="KV_FKMU_0005.OVRIGT_UTLATANDE.RBK">Övrigt</text>
+<text id="KV_FKMU_0005.PSYKOLOG.RBK">Underlag från psykolog</text>
+<text id="KV_FKMU_0005.SKOLHALSOVARD.RBK">Underlag från skolhälsovård</text>
+<text id="KV_FKMU_0005.SPECIALISTKLINIK.RBK">Utredning av annan specialistklinik</text>
+<text id="KV_FKMU_0005.VARD_UTOMLANDS.RBK">Utredning från vårdinrättning utomlands</text>
 </texter>
