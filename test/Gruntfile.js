@@ -97,12 +97,12 @@ module.exports = function(grunt) {
                     args: {
                         params: {
                             // En fil där cucumber fyller i alla externa länkar som hittas.
-                            externalLinksFile: 'acceptance/report/external_links.txt'
+                            externalLinksFile: 'external_links.txt'
                         }
                     }
                 },
-                partialReportPattern: 'acceptance/report/*_acc_results.json',
-                reportFile: 'acceptance/report/acc_results.json'
+                partialReportPattern: 'node_modules/common-testtools/cucumber-html-report/*_acc_results.json',
+                reportFile: 'node_modules/common-testtools/cucumber-html-report/acc_results.json'
             }
         },
 

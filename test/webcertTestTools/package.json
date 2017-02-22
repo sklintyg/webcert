@@ -1,8 +1,8 @@
 {
     "name": "webcert-testtools",
-    "version": "1.0.160",
+    "version": "1.0.161",
     "description": "",
-    "main": "webcertTestTools.js",
+    "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
