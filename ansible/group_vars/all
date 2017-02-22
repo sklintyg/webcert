@@ -6,6 +6,9 @@ java_home: "{{ inera_root }}/jre8"
 releases_folder: "{{ inera_root }}/releases"
 deploy_from_repo: true
 
+#Dummy value for proxy_env
+proxy_env: {}
+
 # Spring profiles
 profiles: test
 

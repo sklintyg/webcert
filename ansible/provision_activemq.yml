@@ -1,8 +1,8 @@
 ---
-# This playbook provisions ActiveMQ resources for WebCert 
 
 - hosts: activemq
   become: yes
-
+  environment:
+    "{{ proxy_env }}"
   roles:
     - webcert-queues

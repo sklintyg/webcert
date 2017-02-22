@@ -1,10 +1,10 @@
 ---
-# This playbook provisions Tomcat resources for WebCert
 
 - hosts: tomcat
   serial: 1
   become: yes
-
+  environment:
+    "{{ proxy_env }}"
   roles:
     - webcert-systemvariabler
     - webcert-resurser

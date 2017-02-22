@@ -1,8 +1,9 @@
 [tomcat]
-webcert-demo ansible_ssh_host=10.250.35.51 ansible_ssh_user=intygadmin ansible_ssh_private_key_file=~/.ssh/inera_rsa
+webcert-demo1 ansible_ssh_host=ine-dib-app02.sth.basefarm.net ansible_ssh_user=ine-intyg-build ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
+webcert-demo2 ansible_ssh_host=ine-dib-app02.sth.basefarm.net ansible_ssh_user=ine-intyg-build ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
 
 [mysql]
-webcert-demo ansible_ssh_host=10.250.35.51 ansible_ssh_user=intygadmin ansible_ssh_private_key_file=~/.ssh/inera_rsa
+webcert-demo ansible_ssh_host=ine-dib-app02.sth.basefarm.net ansible_ssh_user=ine-intyg-build ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
 
 [activemq]
-webcert-demo ansible_ssh_host=10.250.35.51 ansible_ssh_user=intygadmin ansible_ssh_private_key_file=~/.ssh/inera_rsa
+webcert-demo ansible_ssh_host=ine-dib-app02.sth.basefarm.net ansible_ssh_user=ine-intyg-build ansible_ssh_private_key_file=~/.ssh/ine-build_rsa

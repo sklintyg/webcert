@@ -1,8 +1,8 @@
 ---
-# This playbook provisions mysql for WebCert 
 
 - hosts: mysql
   become: yes 
-
+  environment:
+    "{{ proxy_env }}"
   roles:
     - webcert-mysql

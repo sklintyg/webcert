@@ -10,3 +10,6 @@ proxy_env:
 # Configuration repository
 environment_name: "demo"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
+
+# Tomcat
+tomcat_http_port: 8181

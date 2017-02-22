@@ -3,7 +3,9 @@
 
 - hosts: tomcat
   serial: 1
-  become: yes 
+  become: yes
+  environment:
+    "{{ proxy_env }}"
   vars:
     config_version: master
 
