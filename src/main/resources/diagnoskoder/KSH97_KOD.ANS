@@ -51,7 +51,7 @@ A073   Isosporiasis
 A078   Andra specificerade tarmsjukdomar orsakade av protozoer
 A079   Protozosjukdom i tarmen, ospecificerad
 A080   Enterit orsakad av rotavirus
-A081   Akut gastroenteropati orsakad av Norwalk-faktor
+A081   Akut gastroenteropati orsakad av norovirus
 A082   Enterit orsakad av adenovirus
 A083   Enterit orsakad av annat specificerat virus
 A083A  Coxsackievirus-enterit
@@ -229,7 +229,7 @@ A483   Toxic shock syndrome
 A484   Brasiliansk purpurafeber
 A488   Andra specificerade bakteriesjukdomar
 A490   Stafylokockinfektion, ospecificerad lokalisation
-A491   Streptokockinfektion, ospecificerad lokalisation
+A491   Streptokock- och enterokockinfektion, ospecificerad lokalisation
 A492   Haemophilus influenzae-infektion, ospecificerad lokalisation
 A493   Mykoplasmainfektion, ospecificerad lokalisation
 A498   Infektion med andra bakterier, ospecificerad lokalisation
@@ -397,8 +397,6 @@ A880   Enteroviral exanthematous fever
 A881   Epidemisk vertigo
 A888   Andra specificerade virusinfektioner i centrala nervsystemet
 A899   Icke specificerad virusinfektion i centrala nervsystemet
-A909   Denguefeber
-A919   Hemorragisk denguefeber
 A920   Chikungunya-virussjukdom
 A921   O'nyong-nyong-feber
 A922   Venezuelan equine encephalitis
@@ -419,6 +417,10 @@ A961   Machupo hemorragisk feber
 A962   Lassa-feber
 A968   Andra specificerade arenavirala hemorragiska febrar
 A969   Arenaviral hemorragisk feber, ospecificerad
+A970   Dengue utan varningstecken
+A971   Dengue med varningstecken
+A972   Allvarlig dengue
+A979   Dengue, ospecificerad
 A980   Centralasiatisk hemorragisk feber
 A981   Omskfeber
 A982   Kyasanur Forest disease
@@ -606,8 +608,8 @@ B334   Hantavirus med (kardio)pulmonellt syndrom [HPS] [HCPS]
 B338   Andra specificerade virussjukdomar
 B340   Adenovirusinfektion, ospecificerad lokalisation
 B341   Enterovirusinfektion, ospecificerad lokalisation
-B341A  Enterovirus-infektion, Coxsackie, UNS
-B341B  Enterovirus-infektion, Echo, UNS
+B341A  Enterovirusinfektion, coxsackie, ospecificerad lokalisation
+B341B  Enterovirusinfektion, ECHO, ospecificerad lokalisation
 B341W  Annan specificerad enterovirusinfektion, ospecificerad lokalisation
 B342   Coronavirusinfektion, ospecificerad lokalisation
 B343   Parvovirusinfektion, ospecificerad lokalisation
@@ -883,7 +885,7 @@ B948   Sena effekter av andra specificerade infektionssjukdomar och parasitsjukd
 B949   Sena effekter av icke specificerad infektionssjukdom eller parasitsjukdom
 B950   Streptokocker grupp A som orsak till sjukdomar som klassificeras i andra kapitel
 B951   Streptokocker grupp B som orsak till sjukdomar som klassificeras i andra kapitel
-B952   Streptokocker grupp D som orsak till sjukdomar som klassificeras i andra kapitel
+B952   Streptokocker grupp D och enterokocker som orsak till sjukdomar som klassificeras i andra kapitel
 B953   Pneumokocker som orsak till sjukdomar som klassificeras i andra kapitel
 B954   Andra specificerade streptokocker som orsak till sjukdomar som klassificeras i andra kapitel
 B955   Icke specificerade streptokocker som orsak till sjukdomar som klassificeras i andra kapitel
@@ -1508,6 +1510,8 @@ C882   Annan heavy chain disease
 C883   Immunoproliferativ tunntarmssjukdom
 C884   Extranodalt marginalzons-B-cellslymfom av mukosaassocierad lymfoid vävnad [MALT-lymfom]
 C887   Andra specificerade maligna immunoproliferativa sjukdomar
+C887A  POEMS syndrom
+C887W  Annan specificerad malign immunoproliferativ sjukdom
 C889   Malign immunoproliferativ sjukdom, ospecificerad
 C900   Multipelt myelom
 C901   Plasmacellsleukemi
@@ -1978,7 +1982,7 @@ D449   Icke specificerad lokalisation av tumör av osäker eller okänd natur i end
 D459   Polycythaemia vera
 D460   Refraktär anemi utan ringsideroblaster
 D461   Refraktär anemi med ringsideroblaster
-D462   Refraktär anemi med överskott av blastceller
+D462   Refraktär anemi med överskott av blastceller [RAEB]
 D464   Refraktär anemi, icke specificerad
 D465   Refraktär anemi med dysplasi av multilinjärt ursprung
 D466   Myelodysplastiskt syndrom med isolerad kromosomavvikelse av typ del(5q)
@@ -2773,6 +2777,8 @@ E852   Heredofamiljär amyloidos, ospecificerad
 E853   Sekundär systemamyloidos
 E854   Organbegränsad amyloidos
 E858   Annan amyloidos
+E858A  AL-amyloidos
+E858W  Annan specificerad amyloidos än E85.0-E85.4
 E859   Amyloidos, ospecificerad
 E869   Minskad vätskevolym
 E870   Hyperosmolalitet och hypernatremi
@@ -2873,16 +2879,16 @@ F107A  Alkoholdemens
 F107W  Alkoholorsakade psykiska störningar och beteendestörningar som resttillstånd eller med sen debut, utom alkoholdemens
 F108   Psykiska störningar och beteendestörningar orsakade av alkohol, andra specificerade psykiska störningar och beteendestörningar
 F109   Psykiska störningar och beteendestörningar orsakade av alkohol, psykisk störning och beteendestörning, ospecificerad
-F110   Psykiska störningar och beteendestörningar orsakade av opiater, akut intoxikation
-F111   Psykiska störningar och beteendestörningar orsakade av opiater, skadligt bruk
-F112   Psykiska störningar och beteendestörningar orsakade av opiater, beroendesyndrom
-F113   Psykiska störningar och beteendestörningar orsakade av opiater, abstinens
-F114   Psykiska störningar och beteendestörningar orsakade av opiater, abstinens med delirium
-F115   Psykiska störningar och beteendestörningar orsakade av opiater, psykotisk störning
-F116   Psykiska störningar och beteendestörningar orsakade av opiater, amnesisyndrom
-F117   Psykiska störningar och beteendestörningar orsakade av opiater, psykotisk störning som resttillstånd eller med sen debut
-F118   Psykiska störningar och beteendestörningar orsakade av opiater, andra specificerade psykiska störningar och beteendestörningar
-F119   Psykiska störningar och beteendestörningar orsakade av opiater, psykisk störning och beteendestörning, ospecificerad
+F110   Psykiska störningar och beteendestörningar orsakade av opioider, akut intoxikation
+F111   Psykiska störningar och beteendestörningar orsakade av opioider, skadligt bruk
+F112   Psykiska störningar och beteendestörningar orsakade av opioider, beroendesyndrom
+F113   Psykiska störningar och beteendestörningar orsakade av opioider, abstinens
+F114   Psykiska störningar och beteendestörningar orsakade av opioider, abstinens med delirium
+F115   Psykiska störningar och beteendestörningar orsakade av opioider, psykotisk störning
+F116   Psykiska störningar och beteendestörningar orsakade av opioider, amnesisyndrom
+F117   Psykiska störningar och beteendestörningar orsakade av opioider, psykotisk störning som resttillstånd eller med sen debut
+F118   Psykiska störningar och beteendestörningar orsakade av opioider, andra specificerade psykiska störningar och beteendestörningar
+F119   Psykiska störningar och beteendestörningar orsakade av opioider, psykisk störning och beteendestörning, ospecificerad
 F120   Psykiska störningar och beteendestörningar orsakade av cannabis, akut intoxikation
 F121   Psykiska störningar och beteendestörningar orsakade av cannabis, skadligt bruk
 F122   Psykiska störningar och beteendestörningar orsakade av cannabis, beroendesyndrom
@@ -3353,7 +3359,8 @@ G219   Sekundär parkinsonism, ospecificerad
 G229   Parkinsonism vid sjukdomar som klassificeras annorstädes
 G230   Hallervorden-Spatz sjukdom
 G231   Progressiv supranukleär oftalmoplegi
-G232   Striatonigral degeneration
+G232   Multipel systematrofi, parkinsontyp [MSA-P]
+G233   Multipel systematrofi, cerebellär typ  [MSA-C]
 G238   Andra specificerade degenerativa sjukdomar i basala ganglierna
 G239   Degenerativ sjukdom i basala ganglierna, ospecificerad
 G240   Läkemedelsutlöst dystoni
@@ -3638,12 +3645,12 @@ G831   Monopares i nedre extremitet
 G832   Monopares i övre extremitet
 G833   Ospecificerad monopares
 G834   Cauda equina-syndrom
+G835   Locked-in-syndrome
 G838   Andra specificerade förlamningssyndrom
 G839   Förlamningssyndrom, ospecificerade
 G900   Idiopatisk perifer autonom neuropati
 G901   Familjär dysautonomi
 G902   Horners syndrom
-G903   Multipel systemdegeneration
 G904   Autonom dysreflexi
 G908   Andra specificerade sjukdomar i autonoma nervsystemet
 G909   Sjukdom i autonoma nervsystemet, ospecificerad
@@ -3700,7 +3707,7 @@ H020   Entropion och trikiasis
 H020A  Entropion
 H020B  Trikiasis
 H021   Ektropion
-H022   Lagoftalmos
+H022   Lagoftalmus
 H023   Blefarochalasis
 H024   Ögonlocksptos
 H025   Andra störningar av ögonlocksfunktionen
@@ -3722,15 +3729,15 @@ H048   Andra specificerade sjukdomar i tårapparaten
 H049   Sjukdom i tårapparaten, ospecificerad
 H050   Akut inflammation i ögonhålan
 H051   Kronisk inflammation i ögonhålan
-H052   Tillstånd med exoftalmos
+H052   Tillstånd med exoftalmus
 H053   Förändring i ögonhålans form
-H054   Enoftalmos
+H054   Enoftalmus
 H055   Kvarvarande främmande kropp efter penetrerande skada i ögonhålan
 H058   Andra specificerade sjukdomar i ögonhålan
 H059   Sjukdom i ögonhålan, ospecificerad
 H060   Förändringar i tårapparaten vid sjukdomar som klassificeras annorstädes
 H061   Parasitinfestation i ögonhålan vid sjukdomar som klassificeras annorstädes
-H062   Dystyreoid exoftalmos
+H062   Dystyreoid exoftalmus (E05.-†)
 H063   Andra förändringar i ögonhålan vid sjukdomar som klassificeras annorstädes
 H100   Mukopurulent konjunktivit
 H101   Akut atopisk konjunktivit
@@ -4259,7 +4266,7 @@ I250   Aterosklerotisk kardiovaskulär sjukdom
 I251   Aterosklerotisk hjärtsjukdom
 I252   Gammal hjärtinfarkt
 I253   Hjärtaneurysm
-I254   Koronarartäraneurysm
+I254   Koronarartäraneurysm och dissektion
 I255   Ischemisk kardiomyopati
 I256   Tyst myokardischemi
 I258   Andra specificerade former av kronisk ischemisk hjärtsjukdom
@@ -4399,9 +4406,11 @@ I495B  Sick sinus syndrome
 I495C  Brady-takysyndrom
 I498   Andra specificerade hjärtarytmier
 I498C  Kardiell ersättningsrytm
+I498D  Brugadas syndrom
+I498E  Långt QT-syndrom
 I498W  Andra specificerade hjärtarytmier
 I499   Hjärtarytmi, ospecificerad
-I500   Kronisk hjärtinsufficiens
+I500   Högerhjärtsvikt (akut) (kronisk)
 I501   Vänsterhjärtsvikt
 I509   Hjärtinsufficiens, ospecificerad
 I510   Förvärvad septumdefekt i hjärtat
@@ -4477,8 +4486,6 @@ I681   Cerebral arterit vid infektionssjukdomar och parasitsjukdomar som klassif
 I682   Cerebral arterit vid andra sjukdomar som klassificeras annorstädes
 I688   Andra specificerade cerebrovaskulära tillstånd vid sjukdomar som klassificeras annorstädes
 I690   Sena effekter av subaraknoidalblödning
-I690A  Sena effekter av subaraknoidalblödning
-I690B  Sena effekter av subduralblödning
 I691   Sena effekter av intracerebral blödning
 I692   Sena effekter av annan icke traumatisk intrakraniell blödning
 I693   Sena effekter av cerebral infarkt
@@ -4636,10 +4643,10 @@ J051   Akut epiglottit
 J060   Akut laryngofaryngit
 J068   Annan specificerad akut övre luftvägsinfektion med multipel lokalisation
 J069   Akut övre luftvägsinfektion, ospecificerad
-J099   Influensa orsakad av vissa identifierade influensavirus
-J100   Influensa med pneumoni, annat identifierat influensavirus
-J101   Influensa med andra respiratoriska manifestationer, annat identifierat influensavirus
-J108   Influensa med andra manifestationer, annat identifierat influensavirus
+J099   Influensa orsakad av identifierat zoonotiskt eller pandemiskt influensavirus
+J100   Influensa med pneumoni, identifierat säsongsinfluensavirus
+J101   Influensa med andra respiratoriska manifestationer, identifierat säsongsinfluensavirus
+J108   Influensa med andra manifestationer, identifierat säsongsinfluensavirus
 J110   Influensa med pneumoni, virus ej identifierat
 J111   Influensa med andra manifestationer i luftvägarna, virus ej identifierat
 J118   Influensa med andra manifestationer, virus ej identifierat
@@ -4657,7 +4664,7 @@ J152   Pneumoni orsakad av stafylokocker
 J153   Pneumoni orsakad av streptokocker grupp B
 J154   Pneumoni orsakad av andra streptokocker
 J155   Pneumoni orsakad av Escherichia coli
-J156   Pneumoni orsakad av andra aeroba gramnegativa bakterier
+J156   Pneumoni orsakad av andra gramnegativa bakterier
 J157   Pneumoni orsakad av Mycoplasma pneumoniae
 J158   Annan specificerad bakteriell pneumoni
 J159   Bakteriell pneumoni, ospecificerad
@@ -5235,6 +5242,7 @@ K529W  Annan ospecificerad icke infektiös gastroenterit och kolit
 K550   Akuta kärlsjukdomar i tarmen
 K551   Kroniska kärlsjukdomar i tarmen
 K552   Angiodysplasi i kolon
+K553   Angiodysplasi i tunntarmen
 K558   Andra specificerade kärlsjukdomar i tarmen
 K559   Kärlsjukdom i tarmen, ospecificerad
 K560   Paralytisk ileus
@@ -5304,6 +5312,7 @@ K658   Annan specificerad peritonit
 K659   Peritonit, ospecificerad
 K660   Peritoneala adherenser
 K661   Hemoperitoneum
+K662   Retroperitoneal fibros
 K668   Andra specificerade sjukdomar i peritoneum
 K669   Sjukdom i peritoneum, ospecificerad
 K670   Klamydiaperitonit
@@ -5875,7 +5884,7 @@ L701X  Acne conglobata, ospecificerad
 L702   Acne varioliformis
 L703   Acne tropica
 L704   Spädbarnsakne
-L705   Acné excoriée des jeunes filles
+L705   Acné excoriée
 L708   Annan specificerad akne
 L708A  Acne cosmetica
 L708B  Acne venenata
@@ -6118,12 +6127,12 @@ L985C  Pretibialt myxödem
 L985D  Retikulär erytematös mucinos
 L985W  Annan och icke specificerad hudmucinos
 L986   Andra infiltrativa sjukdomar i hud och underhud
+L987   Överskott av hud och subkutan vävnad
 L988   Andra specificerade sjukdomar i hud och underhud
 L988A  Autoimmun progesterondermatit
 L988B  Benign lymfocytinfiltration i huden [Jessner-Kanof]
 L988C  Lymphocytoma cutis benigna
 L988D  Digital myxoid cysta
-L988E  Hudöverskott
 L988W  Andra sjukdomar i hud och underhud
 L989   Sjukdom i hud och underhud, ospecificerad
 L990   Hudamyloidos
@@ -6504,7 +6513,6 @@ M303   Mukokutant lymfkörtelsyndrom
 M308   Andra specificerade tillstånd besläktade med polyarteritis nodosa
 M310   Överkänslighetsangiit
 M311   Trombotisk mikroangiopati
-M312   Letalt medellinjegranulom
 M313   Wegeners granulomatos
 M314   Aortabågsarterit
 M315   Jättecellsarterit med polymyalgia rheumatica
@@ -7251,7 +7259,7 @@ N270   Ensidig liten njure
 N271   Dubbelsidig liten njure
 N279   Liten njure, ospecificerad
 N280   Njurischemi och njurinfarkt
-N281   Förvärvad njurcysta
+N281   Njurcysta
 N288   Andra specificerade sjukdomar i njure och uretär
 N289   Sjukdom i njure och uretär, ospecificerad
 N290   Sen syfilis i njure
@@ -7300,8 +7308,6 @@ N369   Sjukdom i uretra, ospecificerad
 N370   Uretrit vid sjukdomar som klassificeras annorstädes
 N378   Andra sjukliga tillstånd i uretra vid sjukdomar som klassificeras annorstädes
 N390   Urinvägsinfektion, utan angiven lokalisation
-N390A  Urinvägsinfektion, asymtomatisk (ABU)
-N390X  Urinvägsinfektion UNS
 N391   Icke specificerad kvarstående proteinuri
 N392   Icke specificerad ortostatisk proteinuri
 N393   Stressinkontinens
@@ -7795,6 +7801,13 @@ O339   Vård av blivande moder på grund av disproportion mellan bäcken och foster
 O340   Vård av blivande moder för medfödd missbildning av livmodern
 O341   Vård av blivande moder för tumör i corpus uteri
 O342   Vård av blivande moder för ärrbildning efter tidigare kirurgiskt ingrepp
+O342A  Vård av blivande moder för ärrbildning i uterus efter ett tidigare kejsarsnitt (exkl. T-/L-snitt)
+O342B  Vård av blivande moder för ärrbildning i uterus efter två tidigare kejsarsnitt eller ett T-/L-snitt
+O342C  Vård av blivande moder för ärrbildning i uterus efter tre eller fler tidigare kejsarsnitt
+O342D  Vård av blivande moder för ärrbildning i uterus efter myomoperation
+O342E  Vård av blivande moder för ärrbildning i uterus efter operation av septum eller annan plastikoperation av uterus
+O342W  Vård av blivande moder för ärrbildning i uterus efter annan specificerad operation
+O342X  Vård av blivande moder för ärrbildning i uterus efter tidigare kirurgiskt ingrepp, ospecificerat
 O343   Vård av blivande moder för cervixinsufficiens
 O344   Vård av blivande moder för andra abnormiteter i livmoderhalsen
 O345   Vård av blivande moder för andra abnormiteter hos den gravida livmodern
@@ -7856,6 +7869,8 @@ O367   Vård av blivande moder för viabelt foster vid graviditet i bukhålan
 O368   Vård av blivande moder för annat känt eller misstänkt specificerat problem hos fostret
 O368A  Vård av blivande moder för annat specificerat (misstänkt) problem hos fostret: genetisk ultraljudsmarkör, s.k. soft marker (exkl. strukturella missbildningar)
 O368B  Vård av blivande moder för annat specificerat (misstänkt) problem hos fostret: fetal hjärtarytmi
+O368C  Vård av blivande moder för alloimmun trombocytimmunisering
+O368D  Vård av blivande moder för autoimmun trombocytimmunisering
 O368W  Vård av blivande moder för annat känt eller misstänkt problem hos fostret
 O369   Vård av blivande moder för känt eller misstänkt problem hos fostret, ospecificerat
 O409   Onormalt stor mängd fostervatten
@@ -7973,7 +7988,7 @@ O702   Perinealbristning av tredje graden
 O702C  Perinealbristning av tredje graden; skada som omfattar mindre än halva externa analsfinktern
 O702D  Perinealbristning av tredje graden; skada som omfattar mer än halva externa analsfinktern (inkl. total ruptur av externa sfinktern utan engagemang av interna sfinktern)
 O702E  Perinealbristning av tredje graden; skada som omfattar både externa och interna analsfinktern
-O702X  Perinealbristning av 3:e graden; ospecificerad
+O702X  Perinealbristning av tredje graden, ospecificerad
 O703   Perinealbristning av fjärde graden
 O709   Perinealbristning under förlossningen, ospecificerad
 O710   Uterusruptur före förlossningsarbetets början
@@ -8108,9 +8123,9 @@ O926   Galaktorré
 O927   Andra och icke specificerade laktationssjukdomar
 O949   Sena besvär av komplikation till graviditet, förlossning och barnsängstid
 O959   Obstetrisk död av icke specificerad orsak
-O960   Död av direkt obstetrisk orsak
-O961   Död av indirekt obstetrisk orsak
-O969   Död av icke specificerad obstetrisk orsak
+O960   Död av direkt obstetrisk orsak som inträffar mer än 42 dagar men mindre än ett år efter förlossningen
+O961   Död av indirekt obstetrisk orsak som inträffar mer än 42 dagar men mindre än ett år efter förlossningen
+O969   Död av icke specificerad obstetrisk orsak som inträffar mer än 42 dagar men mindre än ett år efter förlossningen
 O970   Död av följdtillstånd efter direkt obstetrisk orsak
 O971   Död av följdtillstånd efter indirekt obstetrisk orsak
 O979   Död av följdtillstånd efter icke specificerad obstetrisk orsak
@@ -8356,7 +8371,7 @@ P518   Andra navelblödningar hos nyfödd
 P519   Icke specificerad navelblödning hos nyfödd
 P520   Intraventrikulär, icke traumatisk blödning grad 1 hos foster och nyfödd
 P521   Intraventrikulär, icke traumatisk blödning grad 2 hos foster och nyfödd
-P522   Intraventrikulär, icke traumatisk blödning grad 3 hos foster och nyfödd
+P522   Intraventrikulär, icke traumatisk blödning grad 3 och grad 4 hos foster och nyfödd
 P523   Icke specificerad intraventrikulär, icke traumatisk blödning hos foster och nyfödd
 P524   Intracerebral, icke traumatisk blödning hos foster och nyfödd
 P525   Subaraknoidal, icke traumatisk blödning hos foster och nyfödd
@@ -8400,6 +8415,9 @@ P598   Gulsot hos nyfödd av andra specificerade orsaker
 P599   Gulsot hos nyfödd av icke specificerad orsak
 P609   Disseminerad intravasal koagulation hos foster och nyfödd
 P610   Övergående trombocytopeni hos nyfödd
+P610A  Alloimmun trombocytopeni (FNAIT) hos nyfödd
+P610B  Autoimmun trombocytopeni hos nyfödd
+P610W  Annan övergående trombocytopeni hos nyfödd
 P611   Polycytemi hos nyfödd
 P612   Anemi vid underburenhet
 P613   Medfödd anemi på grund av blodförlust under fostertiden
@@ -8489,6 +8507,7 @@ P916A  Hypoxisk ischemisk encefalopati (HIE), lätt
 P916B  Hypoxisk ischemisk encefalopati (HIE), måttlig
 P916C  Hypoxisk ischemisk encefalopati (HIE), svår
 P916X  Hypoxisk ischemisk encefalopati (HIE), UNS
+P917   Förvärvad hydrocefalus hos nyfödd
 P918   Andra specificerade cerebrala rubbningar hos nyfödd
 P919   Icke specificerad cerebral rubbning hos nyfödd
 P920   Nyföddhetskräkningar
@@ -8572,9 +8591,9 @@ Q105   Medfödd stenos och striktur i tårkanal
 Q106   Andra medfödda missbildningar av tårapparaten
 Q107   Medfödd missbildning av orbita
 Q110   Cystisk ögonglob
-Q111   Annan anoftalmos
-Q112   Mikroftalmos
-Q113   Makroftalmos
+Q111   Annan anoftalmus
+Q112   Mikroftalmus
+Q113   Makroftalmus
 Q120   Medfödd katarakt
 Q121   Medfödd linsdislokation
 Q122   Linskolobom
@@ -8786,7 +8805,7 @@ Q390   Atresi av esofagus utan fistel
 Q391   Atresi av esofagus med trakeoesofageal fistel
 Q392   Medfödd trakeoesofageal fistel utan atresi
 Q393   Medfödd stenos och striktur av esofagus
-Q394   Esofagusmembran
+Q394   Medfött esofagusmembran
 Q395   Medfödd dilatation av esofagus
 Q396   Divertikel i esofagus
 Q398   Andra specificerade medfödda missbildningar av esofagus
@@ -9517,7 +9536,7 @@ R498C  Avvikande röstläge
 R498D  Sångröststörning
 R498E  Fickbandsfonation
 R498F  Rösttremor
-R498W  Andra specificerade röstrubbingar
+R498W  Andra specificerade röstrubbningar
 R498X  Röstrubbning, ospecificerad
 R502   Läkemedelsutlöst feber
 R508   Annan specificerad feber
@@ -9548,7 +9567,7 @@ R591   Generell lymfkörtelförstoring
 R599   Lymfkörtelförstoring, ospecificerad
 R600   Lokaliserat ödem
 R600A  Ansiktsödem UNS
-R600B  Lipödem (underben)
+R600B  Lipödem
 R600C  Underbensödem UNS
 R600D  Secretans syndrom
 R600X  Lokaliserat ödem, ospecificerat
@@ -9572,7 +9591,7 @@ R632   Polyfagi
 R633   Dåliga matvanor
 R634   Onormal viktförlust
 R635   Onormal viktökning
-R636   Otillräckligt intag av föda och vatten på grund av självförsummelse
+R636   Otillräckligt intag av föda och vatten
 R638   Andra symtom och sjukdomstecken som har samband med födo- och vätskeintag
 R649   Utmärgling
 R650   Systemiskt inflammatoriskt svarssyndrom [SIRS] av infektiöst ursprung utan organsvikt
@@ -9615,7 +9634,7 @@ R772   Onormalt alfa-fetoprotein
 R778   Andra specificerade onormala plasmaproteinfynd
 R779   Onormalt plasmaproteinfynd, ospecificerat
 R780   Alkohol i blodet
-R781   Opiater i blodet
+R781   Opioider i blodet
 R782   Kokain i blodet
 R783   Hallucinogener i blodet
 R784   Andra potentiellt tillvänjande droger i blodet
@@ -10939,11 +10958,11 @@ T391   Anilider
 T392   Pyrazolonderivat
 T393   Andra antiinflammatoriska och antireumatiska läkemedel som ej är av steroidtyp
 T394   Antireumatiskt verkande läkemedel som ej klassificeras annorstädes
-T398   Andra analgetika av icke opiatkaraktär och febernedsättande läkemedel som ej klassificeras annorstädes
-T399   Analgetika av icke opiatkaraktär, febernedsättande och antireumatiska läkemedel, ospecificerade
+T398   Andra analgetika av icke opioidkaraktär och febernedsättande läkemedel som ej klassificeras annorstädes
+T399   Analgetika av icke opioidkaraktär, febernedsättande och antireumatiska läkemedel, ospecificerade
 T400   Opium
 T401   Heroin
-T402   Andra opiater
+T402   Andra opioider
 T403   Metadon
 T404   Andra syntetiska narkotiska substanser
 T405   Kokain
@@ -11040,7 +11059,7 @@ T503   Läkemedel som påverkar elektrolyt-, värme- och vattenbalansen
 T504   Läkemedel som påverkar urinsyrametabolismen
 T505   Aptitreglerande medel
 T506   Antidoter och chelatbildande läkemedel som ej klassificeras annorstädes
-T507   Analeptika och opiatreceptorantagonister
+T507   Analeptika och opioidreceptorantagonister
 T508   Diagnostiska medel
 T509   Andra och icke specificerade droger, läkemedel och biologiska substanser
 T510   Etanol
@@ -11100,7 +11119,7 @@ T598   Andra specificerade gaser, rök och ångor
 T599   Gaser, rök och ångor, ospecificerade
 T600   Organiska fosfater och karbamater använda som insekticider
 T601   Halogenerade insekticider
-T602   Andra insekticider
+T602   Andra och ospecificerade insekticider
 T603   Herbicider och fungicider
 T604   Rodenticider
 T608   Andra specificerade pesticider
@@ -11479,7 +11498,7 @@ U065   Kod som kan tas i bruk med kort varsel
 U066   Kod som kan tas i bruk med kort varsel
 U067   Kod som kan tas i bruk med kort varsel
 U068   Kod som kan tas i bruk med kort varsel
-U069   Kod som kan tas i bruk med kort varsel
+U069   Infektion med zikavirus, ospecificerad
 U070   Kod som kan tas i bruk med kort varsel
 U071   Kod som kan tas i bruk med kort varsel
 U072   Kod som kan tas i bruk med kort varsel
@@ -11814,7 +11833,6 @@ Z223B  Bärare av meningokocker
 Z223C  Bärare av stafylokocker
 Z223W  Bärare av andra specificerade bakterier
 Z224   Bärare av agens för könssjukdom
-Z225   Bärare av hepatitvirus
 Z226   Bärare av humant T-lymfotropt virus typ 1
 Z228   Bärare av andra specificerade patogena mikroorganismer
 Z228A  Latent tuberkulos
@@ -12247,6 +12265,9 @@ Z850W  Malign tumör med annan lokalisation i matsmältningsorganen, i den egna sj
 Z850X  Malign tumör med ofullständigt angiven lokalisation i matsmältningsorganen, i den egna sjukhistorien (tillstånd som klassificeras under C269)
 Z851   Malign tumör i luftstrupe, luftrör och lunga i den egna sjukhistorien
 Z852   Malign tumör i andra andningsorgan och intratorakala organ i den egna sjukhistorien
+Z852A  Malign tumör i näshåla och mellanöra, näsans bihålor och struphuvud i den egna sjukhistorien (tillstånd som klassificeras under C30-C32)
+Z852B  Malign tumör i tymus, hjärtat, mediastinum och lungsäcken i den egna sjukhistorien (tillstånd som klassificeras under C37-C38)
+Z852X  Malign tumör med annan och ofullständigt angiven lokalisation i andningsorganen och brösthålans organ i den egna sjukhistorien (tillstånd som klassificeras under C39)
 Z853   Malign tumör i bröstkörtel i den egna sjukhistorien
 Z854   Malign tumör i könsorganen i den egna sjukhistorien
 Z854A  Malign tumör i vulva i den egna sjukhistorien (tillstånd som klassificeras under C51)
@@ -12271,6 +12292,14 @@ Z855X  Malign tumör med icke specificerad lokalisation i urinorganen, i den egna
 Z856   Leukemi i den egna sjukhistorien
 Z857   Malign tumör i lymfoid, blodbildande eller därmed besläktad vävnad i den egna sjukhistorien
 Z858   Malign tumör i andra specificerade organ och organsystem i den egna sjukhistorien
+Z858A  Malign tumör i läpp, munhåla och svalg i den egna sjukhistorien (tillstånd som klassificeras under C00-C14)
+Z858B  Malign tumör i ben och ledbrosk i den egna sjukhistorien (tillstånd som klassificeras under C40-C41)
+Z858C  Malignt melanom och andra maligna tumörer i huden i den egna sjukhistorien (tillstånd som klassificeras under C43-C44)
+Z858D  Malign tumör i mesotelial (kroppshåletäckande) vävnad i den egna sjukhistorien (tillstånd som klassificeras under C45-C48)
+Z858E  Malign tumör i annan bindväv och mjukvävnad i den egna sjukhistorien (tillstånd som klassificeras under C49)
+Z858F  Malign tumör i hjärnan och andra delar av centrala nervsystemet i den egna sjukhistorien (tillstånd som klassificeras under C70-C72)
+Z858G  Malign tumör i tyreoidea i den egna sjukhistorien (tillstånd som klassificeras under C73)
+Z858W  Malign tumör i andra specificerade organ och organsystem eller med ofullständigt angiven lokalisation i den egna sjukhistorien (tillstånd som klassificeras under C69, C74-C79, C97)
 Z859   Malign tumör med icke specificerad lokalisation i den egna sjukhistorien
 Z860   Andra tumörer i den egna sjukhistorien
 Z861   Infektions- och parasitsjukdomar i den egna sjukhistorien
@@ -12290,7 +12319,7 @@ Z867W  Andra sjukdomar i cirkulationsorganen i den egna sjukhistorien
 Z870   Sjukdomar i andningsorganen i den egna sjukhistorien
 Z871   Sjukdomar i mag-tarmkanalen i den egna sjukhistorien
 Z872   Sjukdomar i hud och underhud i den egna sjukhistorien
-Z873   Sjukdomar i muskuloskeletala systemet och bindväven
+Z873   Sjukdomar i muskuloskeletala systemet och bindväven i den egna sjukhistorien
 Z874   Sjukdomar i urin- och könsorgan i den egna sjukhistorien
 Z875   Komplikationer under graviditet, förlossning och barnsängstid i den egna sjukhistorien
 Z876   Vissa perinatala tillstånd i den egna sjukhistorien
@@ -12341,6 +12370,7 @@ Z913   Störningar i mönstret för sömn-vakenhet i den egna sjukhistorien
 Z914   Psykiskt trauma i den egna sjukhistorien som ej klassificeras annorstädes
 Z915   Självdestruktivitet i den egna sjukhistorien
 Z916   Annat fysiskt trauma i den egna sjukhistorien
+Z917   Kvinnlig könsstympning i den egna sjukhistorien
 Z918   Andra specificerade riskfaktorer i den egna sjukhistorien som ej klassificeras annorstädes
 Z920   Tidigare användning av preventivmedel
 Z921   Långtidsanvändning av blodförtunnande medel i den egna sjukhistorien

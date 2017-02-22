@@ -75,13 +75,12 @@ A86    Icke specificerad virusencefalit
 A87    Virusmeningit
 A88    Andra virusinfektioner i centrala nervsystemet som ej klassificeras annorstädes
 A89    Icke specificerad virusinfektion i centrala nervsystemet
-A90    Denguefeber (klassisk dengue)
-A91    Hemorragisk denguefeber
-A92    Andra febersjukdomar orsakade av virus överförda av myggor
+A92    Andra febersjukdomar än dengue orsakade av virus överförda av myggor
 A93    Andra febersjukdomar orsakade av virus överförda av leddjur, som ej klassificeras annorstädes
 A94    Icke specificerad febersjukdom orsakad av virus överfört av leddjur
 A95    Gula febern
 A96    Arenaviral hemorragisk feber
+A97    Dengue
 A98    Andra hemorragiska febersjukdomar orsakade av virus som ej klassificeras annorstädes
 A99    Icke specificerad hemorragisk febersjukdom orsakad av virus
 B00    Herpes simplex-infektioner
@@ -424,7 +423,7 @@ F06    Andra psykiska störningar orsakade av hjärnskada, cerebral dysfunktion el
 F07    Personlighets- och beteendestörningar orsakade av hjärnsjukdom, hjärnskada eller cerebral dysfunktion
 F09    Ospecificerad organisk eller symtomatisk psykisk störning
 F10    Psykiska störningar och beteendestörningar orsakade av alkohol
-F11    Psykiska störningar och beteendestörningar orsakade av opiater
+F11    Psykiska störningar och beteendestörningar orsakade av opioider
 F12    Psykiska störningar och beteendestörningar orsakade av cannabis
 F13    Psykiska störningar och beteendestörningar orsakade av sedativa och hypnotika
 F14    Psykiska störningar och beteendestörningar orsakade av kokain
@@ -551,7 +550,7 @@ G81    Ensidig förlamning
 G82    Parapares och tetrapares (förlamning av båda nedre extremiteterna och förlamning av alla fyra extremiteterna)
 G83    Andra förlamningssyndrom
 G90    Sjukdomar i autonoma nervsystemet
-G91    Hydrocefalus (vattenskalle, ökad mängd hjärnkammarvatten)
+G91    Hydrocefalus (vattenskalle)
 G92    Toxisk encefalopati (hjärnsjukdom)
 G93    Andra sjukdomar i hjärnan
 G94    Andra tillstånd i hjärnan vid sjukdomar som klassificeras annorstädes
@@ -714,8 +713,8 @@ J03    Akut tonsillit (tonsillinflammation)
 J04    Akut laryngit (inflammation i struphuvudet) och trakeit (inflammation i luftstrupen)
 J05    Akut obstruktiv laryngit (pseudokrupp) och epiglottit (inflammation i struplocket)
 J06    Akut övre luftvägsinfektion med multipel och icke specificerad lokalisation
-J09    Influensa orsakad av vissa identifierade influensavirus
-J10    Influensa orsakad av annat identifierat influensavirus
+J09    Influensa orsakad av identifierat zoonotiskt eller pandemiskt influensavirus
+J10    Influensa orsakad av identifierat säsongsinfluensavirus
 J11    Influensa, virus ej identifierat
 J12    Viruspneumoni som ej klassificeras annorstädes
 J13    Pneumoni orsakad av Streptococcus pneumoniae
@@ -951,7 +950,7 @@ M40    Kyfos och lordos
 M41    Skolios
 M42    Osteokondros (degenerativ brosk-bensjukdom) i kotpelaren
 M43    Andra deformerande ryggsjukdomar
-M45    Pelvospondylit [Bechterews sjukdom]
+M45    Ankyloserande spondylit [Bechterews sjukdom]
 M46    Andra inflammatoriska sjukdomar i ryggraden
 M47    Spondylos
 M48    Andra spondylopatier
@@ -1096,7 +1095,7 @@ O20    Blödning i tidig graviditet
 O21    Ihållande kräkningar under graviditeten
 O22    Venösa komplikationer och hemorrojder under graviditeten
 O23    Infektioner i urin- och könsorganen under graviditeten
-O24    Diabetes (sockersjuka) under graviditeten
+O24    Diabetes under graviditeten
 O25    Undernäring under graviditeten
 O26    Vård av modern för andra tillstånd i huvudsak sammanhängande med graviditeten
 O28    Onormala fynd vid undersökning av den blivande modern
@@ -1220,7 +1219,7 @@ Q05    Spina bifida (kluven ryggrad)
 Q06    Andra medfödda missbildningar av ryggmärgen
 Q07    Andra medfödda missbildningar i nervsystemet
 Q10    Medfödda missbildningar av ögonlock, tårsäck och tårkanal samt ögonhåla
-Q11    Anoftalmos (avsaknad av öga), mikroftalmos (förminskat öga) och makroftalmos (förstorat öga)
+Q11    Anoftalmus (avsaknad av öga), mikroftalmus (förminskat öga) och makroftalmus (förstorat öga)
 Q12    Medfödd linsmissbildning
 Q13    Medfödda missbildningar i ögats främre segment
 Q14    Medfödda missbildningar i ögats bakre segment
@@ -1528,7 +1527,7 @@ T35    Köldskada som engagerar flera kroppsregioner och icke specificerad köldsk
 T36    Förgiftning med systemiska antibiotika
 T37    Förgiftning med andra läkemedel för systemiskt bruk mot infektionssjukdomar och parasitsjukdomar
 T38    Förgiftning med hormoner och deras syntetiska substitut och antagonister som ej klassificeras annorstädes
-T39    Förgiftning med smärtstillande läkemedel av icke opiatkaraktär, febernedsättande läkemedel samt antiinflammatoriska och antireumatiska läkemedel
+T39    Förgiftning med smärtstillande läkemedel av icke opioidkaraktär, febernedsättande läkemedel samt antiinflammatoriska och antireumatiska läkemedel
 T40    Förgiftning med narkotiska och psykodysleptiska medel [hallucinogener]
 T41    Förgiftning med anestetika och gaser för terapeutiskt bruk
 T42    Förgiftning med antiepileptika och medel vid parkinsonism samt lugnande medel och sömnmedel
@@ -1585,7 +1584,7 @@ T96    Sena besvär av förgiftning orsakad av droger, läkemedel och biologiska su
 T97    Sena besvär av toxiska effekter av substanser med i huvudsak icke medicinsk användning
 T98    Sena besvär av andra och icke specificerade effekter av yttre orsaker
 U04    Svår akut respiratorisk sjukdom [SARS]
-U06    Kod som kan tas i bruk med kort varsel
+U06    Infektion med zikavirus
 U07    Kod som kan tas i bruk med kort varsel
 U82    Resistens mot betalaktamantibiotika
 U83    Resistens mot andra antibiotika
@@ -1598,190 +1597,190 @@ UA4    UA4
 UA5    UA5
 UB1    UB1
 UP7    UP7
-W00    Fall i samma plan i samband med is och snö
 V01    Fotgängare skadad i kollision med cykel
-W01    Fall i samma plan genom halkning, snavning eller snubbling
 V02    Fotgängare skadad i kollision med två- eller trehjuligt motorfordon
-W02    Fall i samband med användning av skridskor, skidor, rullskridskor, skateboard (rullbräda) eller snowboard
 V03    Fotgängare skadad i kollision med personbil eller lätt lastbil
-W03    Annat fall i samma plan genom kollision med eller knuff av annan person
 V04    Fotgängare skadad i kollision med tung lastbil eller buss
-W04    Fall när man blir buren eller får stöd av andra personer
 V05    Fotgängare skadad i kollision med tåg
-W05    Fall från rullstol
 V06    Fotgängare skadad i kollision med annat icke motordrivet fordon
-W06    Fall från säng
-W07    Fall från stol
-W08    Fall från andra möbler
 V09    Fotgängare skadad i transportolycka
-W09    Fall från lekredskap på lekplats
 V10    Cyklist skadad i kollision med fotgängare eller djur
-W10    Fall i och från trappa och trappsteg
 V11    Cyklist skadad i kollision med annan cykel
-W11    Fall på och från stege
 V12    Cyklist skadad i kollision med två- eller trehjuligt motorfordon
-W12    Fall på och från byggnadsställning
 V13    Cyklist skadad i kollision med personbil eller lätt lastbil
-W13    Fall ut ur, från eller genom byggnad eller byggnadskonstruktion
 V14    Cyklist skadad i kollision med tung lastbil eller buss
-W14    Fall från träd
 V15    Cyklist skadad i kollision med tåg
-W15    Fall från stup
 V16    Cyklist skadad i kollision med annat icke motordrivet fordon
-W16    Dykning eller hopp i vatten med annan skada än drunkning eller drunkningstillbud
 V17    Cyklist skadad i kollision med fast eller stillastående föremål
-W17    Annat fall från ett plan till ett annat
 V18    Cyklist i transportolycka, ej kollision
-W18    Annat fall i samma plan
 V19    Cyklist skadad i transportolycka
-W19    Fall, ospecificerat
 V20    Motorcyklist skadad i kollision med fotgängare eller djur
-W20    Träffad av kastat eller fallande föremål
 V21    Motorcyklist skadad i kollision med cykel
-W21    Slagit sig mot eller träffad av sportredskap
 V22    Motorcyklist skadad i kollision med två- eller trehjuligt motorfordon
-W22    Slagit sig mot eller träffad av andra föremål
 V23    Motorcyklist skadad i kollision med personbil eller lätt lastbil
-W23    Fångad av, klämd eller pressad i eller mellan föremål
 V24    Motorcyklist skadad i kollision med tung lastbil eller buss
-W24    Kontakt med utrustning för kraftöverföring och lyft som ej klassificeras annorstädes
 V25    Motorcyklist skadad i kollision med tåg
-W25    Kontakt med vasst glasföremål
 V26    Motorcyklist skadad i kollision med annat ej motordrivet fordon
-W26    Kontakt med dolk, kniv eller svärd
 V27    Motorcyklist skadad i kollision med fast eller stillastående föremål
-W27    Kontakt med ej motordrivet handverktyg
 V28    Motorcyklist skadad i transportolycka, ej kollision
-W28    Kontakt med motordriven gräsklippare
 V29    Motorcyklist skadad i transportolycka
-W29    Kontakt med annat motordrivet handverktyg och hushållsmaskin
 V30    Förare av eller passagerare i trehjuligt motorfordon i kollision med fotgängare eller djur
-W30    Kontakt med jordbruksmaskin
 V31    Förare av eller passagerare i trehjuligt motorfordon skadad i kollision med cykel
-W31    Kontakt med annan och icke specificerad maskin
 V32    Förare av eller passagerare i trehjuligt motorfordon skadad i kollision med annat två- eller trehjuligt motorfordon
-W32    Skott från pistol och revolver
 V33    Förare av eller passagerare i trehjuligt motorfordon skadad i kollision med personbil eller lätt lastbil
-W33    Skott från gevär, hagelbössa och tyngre skjutvapen
 V34    Förare av eller passagerare i trehjuligt motorfordon skadad i kollision med tung lastbil eller buss
-W34    Skott från andra och icke specificerade skjutvapen
 V35    Förare av eller passagerare i trehjuligt motorfordon skadad i kollision med tåg
-W35    Explosion i ångpanna
 V36    Förare av eller passagerare i trehjuligt motorfordon skadad i kollision med annat icke motordrivet fordon
-W36    Explosion av gascylinder
 V37    Förare av eller passagerare i trehjuligt motorfordon skadad i kollision med fast eller stillastående föremål
-W37    Explosion av däck, rör eller slang (under övertryck)
 V38    Förare av eller passagerare i trehjuligt motorfordon skadad i transportolycka, ej kollision
-W38    Explosion av andra specificerade föremål under övertryck
 V39    Förare av eller passagerare i trehjuligt motorfordon skadad i transportolycka
-W39    Explosion av fyrverkeripjäs
 V40    Förare av eller passagerare i personbil skadad i kollision med fotgängare eller djur
-W40    Explosion av andra sprängämnen
 V41    Förare av eller passagerare i personbil skadad i kollision med cykel,
-W41    Exponering för högtrycksstråle
 V42    Förare av eller passagerare i personbil skadad i kollision med två- eller trehjuligt motorfordon
-W42    Exponering för buller
 V43    Förare av eller passagerare i personbil skadad i kollision med personbil eller lätt lastbil
-W43    Exponering för vibrationer
 V44    Förare av eller passagerare i personbil skadad i kollision med tung lastbil eller buss
-W44    Främmande kropp som trängt in i eller genom öga eller naturlig kroppsöppning
 V45    Förare av eller passagerare i personbil skadad i kollision med tåg
-W45    Främmande kropp som trängt in genom huden
 V46    Förare av eller passagerare i personbil skadad i kollision med annat icke motordrivet fordon
-W46    Kontakt med injektionsnål
 V47    Förare av eller passagerare i personbil skadad i kollision med fast eller stillastående föremål
 V48    Förare av eller passagerare i personbil skadad i transportolycka, ej kollision
 V49    Förare av eller passagerare i personbil skadad i transportolycka
-W49    Exponerad för andra och icke specificerade icke levande mekaniska krafter
 V50    Förare av eller passagerare i lätt lastbil skadad i kollision med fotgängare eller djur
-W50    Slagen, sparkad, biten eller riven av annan person
 V51    Förare av eller passagerare i lätt lastbil skadad i kollision med cykel
-W51    Slagit sig mot eller törnat emot annan person
 V52    Förare av eller passagerare i lätt lastbil skadad i kollision med två- eller trehjuligt motorfordon
-W52    Klämd, knuffad eller nedtrampad av folkmassa
 V53    Förare av eller passagerare i lätt lastbil skadad i kollision med personbil eller lätt lastbil
-W53    Biten av råtta
 V54    Förare av eller passagerare i lätt lastbil skadad i kollision med tung lastbil eller buss
-W54    Biten eller angripen av hund
 V55    Förare av eller passagerare i lätt lastbil skadad i kollision med tåg
-W55    Biten eller angripen av annat däggdjur
 V56    Förare av eller passagerare i lätt lastbil skadad i kollision med annat icke motordrivet fordon
-W56    Biten eller angripen av vattendjur
 V57    Förare av eller passagerare i lätt lastbil skadad i kollision med fast eller stillastående föremål
-W57    Bett och stick av icke giftig insekt och andra icke giftiga leddjur
 V58    Förare av eller passagerare i lätt lastbil skadad i transportolycka, ej kollision
-W58    Biten eller angripen av krokodil eller alligator
 V59    Förare av eller passagerare i lätt lastbil skadad i transportolycka
-W59    Biten eller angripen av andra kräldjur
 V60    Förare av eller passagerare i tung lastbil skadad i kollision med fotgängare eller djur
-W60    Kontakt med törnen och taggar på växter samt vassa blad
 V61    Förare av eller passagerare i tung lastbil skadad i kollision med cykel
 V62    Förare av eller passagerare i tung lastbil skadad i kollision med två- eller trehjuligt motorfordon
 V63    Förare av eller passagerare i tung lastbil skadad i kollision med personbil eller lätt lastbil
 V64    Förare av eller passagerare i tung lastbil skadad i kollision med tung lastbil eller buss
-W64    Exponering för andra och icke specificerade levande mekaniska krafter
 V65    Förare av eller passagerare i tung lastbil skadad i kollision med tåg
-W65    Drunkning och drunkningstillbud i badkar
 V66    Förare av eller passagerare i tung lastbil skadad i kollision med annat icke motordrivet fordon
-W66    Drunkning och drunkningstillbud efter fall ned i badkar
 V67    Förare av eller passagerare i tung lastbil skadad i kollision med fast eller stillastående föremål
-W67    Drunkning och drunkningstillbud i simbassäng
 V68    Förare av eller passagerare i tung lastbil skadad i transportolycka, ej kollision
-W68    Drunkning och drunkningstillbud efter fall ned i simbassäng
 V69    Förare av eller passagerare i tung lastbil skadad i transportolycka
-W69    Drunkning och drunkningstillbud i hav, sjö och vattendrag
 V70    Förare av eller passagerare i buss skadad i kollision med fotgängare eller djur
-W70    Drunkning och drunkningstillbud efter fall i hav, sjö och vattendrag
 V71    Förare av eller passagerare i buss skadad i kollision med cykel
 V72    Förare av eller passagerare i buss skadad i kollision med två- eller trehjuligt motorfordon
 V73    Förare av eller passagerare i buss skadad i kollison med personbil eller lätt lastbil
-W73    Annan specificerad drunkning och annat specificerat drunkningstillbud
 V74    Förare av eller passagerare i buss skadad i kollision med tung lastbil eller buss
-W74    Drunkning och drunkningstillbud, ospecificerat
 V75    Förare av eller passagerare i buss skadad i kollision med tåg
-W75    Kvävning, kvävningstillbud och strypning i sängen
 V76    Förare av eller passagerare i buss skadad i kollision med annat icke motordrivet fordon
-W76    Annan strypning och hängning genom olyckshändelse
 V77    Förare av eller passagerare i buss skadad i kollision med fast eller stillastående föremål
-W77    Kvävning och kvävningstillbud av jord- eller sandmassor
 V78    Förare av eller passagerare i buss skadad i transportolycka, ej kollision
-W78    Inhalation av maginnehåll
 V79    Förare av eller passagerare i buss skadad i transportolycka
-W79    Inhalation och nedsväljning av föda som orsakat andningshinder
 V80    Ryttare eller person i åkdon draget av djur skadad i transportolycka
-W80    Inhalation och nedsväljning av andra föremål eller ämnen som orsakat andningshinder
 V81    Tågförare eller tågpassagerare skadad i transportolycka
-W81    Instängd eller fångad i utrymme med låg syrgashalt
 V82    Spårvagnsförare eller spårvagnspassagerare skadad i transportolycka
 V83    Förare av eller passagerare i eller på industrifordon skadad i transportolycka
-W83    Annan specificerad kvävning och annat specificerat kvävningstillbud
 V84    Förare eller passagerare i eller på jordbruksfordon skadad i transportolycka
-W84    Kvävning och kvävningstillbud, ospecificerat
 V85    Förare eller passagerare i eller på specialfordon skadad i transportolycka
-W85    Exponering för kraftledningar
 V86    Förare eller passagerare i terrängfordon skadad i transportolycka
-W86    Exponering för annan specificerad elektrisk ström
 V87    Trafikolycka där olyckstypen är specificerad men där olycksoffrets transportsätt är okänt
-W87    Exponering för icke specificerad elektrisk ström
 V88    Olycka, ej trafik, där olyckstypen är specificerad men där olycksoffrets transportsätt är okänt
-W88    Exponering för joniserande strålning
 V89    Olycka med motorfordon eller ej motordrivet fordon, fordonstyp ej specificerad
-W89    Exponering för av människa framställt synligt och ultraviolett ljus
 V90    Olycka med vattenfarkost som orsak till drunkning och drunkningstillbud
-W90    Exponering för annan icke joniserande strålning
 V91    Olycka med vattenfarkost som leder till annan skada
-W91    Exponering för icke specificerad strålning
 V92    Drunkning och drunkningstillbud i samband med transport på vatten utan att vattenfarkost är direkt engagerad i olyckan
-W92    Exponering för av människa framställd extrem hetta
 V93    Olycka ombord som lett till annan skada än drunkning och drunkningstillbud utan att olyckan kan karakteriseras som olycka med vattenfarkost
-W93    Exponering för av människa framställd extrem kyla
 V94    Andra och icke specificerade transportolyckor på vatten
-W94    Exponering för högt och lågt lufttryck och för ändringar i lufttryck
 V95    Olycka med motordriven luftfarkost med skada på ombordvarande
 V96    Olycka med ej motordriven luftfarkost med skada på ombordvarande
 V97    Andra specificerade olyckor vid lufttransport
-v98    Andra specificerade transportolyckor
+V98    Andra specificerade transportolyckor
 V99    Transportolycka, ospecificerad
+W00    Fall i samma plan i samband med is och snö
+W01    Fall i samma plan genom halkning, snavning eller snubbling
+W02    Fall i samband med användning av skridskor, skidor, rullskridskor, skateboard (rullbräda) eller snowboard
+W03    Annat fall i samma plan genom kollision med eller knuff av annan person
+W04    Fall när man blir buren eller får stöd av andra personer
+W05    Fall från rullstol
+W06    Fall från säng
+W07    Fall från stol
+W08    Fall från andra möbler
+W09    Fall från lekredskap på lekplats
+W10    Fall i och från trappa och trappsteg
+W11    Fall på och från stege
+W12    Fall på och från byggnadsställning
+W13    Fall ut ur, från eller genom byggnad eller byggnadskonstruktion
+W14    Fall från träd
+W15    Fall från stup
+W16    Dykning eller hopp i vatten med annan skada än drunkning eller drunkningstillbud
+W17    Annat fall från ett plan till ett annat
+W18    Annat fall i samma plan
+W19    Fall, ospecificerat
+W20    Träffad av kastat eller fallande föremål
+W21    Slagit sig mot eller träffad av sportredskap
+W22    Slagit sig mot eller träffad av andra föremål
+W23    Fångad av, klämd eller pressad i eller mellan föremål
+W24    Kontakt med utrustning för kraftöverföring och lyft som ej klassificeras annorstädes
+W25    Kontakt med vasst glasföremål
+W26    Kontakt med andra vassa föremål
+W27    Kontakt med ej motordrivet handverktyg
+W28    Kontakt med motordriven gräsklippare
+W29    Kontakt med annat motordrivet handverktyg och hushållsmaskin
+W30    Kontakt med jordbruksmaskin
+W31    Kontakt med annan och icke specificerad maskin
+W32    Skott från pistol och revolver
+W33    Skott från gevär, hagelbössa och tyngre skjutvapen
+W34    Skott från andra och icke specificerade skjutvapen
+W35    Explosion i ångpanna
+W36    Explosion av gascylinder
+W37    Explosion av däck, rör eller slang (under övertryck)
+W38    Explosion av andra specificerade föremål under övertryck
+W39    Explosion av fyrverkeripjäs
+W40    Explosion av andra sprängämnen
+W41    Exponering för högtrycksstråle
+W42    Exponering för buller
+W43    Exponering för vibrationer
+W44    Främmande kropp som trängt in i eller genom öga eller naturlig kroppsöppning
+W45    Främmande kropp som trängt in genom huden
+W46    Kontakt med injektionsnål
+W49    Exponerad för andra och icke specificerade icke levande mekaniska krafter
+W50    Slagen, sparkad, biten eller riven av annan person
+W51    Slagit sig mot eller törnat emot annan person
+W52    Klämd, knuffad eller nedtrampad av folkmassa
+W53    Biten av råtta
+W54    Biten eller angripen av hund
+W55    Biten eller angripen av annat däggdjur
+W56    Biten eller angripen av vattendjur
+W57    Bett och stick av icke giftig insekt och andra icke giftiga leddjur
+W58    Biten eller angripen av krokodil eller alligator
+W59    Biten eller angripen av andra kräldjur
+W60    Kontakt med törnen och taggar på växter samt vassa blad
+W64    Exponering för andra och icke specificerade levande mekaniska krafter
+W65    Drunkning och drunkningstillbud i badkar
+W66    Drunkning och drunkningstillbud efter fall ned i badkar
+W67    Drunkning och drunkningstillbud i simbassäng
+W68    Drunkning och drunkningstillbud efter fall ned i simbassäng
+W69    Drunkning och drunkningstillbud i hav, sjö och vattendrag
+W70    Drunkning och drunkningstillbud efter fall i hav, sjö och vattendrag
+W73    Annan specificerad drunkning och annat specificerat drunkningstillbud
+W74    Drunkning och drunkningstillbud, ospecificerat
+W75    Kvävning, kvävningstillbud och strypning i sängen
+W76    Annan strypning och hängning genom olyckshändelse
+W77    Kvävning och kvävningstillbud av jord- eller sandmassor
+W78    Inhalation av maginnehåll
+W79    Inhalation och nedsväljning av föda som orsakat andningshinder
+W80    Inhalation och nedsväljning av andra föremål eller ämnen som orsakat andningshinder
+W81    Instängd eller fångad i utrymme med låg syrgashalt
+W83    Annan specificerad kvävning och annat specificerat kvävningstillbud
+W84    Kvävning och kvävningstillbud, ospecificerat
+W85    Exponering för kraftledningar
+W86    Exponering för annan specificerad elektrisk ström
+W87    Exponering för icke specificerad elektrisk ström
+W88    Exponering för joniserande strålning
+W89    Exponering för av människa framställt synligt och ultraviolett ljus
+W90    Exponering för annan icke joniserande strålning
+W91    Exponering för icke specificerad strålning
+W92    Exponering för av människa framställd extrem hetta
+W93    Exponering för av människa framställd extrem kyla
+W94    Exponering för högt och lågt lufttryck och för ändringar i lufttryck
 W99    Exponering för andra och icke specificerade, av människa orsakade miljöfaktorer
 X00    Exponering för okontrollerad eld i byggnad eller byggnadskonstruktion
 X01    Exponering för icke kontrollerad eld med undantag för eld i byggnad eller byggnadskonstruktion
@@ -1822,7 +1821,7 @@ X36    Snöskred, lavin, jordskred och andra rörelser i jordytan
 X37    Katastrofartat oväder
 X38    Översvämning
 X39    Exponering för andra och icke specificerade naturkrafter
-X40    Oavsiktlig förgiftning med och exponering för smärtstillande läkemedel av icke opiatkaraktär, febernedsättande medel och medel mot reumatism
+X40    Oavsiktlig förgiftning med och exponering för smärtstillande läkemedel av icke opioidkaraktär, febernedsättande medel och medel mot reumatism
 X41    Oavsiktlig förgiftning med och exponering för antiepileptika, lugnande läkemedel och sömnmedel, medel mot parkinsonism samt psykotropa medel som ej klassificeras annorstädes
 X42    Oavsiktlig förgiftning med och exponering för narkotiska medel och hallucinogener som ej klassificeras annorstädes
 X43    Oavsiktlig förgiftning med och exponering för andra läkemedel som påverkar det autonoma nervsystemet
@@ -1840,7 +1839,7 @@ X54    Brist på vatten
 X57    Umbäranden, ospecificerade
 X58    Exponering för andra specificerade faktorer
 X59    Exponering för icke specificerad faktor
-X60    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för smärtstillande läkemedel av icke opiatkaraktär, febernedsättande medel och medel mot reumatism
+X60    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för smärtstillande läkemedel av icke opioidkaraktär, febernedsättande medel och medel mot reumatism
 X61    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för antiepileptika, lugnande läkemedel och sömnmedel, medel mot parkinsonism samt psykotropa medel som ej klassificeras annorstädes
 X62    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för narkotiska medel och hallucinogener som ej klassificeras annorstädes
 X63    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för andra läkemedel som påverkar det autonoma nervsystemet
@@ -1890,7 +1889,7 @@ Y06    Försummelse och vanvård
 Y07    Annan misshandel
 Y08    övergrepp med andra specificerade metoder
 Y09    Övergrepp med icke specificerade metoder
-Y10    Förgiftning med och exponering för smärtstillande läkemedel av icke opiatkaraktär, febernedsättande medel och medel mot reumatism, med oklar avsikt
+Y10    Förgiftning med och exponering för smärtstillande läkemedel av icke opioidkaraktär, febernedsättande medel och medel mot reumatism, med oklar avsikt
 Y11    Förgiftning med och exponering för antiepileptika, lugnande läkemedel och sömnmedel, medel mot parkinsonism samt psykotropa medel som ej klassificeras annorstädes, med oklar avsikt
 Y12    Förgiftning med och exponering för narkotiska medel och hallucinogener som ej klassificeras annorstädes, med oklar avsikt
 Y13    Förgiftning med och exponering för andra läkemedel som påverkar det autonoma nervsystemet, med oklar avsikt
