@@ -69,7 +69,8 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
             expect(UtkastPage.getDynamicLabelText('FRG_16.RBK')).toBe(texts['FRG_16.RBK']);
 
             //Tilläggsfråga
-            expect(UtkastPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
+            //expect(UtkastPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
+            // No tilläggsfrågor is available
 
         });
 
@@ -94,7 +95,7 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
             expect(IntygPage.getDynamicLabelText('FRG_16.RBK')).toBe(texts['FRG_16.RBK']);
 
             //Tilläggsfråga
-            expect(IntygPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
+            //expect(IntygPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
         });
 
 

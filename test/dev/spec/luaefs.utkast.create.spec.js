@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
-describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
+fdescribe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
 
     var utkastId = null;
 
@@ -125,14 +125,14 @@ describe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
                 UtkastPage.anledningTillKontakt.sendKeys('Patienten känner att en avstämning vore bra.');
             });
         });
-
+/* no tilläggsfrågor atm. activate if we get such in the future
         it('Ange tilläggsfrågor', function() {
             UtkastPage.tillaggsfragor0svar.sendKeys('Vad för slags fråga är det där?!?!?');
             UtkastPage.enableAutosave();
             UtkastPage.tillaggsfragor1svar.sendKeys(
                 'Likheten på en struts? Båda benen är lika långa, särskilt det vänstra.');
         });
-
+*/
         it('Signera intyget', function() {
             UtkastPage.whenSigneraButtonIsEnabled().then(function() {
                 UtkastPage.signeraButtonClick();
