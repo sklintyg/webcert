@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@keepIntyg @signera @smoke
+@keepIntyg @signera
 Scenariomall: Skapa och signera ett intyg för <intygKod>
 	När jag går in på att skapa ett <intyg> intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -75,7 +75,7 @@ Scenario: Samtida användare ska generera felmeddelande (SMI-intyg)
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
 
-@samtidaanvandare @makulera
+@samtidaanvandare @makulera  @smoke
 Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) om intyg kopieras efter makulera
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget
