@@ -56,7 +56,7 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionPar
 
 /**
  * Bean for inserting questions directly into the database.
- * <p/>
+ *
  * Created by Pehr Assarsson on 9/24/13.
  */
 @Transactional

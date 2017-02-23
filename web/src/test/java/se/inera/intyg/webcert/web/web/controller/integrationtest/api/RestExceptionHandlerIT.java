@@ -18,22 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import com.jayway.restassured.RestAssured;
-import org.junit.Test;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
+
+import com.jayway.restassured.RestAssured;
+import org.junit.Test;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Verify that the API framework handles Rest framework problems, such as an nonexisting endpoint method in such a
  * way that our custom exception handler is used and responds with our custom error json response.
  *
  * @see se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler
- * <p/>
+ * 
  * Created by marced on 01/12/15.
  */
 public class RestExceptionHandlerIT extends BaseRestIntegrationTest {

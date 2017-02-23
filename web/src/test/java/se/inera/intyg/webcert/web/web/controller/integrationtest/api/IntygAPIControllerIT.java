@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
  * Basic test suite that verifies that the endpoint (/api/intyg) for generic intygs operations (list
  * drafts/copy/notification status)
  * are available and reponds according to specification.
- * <p/>
+ *
  * Created by marced on 01/12/15.
  */
 public class IntygAPIControllerIT extends BaseRestIntegrationTest {

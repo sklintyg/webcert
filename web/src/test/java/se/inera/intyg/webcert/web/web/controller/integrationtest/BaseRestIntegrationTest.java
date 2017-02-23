@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
- * <p/>
+ *
  * Created by marced on 19/11/15.
  */
 public abstract class BaseRestIntegrationTest {
