@@ -18,14 +18,24 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -69,13 +79,6 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
-
-import javax.xml.ws.WebServiceException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -246,16 +249,40 @@ public class IntygServiceImpl implements IntygService {
                     isEmployer);
 
             // Log print as PDF to PDL log
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
-            logService.logPrintIntygAsPDF(logRequest);
-
-            // Log print as PDF to monitoring log
-            monitoringService.logIntygPrintPdf(intygsId, intygsTyp);
+            logPdfPrinting(intyg);
 
             return intygPdf;
 
         } catch (IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+        }
+    }
+
+    /**
+     * Creates log events for PDF printing actions. Creates both PDL and monitoring log events
+     * depending the state of the intyg.
+     * @param intyg
+     */
+    private void logPdfPrinting(IntygContentHolder intyg) {
+
+        final String intygsId = intyg.getUtlatande().getId();
+        final String intygsTyp = intyg.getUtlatande().getTyp();
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
+
+        //Are we printing a draft?
+        if (intyg.getUtlatande().getGrundData().getSigneringsdatum() == null) {
+            // Log printing of draft
+            logService.logPrintIntygAsDraft(logRequest);
+            monitoringService.logUtkastPrint(intygsId, intygsTyp);
+        } else {
+            // Log printing of intyg
+            logService.logPrintIntygAsPDF(logRequest);
+            if (intyg.isRevoked()) {
+                monitoringService.logRevokedPrint(intygsId, intygsTyp);
+            } else {
+                monitoringService.logIntygPrintPdf(intygsId, intygsTyp);
+            }
         }
     }
 

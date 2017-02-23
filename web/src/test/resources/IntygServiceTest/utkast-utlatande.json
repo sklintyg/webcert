@@ -1,0 +1,83 @@
+{"id": "123",
+ "typ": "fk7263",
+    "grundData": {
+        "skapadAv": {
+            "personId": "Personal HSA-ID",
+            "fullstandigtNamn": "En Läkare",
+            "vardenhet": {
+                "enhetsid": "VardenhetY",
+                "enhetsnamn": "Kir mott",
+                "postadress": "Lasarettsvägen 13",
+                "postnummer": "85150",
+                "postort": "Sundsvall",
+                "telefonnummer": "060-1818000",
+                "epost" : "kirmott@vardenhet.se",
+                "vardgivare": {
+                    "vardgivarid": "VardgivarId",
+                    "vardgivarnamn": "Landstinget Norrland"
+                },
+                "arbetsplatsKod": "123456789011"
+            }
+        },
+        "patient": {
+            "personId": "19121212-1212",
+            "fullstandigtNamn": "Test Testorsson",
+            "efternamn": "Test Testorsson"
+        }
+    },
+    "giltighet":{
+        "from" :"2011-01-26",
+        "tom" :"2011-05-31"
+    },
+
+    "avstangningSmittskydd":false,
+
+    "undersokningAvPatienten" : "2011-01-26",
+    "telefonkontaktMedPatienten" : "2011-01-12",
+    "journaluppgifter" : "2010-01-14",
+    "annanReferens" : "2010-01-24",
+    "kommentar" : "Prognosen för patienten är god.\nHan kommer att kunna återgå till sitt arbete efter genomförd behandling.",
+
+    "rekommendationKontaktForetagshalsovarden" : true,
+    "rekommendationKontaktArbetsformedlingen" : true,
+    "rekommendationOvrigt" : "När skadan förbättrats rekommenderas muskeluppbyggande sjukgymnastik",
+    "rekommendationOvrigtCheck" : true,
+    "atgardInomSjukvarden" : "Utreds om operation är nödvändig",
+    "annanAtgard" : "Patienten ansvarar för att armen hålls i stillhet",
+    "rehabilitering" : "rehabiliteringGarInteAttBedoma",
+
+    "ressattTillArbeteEjAktuellt" : true,
+    "kontaktMedFk" : true,
+
+    "sjukdomsforlopp" : "Bedömttillstånd: Patienten klämde höger överarm vid olycka i hemmet.\nProblemen har pågått en längre tid.",
+
+    "diagnosKod" : "S47",
+    "diagnosBeskrivning": "Medicinskttillstånd: Klämskada på överarm",
+
+    "nuvarandeArbete":true,
+    "nuvarandeArbetsuppgifter":"",
+
+    "funktionsnedsattning" : "Funktionstillstånd-Kroppsfunktion: Kraftigt nedsatt rörlighet i överarmen pga skadan.\nBöj- och sträckförmågan är mycket dålig.\nSmärtar vid rörelse vilket ger att patienten inte kan använda armen särkilt mycket.",
+    "aktivitetsbegransning" : "Funktionstillstånd-Aktivitet: Patienten bör/kan inte använda armen förrän skadan läkt.\nSkadan förvärras vid för tidigt påtvingad belastning.\nPatienten kan inte lyfta armen utan den ska hållas riktad nedåt och i fast läge så mycket som möjligt under tiden för läkning.",
+    "prognosBedomning" : "arbetsformagaPrognosGarInteAttBedoma",
+    "arbetsformagaPrognos" : "Arbetsförmåga: Skadan har förvärrats vid varje tillfälle patienten använt armen. Måste hållas i total stillhet tills läkningsprocessen kommit en bit på väg. Eventuellt kan utredning visa att operation är nödvändig för att läka skadan.",
+
+    "nedsattMed25":{
+      "from" :"",
+      "tom" :""
+    },
+    "nedsattMed50":{
+      "from" :"",
+      "tom" :""
+    },
+    "nedsattMed75":{
+      "from" :"",
+      "tom" :""
+    },
+    "nedsattMed100":{
+      "from" :"",
+      "tom" :""
+    },
+    "arbetsloshet" : true,
+    "foraldrarledighet" : true
+}
