@@ -131,8 +131,13 @@ module.exports = function(grunt) {
         });
 
         var promiseArr = externalFilesArr.map(function(link) {
+            var request_options = link;
+	    if (link.indexOf('sjunet.org') !== -1) {
+		request_options = {url: link, strictSSL: false}
+	    }
+
             return new Promise(function(resolve, reject) {
-                request(link, function(error, response) {
+                request(request_options, function(error, response) {
                     if (error) {
                         reject('En extern länk genererade ett fel: ' + error + 'länk: ' + link);
                     } else {
