@@ -19,8 +19,10 @@
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
+import autovalue.shaded.com.google.common.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             if (!isEmployer) {
                 pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT);
             } else {
-                pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, null);
+                pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, Collections.emptyList());
             }
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException me) {
