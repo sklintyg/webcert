@@ -26,7 +26,9 @@ import javax.xml.bind.JAXB;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.*;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificate.v1.GetMedicalCertificateRequestType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificate.v1.GetMedicalCertificateResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificate.v1.GetMedicalCertificateResponseType;
 import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certificate.converter.ModelConverter;
 import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
@@ -34,8 +36,8 @@ import se.inera.intyg.webcert.intygstjanststub.mode.StubLatencyAware;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 
-public class GetMedicalCertificateForCareResponderStub implements
-        GetMedicalCertificateForCareResponderInterface {
+public class GetMedicalCertificateResponderStub implements
+        GetMedicalCertificateResponderInterface {
 
     @Autowired
     private IntygStore intygStore;
@@ -43,10 +45,10 @@ public class GetMedicalCertificateForCareResponderStub implements
     @Override
     @StubLatencyAware
     @StubModeAware
-    public GetMedicalCertificateForCareResponseType getMedicalCertificateForCare(String logicalAddress,
-            GetMedicalCertificateForCareRequestType request) {
+    public GetMedicalCertificateResponseType getMedicalCertificate(String logicalAddress,
+            GetMedicalCertificateRequestType request) {
 
-        GetMedicalCertificateForCareResponseType response = new GetMedicalCertificateForCareResponseType();
+        GetMedicalCertificateResponseType response = new GetMedicalCertificateResponseType();
         CertificateHolder intygResponse = intygStore.getIntygForCertificateId(request.getCertificateId());
         if (intygResponse != null) {
             response.setMeta(ModelConverter.toCertificateMetaType(intygResponse));
@@ -64,7 +66,7 @@ public class GetMedicalCertificateForCareResponderStub implements
         return response;
     }
 
-    private void attachCertificateDocument(CertificateHolder certificate, GetMedicalCertificateForCareResponseType response) {
+    private void attachCertificateDocument(CertificateHolder certificate, GetMedicalCertificateResponseType response) {
         String content = intygStore.getContentTemplate("intyg-fk7263-content.xml")
                 .replace("CERTIFICATE_ID", certificate.getId())
                 .replace("PATIENT_CRN", certificate.getCivicRegistrationNumber().getPersonnummer())

@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -79,7 +80,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     public CertificateResponse getCertificate(String certificateId, String intygType) throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            return moduleApi.getCertificate(certificateId, logicalAddress);
+            return moduleApi.getCertificate(certificateId, logicalAddress, PartKod.HSVARD);
         } catch (ModuleException me) {
             throw new IntygModuleFacadeException(me.getMessage(), me);
         } catch (ModuleNotFoundException e) {

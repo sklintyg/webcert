@@ -28,7 +28,7 @@
   <beans profile="dev,wc-all-stubs,wc-it-stub">
     <context:component-scan base-package="se.inera.intyg.webcert.intygstjanststub" />
 
-    <jaxws:endpoint address="/get-certificate-for-care-stub" implementor="se.inera.intyg.webcert.intygstjanststub.GetMedicalCertificateForCareResponderStub"/>
+    <jaxws:endpoint address="/get-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.GetMedicalCertificateResponderStub"/>
     <jaxws:endpoint address="/list-certificates-for-care-stub" implementor="se.inera.intyg.webcert.intygstjanststub.ListCertificatesForCareResponderStub"/>
     <jaxws:endpoint address="/revoke-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RevokeMedicalCertificateResponderStub"/>
     <jaxws:endpoint address="/send-certificate-to-recipient-stub" implementor="se.inera.intyg.webcert.intygstjanststub.SendCertificateToRecipientResponderStub">

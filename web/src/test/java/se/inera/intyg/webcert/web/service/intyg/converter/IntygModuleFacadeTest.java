@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -125,17 +126,17 @@ public class IntygModuleFacadeTest {
         final String certificateId = "certificateId";
         final String logicalAddress = "logicalAddress";
         ReflectionTestUtils.setField(moduleFacade, "logicalAddress", logicalAddress);
-        when(moduleApi.getCertificate(certificateId, logicalAddress)).thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
+        when(moduleApi.getCertificate(certificateId, logicalAddress, PartKod.HSVARD)).thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
         CertificateResponse res = moduleFacade.getCertificate(certificateId, CERTIFICATE_TYPE);
 
         assertNotNull(res);
 
-        verify(moduleApi).getCertificate(certificateId, logicalAddress);
+        verify(moduleApi).getCertificate(certificateId, logicalAddress, PartKod.HSVARD);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetCertificateModuleException() throws Exception {
-        when(moduleApi.getCertificate(anyString(), anyString())).thenThrow(new ModuleException());
+        when(moduleApi.getCertificate(anyString(), anyString(), eq(PartKod.HSVARD))).thenThrow(new ModuleException());
         moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE);
     }
 
