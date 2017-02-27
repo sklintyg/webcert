@@ -66,8 +66,9 @@ public class LogServiceImpl implements LogService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogServiceImpl.class);
 
-    private static final String PRINTED_AS_PDF = "Intyget utskrivet som PDF";
-    private static final String PRINTED_AS_DRAFT = "Intyget utskrivet som utkast";
+    private static final String PRINTED_AS_PDF = "Intyg utskrivet";
+    private static final String PRINTED_AS_DRAFT = "Utkastet utskrivet";
+    private static final String PRINTED_WHEN_REVOKED = "Makulerat intyg utskrivet";
 
     @Autowired(required = false)
     @Qualifier("jmsPDLLogTemplate")
@@ -170,6 +171,16 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
+    public void logPrintRevokedIntygAsPDF(LogRequest logRequest) {
+        logPrintRevokedIntygAsPDF(logRequest, getLogUser(webCertUserService.getUser()));
+    }
+
+    @Override
+    public void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user) {
+        send(populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED), user));
+    }
+
+    @Override
     public void logSendIntygToRecipient(LogRequest logRequest) {
         logSendIntygToRecipient(logRequest, getLogUser(webCertUserService.getUser()));
     }
@@ -239,7 +250,7 @@ public class LogServiceImpl implements LogService {
             return;
         }
 
-        LOGGER.debug("Logging {} of Intyg {}", logMsg.getActivityType(), logMsg.getActivityLevel());
+        LOGGER.debug("Logging {} ({}) of Intyg {}", logMsg.getActivityType(), logMsg.getActivityArgs(), logMsg.getActivityLevel());
 
         try {
             jmsTemplate.send(new MC(logMsg));

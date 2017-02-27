@@ -150,6 +150,21 @@ public interface LogService {
     void logPrintIntygAsDraft(LogRequest logRequest, LogUser user);
 
     /**
+     * Creates a log event when an user requests a print-out of a revoked intyg.
+     *
+     * @param logRequest the logging details
+     */
+    void logPrintRevokedIntygAsPDF(LogRequest logRequest);
+
+    /**
+     * Creates a log event when an user requests a print-out of a revoked intyg.
+     *
+     * @param logRequest the logging details
+     * @param user the user who performs the action that is being logged
+     */
+    void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user);
+
+    /**
      * Creates a log event when an user sends a signed intyg directly to a recipient.
      *
      * @param logRequest the logging details

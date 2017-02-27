@@ -277,10 +277,11 @@ public class IntygServiceImpl implements IntygService {
             monitoringService.logUtkastPrint(intygsId, intygsTyp);
         } else {
             // Log printing of intyg
-            logService.logPrintIntygAsPDF(logRequest);
             if (intyg.isRevoked()) {
+                logService.logPrintRevokedIntygAsPDF(logRequest);
                 monitoringService.logRevokedPrint(intygsId, intygsTyp);
             } else {
+                logService.logPrintIntygAsPDF(logRequest);
                 monitoringService.logIntygPrintPdf(intygsId, intygsTyp);
             }
         }

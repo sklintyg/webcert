@@ -543,14 +543,29 @@ public class IntygServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testFetchIntygAsPdfFromWebCertDraft() throws IOException, IntygModuleFacadeException {
-        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
+    public void testFetchIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), null));
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean())).thenReturn(buildPdfDocument());
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
         verify(intygRepository, times(1)).findOne(anyString());
         verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
+        verifyNoMoreInteractions(logservice);
+        verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testFetchRevokedIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean())).thenReturn(buildPdfDocument());
+        IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        assertNotNull(intygPdf);
+
+        verify(intygRepository, times(1)).findOne(anyString());
+        verify(logservice).logPrintRevokedIntygAsPDF(any(LogRequest.class));
+        verifyNoMoreInteractions(logservice);
         verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }
 
@@ -598,8 +613,8 @@ public class IntygServiceTest {
         assertNotNull(intygPdf);
 
         verify(intygRepository).findOne(anyString());
-        verify(logservice, times(0)).logPrintIntygAsPDF(any(LogRequest.class));
         verify(logservice).logPrintIntygAsDraft(any(LogRequest.class));
+        verifyNoMoreInteractions(logservice);
         verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }
 
