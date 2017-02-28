@@ -17,12 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata,intyg,logger,pages,Promise,browser*/
+/*global testdata,intyg,logger,pages,Promise,browser,commonTools*/
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
 
 module.exports = {
+    intygShortcode: commonTools.helpers.intygShortcodes,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // SE2321000156-1004 saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
@@ -130,15 +131,7 @@ module.exports = {
         }
         return null;
     },
-    intygShortcode: {
-        'LISJP': 'Läkarintyg för sjukpenning',
-        'LUSE': 'Läkarutlåtande för sjukersättning',
-        'LUAE_NA': 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-        'LUAE_FS': 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-        'FK7263': 'Läkarintyg FK 7263',
-        'TSTRK1007': 'Transportstyrelsens läkarintyg',
-        'TSTRK1031': 'Transportstyrelsens läkarintyg, diabetes'
-    },
+
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;

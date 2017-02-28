@@ -16,34 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* globals browser,logger, wcTestTools */
+/* globals browser,logger, wcTestTools,commonTools */
 'use strict';
 var loginHelper = require('./login.helpers.js');
 var logInAsUserRole = loginHelper.logInAsUserRole;
 var logInAsUser = loginHelper.logInAsUser;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
-
-
-var users = {
-    'Tandläkare': [{
-        fornamn: 'Louise',
-        efternamn: 'Ericsson',
-        hsaId: 'TSTNMT2321000156-103B',
-        enhetId: 'TSTNMT2321000156-1039'
-    }],
-    'Vårdadministratör': [{
-        fornamn: 'Susanne',
-        efternamn: 'Johansson Karlsson',
-        hsaId: 'TSTNMT2321000156-105J',
-        enhetId: 'TSTNMT2321000156-105F'
-    }],
-    'Läkare': [{
-        fornamn: 'Erik',
-        efternamn: 'Nilsson',
-        hsaId: 'TSTNMT2321000156-105H',
-        enhetId: 'TSTNMT2321000156-105F'
-    }]
-};
+var users = commonTools.HSAusers;
 
 module.exports = function() {
 

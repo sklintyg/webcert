@@ -24,7 +24,8 @@
 'use strict';
 
 var JClass = require('jclass');
-var shuffle = require('../../helpers/testdataHelper.js').shuffle;
+var testdataHelper = require('common-testtools').testdataHelper;
+var shuffle = testdataHelper.shuffle;
 var BaseIntyg = JClass._extend({
     init: function() {
         this.intygType = null;
