@@ -1,19 +1,19 @@
 {
-  "name": "webcert-testtools",
-  "version": "1.0.162",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "dependencies": {
-    "common-testtools": "^0.1.3",
-    "jclass": "^1.2.1",
-    "request": "^2.79.0",
-    "xml2js": "^0.4.17"
-  },
-  "publishConfig": {
-    "registry": "https://build-inera.nordicmedtest.se/nexus/content/repositories/npm-internal/"
-  }
+    "name": "webcert-testtools",
+    "version": "1.0.163",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "dependencies": {
+        "common-testtools": "^0.1.3",
+        "jclass": "^1.2.1",
+        "request": "^2.79.0",
+        "xml2js": "^0.4.17"
+    },
+    "publishConfig": {
+        "registry": "https://build-inera.nordicmedtest.se/nexus/content/repositories/npm-internal/"
+    }
 }

@@ -23,7 +23,7 @@
 var fkLusePage = pages.intyg.luse.intyg;
 
 module.exports = {
-        intygShortcode: commonTools.helpers.intygShortcodes,
+    intygShortcode: commonTools.helpers.intygShortcodes,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // SE2321000156-1004 saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt

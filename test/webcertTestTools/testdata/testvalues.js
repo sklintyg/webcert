@@ -18,7 +18,9 @@
  */
 
 'use strict';
-var shuffle = require('./../helpers/testdataHelper.js').shuffle;
+var testdataHelper = require('common-testtools').testdataHelper;
+var shuffle = testdataHelper.shuffle;
+
 module.exports = {
     ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js'),

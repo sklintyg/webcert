@@ -19,7 +19,7 @@
 
 'use strict';
 
-var testdataHelper = require('./../helpers/testdataHelper.js');
+var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
 
 var testValues = require('./testvalues.js').ts;

@@ -19,7 +19,7 @@
 
 'use strict';
 
-var testdataHelper = require('../helpers/helpers.js').testdata;
+var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
 var fkValues = require('./testvalues.js').fk;
 var today = testdataHelper.dateFormat(new Date());
