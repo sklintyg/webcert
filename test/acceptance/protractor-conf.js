@@ -64,9 +64,9 @@ exports.config = {
         global.should = global.chai.should();
 
         var wcTestTools = require('webcert-testtools');
-        
+
         var commonTools = require('common-testtools');
-        
+
 
         global.commonTools = commonTools;
         global.wcTestTools = wcTestTools;
@@ -74,7 +74,7 @@ exports.config = {
         global.pages = wcTestTools.pages;
         global.person = {};
 
-        browser.ignoreSynchronization = false;
+        browser.ignoreSynchronization = true;
         browser.baseUrl = process.env.WEBCERT_URL;
 
         //logger.infoing
@@ -122,6 +122,7 @@ exports.config = {
                 }]);
         };
         browser.addMockModule('overrideLogging', overrideLogging);
+
     },
     onComplete: function() {
 
