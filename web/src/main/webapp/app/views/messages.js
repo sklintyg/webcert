@@ -46,10 +46,6 @@ angular.module('webcert').constant('webcert.messages', {
         'label.copyintyg': 'Kopiera intyg',
         'label.fornyaintyg': 'Förnya intyg',
 
-        'print.label.signed': 'Observera! Detta är en webbutskrift av intyget och är därför inte giltigt som intyg.',
-        'print.label.draft': 'Observera! Intyget är ett utkast och är därför inte giltigt.',
-        'print.label.revoked': 'Observera! Intyget är makulerat och därför inte giltigt.',
-
         'label.makulera': 'Makulera intyg',
         'label.makulera.body': 'Intyg som innehåller allvarliga fel kan makuleras. Exempel på ett allvarligt fel är om intyget är utfärdat för fel patient. Om intyget har skickats elektroniskt till en mottagare kommer mottagaren att informeras om makuleringen.<br><br>Om du fått ny information om patienten eller av annan anledning behöver korrigera innehållet i intyget, ska det inte makuleras. Du kan då välja att skapa ett nytt intyg genom att använda funktionen Kopiera och korrigera de felaktiga uppgifterna.',
         'label.makulera.confirmation': 'Kvittens - Återtaget intyg',

@@ -43,15 +43,13 @@
       media="screen">
 <link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css?<spring:message code="buildNumber" />"
       media="screen">
-<link rel="stylesheet" href="/web/webjars/common/webcert/css/print.css?<spring:message code="buildNumber" />"
-      media="print">
 
 </head>
 <body>
 
   <wc-cookie-banner></wc-cookie-banner>
 
-  <div ui-view="header" autoscroll="true" id="wcHeader" class="print-hide"></div>
+  <div ui-view="header" autoscroll="true" id="wcHeader"></div>
 
 
 

@@ -250,24 +250,6 @@ public class UtkastModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Creates a PDL log event that a persons draft has been printed.
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/loggautskrift")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response logPrintOfDraftToPDL(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
-
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
-
-        LOG.debug("Logging printout of draft intyg '{}'", intygsId);
-
-        utkastService.logPrintOfDraftToPDL(intygsId);
-
-        return Response.ok().build();
-    }
-
-    /**
      * Signera utkast.
      *
      * @param intygsId

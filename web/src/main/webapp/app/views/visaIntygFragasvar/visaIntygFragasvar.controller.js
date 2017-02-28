@@ -119,7 +119,6 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
 
             UtkastProxy.getUtkastType(certificateType, function(intygType) {
                 $scope.widgetState.fragaSvarAvailable = intygType.fragaSvarAvailable;
-                $scope.widgetState.printStatus = intygType.printStatus;
             });
 
         }]);

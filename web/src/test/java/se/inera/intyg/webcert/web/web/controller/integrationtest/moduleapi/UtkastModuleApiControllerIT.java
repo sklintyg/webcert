@@ -184,19 +184,6 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void testLogPrintOfDraftToPDL() {
-        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-
-        String intygsTyp = "fk7263";
-        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
-
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON)
-                .expect().statusCode(200)
-                .when().post(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/loggautskrift");
-    }
-
-    @Test
     public void testSigneraUtkastInvalidState() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 

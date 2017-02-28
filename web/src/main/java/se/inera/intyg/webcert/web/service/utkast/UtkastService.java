@@ -48,8 +48,6 @@ public interface UtkastService {
 
     void deleteUnsignedDraft(String intygId, long version);
 
-    void logPrintOfDraftToPDL(String intygId);
-
     int countFilterIntyg(UtkastFilter filter);
 
     String getQuestions(String intygsTyp, String version);

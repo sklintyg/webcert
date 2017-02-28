@@ -80,7 +80,6 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                         clickFn: function() {
                             var head = '<!DOCTYPE html><html>' +
                                 '<head>' +
-                                '<link rel="stylesheet" href="/web/webjars/common/webcert/css/print.css" media="print">' +
                                 '<title>Webcert - Användarvillkor</title>' +
                                 '</head>';
 

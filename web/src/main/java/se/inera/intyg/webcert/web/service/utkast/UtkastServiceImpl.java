@@ -284,27 +284,6 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public void logPrintOfDraftToPDL(String intygId) {
-        Utkast utkast = utkastRepository.findOne(intygId);
-
-        if (utkast == null) {
-            return;
-        }
-
-        // Log print to PDL log
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logPrintIntygAsDraft(logRequest);
-
-        // Log print to monitoring log
-        if (utkast.getAterkalladDatum() == null) {
-            monitoringService.logUtkastPrint(utkast.getIntygsId(), utkast.getIntygsTyp());
-        } else {
-            monitoringService.logRevokedPrint(utkast.getIntygsId(), utkast.getIntygsTyp());
-        }
-    }
-
-    @Override
     @Transactional("jpaTransactionManager")
     public SaveDraftResponse saveDraft(String intygId, long version, String draftAsJson, boolean createPdlLogEvent) {
         LOG.debug("Saving and validating utkast '{}'", intygId);

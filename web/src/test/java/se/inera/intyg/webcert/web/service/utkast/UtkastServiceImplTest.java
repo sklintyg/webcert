@@ -209,17 +209,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verifyZeroInteractions(mockMonitoringService);
     }
 
-    @Test
-    public void testLogPrintOfIntygAsDraft() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        draftService.logPrintOfDraftToPDL(INTYG_ID);
-
-        // Assert pdl log
-        verify(logService).logPrintIntygAsDraft(any(LogRequest.class));
-
-        verify(mockMonitoringService).logUtkastPrint(INTYG_ID, INTYG_TYPE);
-    }
-
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatIsSigned() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
