@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 

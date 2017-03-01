@@ -27,7 +27,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
 // CHECKSTYLE:OFF LineLength
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 import se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitioner.v1.rivtabp21.ValidatePrivatePractitionerResponderInterface;

@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import org.junit.Test;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;

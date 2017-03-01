@@ -30,7 +30,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.support.destination.DestinationResolutionException;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;

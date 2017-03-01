@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;

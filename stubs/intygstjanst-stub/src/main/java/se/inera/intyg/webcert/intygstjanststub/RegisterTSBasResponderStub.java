@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
 import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.*;
 import se.inera.intygstjanster.ts.services.v1.ResultCodeType;

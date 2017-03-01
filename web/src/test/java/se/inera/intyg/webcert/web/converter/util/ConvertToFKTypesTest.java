@@ -32,7 +32,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;

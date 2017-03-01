@@ -34,7 +34,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.notification.*;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;

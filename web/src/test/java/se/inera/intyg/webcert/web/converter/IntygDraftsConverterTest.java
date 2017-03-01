@@ -32,7 +32,7 @@ import org.junit.Test;
 
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;

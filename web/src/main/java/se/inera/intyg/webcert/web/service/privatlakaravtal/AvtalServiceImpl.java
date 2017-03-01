@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.privatlakaravtal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;

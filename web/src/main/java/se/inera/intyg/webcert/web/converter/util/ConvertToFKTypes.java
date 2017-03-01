@@ -18,13 +18,6 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import static se.inera.intyg.common.support.Constants.ARBETSPLATS_KOD_OID;
-import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
-import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
-import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
-
-import java.time.LocalDateTime;
-
 import iso.v21090.dt.v1.II;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
@@ -34,9 +27,17 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+
+import java.time.LocalDateTime;
+
+import static se.inera.intyg.common.support.Constants.ARBETSPLATS_KOD_OID;
+import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
+import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
+import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 
 /**
  * Created by pehr on 10/2/13.
@@ -95,7 +96,7 @@ public final class ConvertToFKTypes {
         pt.setFullstandigtNamn(ir.getPatientNamn());
 
         String root = PERSON_ID_OID;
-        if (ir.getPatientId().isSamordningsNummer()) {
+        if (SamordningsnummerValidator.isSamordningsNummer(ir.getPatientId())) {
             root = SAMORDNING_ID_OID;
         }
 

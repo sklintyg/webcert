@@ -20,7 +20,8 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import com.google.common.base.Strings;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 public class CopyIntygRequest {
 
@@ -62,7 +63,7 @@ public class CopyIntygRequest {
 
     public boolean containsNewValidPatientPersonId() {
         return (nyttPatientPersonnummer != null && (Personnummer.createValidatedPersonnummerWithDash(nyttPatientPersonnummer).isPresent()
-                || nyttPatientPersonnummer.isSamordningsNummer()));
+                || SamordningsnummerValidator.isSamordningsNummer(nyttPatientPersonnummer)));
     }
 
     public boolean isValid() {

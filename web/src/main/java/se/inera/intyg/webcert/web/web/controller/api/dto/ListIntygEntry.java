@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.time.LocalDateTime;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 public class ListIntygEntry {
 

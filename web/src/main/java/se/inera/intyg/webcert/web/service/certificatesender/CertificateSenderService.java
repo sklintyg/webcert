@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.certificatesender;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 /**
  * Created by eriklupander on 2015-05-20.
