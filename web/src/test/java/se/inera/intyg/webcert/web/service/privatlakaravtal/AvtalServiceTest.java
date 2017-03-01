@@ -35,7 +35,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;

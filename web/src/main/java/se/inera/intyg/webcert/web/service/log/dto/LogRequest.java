@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.log.dto;
 
 import com.google.common.base.Joiner;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 public class LogRequest {
 

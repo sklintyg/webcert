@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 public abstract class CreateCopyRequest {
     private String originalIntygId;

@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 
 public final class UtkastTestUtil {

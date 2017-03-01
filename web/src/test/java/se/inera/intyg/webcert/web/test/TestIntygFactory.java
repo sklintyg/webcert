@@ -24,7 +24,7 @@ import java.util.List;
 import java.time.LocalDateTime;
 
 import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 

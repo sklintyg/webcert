@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.integration.validator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import se.inera.intyg.common.support.modules.support.api.dto.InvalidPersonNummerException;
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.validate.ValidatorUtil;
 
 public final class PersonnummerChecksumValidator {

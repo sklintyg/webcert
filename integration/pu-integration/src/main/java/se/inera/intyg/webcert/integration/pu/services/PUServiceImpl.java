@@ -31,7 +31,7 @@ import org.springframework.cache.annotation.Cacheable;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.integration.pu.model.Person;
 import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
 import se.riv.population.residentmaster.lookupresidentforfullprofileresponder.v1.*;

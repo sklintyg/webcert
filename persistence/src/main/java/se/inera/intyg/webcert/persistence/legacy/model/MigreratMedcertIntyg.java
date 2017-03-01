@@ -24,7 +24,7 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 
-import se.inera.intyg.common.support.modules.support.api.dto.Personnummer;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 /**
  * Entity for a Medcert certificate migrated into Webcert.
