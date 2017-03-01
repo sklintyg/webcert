@@ -4,7 +4,6 @@ include ':webcert-common'
 include ':webcert-persistence'
 include ':log-sender'
 include ':notification-sender'
-include ':pu-integration'
 include ':pp-integration'
 include ':fmb-integration'
 include ':webcert-specifications'
@@ -20,7 +19,6 @@ project(':webcert-common').projectDir = "$rootDir/common" as File
 project(':webcert-persistence').projectDir = "$rootDir/persistence" as File
 project(':log-sender').projectDir = "$rootDir/log-sender" as File
 project(':notification-sender').projectDir = "$rootDir/notification-sender" as File
-project(':pu-integration').projectDir = "$rootDir/integration/pu-integration" as File
 project(':pp-integration').projectDir = "$rootDir/integration/pp-integration" as File
 project(':fmb-integration').projectDir = "$rootDir/integration/fmb-integration" as File
 project(':fk-stub').projectDir = "$rootDir/stubs/fk-stub" as File
