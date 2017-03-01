@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.integration.pu.model.PersonSvar;
-import se.inera.intyg.webcert.integration.pu.services.PUService;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PersonuppgifterResponse;

@@ -115,7 +115,6 @@ configurations {
 
 dependencies {
     compile project(':fmb-integration')
-    compile project(':pu-integration')
     compile project(':pp-integration')
     compile project(':notification-sender')
     compile project(':fk-stub')
@@ -127,6 +126,7 @@ dependencies {
     compile "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
+    compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
     compile "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
     compile "se.inera.intyg.infra:security-siths:${infraVersion}"
     compile "se.inera.intyg.infra:common-cache-metrics:${infraVersion}"
