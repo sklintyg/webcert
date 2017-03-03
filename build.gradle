@@ -76,6 +76,9 @@ allprojects {
         maven { url "http://repo.maven.apache.org/maven2" }
     }
 
+    // Findbugs does not work very well with groovy code. Hence we exclude groovy projects.
+    ext.findbugsExclude = ".*specifications\$"
+
     apply plugin: 'inera-intyg'
     apply plugin: 'maven'
 

@@ -48,6 +48,7 @@ dependencies {
 
     compile "com.jayway.awaitility:awaitility:${awaitilityVersion}"
 
+    fitnesse (project(":webcert-specifications")) { transitive = false }
     fitnesse "se.inera.intyg.common:integration-util:${commonVersion}"
     fitnesse "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
     fitnesse "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
@@ -61,7 +62,6 @@ dependencies {
     fitnesse "org.gebish:geb-core:${gebCoreVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-server:${seleniumServerVersion}"
     fitnesse "org.skyscreamer:jsonassert:${jsonAssertVersion}"
-    fitnesse (project(":webcert-specifications")) { transitive = false }
     fitnesse "com.jayway.awaitility:awaitility:${awaitilityVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-support:${seleniumVersion}"
     fitnesse "org.seleniumhq.selenium:selenium-firefox-driver:${seleniumVersion}"
