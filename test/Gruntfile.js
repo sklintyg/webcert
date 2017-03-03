@@ -132,9 +132,12 @@ module.exports = function(grunt) {
 
         var promiseArr = externalFilesArr.map(function(link) {
             var request_options = link;
-	    if (link.indexOf('sjunet.org') !== -1) {
-		request_options = {url: link, strictSSL: false}
-	    }
+            if (link.indexOf('sjunet.org') !== -1) {
+                request_options = {
+                    url: link,
+                    strictSSL: false
+                };
+            }
 
             return new Promise(function(resolve, reject) {
                 request(request_options, function(error, response) {
@@ -243,6 +246,33 @@ module.exports = function(grunt) {
             tagsArray.forEach(function(tag, index) {
                 tagsArray[index] = tagsArray[index].replace(' ', ',');
             });
+
+
+            // Filtrera bort de feature-filer som inte har några scenarios med valda taggar om parallella tester 
+            // ska koras (dvs. selenium-grid). 
+            if (grunt.option('gridnodeinstances')) {
+
+                var files = grunt.file.expand('acceptance/features/*.feature');
+                var featureFiles = [];
+
+                files.forEach(function(filePath) {
+
+                    var fileText = grunt.file.read(filePath);
+
+                    tagsArray.forEach(function(currentTag) {
+                        if (fileText.indexOf(currentTag) > -1 && featureFiles.indexOf(filePath) == -1) {
+                            featureFiles.push(filePath);
+                        }
+                    });
+                });
+
+                if (featureFiles.length === 0) {
+                    grunt.fail.warn('Hittade inget scenario som hade någon av taggarna som specificerats');
+                } else {
+                    grunt.config.set('protractor.acc.options.args.specs', featureFiles);
+                }
+            }
+
         }
         grunt.log.subhead('Taggar:' + tagsArray);
         grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
