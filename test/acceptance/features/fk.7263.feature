@@ -57,7 +57,7 @@ Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas e
 		Och jag klickar på skicka knappen
 		Och jag makulerar intyget
 		Och jag skickar en fråga till Försäkringskassan
-		Så ska varningen "internal_problem" visas
+		Så ska varningen "Ett tekniskt problem inträffade" visas
 
 @samtidaanvandare @fornya
 Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
