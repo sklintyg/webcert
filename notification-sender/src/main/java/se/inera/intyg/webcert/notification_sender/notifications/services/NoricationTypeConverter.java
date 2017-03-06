@@ -31,11 +31,11 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 
-public final class CertificateStatusUpdateForCareTypeConverter {
+public final class NoricationTypeConverter {
 
     protected static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
 
-    private CertificateStatusUpdateForCareTypeConverter() {
+    private NoricationTypeConverter() {
     }
 
     public static CertificateStatusUpdateForCareType convert(NotificationMessage notificationMessage, Intyg intyg) {
@@ -83,7 +83,7 @@ public final class CertificateStatusUpdateForCareTypeConverter {
         statusUpdateType.setMottagnaFragor(toArenden(notificationMessage.getMottagnaFragor()));
     }
 
-    private static Arenden toArenden(ArendeCount source) {
+    public static Arenden toArenden(ArendeCount source) {
         Arenden target = new Arenden();
         target.setTotalt(source.getTotalt());
         target.setBesvarade(source.getBesvarade());

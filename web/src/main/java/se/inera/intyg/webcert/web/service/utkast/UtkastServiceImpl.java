@@ -627,7 +627,7 @@ public class UtkastServiceImpl implements UtkastService {
             break;
         default:
             LOG.debug(
-                    "IntygDraftServiceImpl.sendNotification(Intyg, Event) was called but with an unhandled event. "
+                    "IntygDraftServiceImpl.sendNotification(Intyg, Handelse) was called but with an unhandled event. "
                             + "No notification was sent.",
                     utkast.getIntygsId());
             break;

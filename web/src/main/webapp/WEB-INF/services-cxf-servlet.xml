@@ -115,4 +115,18 @@
     </jaxws:schemaLocations>
   </jaxws:endpoint>
 
+  <jaxws:endpoint address="/list-certificates-for-care-with-qa/v2.0" implementor="se.inera.intyg.webcert.web.integration.ListCertificatesForCareWithQAResponderImpl">
+    <jaxws:outFaultInterceptors>
+      <bean
+        class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/clinicalprocess-healthcond-2/list-certificates-for-care-with-qa.xslt" />
+      </bean>
+    </jaxws:outFaultInterceptors>
+    <jaxws:schemaLocations>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_2.0.xsd</jaxws:schemaLocation>
+    </jaxws:schemaLocations>
+  </jaxws:endpoint>
+
 </beans>

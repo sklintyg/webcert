@@ -867,4 +867,35 @@
         tableName="MEDICINSKT_ARENDE"/>
   </changeSet>
 
+  <changeSet id="42" author="kja">
+    <createTable tableName="HANDELSE">
+      <column name="ID" type="bigint">
+        <constraints unique="true" nullable="false" />
+      </column>
+      <column name="TIMESTAMP" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="KOD" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="INTYGS_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="ENHETS_ID" type="varchar(255)">
+      </column>
+      <column name="VARDGIVAR_ID" type="varchar(255)">
+      </column>
+      <column name="PATIENT_PERSON_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="REFERENCE" type="varchar(255)">
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+      columnName="ID" incrementBy="1" startWith="1"
+      tableName="HANDELSE" />
+
+  </changeSet>
+
 </databaseChangeLog>

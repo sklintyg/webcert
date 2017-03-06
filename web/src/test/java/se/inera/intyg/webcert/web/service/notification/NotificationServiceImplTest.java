@@ -52,6 +52,8 @@ import se.inera.intyg.common.util.integration.integration.json.CustomObjectMappe
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -102,6 +104,9 @@ public class NotificationServiceImplTest {
 
     @Mock
     private ModuleApi moduleApi;
+
+    @Mock
+    private HandelseRepository handelseRepository;
 
     @Mock
     private UtkastRepository utkastRepo;
@@ -164,6 +169,7 @@ public class NotificationServiceImplTest {
         assertNull(captNotMsg.getReference());
         verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
                 eq(SchemaVersion.VERSION_1), eq(null));
+        verify(handelseRepository).save(any(Handelse.class));
     }
 
     @Test

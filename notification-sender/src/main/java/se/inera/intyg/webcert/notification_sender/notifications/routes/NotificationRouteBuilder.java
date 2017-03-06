@@ -91,7 +91,6 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .to("bean:notificationAggregator")
                 .split(body())
                 .to(notificationQueue).end()
-
                 .end();
 
         // The wiretap is used to directly forward SIGNAT messages (see INTYG-2744) to the send queue while the original

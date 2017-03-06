@@ -30,6 +30,7 @@ import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -51,15 +52,17 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -101,6 +104,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private UtkastRepository utkastRepo;
+
+    @Autowired
+    private HandelseRepository handelseRepo;
 
     @PostConstruct
     public void checkJmsTemplate() {
@@ -247,6 +253,11 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    @Override
+    public List<Handelse> getNotifications(String intygsId) {
+        return handelseRepo.findByIntygsId(intygsId);
+    }
+
     protected void createAndSendNotification(Utkast utkast, NotificationEvent event) {
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
@@ -327,7 +338,20 @@ public class NotificationServiceImpl implements NotificationService {
 
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(),
                 reference);
+        save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(), utkast.getPatientPersonnummer().getPersonnummer());
         send(notificationMessage, utkast.getEnhetsId());
+    }
+
+    private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer) {
+        Handelse handelse = new Handelse();
+        handelse.setCode(notificationMessage.getHandelse());
+        handelse.setEnhetsId(enhetsId);
+        handelse.setIntygsId(notificationMessage.getIntygsId());
+        handelse.setPersonnummer(personnummer);
+        handelse.setRef(notificationMessage.getReference());
+        handelse.setTimestamp(notificationMessage.getHandelseTid());
+        handelse.setVardgivarId(vardgivarId);
+        handelseRepo.save(handelse);
     }
 
     private void send(NotificationMessage notificationMessage, String enhetsId) {

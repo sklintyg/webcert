@@ -18,8 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,14 +45,20 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -66,10 +74,12 @@ import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -78,6 +88,7 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
 
 /**
@@ -104,6 +115,9 @@ public class IntygServiceImpl implements IntygService {
     private IntygModuleFacade modelFacade;
 
     @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
     private LogService logService;
 
     @Autowired
@@ -114,6 +128,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private ArendeService arendeService;
+
+    @Autowired
+    private FragorOchSvarCreator fragorOchSvarCreator;
 
     @Autowired
     private CertificateSenderService certificateSenderService;
@@ -261,6 +278,7 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Creates log events for PDF printing actions. Creates both PDL and monitoring log events
      * depending the state of the intyg.
+     *
      * @param intyg
      */
     private void logPdfPrinting(IntygContentHolder intyg) {
@@ -270,7 +288,7 @@ public class IntygServiceImpl implements IntygService {
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
 
-        //Are we printing a draft?
+        // Are we printing a draft?
         if (intyg.getUtlatande().getGrundData().getSigneringsdatum() == null) {
             // Log printing of draft
             logService.logPrintIntygAsDraft(logRequest);
@@ -384,6 +402,34 @@ public class IntygServiceImpl implements IntygService {
         // Log read of revoke status to monitoring log
         monitoringService.logIntygRevokeStatusRead(intygsId, intygsTyp);
         return intygData.isRevoked();
+    }
+
+    @Override
+    public List<IntygWithNotifications> listCertificatesForCareWithQA(Personnummer personnummer, List<String> enhetsId) {
+        List<Utkast> utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer),
+                enhetsId, Arrays.asList(UtkastStatus.values()),
+                moduleRegistry.listAllModules().stream()
+                        .map(IntygModule::getId)
+                        .collect(Collectors.toSet()));
+
+        List<IntygWithNotifications> res = new ArrayList<>();
+        for (Utkast utkast : utkastList) {
+            List<Handelse> notifications = notificationService.getNotifications(utkast.getIntygsId());
+            // In version 2.0 of ListCertificatesForCareWithQA is Handelse mandatory. Skip certificates without
+            // Handelse.
+            if (!notifications.isEmpty()) {
+                try {
+                    ModuleApi api = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+                    Intyg intyg = api.getIntygFromUtlatande(api.getUtlatandeFromJson(utkast.getModel()));
+                    Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(utkast.getIntygsId(),
+                            utkast.getIntygsTyp());
+                    res.add(new IntygWithNotifications(intyg, notifications, arenden.getLeft(), arenden.getRight()));
+                } catch (ModuleNotFoundException | ModuleException | IOException e) {
+                    LOG.error("Could not convert intyg {} to external format", utkast.getIntygsId());
+                }
+            }
+        }
+        return res;
     }
 
     public void setLogicalAddress(String logicalAddress) {

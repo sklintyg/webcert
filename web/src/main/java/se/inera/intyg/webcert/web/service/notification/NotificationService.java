@@ -18,8 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.util.List;
+
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 /**
@@ -80,4 +83,15 @@ public interface NotificationService {
     void sendNotificationForAnswerRecieved(Arende arende);
 
     void sendNotificationForQAs(String intygsId, NotificationEvent event);
+
+    /**
+     * Returns all notifications saved for an intyg.
+     *
+     * @param intygsId
+     *            the id of the intyg
+     *
+     * @return a list of all the notifications
+     */
+    List<Handelse> getNotifications(String intygsId);
+
 }

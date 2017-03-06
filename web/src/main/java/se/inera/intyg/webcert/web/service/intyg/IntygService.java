@@ -18,15 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
+
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-
-import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -98,7 +100,7 @@ public interface IntygService {
      * @param intygId
      * @param intygsTyp
      * @return
-     *      The HSA Id of the vardenhet where the intyg was created/issued.
+     *         The HSA Id of the vardenhet where the intyg was created/issued.
      */
     String getIssuingVardenhetHsaId(String intygId, String intygsTyp);
 
@@ -110,13 +112,23 @@ public interface IntygService {
      * log using {@link se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService#logIntygRevokeStatusRead}.
      *
      * @param intygsId
-     *      ID of the intyg to check revoke status for.
+     *            ID of the intyg to check revoke status for.
      * @param intygsTyp
-     *      Type of the intyg.
+     *            Type of the intyg.
      * @param coherentJournaling
-     *      true or false.
+     *            true or false.
      * @return
-     *      true if the intyg is revoked, false if not.
+     *         true if the intyg is revoked, false if not.
      */
     boolean isRevoked(String intygsId, String intygsTyp, boolean coherentJournaling);
+
+    /**
+     * Gathers the information required to return the list with notifications and creates a list of
+     * IntygWithNotifications objects.
+     *
+     * @param personnummer
+     * @param enhetsId
+     * @return
+     */
+    List<IntygWithNotifications> listCertificatesForCareWithQA(Personnummer personnummer, List<String> enhetsId);
 }

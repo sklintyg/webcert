@@ -27,7 +27,7 @@ import javax.xml.bind.JAXB;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.common.fkparent.support.ResultTypeUtil;
+import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.common.fkparent.model.converter.CertificateStateHolderConverter;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubLatencyAware;

@@ -31,10 +31,12 @@ import se.inera.intyg.webcert.notification_sender.notifications.filter.Notificat
 
 /**
  * Extracts the List of individual {@link Exchange}s that have been aggregated during the last minute and lets
- * the {@link NotificationMessageDiscardFilter} filter out those not applicable to be forwarded to the notificationQueue.
+ * the {@link NotificationMessageDiscardFilter} filter out those not applicable to be forwarded to the
+ * notificationQueue.
  *
  * Note that this processor returns a List of messages as its output - typically the next processor should be a standard
- * camel "split" Processor that splits the List into its individual messages and then forwards them to the notificationQueue, i.e:
+ * camel "split" Processor that splits the List into its individual messages and then forwards them to the
+ * notificationQueue, i.e:
  *
  * M(1...n) -> Aggregator (this) -> M(List of 1...n messages) -> Split -> M(1...n)
  *
