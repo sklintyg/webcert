@@ -92,7 +92,9 @@
                  }
 
                  client.SendMedicalCertificate(body, function(err, result, body) {
-                     console.log(err);
+                     if (err) {
+                         throw err;
+                     }
                      console.log(result);
 
                      var resultcode = result.result.resultCode;
@@ -103,12 +105,6 @@
                      } else {
                          callback();
                      }
-                     /* if (err) {
-                         callback(err);
-                     } else {
-                         callback();
-                     }*/
-
                  });
              });
          }
