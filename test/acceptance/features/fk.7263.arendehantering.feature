@@ -27,7 +27,7 @@ Scenario: Filtrera frågor på läkare
    När Försäkringskassan ställer en "Kontakt" fråga om intyget
    Och jag går till sidan Frågor och svar
 
-   Givet att jag är inloggad som läkare "Erik Nilsson"
+   Givet att jag är inloggad som läkare "Johan Johansson"
    När jag går in på en patient
    När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
    Och Försäkringskassan ställer en "Kontakt" fråga om intyget

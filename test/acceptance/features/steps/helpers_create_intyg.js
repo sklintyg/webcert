@@ -32,9 +32,9 @@ function writeNewIntyg(typ, status) {
     var standardUser = global.user;
 
     var userObj = {
-        fornamn: 'Erik',
-        efternamn: 'Nilsson',
-        hsaId: 'TSTNMT2321000156-105H',
+        fornamn: 'Johan',
+        efternamn: 'Johansson',
+        hsaId: 'TSTNMT2321000156-107V',
         enhetId: standardUser.enhetId,
         lakare: true
     };

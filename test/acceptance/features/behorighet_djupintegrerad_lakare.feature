@@ -4,7 +4,7 @@
 Egenskap: Behörigheter för en djupintegrerad läkare
 
 Bakgrund: Logga in och gå in på en patient
-	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 	Och jag går in på en patient
 
 Scenario: Kan makulera sjukintyg

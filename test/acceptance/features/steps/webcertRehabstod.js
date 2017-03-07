@@ -176,10 +176,10 @@ module.exports = function() {
         // Setting rehabstod to new bas url
         browser.baseUrl = process.env.REHABSTOD_URL;
         var userObj = {
-            fornamn: 'Erik',
-            efternamn: 'Nilsson',
-            hsaId: 'TSTNMT2321000156-105H',
-            enhetId: 'TSTNMT2321000156-105F'
+            fornamn: 'Johan',
+            efternamn: 'Johansson',
+            hsaId: 'TSTNMT2321000156-107V',
+            enhetId: 'TSTNMT2321000156-107P'
         };
 
         return logInAsUserRoleRehabstod(userObj, 'Läkare', true);
@@ -189,10 +189,10 @@ module.exports = function() {
         // Setting webcert to new bas url
         browser.baseUrl = process.env.WEBCERT_URL;
         var userObj = {
-            fornamn: 'Erik',
-            efternamn: 'Nilsson',
-            hsaId: 'TSTNMT2321000156-105H',
-            enhetId: 'TSTNMT2321000156-105F'
+            fornamn: 'Johan',
+            efternamn: 'Johansson',
+            hsaId: 'TSTNMT2321000156-107V',
+            enhetId: 'TSTNMT2321000156-107P'
         };
 
         return logInAsUserRole(userObj, 'Läkare', true);

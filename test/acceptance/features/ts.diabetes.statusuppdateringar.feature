@@ -3,7 +3,7 @@
 Egenskap: Statusuppdateringar för TS-diabetes intyg
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
-   Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
+   Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
    Och att vårdsystemet skapat ett intygsutkast för "Transportstyrelsens läkarintyg, diabetes"
    Och jag går in på intygsutkastet via djupintegrationslänk
 

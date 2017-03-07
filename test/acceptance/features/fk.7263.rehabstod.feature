@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på Rehabstöds förstasida
 @integration @skapa
 Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
     När jag är inloggad som läkare i Rehabstöd
-    Och jag väljer enhet "TSTNMT2321000156-105F"
+    Och jag väljer enhet "TSTNMT2321000156-107P"
     Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
     Och jag söker efter slumpvald patient och sparar antal intyg
 
@@ -20,14 +20,14 @@ Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
 
     När jag går in på Rehabstöd
     Och jag är inloggad som läkare i Rehabstöd
-    Och jag väljer enhet "TSTNMT2321000156-105F"
+    Och jag väljer enhet "TSTNMT2321000156-107P"
     Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
     Så ska antalet intyg ökat med 1 på patient som sparats från Rehabstöd
 
 @integration @makulera
 Scenario: Ett makulerat FK7263 intyg ska tas bort från Rehabstöd
     När jag är inloggad som läkare i Rehabstöd
-    Och jag väljer enhet "TSTNMT2321000156-105F"
+    Och jag väljer enhet "TSTNMT2321000156-107P"
     Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
     Och jag söker efter slumpvald patient och sparar antal intyg
 
@@ -39,7 +39,7 @@ Scenario: Ett makulerat FK7263 intyg ska tas bort från Rehabstöd
 
     När jag går in på Rehabstöd
     Och jag är inloggad som läkare i Rehabstöd
-    Och jag väljer enhet "TSTNMT2321000156-105F"
+    Och jag väljer enhet "TSTNMT2321000156-107P"
     Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
     Så ska antalet intyg ökat med 1 på patient som sparats från Rehabstöd
 
@@ -49,6 +49,6 @@ Scenario: Ett makulerat FK7263 intyg ska tas bort från Rehabstöd
 
     När jag går in på Rehabstöd
     Och jag är inloggad som läkare i Rehabstöd
-    Och jag väljer enhet "TSTNMT2321000156-105F"
+    Och jag väljer enhet "TSTNMT2321000156-107P"
     Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
     Så ska antalet intyg ökat med 0 på patient som sparats från Rehabstöd
