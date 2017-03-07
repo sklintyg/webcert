@@ -68,6 +68,15 @@ Scenario: Samtida användare ska generera felmeddelande om man förnyar efter ma
 		Och jag makulerar intyget
 		Så ska varningen "Kunde inte förnya intyget" visas om man försöker förnya intyget i andra webbläsarinstansen
 
+@samtidaanvandare @makulera-kopiera
+Scenario: Samtida användare ska generera felmeddelande om man kopiera efter makulering (FK7263)
+	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag klickar på signera-knappen
+	Och sedan öppnar intyget i två webbläsarinstanser
+	Och jag makulerar intyget
+	Så ska varningen "Kunde inte kopiera intyget" visas om man försöker kopiera intyget i andra webbläsarinstansen
+
 # @makulera @ersatt
 # Scenario: Makulera ett signerat intyg och ersätt det
 #	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
