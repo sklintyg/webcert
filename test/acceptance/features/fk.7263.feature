@@ -59,6 +59,15 @@ Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas e
 		Och jag skickar en fråga till Försäkringskassan
 		Så ska varningen "Ett tekniskt problem inträffade" visas
 
+@samtidaanvandare @makulera-skicka
+Scenario: Samtida användare ska generera felmeddelande om man skickar efter makulering (FK7263)
+		När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+		Och jag fyller i alla nödvändiga fält för intyget
+		Och jag klickar på signera-knappen
+		Och sedan öppnar intyget i två webbläsarinstanser
+		Och jag makulerar intyget
+		Så ska varningen "Kunde inte skicka intyget" visas om man försöker skicka intyget i andra webbläsarinstansen
+
 @samtidaanvandare @fornya
 Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
 		När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
