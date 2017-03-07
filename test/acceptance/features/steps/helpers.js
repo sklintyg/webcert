@@ -37,7 +37,7 @@ module.exports = {
                 telefon: '054203040'
             };
 
-            if (global.user.enhetId === 'TSTNMT2321000156-105F') {
+            if (global.user.enhetId === 'TSTNMT2321000156-107P') {
                 global.user.enhetsAdress.telefon = '054121314';
             }
 
@@ -217,14 +217,14 @@ module.exports = {
             DOCTOR: 'Läkare'
         },
         EN: {
-            fornamn: 'Erik',
-            efternamn: 'Nilsson',
-            hsaId: 'TSTNMT2321000156-105H',
-            enhetId: 'TSTNMT2321000156-105F'
+            fornamn: 'Johan',
+            efternamn: 'Johansson',
+            hsaId: 'TSTNMT2321000156-107V',
+            enhetId: 'TSTNMT2321000156-107P'
         },
         ÅS: {
             fornamn: 'Åsa Svensson',
-            efternamn: 'Nilsson',
+            efternamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: 'TSTNMT2321000156-1003'
         }

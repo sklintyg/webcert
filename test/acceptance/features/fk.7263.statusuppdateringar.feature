@@ -3,7 +3,7 @@
 Egenskap: Statusuppdateringar för FK7263
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
-   Givet att jag är inloggad som djupintegrerad läkare
+   Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT1"
    Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på intygsutkastet via djupintegrationslänk
 

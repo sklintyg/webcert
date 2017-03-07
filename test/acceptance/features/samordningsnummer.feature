@@ -26,12 +26,12 @@ Scenario: Det ska gå att skicka CreateDraft:1 med ett samordningsnummer
 
 @createDraft2
 Scenario: Det ska gå att skicka CreateDraft:2 med ett samordningsnummer
-  Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
+  Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
   Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning" med samordningsnummer
   Så jag går in på intygsutkastet via djupintegrationslänk
 
 @saknat
 Scenario: Jag ska få ett felmeddelande när ett samordningsnummer saknas i PUtjänsten
-	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 	När jag anger ett samordningsnummer som inte finns i PUtjänsten
 	Så ska valideringsfelet "Samordningsnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt." visas

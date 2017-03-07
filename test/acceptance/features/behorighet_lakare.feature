@@ -13,7 +13,7 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag sparar länken till aktuell sida
 
-	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-1004"
+	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-INT2"
 	Och går till den sparade länken
 	Så ska ett fel-meddelande visa "Kunde inte hämta intyget eftersom du saknar behörighet"
 

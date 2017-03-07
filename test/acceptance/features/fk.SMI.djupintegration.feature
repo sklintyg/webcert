@@ -3,7 +3,7 @@
 Egenskap: Djupintegration SMI intyg
 
 Bakgrund: Jag är inloggad som djupintegrerad läkare
-   Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1004"
+   Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 
 @namnbyte
 Scenario: Informera om patienten har bytt namn
