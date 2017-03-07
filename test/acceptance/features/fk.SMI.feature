@@ -83,3 +83,14 @@ Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) om intyg kop
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Och jag makulerar intyget
 	Så ska varningen "Kunde inte makulera intyget" visas om man försöker makulera intyget i andra webbläsarinstansen
+
+@samtidaanvandare @skicka-makulera
+Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (LISJP)
+		När jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
+		Och jag fyller i alla nödvändiga fält för intyget
+		Och jag klickar på signera-knappen
+		Och sedan öppnar intyget i två webbläsarinstanser
+		Och jag klickar på skicka knappen
+		Och jag makulerar intyget
+		Och jag skickar en fråga till Försäkringskassan
+		Så ska varningen "common.error.certificate_revoked" visas
