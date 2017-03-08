@@ -16,10 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-'use strict';
 
-module.exports = {
-    makeConnection: require('./makeConnection'),
-    storeLog: require('./storeLog'),
-    statistics: require('./statistics')
+
+'use strict';
+var mysql = require('mysql');
+module.exports = function() {
+    if (!process.env.DATABASE_PASSWORD) {
+        throw 'Miljövariabel DATABASE_PASSWORD saknas';
+    }
+    return mysql.createConnection({
+        host: process.env.STAT_DATABASE_HOST,
+        user: process.env.DATABASE_USER,
+        password: process.env.DATABASE_PASSWORD,
+        // database: process.env.DATABASE_NAME,
+        multipleStatements: true
+    });
 };

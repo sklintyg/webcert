@@ -16,10 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-'use strict';
 
-module.exports = {
-    makeConnection: require('./makeConnection'),
-    storeLog: require('./storeLog'),
-    statistics: require('./statistics')
+/* globals intyg */
+'use strict';
+var db = require('./dbActions');
+
+module.exports = function() {
+
+    this.Given(/^ska jag se intyget i databasen$/, function(callback) {
+        db.statistics.lookUp(1, intyg.id, callback);
+    });
+
 };
