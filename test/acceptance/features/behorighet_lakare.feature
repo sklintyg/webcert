@@ -6,7 +6,7 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Givet att jag är inloggad som läkare utan angiven vårdenhet
 	Så ska jag se en rubrik med texten "Välj din vårdenhet"
 
-	När jag väljer vårdenheten "TSTNMT2321000156-102R"
+	När jag väljer vårdenheten "TSTNMT2321000156-107P"
 	Så ska jag se en rubrik med texten "Sök/skriv intyg"
 
 	När jag går in på en patient
@@ -17,20 +17,20 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Och går till den sparade länken
 	Så ska ett fel-meddelande visa "Kunde inte hämta intyget eftersom du saknar behörighet"
 
-
+@underliggande-enhet
 Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enhet
-	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-107J"
+	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-UND2"
 	När jag går in på en patient
 	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag sparar länken till aktuell sida
 
-	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-1003"
+	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-107Q"
 	Och går till den sparade länken
 	Så ska intygets status vara "Intyget är signerat"
 
 @skriv-ut @annan-enhet
 Scenario: Kan inte se intyg på överliggande enhet när jag är inne på underenhet
-	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-1003"
+	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-107P"
 	När jag går in på en patient
 	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 
@@ -40,7 +40,7 @@ Scenario: Kan inte se intyg på överliggande enhet när jag är inne på undere
 	Och jag signerar intyget
 	Och jag sparar länken till aktuell sida
 
-	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-107J" och inte har uppdrag på "TSTNMT2321000156-1003"
+	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-UND1" och inte har uppdrag på "TSTNMT2321000156-107P"
 	Och går till den sparade länken
 	Så ska ett fel-meddelande visa "Kunde inte hämta intyget eftersom du saknar behörighet"
 

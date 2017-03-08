@@ -223,7 +223,7 @@ module.exports = {
             enhetId: 'TSTNMT2321000156-107P'
         },
         ÅS: {
-            fornamn: 'Åsa Svensson',
+            fornamn: 'Karin Persson',
             efternamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-100L',
             enhetId: 'TSTNMT2321000156-1003'

@@ -3,7 +3,7 @@
 Egenskap: FK7263 Ärendehantering
 
 Bakgrund: Jag är inloggad och inne på ett skickat intyg
-      Givet att jag är inloggad som läkare "Åsa Svensson"
+      Givet att jag är inloggad som läkare "Karin Persson"
       Och jag går in på en patient
       Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
 
@@ -35,8 +35,8 @@ Scenario: Filtrera frågor på läkare
    Och jag går till sidan Frågor och svar
    Så ska jag se flera frågor
 
-   När jag väljer att filtrera på läkare "Åsa Svensson"
-   Så ska jag bara se frågor på intyg signerade av "Åsa Svensson"
+   När jag väljer att filtrera på läkare "Karin Persson"
+   Så ska jag bara se frågor på intyg signerade av "Karin Persson"
 
 @befintlig-fråga
 Scenario: Skicka fråga till Försäkringskassan genom att gå in på en befintlig fråga

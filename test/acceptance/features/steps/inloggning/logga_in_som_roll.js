@@ -87,16 +87,16 @@ module.exports = function() {
             fornamn: 'Johan',
             efternamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
-            enhetId: 'TSTNMT2321000156-107P'
+            enhetId: 'TSTNMT2321000156-107Q'
         };
 
         if (lakarNamn) {
-            userObj.enhetId = 'TSTNMT2321000156-1003';
+            userObj.enhetId = 'TSTNMT2321000156-107Q';
             userObj.fornamn = lakarNamn.split(' ')[0];
             userObj.efternamn = lakarNamn.split(' ')[1];
 
-            if (lakarNamn && lakarNamn === 'Åsa Svensson') {
-                userObj.hsaId = 'TSTNMT2321000156-100L';
+            if (lakarNamn && lakarNamn === 'Karin Persson') {
+                userObj.hsaId = 'TSTNMT2321000156-107T';
 
             }
         }
@@ -116,7 +116,8 @@ module.exports = function() {
             fornamn: 'Johan',
             efternamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
-            enhetId: ve
+            enhetId: ve,
+            'origin': 'NORMAL'
         };
         return logInAsUserRole(userObj, 'Läkare');
     });
@@ -169,11 +170,11 @@ module.exports = function() {
     this.Given(/^att jag är inloggad som läkare på (underenhet|vårdenhet) "([^"]*)" och inte har uppdrag på "([^"]*)"$/, function(typ, harEnhet, harInteEnhet) {
 
         var userObj;
-        if (harInteEnhet === 'TSTNMT2321000156-1003') {
+        if (harInteEnhet === 'TSTNMT2321000156-107P') {
             userObj = {
-                'fornamn': 'Arnold',
-                'efternamn': 'Johansson',
-                'hsaId': 'TSTNMT2321000156-1079',
+                'fornamn': 'Karin',
+                'efternamn': 'Persson',
+                'hsaId': 'TSTNMT2321000156-107T',
                 'enhetId': harInteEnhet,
                 'origin': 'NORMAL'
             };
