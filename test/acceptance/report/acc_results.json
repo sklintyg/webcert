@@ -1,0 +1,155 @@
+[
+  {
+    "elements": [
+      {
+        "id": "sekretessmarkerad-patient;varningmeddelanden-när-man-går-in-på-patient",
+        "keyword": "Scenario",
+        "line": 6,
+        "name": "Varningmeddelanden när man går in på patient",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Before ",
+            "result": {
+              "status": "passed",
+              "duration": 1382581
+            },
+            "hidden": true,
+            "match": {
+              "location": "/home/martin/Desktop/sklintyg/webcert/test/acceptance/features/steps/env.js:75"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Givet ",
+            "name": "att jag är inloggad som läkare",
+            "result": {
+              "status": "passed",
+              "duration": 7998005105
+            },
+            "line": 7,
+            "embeddings": [
+              {
+                "data": "aW5mbzog",
+                "mime_type": "text/plain"
+              },
+              {
+                "data": "aW5mbzogTG9nZ2FyIGluIHNvbSBFcmlrIE5pbHNzb24=",
+                "mime_type": "text/plain"
+              },
+              {
+                "data": "aW5mbzogTG9naW4gZGVmYXVsdCBicm93c2VyIHN1Y2Nlc3NmdWw=",
+                "mime_type": "text/plain"
+              }
+            ],
+            "match": {
+              "location": "/home/martin/Desktop/sklintyg/webcert/test/acceptance/features/steps/inloggning/logga_in_som_roll.js:106"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Och ",
+            "name": "jag går in på en patient med sekretessmarkering",
+            "result": {
+              "status": "passed",
+              "duration": 3053525089
+            },
+            "line": 8,
+            "embeddings": [
+              {
+                "data": "aW5mbzogR+VyIGluIHDlIHBhdGllbnQgMTk0MjAxMTktOTEyNA==",
+                "mime_type": "text/plain"
+              }
+            ],
+            "match": {
+              "location": "/home/martin/Desktop/sklintyg/webcert/test/acceptance/features/steps/inloggning/inloggning.steps.js:109"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Så ",
+            "name": "ska en varningsruta innehålla texten \"Patienten har en sekretessmarkering.\"",
+            "result": {
+              "status": "passed",
+              "duration": 220859296
+            },
+            "line": 9,
+            "embeddings": [
+              {
+                "data": "aW5mbzogVmFybmluZzogUGF0aWVudGVuIGhhciBlbiBzZWtyZXRlc3NtYXJrZXJpbmcuIERldCBpbm5lYuRyIGF0dCBwYXRpZW50ZW5zIGZvbGtib2tm9nJpbmdzdXBwZ2lmdGVyIORyIHNreWRkYWRlLiBWYXIgduRubGlnIGhhbnRlcmEgZGVtIHZhcnNhbXQuClDlIGdydW5kIGF2IHNla3JldGVzc21hcmtlcmluZ2VuIGflciBkZXQgaW50ZSBhdHQgc2tyaXZhIG55YSBlbGVrdHJvbmlza2EgaW50eWcu",
+                "mime_type": "text/plain"
+              },
+              {
+                "data": "aW5mbzogVmFybmluZzogUOUgZ3J1bmQgYXYgc2VrcmV0ZXNzbWFya2VyaW5nZW4gZ+VyIGRldCBpbnRlIGF0dCBrb3BpZXJhIGludHlnLg==",
+                "mime_type": "text/plain"
+              }
+            ],
+            "match": {
+              "location": "/home/martin/Desktop/sklintyg/webcert/test/acceptance/features/steps/inloggning/inloggning.steps.js:118"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Och ",
+            "name": "ska en varningsruta innehålla texten \"På grund av sekretessmarkeringen går det inte att kopiera intyg.\"",
+            "result": {
+              "status": "passed",
+              "duration": 109907388
+            },
+            "line": 10,
+            "embeddings": [
+              {
+                "data": "aW5mbzogVmFybmluZzogUGF0aWVudGVuIGhhciBlbiBzZWtyZXRlc3NtYXJrZXJpbmcuIERldCBpbm5lYuRyIGF0dCBwYXRpZW50ZW5zIGZvbGtib2tm9nJpbmdzdXBwZ2lmdGVyIORyIHNreWRkYWRlLiBWYXIgduRubGlnIGhhbnRlcmEgZGVtIHZhcnNhbXQuClDlIGdydW5kIGF2IHNla3JldGVzc21hcmtlcmluZ2VuIGflciBkZXQgaW50ZSBhdHQgc2tyaXZhIG55YSBlbGVrdHJvbmlza2EgaW50eWcu",
+                "mime_type": "text/plain"
+              },
+              {
+                "data": "aW5mbzogVmFybmluZzogUOUgZ3J1bmQgYXYgc2VrcmV0ZXNzbWFya2VyaW5nZW4gZ+VyIGRldCBpbnRlIGF0dCBrb3BpZXJhIGludHlnLg==",
+                "mime_type": "text/plain"
+              }
+            ],
+            "match": {
+              "location": "/home/martin/Desktop/sklintyg/webcert/test/acceptance/features/steps/inloggning/inloggning.steps.js:118"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "After ",
+            "result": {
+              "status": "passed",
+              "duration": 1497921
+            },
+            "hidden": true,
+            "match": {
+              "location": "/home/martin/Desktop/sklintyg/webcert/test/acceptance/features/steps/env.js:86"
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@sekretess",
+            "line": 2
+          },
+          {
+            "name": "@varningsmeddelande",
+            "line": 5
+          },
+          {
+            "name": "@kristi",
+            "line": 5
+          }
+        ],
+        "type": "scenario"
+      }
+    ],
+    "id": "sekretessmarkerad-patient",
+    "keyword": "Egenskap",
+    "line": 3,
+    "name": "Sekretessmarkerad patient",
+    "tags": [
+      {
+        "name": "@sekretess",
+        "line": 2
+      }
+    ],
+    "uri": "/home/martin/Desktop/sklintyg/webcert/test/acceptance/features/sekretess.feature"
+  }]

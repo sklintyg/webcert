@@ -429,49 +429,56 @@ module.exports = function() {
 
     this.Given(/^jag lägger till fältet "([^"]*)"$/, function(fieldtype) {
         var enter = browser.actions().sendKeys(protractor.Key.ENTER);
-        if (fieldtype === 'Intyget baseras på') {
-            return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2016-12-10').then(function() {
-                logger.info('Fyller i rätt datum: 2016-12-10');
-                enter = browser.actions().sendKeys(protractor.Key.ENTER);
-                return enter.perform();
-            });
-        } else if (fieldtype === 'Arbete') {
-            return fkUtkastPage.nuvarandeArbete.sendKeys('Testare');
 
-        } else if (fieldtype === 'Aktivitetsbegransning') {
-            logger.info('Ändrar Aktivitetsbegransning');
-            return fkUtkastPage.aktivitetsBegransning.sendKeys('Aktivitetsbegransning');
+        switch (fieldtype) {
+            case 'Intyget baseras på':
 
-        } else if (fieldtype === 'Funktionsnedsattning') {
-            logger.info('Ändrar Funktionsnedsattning');
-            return fkUtkastPage.funktionsNedsattning.sendKeys('Funktionsnedsättning');
+                return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2016-12-10').then(function() {
+                    logger.info('Fyller i rätt datum: 2016-12-10 Intyget baseras på');
+                    enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                    return enter.perform();
+                });
 
-        } else if (fieldtype === 'Går ej att bedöma') {
-            logger.info('Ändrar Går ej att bedöma');
-            return fkUtkastPage.prognos.GAR_EJ_ATT_BEDOMA.click();
+            case 'Arbete':
+                logger.info('Arbete switch');
+                return fkUtkastPage.nuvarandeArbete.sendKeys('Testare');
 
-        } else if (fieldtype === 'Diagnoskod') {
-            logger.info('Ändrar Aktivitetsbegransning');
-            return fkUtkastPage.diagnosKod.sendKeys('A00').then(function() {
-                enter = browser.actions().sendKeys(protractor.Key.ENTER);
-                return enter.perform();
-            });
+            case 'Aktivitetsbegransning':
+                logger.info('Ändrar Aktivitetsbegransning');
+                return fkUtkastPage.aktivitetsBegransning.sendKeys('Aktivitetsbegransning');
 
-        } else if (fieldtype === 'Arbetsförmåga') {
-            logger.info('Ändrar Funktionsnedsattning');
-            return fkUtkastPage.nedsatt.med100.checkbox.sendKeys(protractor.Key.SPACE);
+            case 'Funktionsnedsattning':
+                logger.info('Ändrar Funktionsnedsattning');
+                return fkUtkastPage.funktionsNedsattning.sendKeys('Funktionsnedsättning');
 
-        } else if (fieldtype === 'Intyget baseras på Annat') {
-            return fkUtkastPage.baserasPa.annat.datum.sendKeys('2016-12-10').then(function() {
-                logger.info('Fyller i rätt datum: 2016-12-10');
-                enter = browser.actions().sendKeys(protractor.Key.ENTER);
-                return enter.perform();
-            });
+            case 'Går ej att bedöma':
+                logger.info('Ändrar Går ej att bedöma');
+                return fkUtkastPage.prognos.GAR_EJ_ATT_BEDOMA.click();
 
-        } else {
-            logger.info('Felaktigt Fält valt');
+            case 'Diagnoskod':
+                logger.info('Ändrar Aktivitetsbegransning switch');
+                return fkUtkastPage.diagnosKod.sendKeys('A00').then(function() {
+                    enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                    return enter.perform();
+                });
 
+            case 'Arbetsförmåga':
+                logger.info('Ändrar arbetsförmåga');
+                return fkUtkastPage.nedsatt.med100.checkbox.sendKeys(protractor.Key.SPACE);
+
+            case 'Intyget baseras på Annat':
+                logger.info('Fyller i rätt datum: 2016-12-10 Annat ');
+                return fkUtkastPage.baserasPa.annat.datum.sendKeys('2016-12-10').then(function() {
+
+                    enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                    return enter.perform();
+                });
+
+            default:
+                logger.info('Felaktigt Fält valt');
+                break;
         }
+
     });
     this.Given(/^jag fyller i blanksteg i "([^"]*)" fältet$/, function(field) {
         var enter = browser.actions().sendKeys(protractor.Key.ENTER);
