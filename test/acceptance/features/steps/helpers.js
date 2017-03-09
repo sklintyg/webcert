@@ -26,10 +26,10 @@ module.exports = {
     intygShortcode: commonTools.helpers.intygShortcode,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
-    // SE2321000156-1004 saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
+    // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
     updateEnhetAdressForNewIntyg: function() {
 
-        if (global.user.enhetId !== 'SE2321000156-1004') {
+        if (global.user.enhetId !== 'TSTNMT2321000156-ULLA') {
             global.user.enhetsAdress = {
                 postnummer: '65340',
                 postort: 'Karlstad',

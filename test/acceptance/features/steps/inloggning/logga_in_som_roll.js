@@ -39,10 +39,10 @@ module.exports = function() {
     });
     this.Given(/^att jag är inloggad som läkare utan adress till enheten$/, function() {
         var userObj = {
-            fornamn: 'Per',
+            fornamn: 'Johan',
             efternamn: 'Johansson',
-            hsaId: 'TST2321000156-102C',
-            enhetId: 'SE2321000156-1004',
+            hsaId: 'TSTNMT2321000156-107V',
+            enhetId: 'TSTNMT2321000156-ULLA',
             lakare: 'true',
             origin: 'NORMAL'
         };

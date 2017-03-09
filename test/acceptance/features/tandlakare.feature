@@ -6,13 +6,13 @@ Egenskap: Kontrollera funktioner för tandläkare
 # Bakgrund: Jag befinner mig på webcerts förstasida
 
 Scenario: Ska endast kunna hantera FK7263
-	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-102R"
+	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-107Q"
 	När jag går in på en patient
 	Och det finns ett "Transportstyrelsens läkarintyg"
 	Och det finns ett "Transportstyrelsens läkarintyg, diabetes"
 	Och det finns ett "Läkarutlåtande för sjukersättning" 
 
-	Givet att jag är inloggad som tandläkare på vårdenhet "TSTNMT2321000156-102R"
+	Givet att jag är inloggad som tandläkare på vårdenhet "TSTNMT2321000156-107Q"
 	När jag går in på patienten
 	Så ska jag inte se intyg av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
 	Och jag ska endast ha möjlighet att skapa nya "Läkarintyg FK 7263,Läkarintyg för sjukpenning" utkast

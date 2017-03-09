@@ -16,6 +16,7 @@ Scenario: Kan kopiera Transportstyrelsens läkarintyg
    När jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så är kopieraknappen tillgänglig
 
+@diabetes @kopiera
 Scenario: Kan kopiera Transportstyrelsens läkarintyg, diabetes intyg
    När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
    Så är kopieraknappen tillgänglig
