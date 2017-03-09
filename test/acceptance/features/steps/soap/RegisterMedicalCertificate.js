@@ -53,7 +53,7 @@ module.exports.RegisterMedicalCertificate = function(personId, personNamn, perso
         '                <ns2:postort>Sundsvall</ns2:postort>\n' +
         '                <ns2:telefonnummer>060-1818000</ns2:telefonnummer>\n' +
         '                <ns2:vardgivare>\n' +
-        '                    <ns2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="' + 'TSTNMT2321000156-1002' + '"/>\n' +
+        '                    <ns2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="' + 'TSTNMT2321000156-107M' + '"/>\n' +
         '                    <ns2:vardgivarnamn>Nordic Medtest</ns2:vardgivarnamn>\n' +
         '                </ns2:vardgivare>\n' +
         '            </ns2:enhet>\n' +

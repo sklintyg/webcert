@@ -53,7 +53,7 @@ module.exports.SendMedicalCertificate = function(personId, doctorHsa, doctorName
         '                     <urn2:epost> </urn2:epost>\n' +
         '                     <!--Optional:-->\n' +
         '                     <urn2:vardgivare>\n' +
-        '                        <urn2:vardgivare-id extension="' + 'TSTNMT2321000156-1002' + '" root="1.2.752.129.2.1.4.1"/>\n' +
+        '                        <urn2:vardgivare-id extension="' + 'TSTNMT2321000156-107M' + '" root="1.2.752.129.2.1.4.1"/>\n' +
         '                        <urn2:vardgivarnamn>nmt_vg1</urn2:vardgivarnamn>\n' +
         '                        <!--You may enter ANY elements at this point-->\n' +
         '                     </urn2:vardgivare>\n' +
