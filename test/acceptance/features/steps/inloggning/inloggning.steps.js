@@ -171,48 +171,52 @@ module.exports = function() {
 
 
     this.Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        var intygtyp, userObj, inteAccepteratKakor, forkedBrowser, intygEditUrl;
-        if (isSMIIntyg) {
-            intygtyp = helpers.getAbbrev(intyg.typ);
+        // var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var intygtyp, userObj, forkedBrowser, intygEditUrl;
+        // if (isSMIIntyg) {
+        //     intygtyp = helpers.getAbbrev(intyg.typ);
 
-            // User
-            userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
-            inteAccepteratKakor = true;
+        //     // User
+        //     userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
+        //     inteAccepteratKakor = true;
 
-            // Browser & URL
-            forkedBrowser = browser.forkNewDriverInstance(true);
-            intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
+        //     // Browser & URL
+        //     forkedBrowser = browser.forkNewDriverInstance(true);
+        //     intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
 
-            parallell.login({
-                userObj: userObj,
-                role: helpers.userObj.Role.DOCTOR,
-                cookies: inteAccepteratKakor
-            }, intygEditUrl, forkedBrowser).then(function() {
-                setForkedBrowser(forkedBrowser);
-                callback();
-            });
-        } else {
-            // throw new Error(intyg.typ + ' is not implemented.');
-            intygtyp = helpers.getAbbrev(intyg.typ);
+        //     parallell.login({
+        //         userObj: userObj,
+        //         role: helpers.userObj.Role.DOCTOR,
+        //         cookies: inteAccepteratKakor
+        //     }, intygEditUrl, forkedBrowser).then(function() {
+        //         setForkedBrowser(forkedBrowser);
+        //         callback();
+        //     });
+        // } else {
+        // throw new Error(intyg.typ + ' is not implemented.');
+        intygtyp = helpers.getAbbrev(intyg.typ);
 
-            // User
-            userObj = helpers.getUserObj(helpers.userObj.UserKey.EN);
-            inteAccepteratKakor = true;
+        // User
+        userObj = {
+            fornamn: 'Johan',
+            efternamn: 'Johansson',
+            hsaId: 'TSTNMT2321000156-107V',
+            enhetId: 'TSTNMT2321000156-107Q'
+        };
+        //inteAccepteratKakor = true;
 
-            // Browser & URL
-            forkedBrowser = browser.forkNewDriverInstance(true);
-            intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
+        // Browser & URL
+        forkedBrowser = browser.forkNewDriverInstance(true);
+        intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
 
-            parallell.login({
-                userObj: userObj,
-                role: helpers.userObj.Role.DOCTOR,
-                cookies: inteAccepteratKakor
-            }, intygEditUrl, forkedBrowser).then(function() {
-                setForkedBrowser(forkedBrowser);
-                callback();
-            });
-        }
+        parallell.login({
+            userObj: userObj,
+            role: 'Läkare'
+        }, intygEditUrl, forkedBrowser).then(function() {
+            setForkedBrowser(forkedBrowser);
+            callback();
+        });
+        // }
 
     });
 
@@ -228,7 +232,7 @@ module.exports = function() {
 
         parallell.changeFields(forkedBrowser, elemntId).then(function() {
             logger.info('saveErrorMessage found');
-            return parallell.refreshBroswer(forkedBrowser);
+            return parallell.refreshBrowser(forkedBrowser);
         }).then(function() {
             // Known issue - https://github.com/angular/protractor/issues/2203
             parallell.closeBrowser(forkedBrowser).then(callback);
@@ -277,7 +281,7 @@ module.exports = function() {
         };
 
         return parallell.clickModalBtn(browser, elemntIds).then(function() {
-            return parallell.refreshBroswer(forkedBrowser);
+            return parallell.refreshBrowser(forkedBrowser);
         });
     });
 

@@ -34,7 +34,7 @@ module.exports = {
                 postnummer: '65340',
                 postort: 'Karlstad',
                 postadress: 'Bryggaregatan 11',
-                telefon: '054203040'
+                telefon: '054100000'
             };
 
             if (global.user.enhetId === 'TSTNMT2321000156-107P') {
@@ -207,27 +207,6 @@ module.exports = {
     },
     getUserObj: function(userKey) {
         return this.userObj[userKey];
-    },
-    userObj: {
-        UserKey: {
-            EN: 'EN',
-            ÅS: 'ÅS'
-        },
-        Role: {
-            DOCTOR: 'Läkare'
-        },
-        EN: {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
-            hsaId: 'TSTNMT2321000156-107V',
-            enhetId: 'TSTNMT2321000156-107P'
-        },
-        ÅS: {
-            fornamn: 'Karin Persson',
-            efternamn: 'Johansson',
-            hsaId: 'TSTNMT2321000156-100L',
-            enhetId: 'TSTNMT2321000156-1003'
-        }
     },
 
     diffDays: function(dateFrom, dateTo) {

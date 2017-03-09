@@ -22,7 +22,6 @@
 var helpers = require('../helpers');
 
 var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
-    logger.info((secondBrowser) ? 'Login in second browser >>' : '');
     if (skipCookieConsent) {
         logger.info('Lämnar inte samtycke för kakor');
     }
@@ -52,6 +51,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         browser.sleep(3000);
 
     } else {
+        logger.info('Loggar in i andra webbläsaren >>');
         secondBrowser.ignoreSynchronization = true;
         secondBrowser.get('welcome.jsp');
         secondBrowser.sleep(2000);

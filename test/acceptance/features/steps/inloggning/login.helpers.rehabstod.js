@@ -30,14 +30,6 @@ var logInAsUserRehabstod = function(userObj, roleName, skipCookieConsent) {
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
 
-    //Lägg till en adress för vårdenheten
-    global.user.enhetsAdress = {
-        postnummer: '66130',
-        postort: 'Karlstad',
-        postadress: 'Trumpsvängen 1',
-        telefon: '072-9192811'
-    };
-
     var login;
     browser.ignoreSynchronization = true;
     browser.get('welcome.html');

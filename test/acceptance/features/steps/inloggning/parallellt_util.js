@@ -24,7 +24,7 @@ var helpers = require('../helpers.js');
 
 module.exports = {
     login: function(userObj, url, secondBrowser) {
-        return logInAsUserRole(userObj.userObj, userObj.role, userObj.cookies, secondBrowser).then(function(value) {
+        return logInAsUserRole(userObj.userObj, userObj.role, false, secondBrowser).then(function(value) {
             return secondBrowser.get(url).then(function() {
                 logger.info('Default browser sleep for 5 sec,\t' + new Date());
                 return browser.sleep(5000).then(function() {
@@ -48,7 +48,7 @@ module.exports = {
             });
         });
     },
-    refreshBroswer: function(secondBrowser) {
+    refreshBrowser: function(secondBrowser) {
         return secondBrowser.driver.getCurrentUrl().then(function(url) {
             secondBrowser.ignoreSynchronization = true;
             return secondBrowser.sleep(2000).then(function() {
