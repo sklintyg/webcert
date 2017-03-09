@@ -163,4 +163,20 @@ För arbetslösa bedöms arbetsförmågan i förhållande till arbeten som norma
 <text id="KV_FKMU_0007.SEXTIO_DGR.RBK">2 månader.</text>
 <text id="KV_FKMU_0007.TREHUNDRASEXTIOFEM_DAGAR.RBK">12 månader.</text>
 <text id="KV_FKMU_0007.TRETTIO_DGR.RBK">1 månad.</text>
+
+  <!-- Manuellt tillagda tilläggsfrågor så att vi kan testa den funktionaliteten -->
+  <text id="KAT_9999.RBK">Tilläggsfrågor</text>
+  <text id="KAT_9999.HLP">TBD</text>
+
+  <tillagg>
+    <tillaggsfraga id="9001">
+      <text id="DFR_9001.1.RBK">Tycker du att denna tilläggsfråga är meningfull?</text>
+      <text id="DFR_9001.1.HLP">Beskriv i detalj varför du anser detta. Ge exempel på värdet det tillför patienten.
+      </text>
+    </tillaggsfraga>
+    <tillaggsfraga id="9002">
+      <text id="DFR_9002.1.RBK">Är raktvål bättre än rakskum?</text>
+      <text id="DFR_9002.1.HLP">Motivera varför och hur detta påverkar patientens vardag.</text>
+    </tillaggsfraga>
+  </tillagg>
 </texter>
