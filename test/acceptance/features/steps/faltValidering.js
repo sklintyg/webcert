@@ -469,10 +469,20 @@ module.exports = function() {
             case 'Intyget baseras på Annat':
                 logger.info('Fyller i rätt datum: 2016-12-10 Annat ');
                 return fkUtkastPage.baserasPa.annat.datum.sendKeys('2016-12-10').then(function() {
-
                     enter = browser.actions().sendKeys(protractor.Key.ENTER);
                     return enter.perform();
                 });
+            case 'UndersökningsDatum':
+                return fkUtkastPage.baserasPa.minUndersokning.datum.clear().then(function() {
+                    return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2017-01-12').then(function() {
+                        logger.info('Ändrar undersökningsdatum: 2017-01-12 ');
+                        //console.log('Ändrar datum');
+                        return enter.perform();
+
+                    });
+                });
+
+
 
             default:
                 logger.info('Felaktigt Fält valt');
@@ -522,24 +532,6 @@ module.exports = function() {
             fkUtkastPage.prognos.fortydligande.clear().then(callback);
         });
 
-
-
     });
-    this.Given(/^jag ändrar till giltig text i "([^"]*)"$/, function(fieldtype) {
-        if (fieldtype === 'UndersökningsDatum') {
-            return fkUtkastPage.baserasPa.minUndersokning.datum.clear().then(function() {
-                return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2017-01-12').then(function() {
-                    var enter = browser.actions().sendKeys(protractor.Key.ENTER);
-                    console.log('Ändrar datum');
-                    return enter.perform();
-
-                });
-            });
-        }
-
-    });
-
-
-
 
 };

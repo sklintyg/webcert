@@ -13,7 +13,7 @@ Scenariomall: Validera felaktigt <typAvFält> i <intygsTyp>
    	Så ska valideringsfelet <feltext> visas
 	Och ska jag se en rubrik med texten "Utkastet saknar uppgifter i följande avsnitt"
  	Och ska jag se en lista med endast det saknade <fältet>
- 	Och jag ändrar till giltig text i <typAvFält>
+ 	Och jag lägger till fältet <typAvFält>
  	Så ska inget valideringsfel visas
  	Och ska jag inte se en lista med vad som saknas
  	Så ska utkastets statusheader meddela <meddelande>
