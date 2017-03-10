@@ -12,6 +12,9 @@
         "sekretessmarkering": {
           "type": "boolean"
         },
+        "avliden": {
+          "type": "boolean"
+        },
         "fornamn": {
           "type": "string"
         },
@@ -32,6 +35,7 @@
       "required": [
         "personnummer",
         "sekretessmarkering",
+        "avliden",
         "fornamn",
         "efternamn",
         "postadress",

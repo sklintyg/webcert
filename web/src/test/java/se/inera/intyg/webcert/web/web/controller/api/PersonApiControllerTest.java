@@ -33,10 +33,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PersonuppgifterResponse;
 
@@ -56,8 +56,8 @@ public class PersonApiControllerTest {
     public void testGetPersonuppgifter() {
         Personnummer personnummer = new Personnummer("19121212-1212");
 
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(
-                new PersonSvar(new Person(personnummer, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(new PersonSvar(
+                new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
 
         Response response = personCtrl.getPersonuppgifter(personnummer.getPersonnummer());
 
@@ -81,8 +81,8 @@ public class PersonApiControllerTest {
     public void testGetPersonuppgifterSekretess() {
         Personnummer personnummer = new Personnummer("19121212-1212");
 
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(
-                new PersonSvar(new Person(personnummer, true, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(new PersonSvar(
+                new Person(personnummer, true, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
 
         Response response = personCtrl.getPersonuppgifter(personnummer.getPersonnummer());
 

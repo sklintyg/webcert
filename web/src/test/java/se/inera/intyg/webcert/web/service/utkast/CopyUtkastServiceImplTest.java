@@ -158,7 +158,7 @@ public class CopyUtkastServiceImplTest {
     @Before
     public void expectCallToPUService() throws Exception {
         PersonSvar personSvar = new PersonSvar(
-                new Person(PATIENT_SSN, false, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"),
+                new Person(PATIENT_SSN, false, false, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"),
                 PersonSvar.Status.FOUND);
         when(mockPUService.getPerson(PATIENT_SSN)).thenReturn(personSvar);
     }

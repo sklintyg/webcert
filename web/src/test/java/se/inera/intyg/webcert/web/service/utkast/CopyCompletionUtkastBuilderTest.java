@@ -53,13 +53,13 @@ import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -170,14 +170,16 @@ public class CopyCompletionUtkastBuilderTest {
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId("meddelandeId");
-        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+        Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
+                "postort");
 
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false);
+        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails,
+                true, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -193,7 +195,8 @@ public class CopyCompletionUtkastBuilderTest {
 
         // verify full name is set
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
-        assertEquals(PATIENT_FNAME + " " + PATIENT_MNAME + " " + PATIENT_LNAME, requestCaptor.getValue().getPatient().getFullstandigtNamn());
+        assertEquals(PATIENT_FNAME + " " + PATIENT_MNAME + " " + PATIENT_LNAME,
+                requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
     @Test
@@ -205,14 +208,16 @@ public class CopyCompletionUtkastBuilderTest {
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
 
         copyRequest.setMeddelandeId("meddelandeId");
-        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+        Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
+                "postort");
 
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false);
+        CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails,
+                true, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -235,13 +240,15 @@ public class CopyCompletionUtkastBuilderTest {
         when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
         when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(createIntygContentHolder());
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
+        when(mockModuleApi.validateDraft(anyString()))
+                .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId(meddelandeId);
         copyRequest.setTyp(intygsTyp);
-        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+        Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
+                "postort");
 
         copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false);
 
@@ -264,7 +271,8 @@ public class CopyCompletionUtkastBuilderTest {
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(createOriginalUtkast());
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
+        when(mockModuleApi.validateDraft(anyString()))
+                .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
         when(webcertUserService.isAuthorizedForUnit(any(String.class), any(boolean.class))).thenReturn(true);
@@ -272,7 +280,8 @@ public class CopyCompletionUtkastBuilderTest {
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId(meddelandeId);
         copyRequest.setTyp(intygsTyp);
-        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+        Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
+                "postort");
 
         copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false);
 

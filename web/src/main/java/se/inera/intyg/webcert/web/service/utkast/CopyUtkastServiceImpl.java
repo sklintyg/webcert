@@ -354,6 +354,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return new Person(
                 copyRequest.getPatient().getPersonId(),
                 false,
+                false,
                 copyRequest.getPatient().getFornamn(),
                 copyRequest.getPatient().getMellannamn(),
                 copyRequest.getPatient().getEfternamn(),
