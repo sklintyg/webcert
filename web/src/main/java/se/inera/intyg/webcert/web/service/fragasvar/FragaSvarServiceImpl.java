@@ -54,6 +54,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -73,6 +74,7 @@ import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -343,8 +345,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // if possible.
         IntygContentHolder intyg = intygService.fetchIntygData(intygId, typ, false);
 
-        // Get utfardande vardperson
-        Vardperson vardPerson = FragaSvarConverter.convert(intyg.getUtlatande().getGrundData().getSkapadAv());
+        WebCertUser user = webCertUserService.getUser();
+
+        // Get vardperson that posed the question
+        HoSPersonal hoSPersonal = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
+        Vardperson vardPerson = FragaSvarConverter.convert(hoSPersonal);
 
         // Is user authorized to save an answer to this question?
         verifyEnhetsAuth(vardPerson.getEnhetsId(), false);
@@ -374,7 +379,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fraga.setVardperson(vardPerson);
         fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        WebCertUser user = webCertUserService.getUser();
         fraga.setVardAktorHsaId(user.getHsaId());
         fraga.setVardAktorNamn(user.getNamn());
 

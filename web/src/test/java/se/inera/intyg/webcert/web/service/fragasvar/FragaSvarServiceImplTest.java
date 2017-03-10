@@ -320,9 +320,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         verify(monitoringServiceMock).logQuestionSent(anyString(), any(Long.class), anyString(), anyString(), any(Amne.class));
 
         assertEquals(Status.PENDING_EXTERNAL_ACTION, capture.getValue().getStatus());
-        assertEquals(getIntygContentHolder().getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), capture.getValue()
-                .getVardperson()
-                .getEnhetsId());
+        assertEquals(createUser().getValdVardenhet().getId(),
+                capture.getValue().getVardperson().getEnhetsId());
 
     }
 
@@ -378,6 +377,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false)).thenReturn(
                 getIntygContentHolder());
 
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(false);
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
 
@@ -401,6 +402,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         // create mocked Utlatande from intygstjansten
         when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
                 .thenReturn(getRevokedIntygContentHolder());
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
@@ -424,6 +426,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         // mock error with content type html
         SOAPFault soapFault = SOAPFactory.newInstance().createFault();
         soapFault.setFaultString("Response was of unexpected text/html ContentType.");
+
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         when(sendQuestionToFKClientMock.sendMedicalCertificateQuestion(
                 any(AttributedURIType.class),
