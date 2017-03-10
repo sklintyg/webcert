@@ -215,6 +215,7 @@ module.exports = function() {
     this.Given(/^jag ska ha origin "([^"]*)"/, function(origin) {
         return expect(checkUserOrigin()).to.eventually.be.equal(origin);
     });
+    //För att se vilka felaktigheter som bör finnas i HSA se https://inera-certificate.atlassian.net/wiki/display/IT/Negativa+tester+HSA
     this.Given(/^jag loggar in med felaktig uppgift om telefonuppgift i HSAkatalogen$/, function() {
         var userObj = {
             fornamn: 'Johan',
@@ -239,7 +240,7 @@ module.exports = function() {
             fornamn: 'Karin',
             efternamn: 'Persson',
             hsaId: 'TSTNMT2321000156-107T',
-            enhetId: 'TSTNMT2321000156-107P'
+            enhetId: 'TSTNMT2321000156-1098'
         };
         return logInAsUser(userObj);
     });

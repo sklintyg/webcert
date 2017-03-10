@@ -11,7 +11,7 @@ Exempel:
   |felaktighet			|
   |telefonuppgift		|
   |befattning	  		|
-  |adress			    	|
+  |adress			    |
   
 
 @adminstratör @skapa-utkast
