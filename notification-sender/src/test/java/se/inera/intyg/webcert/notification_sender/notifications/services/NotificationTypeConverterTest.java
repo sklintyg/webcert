@@ -34,7 +34,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.v2.*;
 
-public class NoricationTypeConverterTest {
+public class NotificationTypeConverterTest {
 
     @Test
     public void testConvert() throws Exception {
@@ -55,7 +55,7 @@ public class NoricationTypeConverterTest {
 
         NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null, skickadeFragor, mottagnaFragor,
                 SchemaVersion.VERSION_2, "ref");
-        CertificateStatusUpdateForCareType res = NoricationTypeConverter.convert(msg, intyg);
+        CertificateStatusUpdateForCareType res = NotificationTypeConverter.convert(msg, intyg);
 
         assertEquals(intyg, res.getIntyg());
         assertEquals(HandelsekodEnum.ANDRAT.value(), res.getHandelse().getHandelsekod().getCode());
@@ -75,7 +75,7 @@ public class NoricationTypeConverterTest {
         assertEquals(mottagnaFragorHanterade, res.getMottagnaFragor().getHanterade());
 
         // Make sure we have a valid Intyg according to service contract
-        assertEquals(NoricationTypeConverter.TEMPORARY_ARBETSPLATSKOD,
+        assertEquals(NotificationTypeConverter.TEMPORARY_ARBETSPLATSKOD,
                 res.getIntyg().getSkapadAv().getEnhet().getArbetsplatskod().getExtension());
         assertNull(res.getIntyg().getSkapadAv().getEnhet().getEpost());
     }
@@ -97,7 +97,7 @@ public class NoricationTypeConverterTest {
         NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null, new ArendeCount(4, 3, 2, 1),
                 new ArendeCount(4, 3, 2, 1),
                 SchemaVersion.VERSION_2, "ref");
-        CertificateStatusUpdateForCareType res = NoricationTypeConverter.convert(msg, intyg);
+        CertificateStatusUpdateForCareType res = NotificationTypeConverter.convert(msg, intyg);
 
         assertEquals(arbetsplatskod, res.getIntyg().getSkapadAv().getEnhet().getArbetsplatskod().getExtension());
         assertEquals(epost, res.getIntyg().getSkapadAv().getEnhet().getEpost());

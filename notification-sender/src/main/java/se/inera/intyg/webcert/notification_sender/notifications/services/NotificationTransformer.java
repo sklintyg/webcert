@@ -72,7 +72,7 @@ public class NotificationTransformer {
 
         if (SchemaVersion.VERSION_2.equals(notificationMessage.getVersion())) {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp());
-            message.setBody(NoricationTypeConverter.convert(notificationMessage,
+            message.setBody(NotificationTypeConverter.convert(notificationMessage,
                     moduleApi.getIntygFromUtlatande(moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast()))));
         } else if (Fk7263EntryPoint.MODULE_ID.equals(notificationMessage.getIntygsTyp())) {
             message.setBody(fk7263Transform.createCertificateStatusUpdateForCareType(notificationMessage));

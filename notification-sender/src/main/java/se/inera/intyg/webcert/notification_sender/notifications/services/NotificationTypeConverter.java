@@ -31,11 +31,11 @@ import se.riv.clinicalprocess.healthcond.certificate.v2.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
 
-public final class NoricationTypeConverter {
+public final class NotificationTypeConverter {
 
     protected static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
 
-    private NoricationTypeConverter() {
+    private NotificationTypeConverter() {
     }
 
     public static CertificateStatusUpdateForCareType convert(NotificationMessage notificationMessage, Intyg intyg) {

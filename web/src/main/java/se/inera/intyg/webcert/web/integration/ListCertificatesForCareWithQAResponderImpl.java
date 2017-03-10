@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.web.integration;
 
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
-import static se.inera.intyg.webcert.notification_sender.notifications.services.NoricationTypeConverter.toArenden;
+import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
 
 import java.util.stream.Collectors;
 
