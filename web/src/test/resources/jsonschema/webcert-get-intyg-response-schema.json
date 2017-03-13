@@ -70,12 +70,17 @@
           "status"
         ]
       }
+    },
+    "deceased": {
+      "id": "deceased",
+      "type": "boolean"
     }
   },
   "required": [
     "contents",
     "statuses",
     "revoked",
-    "relations"
+    "relations",
+    "deceased"
   ]
 }

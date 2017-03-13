@@ -63,8 +63,8 @@ import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
@@ -112,10 +112,11 @@ public class ArendeViewConverterTest {
     @Test
     public void testConvertToArendeForLuse() throws ModuleNotFoundException {
         when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(new IntygContentHolder("", buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                        SKAPADAV_PERSON_ID,
-                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
-                        false, null));
+                .thenReturn(new IntygContentHolder("",
+                        buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
+                                LocalDateTime.now().minusDays(2)),
+                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null,
+                        false));
 
         ArendeView result = converter.convertToDto(buildArende("luse"));
 
@@ -145,10 +146,11 @@ public class ArendeViewConverterTest {
     @Test
     public void testConvertToArendeForLisjp() throws ModuleNotFoundException {
         when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                        SKAPADAV_PERSON_ID,
-                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
-                        false, null));
+                .thenReturn(new IntygContentHolder("",
+                        buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
+                                LocalDateTime.now().minusDays(2)),
+                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null,
+                        false));
 
         ArendeView result = converter.convertToDto(buildArende("lisjp"));
 
@@ -171,10 +173,12 @@ public class ArendeViewConverterTest {
     @Test
     public void testConvertKompletteringWithoutInstans() throws ModuleNotFoundException {
         when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                        SKAPADAV_PERSON_ID,
-                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
-                        false, null));
+                .thenReturn(
+                        new IntygContentHolder("",
+                                buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                                        SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)),
+                                Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false,
+                                null, false));
 
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
@@ -193,10 +197,11 @@ public class ArendeViewConverterTest {
     @Test
     public void testConvertKompletteringInstansTooHigh() throws ModuleNotFoundException {
         when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                        SKAPADAV_PERSON_ID,
-                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
-                        false, null));
+                .thenReturn(new IntygContentHolder("",
+                        buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
+                                LocalDateTime.now().minusDays(2)),
+                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null,
+                        false));
 
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", 3, "arende1")));
@@ -215,10 +220,12 @@ public class ArendeViewConverterTest {
     @Test
     public void testConvertKompletteringUnknownQuestionId() throws ModuleNotFoundException {
         when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(new IntygContentHolder("", buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                        SKAPADAV_PERSON_ID,
-                        LocalDateTime.now().minusDays(2)), Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))),
-                        false, null));
+                .thenReturn(
+                        new IntygContentHolder("",
+                                buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                                        SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)),
+                                Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false,
+                                null, false));
 
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));
@@ -255,8 +262,10 @@ public class ArendeViewConverterTest {
         final String paminnelse2MeddelandeId = "paminnelse2Id";
         final LocalDateTime paminnelse2Timestamp = paminnelse1Timestamp.minusDays(2);
 
-        ArendeConversationView res = converter.convertToArendeConversationView(buildArende(fragaMeddelandeId, senasteHandelseFraga, LocalDateTime.now()),
-                buildArende(svarMeddelandeId, null, LocalDateTime.now()), null, Arrays.asList(buildArende(paminnelse2MeddelandeId, null, paminnelse2Timestamp),
+        ArendeConversationView res = converter.convertToArendeConversationView(
+                buildArende(fragaMeddelandeId, senasteHandelseFraga, LocalDateTime.now()),
+                buildArende(svarMeddelandeId, null, LocalDateTime.now()), null,
+                Arrays.asList(buildArende(paminnelse2MeddelandeId, null, paminnelse2Timestamp),
                         buildArende(paminnelse1MeddelandeId, null, paminnelse1Timestamp)));
         assertNotNull(res);
         assertNotNull(res.getFraga());
@@ -330,7 +339,8 @@ public class ArendeViewConverterTest {
         return template.build();
     }
 
-    private GrundData buildGrundData(String enhetsId, String enhetsNamn, String patientPersonId, String skapadavPersonId, LocalDateTime timeStamp) {
+    private GrundData buildGrundData(String enhetsId, String enhetsNamn, String patientPersonId, String skapadavPersonId,
+            LocalDateTime timeStamp) {
         GrundData grundData = new GrundData();
         HoSPersonal skapadAv = new HoSPersonal();
         Vardenhet vardenhet = new Vardenhet();

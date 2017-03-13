@@ -53,6 +53,8 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -64,6 +66,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -149,6 +152,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
+
+    @Autowired
+    private PUService puService;
 
     @Override
     public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling) {
@@ -507,14 +513,12 @@ public class IntygServiceImpl implements IntygService {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
-            return new IntygContentHolder(internalIntygJsonModel,
-                    certificate.getUtlatande(),
-                    certificate.getMetaData().getStatus(),
+            return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), certificate.getMetaData().getStatus(),
                     certificate.isRevoked(),
-                    relations ? relationService.getRelations(intygId)
-                            .orElse(RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(),
-                                    CertificateState.RECEIVED.name()))
-                            : null);
+                    relations ? relationService.getRelations(intygId).orElse(
+                            RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name()))
+                            : null,
+                    isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()));
 
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
@@ -550,8 +554,8 @@ public class IntygServiceImpl implements IntygService {
         Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
         return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null,
-                relations ? relationService.getRelations(utkast.getIntygsId())
-                        .orElse(RelationItem.createBaseCase(utkast)) : null);
+                relations ? relationService.getRelations(utkast.getIntygsId()).orElse(RelationItem.createBaseCase(utkast)) : null,
+                isDeceased(utkast.getPatientPersonnummer()));
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
@@ -601,6 +605,19 @@ public class IntygServiceImpl implements IntygService {
         if (utkast != null) {
             utkast.setAterkalladDatum(LocalDateTime.now());
             utkastRepository.save(utkast);
+        }
+    }
+
+    private boolean isDeceased(Personnummer personnummer) {
+        if (WebCertUserOriginType.DJUPINTEGRATION.name().equals(webCertUserService.getUser().getOrigin())) {
+            return webCertUserService.getUser().isPatientDeceased();
+        } else {
+            PersonSvar personSvar = puService.getPerson(personnummer);
+            if (personSvar != null && personSvar.getPerson() != null) {
+                return personSvar.getPerson().isAvliden();
+            } else {
+                return false;
+            }
         }
     }
 }

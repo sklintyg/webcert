@@ -28,7 +28,6 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -78,6 +77,9 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -88,6 +90,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
@@ -114,39 +117,50 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceTest {
-
     private static final String HSA_ID = "HSA-123";
     private static final String CREATED_BY_NAME = "Läkare Läkarsson";
     private static final String SENAST_SPARAD_NAME = "Spara Sparasson";
     private static final String CERTIFICATE_ID = "123";
     private static final String CERTIFICATE_TYPE = "fk7263";
-
     private static final String LOGICAL_ADDRESS = "<logicalAddress>";
-    @Mock
-    IntygModuleRegistry moduleRegistry;
-    @Mock
-    ModuleApi moduleApi;
-    @Mock
-    AuthoritiesHelper authoritiesHelper;
+
     private ListCertificatesForCareResponseType listResponse;
     private VardpersonReferens vardpersonReferens;
     private String json;
+
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private ModuleApi moduleApi;
+
+    @Mock
+    private AuthoritiesHelper authoritiesHelper;
+
     @Mock
     private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
+
     @Mock
     private IntygModuleFacade moduleFacade;
+
     @Mock
     private UtkastRepository intygRepository;
-    @Mock
-    private UtkastIntygDecorator utkastIntygDecorator;
+
     @Mock
     private LogService logservice;
+
+    @Mock
+    private WebCertUser webcertUser;
+
     @Mock
     private WebCertUserService webCertUserService;
+
     @Mock
     private MonitoringLogService mockMonitoringService;
+
     @Mock
     private RelationService relationService;
+
     @Mock
     private NotificationService notificationService;
 
@@ -158,6 +172,12 @@ public class IntygServiceTest {
 
     @Mock
     private FragorOchSvarCreator fragorOchSvarCreator;
+
+    @Mock
+    private PUService puService;
+
+    @Mock
+    private UtkastIntygDecorator utkastIntygDecorator;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -200,7 +220,8 @@ public class IntygServiceTest {
         Set<String> set = new HashSet<>();
         set.add("fk7263");
 
-        when(webCertUserService.getUser()).thenReturn(mock(WebCertUser.class));
+        when(webCertUserService.getUser()).thenReturn(webcertUser);
+        when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.NORMAL.name());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
     }
@@ -226,6 +247,11 @@ public class IntygServiceTest {
                 .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     }
 
+    @Before
+    public void setupPUService() {
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(getPersonSvar(false));
+    }
+
     @Test
     public void testFetchIntyg() throws Exception {
 
@@ -233,13 +259,14 @@ public class IntygServiceTest {
 
         // ensure that correctcall is made to intygstjanst
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(puService).getPerson(any(Personnummer.class));
 
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
         assertEquals(json, intygData.getContents());
         assertEquals(CERTIFICATE_ID, intygData.getUtlatande().getId());
         assertEquals("19121212-1212", intygData.getUtlatande().getGrundData().getPatient().getPersonId().getPersonnummer());
-
+        assertFalse(intygData.isDeceased());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -757,6 +784,29 @@ public class IntygServiceTest {
         assertTrue(res.isEmpty());
     }
 
+    @Test
+    public void testDeceasedIsSetForDeadPatientNormal() {
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(getPersonSvar(true));
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        assertTrue(intygData.isDeceased());
+    }
+
+    @Test
+    public void testDeceasedIsNotSetForAlivePatientDjupintegration() {
+        when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
+        when(webcertUser.isPatientDeceased()).thenReturn(false);
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        assertFalse(intygData.isDeceased());
+    }
+
+    @Test
+    public void testDeceasedIsSetForDeadPatientDjupintegration() {
+        when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
+        when(webcertUser.isPatientDeceased()).thenReturn(true);
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        assertTrue(intygData.isDeceased());
+    }
+
     private IntygPdf buildPdfDocument() {
         IntygPdf pdf = new IntygPdf("fake".getBytes(), "fakepdf.pdf");
         return pdf;
@@ -795,5 +845,10 @@ public class IntygServiceTest {
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
         return utkast;
+    }
+
+    private PersonSvar getPersonSvar(boolean deceased) {
+        return new PersonSvar(new Person(new Personnummer("19121212-1212"), false, deceased, "fornamn", "mellannamn", "efternamn", "postadress",
+                "postnummer", "postort"), null);
     }
 }

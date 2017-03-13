@@ -85,6 +85,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
     private static final String PARAM_REFERENCE = "ref";
     private static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
+    private static final String PARAM_PATIENT_DECEASED = "avliden";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -124,9 +125,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
             @QueryParam(PARAM_REFERENCE) String reference,
-            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit) {
-        return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn,
-                mellannamn, postadress, postnummer, postort, coherentJournaling, reference, inactiveUnit);
+            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased) {
+        return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress,
+                postnummer, postort, coherentJournaling, reference, inactiveUnit, deceased);
     }
 
     /**
@@ -151,13 +153,15 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
             @QueryParam(PARAM_REFERENCE) String reference,
-            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit) {
+            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased) {
 
         super.validateRedirectToIntyg(intygId);
 
         WebCertUser user = getWebCertUserService().getUser();
 
         user.setInactive(inactiveUnit);
+        user.setPatientDeceased(deceased);
 
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
@@ -204,9 +208,26 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 coherentJournaling);
     }
 
+    public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
+        this.urlIntygFragmentTemplate = urlFragmentTemplate;
+    }
+
+    public void setUrlUtkastFragmentTemplate(String urlFragmentTemplate) {
+        this.urlUtkastFragmentTemplate = urlFragmentTemplate;
+    }
+
+    @Override
+    protected String[] getGrantedRoles() {
+        return GRANTED_ROLES;
+    }
+
+    @Override
+    protected UserOriginType getGrantedRequestOrigin() {
+        return GRANTED_ORIGIN;
+    }
+
     /**
      * Updates Patient section of a draft with updated patient details for selected types.
-     *
      *
      * @param intygsType
      * @param draftId
@@ -252,39 +273,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         utkastService.updatePatientOnDraft(request);
 
-    }
-
-    private void verifyQueryStrings(String fornamn, String efternamn, String postadress, String postnummer, String postort) {
-        verifyQueryString(PARAM_PATIENT_FORNAMN, fornamn);
-        verifyQueryString(PARAM_PATIENT_EFTERNAMN, efternamn);
-        verifyQueryString(PARAM_PATIENT_POSTADRESS, postadress);
-        verifyQueryString(PARAM_PATIENT_POSTNUMMER, postnummer);
-        verifyQueryString(PARAM_PATIENT_POSTORT, postort);
-    }
-
-    private void verifyQueryString(String queryStringName, String queryStringValue) {
-        if (Strings.nullToEmpty(queryStringValue).trim().isEmpty()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "Missing required parameter '" + queryStringName + "'");
-        }
-    }
-
-    public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
-        this.urlIntygFragmentTemplate = urlFragmentTemplate;
-    }
-
-    public void setUrlUtkastFragmentTemplate(String urlFragmentTemplate) {
-        this.urlUtkastFragmentTemplate = urlFragmentTemplate;
-    }
-
-    @Override
-    protected String[] getGrantedRoles() {
-        return GRANTED_ROLES;
-    }
-
-    @Override
-    protected UserOriginType getGrantedRequestOrigin() {
-        return GRANTED_ORIGIN;
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn,
@@ -339,6 +327,21 @@ public class IntygIntegrationController extends BaseIntegrationController {
         URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
+    }
+
+    private void verifyQueryStrings(String fornamn, String efternamn, String postadress, String postnummer, String postort) {
+        verifyQueryString(PARAM_PATIENT_FORNAMN, fornamn);
+        verifyQueryString(PARAM_PATIENT_EFTERNAMN, efternamn);
+        verifyQueryString(PARAM_PATIENT_POSTADRESS, postadress);
+        verifyQueryString(PARAM_PATIENT_POSTNUMMER, postnummer);
+        verifyQueryString(PARAM_PATIENT_POSTORT, postort);
+    }
+
+    private void verifyQueryString(String queryStringName, String queryStringValue) {
+        if (Strings.nullToEmpty(queryStringValue).trim().isEmpty()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    "Missing required parameter '" + queryStringName + "'");
+        }
     }
 
 }

@@ -19,14 +19,17 @@
 package se.inera.intyg.webcert.web.service.intyg;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.cxf.helpers.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
@@ -37,6 +40,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -62,6 +66,12 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     @Before
     public void setupDefaultAuthorization() {
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), eq(true))).thenReturn(true);
+    }
+
+    @Before
+    public void setupIntyg() throws Exception {
+        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
     }
 
     @Test
@@ -91,7 +101,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<>());
 
-        CertificateResponse revokedCertificateResponse = new CertificateResponse("{}", null, metaData, true);
+        CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, true);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
 
@@ -143,15 +153,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(intygRepository).save(any(Utkast.class));
     }
 
-    private Utkast getUtkast(String intygId) throws IOException {
-        Utkast utkast = new Utkast();
-        String json = IOUtils.toString(new ClassPathResource(
-                "FragaSvarServiceImplTest/utlatande.json").getInputStream(), "UTF-8");
-        utkast.setModel(json);
-        utkast.setIntygsId(intygId);
-        return utkast;
-    }
-
     @Test
     public void testSendIntygPDLLogServiceFailingWithRuntimeException() throws Exception {
 
@@ -170,10 +171,21 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
         WebCertUser user = new WebCertUser();
+        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+        user.setPatientDeceased(false);
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 
         return user;
+    }
+
+    private Utkast getUtkast(String intygId) throws IOException {
+        Utkast utkast = new Utkast();
+        String json = IOUtils.toString(new ClassPathResource(
+                "FragaSvarServiceImplTest/utlatande.json").getInputStream(), "UTF-8");
+        utkast.setModel(json);
+        utkast.setIntygsId(intygId);
+        return utkast;
     }
 
 }

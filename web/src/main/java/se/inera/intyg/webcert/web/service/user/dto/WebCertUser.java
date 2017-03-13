@@ -32,6 +32,7 @@ public class WebCertUser extends IntygUser {
     private static final long serialVersionUID = -2624303818412468774L;
 
     private Map<String, String> anvandarPreference;
+    private boolean patientDeceased;
 
     public WebCertUser() {
         super("only-for-test-use");
@@ -77,5 +78,13 @@ public class WebCertUser extends IntygUser {
         if (valdVardenhet instanceof AbstractVardenhet) {
             ((AbstractVardenhet) valdVardenhet).setInactive(inactive);
         }
+    }
+
+    public void setPatientDeceased(boolean deceased) {
+        patientDeceased = deceased;
+    }
+
+    public boolean isPatientDeceased() {
+        return patientDeceased;
     }
 }

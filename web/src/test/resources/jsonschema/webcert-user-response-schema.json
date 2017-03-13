@@ -685,6 +685,9 @@
       "additionalProperties": true,
       "properties": {},
       "type": "object"
+    },
+    "patientDeceased": {
+      "type": "boolean"
     }
   },
   "required": [
@@ -706,7 +709,8 @@
     "authenticationMethod",
     "lakare",
     "privatLakare",
-    "totaltAntalVardenheter"
+    "totaltAntalVardenheter",
+    "patientDeceased"
   ],
   "title": "WebCertUser transport model",
   "type": "object",

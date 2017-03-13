@@ -18,14 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.dto;
 
-import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+
+import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 public class IntygContentHolder {
 
@@ -37,8 +38,10 @@ public class IntygContentHolder {
     private final List<Status> statuses;
     private final boolean revoked;
     private final List<RelationItem> relations;
+    private final boolean deceased;
 
-    public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked, List<RelationItem> relations) {
+    public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked, List<RelationItem> relations,
+            boolean deceased) {
         this.contents = contents;
         this.utlatande = utlatande;
         this.statuses = statuses;
@@ -48,6 +51,7 @@ public class IntygContentHolder {
         } else {
             this.relations = relations;
         }
+        this.deceased = deceased;
     }
 
     public String getContents() {
@@ -68,5 +72,9 @@ public class IntygContentHolder {
 
     public List<RelationItem> getRelations() {
         return relations;
+    }
+
+    public boolean isDeceased() {
+        return deceased;
     }
 }
