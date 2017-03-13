@@ -18,10 +18,16 @@
 
               <div class="bottom-padding-big">
                 <label class="control-label">Patientuppgifter</label>
-                <div class="form-group">
-                  <span
-                      id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span><br />
-                  {{patientModel.personnummer | PersonIdFormatter}}
+                <div class="form-group row">
+                  <div class="col-md-4">
+                    <span ng-if="patientModel.avliden"
+                          class="glyphicon glyphicon-ban-circle mark-webcert-red"></span> <span id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span><br>
+                    {{patientModel.personnummer | PersonIdFormatter}}
+                  </div>
+                  <div class="col-md-8">
+                    <span class="mark-webcert-red">OBS! Patienten har avlidit.</span><br>
+                    <span class="italic">Du kan inte skapa ett nytt intyg för en avliden patient.</span>
+                  </div>
                 </div>
 
                 <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
