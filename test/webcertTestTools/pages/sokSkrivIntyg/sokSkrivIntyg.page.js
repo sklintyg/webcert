@@ -39,6 +39,7 @@ var SokSkrivIntyg = WebcertBasePage._extend({
         this.efternamn = element(by.id('efternamn'));
         this.namnFortsatt = element(by.id('namnFortsatt'));
         this.intygLista = element(by.id('intygLista'));
+        this.sokSkrivIntygForm = element(by.css('form[name=certForm]'));
     },
     get: function() {
         browser.get('web/dashboard#/create/choose-intyg-type/default/index');

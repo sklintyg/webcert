@@ -46,7 +46,7 @@ function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänst
     sokSkrivIntygPage.selectPersonnummer(person.id);
     logger.info('Går in på patient ' + person.id);
     //Patientuppgifter visas
-    var patientUppgifter = element(by.cssContainingText('.form-group', 'Patientuppgifter'));
+    var patientUppgifter = sokSkrivIntygPage.sokSkrivIntygForm;
     return expect(patientUppgifter.getText()).to.eventually.contain(person.id);
 }
 
