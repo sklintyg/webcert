@@ -43,9 +43,9 @@ import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -69,10 +69,9 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PatientParamete
  */
 @Path("/intyg")
 @Api(value = "intyg (Djupintegration)", description = "REST API för Djupintegration", produces = MediaType.APPLICATION_JSON)
+// CHECKSTYLE:OFF ParameterNumber
 public class IntygIntegrationController extends BaseIntegrationController {
 
-    private static final String PARAM_CERT_TYPE = "certType";
-    private static final String PARAM_CERT_ID = "certId";
     public static final String PARAM_HOSP_NAME = "hospName";
     public static final String PARAM_PATIENT_SSN = "patientId";
     public static final String PARAM_PATIENT_FORNAMN = "fornamn";
@@ -81,8 +80,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_PATIENT_POSTADRESS = "postadress";
     public static final String PARAM_PATIENT_POSTNUMMER = "postnummer";
     public static final String PARAM_PATIENT_POSTORT = "postort";
+    private static final String PARAM_CERT_TYPE = "certType";
+    private static final String PARAM_CERT_ID = "certId";
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
     private static final String PARAM_REFERENCE = "ref";
+    private static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -111,7 +113,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
      */
     @GET
     @Path("/{intygId}")
-    // CHECKSTYLE:OFF ParameterNumber
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId,
             @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
             @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName,
@@ -122,11 +123,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference) {
+            @QueryParam(PARAM_REFERENCE) String reference,
+            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit) {
         return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn,
-                mellannamn, postadress, postnummer, postort, coherentJournaling, reference);
+                mellannamn, postadress, postnummer, postort, coherentJournaling, reference, inactiveUnit);
     }
-    // CHECKSTYLE:OFF ParameterNumber
 
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
@@ -139,7 +140,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
      */
     @GET
     @Path("/{typ}/{intygId}")
-    // CHECKSTYLE:OFF ParameterNumber
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typParam,
             @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
             @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName,
@@ -150,11 +150,14 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
             @QueryParam(PARAM_PATIENT_POSTORT) String postort,
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference) {
+            @QueryParam(PARAM_REFERENCE) String reference,
+            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit) {
 
         super.validateRedirectToIntyg(intygId);
 
         WebCertUser user = getWebCertUserService().getUser();
+
+        user.setInactive(inactiveUnit);
 
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
@@ -217,8 +220,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * @param postort
      */
     private void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, String alternatePatientSSn,
-            String fornamn,
-            String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
+            String fornamn, String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
 
         // To be allowed to update utkast, we need to have the same authority as when saving a draft..
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsType)
@@ -266,7 +268,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
                     "Missing required parameter '" + queryStringName + "'");
         }
     }
-    // CHECKSTYLE:OFF ParameterNumber
 
     public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
         this.urlIntygFragmentTemplate = urlFragmentTemplate;
@@ -275,8 +276,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public void setUrlUtkastFragmentTemplate(String urlFragmentTemplate) {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
-
-    // - - - - - Protected scope - - - - -
 
     @Override
     protected String[] getGrantedRoles() {
@@ -287,8 +286,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
     protected UserOriginType getGrantedRequestOrigin() {
         return GRANTED_ORIGIN;
     }
-
-    // - - - - - Private scope - - - - -
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn,
             String responsibleHospName, PatientParameter patientDetails, Boolean isUtkast, boolean coherentJournaling) {
@@ -345,3 +342,4 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
 }
+// CHECKSTYLE:ON ParameterNumber

@@ -356,4 +356,37 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x")
                 .then().header(HttpHeaders.LOCATION, endsWith("#/integration-enhetsval"));
     }
+
+    @Test
+    public void testInactiveUnitIsSet() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsId", utkastId);
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("inaktivEnhet", "true");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects()
+                .follow(false)
+                .pathParam("intygsId", utkastId)
+                .queryParams(queryParams)
+                .expect()
+                .statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .when()
+                .get("/visa/intyg/{intygsId}");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("valdVardenhet.inactive", equalTo(true));
+    }
 }
