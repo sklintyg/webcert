@@ -24,7 +24,7 @@
                           class="glyphicon glyphicon-ban-circle mark-webcert-red"></span> <span id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span><br>
                     {{patientModel.personnummer | PersonIdFormatter}}
                   </div>
-                  <div class="col-md-8">
+                  <div class="col-md-8" ng-if="patientModel.avliden">
                     <span class="mark-webcert-red">OBS! Patienten har avlidit.</span><br>
                     <span class="italic">Du kan inte skapa ett nytt intyg för en avliden patient.</span>
                   </div>
@@ -40,10 +40,11 @@
                   <div ng-show="!patientModel.sekretessmarkering">
                     <select id="intygType" class="form-control" name="intygType" ng-model="intygTypeModel.intygType"
                             ng-options="type.id as type.label for type in intygTypeModel.intygTypes"
-                            wc-focus-me="viewState.focusFirstInput"></select>
+                            wc-focus-me="viewState.focusFirstInput"
+                            ng-disabled="patientModel.avliden"></select>
                     <span id="fortsattBtn">
                       <button id="intygTypeFortsatt" class="btn btn-success" type="submit"
-                              ng-disabled="intygTypeModel.intygType == 'default'">Skapa intyg
+                              ng-disabled="intygTypeModel.intygType == 'default' || patientModel.avliden">Skapa intyg
                       </button>
                     </span>
                   </div>
@@ -121,7 +122,7 @@
                 <table class="col-md-12 table table-striped table-qa">
                   <tr>
                     <th></th>
-                    <th></th>
+                    <th ng-if="!patientModel.avliden"></th>
                     <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"></th>
                     <th wc-table-head label-key="th.label.status" help-key="th.help.status"></th>
                     <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"></th>
@@ -141,7 +142,7 @@
                         {{messageService.getProperty('common.show')}}
                       </button>
                     </td>
-                    <td ng-switch on="intyg.intygType">
+                    <td ng-switch on="intyg.intygType" ng-if="!patientModel.avliden">
                       <button type="button"
                               wc-authority="KOPIERA_INTYG"
                               feature="kopieraIntyg"
