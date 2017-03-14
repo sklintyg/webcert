@@ -36,6 +36,14 @@ var helpers = require('../helpers.js');
 
 // webcertBase.flikarsokSkrivIntyg
 
+
+function insertDashInPnr(pnrString) {
+    if (pnrString.indexOf('-') >= 0) {
+        return pnrString;
+    }
+    return pnrString.slice(0, 8) + '-' + pnrString.slice(8);
+}
+
 function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänsten
     global.person = patient;
 
@@ -47,7 +55,7 @@ function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänst
     logger.info('Går in på patient ' + person.id);
     //Patientuppgifter visas
     var patientUppgifter = sokSkrivIntygPage.sokSkrivIntygForm;
-    return expect(patientUppgifter.getText()).to.eventually.contain(person.id);
+    return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id));
 }
 
 function gotoPerson(patient, callback) { //förutsätter inte att personen finns i PU-tjänsten

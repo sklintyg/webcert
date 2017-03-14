@@ -25,11 +25,11 @@ module.exports = {
     ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js'),
     patienter: [{
-        id: '19000119-9801' // Har adress i PU
+        id: '190001199801' // Har adress i PU
     }, {
-        id: '19000717-9815' // Har adress i PU
+        id: '190007179815' // Har adress i PU
     }, {
-        id: '19000128-9818',
+        id: '190001289818',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -37,7 +37,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900424-2385',
+        id: '199004242385',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -45,7 +45,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900424-2393',
+        id: '199004242393',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -53,7 +53,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900425-2384',
+        id: '199004252384',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -61,7 +61,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900425-2392',
+        id: '199004252392',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -69,7 +69,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900426-2383',
+        id: '199004262383',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -77,7 +77,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900426-2391',
+        id: '199004262391',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -85,7 +85,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900427-2382',
+        id: '199004272382',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -93,7 +93,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900427-2390',
+        id: '199004272390',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -101,7 +101,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900428-2381',
+        id: '199004282381',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -109,7 +109,7 @@ module.exports = {
 
         }
     }, {
-        id: '19900428-2399',
+        id: '199004282399',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -117,7 +117,7 @@ module.exports = {
 
         }
     }, {
-        id: '19990810-2388',
+        id: '199908102388',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -125,7 +125,7 @@ module.exports = {
 
         }
     }, {
-        id: '19990811-2395',
+        id: '199908112395',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -133,7 +133,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991225-2393',
+        id: '199912252393',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -141,7 +141,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991214-2388',
+        id: '199912142388',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -149,7 +149,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991215-2395',
+        id: '199912152395',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -157,7 +157,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991216-2386',
+        id: '199912162386',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -165,7 +165,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991217-2393',
+        id: '199912172393',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -173,7 +173,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991218-2384',
+        id: '199912182384',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -181,7 +181,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991219-2391',
+        id: '199912192391',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -189,7 +189,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991220-2380',
+        id: '199912202380',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -197,7 +197,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991221-2397',
+        id: '199912212397',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -205,7 +205,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991222-2388',
+        id: '199912222388',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -213,7 +213,7 @@ module.exports = {
 
         }
     }, {
-        id: '19991223-2395',
+        id: '199912232395',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
@@ -222,24 +222,24 @@ module.exports = {
         }
     }],
     patienterMedSamordningsnummer: [{
-        id: '19440178-6530',
+        id: '194401786530',
         namn: '',
         efternamn: ''
     }],
     patienterMedSamordningsnummerEjPU: [{
-        id: '20081063-2398 ',
+        id: '200810632398 ',
         namn: '',
         efternamn: ''
     }],
 
     patienterMedSekretessmarkering: [{
-        id: '19420119-9124',
+        id: '194201199124',
         namn: '',
         efternamn: ''
     }],
 
     patienterEjPU: [{
-        id: '20121212-1212',
+        id: '201212121212',
         namn: '',
         efternamn: ''
     }],

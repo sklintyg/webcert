@@ -1,6 +1,6 @@
 # language: sv
 
-@webcert @ts @bas
+@ts @bas
 Egenskap: Hantera Transportstyrelsens basintyg
 
 Bakgrund: Jag är inloggad

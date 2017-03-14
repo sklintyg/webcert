@@ -155,5 +155,6 @@ module.exports = {
     SendMessageToCare: require('./SendMessageToCare').SendMessageToCare,
     CreateDraftCertificateV2: require('./CreateDraftV2').CreateDraftCertificateV2,
     RegisterMedicalCertificate: require('./RegisterMedicalCertificate').RegisterMedicalCertificate,
-    SendMedicalCertificate: require('./SendMedicalCertificate').SendMedicalCertificate
+    SendMedicalCertificate: require('./SendMedicalCertificate').SendMedicalCertificate,
+    ListCertificatesForCareWithQA: require('./ListCertificatesForCareWithQA2')
 };
