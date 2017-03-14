@@ -11,20 +11,13 @@ stage('checkout') {
 
 stage('deploy') {
     node {
-        withEnv(["BASE_VERSION=${baseVersion}"]) {
-            util.run({
-                    def itVersion = sh(
-                        script: 'curl -ks "https://build-inera.nordicmedtest.se/nexus/service/local/lucene/search?a=webcert-web&v=${BASE_VERSION}&repositoryId=releases" | sed -nr "/^.*latestRelease>([0-9.]+)<.*/{s//\\1/p;q}"',
-                                       returnStdout: true
-                                       ).trim()
+        util.run({
+                def itVersion = util.latestVersion("webcert-web", baseVersion)
 
-                    ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.106", deploy_from_repo: "true"],
-                                    installation: 'ansible-yum',
-                                    inventory: 'ansible/inventory/webcert/demo',
-                                    playbook: 'ansible/deploy.yml')
+                ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.106", deploy_from_repo: "true"],
+                                installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/demo', playbook: 'ansible/deploy.yml')
 
-                    util.waitForServer('https://demo.webcert.intygstjanster.se/version.jsp')
-                })
-        }
+                util.waitForServer('https://demo.webcert.intygstjanster.se/version.jsp')
+            })
     }
 }
