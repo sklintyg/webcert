@@ -1,0 +1,30 @@
+#!groovy
+
+def baseVersion = "5.2.*"
+
+stage('checkout') {
+    node {
+        git url: "https://github.com/sklintyg/webcert.git", branch: GIT_BRANCH
+        util.run { checkout scm }
+    }
+}
+
+stage('deploy') {
+    node {
+        withEnv(["BASE_VERSION=${baseVersion}"]) {
+            util.run({
+                    def itVersion = sh(
+                        script: 'curl -ks "https://build-inera.nordicmedtest.se/nexus/service/local/lucene/search?a=webcert-web&v=${BASE_VERSION}&repositoryId=releases" | sed -nr "/^.*latestRelease>([0-9.]+)<.*/{s//\\1/p;q}"',
+                                       returnStdout: true
+                                       ).trim()
+
+                    ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.106", deploy_from_repo: "true"],
+                                    installation: 'ansible-yum',
+                                    inventory: 'ansible/inventory/webcert/demo',
+                                    playbook: 'ansible/deploy.yml')
+
+                    util.waitForServer('https://demo.webcert.intygstjanster.se/version.jsp')
+                })
+        }
+    }
+}
