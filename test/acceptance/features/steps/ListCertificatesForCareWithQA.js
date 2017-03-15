@@ -34,7 +34,6 @@
                  throw (err);
              } else {
                  client.ListCertificatesForCareWithQA(body, function(err, result, resBody) {
-                     console.log(resBody);
                      if (err) {
                          throw (err);
                      } else {
@@ -70,16 +69,19 @@
      });
 
 
-     this.Then(/^ska svaret innehålla intyget jag var inne på$/, function() {
+     this.Then(/^ska svaret( inte)? innehålla intyget jag var inne på$/, function(inte) {
          var idn = [];
          response.list.item.forEach(function(element) {
              var intygID = element.intyg['intygs-id'].extension;
              idn.push(intygID);
              if (intygID === intyg.id) {
-                 responseIntyg = element.intyg;
+                 responseIntyg = element;
              }
          });
-         return expect(idn).to.contain(intyg.id);
+         if (inte) {
+             return expect(idn).to.not.include(intyg.id);
+         }
+         return expect(idn).to.include(intyg.id);
      });
 
      this.Then(/^ska svaret endast innehålla intyg för utvald patient$/, function() {
@@ -98,6 +100,14 @@
              idPromises.push(expect(enhetID).to.contain(global.user.enhetId));
          });
          return Promise.all(idPromises);
+     });
+
+
+     this.Then(/^ska svaret visa intyghändelse "([^"]*)"$/, function(handelseKod) {
+         var handelser = responseIntyg.handelser.handelse.map(function(obj) {
+             return obj.handelsekod.code;
+         });
+         return expect(handelser).to.contain(handelseKod);
      });
 
 

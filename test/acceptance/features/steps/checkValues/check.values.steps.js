@@ -39,11 +39,11 @@ module.exports = function() {
     // });
 
     this.Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
+        var id = ursprungligPerson.id;
         if (arg1 === 'nya') {
-            return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.id);
-        } else {
-            return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(ursprungligPerson.id);
+            id = person.id;
         }
+        return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(helpers.insertDashInPnr(id));
 
     });
 
