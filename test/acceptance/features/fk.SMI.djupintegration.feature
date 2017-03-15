@@ -27,6 +27,7 @@ Scenario: Informera om patienten har bytt adress och använd address på nya int
     Och jag signerar intyget
     Så ska intyget visa den nya addressen
 
+@nytt-personnummer
 Scenario: Patienten har fått ett nytt personnummer
 	När att vårdsystemet skapat ett intygsutkast för slumpat intyg med samordningsnummer eller personnummer
 	Och jag går in på intygsutkastet via djupintegrationslänk

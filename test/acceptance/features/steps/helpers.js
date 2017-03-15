@@ -23,6 +23,12 @@
 var fkLusePage = pages.intyg.luse.intyg;
 
 module.exports = {
+    insertDashInPnr: function(pnrString) {
+        if (pnrString.indexOf('-') >= 0) {
+            return pnrString;
+        }
+        return pnrString.slice(0, 8) + '-' + pnrString.slice(8);
+    },
     intygShortcode: commonTools.helpers.intygShortcode,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt

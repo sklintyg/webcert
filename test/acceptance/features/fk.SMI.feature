@@ -93,4 +93,4 @@ Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas e
 		Och jag klickar på skicka knappen
 		Och jag makulerar intyget
 		Och jag skickar en fråga till Försäkringskassan
-		Så ska varningen "common.error.certificate_revoked" visas
+		Så ska varningen "Förmodligen har en annan användare makulerat intyget medan du arbetat på samma post. Ladda om sidan och försök igen" visas

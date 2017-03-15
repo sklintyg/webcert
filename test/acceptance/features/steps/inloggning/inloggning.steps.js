@@ -33,16 +33,7 @@ var testpatienter = testdata.values.patienter;
 // var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
 var parallell = require('./parallellt_util.js');
 var helpers = require('../helpers.js');
-
-// webcertBase.flikarsokSkrivIntyg
-
-
-function insertDashInPnr(pnrString) {
-    if (pnrString.indexOf('-') >= 0) {
-        return pnrString;
-    }
-    return pnrString.slice(0, 8) + '-' + pnrString.slice(8);
-}
+var insertDashInPnr = helpers.insertDashInPnr;
 
 function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänsten
     global.person = patient;
