@@ -51,20 +51,17 @@ describe('Validera makulering av luae_fs Intyg', function() {
 
         it('Makulera intyget', function() {
             IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-            IntygPage.makulera.dialogRadioFelPatient.sendKeys(protractor.Key.SPACE)
-            browser.wait(IntygPage.makulera.dialogMakulera.isDisplayed())
-                .then(IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE));
+            IntygPage.makulera.dialogRadioFelPatient.sendKeys(protractor.Key.SPACE);
+            expect(IntygPage.makulera.dialogMakulera.isDisplayed()).toBeTruthy();
 
-            element.all(by.id('#makuleraBtn')).then(function(items) {
-                expect(items.length).toBe(0);
-            });
-
-            // A small artificial wait so Intygstjänsten kan process the revoke, it's async.
-            browser.sleep(500);
-            expect(isIntygRevoked(intygsId)).toBeTruthy();
-            expect(IntygPage.copyBtn.isDisplayed()).toBeTruthy();
+            IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
+            expect(IntygPage.makulera.dialogMakulera.isDisplayed()).toBeFalsy();
         });
 
+        it('check intyg is makulerat', function() {
+            expect(isIntygRevoked(intygsId)).toBeTruthy();
+            expect(IntygPage.makulera.btn.isPresent()).toBeFalsy();
+        });
     });
 
     afterAll(function() {

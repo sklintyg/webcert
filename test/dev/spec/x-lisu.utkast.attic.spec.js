@@ -37,7 +37,7 @@ xdescribe('lisu.utkast.attic', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
 
-        testdataHelper.createUtkast('lisu').then(function(response){
+        testdataHelper.createUtkast('lisjp').then(function(response){
             var utkast = response.body;
             intygsId = utkast.intygsId;
 

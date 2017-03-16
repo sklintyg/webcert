@@ -31,7 +31,7 @@ var EC = protractor.ExpectedConditions;
 
 // Validera att man med roll Tandläkare ej kan se Ärende tillhörande luae_fs intyg samt
 // att Ärendet ej inkluderas i summeringssiffran i Fråga-svar tabben
-xdescribe('fragasvar.intygstyp.filtrering', function() {
+describe('fragasvar.intygstyp.filtrering', function() {
 
     var intygsId;
     var arendeId = 'luaefs-arende-avstmn';
