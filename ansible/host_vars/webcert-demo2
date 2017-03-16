@@ -1,15 +1,15 @@
 ---
 
-# Spring profiles
-profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled
-
-proxy_env:
-  http_proxy: http://bf-proxy.sth:8888
-  https_proxy: http://bf-proxy.sth:8888
-
 # Configuration repository
 environment_name: "demo"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
+# Spring profiles
+profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled
+
 # Tomcat
-tomcat_http_port: 8182
+tomcat_http_port: 8081
+
+proxy_env:
+  http_proxy: http://bf-proxy.sth:8888
+  https_proxy: http://bf-proxy.sth:8888
