@@ -898,4 +898,12 @@
 
   </changeSet>
 
+  <changeSet id="43" author="el">
+    <addColumn tableName="INTYG">
+      <column name="REDO_SIGNERAS_NOTIFERING_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

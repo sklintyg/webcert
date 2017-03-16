@@ -18,25 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.*;
-
-import javax.persistence.OptimisticLockException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import io.swagger.annotations.Api;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-
-import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -50,6 +41,21 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+
+import javax.persistence.OptimisticLockException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Controller for the API that serves WebCert.
@@ -88,8 +94,7 @@ public class IntygApiController extends AbstractApiController {
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
      * types of Intyg are converted and merged into one sorted list.
      *
-     * @param personNummerIn
-     *            personnummer
+     * @param personNummerIn personnummer
      * @return a Response carrying a list containing all Intyg for a person.
      */
     @GET
@@ -139,19 +144,16 @@ public class IntygApiController extends AbstractApiController {
     /**
      * Sets the notified flag on an Intyg.
      *
-     * @param intygsId
-     *            Id of the Intyg
-     * @param notifiedState
-     *            True or False
-     * @return
-     *         Response
+     * @param intygsId      Id of the Intyg
+     * @param notifiedState True or False
+     * @return Response
      */
     @PUT
     @Path("/{intygsTyp}/{intygsId}/{version}/vidarebefordra")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version, NotifiedState notifiedState) {
+                                       @PathParam("version") long version, NotifiedState notifiedState) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
@@ -166,10 +168,26 @@ public class IntygApiController extends AbstractApiController {
         }
 
         LOG.debug("Set forward to {} on intyg {} with id '{}'",
-                new Object[] { updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId() });
+                new Object[]{updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId()});
 
         ListIntygEntry intygEntry = IntygDraftsConverter.convertUtkastToListIntygEntry(updatedIntyg);
 
         return Response.ok(intygEntry).build();
+    }
+
+
+    @PUT
+    @Path("/{intygsTyp}/{intygsId}/{version}/redoattsignera")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response sendRedoToSignNotification(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+                                               @PathParam("version") long version) {
+
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .privilege(AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST)
+                .orThrow();
+
+        utkastService.setStatusMessageReadyToSignSent(intygsId, intygsTyp);
+        return Response.ok().build();
     }
 }

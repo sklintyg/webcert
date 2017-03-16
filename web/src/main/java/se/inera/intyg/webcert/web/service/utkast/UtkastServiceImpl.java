@@ -68,6 +68,7 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -167,6 +168,19 @@ public class UtkastServiceImpl implements UtkastService {
         LOG.debug("Got questions of {} chars from module '{}'", getSafeLength(questionsAsJson), intygsTyp);
 
         return questionsAsJson;
+    }
+
+    @Override
+    @Transactional
+    public void setStatusMessageReadyToSignSent(String intygsId, String intygType) {
+        Utkast utkast = getIntygAsDraft(intygsId, intygType);
+        if (utkast.getRedoSignerasNotifieringDatum() == null) {
+            notificationService.sendNotificationForDraftReadyToSign(utkast);
+            utkast.setRedoSignerasNotifieringDatum(LocalDateTime.now());
+            monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
+            saveDraft(utkast);
+            LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
+        }
     }
 
     @Override

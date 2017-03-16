@@ -18,17 +18,32 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.model;
 
+import org.hibernate.annotations.Type;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
+import se.inera.intyg.schemas.contract.Personnummer;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-import javax.persistence.*;
-
-import org.hibernate.annotations.Type;
-
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 
 /**
  * A draft of a certificate.
@@ -126,6 +141,10 @@ public class Utkast {
     @Column(name = "RELATION_KOD")
     @Enumerated(EnumType.STRING)
     private RelationKod relationKod;
+
+    @Column(name = "REDO_SIGNERAS_NOTIFERING_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime redoSignerasNotifieringDatum;
 
     @PrePersist
     void onPrePersist() {
@@ -337,6 +356,14 @@ public class Utkast {
 
     public void setRelationKod(RelationKod relationKod) {
         this.relationKod = relationKod;
+    }
+
+    public LocalDateTime getRedoSignerasNotifieringDatum() {
+        return redoSignerasNotifieringDatum;
+    }
+
+    public void setRedoSignerasNotifieringDatum(LocalDateTime redoSignerasNotifieringDatum) {
+        this.redoSignerasNotifieringDatum = redoSignerasNotifieringDatum;
     }
 
     private byte[] toBytes(String data) {

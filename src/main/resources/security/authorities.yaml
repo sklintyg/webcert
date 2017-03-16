@@ -73,6 +73,7 @@ knownPrivileges:
   - &kp100 HANTERA_MAILSVAR
   - &kp110 NAVIGERING
   - &kp120 SVARA_MED_NYTT_INTYG
+  - &kp130 NOTIFIERING_UTKAST
 
 # De roller som systemet har
 knownRoles:
@@ -198,6 +199,16 @@ privileges:
       - *ki070 # luae_fs
     requestOrigins:
       - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
+  - &p130
+    name: *kp130
+    desc: Notifiera utkast klart för signering
+    intygstyper:
+      - *ki040 # lisjp
+      - *ki050 # luse
+      - *ki060 # luae_na
+      - *ki070 # luae_fs
+    requestOrigins:
       - *ro020 # DJUPINTEGRATION
 
 # Roller
@@ -532,6 +543,9 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro030 # UTHOPP
+      - <<: *p130 # NOTIFIERING_UTKAST
+        requestOrigins:
+          - <<: *ro020 # DJUPINTEGRATION
 
 # Legitimerade yrkesroller
 titles:

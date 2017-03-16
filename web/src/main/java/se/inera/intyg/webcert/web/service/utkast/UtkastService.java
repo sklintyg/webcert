@@ -18,13 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.util.List;
-import java.util.Map;
-
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
+
+import java.util.List;
+import java.util.Map;
 
 public interface UtkastService {
 
@@ -51,4 +54,6 @@ public interface UtkastService {
     int countFilterIntyg(UtkastFilter filter);
 
     String getQuestions(String intygsTyp, String version);
+
+    void setStatusMessageReadyToSignSent(String intygsId, String intygsTyp);
 }

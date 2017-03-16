@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import java.util.List;
-
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+
+import java.util.List;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -51,6 +51,11 @@ public interface NotificationService {
      * Utkast deleted (HAN4).
      */
     void sendNotificationForDraftDeleted(Utkast utkast);
+
+    /**
+     * Utkast marked as ready to sign.
+     */
+    void sendNotificationForDraftReadyToSign(Utkast utkast);
 
     /**
      * Signed intyg sent to recipient (HAN3).
@@ -93,5 +98,4 @@ public interface NotificationService {
      * @return a list of all the notifications
      */
     List<Handelse> getNotifications(String intygsId);
-
 }

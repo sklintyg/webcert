@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonRawValue;
-
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
 /**
  * Container for a draft and its current status.
@@ -48,6 +48,7 @@ public class DraftHolder {
     private String latestTextVersion;
 
     private List<RelationItem> relations;
+    private LocalDateTime markedReadyToSignDateTime;
 
     public long getVersion() {
         return version;
@@ -110,5 +111,13 @@ public class DraftHolder {
             relations = new ArrayList<>();
         }
         return relations;
+    }
+
+    public void setMarkedReadyToSignDateTime(LocalDateTime markedReadyToSignDateTime) {
+        this.markedReadyToSignDateTime = markedReadyToSignDateTime;
+    }
+
+    public LocalDateTime getMarkedReadyToSignDateTime() {
+        return markedReadyToSignDateTime;
     }
 }

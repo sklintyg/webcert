@@ -254,6 +254,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.UTKAST_PATIENT_UPDATED, intygsId, intygsTyp);
     }
 
+    @Override
+    public void logUtkastMarkedAsReadyToSignNotificationSent(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.UTKAST_READY_NOTIFICATION_SENT, intygsId, intygsTyp);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -298,6 +303,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_CONCURRENTLY_EDITED("Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
+        UTKAST_READY_NOTIFICATION_SENT("Utkast '{}' of type '{}' was marked as ready and notification was sent"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'"),
