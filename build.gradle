@@ -16,6 +16,7 @@ ext {
     rivtaResidentMasterSchemasVersion = "1.1.3.5"
 
     activeMqVersion = "5.13.4"
+    assertjVersion = "3.6.2"
     aspectJWeaverVersion = "1.7.1"
     awaitilityVersion = "1.4.0"
     camelVersion = "2.16.0"

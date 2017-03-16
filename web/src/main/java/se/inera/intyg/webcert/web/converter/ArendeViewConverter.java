@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -122,6 +123,8 @@ public class ArendeViewConverter {
      */
     public List<ArendeConversationView> buildArendeConversations(String intygsId, List<Arende> intygMessages,
             List<AnsweredWithIntyg> kompltToIntyg) {
+        Objects.requireNonNull(kompltToIntyg);
+        Objects.requireNonNull(intygMessages);
         // Group by conversation thread.
         Map<String, List<Arende>> threads = intygMessages.stream()
                 .collect(Collectors.groupingBy(ArendeViewConverter::getThreadRootMessageId));

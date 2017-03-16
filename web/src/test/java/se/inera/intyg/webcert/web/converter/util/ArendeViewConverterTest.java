@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -32,11 +34,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +53,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.collect.ImmutableList;
 
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
 import se.inera.intyg.common.lisjp.model.internal.LisjpUtlatande;
@@ -71,6 +78,7 @@ import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 
@@ -267,6 +275,7 @@ public class ArendeViewConverterTest {
                 buildArende(svarMeddelandeId, null, LocalDateTime.now()), null,
                 Arrays.asList(buildArende(paminnelse2MeddelandeId, null, paminnelse2Timestamp),
                         buildArende(paminnelse1MeddelandeId, null, paminnelse1Timestamp)));
+
         assertNotNull(res);
         assertNotNull(res.getFraga());
         assertEquals(fragaMeddelandeId, res.getFraga().getInternReferens());
@@ -311,6 +320,193 @@ public class ArendeViewConverterTest {
         assertEquals(decemberYear9999, result.get(1).getSenasteHandelse());
         assertEquals(february, result.get(2).getSenasteHandelse());
         assertEquals(january, result.get(3).getSenasteHandelse());
+    }
+
+    @Test
+    public void paminnelserInArendeConversionViewShouldBeReverseSortedOnDate() {
+        // Given
+        LocalDateTime fragaTimestamp = LocalDateTime.parse("2016-03-01T11:22:11");
+        Arende fraga = createValidArendeForLuse("fraga", fragaTimestamp, "fraga1-id", null);
+        Arende p1 = createValidArendeForLuse("paminnelse", fragaTimestamp.plusHours(2), "paminnelse-1.1-id", fraga);
+        Arende p2 = createValidArendeForLuse("paminnelse", fragaTimestamp.plusDays(1), "paminnelse-1.2-id", fraga);
+        Arende p3 = createValidArendeForLuse("paminnelse", fragaTimestamp.plusDays(3), "paminnelse-1.3-id", fraga);
+        Arende svar = createValidArendeForLuse("svar", fragaTimestamp.plusDays(4), "svar-1-id", fraga);
+
+        // When
+        ArendeConversationView messageThread = converter.convertToArendeConversationView(fraga, svar, null,
+                ImmutableList.of(p3, p1, p2));
+
+        // Then
+        List<ArendeView> expectedPaminnelserOrder = Stream.of(p3, p2, p1)
+                .map(converter::convertToDto)
+                .collect(Collectors.toList());
+        Assertions.assertThat(messageThread.getPaminnelser())
+                .hasSize(3)
+                .containsExactlyElementsOf(expectedPaminnelserOrder);
+    }
+
+    @Test
+    public void differentMessageThreadsShouldBeSeparatedAndSortedOnSenasteHandelse() {
+        // Given
+        LocalDateTime startOfFirstThread = LocalDateTime.parse("2016-03-01T11:22:11");
+        Arende fraga1 = createValidArendeForLuse("fraga", startOfFirstThread, "fraga1-id", null);
+        Arende p11 = createValidArendeForLuse("paminnelse", startOfFirstThread.plusHours(2), "paminnelse-1.1-id", fraga1);
+        Arende p12 = createValidArendeForLuse("paminnelse", startOfFirstThread.plusDays(1), "paminnelse-1.2-id", fraga1);
+        Arende p13 = createValidArendeForLuse("paminnelse", startOfFirstThread.plusDays(3), "paminnelse-1.3-id", fraga1);
+        Arende svar1 = createValidArendeForLuse("svar", startOfFirstThread.plusDays(4), "svar-1-id", fraga1);
+
+        LocalDateTime startOfSecondThread = LocalDateTime.parse("2016-03-02T11:22:11");
+        Arende fraga2 = createValidArendeForLuse("fraga", startOfSecondThread, "fraga2-id", null);
+        Arende p21 = createValidArendeForLuse("paminnelse", startOfFirstThread.plusHours(2), "paminnelse-2.1-id", fraga2);
+        Arende p22 = createValidArendeForLuse("paminnelse", startOfFirstThread.plusDays(1), "paminnelse-2.2-id", fraga2);
+        Arende svar2 = createValidArendeForLuse("svar", startOfFirstThread.plusDays(4), "svar-2-id", fraga2);
+
+        List<Arende> mixedThreads = ImmutableList.of(fraga1, fraga2, p11, p21, p12, p22, p13, svar2, svar1);
+
+        // When
+        List<ArendeConversationView> createdList = converter.buildArendeConversations(intygsId, mixedThreads, Collections.emptyList());
+
+        // Then
+        List<ArendeView> expectedPaminnelser1Dtos = Stream.of(p13, p12, p11)
+                .map(converter::convertToDto)
+                .collect(Collectors.toList());
+        List<ArendeView> expectedPaminnelser2Dtos = Stream.of(p22, p21)
+                .map(converter::convertToDto)
+                .collect(Collectors.toList());
+        Assertions.assertThat(createdList)
+                .hasSize(2)
+                .extracting("fraga", "svar", "paminnelser")
+                .contains(tuple(converter.convertToDto(fraga1), converter.convertToDto(svar1), expectedPaminnelser1Dtos),
+                        tuple(converter.convertToDto(fraga2), converter.convertToDto(svar2), expectedPaminnelser2Dtos));
+    }
+
+    @Test
+    public void emptyListOfKompletterandeIntygIsOk() {
+        // Given
+        LocalDateTime fragaTimestamp = LocalDateTime.parse("2016-03-01T11:22:11");
+        Arende fraga = createValidArendeForLuse("fraga", fragaTimestamp, "unique id of fraga", null);
+        Arende svar = createValidArendeForLuse("svar", fragaTimestamp.plusMinutes(10), "unique id of svar", fraga);
+
+        // When
+        List<ArendeConversationView> res = converter.buildArendeConversations(fraga.getIntygsId(), ImmutableList.of(fraga, svar),
+                Collections.emptyList());
+
+        // Then
+        Assertions.assertThat(res)
+                .hasSize(1)
+                .extracting("fraga", "svar", "answeredWithIntyg")
+                .contains(tuple(converter.convertToDto(fraga), converter.convertToDto(svar), null));
+    }
+
+    @Test
+    public void nullListOfKompltIntygShouldThrowException() {
+        // Given
+        LocalDateTime fragaTimestamp = LocalDateTime.parse("2016-03-01T11:22:11");
+        Arende fraga = createValidArendeForLuse("fraga", fragaTimestamp, "unique id of fraga", null);
+        Arende svar = createValidArendeForLuse("svar", fragaTimestamp.plusMinutes(10), "unique id of svar", fraga);
+
+        // When
+        Throwable thrown = catchThrowable(() -> {
+            converter.buildArendeConversations(
+                    fraga.getIntygsId(),
+                    ImmutableList.of(fraga, svar),
+                    null);
+        });
+
+        // Then
+        Assertions.assertThat(thrown).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void ifMultipleKompltIntygClosestInTimeShouldBeChoosen() {
+        // Given
+        LocalDateTime fragaDate = LocalDateTime.parse("2016-03-01T11:22:11");
+        Arende fraga = createValidArendeForLuse("fraga", fragaDate, "fraga-id", null);
+        List<AnsweredWithIntyg> komplt = ImmutableList.of(
+                createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(3)),
+                createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(1)),
+                createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(2)));
+
+        // When
+        List<ArendeConversationView> messageThreads = converter.buildArendeConversations(fraga.getIntygsId(), ImmutableList.of(fraga),
+                komplt);
+
+        // Then
+        Assertions.assertThat(messageThreads)
+                .hasSize(1)
+                .extracting(ArendeConversationView::getAnsweredWithIntyg)
+                .contains(komplt.get(1));
+    }
+
+    private AnsweredWithIntyg createMatchingAnsweredWithIntyg(Arende fraga, LocalDateTime signDate) {
+        LocalDateTime sendDate = signDate.plusMinutes(5);
+        if (fraga.getSenasteHandelse().compareTo(sendDate) < 0) {
+            fraga.setSenasteHandelse(sendDate);
+        }
+        return AnsweredWithIntyg.create(fraga.getIntygsId(), "signeratAv", signDate, sendDate, "namnetpaskapareavintyg");
+    }
+
+    private Arende createValidArendeForLuse(String typeOfArende, LocalDateTime timestamp, String meddelandeId, Arende relatedFraga) {
+        /*
+         * A Arende (message) has different fields (corresponding to columns in the database) set, depending whether
+         * it is a 'fraga', 'svar' or 'paminnelse'.
+         *
+         * timestamp: when entry was created in the database
+         * skickatTidpunkt: the date and time written into the original request from FK
+         * senasteHandelse: timestamp of last message related to a 'thread of messages' (which consists of 1 fraga, 0..1
+         * svar 0..n paminnelser
+         * referensId: FK's internal tracking id
+         */
+        if (typeOfArende == null || timestamp == null) {
+            throw new NullPointerException();
+        }
+        if ((!typeOfArende.equals("fraga")) && relatedFraga == null) {
+            throw new IllegalArgumentException("No related fraga provided.");
+        }
+        Arende arende = new Arende();
+        // First, set the fields all three types have in common:
+        arende.setAmne(ArendeAmne.OVRIGT);
+        arende.setIntygsId(intygsId);
+        arende.setStatus(se.inera.intyg.webcert.persistence.model.Status.PENDING_INTERNAL_ACTION);
+        arende.setMeddelandeId(meddelandeId); // Unique for each Arende
+        arende.setMeddelande("This is the text of a auto generated Arende.");
+        arende.setPatientPersonId("191212121212");
+        arende.setTimestamp(timestamp);
+        arende.setIntygTyp("luse");
+        arende.setVardaktorName(VARDAKTOR_NAMN);
+        arende.setEnhetId(ENHETS_ID);
+        arende.setEnhetName(ENHETS_NAMN);
+        arende.setVardgivareName(VARDGIVARE_NAMN);
+        arende.setSenasteHandelse(timestamp);
+        arende.setSkickatAv("Fragestallare");
+
+        // Then, set fields which are specific per type
+        switch (typeOfArende) {
+        case "fraga":
+            arende.setRubrik("Fraga");
+            arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());
+            arende.setAmne(ArendeAmne.KOMPLT);
+            break;
+        case "svar":
+            arende.setRubrik("Svar");
+            arende.setSvarPaId(relatedFraga.getMeddelandeId()); // Contains the thread root's meddelandeId.
+            arende.setAmne(ArendeAmne.KOMPLT);
+            break;
+        case "paminnelse":
+            arende.setRubrik("Paminnelse");
+            arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());
+            // Contains the thread root's meddelandeId.
+            arende.setPaminnelseMeddelandeId(relatedFraga.getMeddelandeId());
+            arende.setAmne(ArendeAmne.PAMINN);
+            break;
+        }
+
+        // Finally, update the root message (fraga) of the thread
+        if (!typeOfArende.equals("fraga")) {
+            relatedFraga.setSenasteHandelse(timestamp);
+        }
+
+        return arende;
     }
 
     private LisjpUtlatande buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,

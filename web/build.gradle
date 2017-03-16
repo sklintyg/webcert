@@ -26,7 +26,7 @@ task jsTests(type: NodeTask, dependsOn: npmInstall) {
     outputs.dir(webappTestOutputDir)
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test', "--outputDir=${webappTestOutputDir}", '--run-coverage=' + (project.findProperty('codeCoverage') != null ? 'true' : '') ]
+    args = ['test', "--outputDir=${webappTestOutputDir}", '--run-coverage=' + (project.findProperty('codeCoverage') != null ? 'true' : '')]
 }
 
 test.dependsOn(jsTests)
@@ -49,7 +49,9 @@ war.dependsOn createVersionPropertyFile
 task unzipBuildTools(type: Copy) {
     into "$buildDir/build-tools/"
     from {
-        def intygJar = project.rootProject.buildscript.configurations.classpath.find { it.name.contains("gradle-intyg") }
+        def intygJar = project.rootProject.buildscript.configurations.classpath.find {
+            it.name.contains("gradle-intyg")
+        }
         zipTree(intygJar)
     }
 }
@@ -155,6 +157,7 @@ dependencies {
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+    testCompile "org.assertj:assertj-core:${assertjVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
     testCompile "javax.servlet:javax.servlet-api:${servletApiVersion}"
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
