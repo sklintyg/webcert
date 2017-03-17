@@ -6,7 +6,7 @@
         "SELENIUM_ADDRESS": ""
     },
     "sim2": {
-        "WEBCERT_URL": "https://webcert2.sim2.nordicmedtest.sjunet.org/",
+        "WEBCERT_URL": "https://webcert.sim2.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://minaintyg.sim2.nordicmedtest.se/",
         "INTYGTJANST_URL": "",
         "SELENIUM_ADDRESS": ""
@@ -23,6 +23,15 @@
     },
     "ssh-tunnel": {
         "WEBCERT_URL": "http://localhost:28080/",
+        "DATABASE_HOST": "mysql.sm.nordicmedtest.se",
+        "DATABASE_USER": "intyg_autotest",
+        "SELENIUM_ADDRESS": ""
+    },
+    "ip10": {
+        "WEBCERT_URL": "https://webcert.ip10.nordicmedtest.sjunet.org/",
+        "MINAINTYG_URL": "https://minaintyg.ip10.nordicmedtest.sjunet.org",
+        "INTYGTJANST_URL": "https://intygstjanst.ip10.nordicmedtest.sjunet.org/inera-certificate",
+        "DATABASE_NAME": "webcert_ip10",
         "DATABASE_HOST": "mysql.sm.nordicmedtest.se",
         "DATABASE_USER": "intyg_autotest",
         "SELENIUM_ADDRESS": ""
