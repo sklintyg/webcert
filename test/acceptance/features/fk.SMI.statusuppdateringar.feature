@@ -85,7 +85,7 @@ Scenario: Statusuppdateringar vid fråga från vården
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
-@fråga-till-fk @hantera
+@fråga-till-fk @hantera @fksmoke
 Scenario: Statusuppdateringar vid hantering av fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget

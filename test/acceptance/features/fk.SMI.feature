@@ -30,12 +30,12 @@ Exempel:
     |intygKod   | 	intyg 																|
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
 
+@fksmoke
 Exempel:
     |intygKod   | 	intyg                                                               |
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
-
-    #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
+    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @minaintyg @keepIntyg @intygTillFK @skicka
 Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
@@ -60,7 +60,7 @@ Exempel:
     |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
     #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
-@makulera @smoke
+@makulera @smoke @fksmoke
 Scenario: Makulera ett skickat ett SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Mottaget"
 	Och jag makulerar intyget
