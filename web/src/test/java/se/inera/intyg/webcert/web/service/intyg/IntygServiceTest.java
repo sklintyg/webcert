@@ -106,6 +106,7 @@ import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
@@ -794,7 +795,7 @@ public class IntygServiceTest {
     @Test
     public void testDeceasedIsNotSetForAlivePatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
-        when(webcertUser.isPatientDeceased()).thenReturn(false);
+        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertFalse(intygData.isDeceased());
     }
@@ -802,7 +803,7 @@ public class IntygServiceTest {
     @Test
     public void testDeceasedIsSetForDeadPatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
-        when(webcertUser.isPatientDeceased()).thenReturn(true);
+        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertTrue(intygData.isDeceased());
     }
@@ -848,7 +849,9 @@ public class IntygServiceTest {
     }
 
     private PersonSvar getPersonSvar(boolean deceased) {
-        return new PersonSvar(new Person(new Personnummer("19121212-1212"), false, deceased, "fornamn", "mellannamn", "efternamn", "postadress",
-                "postnummer", "postort"), null);
+        return new PersonSvar(
+                new Person(new Personnummer("19121212-1212"), false, deceased, "fornamn", "mellannamn", "efternamn", "postadress",
+                        "postnummer", "postort"),
+                null);
     }
 }

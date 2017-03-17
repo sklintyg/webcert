@@ -18,37 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.cxf.helpers.FileUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.core.io.ClassPathResource;
-import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
-import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.Relation;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
-import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -58,6 +27,38 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.cxf.helpers.FileUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.io.ClassPathResource;
+
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
+import se.inera.intyg.common.support.model.common.internal.Relation;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
+import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
+import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
@@ -172,7 +173,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         WebCertUser user = new WebCertUser();
         user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
-        user.setPatientDeceased(false);
+        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false));
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 

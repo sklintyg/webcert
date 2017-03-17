@@ -18,28 +18,32 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import org.junit.Test;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Test;
+
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -175,10 +179,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         deleteUtkast(intygsId);
     }
 
-    /**
-     * Verify that coherent journaling works, i.e that requests with the parameter sjf=true can access certificates
-     * created on different care units than the currently active / selected one.
-     */
     @Test
     public void testGetIntygFromDifferentCareUnitWithCoherentJournalingFlagSuccess() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
@@ -194,22 +194,18 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
 
         changeOriginTo("DJUPINTEGRATION");
+        setSjf();
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects().follow(false).and().pathParam("intygsId", intygsId)
                 .expect().statusCode(HttpServletResponse.SC_OK)
-                .when().get("moduleapi/intyg/fk7263/{intygsId}?sjf=true")
+                .when().get("moduleapi/intyg/fk7263/{intygsId}")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
                 .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
     }
 
-    /**
-     * Requests without the parameter sjf=true should get an INTERNAL_SERVER_ERROR with error message
-     * AUTHORIZATION_PROBLEM when accessing certificates on different care units than the currently active / selected
-     * one.
-     */
     @Test
     public void testGetIntygFromDifferentCareUnitWithoutCoherentJournalingFlagFail() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
@@ -245,7 +241,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
-        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(personnummer));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "fk7263");
@@ -275,7 +270,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
-        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "fk7263");
@@ -285,7 +279,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(500)
                 .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
-                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name())).body("message", not(isEmptyString()));
+                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
 
     }
 
@@ -301,7 +296,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(null);
-        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "fk7263");
@@ -331,12 +325,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         // previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
+        setSjf();
 
         // Set coherentJournaling=true in copyIntygRequest, this is normally done in the js using the copyService.
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
-        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
-        copyIntygRequest.setCoherentJournaling(true);
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "fk7263");
@@ -356,7 +349,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         // Check that the copy contains the correct stuff
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get("moduleapi/intyg/fk7263/" + newIntygsId + "?sjf=true")
+                .when().get("moduleapi/intyg/fk7263/" + newIntygsId)
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(LEONIE_KOEHL.getHsaId()))
@@ -382,7 +375,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         // coherentJournaling defaults to false, so don't set it here.
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
-        copyIntygRequest.setNyttPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "fk7263");
@@ -396,7 +388,6 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
                 .body("message", not(isEmptyString()));
     }
-
 
     private void signeraUtkastWithTestabilityApi(String intygsId) {
         String completePath = "testability/intyg/" + intygsId + "/komplett";

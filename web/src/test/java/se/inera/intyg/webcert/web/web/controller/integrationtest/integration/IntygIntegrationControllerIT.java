@@ -18,23 +18,23 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
-import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.core.IsEqual.equalTo;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+
+import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Created by marced on 16/12/15.
@@ -67,8 +67,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .pathParam("intygsId", utkastId).queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("/visa/intyg/{intygsId}")
-                .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "?patientId=" + queryParams.get("alternatePatientSSn")
-                        + "&hospName=" + queryParams.get("responsibleHospName")));
+                .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId));
     }
 
     /**
@@ -88,7 +87,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().pathParam("intygsId", intygsId)
                 .and().queryParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
-                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "?patientId=" + DEFAULT_PATIENT_PERSONNUMMER));
+                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId));
     }
 
     /**
@@ -143,20 +142,27 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}")
                 .then()
-                .header(HttpHeaders.LOCATION,
-                        endsWith("/luse/edit/" + utkastId
-                                + "?patientId=" + queryParams.get("alternatePatientSSn")
-                                + "&hospName=" + queryParams.get("responsibleHospName")
-                                + "&fornamn=" + queryParams.get("fornamn")
-                                + "&mellannamn=" + queryParams.get("mellannamn")
-                                + "&efternamn=" + queryParams.get("efternamn")
-                                + "&postadress=" + queryParams.get("postadress")
-                                + "&postnummer=" + queryParams.get("postnummer")
-                                + "&postort=" + queryParams.get("postort")));
+                .header(HttpHeaders.LOCATION, endsWith("/luse/edit/" + utkastId));
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .prettyPeek()
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("parameters.alternateSsn", equalTo(DEFAULT_PATIENT_PERSONNUMMER))
+                .body("parameters.responsibleHospName", equalTo("HrDoktor"))
+                .body("parameters.fornamn", equalTo("patientfornamn"))
+                .body("parameters.mellannamn", equalTo("patientmellannamn"))
+                .body("parameters.efternamn", equalTo("patientefternamn"))
+                .body("parameters.postadress", equalTo("patientpostadress"))
+                .body("parameters.postnummer", equalTo("patientpostnummer"))
+                .body("parameters.postort", equalTo("patientpostort"));
     }
 
     /**
-     * Verify that the utkast patient info is updated with supplied parameters as part of the djupintegreration link redirect process.
+     * Verify that the utkast patient info is updated with supplied parameters as part of the djupintegreration link
+     * redirect process.
      */
     @Test
     public void testPatientDetailsUpdatedFromJournalSystemUtkastLuse() {
@@ -181,7 +187,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("postort", "sjukort");
         queryParams.put("enhet", "IFV1239877878-1042");
 
-        //Go to deep integration link with other patient info than on current utkast...
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects()
                 .follow(false)
@@ -192,33 +197,39 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}")
                 .then()
-                .header(HttpHeaders.LOCATION,
-                        endsWith("/luse/edit/" + utkastId
-                                + "?patientId=" + queryParams.get("alternatePatientSSn")
-                                + "&hospName=" + queryParams.get("responsibleHospName")
-                                + "&fornamn=nyaf%C3%B6rnamnet"
-                                + "&mellannamn=" + queryParams.get("mellannamn")
-                                + "&efternamn=" + queryParams.get("efternamn")
-                                + "&postadress=nyv%C3%A4gen+12"
-                                + "&postnummer=" + queryParams.get("postnummer")
-                                + "&postort=" + queryParams.get("postort")));
+                .header(HttpHeaders.LOCATION, endsWith("/luse/edit/" + utkastId));
 
-        //..after following the link - the draft should have updated patient details
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
                 .when().get("moduleapi/utkast/luse/" + utkastId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-                    .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
-                    .body("content.grundData.patient.fornamn", equalTo(queryParams.get("fornamn")))
-                    .body("content.grundData.patient.efternamn", equalTo(queryParams.get("efternamn")))
-                    .body("content.grundData.patient.fullstandigtNamn", equalTo("nyaförnamnet nyamellannamnet nyaefternamnet"))
-                    .body("content.grundData.patient.postadress", equalTo(queryParams.get("postadress")))
-                    .body("content.grundData.patient.postnummer", equalTo(queryParams.get("postnummer")))
-                    .body("content.grundData.patient.postort", equalTo(queryParams.get("postort")));
+                .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
+                .body("content.grundData.patient.fornamn", equalTo(queryParams.get("fornamn")))
+                .body("content.grundData.patient.efternamn", equalTo(queryParams.get("efternamn")))
+                .body("content.grundData.patient.fullstandigtNamn", equalTo("nyaförnamnet nyamellannamnet nyaefternamnet"))
+                .body("content.grundData.patient.postadress", equalTo(queryParams.get("postadress")))
+                .body("content.grundData.patient.postnummer", equalTo(queryParams.get("postnummer")))
+                .body("content.grundData.patient.postort", equalTo(queryParams.get("postort")));
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .prettyPeek()
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("parameters.alternateSsn", equalTo("19121212-1212"))
+                .body("parameters.responsibleHospName", equalTo("HrDoktor"))
+                .body("parameters.fornamn", equalTo("nyaförnamnet"))
+                .body("parameters.mellannamn", equalTo("nyamellannamnet"))
+                .body("parameters.efternamn", equalTo("nyaefternamnet"))
+                .body("parameters.postadress", equalTo("nyvägen 12"))
+                .body("parameters.postnummer", equalTo("000001"))
+                .body("parameters.postort", equalTo("sjukort"));
     }
 
     /**
-     * Verify that the utkast patientId info is updated with supplied parameters as part of the fk7263 djupintegreration link redirect process.
+     * Verify that the utkast patientId info is updated with supplied parameters as part of the fk7263 djupintegreration
+     * link redirect process.
      */
     @Test
     public void testOnlyPatientIdDetailsUpdatedFromJournalSystemUtkastFk7263() {
@@ -243,7 +254,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("postort", "sjukort");
         queryParams.put("enhet", "IFV1239877878-1042");
 
-        //Go to deep integration link with other patient info than on current utkast...
+        // Go to deep integration link with other patient info than on current utkast...
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects()
                 .follow(false)
@@ -254,25 +265,32 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}")
                 .then()
-                .header(HttpHeaders.LOCATION,
-                        endsWith("/fk7263/edit/" + utkastId
-                                + "?patientId=" + queryParams.get("alternatePatientSSn")
-                                + "&hospName=" + queryParams.get("responsibleHospName")
-                                + "&fornamn=nyaf%C3%B6rnamnet"
-                                + "&mellannamn=" + queryParams.get("mellannamn")
-                                + "&efternamn=" + queryParams.get("efternamn")
-                                + "&postadress=nyv%C3%A4gen+12"
-                                + "&postnummer=" + queryParams.get("postnummer")
-                                + "&postort=" + queryParams.get("postort")));
+                .header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId));
 
-        //..after following the link - the draft should have updated patient id and fullstandigtNamn
+        // ..after following the link - the draft should have updated patient id and fullstandigtNamn
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
                 .when().get("moduleapi/utkast/fk7263/" + utkastId)
                 .then()
-                    .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-                    .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
-                    .body("content.grundData.patient.fullstandigtNamn", equalTo(DEFAULT_UTKAST_PATIENT_FORNAMN + " " + DEFAULT_UTKAST_PATIENT_EFTERNAMN));
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+                .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
+                .body("content.grundData.patient.fullstandigtNamn",
+                        equalTo(DEFAULT_UTKAST_PATIENT_FORNAMN + " " + DEFAULT_UTKAST_PATIENT_EFTERNAMN));
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .prettyPeek()
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("parameters.alternateSsn", equalTo("19121212-1212"))
+                .body("parameters.responsibleHospName", equalTo("HrDoktor"))
+                .body("parameters.fornamn", equalTo("nyaförnamnet"))
+                .body("parameters.mellannamn", equalTo("nyamellannamnet"))
+                .body("parameters.efternamn", equalTo("nyaefternamnet"))
+                .body("parameters.postadress", equalTo("nyvägen 12"))
+                .body("parameters.postnummer", equalTo("000001"))
+                .body("parameters.postort", equalTo("sjukort"));
     }
 
     /**
@@ -302,14 +320,22 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .and().pathParam("intygsId", intygsId).and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}")
-                .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId
-                        + "?patientId=" + queryParams.get("alternatePatientSSn")
-                        + "&fornamn=" + queryParams.get("fornamn")
-                        + "&mellannamn=" + queryParams.get("mellannamn")
-                        + "&efternamn=" + queryParams.get("efternamn")
-                        + "&postadress=" + queryParams.get("postadress")
-                        + "&postnummer=" + queryParams.get("postnummer")
-                        + "&postort=" + queryParams.get("postort")));
+                .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId));
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .prettyPeek()
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("parameters.alternateSsn", equalTo(DEFAULT_PATIENT_PERSONNUMMER))
+                .body("parameters.responsibleHospName", equalTo("HrDoktor"))
+                .body("parameters.fornamn", equalTo("patientfornamn"))
+                .body("parameters.mellannamn", equalTo("patientmellannamn"))
+                .body("parameters.efternamn", equalTo("patientefternamn"))
+                .body("parameters.postadress", equalTo("patientpostadress"))
+                .body("parameters.postnummer", equalTo("patientpostnummer"))
+                .body("parameters.postort", equalTo("patientpostort"));
     }
 
     /**
@@ -328,7 +354,8 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().pathParam("intygsId", utkastId)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042")
-                .then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
+                .then().header(HttpHeaders.LOCATION,
+                        endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
     }
 
     /**
@@ -348,7 +375,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
         queryParams.put("responsibleHospName", "HrDoktor");
-
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .and().pathParam("intygsId", utkastId)
@@ -387,6 +413,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("api/anvandare")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
-                .body("valdVardenhet.inactive", equalTo(true));
+                .body("parameters.inactiveUnit", equalTo(true));
     }
 }

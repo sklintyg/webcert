@@ -631,9 +631,6 @@
         "postort": {
           "type": "string"
         },
-        "inactive": {
-          "type": "boolean"
-        },
         "agandeForm": {
           "type": "string",
           "enum": [
@@ -686,8 +683,47 @@
       "properties": {},
       "type": "object"
     },
-    "patientDeceased": {
-      "type": "boolean"
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "type": "string"
+        },
+        "responsibleHospName": {
+          "type": "string"
+        },
+        "alternateSsn": {
+          "type": "string"
+        },
+        "fornamn": {
+          "type": "string"
+        },
+        "mellannamn": {
+          "type": "string"
+        },
+        "efternamn": {
+          "type": "string"
+        },
+        "postadress": {
+          "type": "string"
+        },
+        "postnummer": {
+          "type": "string"
+        },
+        "postort": {
+          "type": "string"
+        },
+        "sjf": {
+          "type": "boolean"
+        },
+        "patientDeceased": {
+          "type": "boolean"
+        },
+        "inactiveUnit": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
     }
   },
   "required": [
@@ -709,8 +745,7 @@
     "authenticationMethod",
     "lakare",
     "privatLakare",
-    "totaltAntalVardenheter",
-    "patientDeceased"
+    "totaltAntalVardenheter"
   ],
   "title": "WebCertUser transport model",
   "type": "object",

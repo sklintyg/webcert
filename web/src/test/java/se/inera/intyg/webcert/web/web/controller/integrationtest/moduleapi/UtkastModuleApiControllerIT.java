@@ -27,8 +27,6 @@ import static org.hamcrest.core.IsNot.not;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +38,7 @@ import com.jayway.restassured.response.Response;
 
 import se.inera.intyg.common.fk7263.model.internal.PrognosBedomning;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
@@ -69,6 +68,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testGetDraftFromDifferentCareUnitWithCoherentJournalingFlagSuccess() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
         String intygsTyp = "fk7263";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
@@ -76,13 +76,15 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(302)
                 .when().get("logout");
 
-        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
+        // previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
+        setSjf();
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId + "?=sjf=true")
+                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
     }
@@ -98,7 +100,8 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(302)
                 .when().get("logout");
 
-        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in previous step.
+        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
+        // previous step.
         RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
         changeOriginTo("DJUPINTEGRATION");
 

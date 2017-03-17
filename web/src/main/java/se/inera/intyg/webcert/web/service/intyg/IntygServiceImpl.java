@@ -86,6 +86,7 @@ import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface;
@@ -609,8 +610,13 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private boolean isDeceased(Personnummer personnummer) {
-        if (WebCertUserOriginType.DJUPINTEGRATION.name().equals(webCertUserService.getUser().getOrigin())) {
-            return webCertUserService.getUser().isPatientDeceased();
+        WebCertUser user = webCertUserService.getUser();
+        if (WebCertUserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
+            if (user.getParameters() != null) {
+                return user.getParameters().isPatientDeceased();
+            } else {
+                return false;
+            }
         } else {
             PersonSvar personSvar = puService.getPerson(personnummer);
             if (personSvar != null && personSvar.getPerson() != null) {

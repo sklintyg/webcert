@@ -54,6 +54,8 @@ import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
@@ -94,6 +96,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private RelationService relationService;
 
+    @Autowired
+    private WebCertUserService userService;
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -105,14 +110,18 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @DefaultValue("false") @QueryParam("sjf") boolean coherentJournaling, @Context HttpServletRequest request) {
+            @Context HttpServletRequest request) {
 
-        LOG.debug("Retrieving Intyg with id {} and type {}, coherent journaling: {}", intygsId, intygsTyp, coherentJournaling);
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
+
+        WebCertUser user = userService.getUser();
+        boolean coherentJournaling = user.getParameters() != null ? user.getParameters().isSjf() : false;
+
+        LOG.debug("Retrieving Intyg with id {} and type {}, coherent journaling: {}", intygsId, intygsTyp, coherentJournaling);
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, coherentJournaling);
 

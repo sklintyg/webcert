@@ -19,13 +19,11 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -38,8 +36,10 @@ import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
@@ -47,6 +47,9 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
@@ -79,6 +82,9 @@ public class IntygModuleApiController extends AbstractApiController {
     @Autowired
     private CopyUtkastService copyUtkastService;
 
+    @Autowired
+    private WebCertUserService userService;
+
     /**
      * Retrieves a signed intyg from intygstjänst.
      *
@@ -89,12 +95,14 @@ public class IntygModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @DefaultValue("false") @QueryParam("sjf") boolean coherentJournaling) {
+    public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
                 .orThrow();
+
+        WebCertUser user = userService.getUser();
+        boolean coherentJournaling = user.getParameters() != null ? user.getParameters().isSjf() : false;
 
         LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
 
@@ -219,15 +227,18 @@ public class IntygModuleApiController extends AbstractApiController {
 
         validateCopyAuthority(intygsTyp);
 
+        WebCertUser user = userService.getUser();
+
+        boolean coherentJournaling = user.getParameters() != null ? user.getParameters().isSjf() : false;
         LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, orgIntygsId,
-                request.isCoherentJournaling());
+                coherentJournaling);
 
         if (!request.isValid()) {
             LOG.error("Request to create copy of '{}' is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
 
-        CopyIntygResponse result = copyIntyg(request, intygsTyp, orgIntygsId);
+        CopyIntygResponse result = copyIntyg(request, intygsTyp, orgIntygsId, coherentJournaling);
         return Response.ok().entity(result).build();
     }
 
@@ -311,9 +322,10 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
 
-        if (request.containsNewValidPatientPersonId()) {
+        IntegrationParameters parameters = userService.getUser().getParameters();
+        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
             LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(request.getNyttPatientPersonnummer());
+            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
         }
 
         if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
@@ -330,9 +342,10 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patient, hosPerson);
 
-        if (copyRequest.containsNewValidPatientPersonId()) {
+        IntegrationParameters parameters = userService.getUser().getParameters();
+        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
             LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
+            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
         }
 
         if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
@@ -343,16 +356,17 @@ public class IntygModuleApiController extends AbstractApiController {
         return req;
     }
 
-    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {
+    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest,
+            boolean coherentJournaling) {
         HoSPersonal hosPerson = createHoSPersonFromUser();
         Patient patient = createPatientFromCopyIntygRequest(copyRequest);
 
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson,
-                copyRequest.isCoherentJournaling());
+        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson, coherentJournaling);
 
-        if (copyRequest.containsNewValidPatientPersonId()) {
+        IntegrationParameters parameters = userService.getUser().getParameters();
+        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
             LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
+            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
         }
 
         if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
@@ -364,21 +378,23 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     private Patient createPatientFromCopyIntygRequest(CopyIntygRequest copyRequest) {
-        Patient patient = new Patient();
+        WebCertUser user = getWebCertUserService().getUser();
+        IntegrationParameters parameters = user.getParameters();
 
+        Patient patient = new Patient();
         patient.setPersonId(copyRequest.getPatientPersonnummer());
 
-        if (!Strings.nullToEmpty(copyRequest.getFornamn()).trim().isEmpty()
-                && !Strings.nullToEmpty(copyRequest.getEfternamn()).trim().isEmpty()
-                && !Strings.nullToEmpty(copyRequest.getPostadress()).trim().isEmpty()
-                && !Strings.nullToEmpty(copyRequest.getPostnummer()).trim().isEmpty()
-                && !Strings.nullToEmpty(copyRequest.getPostort()).trim().isEmpty()) {
-            patient.setFornamn(copyRequest.getFornamn());
-            patient.setEfternamn(copyRequest.getEfternamn());
-            patient.setMellannamn(copyRequest.getMellannamn());
-            patient.setPostadress(copyRequest.getPostadress());
-            patient.setPostnummer(copyRequest.getPostnummer());
-            patient.setPostort(copyRequest.getPostort());
+        if (parameters != null && !Strings.nullToEmpty(parameters.getFornamn()).trim().isEmpty()
+                && !Strings.nullToEmpty(parameters.getEfternamn()).trim().isEmpty()
+                && !Strings.nullToEmpty(parameters.getPostadress()).trim().isEmpty()
+                && !Strings.nullToEmpty(parameters.getPostnummer()).trim().isEmpty()
+                && !Strings.nullToEmpty(parameters.getPostort()).trim().isEmpty()) {
+            patient.setFornamn(parameters.getFornamn());
+            patient.setEfternamn(parameters.getEfternamn());
+            patient.setMellannamn(parameters.getMellannamn());
+            patient.setPostadress(parameters.getPostadress());
+            patient.setPostnummer(parameters.getPostnummer());
+            patient.setPostort(parameters.getPostort());
         }
         return patient;
     }
@@ -387,8 +403,8 @@ public class IntygModuleApiController extends AbstractApiController {
         return intygService.revokeIntyg(intygsId, intygsTyp, param.getMessage(), param.getReason());
     }
 
-    private CopyIntygResponse copyIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId) {
-        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
+    private CopyIntygResponse copyIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId, boolean coherentJournaling) {
+        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request, coherentJournaling);
         CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
 
         LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", orgIntygsId, serviceResponse.getNewDraftIntygId(),
@@ -409,5 +425,10 @@ public class IntygModuleApiController extends AbstractApiController {
                 .features(WebcertFeature.KOPIERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
                 .orThrow();
+    }
+
+    private boolean isNewValidPatientPersonId(Personnummer newPersonnummer) {
+        return (newPersonnummer != null && (Personnummer.createValidatedPersonnummerWithDash(newPersonnummer).isPresent()
+                || SamordningsnummerValidator.isSamordningsNummer(newPersonnummer)));
     }
 }

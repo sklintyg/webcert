@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
@@ -252,7 +253,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
         // notify
-        notificationService.sendNotificationForDraftCreated(savedUtkast, userService.getUser().getReference());
+        WebCertUser user = userService.getUser();
+        String reference = user.getParameters() != null ? user.getParameters().getReference() : null;
+        notificationService.sendNotificationForDraftCreated(savedUtkast, reference);
+
         LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);

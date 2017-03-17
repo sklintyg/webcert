@@ -38,7 +38,6 @@ public class FakeCredentials implements Serializable {
     private String befattningsKod;
     private String forskrivarKod;
     private String origin = WebCertUserOriginType.NORMAL.name();
-    private String reference;
 
     public FakeCredentials() {
         // Needed for deserialization
@@ -52,7 +51,6 @@ public class FakeCredentials implements Serializable {
         this.befattningsKod = builder.befattningsKod;
         this.forskrivarKod = builder.forskrivarKod;
         this.origin = builder.origin;
-        this.reference = builder.reference;
     }
 
     public String getBefattningsKod() {
@@ -123,14 +121,6 @@ public class FakeCredentials implements Serializable {
         this.origin = origin;
     }
 
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
     @Override
     public String toString() {
         return "FakeCredentials{"
@@ -138,7 +128,6 @@ public class FakeCredentials implements Serializable {
                 + ", fornamn='" + fornamn + '\''
                 + ", efternamn='" + efternamn + '\''
                 + ", lakare=" + lakare
-                + ", reference=" + getReference()
                 + '}';
     }
 
@@ -150,7 +139,6 @@ public class FakeCredentials implements Serializable {
         private String befattningsKod;
         private String forskrivarKod;
         private String origin;
-        private String reference;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
             this.hsaId = hsaId;
@@ -184,11 +172,6 @@ public class FakeCredentials implements Serializable {
 
         public FakeCredentialsBuilder befattningsKod(String befattningsKod) {
             this.befattningsKod = befattningsKod;
-            return this;
-        }
-
-        public FakeCredentialsBuilder reference(String reference) {
-            this.reference = reference;
             return this;
         }
 

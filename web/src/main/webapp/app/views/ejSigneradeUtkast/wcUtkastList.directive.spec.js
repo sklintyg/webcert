@@ -44,7 +44,7 @@ describe('wcUtkastListSpec', function() {
             $provide.value('webcert.UtkastProxy', UtkastProxy);
 
             _$stateProvider_.state('fk7263-edit', {
-                url: '/fk7263/edit/:certificateId?:patientId&:hospName&:sjf'
+                url: '/fk7263/edit/:certificateId'
             });
         }]);
 

@@ -63,20 +63,11 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         addAbsentAttributesFromFakeCredentials(token, details);
         selectVardenhetFromFakeCredentials(token, details);
         applyUserOrigin(token, details);
-        applyReference(token, details);
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
                 new ArrayList<>());
         result.setDetails(details);
 
         return result;
-    }
-
-    private void applyReference(Authentication token, Object details) {
-        if (details instanceof IntygUser) {
-            if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getReference() != null) {
-                ((IntygUser) details).setReference(((FakeCredentials) token.getCredentials()).getReference());
-            }
-        }
     }
 
     private void applyUserOrigin(Authentication token, Object details) {

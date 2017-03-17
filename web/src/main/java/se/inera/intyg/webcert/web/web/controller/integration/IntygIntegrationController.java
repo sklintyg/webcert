@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +54,10 @@ import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.PatientParameter;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -72,20 +73,20 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PatientParamete
 // CHECKSTYLE:OFF ParameterNumber
 public class IntygIntegrationController extends BaseIntegrationController {
 
-    public static final String PARAM_HOSP_NAME = "hospName";
-    public static final String PARAM_PATIENT_SSN = "patientId";
-    public static final String PARAM_PATIENT_FORNAMN = "fornamn";
-    public static final String PARAM_PATIENT_EFTERNAMN = "efternamn";
-    public static final String PARAM_PATIENT_MELLANNAMN = "mellannamn";
-    public static final String PARAM_PATIENT_POSTADRESS = "postadress";
-    public static final String PARAM_PATIENT_POSTNUMMER = "postnummer";
-    public static final String PARAM_PATIENT_POSTORT = "postort";
-    private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
+    private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
-    private static final String PARAM_REFERENCE = "ref";
     private static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
+    private static final String PARAM_PATIENT_ALTERNATE_SSN = "alternatePatientSSn";
     private static final String PARAM_PATIENT_DECEASED = "avliden";
+    private static final String PARAM_PATIENT_EFTERNAMN = "efternamn";
+    private static final String PARAM_PATIENT_FORNAMN = "fornamn";
+    private static final String PARAM_PATIENT_MELLANNAMN = "mellannamn";
+    private static final String PARAM_PATIENT_POSTADRESS = "postadress";
+    private static final String PARAM_PATIENT_POSTNUMMER = "postnummer";
+    private static final String PARAM_PATIENT_POSTORT = "postort";
+    private static final String PARAM_REFERENCE = "ref";
+    private static final String PARAM_RESPONSIBLE_HOSP_NAME = "responsibleHospName";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -115,8 +116,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId,
-            @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
-            @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName,
+            @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+            @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
             @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
             @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
             @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
@@ -143,8 +144,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/{typ}/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typParam,
-            @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
-            @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName,
+            @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+            @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
             @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
             @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
             @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
@@ -159,9 +160,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         super.validateRedirectToIntyg(intygId);
 
         WebCertUser user = getWebCertUserService().getUser();
-
-        user.setInactive(inactiveUnit);
-        user.setPatientDeceased(deceased);
 
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
@@ -190,10 +188,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
             verifyQueryStrings(fornamn, efternamn, postadress, postnummer, postort);
         }
 
-        if (!Strings.nullToEmpty(reference).trim().isEmpty()) {
-            user.setReference(reference);
-        }
-
         if (isUtkast) {
             // INTYG-3212: Draft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
@@ -202,10 +196,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
                     postort);
         }
 
-        PatientParameter patientDetails = new PatientParameter(fornamn, efternamn, mellannamn, postadress, postnummer, postort);
+        user.setParameters(new IntegrationParameters(StringUtils.trimToNull(reference), responsibleHospName, alternatePatientSSn, fornamn,
+                mellannamn, efternamn, postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit));
+
         LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, intygsTyp, coherentJournaling);
-        return buildRedirectResponse(uriInfo, intygsTyp, intygId, alternatePatientSSn, responsibleHospName, patientDetails, isUtkast,
-                coherentJournaling);
+        return buildRedirectResponse(uriInfo, intygsTyp, intygId, isUtkast);
     }
 
     public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
@@ -275,54 +270,15 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn,
-            String responsibleHospName, PatientParameter patientDetails, Boolean isUtkast, boolean coherentJournaling) {
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, boolean isUtkast) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
-        urlParams.put(PARAM_PATIENT_SSN, alternatePatientSSn);
 
-        String urlFragmentTemplate;
-        if (isUtkast) {
-            urlParams.put(PARAM_HOSP_NAME, responsibleHospName);
-            urlFragmentTemplate = this.urlUtkastFragmentTemplate;
-        } else {
-            urlFragmentTemplate = this.urlIntygFragmentTemplate;
-        }
-
-        if (patientDetails.getFornamn() != null) {
-            urlParams.put(PARAM_PATIENT_FORNAMN, patientDetails.getFornamn());
-            urlFragmentTemplate += "&" + PARAM_PATIENT_FORNAMN + "={" + PARAM_PATIENT_FORNAMN + "}";
-        }
-        if (patientDetails.getMellannamn() != null) {
-            urlParams.put(PARAM_PATIENT_MELLANNAMN, patientDetails.getMellannamn());
-            urlFragmentTemplate += "&" + PARAM_PATIENT_MELLANNAMN + "={" + PARAM_PATIENT_MELLANNAMN + "}";
-        }
-        if (patientDetails.getEfternamn() != null) {
-            urlParams.put(PARAM_PATIENT_EFTERNAMN, patientDetails.getEfternamn());
-            urlFragmentTemplate += "&" + PARAM_PATIENT_EFTERNAMN + "={" + PARAM_PATIENT_EFTERNAMN + "}";
-        }
-        if (patientDetails.getPostadress() != null) {
-            urlParams.put(PARAM_PATIENT_POSTADRESS, patientDetails.getPostadress());
-            urlFragmentTemplate += "&" + PARAM_PATIENT_POSTADRESS + "={" + PARAM_PATIENT_POSTADRESS + "}";
-        }
-        if (patientDetails.getPostnummer() != null) {
-            urlParams.put(PARAM_PATIENT_POSTNUMMER, patientDetails.getPostnummer());
-            urlFragmentTemplate += "&" + PARAM_PATIENT_POSTNUMMER + "={" + PARAM_PATIENT_POSTNUMMER + "}";
-        }
-        if (patientDetails.getPostort() != null) {
-            urlParams.put(PARAM_PATIENT_POSTORT, patientDetails.getPostort());
-            urlFragmentTemplate += "&" + PARAM_PATIENT_POSTORT + "={" + PARAM_PATIENT_POSTORT + "}";
-        }
-
-        // Add query param for coherent journaling
-        if (coherentJournaling) {
-            urlParams.put(PARAM_COHERENT_JOURNALING, coherentJournaling);
-            urlFragmentTemplate += "&" + PARAM_COHERENT_JOURNALING + "={" + PARAM_COHERENT_JOURNALING + "}";
-        }
+        String urlFragmentTemplate = isUtkast ? urlUtkastFragmentTemplate : urlIntygFragmentTemplate;
 
         URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 

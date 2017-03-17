@@ -27,6 +27,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +58,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
@@ -179,7 +181,7 @@ public class CopyUtkastServiceImplTest {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
-        user.setReference(reference);
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false));
         when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
@@ -213,7 +215,7 @@ public class CopyUtkastServiceImplTest {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
-        user.setReference(reference);
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false));
         when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
@@ -245,7 +247,7 @@ public class CopyUtkastServiceImplTest {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
-        user.setReference(reference);
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false));
         when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
@@ -277,7 +279,7 @@ public class CopyUtkastServiceImplTest {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
-        user.setReference(reference);
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false));
         when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
@@ -309,7 +311,7 @@ public class CopyUtkastServiceImplTest {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
-        user.setReference(reference);
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false));
         when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
@@ -346,7 +348,7 @@ public class CopyUtkastServiceImplTest {
     public void testCreateCopyWhenIntegratedAndWithUpdatedSSN() throws Exception {
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
-        user.setReference(reference);
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false));
         when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);

@@ -31,7 +31,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class MailLinkServiceImplTest {
 
     private static final Object URL_BASE_TEMPLATE = "url/base/template";
-    private static final Object URL_UTKAST_FRAGMENT_TEMPLATE = "/{certType}/edit/{certId}?patientId={patientId}&hospName={hospName}";
+    private static final Object URL_UTKAST_FRAGMENT_TEMPLATE = "/{certType}/edit/{certId}";
 
     private MailLinkServiceImpl service = new MailLinkServiceImpl();
 
@@ -63,6 +63,6 @@ public class MailLinkServiceImplTest {
 
         assertNotNull(res);
         assertEquals(URL_BASE_TEMPLATE, res.getPath());
-        assertEquals("/typ/edit/intyg-id?patientId=&hospName=", res.getFragment());
+        assertEquals("/typ/edit/intyg-id", res.getFragment());
     }
 }

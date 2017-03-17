@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.user.dto;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 
 /**
@@ -32,7 +31,7 @@ public class WebCertUser extends IntygUser {
     private static final long serialVersionUID = -2624303818412468774L;
 
     private Map<String, String> anvandarPreference;
-    private boolean patientDeceased;
+    private IntegrationParameters parameters;
 
     public WebCertUser() {
         super("only-for-test-use");
@@ -74,17 +73,11 @@ public class WebCertUser extends IntygUser {
         this.anvandarPreference = anvandarMetadata;
     }
 
-    public void setInactive(boolean inactive) {
-        if (valdVardenhet instanceof AbstractVardenhet) {
-            ((AbstractVardenhet) valdVardenhet).setInactive(inactive);
-        }
+    public IntegrationParameters getParameters() {
+        return parameters;
     }
 
-    public void setPatientDeceased(boolean deceased) {
-        patientDeceased = deceased;
-    }
-
-    public boolean isPatientDeceased() {
-        return patientDeceased;
+    public void setParameters(IntegrationParameters parameters) {
+        this.parameters = parameters;
     }
 }

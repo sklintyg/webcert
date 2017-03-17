@@ -20,22 +20,11 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import com.google.common.base.Strings;
 
-import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public class CopyIntygRequest {
 
     private Personnummer patientPersonnummer;
-
-    private Personnummer nyttPatientPersonnummer;
-
-    private String fornamn;
-    private String efternamn;
-    private String mellannamn;
-    private String postadress;
-    private String postnummer;
-    private String postort;
-    private boolean coherentJournaling = false;
 
     public Personnummer getPatientPersonnummer() {
         return patientPersonnummer;
@@ -45,76 +34,7 @@ public class CopyIntygRequest {
         this.patientPersonnummer = patientPersonnummer;
     }
 
-    public Personnummer getNyttPatientPersonnummer() {
-        return nyttPatientPersonnummer;
-    }
-
-    public void setNyttPatientPersonnummer(Personnummer nyttPatientPersonnummer) {
-        this.nyttPatientPersonnummer = nyttPatientPersonnummer;
-    }
-
-    public boolean isCoherentJournaling() {
-        return coherentJournaling;
-    }
-
-    public void setCoherentJournaling(boolean coherentJournaling) {
-        this.coherentJournaling = coherentJournaling;
-    }
-
-    public boolean containsNewValidPatientPersonId() {
-        return (nyttPatientPersonnummer != null && (Personnummer.createValidatedPersonnummerWithDash(nyttPatientPersonnummer).isPresent()
-                || SamordningsnummerValidator.isSamordningsNummer(nyttPatientPersonnummer)));
-    }
-
     public boolean isValid() {
         return patientPersonnummer != null && !Strings.nullToEmpty(patientPersonnummer.getPersonnummer()).trim().isEmpty();
-    }
-
-    public String getFornamn() {
-        return fornamn;
-    }
-
-    public void setFornamn(String fornamn) {
-        this.fornamn = fornamn;
-    }
-
-    public String getEfternamn() {
-        return efternamn;
-    }
-
-    public void setEfternamn(String efternamn) {
-        this.efternamn = efternamn;
-    }
-
-    public String getMellannamn() {
-        return mellannamn;
-    }
-
-    public void setMellannamn(String mellannamn) {
-        this.mellannamn = mellannamn;
-    }
-
-    public String getPostadress() {
-        return postadress;
-    }
-
-    public void setPostadress(String postadress) {
-        this.postadress = postadress;
-    }
-
-    public String getPostnummer() {
-        return postnummer;
-    }
-
-    public void setPostnummer(String postnummer) {
-        this.postnummer = postnummer;
-    }
-
-    public String getPostort() {
-        return postort;
-    }
-
-    public void setPostort(String postort) {
-        this.postort = postort;
     }
 }

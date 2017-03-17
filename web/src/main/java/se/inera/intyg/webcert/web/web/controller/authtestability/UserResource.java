@@ -21,7 +21,11 @@ package se.inera.intyg.webcert.web.web.controller.authtestability;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -32,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -101,4 +106,18 @@ public class UserResource {
         return Response.ok().build();
     }
 
+    @GET
+    @Path("/parameters")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getParameters() {
+        return Response.ok(webCertUserService.getUser().getParameters()).build();
+    }
+
+    @POST
+    @Path("/parameters/sjf")
+    public Response setSjf() {
+        webCertUserService.getUser()
+                .setParameters(new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false));
+        return Response.ok().build();
+    }
 }

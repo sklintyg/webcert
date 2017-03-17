@@ -26,25 +26,31 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.jayway.restassured.filter.session.SessionFilter;
 import org.junit.After;
 import org.junit.Before;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.filter.session.SessionFilter;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
@@ -57,31 +63,24 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
  */
 public abstract class BaseRestIntegrationTest {
 
-    /** Use to create a ROUTEID cookie to ensure the correct tomcat-node is used */
-    public static String routeId;
-
-    public static SessionFilter sessionFilter;
-
-    private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
-    private static final String FAKE_LOGIN_URI = "/fake";
     protected static final String DEFAULT_UTKAST_PATIENT_FORNAMN = "Api";
     protected static final String DEFAULT_UTKAST_PATIENT_EFTERNAMN = "Restman";
-
+    protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
+    protected static final String DEFAULT_INTYGSTYP = "fk7263";
+    private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
+    private static final String FAKE_LOGIN_URI = "/fake";
+    /** Use to create a ROUTEID cookie to ensure the correct tomcat-node is used */
+    public static String routeId;
+    public static SessionFilter sessionFilter;
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
             "IFV1239877878-1042").lakare(true).build();
-
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
             "TSTNMT2321000156-1039").lakare(true).build();
-
     /**
      * Has multiple vardenheter.
      */
     protected static FakeCredentials ASA_ANDERSSON = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
             "IFV1239877878-1046").lakare(true).build();
-
-    protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
-    protected static final String DEFAULT_INTYGSTYP = "fk7263";
-
     protected final String DEFAULT_PATIENT_PERSONNUMMER = "19010101-0101";
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -176,6 +175,17 @@ public abstract class BaseRestIntegrationTest {
     }
 
     /**
+     * Sets the coherentJournaling flag in the integration parameters to true for the current session.
+     */
+    protected void setSjf() {
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect()
+                .statusCode(200)
+                .when()
+                .post("authtestability/user/parameters/sjf");
+    }
+
+    /**
      * Helper method to create an utkast of a given type for a given patient.
      * The request will be made with the current auth session.
      *
@@ -252,9 +262,11 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Inserts a question for an existing certificate
      *
-     * @param intygsType
+     * @param typ
      *            type to create
-     * @param patientPersonNummer
+     * @param intygId
+     *            id of the intyg to create the question for
+     * @param personnummer
      *            patient to create it for
      * @return
      */
@@ -274,9 +286,11 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Inserts a question of type arende for an existing certificate
      *
-     * @param intygsType
+     * @param typ
      *            type to create
-     * @param patientPersonNummer
+     * @param intygId
+     *            id of the intyg to create the arende for
+     * @param personnummer
      *            patient to create it for
      * @return
      */

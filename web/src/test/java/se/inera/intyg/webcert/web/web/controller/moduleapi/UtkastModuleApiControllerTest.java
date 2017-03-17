@@ -26,7 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,14 +41,18 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
-import se.inera.intyg.infra.security.common.model.*;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
@@ -53,9 +60,12 @@ import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastModuleApiControllerTest {
@@ -105,21 +115,35 @@ public class UtkastModuleApiControllerTest {
     public void testGetDraft() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         when(utkastService.getDraft(CERTIFICATE_ID, intygTyp, false)).thenReturn(buildUtkast(intygTyp, intygId));
         when(relationService.getRelations(eq(intygId))).thenReturn(Optional.empty());
 
-        Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, false, request);
+        Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
         verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp, false);
+        assertEquals(OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testGetDraftWithCoherentJournaling() {
+        String intygTyp = "fk7263";
+        String intygId = "intyg1";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, true, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.getDraft(CERTIFICATE_ID, intygTyp, true)).thenReturn(buildUtkast(intygTyp, intygId));
+        when(relationService.getRelations(eq(intygId))).thenReturn(Optional.empty());
+
+        Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
+        verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp, true);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test(expected = AuthoritiesException.class)
     public void getDraftWithoutPrivilegeSkrivaIntygFails() {
         String intygType = "fk7263";
-        setupUser("", intygType, WebcertFeature.HANTERA_INTYGSUTKAST);
-        moduleApiController.getDraft(intygType, CERTIFICATE_ID, false, request);
+        setupUser("", intygType, false, WebcertFeature.HANTERA_INTYGSUTKAST);
+        moduleApiController.getDraft(intygType, CERTIFICATE_ID, request);
     }
 
     @Test
@@ -128,9 +152,10 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true)).thenReturn(new SaveDraftResponse(UTKAST_VERSION, UtkastStatus.DRAFT_COMPLETE));
+        when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true))
+                .thenReturn(new SaveDraftResponse(UTKAST_VERSION, UtkastStatus.DRAFT_COMPLETE));
 
         Response response = moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
 
@@ -143,7 +168,7 @@ public class UtkastModuleApiControllerTest {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
         byte[] payload = "test".getBytes();
-        setupUser("", intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser("", intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
     }
@@ -154,7 +179,7 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true)).thenThrow(new OptimisticLockException(""));
 
@@ -171,7 +196,7 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(buildDraftValidation());
 
@@ -187,7 +212,7 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser("", intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser("", intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         try {
             moduleApiController.validateDraft(intygTyp, intygId, payload);
@@ -200,7 +225,7 @@ public class UtkastModuleApiControllerTest {
     public void testDiscardDraft() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         Response response = moduleApiController.discardDraft(intygTyp, intygId, UTKAST_VERSION, request);
 
@@ -212,7 +237,7 @@ public class UtkastModuleApiControllerTest {
     public void discardDraftWithoutPrivilegeSkrivaIntygFails() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
-        setupUser("", intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser("", intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         moduleApiController.discardDraft(intygTyp, intygId, UTKAST_VERSION, request);
     }
@@ -223,7 +248,7 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
         DraftValidation draftValidation = buildDraftValidation();
         draftValidation.addWarning(new DraftValidationMessage("field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
 
@@ -260,11 +285,12 @@ public class UtkastModuleApiControllerTest {
         return utkast;
     }
 
-    private void setupUser(String privilegeString, String intygType, WebcertFeature... features) {
+    private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, WebcertFeature... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.setFeatures(Stream.of(features).map(WebcertFeature::getName).collect(Collectors.toSet()));
         user.getFeatures().addAll(Stream.of(features).map(f -> f.getName() + "." + intygType).collect(Collectors.toSet()));
+        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling, false, false));
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();

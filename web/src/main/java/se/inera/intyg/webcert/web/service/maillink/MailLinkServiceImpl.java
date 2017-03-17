@@ -41,8 +41,6 @@ public class MailLinkServiceImpl implements MailLinkService {
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
-    private static final String PARAM_HOSP_NAME = "hospName";
-    private static final String PARAM_PATIENT_SSN = "patientId";
 
     @Value("${certificate.view.url.base}")
     private String urlBaseTemplate;
@@ -66,8 +64,6 @@ public class MailLinkServiceImpl implements MailLinkService {
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, typ);
         urlParams.put(PARAM_CERT_ID, intygId);
-        urlParams.put(PARAM_HOSP_NAME, "");
-        urlParams.put(PARAM_PATIENT_SSN, "");
 
         return UriBuilder.fromPath(urlBaseTemplate).fragment(urlUtkastFragmentTemplate).buildFromMap(urlParams);
     }

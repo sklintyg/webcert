@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -148,7 +149,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
-        user.setPatientDeceased(false);
+        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
         user.setNamn(person.getFullstandigtNamn());
         user.setHsaId(person.getPersonId());
