@@ -37,7 +37,7 @@
   <button type="button" class="btn btn-success" ng-disabled="false">btn-success</button>
   <button type="button" class="btn btn-info" ng-disabled="false">btn-info</button>
   <button type="button" class="btn btn-primary" ng-disabled="false">btn-primary</button>
-  <button type="button" class="btn btn-default btn-secondary" ng-disabled="false">btn-default btn-secondary</button>
+  <button type="button" class="btn btn-secondary" ng-disabled="false">btn-secondary</button>
   <button type="button" class="btn btn-inverse" ng-disabled="false">btn-inverse</button>
 </div>
 
@@ -46,7 +46,7 @@
   <button type="button" class="btn btn-success" ng-disabled="true">btn-success</button>
   <button type="button" class="btn btn-info" ng-disabled="true">btn-info</button>
   <button type="button" class="btn btn-primary" ng-disabled="true">btn-primary</button>
-  <button type="button" class="btn btn-default btn-secondary" ng-disabled="true">btn-default btn-secondary</button>
+  <button type="button" class="btn btn-secondary" ng-disabled="true">btn-secondary</button>
   <button type="button" class="btn btn-inverse" ng-disabled="true">btn-inverse</button>
 </div>
 
@@ -63,7 +63,7 @@ Används för hjälptexter i utkastvyerna. (placement av popup kan varieras)
 
 
 <h2>Vidarebefodrad knapp (både action och indikator på vidarebefordrad state)</h2>
-<button type="button" class="btn btn-default vidarebefordra-btn" ng-class="{'btn-info': !cert1.vidarebefordrad, 'btn-default btn-secondary' : cert1.vidarebefordrad}" ng-click="cert1.vidarebefordrad = !cert1.vidarebefordrad">
+<button type="button" class="btn vidarebefordra-btn" ng-class="{'btn-info': !cert1.vidarebefordrad, 'btn-default btn-secondary' : cert1.vidarebefordrad}" ng-click="cert1.vidarebefordrad = !cert1.vidarebefordrad">
   <span class="glyphicon glyphicon-share-alt"></span>
 </button>
 

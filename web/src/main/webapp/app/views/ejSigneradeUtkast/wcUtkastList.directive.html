@@ -17,8 +17,8 @@
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST">
       <button type="button"
-              class="btn btn-default vidarebefordra-btn"
-              ng-class="{'btn-info': !intyg.vidarebefordrad, 'btn-default btn-secondary' : intyg.vidarebefordrad}"
+              class="btn vidarebefordra-btn"
+              ng-class="{'btn-info': !intyg.vidarebefordrad, 'btn-secondary' : intyg.vidarebefordrad}"
               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
               ng-click="openMailDialog(intyg)">
           <span class="glyphicon glyphicon-share-alt"
