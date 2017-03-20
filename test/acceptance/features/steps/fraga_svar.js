@@ -612,4 +612,25 @@ module.exports = function() {
     this.Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
         return expect(element(by.id('unhandled-vidarebefordraEjHanterad')).isPresent()).to.eventually.be.ok;
     });
+    this.Then(/^ska det synas vem som svarat$/, function() {
+        var name = global.user.fornamn + ' ' + global.user.efternamn;
+        element.all(by.css('.arende-sender.ng-binding.ng-scope')).map(function(data) {
+            return data.getText();
+        }).then(function(theNames) {
+            return expect(theNames.join('\n')).to.contain(name);
+        });
+
+    });
+
+    this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
+        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
+            return elm.getText();
+        });
+        return alertTexts.then(function(result) {
+            // console.log(result);
+            return expect(result.join('\n')).to.not.have.string(fel);
+        });
+    });
+
+
 };

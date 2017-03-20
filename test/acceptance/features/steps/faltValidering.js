@@ -478,12 +478,8 @@ module.exports = function() {
                         logger.info('Ändrar undersökningsdatum: 2017-01-12 ');
                         //console.log('Ändrar datum');
                         return enter.perform();
-
                     });
                 });
-
-
-
             default:
                 logger.info('Felaktigt Fält valt');
                 break;
