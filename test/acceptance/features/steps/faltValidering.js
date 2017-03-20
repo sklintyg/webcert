@@ -257,7 +257,7 @@ module.exports = function() {
             return expect(result.join('\n')).to.have.string(fel);
         });
     });
-    this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
+    /*  this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
         var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         });
@@ -265,8 +265,15 @@ module.exports = function() {
             // console.log(result);
             return expect(result.join('\n')).to.not.have.string(fel);
         });
+    });*/
+    this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
+        element.all(by.css('.alert-danger')).map(function(elm) {
+            return elm.getText();
+        }).then(function(result) {
+            // console.log(result);
+            return expect(result.join('\n')).to.not.have.string(fel);
+        });
     });
-
 
     this.Given(/^ska valideringsfelet "([^"]*)" visas "([^"]*)" gånger$/, function(arg1, arg2) {
         var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {

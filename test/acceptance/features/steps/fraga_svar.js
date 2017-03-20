@@ -622,15 +622,6 @@ module.exports = function() {
 
     });
 
-    this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
-        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
-            return elm.getText();
-        });
-        return alertTexts.then(function(result) {
-            // console.log(result);
-            return expect(result.join('\n')).to.not.have.string(fel);
-        });
-    });
 
 
 };
