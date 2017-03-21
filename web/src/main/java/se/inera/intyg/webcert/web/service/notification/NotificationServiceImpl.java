@@ -165,6 +165,13 @@ public class NotificationServiceImpl implements NotificationService {
         createAndSendNotification(utkast, RADERA);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.intyg.webcert.web.service.notification.NotificationService#sendNotificationForDraftReadyToSign(se.inera.
+     * intyg.webcert.web.persistence.utkast.model.Utkast)
+     */
     @Override
     public void sendNotificationForDraftReadyToSign(Utkast utkast) {
         createAndSendNotification(utkast, KFSIGN);

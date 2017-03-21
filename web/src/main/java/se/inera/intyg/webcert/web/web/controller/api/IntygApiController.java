@@ -180,14 +180,14 @@ public class IntygApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}/redoattsignera")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response sendRedoToSignNotification(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-                                               @PathParam("version") long version) {
+    public Response setKlarForSigneraAndSendStatusMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+                                                          @PathParam("version") long version) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST)
                 .orThrow();
 
-        utkastService.setStatusMessageReadyToSignSent(intygsId, intygsTyp);
+        utkastService.setKlarForSigneraAndSendStatusMessage(intygsId, intygsTyp);
         return Response.ok().build();
     }
 }

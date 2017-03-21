@@ -172,14 +172,29 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional
-    public void setStatusMessageReadyToSignSent(String intygsId, String intygType) {
+    public void setKlarForSigneraAndSendStatusMessage(String intygsId, String intygType) {
+
+        validateUserAllowedToSendKFSignNotification(intygsId, intygType);
+
         Utkast utkast = getIntygAsDraft(intygsId, intygType);
-        if (utkast.getRedoSignerasNotifieringDatum() == null) {
+        if (utkast.getKlarForSigneraDatum() == null) {
             notificationService.sendNotificationForDraftReadyToSign(utkast);
-            utkast.setRedoSignerasNotifieringDatum(LocalDateTime.now());
+            utkast.setKlarForSigneraDatum(LocalDateTime.now());
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
             saveDraft(utkast);
             LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
+        }
+    }
+
+    private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+                AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST);
+
+        if (intygsTyper.size() == 0 || !intygsTyper.contains(intygType)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not allowed to send KFSIGN notification for utkast '" + intygsId + "', "
+                    + "user must be Vardadministrator or intygsTyp '" + intygType + "' is not eligible "
+                    + "for KFSIGN notifications.");
         }
     }
 

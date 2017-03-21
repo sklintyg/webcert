@@ -55,5 +55,5 @@ public interface UtkastService {
 
     String getQuestions(String intygsTyp, String version);
 
-    void setStatusMessageReadyToSignSent(String intygsId, String intygsTyp);
+    void setKlarForSigneraAndSendStatusMessage(String intygsId, String intygsTyp);
 }

@@ -18,21 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.persistence.OptimisticLockException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +26,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -49,7 +33,6 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
@@ -57,9 +40,12 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserDetails;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
@@ -77,6 +63,27 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -104,6 +111,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private NotificationService notificationService;
     @Mock
     private MonitoringLogService mockMonitoringService;
+    @Mock
+    private AuthoritiesHelper authoritiesHelper;
+    
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
         @Override
@@ -525,6 +535,33 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         DraftValidation validationResult = draftService.validateDraft(INTYG_ID, INTYG_TYPE, utkast.getModel());
         assertEquals(1, validationResult.getWarnings().size());
         assertEquals(0, validationResult.getMessages().size());
+    }
+
+    @Test
+    public void testSetKlarForSigneraStatusMessageSent() {
+        when(mockUtkastRepository.findOneByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(utkast);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+                .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+
+        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
+        
+        verify(notificationService).sendNotificationForDraftReadyToSign(utkast);
+        verify(mockMonitoringService).logUtkastMarkedAsReadyToSignNotificationSent(INTYG_ID, "luae_fs");
+        verify(mockUtkastRepository).save(utkast);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForLakare() {
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString())).thenReturn(new HashSet<>());
+        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForInvalidIntygsTyp() {
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+                .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
 
     private ValidateDraftResponse buildValidationResponse() {
