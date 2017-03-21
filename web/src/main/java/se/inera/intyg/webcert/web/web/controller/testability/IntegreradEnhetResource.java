@@ -24,9 +24,12 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -61,6 +64,10 @@ public class IntegreradEnhetResource {
         return Response.ok().build();
     }
 
+    private boolean isNullOrEmpty(String hsaId) {
+        return hsaId == null || hsaId.trim().length() == 0;
+    }
+
     @GET
     @Path("/")
     @Produces("application/json")
@@ -71,7 +78,17 @@ public class IntegreradEnhetResource {
         return Response.ok(integreradeEnheterRegistry.getIntegreradeVardenheter()).build();
     }
 
-    private boolean isNullOrEmpty(@PathParam("hsaId") String hsaId) {
-        return hsaId == null || hsaId.trim().length() == 0;
+    @POST
+    @Path("/")
+    @Consumes("application/json")
+    @Produces("application/json")
+    @ApiResponses(value = {
+            @ApiResponse(code = OK, message = "Registered integrerad vardenhet")
+    })
+    public Response registerIntegreradVardenhet(IntegreradEnhetEntryWithSchemaVersion enhet) {
+        integreradeEnheterRegistry.putIntegreradEnhet(enhet, "1.0".equals(enhet.getSchemaVersion()),
+                "2.0".equals(enhet.getSchemaVersion()));
+        return Response.ok(enhet).build();
     }
+
 }

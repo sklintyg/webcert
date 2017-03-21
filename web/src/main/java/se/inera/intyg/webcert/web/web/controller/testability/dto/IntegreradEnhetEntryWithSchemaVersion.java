@@ -30,6 +30,10 @@ public class IntegreradEnhetEntryWithSchemaVersion extends IntegreradEnhetEntry 
 
     private String schemaVersion;
 
+    public IntegreradEnhetEntryWithSchemaVersion() {
+        super();
+    }
+
     public IntegreradEnhetEntryWithSchemaVersion(IntegreradEnhet integreradEnhet) {
         super(integreradEnhet.getEnhetsId(), integreradEnhet.getEnhetsNamn(), integreradEnhet.getVardgivarId(),
                 integreradEnhet.getVardgivarNamn());

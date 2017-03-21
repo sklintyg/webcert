@@ -32,7 +32,7 @@ var FkBaseUtkast = BaseUtkast._extend({
         init._super.call(this);
 
         this.at = element(by.css('.edit-form'));
-
+        this.markeraSomKlartAttSigneraButton = element(by.id('statusuppdateringBtn'));
     },
 
     isAt: function isAt() {
@@ -42,6 +42,12 @@ var FkBaseUtkast = BaseUtkast._extend({
     //Locates the dynamic text based on text-key. see luaefs.dynamictexts.spec.js for example
     getDynamicLabelText: function(textKey) {
         return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
+    },
+    isMarkeraSomKlartAttSigneraButtonEnabled: function() {
+        return this.markeraSomKlartAttSigneraButton.isEnabled();
+    },
+    markeraSomKlartAttSigneraButtonClick: function() {
+        this.markeraSomKlartAttSigneraButton.sendKeys(protractor.Key.SPACE);
     }
 });
 

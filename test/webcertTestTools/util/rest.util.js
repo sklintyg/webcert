@@ -162,5 +162,33 @@ module.exports = {
             method: 'GET'
         };
         return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+    },
+    queryNotificationStub: function() {
+        var options = {
+            url: 'services/notification-stub/notifieringar/v2',
+            method: 'GET'
+        };
+        return restClient.run(options, 'json');
+    },
+    registerEnhetAsDjupintegrerad: function(veId, veNamn, vgId, vgNamn, v1Enabled, v2Enabled) {
+        var options = {
+            url: 'testability/integreradevardenheter/',
+            method: 'POST',
+            body: {
+                enhetsId: veId,
+                enhetsNamn: veNamn,
+                vardgivareId: vgId,
+                vardgivareNamn: vgNamn,
+                schemaVersion: v2Enabled ? "2.0" : "1.0"
+            }
+        };
+        return restClient.run(options, 'json');
+    },
+    deregisterEnhetAsDjupintegrerad: function(veId) {
+        var options = {
+            url: 'testability/integreradevardenheter/' + veId,
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
     }
 };

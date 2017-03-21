@@ -28,6 +28,10 @@ public class IntegreradEnhetEntry implements Comparable<IntegreradEnhetEntry> {
 
     private String vardgivareNamn;
 
+    // For serialization purposes.
+    public IntegreradEnhetEntry() {
+    }
+
     public IntegreradEnhetEntry(String enhetsId, String vardgivareId) {
         super();
         this.enhetsId = enhetsId;
