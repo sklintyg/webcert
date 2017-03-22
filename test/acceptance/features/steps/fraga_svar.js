@@ -614,7 +614,7 @@ module.exports = function() {
     });
     this.Then(/^ska det synas vem som svarat$/, function() {
         var name = global.user.fornamn + ' ' + global.user.efternamn;
-        element.all(by.css('.arende-sender.ng-binding.ng-scope')).map(function(data) {
+        return element.all(by.css('.arende-sender.ng-binding.ng-scope')).map(function(data) {
             return data.getText();
         }).then(function(theNames) {
             return expect(theNames.join('\n')).to.contain(name);
