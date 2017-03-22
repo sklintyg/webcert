@@ -63,6 +63,11 @@ var FkUtkast = BaseUtkast._extend({
 
         this.capacityForWorkForecastText = element(by.id('capacityForWorkForecastText'));
         this.diagnosKod = element(by.id('diagnoseCode'));
+        this.diagnosKod2 = element(by.id('diagnoseCodeOpt1'));
+        this.diagnosKod3 = element(by.id('diagnoseCodeOpt2'));
+        this.diagnosBeskrivning = element(by.id('diagnoseDescription'));
+        this.diagnosBeskrivning2 = element(by.id('diagnoseDescriptionOpt1'));
+        this.diagnosBeskrivning3 = element(by.id('diagnoseDescriptionOpt2'));
         this.funktionsNedsattning = element(by.id('disabilities'));
         this.aktivitetsBegransning = element(by.id('activityLimitation'));
         this.nuvarandeArbete = element(by.id('currentWork'));
@@ -187,19 +192,21 @@ var FkUtkast = BaseUtkast._extend({
     minUndersokningAvPatClick: function() {
         this.baserasPa.minUndersokning.check();
     },
-    angeDiagnosKod: function(kod) {
-
-        var diagnosKodEl = this.diagnosKod;
+    angeDiagnosKod: function(kod, diagnosKodElement) {
+        var element = !diagnosKodElement ? this.diagnosKod : diagnosKodElement;
 
         function sendEnterToElement(el) {
             return function() {
                 return el.sendKeys(protractor.Key.ENTER);
             };
         }
-        return diagnosKodEl.sendKeys(kod).then(function() {
+        return element.clear().sendKeys(kod).then(function() {
             return browser.sleep(2000);
-        }).then(sendEnterToElement(diagnosKodEl));
+        }).then(sendEnterToElement(element));
 
+    },
+    angeDiagnosFortydligande: function(txt) {
+        return this.diagnos.fortydligande.clear().sendKeys(txt);
     },
     angeFunktionsnedsattning: function(txt) {
         if (!txt) {
