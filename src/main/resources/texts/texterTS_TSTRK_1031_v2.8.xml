@@ -6,8 +6,9 @@
 	KATEGORI: Intyg avser
 	===============================================
 	-->
-	<text id="KAT_99.RBK">Intyg avser</text>
-  <text id="KORKORT_AM.RBK">AM</text>
+	<text id="KAT_99.RBK">Intyget avser</text>
+	<text id="KAT_99.HLP"><![CDATA[<span style="text-align:left">AM = moped klass I<br>A1 - lätt motorcykel<br>A2 - mellanstor motorcykel<br>A - motorcykel<br>B - personbil, lätt lastbil och enbart ett lätt släpfordon<br>BE - personbil, lätt lastbil och ett eller flera släpfordon *<br>C1 = medeltung lastbil och enbart ett lätt släpfordon<br/>C1E = medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C = tung lastbil och enbart ett lätt släpfordon<br/>CE = tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 = mellanstor buss och enbart ett lätt släpfordon<br/>D1E = mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D = buss och enbart ett lätt släpfordon<br/>DE = buss och ett eller flera släpfordon oavsett vikt<br/>Taxi = taxiförarlegitimation<br>* Släpens totalvikt får inte överstiga 3,5 ton.</span>]]></text>
+	<text id="KORKORT_AM.RBK">AM</text>
   <text id="KORKORT_A1.RBK">A1</text>
   <text id="KORKORT_A2.RBK">A2</text>
   <text id="KORKORT_A.RBK">A</text>
