@@ -24,7 +24,7 @@
     "latestTextVersion": {
       "type": "string"
     },
-    "markedReadyToSignDateTime": {
+    "klarForSigneraDatum": {
         "type": "string"
     },
     "relations": {
@@ -60,7 +60,6 @@
     "status",
     "enhetsNamn",
     "vardgivareNamn",
-    "markedReadyToSignDateTime",
     "relations",
     "content"
   ]

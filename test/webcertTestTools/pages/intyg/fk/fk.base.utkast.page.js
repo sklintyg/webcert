@@ -32,7 +32,11 @@ var FkBaseUtkast = BaseUtkast._extend({
         init._super.call(this);
 
         this.at = element(by.css('.edit-form'));
-        this.markeraSomKlartAttSigneraButton = element(by.id('statusuppdateringBtn'));
+
+        // The "markera klart för att signera" functionality is common to all SIT / SMI intygstyper.
+        this.markeraKlartForSigneraButton = element(by.id('markeraKlartForSigneraButton'));
+        this.markeraKlartAttSigneraModalYesButton = element(by.id('buttonYes'));
+        this.markeradKlarForSigneringText = element(by.id('draft-marked-ready-text'));
     },
 
     isAt: function isAt() {
@@ -43,11 +47,11 @@ var FkBaseUtkast = BaseUtkast._extend({
     getDynamicLabelText: function(textKey) {
         return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
     },
-    isMarkeraSomKlartAttSigneraButtonEnabled: function() {
-        return this.markeraSomKlartAttSigneraButton.isEnabled();
+    isMarkeraSomKlartAttSigneraButtonDisplayed: function() {
+        return this.markeraKlartForSigneraButton.isDisplayed();
     },
     markeraSomKlartAttSigneraButtonClick: function() {
-        this.markeraSomKlartAttSigneraButton.sendKeys(protractor.Key.SPACE);
+        this.markeraKlartForSigneraButton.sendKeys(protractor.Key.SPACE);
     }
 });
 

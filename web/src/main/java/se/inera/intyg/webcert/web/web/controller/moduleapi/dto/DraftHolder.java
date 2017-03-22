@@ -48,7 +48,7 @@ public class DraftHolder {
     private String latestTextVersion;
 
     private List<RelationItem> relations;
-    private LocalDateTime markedReadyToSignDateTime;
+    private LocalDateTime klarForSigneraDatum;
 
     public long getVersion() {
         return version;
@@ -113,11 +113,11 @@ public class DraftHolder {
         return relations;
     }
 
-    public void setMarkedReadyToSignDateTime(LocalDateTime markedReadyToSignDateTime) {
-        this.markedReadyToSignDateTime = markedReadyToSignDateTime;
+    public LocalDateTime getKlarForSigneraDatum() {
+        return klarForSigneraDatum;
     }
 
-    public LocalDateTime getMarkedReadyToSignDateTime() {
-        return markedReadyToSignDateTime;
+    public void setKlarForSigneraDatum(LocalDateTime klarForSigneraDatum) {
+        this.klarForSigneraDatum = klarForSigneraDatum;
     }
 }

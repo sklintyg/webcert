@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeNA.utkast;
 var restUtil = wcTestTools.restUtil;
 
-describe('Create partially complete luae_na utkast and mark as ready to sign', function() {
+fdescribe('Create partially complete luae_na utkast and mark as ready to sign', function() {
 
     var utkastId = null,
         data = null;
@@ -52,7 +52,8 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
             });
         });
 
-        describe('Byt till djupintegrerad vårdadministratör på utkastet', function() {
+        describe('Byt till djupintegrerad vårdadministratör på utkastet och markera som klar för signering', function() {
+
             it('Bli vårdadmin och djupintegrerad, ladda sedan om sidan', function() {
                 browser.ignoreSynchronization = true;
                 specHelper.setUserRole("VARDADMINISTRATOR").then(function() {
@@ -64,20 +65,20 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
             });
 
             it('Verifiera att knappen för Markera som klart att signera syns', function() {
-                expect(UtkastPage.isMarkeraSomKlartAttSigneraButtonEnabled()).toBeTruthy();
+                expect(UtkastPage.isMarkeraSomKlartAttSigneraButtonDisplayed()).toBeTruthy();
             });
 
             it('Klicka på knappen för Markera som klart att signera syns', function() {
                 UtkastPage.markeraSomKlartAttSigneraButtonClick();
 
                 // Vänta på att den modala dialogen öppnas och Yes-knappen blir synlig
-                expect(element(by.id('buttonYes')).isEnabled()).toBeTruthy();
+                expect(UtkastPage.markeraKlartAttSigneraModalYesButton.isDisplayed()).toBeTruthy();
             });
 
             it('Klicka knappen för Markera utkast redo att signera', function() {
-                element(by.id('buttonYes')).sendKeys(protractor.Key.SPACE);
+                UtkastPage.markeraKlartAttSigneraModalYesButton.sendKeys(protractor.Key.SPACE);
 
-                expect(element(by.id('draft-marked-ready-text')).isDisplayed());
+                expect(UtkastPage.markeradKlarForSigneringText.isDisplayed()).toBeTruthy();
             });
 
             it('Gör REST-anrop till notification-stubben, tillse att vår post finns med KFSIGN', function() {
@@ -95,24 +96,6 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                 });
             });
         });
-
-        // it('Signera intyget', function() {
-        //     UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-        //         browser.sleep(1000).then(function() {
-        //             UtkastPage.signeraButtonClick();
-        //
-        //             browser.sleep(1000).then(function() {
-        //                 expect(IntygPage.isAt()).toBeTruthy();
-        //             });
-        //         });
-        //     });
-        // });
-        //
-        // it('Verifiera intyg', function() {
-        //     IntygPage.whenCertificateLoaded().then(function() {
-        //         IntygPage.verify(data);
-        //     });
-        // });
     });
 
     afterAll(function() {
