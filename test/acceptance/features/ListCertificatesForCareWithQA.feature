@@ -15,7 +15,7 @@ Scenario: Hämta en lista med intyg och utkast för en specifik vårdenhet och p
     Och ska svaret endast innehålla intyg för utvald patient
     Och ska svaret endast innehålla intyg för vårdenheten
 
-@samordningsnummer
+@samordningsnummer @notReady
 Scenario: Hämta en lista med intyg och utkast för en patient med samordningsnummer
   När jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten
   Så ska svaret innehålla intyget jag var inne på

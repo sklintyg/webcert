@@ -21,6 +21,14 @@
 'use strict';
 
 var hasFoundConsoleErrors = false;
+var fs = require('fs');
+
+function writeScreenShot(data, filename, cb) {
+    var stream = fs.createWriteStream(filename);
+    stream.write(new Buffer(data, 'base64'));
+    stream.end();
+    stream.on('finish', cb);
+}
 
 function checkConsoleErrors(cb) {
     if (hasFoundConsoleErrors) {
@@ -100,16 +108,21 @@ module.exports = function() {
 
         if (scenario.isFailed()) {
             browser.takeScreenshot().then(function(png) {
-                var decodedImage = new Buffer(png, 'base64');
-                scenario.attach(decodedImage, 'image/png', function(err) {
-                    checkConsoleErrors(callback);
+                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+                var filename = 'screenshots/' + new Date().getTime() + '.png';
+                writeScreenShot(png, ssPath + filename, function() {
+                    scenario.attach(filename, 'image/png', function(err) {
+                        if (err) {
+                            throw err;
+                        }
+                        checkConsoleErrors(callback);
+                    });
                 });
-
             });
-
         } else {
             checkConsoleErrors(callback);
         }
+
 
     });
 

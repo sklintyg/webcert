@@ -30,9 +30,14 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks("grunt-jsbeautifier");
     grunt.loadNpmTasks('grunt-force-task');
+    grunt.loadNpmTasks('grunt-contrib-clean');
 
     var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
+        clean: {
+            json: ['node_modules/common-testtools/cucumber-html-report/*.json'],
+            png: ['node_modules/common-testtools/cucumber-html-report/*.png']
+        },
         jshint: {
             acc: [
                 'acceptance/features/steps/*.js',
@@ -267,7 +272,7 @@ module.exports = function(grunt) {
         if (grunt.file.exists(grunt.config.get('protractor.acc.options.args.params.externalLinksFile'))) {
             grunt.file.delete(grunt.config.get('protractor.acc.options.args.params.externalLinksFile'));
         }
-
+        tasks.push('clean');
         tasks.push('env:' + environment);
         tasks.push('protractor_webdriver');
         tasks.push('force:protractor:acc');
