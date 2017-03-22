@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Acceptance-tests for Webcert",
   "scripts": {
-    "install": "npm install protractor@4 --registry https://registry.npmjs.org/",
+    "install": "npm install protractor@4 --registry https://registry.npmjs.org/ && scripts/link_git_hooks.sh",
     "result": "xdg-open './node_modules/common-testtools/cucumber-html-report/index.html'"
   },
   "repository": {
