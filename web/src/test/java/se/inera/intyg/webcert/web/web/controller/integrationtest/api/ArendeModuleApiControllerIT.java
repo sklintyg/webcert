@@ -22,6 +22,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.sessionId;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testArendeForIntyg() {
         sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
-        createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+        createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParameter("intygsId", intygId)
                 .expect().statusCode(200)
@@ -53,7 +54,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         sessionId = getAuthSession(DEFAULT_LAKARE);
         // Setup a question that we can use to answer
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
-        String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+        String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).pathParams("intygsTyp", INTYGSTYP, "meddelandeId", internId).body("svarsText")
@@ -65,7 +66,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testSetForwarded() {
         sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
-        String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+        String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "meddelandeId", internId).body(Boolean.TRUE)
@@ -98,7 +99,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
     public void closeAsHandled() {
         sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
-        String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+        String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .pathParams("intygsTyp", INTYGSTYP, "meddelandeId", internId)
@@ -111,7 +112,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
     public void openAsUnhandled() {
         sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
-        String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
+        String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
         // Close the question
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -125,6 +126,29 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(200)
                 .when().put("moduleapi/arende/{intygsTyp}/{meddelandeId}/oppna")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-schema.json"));
+    }
+
+    @Test
+    public void retrieveInfoWhenKompletteratWithIntyg() {
+        sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        // Create an initial intyg which has been sent to FK
+        String originalIntygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
+        sendIntyg(originalIntygId);
+
+        // Create a message from FK, asking for komplettering on the sent intyg (the one above)
+        String messageId = createArendeQuestion(INTYGSTYP, originalIntygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.KOMPLT);
+
+        // A new kompletterande intyg is created and also marked as sent to FK
+        String answerIntygId = createSentIntygAsKompletteringToIntyg(originalIntygId, INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Check that the listing of arenden contains info about kompletterande intyg
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParameter("intygsId", originalIntygId)
+                .expect().statusCode(200)
+                .when().get("moduleapi/arende/{intygsId}").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-list-schema.json"))
+                .body("$", hasSize(1))
+                .body("[0].answeredWithIntyg.intygsId", equalTo(answerIntygId));
     }
 
 }

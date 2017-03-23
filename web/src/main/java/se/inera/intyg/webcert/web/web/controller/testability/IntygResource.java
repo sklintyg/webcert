@@ -21,14 +21,28 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.*;
-import javax.xml.xpath.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,20 +50,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.swagger.annotations.Api;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -311,11 +334,32 @@ public class IntygResource {
     }
 
     @PUT
+    @Path("/{id}/kompletterarintyg")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response setKompletteringRelation(@PathParam("id") String utkastId, String relatedToIntygId) {
+        setRelationToKompletterandeIntyg(utkastId, relatedToIntygId);
+        return Response.ok().build();
+    }
+
+    @PUT
     @Path("/{id}/skickat")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sendDraft(@PathParam("id") String id) {
         updateUtkastForSend(id);
         return Response.ok().build();
+    }
+
+    private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {
+        Utkast utkast = utkastRepository.findOne(id);
+        Utkast relatedUtkast = utkastRepository.findOne(oldIntygId);
+        if ((utkast != null)
+                && (relatedUtkast != null)
+                && (relatedUtkast.getSignatur() != null)
+                && (relatedUtkast.getSkickadTillMottagareDatum() != null)) {
+            utkast.setRelationIntygsId(oldIntygId);
+            utkast.setRelationKod(RelationKod.KOMPLT);
+        }
+        utkastRepository.saveAndFlush(utkast);
     }
 
     private void deleteDraftAndRelatedQAs(Utkast utkast) {

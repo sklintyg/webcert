@@ -182,6 +182,9 @@
         }
       }
     },
+    "answeredWithIntyg": {
+      "$ref": "webcert-answered-with-intyg-schema.json"
+    },
     "senasteHandelse": {
       "type": "string"
     },

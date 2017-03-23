@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -218,6 +219,36 @@ public abstract class BaseRestIntegrationTest {
     }
 
     /**
+     * Creates a new sent intyg, with a komplettering relation to the given intyg id. It is assumed that the specified
+     * intyg already exists (and is signed & sent), otherwise setting the relation will fail.
+     * 
+     * @param earlierSentIntygId
+     * @param intygTyp
+     * @param patientPersonnummer
+     * @return
+     */
+    protected String createSentIntygAsKompletteringToIntyg(String earlierSentIntygId, String intygTyp,
+            String patientPersonnummer) {
+
+        // Create Utkast not Intyg, since relation data needs to be set before signing with new certificates like luse
+        String utkastId = createUtkast(intygTyp, patientPersonnummer);
+
+        // Mark as komplettering for the given id
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .pathParam("intygsId", utkastId).body(earlierSentIntygId)
+                .expect().statusCode(200)
+                .when().put("testability/intyg/{intygsId}/kompletterarintyg");
+
+        // Sign and send.
+        signUtkast(utkastId);
+        String intygId = utkastId;
+        sendIntyg(intygId);
+
+        return intygId;
+
+    }
+
+    /**
      * Create a intyg with status SIGNED
      *
      * @param intygsTyp
@@ -229,11 +260,8 @@ public abstract class BaseRestIntegrationTest {
         // First create the draft
         final String utkastId = createUtkast(intygsTyp, patientPersonNummer);
 
-        // ..then "fake" it to be signed. Maybe we should set more signature related metadata?
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("intygsId", utkastId).body(DEFAULT_LAKARE.getHsaId())
-                .expect().statusCode(200)
-                .when().put("testability/intyg/{intygsId}/signerat");
+        // ..then "fake" it to be signed.
+        signUtkast(utkastId);
 
         return utkastId;
     }
@@ -288,14 +316,24 @@ public abstract class BaseRestIntegrationTest {
      *
      * @param intygTyp
      *            type to create
-     * @param intygId
+     * @param intygsId
      *            id of the intyg to create the arende for
      * @param personnummer
      *            patient to create it for
      * @return
      */
-    protected String createArendeQuestion(String typ, String intygId, String personnummer) {
-        Arende arende = createTestArendeQuestion(typ, intygId, personnummer);
+    protected String createArendeQuestion(String intygTyp, String intygsId, String personnummer, ArendeAmne messageType) {
+        Arende arende;
+        switch (messageType) {
+        case AVSTMN:
+            arende = createAvstamningArendeFromFktoWebcertUser(intygTyp, intygsId, personnummer);
+            break;
+        case KOMPLT:
+            arende = createKompletteringArendeFromFkToWebcertUser(intygTyp, intygsId, personnummer);
+            break;
+        default:
+            throw new IllegalArgumentException();
+        }
 
         Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(arende)
@@ -382,22 +420,22 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Creates a test question of type arende with information specified in most fields.
      *
-     * @param typ
+     * @param intygTyp
      *            Certificate type of which the question refers to
-     * @param intygId
+     * @param intygsId
      *            Certificate id of which the question refers to
      * @param personnummer
      *            Social security number of the patient the certificate is made out to
      * @return
      */
-    private Arende createTestArendeQuestion(String typ, String intygId, String personnummer) {
+    private Arende createAvstamningArendeFromFktoWebcertUser(String intygTyp, String intygsId, String personnummer) {
         LocalDateTime now = LocalDateTime.now();
         Arende arende = new Arende();
         arende.setAmne(ArendeAmne.AVSTMN);
         arende.setMeddelande(DEFAULT_FRAGE_TEXT);
-        arende.setIntygsId(intygId);
+        arende.setIntygsId(intygsId);
         arende.setPatientPersonId(personnummer);
-        arende.setIntygTyp(typ);
+        arende.setIntygTyp(intygTyp);
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setSenasteHandelse(now);
         arende.setSkickatTidpunkt(now);
@@ -414,6 +452,39 @@ public abstract class BaseRestIntegrationTest {
         return arende;
     }
 
+    private Arende createKompletteringArendeFromFkToWebcertUser(String intygTyp, String intygsId, String personnummer) {
+        LocalDateTime now = LocalDateTime.now();
+        Arende arende = new Arende();
+        arende.setAmne(ArendeAmne.KOMPLT);
+        arende.setMeddelande(DEFAULT_FRAGE_TEXT);
+        arende.setIntygsId(intygsId);
+        arende.setPatientPersonId(personnummer);
+        arende.setIntygTyp(intygTyp);
+        arende.setStatus(Status.CLOSED);
+        arende.setSenasteHandelse(now);
+        arende.setSkickatTidpunkt(now);
+        arende.setTimestamp(now);
+        arende.setRubrik("Komplettering, arende fran FK");
+        arende.setSkickatAv("FK");
+        arende.setSigneratAvName("Jan Nilsson");
+        arende.setSigneratAv(DEFAULT_LAKARE.getHsaId());
+        arende.setReferensId("FK-REF-2");
+        arende.setEnhetId(DEFAULT_LAKARE.getEnhetId());
+        arende.setEnhetName("Enhetsnamn");
+        arende.setMeddelandeId(UUID.randomUUID().toString());
+        arende.setKomplettering(Collections.emptyList());
+        /*
+         * Due to problem with (json) deserialization in the testability api because of
+         * 
+         * @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+         * in Arende.java, this property is not set
+         *
+         */
+        // arende.setSistaDatumForSvar(now.toLocalDate().plusDays(7));
+        return arende;
+
+    }
+
     /**
      * Marks the intyg as sent
      *
@@ -424,6 +495,19 @@ public abstract class BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParams("id", intygId)
                 .expect().statusCode(200)
                 .when().put("/testability/intyg/{id}/skickat");
+    }
+
+    /**
+     * Creates a 'fake signature' for the given utkast, which is now for all (?) intents and purposes, an intyg.
+     * 
+     * @param utkastId
+     */
+    protected void signUtkast(String utkastId) {
+        // Maybe we should set more signature related metadata?
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .pathParam("intygsId", utkastId).body(DEFAULT_LAKARE.getHsaId())
+                .expect().statusCode(200)
+                .when().put("testability/intyg/{intygsId}/signerat");
     }
 
 }
