@@ -30,6 +30,7 @@ var checkValues = require('../checkValues');
 var testdataHelpers = wcTestTools.helpers.testdata;
 var testdata = wcTestTools.testdata;
 var testpatienter = testdata.values.patienter;
+//var testpatientAvliden = testdata.values.patientAvliden;
 // var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
 var parallell = require('./parallellt_util.js');
 var helpers = require('../helpers.js');
@@ -108,6 +109,14 @@ module.exports = function() {
     this.Given(/^jag går in på en patient med sekretessmarkering$/, function() {
         var patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
         return gotoPatient(patient);
+    });
+
+    this.Given(/^jag går in på en patient som är avliden$/, function() {
+        //return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0]);
+        var patient = testdataHelpers.shuffle(testdata.values.patienterAvlidna)[0];
+        console.log(patient);
+        return gotoPatient(patient);
+
     });
 
     this.Given(/^jag går in på en patient$/, function() {
@@ -293,6 +302,15 @@ module.exports = function() {
             return parallell.closeBrowser(forkedBrowser);
         });
     });
+    this.Then(/^ska jag varnas om att "([^"]*)"$/, function(msg) {
+
+        return element.all(by.css('.mark-webcert-red')).map(function(data) {
+            return data.getText();
+        }).then(function(theMsg) {
+            return expect(theMsg.join('\n')).to.contain(msg);
+        });
+
+    });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {
         expect(fk7263Intyg.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
@@ -306,7 +324,6 @@ module.exports = function() {
     this.Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {
         expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
     });
-
 
     this.Given(/^ska jag bli inloggad som "([^"]*)"$/, function(arg1) {
         var wcHeader = element(by.id('wcHeader'));
