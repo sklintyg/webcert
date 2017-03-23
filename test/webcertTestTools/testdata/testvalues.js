@@ -237,7 +237,11 @@ module.exports = {
         namn: '',
         efternamn: ''
     }],
-
+    patienterAvlidna: [{
+        id: '190001309814',
+        namn: '',
+        efternamn: ''
+    }],
     patienterEjPU: [{
         id: '201212121212',
         namn: '',
