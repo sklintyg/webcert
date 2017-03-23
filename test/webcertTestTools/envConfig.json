@@ -50,6 +50,7 @@
         "MINAINTYG_URL": "https://mvk.ip30.nordicmedtest.sjunet.org",
         "REHABSTOD_URL": "https://rehabstod.ip30.nordicmedtest.sjunet.org/",
         "INTYGTJANST_URL": "https://intyg.ip30.nordicmedtest.sjunet.org/inera-certificate",
+        "STATISTIKTJANST_URL": "https://statistik.ip30.nordicmedtest.sjunet.org",
         "DATABASE_NAME": "webcert_ip30",
         "STAT_DATABASE_NAME": "statistik_ip30",
         "DATABASE_HOST": "mysql.sm.nordicmedtest.se",

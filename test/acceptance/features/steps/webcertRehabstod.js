@@ -185,14 +185,14 @@ module.exports = function() {
         return logInAsUserRoleRehabstod(userObj, 'Läkare', true);
     });
 
-    this.Given(/^jag är inloggad som läkare i Webcert$/, function() {
+    this.Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(enhetsId) {
         // Setting webcert to new bas url
         browser.baseUrl = process.env.WEBCERT_URL;
         var userObj = {
             fornamn: 'Johan',
             efternamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
-            enhetId: 'TSTNMT2321000156-107P'
+            enhetId: enhetsId
         };
 
         return logInAsUserRole(userObj, 'Läkare', true);
@@ -217,7 +217,13 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på intyget som tidigare skapats$/, function() {
-        var url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.rehabstod.user.intygId;
+        var url;
+        if (global.rehabstod) {
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.rehabstod.user.intygId;
+        } else if (global.statistik) {
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.statistik.intygsId;
+        }
+
         return browser.get(url).then(function() {
             logger.info('Går till url: ' + url);
         });
