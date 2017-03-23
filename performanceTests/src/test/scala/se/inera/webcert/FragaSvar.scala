@@ -15,7 +15,7 @@ class FragaSvar extends Simulation {
     .repeat(100, "i") {
       feed(intyg)
         .exec(http("Inject question")
-          .post("/testability/questions")
+          .post("/testability/fragasvar")
           .headers(Headers.json)
           .body(StringBody("""
 {"amne":"OVRIGT",

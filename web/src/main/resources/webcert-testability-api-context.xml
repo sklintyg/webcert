@@ -18,35 +18,35 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-  xmlns:cxf="http://cxf.apache.org/core"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+    xmlns:cxf="http://cxf.apache.org/core"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
         http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd"
-  profile="dev,testability-api">
+    profile="dev,testability-api">
 
   <!-- REST services for inserting questions and certificate drafts directly 
     into the database for testing purposes -->
-    
+
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.intyg.webcert.web.web.controller.testability.ArendeResource" />
-      <bean class="se.inera.intyg.webcert.web.web.controller.testability.QuestionResource" />
-      <bean class="se.inera.intyg.webcert.web.web.controller.testability.LogResource" />
-      <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntygResource" />
-      <bean class="se.inera.intyg.webcert.web.web.controller.testability.UserAgreementResource" />
-      <bean class="se.inera.intyg.webcert.web.web.controller.testability.FmbResource" />
-      <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntegreradEnhetResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.ArendeResource"/>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.FragaSvarResource"/>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.LogResource"/>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntygResource"/>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.UserAgreementResource"/>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.FmbResource"/>
+      <bean class="se.inera.intyg.webcert.web.web.controller.testability.IntegreradEnhetResource"/>
     </jaxrs:serviceBeans>
     <jaxrs:providers>
-      <ref bean="jacksonJsonProvider" />
+      <ref bean="jacksonJsonProvider"/>
     </jaxrs:providers>
     <jaxrs:features>
-     <cxf:logging/>
+      <cxf:logging/>
     </jaxrs:features>
     <jaxrs:extensionMappings>
-      <entry key="json" value="application/json" />
+      <entry key="json" value="application/json"/>
     </jaxrs:extensionMappings>
   </jaxrs:server>
 

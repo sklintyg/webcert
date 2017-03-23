@@ -127,7 +127,7 @@ angular.module('rhsIndexApp')
                 // Remove legacy questions as well.
                 $http({
                     method: 'DELETE',
-                    url: '/testability/questions/enhet/' + $scope.selectedEnhet
+                    url: '/testability/fragasvar/enhet/' + $scope.selectedEnhet
                 });
             }
         };

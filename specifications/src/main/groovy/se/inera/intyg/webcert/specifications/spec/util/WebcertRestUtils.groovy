@@ -19,15 +19,14 @@
 
 package se.inera.intyg.webcert.specifications.spec.util
 
+import groovy.json.JsonOutput
+import groovyx.net.http.HttpResponseDecorator
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import se.inera.intyg.webcert.specifications.spec.Browser
 
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.URLENC
-import groovy.json.JsonOutput
-import groovyx.net.http.HttpResponseDecorator
-
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 public class WebcertRestUtils extends RestClientFixture {
     private static final Logger LOG = LoggerFactory.getLogger(WebcertRestUtils.class)
@@ -38,9 +37,10 @@ public class WebcertRestUtils extends RestClientFixture {
         login(webcert)
     }
 
-    static def login(def restClient, String hsaId = "SE4815162344-1B01", String enhetId = "SE4815162344-1A02", boolean lakare = true) {
+    static def login(
+            def restClient, String hsaId = "SE4815162344-1B01", String enhetId = "SE4815162344-1A02", boolean lakare = true) {
         def loginData = JsonOutput.toJson([fornamn: 'fornamn', efternamn: 'efternamn', hsaId: hsaId, enhetId: enhetId, lakare: lakare, forskrivarKod: "2481632"])
-        def response = restClient.post(path: '/fake', body: "userJsonDisplay=${loginData}", requestContentType : URLENC )
+        def response = restClient.post(path: '/fake', body: "userJsonDisplay=${loginData}", requestContentType: URLENC)
         assert response.status == 302
         System.out.println("Using logindata: " + loginData)
     }
@@ -85,10 +85,10 @@ public class WebcertRestUtils extends RestClientFixture {
     /**
      *  Check if a notification with the specified id and code is present in the stub.
      *
-     *  @param id the utlatandeId
-     *  @param code, the code for the notification
-     *  @param timeOutMillis, timout after this many millis
-     *  @return true if a matching notification is found, false othewise
+     * @param id the utlatandeId
+     * @param code , the code for the notification
+     * @param timeOutMillis , timout after this many millis
+     * @return true if a matching notification is found, false othewise
      */
     public static boolean awaitNotification(final String id, final String code, final long timeOutMillis) {
         final long timeOut = System.currentTimeMillis() + timeOutMillis;
@@ -96,7 +96,9 @@ public class WebcertRestUtils extends RestClientFixture {
         while (System.currentTimeMillis() < timeOut) {
             def notifieringar = webcert.get(path: "services/notification-stub/notifieringar").data
 
-            if(notifieringar.find {  it.utlatande.utlatandeId.extension == id && it.utlatande.handelse.handelsekod.code == code }){
+            if (notifieringar.find {
+                it.utlatande.utlatandeId.extension == id && it.utlatande.handelse.handelsekod.code == code
+            }) {
                 return true;
             }
         }
@@ -112,7 +114,7 @@ public class WebcertRestUtils extends RestClientFixture {
      * @return HttpResponseDecorator
      */
     public static HttpResponseDecorator saveUtkast(String intygsTyp, String utkastId, long version, String json) {
-        def response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}/${version}", body : json, requestContentType : JSON)
+        def response = webcert.put(path: "moduleapi/utkast/${intygsTyp}/${utkastId}/${version}", body: json, requestContentType: JSON)
         response
     }
 
@@ -123,7 +125,7 @@ public class WebcertRestUtils extends RestClientFixture {
      * @return HttpResponseDecorator
      */
     public static HttpResponseDecorator signUtkast(String intygsTyp, String intygsId, long version) {
-        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType : JSON)
+        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType: JSON)
         response
     }
 
@@ -136,7 +138,9 @@ public class WebcertRestUtils extends RestClientFixture {
      */
     public static HttpResponseDecorator sendIntyg(String intygsTyp, String intygsId, String recipientId) {
         def restPath = "/moduleapi/intyg/${intygsTyp}/${intygsId}/skicka"
-        def response = webcert.post(path: restPath, body : """{"recipient": "${recipientId}", "patientConsent" : true }""", requestContentType : JSON)
+        def response = webcert.post(path: restPath, body: """{"recipient": "${
+            recipientId
+        }", "patientConsent" : true }""", requestContentType: JSON)
         response
     }
 
@@ -148,8 +152,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @return HttpResponseDecorator
      */
     public static HttpResponseDecorator createQuestionToFk(String intygsTyp, String intygsId, String questionJson) {
-        def restPath= "/moduleapi/fragasvar/${intygsTyp}/${intygsId}"
-        def response = webcert.post(path : restPath, body : questionJson, requestContentType : JSON)
+        def restPath = "/moduleapi/fragasvar/${intygsTyp}/${intygsId}"
+        def response = webcert.post(path: restPath, body: questionJson, requestContentType: JSON)
         response
     }
 
@@ -160,8 +164,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @return HttpResponseDecorator
      */
     public static HttpResponseDecorator setQuestionAsAnswered(String intygsTyp, String internReferens) {
-        def restPath= "/moduleapi/fragasvar/${intygsTyp}/${internReferens}/stang"
-        def response = webcert.get(path : restPath)
+        def restPath = "/moduleapi/fragasvar/${intygsTyp}/${internReferens}/stang"
+        def response = webcert.get(path: restPath)
         response
     }
 
@@ -172,8 +176,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @return HttpResponseDecorator
      */
     public static HttpResponseDecorator setQuestionAsUnhandled(String intygsTyp, String internReferens) {
-        def restPath= "/moduleapi/fragasvar/${intygsTyp}/${internReferens}/oppna"
-        def response = webcert.get(path : restPath)
+        def restPath = "/moduleapi/fragasvar/${intygsTyp}/${internReferens}/oppna"
+        def response = webcert.get(path: restPath)
         response
     }
 
@@ -185,17 +189,16 @@ public class WebcertRestUtils extends RestClientFixture {
      * @return
      */
     public static HttpResponseDecorator answerQuestion(String intygsTyp, String internReferns, String text) {
-        def restPath ="/moduleapi/fragasvar/${intygsTyp}/${internReferns}/besvara"
-        def response = webcert.put(path : restPath, body : text, requestContentType : JSON)
+        def restPath = "/moduleapi/fragasvar/${intygsTyp}/${internReferns}/besvara"
+        def response = webcert.put(path: restPath, body: text, requestContentType: JSON)
         response
     }
 
     public static String translateExternalToInternalReferens(String externReferens) {
-        def restPath ="/testability/questions/extern/${externReferens}/translate"
-        def response = webcert.get(path : restPath, requestContentType : JSON)
+        def restPath = "/testability/fragasvar/extern/${externReferens}/translate"
+        def response = webcert.get(path: restPath, requestContentType: JSON)
         response.data.internReferens
     }
-
 
     /**
      * Delete a draft
@@ -204,8 +207,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @return HttpResponseDecorator
      */
     public static HttpResponseDecorator deleteUtkast(String intygsTyp, String utkastId, long version) {
-        def restPath ="/moduleapi/utkast/${intygsTyp}/${utkastId}/${version}/"
-        def response = webcert.delete(path : restPath)
+        def restPath = "/moduleapi/utkast/${intygsTyp}/${utkastId}/${version}/"
+        def response = webcert.delete(path: restPath)
         response
     }
 
@@ -217,7 +220,7 @@ public class WebcertRestUtils extends RestClientFixture {
      */
     public static HttpResponseDecorator deleteIntyg(String intygsTyp, String intygsId) {
         def restPath = "/moduleapi/intyg/${intygsTyp}/${intygsId}/aterkalla"
-        def response = webcert.post(path : restPath, requestContentType : JSON, body : "")
+        def response = webcert.post(path: restPath, requestContentType: JSON, body: "")
         response
     }
 
@@ -235,10 +238,10 @@ public class WebcertRestUtils extends RestClientFixture {
      */
     public static Integer getNumberOfUnsignedCertificates() {
         def restPath = "/api/utkast"
-        def response = webcert.get(path : restPath, requestContentType : JSON, query: ["complete":"false"],
+        def response = webcert.get(path: restPath, requestContentType: JSON, query: ["complete": "false"],
                 headers: [
-                        "Cookie":["JSESSIONID="+Browser.getJSession(),
-                        "ROUTEID="+Browser.getRouteId()].join(";")
+                        "Cookie": ["JSESSIONID=" + Browser.getJSession(),
+                                   "ROUTEID=" + Browser.getRouteId()].join(";")
                 ])
         return response.data.totalCount;
     }
@@ -250,10 +253,10 @@ public class WebcertRestUtils extends RestClientFixture {
      */
     public static void deleteUserPreference(String key) {
         def restPath = "/api/anvandare/preferences/" + key
-        def response = webcert.delete(path : restPath,
+        def response = webcert.delete(path: restPath,
                 headers: [
-                        "Cookie":["JSESSIONID="+Browser.getJSession(),
-                                  "ROUTEID="+Browser.getRouteId()].join(";")
+                        "Cookie": ["JSESSIONID=" + Browser.getJSession(),
+                                   "ROUTEID=" + Browser.getRouteId()].join(";")
                 ])
     }
 
@@ -307,11 +310,12 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param intygsId
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator signUtkastUsingBrowserSesssion(String intygsTyp, String intygsId, Long version) {
-        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType : JSON,
+    public
+    static HttpResponseDecorator signUtkastUsingBrowserSesssion(String intygsTyp, String intygsId, Long version) {
+        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType: JSON,
                 headers: [
-                        "Cookie":["JSESSIONID="+Browser.getJSession(),
-                                  "ROUTEID="+Browser.getRouteId()].join(";")
+                        "Cookie": ["JSESSIONID=" + Browser.getJSession(),
+                                   "ROUTEID=" + Browser.getRouteId()].join(";")
                 ])
         response
     }

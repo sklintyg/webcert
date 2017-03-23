@@ -276,7 +276,7 @@ public abstract class BaseRestIntegrationTest {
         Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(fs)
                 .expect().statusCode(200)
-                .when().post("testability/questions")
+                .when().post("testability/fragasvar")
                 .then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
@@ -286,7 +286,7 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Inserts a question of type arende for an existing certificate
      *
-     * @param typ
+     * @param intygTyp
      *            type to create
      * @param intygId
      *            id of the intyg to create the arende for
@@ -300,7 +300,7 @@ public abstract class BaseRestIntegrationTest {
         Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(arende)
                 .expect().statusCode(200)
-                .when().post("testability/questions/arende")
+                .when().post("testability/arendetest")
                 .then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
@@ -316,13 +316,13 @@ public abstract class BaseRestIntegrationTest {
     protected void deleteQuestion(int internId) {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("id", internId)
                 .expect().statusCode(200)
-                .when().delete("testability/questions/{id}");
+                .when().delete("testability/fragasvar/{id}");
     }
 
     protected void deleteQuestionsByEnhet(String enhetsId) {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("enhetsId", enhetsId)
                 .expect().statusCode(200)
-                .when().delete("testability/questions/enhet/{enhetsId}");
+                .when().delete("testability/fragasvar/enhet/{enhetsId}");
     }
 
     /**

@@ -31,14 +31,14 @@ module.exports = {
 
         // login with doctor Jan Nilsson if noone else is specified
         var user = userJson || {
-            'fornamn': 'Leonie',
-            'efternamn': 'Koehl',
-            'hsaId': 'TSTNMT2321000156-103F',
-            'enhetId': 'TSTNMT2321000156-1039',
-            'lakare': true,
-            'forskrivarKod': '9300005',
-            'befattningsKod': '203090'
-        };
+                'fornamn': 'Leonie',
+                'efternamn': 'Koehl',
+                'hsaId': 'TSTNMT2321000156-103F',
+                'enhetId': 'TSTNMT2321000156-1039',
+                'lakare': true,
+                'forskrivarKod': '9300005',
+                'befattningsKod': '203090'
+            };
 
         var options = {
             url: 'fake',
@@ -117,7 +117,7 @@ module.exports = {
     // Fråga/svar
     createFragasvar: function(createJson) {
         var options = {
-            url: 'testability/questions/',
+            url: 'testability/fragasvar/',
             method: 'POST',
             body: createJson
         };

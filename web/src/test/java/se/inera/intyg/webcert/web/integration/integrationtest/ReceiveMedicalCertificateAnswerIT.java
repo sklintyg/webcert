@@ -28,16 +28,21 @@ import java.time.LocalDateTime;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
@@ -185,7 +190,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
 
         Response response = given().log().all().contentType(ContentType.JSON)
                 .body(fs).expect().statusCode(200).when()
-                .post("testability/questions").then().extract().response();
+                .post("testability/fragasvar").then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
         return model.get("internReferens");

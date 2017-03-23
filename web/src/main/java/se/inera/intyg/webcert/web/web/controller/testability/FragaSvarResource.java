@@ -18,11 +18,20 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -46,8 +55,6 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -60,11 +67,11 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionPar
  * Created by Pehr Assarsson on 9/24/13.
  */
 @Transactional
-@Api(value = "services questions", description = "REST API för testbarhet - Fråga/Svar")
-@Path("/questions")
-public class QuestionResource {
+@Api(value = "services fragasvar", description = "REST API för testbarhet - Fråga/Svar")
+@Path("/fragasvar")
+public class FragaSvarResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QuestionResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FragaSvarResource.class);
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -83,41 +90,15 @@ public class QuestionResource {
     private FragaSvarRepository fragasvarRepository;
 
     @Autowired
-    private ArendeRepository arendeRepository;
-
-    @Autowired
     private CommonAuthoritiesResolver authoritiesResolver;
 
-    @GET
-    @Path("/extern/{externReferens}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public FragaSvar getCertificateByExternReferens(@PathParam("externReferens") String externReferens) {
-        return fragasvarRepository.findByExternReferens(externReferens);
-    }
-
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public FragaSvar getCertificate(@PathParam("id") Long id) {
-        return fragasvarRepository.findOne(id);
-    }
-
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertQuestion(FragaSvar question) {
-        FragaSvar saved = fragasvarRepository.save(question);
+    public Response insertFragaSvar(FragaSvar fragaSvar) {
+        FragaSvar saved = fragasvarRepository.save(fragaSvar);
         LOG.info("Created FragaSvar with id {} using testability API", saved.getInternReferens());
         return Response.ok(saved).build();
-    }
-
-    @POST
-    @Path("/arende")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response insertArendeQuestion(Arende arende) {
-        arendeRepository.save(arende);
-        return Response.ok(arende).build();
     }
 
     @PUT
@@ -163,7 +144,7 @@ public class QuestionResource {
     @DELETE
     @Path("/extern/{externReferens}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestionByExternReferens(@PathParam("externReferens") String externReferens) {
+    public Response deleteFragaSvarByExternReferens(@PathParam("externReferens") String externReferens) {
         List<FragaSvar> fragor = fragasvarRepository.findByExternReferensLike(externReferens);
         for (FragaSvar fraga : fragor) {
             fragasvarRepository.delete(fraga);
@@ -174,7 +155,7 @@ public class QuestionResource {
     @DELETE
     @Path("/frageText/{frageText}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestionsByFrageText(@PathParam("frageText") String frageText) {
+    public Response deleteFragaSvarByFrageText(@PathParam("frageText") String frageText) {
         List<FragaSvar> fragorOchSvar = fragasvarRepository.findByFrageTextLike(frageText);
         if (fragorOchSvar != null) {
             for (FragaSvar fragaSvar : fragorOchSvar) {
@@ -187,7 +168,7 @@ public class QuestionResource {
     @DELETE
     @Path("/svarsText/{svarsText}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestionsBySvarsText(@PathParam("svarsText") String svarsText) {
+    public Response deleteFragaSvarBySvarsText(@PathParam("svarsText") String svarsText) {
         List<FragaSvar> fragorOchSvar = fragasvarRepository.findBySvarsTextLike(svarsText);
         if (fragorOchSvar != null) {
             for (FragaSvar fragaSvar : fragorOchSvar) {
@@ -200,7 +181,7 @@ public class QuestionResource {
     @DELETE
     @Path("/enhet/{enhetsId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestionsByEnhet(@PathParam("enhetsId") String enhetsId) {
+    public Response deleteFragaSvarByEnhet(@PathParam("enhetsId") String enhetsId) {
         List<String> enhetsIds = new ArrayList<>();
         enhetsIds.add(enhetsId);
         List<FragaSvar> fragorOchSvar = fragasvarRepository.findByEnhetsId(enhetsIds);
@@ -215,7 +196,7 @@ public class QuestionResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestion(@PathParam("id") Long id) {
+    public Response deleteFragaSvarById(@PathParam("id") Long id) {
         fragasvarRepository.delete(id);
         return Response.ok().build();
     }
@@ -223,7 +204,7 @@ public class QuestionResource {
     @DELETE
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAllQuestions() {
+    public Response deleteAllFragaSvar() {
         return transactionTemplate.execute(new TransactionCallback<Response>() {
             @Override
             public Response doInTransaction(TransactionStatus status) {
