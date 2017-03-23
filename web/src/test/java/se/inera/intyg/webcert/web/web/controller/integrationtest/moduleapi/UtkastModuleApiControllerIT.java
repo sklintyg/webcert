@@ -38,7 +38,6 @@ import com.jayway.restassured.response.Response;
 
 import se.inera.intyg.common.fk7263.model.internal.PrognosBedomning;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
@@ -49,7 +48,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
  */
 public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
-    private static final String BASEAPI = "moduleapi/utkast";
+    public static final String MODULEAPI_UTKAST_BASE = "moduleapi/utkast";
 
     @Test
     public void testGetDraft() {
@@ -60,7 +59,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
     }
 
@@ -84,7 +83,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
     }
@@ -107,7 +106,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(500)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then()
                 .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
                 .body("message", not(isEmptyString()));
@@ -122,7 +121,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
@@ -131,7 +130,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).body(content)
                 .expect().statusCode(200)
-                .when().put(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version)
+                .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
                 .body("version", equalTo(Integer.parseInt(version) + 1));
     }
@@ -145,7 +144,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
@@ -154,7 +153,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
                 .expect().statusCode(200)
-                .when().post(BASEAPI + "/{intygsTyp}/{intygsId}/validate")
+                .when().post(MODULEAPI_UTKAST_BASE + "/{intygsTyp}/{intygsId}/validate")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
     }
 
@@ -167,7 +166,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
@@ -175,12 +174,12 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().delete(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version);
+                .when().delete(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(500)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
                 .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND.name()))
                 .body("message", not(isEmptyString()));
@@ -195,7 +194,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
@@ -204,7 +203,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(500)
-                .when().post(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash")
+                .when().post(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
                 .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INVALID_STATE.name()))
                 .body("message", not(isEmptyString()));
@@ -219,7 +218,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash")
+                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
     }
 
@@ -231,7 +230,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeraserver")
+                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeraserver")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
     }
 
@@ -243,7 +242,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Response reponseTicket = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().post(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash")
+                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(reponseTicket.body().asString());
@@ -251,7 +250,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"));
     }
 
@@ -262,7 +261,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(BASEAPI + "/" + intygsTyp + "/" + intygsId)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -283,7 +282,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(content)
                 .expect().statusCode(200)
-                .when().put(BASEAPI + "/" + intygsTyp + "/" + intygsId + "/" + version)
+                .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
                 .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
 

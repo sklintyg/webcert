@@ -19,13 +19,13 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
     ['$window', '$filter', '$log', '$scope', '$stateParams', '$state', '$location',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
-        'common.IntygCopyFornya', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
+        'common.IntygCopyActions', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
         'common.messageService',
 
         function($window, $filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
-            CommonIntygCopyFornya, IntygFornyaRequestModel, IntygCopyRequestModel,
+            CommonIntygCopyActions, IntygFornyaRequestModel, IntygCopyRequestModel,
             IntygProxy, UtkastProxy, Service, ObjectHelper, messageService) {
             'use strict';
 
@@ -193,7 +193,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
-                CommonIntygCopyFornya.copy(Viewstate,
+                CommonIntygCopyActions.copy(Viewstate,
                     IntygCopyRequestModel.build({
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,
@@ -211,7 +211,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 // It only affects a piece of text in the Kopiera-dialog anyway.
                 var isOtherCareUnit = true;
 
-                CommonIntygCopyFornya.fornya(Viewstate,
+                CommonIntygCopyActions.fornya(Viewstate,
                     IntygFornyaRequestModel.build({
                         intygId: intyg.intygId,
                         intygType: intyg.intygType,

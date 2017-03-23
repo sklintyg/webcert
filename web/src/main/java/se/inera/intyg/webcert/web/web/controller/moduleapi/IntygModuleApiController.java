@@ -57,6 +57,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
@@ -315,6 +317,63 @@ public class IntygModuleApiController extends AbstractApiController {
 
         return Response.ok().entity(response).build();
     }
+
+    /**
+     * Create a copy that is a replacement (ersättning) of an existing certificate.
+     *
+     * @param request
+     * @param intygsTyp
+     * @param orgIntygsId
+     * @return
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/ersatt")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response createReplacement(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
+                                  @PathParam("intygsId") String orgIntygsId) {
+        validateCopyAuthority(intygsTyp);
+
+        LOG.debug("Attempting to create a replacement of {} with id '{}'", intygsTyp, orgIntygsId);
+
+        if (!request.isValid()) {
+            LOG.error("Request to create replacement of '{}' is not valid", orgIntygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+        }
+
+        CreateReplacementCopyRequest serviceRequest = createReplacementCopyRequest(orgIntygsId, intygsTyp, request);
+        CreateReplacementCopyResponse serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
+
+        LOG.debug("Created a new replacement draft with id: '{}' and type: {}, replacing certificate with id '{}'.",
+                serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsId);
+
+        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+
+        return Response.ok().entity(response).build();
+    }
+
+    private CreateReplacementCopyRequest createReplacementCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
+        HoSPersonal hosPerson = createHoSPersonFromUser();
+        Patient patient = createPatientFromCopyIntygRequest(request);
+        final WebCertUser user = userService.getUser();
+        IntegrationParameters parameters = user.getParameters();
+
+        boolean coherentJournaling = parameters != null && parameters.isSjf();
+
+        CreateReplacementCopyRequest req = new CreateReplacementCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson, coherentJournaling);
+
+        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
+            LOG.debug("Adding new personnummer to request");
+            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
+        }
+
+        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
+            LOG.debug("Setting djupintegrerad flag on request to true");
+            req.setDjupintegrerad(true);
+        }
+        return req;
+    }
+
 
     private CreateRenewalCopyRequest createRenewalCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
         HoSPersonal hosPerson = createHoSPersonFromUser();

@@ -16,23 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.utkast;
+package se.inera.intyg.webcert.web.service.utkast.dto;
 
-import org.springframework.stereotype.Component;
+public class CreateReplacementCopyResponse {
+    private String newDraftIntygType;
 
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.model.common.internal.Relation;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
+    private String newDraftIntygId;
 
-@Component
-public class CreateReplacementUtkastBuilder extends AbstractUtkastBuilder<CreateReplacementCopyRequest> {
+    private String originalIntygId;
 
-    @Override
-    public Relation createRelation(CreateReplacementCopyRequest request) {
-        Relation relation = new Relation();
-        relation.setRelationIntygsId(request.getOriginalIntygId());
-        relation.setRelationKod(RelationKod.ERSATT);
-        return relation;
+    public CreateReplacementCopyResponse(String newDraftIntygType, String newDraftIntygId, String originalIntygId) {
+        this.newDraftIntygId = newDraftIntygId;
+        this.newDraftIntygType = newDraftIntygType;
+        this.originalIntygId = originalIntygId;
     }
 
+    public String getNewDraftIntygType() {
+        return newDraftIntygType;
+    }
+
+    public String getNewDraftIntygId() {
+        return newDraftIntygId;
+    }
+
+    public String getOriginalIntygId() {
+        return originalIntygId;
+    }
 }

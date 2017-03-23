@@ -23,6 +23,8 @@ import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonS
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
+import static se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus.DRAFT_INCOMPLETE;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.MODULEAPI_UTKAST_BASE;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,12 +36,15 @@ import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
 
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
@@ -387,6 +392,47 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
                 .body("message", not(isEmptyString()));
+    }
+
+    @Test
+    public void testReplaceIntyg() {
+        final String personnummer = "19121212-1212";
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsId = createSignedIntyg("fk7263", personnummer);
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", intygsId);
+
+        final Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+                .expect().statusCode(200)
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/ersatt")
+                .then()
+                .body("intygsUtkastId", not(isEmptyString()))
+                .body("intygsUtkastId", not(equalTo(intygsId)))
+                .body("intygsTyp", equalTo("fk7263")).extract().response();
+
+        JsonPath intygJson = new JsonPath(response.body().asString());
+
+        String utkastId = intygJson.getString("intygsUtkastId");
+
+        // Verify that the new draft has correct relations
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/fk7263/" + utkastId).then()
+                .body("relations[0].intygsId", equalTo(utkastId))
+                .body("relations[0].kod", equalTo(RelationKod.ERSATT.name()))
+                .body("relations[0].status", equalTo(DRAFT_INCOMPLETE.name()))
+
+                .body("relations[1].intygsId", equalTo(intygsId))
+                .body("relations[1].status", equalTo(CertificateState.RECEIVED.name()));
+
     }
 
     private void signeraUtkastWithTestabilityApi(String intygsId) {

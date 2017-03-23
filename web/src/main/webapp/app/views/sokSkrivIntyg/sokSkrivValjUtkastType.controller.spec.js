@@ -26,7 +26,7 @@ describe('ChooseCertTypeCtrl', function() {
     var $scope;
     var $location;
     var CommonIntygHelperSpy;
-    var CommonIntygCopyFornyaSpy;
+    var CommonIntygCopyActionsSpy;
     var IntygFornyaRequestModelSpy;
     var IntygFornyaRequestInstanceMock;
     var PatientModelMock;
@@ -69,8 +69,8 @@ describe('ChooseCertTypeCtrl', function() {
             IntygProxy = jasmine.createSpyObj('webcert.IntygProxy', ['getIntygForPatient']);
             $provide.value('webcert.IntygProxy', IntygProxy);
 
-            CommonIntygCopyFornyaSpy = jasmine.createSpyObj('common.IntygCopyFornya', ['fornya']);
-            $provide.value('common.IntygCopyFornya', CommonIntygCopyFornyaSpy);
+            CommonIntygCopyActionsSpy = jasmine.createSpyObj('common.IntygCopyActions', ['fornya']);
+            $provide.value('common.IntygCopyActions', CommonIntygCopyActionsSpy);
             $provide.value('common.IntygCopyRequestModel', {});
             $provide.value('common.IntygFornyaRequestModel', IntygFornyaRequestModelSpy);
             $provide.value('common.IntygHelper', CommonIntygHelperSpy);
@@ -119,7 +119,7 @@ describe('ChooseCertTypeCtrl', function() {
                 patientPersonnummer: '19121212-1212',
                 nyttPatientPersonnummer: null
             });
-            expect(CommonIntygCopyFornyaSpy.fornya).toHaveBeenCalledWith(
+            expect(CommonIntygCopyActionsSpy.fornya).toHaveBeenCalledWith(
                 $scope.viewState,
                 IntygFornyaRequestInstanceMock,
                 true

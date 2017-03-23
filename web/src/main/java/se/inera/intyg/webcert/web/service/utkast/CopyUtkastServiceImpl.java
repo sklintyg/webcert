@@ -18,22 +18,24 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -54,6 +56,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -83,7 +87,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     @Qualifier("createReplacementUtkastBuilder")
-    private CopyUtkastBuilder<CreateCopyRequest> createReplacementUtkastBuilder;
+    private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
 
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
@@ -217,34 +221,35 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    /**
-     * @deprecated The functionality for "makulera & ersätt" has been deactivated in Webcert 5.1.
-     */
     @Override
     @Transactional("jpaTransactionManager")
-    public CreateNewDraftCopyResponse createReplacementCopy(CreateNewDraftCopyRequest copyRequest) {
+    public CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest replacementRequest) {
 
-        String originalIntygId = copyRequest.getOriginalIntygId();
+        String originalIntygId = replacementRequest.getOriginalIntygId();
 
         LOG.debug("Creating replacement copy of intyg '{}'", originalIntygId);
 
         try {
-            CopyUtkastBuilderResponse builderResponse;
-
-            builderResponse = buildReplacementUtkastBuilderResponse(copyRequest, originalIntygId);
+            if (intygService.isRevoked(replacementRequest.getOriginalIntygId(), replacementRequest.getTyp(),
+                    replacementRequest.isCoherentJournaling())) {
+                LOG.debug("Cannot create replacement certificate for id '{}', the certificate is revoked", originalIntygId);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                        "Can not create replacement copy - Original certificate is revoked");
+            }
+            CopyUtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
             monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
 
-            if (copyRequest.isDjupintegrerad()) {
+            if (replacementRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
+            return new CreateReplacementCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error("Module exception occured when trying to make a replacement copy of " + originalIntygId);
+            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
     }
@@ -314,18 +319,20 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return builderResponse;
     }
 
-    private CopyUtkastBuilderResponse buildReplacementUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId)
+    private CopyUtkastBuilderResponse buildReplacementUtkastBuilderResponse(CreateReplacementCopyRequest replacementCopyRequest,
+            String originalIntygId)
             throws ModuleNotFoundException, ModuleException {
 
-        Person patientDetails = updatePatientDetails(copyRequest);
+        Person patientDetails = updatePatientDetails(replacementCopyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
-                    copyRequest.isCoherentJournaling());
+            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(replacementCopyRequest, patientDetails,
+                    true,
+                    replacementCopyRequest.isCoherentJournaling());
         } else {
-            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true,
-                    copyRequest.isCoherentJournaling());
+            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(replacementCopyRequest, patientDetails, true,
+                    replacementCopyRequest.isCoherentJournaling());
         }
 
         return builderResponse;

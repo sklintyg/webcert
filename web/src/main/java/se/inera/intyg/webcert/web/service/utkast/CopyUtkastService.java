@@ -24,6 +24,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 
 public interface CopyUtkastService {
 
@@ -52,11 +54,11 @@ public interface CopyUtkastService {
     CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest);
 
     /**
-     * Create a replacement copy, which is a copy of a revoked Intyg.
+     *  Create a replacement, which is essentially a copy with a relation to the Intyg on which the replacement is based.
      *
      * @param copyRequest
-     * @return {@link CreateNewDraftCopyResponse}
+     * @return {@link CreateReplacementCopyResponse}
      */
-    CreateNewDraftCopyResponse createReplacementCopy(CreateNewDraftCopyRequest copyRequest);
+    CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest copyRequest);
 
 }

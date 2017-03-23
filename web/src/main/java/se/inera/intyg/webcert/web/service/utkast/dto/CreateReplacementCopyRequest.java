@@ -16,23 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.utkast;
+package se.inera.intyg.webcert.web.service.utkast.dto;
 
-import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.model.common.internal.Relation;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
+/**
+ * This is just a placeholder class since a replacement request is for all purposes indentical to a
+ * CreateNewDraftCopyRequest.
+ */
+public class CreateReplacementCopyRequest extends CreateNewDraftCopyRequest {
 
-@Component
-public class CreateReplacementUtkastBuilder extends AbstractUtkastBuilder<CreateReplacementCopyRequest> {
-
-    @Override
-    public Relation createRelation(CreateReplacementCopyRequest request) {
-        Relation relation = new Relation();
-        relation.setRelationIntygsId(request.getOriginalIntygId());
-        relation.setRelationKod(RelationKod.ERSATT);
-        return relation;
+    public CreateReplacementCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson,
+            boolean coherentJournaling) {
+        super(orginalIntygsId, intygsTyp, patient, hosPerson, coherentJournaling);
     }
-
 }
