@@ -1,13 +1,11 @@
 ---
-# This playbook deploys WebCert 
+# This playbook deploys WebCert
 
 - hosts: tomcat
   serial: 1
   become: yes
   environment:
     "{{ proxy_env }}"
-  vars:
-    config_version: master
 
   roles:
     - app-resources

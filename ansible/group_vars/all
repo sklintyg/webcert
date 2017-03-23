@@ -15,6 +15,7 @@ profiles: test
 # Configuration repository
 config_repository: https://github.com/sklintyg/webcert-konfiguration.git
 config_folder: "{{ inera_root }}/webcert-konfiguration"
+config_version: "master"
 gitcrypt_key_name: "git-crypt4.key"
 gitcrypt_key_file: "./{{ gitcrypt_key_name }}"
 feature_file_folder: "{{ config_folder }}/{{ environment_name }}/feature"
