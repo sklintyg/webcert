@@ -19,12 +19,8 @@
 
 package se.inera.intyg.webcert.specifications.spec.api
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-
-import org.springframework.core.io.ClassPathResource
-
 import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
+
 import static groovyx.net.http.ContentType.JSON
 
 public class StallFraga extends RestClientFixture {
@@ -36,6 +32,7 @@ public class StallFraga extends RestClientFixture {
     String frågeText
     String typ = "fk7263"
     String internReferens
+
     String internReferens() {
         internReferens
     }
@@ -43,7 +40,7 @@ public class StallFraga extends RestClientFixture {
     def execute() {
         def restClient = createRestClient("${baseUrl}testability/")
         def response = restClient.post(
-                path: "questions/skickafraga/${vardgivare}/${enhet}/${intygsId}/${typ}",
+                path: "fragasvar/skickafraga/${vardgivare}/${enhet}/${intygsId}/${typ}",
                 body: "{\"amne\":\"${ämne}\",\"frageText\":\"${frågeText}\"}",
                 requestContentType: JSON
         )

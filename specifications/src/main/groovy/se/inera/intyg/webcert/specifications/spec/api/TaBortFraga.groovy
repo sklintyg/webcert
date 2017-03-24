@@ -32,7 +32,7 @@ class TaBortFraga extends RestClientFixture {
     def response;
 
 
-    public String respons(){
+    public String respons() {
         return response.status;
     }
 
@@ -45,26 +45,26 @@ class TaBortFraga extends RestClientFixture {
     }
 
     def taBortFragaMedExternReferens(String externReferens) {
-        response = restClient.delete(path: "questions/extern/${externReferens}")
+        response = restClient.delete(path: "fragasvar/extern/${externReferens}")
     }
 
     def taBortFragaMedInternReferens(String internReferens) {
-        response = restClient.delete(path: "questions/${internReferens}")
+        response = restClient.delete(path: "fragasvar/${internReferens}")
     }
 
     def taBortFragaMedFrageText(String frageText) {
-        response = restClient.delete(path: "questions/frageText/${frageText}")
+        response = restClient.delete(path: "fragasvar/frageText/${frageText}")
     }
 
     def taBortFragaMedSvarsText(String svarsText) {
-        response = restClient.delete(path: "questions/svarsText/${svarsText}")
+        response = restClient.delete(path: "fragasvar/svarsText/${svarsText}")
     }
 
     def taBortFragorForEnhet(String enhetsId) {
-        response = restClient.delete(path: "questions/enhet/${enhetsId}")
+        response = restClient.delete(path: "fragasvar/enhet/${enhetsId}")
     }
 
     def taBortAllaFragor() {
-        response = restClient.delete(path: "questions/")
+        response = restClient.delete(path: "fragasvar/")
     }
 }

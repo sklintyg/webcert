@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.specifications.spec.api
 
-import groovyx.net.http.RESTClient
 import se.inera.intyg.webcert.specifications.spec.util.RestClientFixture
 
 /**
@@ -35,10 +34,10 @@ class FragorOchSvar extends RestClientFixture {
         def restClient = createRestClient("${baseUrl}testability/")
 
         if (internReferens)
-            fragaSvar = restClient.get(path: "questions/${internReferens}").data
+            fragaSvar = restClient.get(path: "fragasvar/${internReferens}").data
 
         if (externReferens)
-            fragaSvar = restClient.get(path: "questions/extern/${externReferens}").data
+            fragaSvar = restClient.get(path: "fragasvar/extern/${externReferens}").data
     }
 
     def finns() {

@@ -125,7 +125,7 @@ module.exports = {
     },
     deleteAllFragasvar: function() {
         var options = {
-            url: 'testability/questions/',
+            url: 'testability/fragasvar/',
             method: 'DELETE'
         };
         return restClient.run(options, 'json');

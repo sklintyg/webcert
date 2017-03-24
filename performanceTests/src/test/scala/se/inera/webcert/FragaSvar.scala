@@ -58,7 +58,7 @@ class FragaSvar extends Simulation {
           .body(StringBody("""SvarsText-${internReferens-franfk}"""))
           .headers(Headers.json))
         .exec(http("Delete incoming question")
-          .delete("/testability/questions/${internReferens-franfk}"))
+          .delete("/testability/fragasvar/${internReferens-franfk}"))
     }
     .exec(http("Logout")
       .get("/logout")
