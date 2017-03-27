@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,7 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
@@ -58,6 +61,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -66,6 +70,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private IntygService intygService;
+
+    @Autowired
+    private RelationService relationService;
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -126,6 +133,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 LOG.debug("Cannot create copy of certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
+
+            verifyNotReplaced(originalIntygId, "create copy");
 
             CopyUtkastBuilderResponse builderResponse;
 
@@ -203,6 +212,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
+            verifyNotReplaced(copyRequest.getOriginalIntygId(), "create renewal");
+
             CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
@@ -236,6 +247,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                         "Can not create replacement copy - Original certificate is revoked");
             }
+            verifyNotReplaced(replacementRequest.getOriginalIntygId(), "create replacement");
+
+
             CopyUtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
@@ -251,6 +265,17 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         } catch (ModuleException | ModuleNotFoundException me) {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
+    }
+
+    private void verifyNotReplaced(String originalIntygId, String operation) {
+        final Optional<RelationItem> replacedByRelation = relationService.getReplacedByRelation(originalIntygId);
+        if (replacedByRelation.isPresent()) {
+            String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
+                    operation, originalIntygId, replacedByRelation.get().getIntygsId());
+            LOG.debug(errorString);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    errorString);
         }
     }
 

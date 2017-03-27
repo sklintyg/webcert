@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -80,6 +81,15 @@ public class RelationServiceImpl implements RelationService {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Optional<RelationItem> getReplacedByRelation(String intygId) {
+        // Get all intyg that are (some type of) descendant of this certificate
+        List<RelationItem> descendants = getChildRelations(intygId);
+
+        // Among those, find the first that is a replacement
+        return descendants.stream().filter(r -> RelationKod.ERSATT.name().equals(r.getKod())).findFirst();
     }
 
     private boolean isAuthorized(String enhetsId) {

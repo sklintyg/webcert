@@ -145,6 +145,26 @@ public class RelationServiceImplTest {
     }
 
     @Test
+    public void testGetReplacedByRelation() {
+        //3 is replaced by 4.
+        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_3);
+        assertTrue(res.isPresent());
+
+        assertEquals(INTYGID_4, res.get().getIntygsId());
+        verify(utkastRepo, times(1)).findAllByRelationIntygsId(eq(INTYGID_3));
+    }
+
+    @Test
+    public void testGetReplacedByRelationNone() {
+        //4 is not replaced by anything.
+        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_4);
+        assertFalse(res.isPresent());
+
+
+        verify(utkastRepo, times(1)).findAllByRelationIntygsId(eq(INTYGID_4));
+    }
+
+    @Test
     public void testGetChildRelationsNone() {
         List<RelationItem> res = relationService.getChildRelations(INTYGID_4);
         assertNotNull(res);

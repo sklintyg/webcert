@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
@@ -58,6 +59,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -81,6 +83,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
         assertEquals(IntygServiceResult.OK, res);
@@ -110,6 +113,26 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verifyZeroInteractions(logService);
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testSendIntygFailsForReplacedCertificate() throws Exception {
+        WebCertUser webCertUser = createUser();
+
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+        RelationItem ersattRelation = new RelationItem("ersattnings-intyg-id", "SIGNED", null);
+        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.of(ersattRelation));
+
+        CertificateMetaData metaData = new CertificateMetaData();
+        metaData.setStatus(new ArrayList<>());
+
+        CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
+        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
+
+        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
+        verifyZeroInteractions(logService);
+    }
+
     @Test
     public void testSendIntygCompletion() throws Exception {
         final String completionMeddelandeId = "meddelandeId";
@@ -122,8 +145,9 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().setRelation(new Relation());
         completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(completionUtlatande);
+
+        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
         assertEquals(IntygServiceResult.OK, res);
@@ -144,6 +168,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
         assertEquals(IntygServiceResult.OK, res);

@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.intyg;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -300,16 +301,19 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygDataWithRelation() throws Exception {
         when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
         assertNotNull(res);
         assertNotNull(res.getRelations());
+        assertNull(res.getReplacedByRelation());
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
     }
 
     @Test
@@ -318,6 +322,7 @@ public class IntygServiceTest {
         when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
         when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
@@ -329,6 +334,7 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
     }
 
     @Test
@@ -337,6 +343,7 @@ public class IntygServiceTest {
         when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
         when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
@@ -348,6 +355,7 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
     }
 
     @Test
@@ -701,6 +709,7 @@ public class IntygServiceTest {
 
         when(intygRepository.findOne(intygId)).thenReturn(utkast);
         when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
+        when(relationService.getReplacedByRelation(eq(intygId))).thenReturn(Optional.empty());
 
         intygService.handleSignedCompletion(utkast, recipient);
 

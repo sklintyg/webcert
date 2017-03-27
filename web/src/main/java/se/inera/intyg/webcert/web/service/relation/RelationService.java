@@ -53,4 +53,12 @@ public interface RelationService {
      * @return a list of all the utkast/intyg which has a relation to <code>intygsId</code>
      */
     Optional<List<RelationItem>> getRelations(String intygsId);
+
+    /**
+     * Optionally return the latest replacement relation for the given intygsId for the supplied relations.
+     * @param intygId
+     * @return
+     */
+    Optional<RelationItem> getReplacedByRelation(String intygId);
+
 }

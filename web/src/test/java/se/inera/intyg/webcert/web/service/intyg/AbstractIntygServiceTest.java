@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.relation.RelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -83,6 +84,9 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
     @Mock
     protected MonitoringLogService monitoringService;
+
+    @Mock
+    protected RelationService relationService;
 
     @Mock
     protected CertificateSenderService certificateSenderService;

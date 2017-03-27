@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -337,6 +338,8 @@ public class IntygServiceImpl implements IntygService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is revoked");
         }
 
+        verifyNotReplaced(intygsId, "send");
+
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, webCertUserService.getUser());
 
         monitoringService.logIntygSent(intygsId, recipient);
@@ -349,6 +352,17 @@ public class IntygServiceImpl implements IntygService {
         markUtkastWithSendDateAndRecipient(intygsId, recipient);
 
         return sendIntygToCertificateSender(sendConfig, intyg);
+    }
+
+    private void verifyNotReplaced(String intygsId, String operation) {
+        final Optional<RelationItem> replacedByRelation = relationService.getReplacedByRelation(intygsId);
+        if (replacedByRelation.isPresent()) {
+            String errorString = String.format("Cannot %s certificate '%s', the certificate is replaced by certificate '%s'",
+                    operation, intygsId, replacedByRelation.get().getIntygsId());
+            LOG.debug(errorString);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    errorString);
+        }
     }
 
     /*
@@ -514,11 +528,17 @@ public class IntygServiceImpl implements IntygService {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
+            List<RelationItem> relationsList = null;
+            Optional<RelationItem> replacedByRelation = Optional.empty();
+            if (relations) {
+                relationsList = relationService.getRelations(intygId).orElse(
+                        RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name()));
+                replacedByRelation = relationService.getReplacedByRelation(intygId);
+            }
             return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), certificate.getMetaData().getStatus(),
                     certificate.isRevoked(),
-                    relations ? relationService.getRelations(intygId).orElse(
-                            RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name()))
-                            : null,
+                    relationsList,
+                    replacedByRelation.isPresent() ? replacedByRelation.get() : null,
                     isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()));
 
         } catch (IntygModuleFacadeException me) {
@@ -554,8 +574,15 @@ public class IntygServiceImpl implements IntygService {
     private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
         Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
+        List<RelationItem> relationsList = null;
+        Optional<RelationItem> replacedByRelation = Optional.empty();
+        if (relations) {
+            relationsList = relationService.getRelations(utkast.getIntygsId()).orElse(RelationItem.createBaseCase(utkast));
+            replacedByRelation = relationService.getReplacedByRelation(utkast.getIntygsId());
+        }
         return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null,
-                relations ? relationService.getRelations(utkast.getIntygsId()).orElse(RelationItem.createBaseCase(utkast)) : null,
+                relationsList,
+                replacedByRelation.isPresent() ? replacedByRelation.get() : null,
                 isDeceased(utkast.getPatientPersonnummer()));
     }
 
