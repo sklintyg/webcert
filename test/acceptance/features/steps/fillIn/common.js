@@ -23,12 +23,12 @@
 var utkastPage;
 module.exports = {
     fillInEnhetAdress: function() {
-        return utkastPage.angeEnhetAdress(global.user.enhetsAdress);
-        // .then(function() {
-        //     logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
-        // }, function(reason) {
-        //     throw ('FEL, angeEnhetAdress,' + reason);
-        // });
+        return utkastPage.angeEnhetAdress(global.user.enhetsAdress)
+            .then(function() {
+                logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
+            }, function(reason) {
+                throw ('FEL, angeEnhetAdress,' + reason);
+            });
     },
     setPatientAdressIfNotGiven: function() {
         var isFk7263 = global.intyg.typ.indexOf('7263') >= 0;
@@ -40,7 +40,7 @@ module.exports = {
                 throw ('FEL, setPatientAdress,' + reason);
             });
         } else {
-            logger.info('Ingen adress ändras');
+            logger.info('Ingen patientadress ändras');
             if (!isFk7263 && global.user.origin !== 'DJUPINTEGRATION') {
                 global.person.adress = {};
                 return Promise.all([

@@ -32,7 +32,7 @@ module.exports = {
             .then(function(value) {
                 logger.info('Baseras på: ' + JSON.stringify(intyg.baseratPa));
             }, function(reason) {
-                return Promise.reject('FEL, Baseras på: ' + reason);
+                throw ('FEL, Baseras på: ' + reason);
             })
         );
 
@@ -42,7 +42,7 @@ module.exports = {
             .then(function(value) {
                 logger.info('Andra medicinska utredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
             }, function(reason) {
-                return Promise.reject('FEL, Andra medicinska utredningar: ' + reason);
+                throw ('FEL, Andra medicinska utredningar: ' + reason);
             })
         );
 
@@ -51,7 +51,7 @@ module.exports = {
         //     .then(function(value) {
         //         logger.info('Sjukdomsförlopp: ' + JSON.stringify(intyg.sjukdomsForlopp));
         //     }, function(reason) {
-        //         return Promise.reject('FEL, Sjukdomsförlopp: ' + reason);
+        //         throw('FEL, Sjukdomsförlopp: ' + reason);
         //     })
         // );
 
@@ -60,7 +60,7 @@ module.exports = {
             .then(function(value) {
                 logger.info('Diagnos: ' + JSON.stringify(intyg.diagnos));
             }, function(reason) {
-                return Promise.reject('FEL, Diagnos: ' + reason);
+                throw ('FEL, Diagnos: ' + reason);
             })
         );
 
@@ -69,7 +69,7 @@ module.exports = {
             .then(function(value) {
                 logger.info('Funktionsnedsättning: ' + JSON.stringify(intyg.funktionsnedsattning));
             }, function(reason) {
-                return Promise.reject('FEL, Funktionsnedsättning: ' + reason);
+                throw ('FEL, Funktionsnedsättning: ' + reason);
             })
         );
 
@@ -78,7 +78,7 @@ module.exports = {
         //     .then(function(value) {
         //         logger.info('Aktivitetsbegränsning: ' + JSON.stringify(intyg.aktivitetsbegransning));
         //     }, function(reason) {
-        //         return Promise.reject('FEL, Aktivitetsbegränsning: ' + reason);
+        //         throw('FEL, Aktivitetsbegränsning: ' + reason);
         //     })
         // );
         //
@@ -87,7 +87,7 @@ module.exports = {
         //     .then(function(value) {
         //         logger.info('Medicinsk behandling: ' + JSON.stringify(intyg.medicinskbehandling));
         //     }, function(reason) {
-        //         return Promise.reject('FEL, Medicinsk behandling: ' + reason);
+        //         throw('FEL, Medicinsk behandling: ' + reason);
         //     })
         // );
         //
@@ -96,7 +96,7 @@ module.exports = {
         //     .then(function(value) {
         //         logger.info('Medicinska förutsättningar: ' + JSON.stringify(intyg.medicinskaForutsattningar));
         //     }, function(reason) {
-        //         return Promise.reject('FEL, Medicinska förutsättningar: ' + reason);
+        //         throw('FEL, Medicinska förutsättningar: ' + reason);
         //     })
         // );
         //
@@ -105,7 +105,7 @@ module.exports = {
             .then(function(value) {
                 logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.ovrigt));
             }, function(reason) {
-                return Promise.reject('FEL, Övriga upplysningar: ' + reason);
+                throw ('FEL, Övriga upplysningar: ' + reason);
             })
         );
 
@@ -114,7 +114,7 @@ module.exports = {
             .then(function(value) {
                 logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.kontaktMedFk));
             }, function(reason) {
-                return Promise.reject('FEL, Övriga upplysningar: ' + reason);
+                throw ('FEL, Övriga upplysningar: ' + reason);
             })
         );
         browser.sleep(30000);

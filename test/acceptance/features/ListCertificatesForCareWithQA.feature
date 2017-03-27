@@ -77,7 +77,7 @@ Scenario: Hämta fråga/svar händelser för frågor från FK
 
     Och jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten
     Så ska responsen visa mottagna frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
-    Och ska responsen visa skickade frågor totalt o,ej besvarade 0,besvarade 1, hanterade 0
+    Och ska responsen visa skickade frågor totalt 0,ej besvarade 0,besvarade 1, hanterade 0
 
     När jag går in på intygsutkastet via djupintegrationslänk
     Och jag svarar på frågan

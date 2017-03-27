@@ -32,18 +32,20 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-force-task');
     grunt.loadNpmTasks('grunt-contrib-clean');
 
-    var devSuite = grunt.option('suite') || 'app';
     grunt.initConfig({
         clean: {
+            options: {
+                force: true
+            },
             json: ['node_modules/common-testtools/cucumber-html-report/*.json'],
             png: ['node_modules/common-testtools/cucumber-html-report/*.png']
         },
         jshint: {
             acc: [
-                'acceptance/features/steps/*.js',
-                'acceptance/features/steps/**/*.js' //,
-                //'webcertTestTools/**/*.js',
-                //'webcertTestTools/*.js'
+                'features/steps/*.js',
+                'features/steps/**/*.js' //,
+                //'../webcertTestTools/**/*.js',
+                //'../webcertTestTools/*.js'
             ],
             options: {
                 force: false,
@@ -53,8 +55,8 @@ module.exports = function(grunt) {
         jsbeautifier: {
             verify: {
                 src: [
-                    'acceptance/features/steps/*.js',
-                    'acceptance/features/steps/**/*.js' //,
+                    'features/steps/*.js',
+                    'features/steps/**/*.js' //,
                     //'webcertTestTools/**/*.js',
                     //'webcertTestTools/*.js'
                 ],
@@ -65,10 +67,10 @@ module.exports = function(grunt) {
             },
             modify: {
                 src: [
-                    'acceptance/features/steps/*.js',
-                    'acceptance/features/steps/**/*.js',
-                    'webcertTestTools/**/*.js',
-                    'webcertTestTools/*.js'
+                    'features/steps/*.js',
+                    'features/steps/**/*.js' //,
+                    // '../webcertTestTools/**/*.js',
+                    // '../webcertTestTools/*.js'
                 ],
                 options: {
                     mode: 'VERIFY_AND_WRITE',
@@ -246,7 +248,7 @@ module.exports = function(grunt) {
                     var fileText = grunt.file.read(filePath);
 
                     tagsArray.forEach(function(currentTag) {
-                        if (fileText.indexOf(currentTag) > -1 && featureFiles.indexOf(filePath) == -1) {
+                        if (fileText.indexOf(currentTag) > -1 && featureFiles.indexOf(filePath) === -1) {
                             featureFiles.push(filePath);
                         }
                     });

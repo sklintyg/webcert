@@ -41,7 +41,7 @@ function getIntygEntries(intygsID) {
     return p1;
 }
 
-function deleteEntries(diagnosKod) {
+/*function deleteEntries(diagnosKod) {
     var bdName = process.env.STAT_DATABASE_NAME;
     var dbTable = bdName + '.wideline';
     var column = 'diagnoskategori';
@@ -58,7 +58,7 @@ function deleteEntries(diagnosKod) {
             });
     });
     return p1;
-}
+}*/
 
 function lookUp(count, intygsID, cb) {
     handleDisconnect();

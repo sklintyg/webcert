@@ -33,13 +33,13 @@ var restAPIOptions = {
         'Content-Length': Buffer.byteLength('')
     },
     body: ''
-}
+};
 
 global.statistik = {
     diagnosKod: 'Z76',
     nrOfSjukfall: 0,
     intygsId: ''
-}
+};
 
 module.exports = function() {
 
