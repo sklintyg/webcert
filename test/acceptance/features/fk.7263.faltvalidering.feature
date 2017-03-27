@@ -22,7 +22,7 @@ Exempel:
  	| intygsTyp                     |	 typAvFält		     	| feltext       				    | fältet	| meddelande |
     |"Läkarintyg FK 7263"	|	"UndersökningsDatum"	| "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"			| "Intyget baseras på" |  "Utkastet är sparat, men obligatoriska uppgifter saknas." |
 
-Scenario: Validera att meddelande visas angående vad intyget saknar
+Scenario: Meddelanden visas när obligatoriska fält inte är ifyllda
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag klickar på signera-knappen
 	Så ska jag se en rubrik med texten "Utkastet saknar uppgifter i följande avsnitt"
@@ -55,7 +55,7 @@ Scenario: Validera att meddelande visas angående vad intyget saknar
 	Och jag signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 
-Scenario: Validera att intyget inte kan signeras utan fält 4b Text för Annat
+Scenario: Intyget kan inte signeras utan fält 4b Text för Annat
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i ett intyg som inte är smitta
 	När jag raderar fältet "Annat Intyget Baseras på" fältet
@@ -63,10 +63,18 @@ Scenario: Validera att intyget inte kan signeras utan fält 4b Text för Annat
 	Så ska valideringsfelet "Intyget baseras på" visas
 	Så ska valideringsfelet "Fältet får inte vara tomt" visas
 
-Scenario: Validera att intyget inte kan signeras utan förtydligande om Går ej att bedöma är ifyllt
+Scenario: Intyget kan inte signeras utan förtydligande om Går ej att bedöma är ifyllt
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i ett intyg som inte är smitta
 	Och jag kryssar i Prognos Går ej att bedöma utan beskrivning	
 	Och jag klickar på signera-knappen
 	Så ska valideringsfelet "Prognos" visas
 	Så ska valideringsfelet "Fältet får inte vara tomt" visas
+
+@INTYG-3760
+Scenario: Intyget kan inte signeras om slut är före startdatum
+	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och anger ett slutdatum som är tidigare än startdatum
+	Och jag klickar på signera-knappen
+	Så ska valideringsfelet "Startdatum får inte vara efter slutdatum." visas

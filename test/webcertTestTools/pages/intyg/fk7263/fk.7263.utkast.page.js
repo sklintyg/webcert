@@ -277,26 +277,35 @@ var FkUtkast = BaseUtkast._extend({
     },
     angeArbetsformaga: function(arbetsformaga) {
 
-        var promisesArr = [];
+        var promisesArr = [
+            this.nedsatt.med25.from.clear(),
+            this.nedsatt.med25.tom.clear(),
+            this.nedsatt.med50.from.clear(),
+            this.nedsatt.med50.tom.clear(),
+            this.nedsatt.med75.from.clear(),
+            this.nedsatt.med75.tom.clear(),
+            this.nedsatt.med100.from.clear(),
+            this.nedsatt.med100.tom.clear()
+        ];
         if (arbetsformaga.nedsattMed25) {
             // this.nedsatt.med25.checkbox.click();
-            promisesArr.push(this.nedsatt.med25.from.clear().sendKeys(arbetsformaga.nedsattMed25.from));
-            promisesArr.push(this.nedsatt.med25.tom.clear().sendKeys(arbetsformaga.nedsattMed25.tom));
+            promisesArr.push(this.nedsatt.med25.from.sendKeys(arbetsformaga.nedsattMed25.from));
+            promisesArr.push(this.nedsatt.med25.tom.sendKeys(arbetsformaga.nedsattMed25.tom));
         }
         if (arbetsformaga.nedsattMed50) {
             // this.nedsatt.med50.checkbox.click();
-            promisesArr.push(this.nedsatt.med50.from.clear().sendKeys(arbetsformaga.nedsattMed50.from));
-            promisesArr.push(this.nedsatt.med50.tom.clear().sendKeys(arbetsformaga.nedsattMed50.tom));
+            promisesArr.push(this.nedsatt.med50.from.sendKeys(arbetsformaga.nedsattMed50.from));
+            promisesArr.push(this.nedsatt.med50.tom.sendKeys(arbetsformaga.nedsattMed50.tom));
         }
         if (arbetsformaga.nedsattMed75) {
             // this.nedsatt.med75.checkbox.click();
-            promisesArr.push(this.nedsatt.med75.from.clear().sendKeys(arbetsformaga.nedsattMed75.from));
-            promisesArr.push(this.nedsatt.med75.tom.clear().sendKeys(arbetsformaga.nedsattMed75.tom));
+            promisesArr.push(this.nedsatt.med75.from.sendKeys(arbetsformaga.nedsattMed75.from));
+            promisesArr.push(this.nedsatt.med75.tom.sendKeys(arbetsformaga.nedsattMed75.tom));
         }
         if (arbetsformaga.nedsattMed100) {
             // this.nedsatt.med100.checkbox.click();
-            promisesArr.push(this.nedsatt.med100.from.clear().sendKeys(arbetsformaga.nedsattMed100.from));
-            promisesArr.push(this.nedsatt.med100.tom.clear().sendKeys(arbetsformaga.nedsattMed100.tom));
+            promisesArr.push(this.nedsatt.med100.from.sendKeys(arbetsformaga.nedsattMed100.from));
+            promisesArr.push(this.nedsatt.med100.tom.sendKeys(arbetsformaga.nedsattMed100.tom));
         }
         return Promise.all(promisesArr);
     },

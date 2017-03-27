@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,wcTestTools, protractor, browser,testdata*/
+/*global intyg,wcTestTools, protractor, browser,testdata,pages*/
 
 'use strict';
 
@@ -30,6 +30,7 @@ var luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
+var shuffle = wcTestTools.helpers.testdata.shuffle;
 
 var td = wcTestTools.testdata;
 var fkValues = wcTestTools.testdata.values.fk;
@@ -247,6 +248,17 @@ module.exports = function() {
             console.log(intyg);
             return fillIn(global.intyg);
         }
+    });
+
+    this.When(/^anger ett slutdatum som är tidigare än startdatum$/, function() {
+        var nedsatthet = shuffle(['nedsattMed25', 'nedsattMed50', 'nedsattMed75', 'nedsattMed100'])[0];
+        console.log('nedsatthet:' + nedsatthet);
+        global.intyg.arbetsformaga = {};
+        global.intyg.arbetsformaga[nedsatthet] = {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        };
+        return pages.intyg.fk['7263'].utkast.angeArbetsformaga(intyg.arbetsformaga);
     });
 
 
