@@ -33,6 +33,7 @@ exports.config = {
 
     // path relative to the current config file
     frameworkPath: require.resolve('protractor-cucumber-framework'),
+    ignoreUncaughtExceptions: true,
     specs: [
         'features/*.feature'
     ],
