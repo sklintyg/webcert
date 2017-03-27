@@ -22,6 +22,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -73,6 +74,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
@@ -424,6 +427,70 @@ public class IntygModuleApiControllerTest {
         }
     }
 
+    @Test
+    public void testReplaceIntyg() {
+        final String personnummer = "191212121212";
+        final String newIntygId = "newIntygId";
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+
+        WebCertUser user = new WebCertUser();
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
+        user.setOrigin("NORMAL");
+
+        ArgumentCaptor<CreateReplacementCopyRequest> captor = ArgumentCaptor.forClass(CreateReplacementCopyRequest.class);
+        when(copyUtkastService.createReplacementCopy(captor.capture())).thenReturn(new CreateReplacementCopyResponse(CERTIFICATE_TYPE, newIntygId, CERTIFICATE_ID));
+        when(webcertUserService.getUser()).thenReturn(user);
+
+        Response response = moduleApiController.createReplacement(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+
+        verify(copyUtkastService).createReplacementCopy(any());
+        verifyNoMoreInteractions(copyUtkastService);
+        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
+    }
+
+    @Test(expected = AuthoritiesException.class)
+    public void testReplaceIntygWithInvalidOrigin() {
+        final String personnummer = "191212121212";
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+
+        WebCertUser user = new WebCertUser();
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
+        user.setOrigin("UTHOPP");
+
+        when(webcertUserService.getUser()).thenReturn(user);
+        try {
+            moduleApiController.createReplacement(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+            fail("Expected exception!");
+        } finally {
+            verifyZeroInteractions(copyUtkastService);
+        }
+
+    }
+
+    @Test(expected = AuthoritiesException.class)
+    public void testReplaceIntygWithInvalidPriviledge() {
+        final String personnummer = "191212121212";
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+
+        WebCertUser user = new WebCertUser();
+        user.setOrigin("NORMAL");
+
+        when(webcertUserService.getUser()).thenReturn(user);
+        try {
+            moduleApiController.createReplacement(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+            fail("Expected exception!");
+        } finally {
+            verifyZeroInteractions(copyUtkastService);
+        }
+
+    }
     @Test
     public void testCreateNewCompletion() {
         final String personnummer = "191212121212";

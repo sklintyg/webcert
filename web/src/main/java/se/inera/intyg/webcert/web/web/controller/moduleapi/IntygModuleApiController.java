@@ -333,8 +333,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createReplacement(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
                                   @PathParam("intygsId") String orgIntygsId) {
-        //Att: check for new ERSATT priviledge
-        validateCopyAuthority(intygsTyp);
+        validateReplaceAuthority(intygsTyp);
 
         LOG.debug("Attempting to create a replacement of {} with id '{}'", intygsTyp, orgIntygsId);
 
@@ -480,6 +479,13 @@ public class IntygModuleApiController extends AbstractApiController {
                 .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
                 .orThrow();
     }
+
+    private void validateReplaceAuthority(String intygsTyp) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .privilege(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG)
+                .orThrow();
+    }
+
 
     private void validateCopyAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
