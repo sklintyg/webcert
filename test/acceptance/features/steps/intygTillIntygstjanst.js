@@ -39,8 +39,44 @@
 
      if (isSMIIntyg) {
          console.log('is isSMIIntyg');
-         throw ('Saknar funktion för SMI-intyg');
+         url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/register-certificate-se/v2.0?wsdl';
+         url = url.replace('https', 'http');
+         body = soapMessageBodies.RegisterCertificate(
+             global.person.id,
+             global.person.fornamn,
+             global.person.efternamn,
+             global.user.hsaId,
+             global.user.fornamn + ' ' + global.user.efternamn,
+             global.user.global.user.enhetId,
+             global.user.enhetName,
+             global.intyg.id);
+         console.log(url);
+         console.log(body);
+         soap.createClient(url, function(err, client) {
+             if (err) {
+                 callback(err);
+             }
+             console.log(client);
+             client.RegisterCertificate(body, function(err, result, body) {
+                 console.log(err);
+                 console.log(result);
+                 var resultcodeSMI = result.result.resultCode;
+                 logger.info('ResultCode: ' + resultcodeSMI);
+                 if (resultcodeSMI !== 'OK') {
+                     logger.info(result);
+                     callback('ResultCode: ' + resultcodeSMI + '\n' + body);
+                 } else {
+                     callback();
+                 }
+                 if (err) {
+                     callback(err);
+                 } else {
+                     callback();
+                 }
+             });
+         });
      } else {
+
          url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/register-certificate/v3.0?wsdl';
          url = url.replace('https', 'http');
          //function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId)
@@ -53,7 +89,9 @@
              global.user.enhetId,
              global.user.enhetId,
              global.intyg.id);
+
          console.log(body);
+
          soap.createClient(url, function(err, client) {
              if (err) {
                  callback(err);
@@ -103,5 +141,16 @@
          console.log(global.intyg);
          intygTillIntygtjanst('Läkarintyg FK 7263', callback);
      });
+     this.When(/^jag skickar ett SMI\-intyg till intygstjänsten på en avliden person$/, function(callback) {
+         global.intyg.id = testdataHelper.generateTestGuid();
+         global.person = testdataHelper.shuffle(testvalues.patienterAvlidna)[0];
+         global.person.fornamn = 'Fornamn';
+         global.person.efternamn = 'Efternamn';
+         console.log(global.intyg);
+         intygTillIntygtjanst('Läkarutlåtande för sjukersättning', callback);
+
+
+     });
+
 
  };

@@ -105,7 +105,7 @@ module.exports = function() {
         if (intyg && intyg.typ) {
             usingCreateDraft2 = helpers.isSMIIntyg(intyg.typ) || helpers.isTSIntyg(intyg.typ);
         }
-        if (intygstyp === 'intygsutkastet' && origin === ' via djupintegrationslänk') {
+        if (origin === ' via djupintegrationslänk') {
             if (usingCreateDraft2) {
 
                 if (!person.adress) {
@@ -116,16 +116,19 @@ module.exports = function() {
 
                     };
                 }
-
-                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+                var intygShortCode = helpers.getAbbrev(intyg.typ);
+                intygShortCode = intygShortCode.toLowerCase();
+                console.log(intygShortCode);
+                url = process.env.WEBCERT_URL + 'visa/intyg/';
+                url = url + intygShortCode + '/' + global.intyg.id;
                 url = url + '?';
                 url += 'fornamn=' + encodeURIComponent(person.fornamn) + '&';
                 url += 'efternamn=' + encodeURIComponent(person.efternamn) + '&';
                 url += 'postadress=' + encodeURIComponent(person.adress.postadress) + '&';
                 url += 'postnummer=' + encodeURIComponent(person.adress.postnummer) + '&';
                 url += 'postort=' + encodeURIComponent(person.adress.postort) + '&';
-                url += 'ref=testref&';
                 url += 'enhet=' + global.user.enhetId + '&';
+
 
             } else {
                 url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
@@ -178,6 +181,10 @@ module.exports = function() {
 
         });
     }
+    this.When(/^jag går in på intyget via djupintegrationslänk och har parametern "([^"]*)" satt till "([^"]*)"$/, function(param, paramValue) {
+        return gotoIntyg('intyget', ' via djupintegrationslänk', param + '=' + paramValue);
+
+    });
 
 
     this.Given(/^ska jag gå in på intyget med en extra "([^"]*)" parametrar med värdet "([^"]*)"$/, function(param, paramValue) {
