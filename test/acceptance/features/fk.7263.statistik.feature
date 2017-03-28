@@ -35,7 +35,7 @@ Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
     Och jag går in på intyget som tidigare skapats
     Och jag makulerar intyget
-    Och radera de intyg som har diagnoskod "Z76" från wideline tabellen i statitikdatabasen
+    #Och radera de intyg som har diagnoskod "Z76" från wideline tabellen i statitikdatabasen
     Och jag anropar statitisk-APIet processIntyg
 
     När jag går in på Statistiktjänsten
