@@ -57,6 +57,10 @@ var BaseIntyg = JClass._extend({
             button: element(by.id('fornyaBtn')),
             dialogConfirmButton: element(by.id('button1fornya-dialog'))
         };
+        this.replace = {
+            button: element(by.id('ersattBtn')),
+            dialogConfirmButton: element(by.id('button1ersatt-dialog'))
+        };
         this.copyBtn = element(by.css('.btn.btn-info'));
         this.backBtn = element(by.id('tillbakaButton'));
 
@@ -150,6 +154,12 @@ var BaseIntyg = JClass._extend({
         return this.skicka.knapp.click().then(function() {
             return self.skicka.dialogKnapp.click();
         });
+    },
+    replaceBtn: function() {
+        return this.replace.button;
+    },
+    replaceDialogConfirmBtn: function() {
+        return this.replace.dialogConfirmButton;
     },
     copyBtn: function() {
         return this.copy.button;
