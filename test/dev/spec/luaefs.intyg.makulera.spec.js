@@ -55,7 +55,6 @@ describe('Validera makulering av luae_fs Intyg', function() {
             expect(IntygPage.makulera.dialogMakulera.isDisplayed()).toBeTruthy();
 
             IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
-            expect(IntygPage.makulera.dialogMakulera.isPresent()).toBeFalsy();
         });
 
         it('check intyg is makulerat', function() {
