@@ -63,16 +63,21 @@
          // Bedöming Arbetsförmåga
          promiseArr.push(lisjpUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function() {
              logger.info('OK - angeArbetsformaga');
+
+             //Arbetstidsförläggning
+             return lisjpUtkastPage.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
+                 logger.info('OK - angeArbetstidsforlaggning');
+             }, function(reason) {
+                 throw ('FEL, angeArbetstidsforlaggning,' + reason);
+             });
+
+
          }, function(reason) {
              throw ('FEL, angeArbetsformaga,' + reason);
          }));
 
-         //Arbetstidsförläggning
-         promiseArr.push(lisjpUtkastPage.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
-             logger.info('OK - angeArbetstidsforlaggning');
-         }, function(reason) {
-             throw ('FEL, angeArbetstidsforlaggning,' + reason);
-         }));
+
+
 
 
          //Trots FMB

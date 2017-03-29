@@ -30,12 +30,16 @@ Exempel:
     |intygKod   | 	intyg 																|
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
 
+@lisjp
+Exempel:
+    |intygKod   | 	intyg 																|
+    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
+
 @fksmoke
 Exempel:
     |intygKod   | 	intyg                                                               |
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
-    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @minaintyg @keepIntyg @intygTillFK @skicka
 Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan

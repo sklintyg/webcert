@@ -251,6 +251,7 @@ module.exports = function() {
     });
 
     this.When(/^anger ett slutdatum som är tidigare än startdatum$/, function() {
+        var utkastPage = pages.getUtkastPageByType(intyg.typ);
         var nedsatthet = shuffle(['nedsattMed25', 'nedsattMed50', 'nedsattMed75', 'nedsattMed100'])[0];
         console.log('nedsatthet:' + nedsatthet);
         global.intyg.arbetsformaga = {};
@@ -258,7 +259,7 @@ module.exports = function() {
             from: '2017-03-27',
             tom: '2016-04-01'
         };
-        return pages.intyg.fk['7263'].utkast.angeArbetsformaga(intyg.arbetsformaga);
+        return utkastPage.angeArbetsformaga(intyg.arbetsformaga);
     });
 
 

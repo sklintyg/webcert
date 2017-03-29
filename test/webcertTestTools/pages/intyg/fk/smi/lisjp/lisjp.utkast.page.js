@@ -177,41 +177,54 @@ var LisuUtkast = BaseSmiUtkast._extend({
         return Promise.all(promisesArr);
     },
     angeArbetsformaga: function(arbetsformaga) {
-        var promisesArr = [];
+        var el25 = this.sjukskrivning['25'];
+        var el50 = this.sjukskrivning['50'];
+        var el75 = this.sjukskrivning['75'];
+        var el100 = this.sjukskrivning['100'];
 
-        if (arbetsformaga.nedsattMed25) {
-            var el25 = this.sjukskrivning['25'];
-            promisesArr.push(el25.fran.sendKeys(arbetsformaga.nedsattMed25.from)
-                .then(function() {
-                    return el25.till.sendKeys(arbetsformaga.nedsattMed25.tom);
 
-                })
-            );
-        }
-        if (arbetsformaga.nedsattMed50) {
-            var el50 = this.sjukskrivning['50'];
-            promisesArr.push(el50.fran.sendKeys(arbetsformaga.nedsattMed50.from)
-                .then(function() {
-                    return el50.till.sendKeys(arbetsformaga.nedsattMed50.tom);
-                })
-            );
-        }
-        if (arbetsformaga.nedsattMed75) {
-            var el75 = this.sjukskrivning['75'];
-            promisesArr.push(el75.fran.sendKeys(arbetsformaga.nedsattMed75.from)
-                .then(function() {
-                    return el75.till.sendKeys(arbetsformaga.nedsattMed75.tom);
-                }));
-        }
-        if (arbetsformaga.nedsattMed100) {
-            var el100 = this.sjukskrivning['100'];
-            promisesArr.push(el100.fran.sendKeys(arbetsformaga.nedsattMed100.from)
-                .then(function() {
-                    return el100.till.sendKeys(arbetsformaga.nedsattMed100.tom);
-                })
-            );
-        }
-        return Promise.all(promisesArr);
+        return Promise.all([
+            el25.fran.clear(),
+            el50.fran.clear(),
+            el75.fran.clear(),
+            el100.fran.clear(),
+            el25.till.clear(),
+            el50.till.clear(),
+            el75.till.clear(),
+            el100.till.clear()
+        ]).then(function() {
+            var promisesArr = [];
+
+            if (arbetsformaga.nedsattMed25) {
+                promisesArr.push(el25.fran.sendKeys(arbetsformaga.nedsattMed25.from)
+                    .then(function() {
+                        return el25.till.sendKeys(arbetsformaga.nedsattMed25.tom);
+
+                    })
+                );
+            }
+            if (arbetsformaga.nedsattMed50) {
+                promisesArr.push(el50.fran.sendKeys(arbetsformaga.nedsattMed50.from)
+                    .then(function() {
+                        return el50.till.sendKeys(arbetsformaga.nedsattMed50.tom);
+                    })
+                );
+            }
+            if (arbetsformaga.nedsattMed75) {
+                promisesArr.push(el75.fran.sendKeys(arbetsformaga.nedsattMed75.from)
+                    .then(function() {
+                        return el75.till.sendKeys(arbetsformaga.nedsattMed75.tom);
+                    }));
+            }
+            if (arbetsformaga.nedsattMed100) {
+                promisesArr.push(el100.fran.sendKeys(arbetsformaga.nedsattMed100.from)
+                    .then(function() {
+                        return el100.till.sendKeys(arbetsformaga.nedsattMed100.tom);
+                    })
+                );
+            }
+            return Promise.all(promisesArr);
+        });
     },
     angeResorTillArbete: function(resor) {
         if (resor) {
