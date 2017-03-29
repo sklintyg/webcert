@@ -27,7 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
+import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @Component
@@ -59,7 +62,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
 
         String utkastJson = utkast.getModel();
 
-        if (SchemaVersion.VERSION_2 == version) {
+        if (SchemaVersion.VERSION_3 == version) {
             Pair<ArendeCount, ArendeCount> arenden = Pair.of(ArendeCount.getEmpty(), ArendeCount.getEmpty());
 
             // Add a count of questions to the message

@@ -37,9 +37,9 @@
       serviceClass="se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface"
       address="${sendanswertofk.endpoint.url}" />
 
-    <jaxws:client id="listCertificatesForCareResponderV2"
-      serviceClass="se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v2.ListCertificatesForCareResponderInterface"
-      address="${intygstjanst.listcertificatesforcare.v2.endpoint.url}" />
+    <jaxws:client id="listCertificatesForCareResponderV3"
+      serviceClass="se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface"
+      address="${intygstjanst.listcertificatesforcare.v3.endpoint.url}" />
 
     <jaxws:client id="sendCertificateClient"
       serviceClass="se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface"
@@ -75,7 +75,7 @@
     </jaxws:client>
 
     <jaxws:client id="getCertificateClient"
-        serviceClass="se.riv.clinicalprocess.healthcond.certificate.getCertificate.v1.GetCertificateResponderInterface"
+        serviceClass="se.riv.clinicalprocess.healthcond.certificate.getCertificate.v2.GetCertificateResponderInterface"
         address="${intygstjanst.getcertificate.endpoint.url}">
     </jaxws:client>
   </beans>

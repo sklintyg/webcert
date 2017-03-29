@@ -18,36 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import org.apache.camel.Message;
-import org.apache.camel.impl.DefaultMessage;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.v2.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Vardgivare;
-
-import java.time.LocalDateTime;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -56,6 +26,37 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+
+import org.apache.camel.Message;
+import org.apache.camel.impl.DefaultMessage;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
+import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationTransformerTest {
@@ -131,7 +132,7 @@ public class NotificationTransformerTest {
     @Test
     public void testSchemaVersion2Transformation() throws Exception {
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", null, ArendeCount.getEmpty(), ArendeCount.getEmpty(), SchemaVersion.VERSION_2, "ref");
+                LOGISK_ADRESS, "{ }", null, ArendeCount.getEmpty(), ArendeCount.getEmpty(), SchemaVersion.VERSION_3, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -153,17 +154,17 @@ public class NotificationTransformerTest {
         transformer.process(message);
 
         assertEquals(INTYGS_ID,
-                ((se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType) message
+                ((se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType) message
                         .getBody()).getIntyg().getIntygsId().getExtension());
         assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
         assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
         assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
-        assertEquals(SchemaVersion.VERSION_2.name(), message.getHeader(NotificationRouteHeaders.VERSION));
+        assertEquals(SchemaVersion.VERSION_3.name(), message.getHeader(NotificationRouteHeaders.VERSION));
 
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_2.name()));
+        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_3.name()));
         verify(moduleRegistry, times(1)).getModuleApi(eq(LUSE));
         verify(moduleApi, times(1)).getUtlatandeFromJson(any());
         verify(moduleApi, times(1)).getIntygFromUtlatande(any());

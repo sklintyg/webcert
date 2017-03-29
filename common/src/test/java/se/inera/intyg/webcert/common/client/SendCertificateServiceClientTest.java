@@ -42,9 +42,11 @@ import org.mockito.stubbing.Answer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.*;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 /**
  * Created by eriklupander on 2015-06-04.
@@ -70,6 +72,16 @@ public class SendCertificateServiceClientTest {
     @InjectMocks
     SendCertificateServiceClientImpl testee = new SendCertificateServiceClientImpl();
 
+    private static String createSkickatAvJson() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"personId\":\"skapad av pid\",\"fullstandigtNamn\":\"fullständigt namn\",\"forskrivarKod\":");
+        sb.append("\"forskrivarKod\",\"befattningar\":[],\"specialiteter\":[],\"vardenhet\":{\"enhetsid\":\"enhetsid\",");
+        sb.append("\"enhetsnamn\":\"enhetsnamn\",\"postadress\":\"postadress\",\"postnummer\":\"postNummer\",\"postort\":");
+        sb.append("\"postOrt\",\"telefonnummer\":\"telefonNummer\",\"epost\":\"epost\",\"vardgivare\":{\"vardgivarid\":");
+        sb.append("\"vardgivarid\",\"vardgivarnamn\":\"vardgivarNamn\"},\"arbetsplatsKod\":\"arbetsplatsKod\"}}");
+        return sb.toString();
+    }
+
     @Before
     public void setup() throws Exception {
         when(objectMapper.readValue(anyString(), eq(HoSPersonal.class))).then(new Answer<HoSPersonal>() {
@@ -88,7 +100,8 @@ public class SendCertificateServiceClientTest {
 
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
                 .thenReturn(response);
-        SendCertificateToRecipientResponseType resp = testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
+        SendCertificateToRecipientResponseType resp = testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT,
+                LOGICAL_ADDRESS);
 
         assertEquals(ResultCodeType.OK, resp.getResult().getResultCode());
     }
@@ -158,15 +171,5 @@ public class SendCertificateServiceClientTest {
         ResultType roc = new ResultType();
         roc.setResultCode(resultCodeType);
         return roc;
-    }
-
-    private static String createSkickatAvJson() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{\"personId\":\"skapad av pid\",\"fullstandigtNamn\":\"fullständigt namn\",\"forskrivarKod\":");
-        sb.append("\"forskrivarKod\",\"befattningar\":[],\"specialiteter\":[],\"vardenhet\":{\"enhetsid\":\"enhetsid\",");
-        sb.append("\"enhetsnamn\":\"enhetsnamn\",\"postadress\":\"postadress\",\"postnummer\":\"postNummer\",\"postort\":");
-        sb.append("\"postOrt\",\"telefonnummer\":\"telefonNummer\",\"epost\":\"epost\",\"vardgivare\":{\"vardgivarid\":");
-        sb.append("\"vardgivarid\",\"vardgivarnamn\":\"vardgivarNamn\"},\"arbetsplatsKod\":\"arbetsplatsKod\"}}");
-        return sb.toString();
     }
 }

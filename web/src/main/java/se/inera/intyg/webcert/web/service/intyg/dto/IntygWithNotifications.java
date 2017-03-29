@@ -4,7 +4,7 @@ import java.util.List;
 
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public class IntygWithNotifications {
     private final Intyg intyg;

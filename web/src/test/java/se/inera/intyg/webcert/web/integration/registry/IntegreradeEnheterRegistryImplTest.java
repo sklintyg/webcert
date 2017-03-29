@@ -33,7 +33,9 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -188,7 +190,7 @@ public class IntegreradeEnheterRegistryImplTest {
     }
 
     @Test
-    public void testGetSchemaVersionOldV2Found() {
+    public void testGetSchemaVersionOldV3Found() {
         final String enhetsId = "enhetsid";
 
         IntegreradEnhet enhet = new IntegreradEnhet();
@@ -198,7 +200,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertTrue(result.isPresent());
-        assertEquals(SchemaVersion.VERSION_2, result.get());
+        assertEquals(SchemaVersion.VERSION_3, result.get());
     }
 
     @Test
@@ -225,6 +227,6 @@ public class IntegreradeEnheterRegistryImplTest {
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID);
         assertTrue(result.isPresent());
-        assertEquals(SchemaVersion.VERSION_2, result.get());
+        assertEquals(SchemaVersion.VERSION_3, result.get());
     }
 }

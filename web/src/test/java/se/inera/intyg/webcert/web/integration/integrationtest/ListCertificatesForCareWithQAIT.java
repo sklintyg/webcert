@@ -33,13 +33,13 @@ import org.stringtemplate.v4.STGroupFile;
 
 import com.google.common.collect.ImmutableMap;
 
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
 
     private static final String BASE = "Envelope.Body.ListCertificatesForCareWithQAResponse.";
-    private static final String LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL = "services/list-certificates-for-care-with-qa/v2.0";
+    private static final String LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL = "services/list-certificates-for-care-with-qa/v3.0";
     BodyExtractorFilter responseBodyExtractorFilter;
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -48,16 +48,16 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
     @Before
     public void setup() throws IOException {
         // Setup String template resource
-        templateGroup = new STGroupFile("integrationtestTemplates/listCertificatesForCareWithQA.v2.stg");
+        templateGroup = new STGroupFile("integrationtestTemplates/listCertificatesForCareWithQA.v3.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_2.0.xsd");
+                .load("interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
         responseBodyExtractorFilter = new BodyExtractorFilter(
-                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:2"),
+                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:3"),
                 "soap:Envelope/soap:Body/lc:ListCertificatesForCareWithQAResponse");
     }
 
@@ -91,7 +91,7 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
     }
 
     /**
-     * Check that even when sending invalid request, Soap faults should get transformed to a valid error response
+     * Check that even when sending invalid request, Soap faults should get transformed to a valid error response.
      */
     @Test
     public void testMessageWithInvalidXMLFailsWithApplicationError() {

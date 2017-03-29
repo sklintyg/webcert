@@ -61,16 +61,16 @@
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
 
-  <jaxws:endpoint address="/create-draft-certificate/v2.0" implementor="se.inera.intyg.webcert.web.integration.v2.CreateDraftCertificateResponderImpl">
+  <jaxws:endpoint address="/create-draft-certificate/v2.0" implementor="se.inera.intyg.webcert.web.integration.v3.CreateDraftCertificateResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
         class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/clinicalprocess-healthcond-2/create-draft-certificate.xslt" />
+        <constructor-arg value="transform/clinicalprocess-healthcond-3/create-draft-certificate.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
     <jaxws:schemaLocations>
-        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</jaxws:schemaLocation>
-        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.0.xsd</jaxws:schemaLocation>
         <jaxws:schemaLocation>classpath:/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_2.0.xsd</jaxws:schemaLocation>
     </jaxws:schemaLocations>
   </jaxws:endpoint>
@@ -105,27 +105,27 @@
   <jaxws:endpoint address="/send-message-to-care/v1.0" implementor="se.inera.intyg.webcert.web.integration.SendMessageToCareResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/clinicalprocess-healthcond-2/send-message-to-care.xslt" />
+        <constructor-arg value="transform/clinicalprocess-healthcond-3/send-message-to-care.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
     <jaxws:schemaLocations>
-        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</jaxws:schemaLocation>
-        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.0.xsd</jaxws:schemaLocation>
         <jaxws:schemaLocation>classpath:/interactions/SendMessageToCareInteraction/SendMessageToCareResponder_1.0.xsd</jaxws:schemaLocation>
     </jaxws:schemaLocations>
   </jaxws:endpoint>
 
-  <jaxws:endpoint address="/list-certificates-for-care-with-qa/v2.0" implementor="se.inera.intyg.webcert.web.integration.ListCertificatesForCareWithQAResponderImpl">
+  <jaxws:endpoint address="/list-certificates-for-care-with-qa/v3.0" implementor="se.inera.intyg.webcert.web.integration.ListCertificatesForCareWithQAResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
         class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/clinicalprocess-healthcond-2/list-certificates-for-care-with-qa.xslt" />
+        <constructor-arg value="transform/clinicalprocess-healthcond-3/list-certificates-for-care-with-qa.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
     <jaxws:schemaLocations>
-        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_2.0.xsd</jaxws:schemaLocation>
-        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd</jaxws:schemaLocation>
-        <jaxws:schemaLocation>classpath:/interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_2.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.0.xsd</jaxws:schemaLocation>
+        <jaxws:schemaLocation>classpath:/interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.0.xsd</jaxws:schemaLocation>
     </jaxws:schemaLocations>
   </jaxws:endpoint>
 

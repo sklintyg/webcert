@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.notificationstub;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.notificationstub.v2.NotificationStoreV2;
-import se.inera.intyg.webcert.notificationstub.v2.stat.NotificationStubEntry;
-import se.inera.intyg.webcert.notificationstub.v2.stat.StatTransformerUtil;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
+import se.inera.intyg.webcert.notificationstub.v3.stat.NotificationStubEntry;
+import se.inera.intyg.webcert.notificationstub.v3.stat.StatTransformerUtil;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
 import javax.ws.rs.GET;
@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public class NotificationStubRestApi {
     private NotificationStore notificationStore;
 
     @Autowired
-    private NotificationStoreV2 notificationStoreV2;
+    private NotificationStoreV3 notificationStoreV3;
 
     @GET
     @Path("/notifieringar")
@@ -53,24 +54,24 @@ public class NotificationStubRestApi {
     }
 
     @GET
-    @Path("/notifieringar/v2")
+    @Path("/notifieringar/v3")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType> notifieringarV2() {
-        return notificationStoreV2.getNotifications();
+    public Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType> notifieringarV3() {
+        return notificationStoreV3.getNotifications();
     }
 
     @GET
-    @Path("/notifieringar/v2/stats")
+    @Path("/notifieringar/v3/stats")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response notifieringarV2Stats() {
-        Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType> notifs = notificationStoreV2
+    public Response notifieringarV3Stats() {
+        Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType> notifs = notificationStoreV3
                 .getNotifications();
         Map<String, List<NotificationStubEntry>> stringListMap = new StatTransformerUtil().toStat(notifs);
         StringBuilder buf = new StringBuilder();
         for (Map.Entry<String, List<NotificationStubEntry>> entry : stringListMap.entrySet()) {
             buf.append("---- ").append(entry.getKey()).append(" ----\n");
             entry.getValue().stream()
-                    .sorted((a, b) -> a.getHandelseTid().compareTo(b.getHandelseTid()))
+                    .sorted(Comparator.comparing(NotificationStubEntry::getHandelseTid))
                     .forEach(ie -> buf.append(ie.getHandelseTid().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).append("\t")
                             .append(ie.getHandelseKod()).append("\n"));
             buf.append("-----------------------------------------------\n\n");
@@ -81,7 +82,7 @@ public class NotificationStubRestApi {
     @POST
     @Path("/clear")
     public void clear() {
-        notificationStoreV2.clear();
+        notificationStoreV3.clear();
         notificationStore.clear();
     }
 }

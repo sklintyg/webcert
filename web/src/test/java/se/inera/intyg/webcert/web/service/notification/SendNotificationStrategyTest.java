@@ -70,7 +70,7 @@ public class SendNotificationStrategyTest {
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_FK)).thenReturn(Optional.of(SchemaVersion.VERSION_1));
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2, INTYG_FK)).thenReturn(Optional.empty());
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_3, INTYG_FK)).thenReturn(Optional.of(SchemaVersion.VERSION_1));
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE)).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE)).thenReturn(Optional.of(SchemaVersion.VERSION_3));
     }
 
     @Before
@@ -124,7 +124,7 @@ public class SendNotificationStrategyTest {
     public void testUtkastVersion2() {
         Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
         assertTrue(res.isPresent());
-        assertEquals(SchemaVersion.VERSION_2, res.get());
+        assertEquals(SchemaVersion.VERSION_3, res.get());
         verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4, INTYG_LUSE);
     }
 

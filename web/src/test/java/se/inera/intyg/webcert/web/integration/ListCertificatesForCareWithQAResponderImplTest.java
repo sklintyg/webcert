@@ -19,11 +19,11 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v2.ListCertificatesForCareWithQAResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v2.ListCertificatesForCareWithQAType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListCertificatesForCareWithQAResponderImplTest {
@@ -56,6 +56,5 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         ListCertificatesForCareWithQAResponseType response = responder.listCertificatesForCareWithQA("logicalAdress", request);
 
         Assert.assertNotNull(response);
-        Assert.assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
     }
 }

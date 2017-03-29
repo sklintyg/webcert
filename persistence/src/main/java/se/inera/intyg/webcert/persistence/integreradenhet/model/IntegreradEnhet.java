@@ -57,7 +57,7 @@ public class IntegreradEnhet {
     @Column(name = "SCHEMA_VERSION_1")
     private boolean schemaVersion1;
 
-    @Column(name = "SCHEMA_VERSION_2")
+    @Column(name = "SCHEMA_VERSION_3")
     private boolean schemaVersion2;
     @PrePersist
     void onPrePersist() {

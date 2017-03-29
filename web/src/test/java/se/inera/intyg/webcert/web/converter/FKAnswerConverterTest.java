@@ -20,20 +20,22 @@ package se.inera.intyg.webcert.web.converter;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.ObjectFactory;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-import java.io.StringWriter;
-import java.io.Writer;
+
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.ObjectFactory;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
  * This test makes use of Equals and HashCode from JAXB basics. All types must implement

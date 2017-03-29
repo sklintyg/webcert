@@ -30,9 +30,12 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.ArbetsplatsKod;
-import se.riv.clinicalprocess.healthcond.certificate.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 public class NotificationTypeConverterTest {
 
@@ -50,11 +53,14 @@ public class NotificationTypeConverterTest {
         final int mottagnaFragorBesvarade = 2;
         final int mottagnaFragorEjBesvarade = 1;
         final Intyg intyg = buildIntyg();
-        ArendeCount skickadeFragor = new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade);
-        ArendeCount mottagnaFragor = new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade);
+        ArendeCount skickadeFragor = new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade,
+                skickadeFragorHanterade);
+        ArendeCount mottagnaFragor = new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade,
+                mottagnaFragorHanterade);
 
-        NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null, skickadeFragor, mottagnaFragor,
-                SchemaVersion.VERSION_2, "ref");
+        NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null, skickadeFragor,
+                mottagnaFragor,
+                SchemaVersion.VERSION_3, "ref");
         CertificateStatusUpdateForCareType res = NotificationTypeConverter.convert(msg, intyg);
 
         assertEquals(intyg, res.getIntyg());
@@ -94,9 +100,10 @@ public class NotificationTypeConverterTest {
         enhet.getArbetsplatskod().setExtension(arbetsplatskod);
         enhet.setEpost(epost);
 
-        NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null, new ArendeCount(4, 3, 2, 1),
+        NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null,
                 new ArendeCount(4, 3, 2, 1),
-                SchemaVersion.VERSION_2, "ref");
+                new ArendeCount(4, 3, 2, 1),
+                SchemaVersion.VERSION_3, "ref");
         CertificateStatusUpdateForCareType res = NotificationTypeConverter.convert(msg, intyg);
 
         assertEquals(arbetsplatskod, res.getIntyg().getSkapadAv().getEnhet().getArbetsplatskod().getExtension());

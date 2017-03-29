@@ -27,14 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 
 public class NotificationTransformer {
@@ -70,7 +70,7 @@ public class NotificationTransformer {
             message.setHeader(NotificationRouteHeaders.VERSION, SchemaVersion.VERSION_1.name());
         }
 
-        if (SchemaVersion.VERSION_2.equals(notificationMessage.getVersion())) {
+        if (SchemaVersion.VERSION_3.equals(notificationMessage.getVersion())) {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp());
             message.setBody(NotificationTypeConverter.convert(notificationMessage,
                     moduleApi.getIntygFromUtlatande(moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast()))));

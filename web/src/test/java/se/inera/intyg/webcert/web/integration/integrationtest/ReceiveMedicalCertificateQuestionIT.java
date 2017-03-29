@@ -27,12 +27,14 @@ import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 import com.google.common.collect.ImmutableMap;
 
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -44,11 +46,10 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
 
     private static final String INTYGS_ID = "6a7f4d81-34f7-4a1f-a655-df58dfabb211";
     private static final String SIGNERINGS_TIDPUNKT = "2014-12-09T11:00:00.000";
-
+    BodyExtractorFilter responseBodyExtractorFilter;
     private ST requestTemplate;
     private STGroup templateGroup;
     private InputStream xsdInputstream;
-    BodyExtractorFilter responseBodyExtractorFilter;
 
     @Before
     public void setup() throws IOException {
@@ -122,7 +123,8 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     }
 
     /**
-     * Send a request with an error that our programmatic validation will detect, and verify that the correct response code is returned.
+     * Send a request with an error that our programmatic validation will detect, and verify that the correct response
+     * code is returned.
      */
     @Test
     public void testCreateQuestionForUnknownAmneFailsWithValidationError() {
@@ -138,7 +140,8 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     }
 
     /**
-     * Check that even when sending a totally nonsense invalid request, Soap faults should get transformed to a valid application error response
+     * Check that even when sending a totally nonsense invalid request, Soap faults should get transformed to a valid
+     * application error response
      */
     @Test
     public void testCreateQuestionWithInvalidXMLFailsWithApplicationError() {

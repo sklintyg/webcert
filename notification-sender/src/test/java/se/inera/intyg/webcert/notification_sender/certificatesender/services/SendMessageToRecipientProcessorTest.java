@@ -30,15 +30,19 @@ import javax.xml.ws.WebServiceException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.*;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendMessageToRecipientProcessorTest {
@@ -48,12 +52,10 @@ public class SendMessageToRecipientProcessorTest {
     private static final String MESSAGE_ID = "b7360a70-80a3-4d24-b10e-621c3c0c826a";
     private static final String XML_BODY = "<SendMessageToRecipient xmlns=\"urn:riv:clinicalprocess:healthcond:certificate:SendMessageToRecipientResponder:1\"><meddelande-id>"
             + MESSAGE_ID + "</meddelande-id></SendMessageToRecipient>";
-
-    @Mock
-    private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
-
     @InjectMocks
     SendMessageToRecipientProcessor sendMessageProcessor;
+    @Mock
+    private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
 
     @Test
     public void processTest() throws Exception {

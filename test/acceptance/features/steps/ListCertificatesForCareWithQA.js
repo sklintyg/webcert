@@ -24,7 +24,7 @@
  var helpers = require('./helpers');
 
  function sendListCertificatesForCareWithQA(body, callback) {
-     var path = '/services/list-certificates-for-care-with-qa/v2.0?wsdl';
+     var path = '/services/list-certificates-for-care-with-qa/v3.0?wsdl';
      var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
      url = url.replace('https', 'http');
      return new Promise(function(resolve, reject) {

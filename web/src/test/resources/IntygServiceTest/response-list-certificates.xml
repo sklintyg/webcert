@@ -17,7 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<ns2:ListCertificatesForCareResponse xmlns:ns4="urn:riv:itintegration:registry:1" xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:2" xmlns:ns2="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:2" xmlns="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+<ns2:ListCertificatesForCareResponse xmlns:ns4="urn:riv:itintegration:registry:1" xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:ns2="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:3" xmlns="urn:riv:clinicalprocess:healthcond:certificate:types:3">
    <ns2:intygsLista>
       <ns2:intyg>
          <ns3:intygs-id>

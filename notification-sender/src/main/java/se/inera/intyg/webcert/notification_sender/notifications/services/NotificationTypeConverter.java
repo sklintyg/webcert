@@ -24,12 +24,12 @@ import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.Handelsekod;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Arenden;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Handelse;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public final class NotificationTypeConverter {
 

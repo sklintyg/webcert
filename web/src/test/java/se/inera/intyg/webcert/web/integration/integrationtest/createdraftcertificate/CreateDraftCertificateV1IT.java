@@ -28,13 +28,17 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 import com.google.common.collect.ImmutableMap;
 
-import se.inera.intyg.webcert.web.integration.integrationtest.*;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
+import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
+import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -46,11 +50,10 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     private static final String FK_7263 = "fk7263";
     private static final String DEFAULT_LAKARE_HSAID = "SE4815162344-1B02";
     private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";
-
+    BodyExtractorFilter responseBodyExtractorFilter;
     private ST requestTemplate;
     private STGroup templateGroup;
     private InputStream xsdInputstream;
-    BodyExtractorFilter responseBodyExtractorFilter;
 
     @Before
     public void setup() throws IOException {

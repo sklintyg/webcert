@@ -32,8 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -43,11 +43,9 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhet
 public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegreradeEnheterRegistryImpl.class);
-
+    private final Set<String> oldIntygTypes = Stream.of(Fk7263EntryPoint.MODULE_ID).collect(Collectors.toSet());
     @Autowired
     private IntegreradEnhetRepository integreradEnhetRepository;
-
-    private final Set<String> oldIntygTypes = Stream.of(Fk7263EntryPoint.MODULE_ID).collect(Collectors.toSet());
 
     /*
      * (non-Javadoc)
@@ -134,7 +132,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
          * events for old certificates.
          *
          * First if-case handles new (which means rivta version 2 - SIT certificates, but also TS certificates).
-         * These certificates should only use VERSION_2.
+         * These certificates should only use VERSION_3.
          *
          * Then we get to the case where fk7263 is handled during a transition period. When this is the case VERSION_1
          * will always be set to true - which means they have previously accepted notifications for certificates written
@@ -144,11 +142,11 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
          * If VERSION_1 is set we use the latest version available.
          */
         if (!oldIntygTypes.contains(intygType)) {
-            return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_2) : Optional.empty();
+            return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_3) : Optional.empty();
         } else if (!enhet.isSchemaVersion1()) {
             return Optional.empty();
         } else {
-            return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_2) : Optional.of(SchemaVersion.VERSION_1);
+            return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_3) : Optional.of(SchemaVersion.VERSION_1);
         }
     }
 

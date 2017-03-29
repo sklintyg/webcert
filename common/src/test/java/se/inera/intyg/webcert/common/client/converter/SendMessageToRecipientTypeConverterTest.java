@@ -20,14 +20,22 @@ package se.inera.intyg.webcert.common.client.converter;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDateTime;
+
 import javax.xml.bind.JAXBException;
 
-import java.time.LocalDateTime;
 import org.junit.Test;
 
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
-import se.riv.clinicalprocess.healthcond.certificate.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 public class SendMessageToRecipientTypeConverterTest {
 

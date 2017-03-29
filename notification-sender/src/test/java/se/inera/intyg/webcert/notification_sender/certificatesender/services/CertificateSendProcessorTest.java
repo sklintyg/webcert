@@ -33,7 +33,9 @@ import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 /**
  * Created by eriklupander on 2015-05-22.
@@ -121,7 +123,8 @@ public class CertificateSendProcessorTest {
     @Test(expected = TemporaryException.class)
     public void testSendCertificateThrowsPermanentOnWebServiceException() throws Exception {
         // Given
-        when(sendServiceClient.sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1)).thenThrow(new WebServiceException());
+        when(sendServiceClient.sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
+                .thenThrow(new WebServiceException());
 
         // When
         certificateSendProcessor.process(SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);

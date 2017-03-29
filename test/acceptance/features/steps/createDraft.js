@@ -68,7 +68,7 @@ function createBody(intygstyp, callback) {
     var isTSIntyg = helpers.isTSIntyg(intygstyp);
 
     if (isSMIIntyg || isTSIntyg) {
-        path = '/services/create-draft-certificate/v2.0?wsdl';
+        path = '/services/create-draft-certificate/v3.0?wsdl';
         body = soapMessageBodies.CreateDraftCertificateV2(
             global.user,
             intygstyp

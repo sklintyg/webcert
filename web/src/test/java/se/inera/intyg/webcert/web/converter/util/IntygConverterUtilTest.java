@@ -237,7 +237,8 @@ public class IntygConverterUtilTest {
     }
 
     private Fk7263Utlatande createUtlatandeFromJson() throws Exception {
-        return new CustomObjectMapper().readValue(new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), Fk7263Utlatande.class);
+        return new CustomObjectMapper().readValue(new ClassPathResource("IntygServiceTest/utlatande.json").getFile(),
+                Fk7263Utlatande.class);
     }
 
 }

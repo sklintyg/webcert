@@ -29,7 +29,10 @@ import org.junit.Test;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
@@ -111,7 +114,8 @@ public class ArendeListItemConverterTest {
         final String enhetsnamn = "enhetsnamn";
         final String vardgivarnamn = "vardgivarnamn";
 
-        Arende arende = createArende(amne, intygsId, intygTyp, meddelandeId, patientPersonId, signeratAvName, skickatAv, skickatTidpunkt, status,
+        Arende arende = createArende(amne, intygsId, intygTyp, meddelandeId, patientPersonId, signeratAvName, skickatAv, skickatTidpunkt,
+                status,
                 vidarebefordrad, enhetsnamn, vardgivarnamn);
         ArendeListItem result = ArendeListItemConverter.convert(arende);
 
@@ -131,7 +135,8 @@ public class ArendeListItemConverterTest {
 
     @Test
     public void testConvertArendeVidarebefordradNull() {
-        Arende arende = createArende(ArendeAmne.KONTKT, "intygsId", "intygTyp", "meddelandeId", "patientPersonId", "signeratAvName", "skickatAv",
+        Arende arende = createArende(ArendeAmne.KONTKT, "intygsId", "intygTyp", "meddelandeId", "patientPersonId", "signeratAvName",
+                "skickatAv",
                 LocalDateTime.now(), Status.ANSWERED,
                 null, "enhetsnamn", "vardgivarnamn");
         ArendeListItem result = ArendeListItemConverter.convert(arende);
@@ -159,7 +164,8 @@ public class ArendeListItemConverterTest {
     }
 
     private Arende createArende(ArendeAmne amne, String intygsId, String intygTyp, String meddelandeId, String patientPersonId,
-            String signeratAvName, String skickatAv, LocalDateTime senasteHandelse, Status status, Boolean vidarebefordrad, String enhetName, String vardgivareName) {
+            String signeratAvName, String skickatAv, LocalDateTime senasteHandelse, Status status, Boolean vidarebefordrad,
+            String enhetName, String vardgivareName) {
         Arende arende = new Arende();
         arende.setAmne(amne);
         arende.setIntygsId(intygsId);

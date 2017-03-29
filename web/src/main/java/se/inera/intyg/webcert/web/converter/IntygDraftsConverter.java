@@ -18,7 +18,9 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,8 +36,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v2.IntygsStatus;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 
 @Component
 public class IntygDraftsConverter {
@@ -88,28 +90,6 @@ public class IntygDraftsConverter {
         return entry;
     }
 
-    public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList) {
-
-        return intygList.stream()
-                .map(intyg -> convertIntygToListIntygEntry(intyg))
-                .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
-                .collect(Collectors.toList());
-    }
-
-    private ListIntygEntry convertIntygToListIntygEntry(Intyg source) {
-
-        ListIntygEntry entry = new ListIntygEntry();
-        entry.setIntygId(source.getIntygsId().getExtension());
-        entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
-        entry.setSource(IntygSource.IT);
-        entry.setStatus(findLatestStatus(source.getStatus()).name());
-        entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
-        entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
-        entry.setPatientId(new Personnummer(source.getPatient().getPersonId().getExtension()));
-
-        return entry;
-    }
-
     public static CertificateState findLatestStatus(List<IntygsStatus> intygStatuses) {
         return intygStatuses.stream()
                 .filter(s -> !ARCHIVED_STATUSES.contains(s.getStatus().getCode()))
@@ -146,6 +126,28 @@ public class IntygDraftsConverter {
             return CertificateState.RECEIVED.name();
         }
         return draft.getStatus().name();
+    }
+
+    public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList) {
+
+        return intygList.stream()
+                .map(intyg -> convertIntygToListIntygEntry(intyg))
+                .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+                .collect(Collectors.toList());
+    }
+
+    private ListIntygEntry convertIntygToListIntygEntry(Intyg source) {
+
+        ListIntygEntry entry = new ListIntygEntry();
+        entry.setIntygId(source.getIntygsId().getExtension());
+        entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
+        entry.setSource(IntygSource.IT);
+        entry.setStatus(findLatestStatus(source.getStatus()).name());
+        entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
+        entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
+        entry.setPatientId(new Personnummer(source.getPatient().getPersonId().getExtension()));
+
+        return entry;
     }
 
 }

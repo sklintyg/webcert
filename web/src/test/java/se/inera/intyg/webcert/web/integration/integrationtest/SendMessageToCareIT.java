@@ -27,12 +27,14 @@ import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.stringtemplate.v4.*;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
 
 import com.google.common.collect.ImmutableMap;
 
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 /**
  * Created by marced on 2016-06-01.
@@ -41,19 +43,19 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
 
     private static final String BASE = "Envelope.Body.SendMessageToCareResponse.";
     private static final String SEND_MESSAGE_TO_CARE_V1_0 = "services/send-message-to-care/v1.0";
-
+    BodyExtractorFilter responseBodyExtractorFilter;
     private ST requestTemplate;
     private STGroup templateGroup;
     private InputStream xsdInputstream;
-    BodyExtractorFilter responseBodyExtractorFilter;
 
     @Before
     public void setup() throws IOException {
         // Setup String template resource
-        templateGroup = new STGroupFile("integrationtestTemplates/sentMessageToCare.v1.stg");
+        templateGroup = new STGroupFile("integrationtestTemplates/sendMessageToCare.v1.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
 
-        xsdInputstream = ClasspathSchemaResourceResolver.load("interactions/SendMessageToCareInteraction/SendMessageToCareResponder_1.0.xsd");
+        xsdInputstream = ClasspathSchemaResourceResolver
+                .load("interactions/SendMessageToCareInteraction/SendMessageToCareResponder_1.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.

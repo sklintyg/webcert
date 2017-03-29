@@ -18,22 +18,23 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.junit.Test;
-import se.inera.intyg.webcert.persistence.model.Filter;
-import se.inera.intyg.webcert.persistence.model.VantarPa;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+import se.inera.intyg.webcert.persistence.model.Filter;
+import se.inera.intyg.webcert.persistence.model.VantarPa;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 
 public class FilterConverterTest {
 
@@ -75,7 +76,8 @@ public class FilterConverterTest {
 
     @Test
     public void testNullSafeBoolean() {
-        QueryFragaSvarParameter source = createQueryFragaSvarParameter(LocalDateTime.now(), LocalDateTime.now(), "enhetId", "hsaId", 5, null,
+        QueryFragaSvarParameter source = createQueryFragaSvarParameter(LocalDateTime.now(), LocalDateTime.now(), "enhetId", "hsaId", 5,
+                null,
                 null, LocalDate.now(), 0, "KOMPLETTERING_FRAN_VARDEN", Boolean.TRUE);
 
         Filter result = FilterConverter.convert(source, new ArrayList<>(), Stream.of("fk7263").collect(Collectors.toSet()));
@@ -85,7 +87,8 @@ public class FilterConverterTest {
 
     @Test
     public void testNoPageSizeNorStartFrom() {
-        QueryFragaSvarParameter source = createQueryFragaSvarParameter(LocalDateTime.now(), LocalDateTime.now(), "enhetId", "hsaId", null, Boolean.FALSE,
+        QueryFragaSvarParameter source = createQueryFragaSvarParameter(LocalDateTime.now(), LocalDateTime.now(), "enhetId", "hsaId", null,
+                Boolean.FALSE,
                 Boolean.TRUE, LocalDate.now(), null, "KOMPLETTERING_FRAN_VARDEN", Boolean.TRUE);
 
         Filter result = FilterConverter.convert(source, new ArrayList<>(), Stream.of("fk7263").collect(Collectors.toSet()));
@@ -94,7 +97,8 @@ public class FilterConverterTest {
         assertEquals(FilterConverter.DEFAULT_PAGE_SIZE, result.getPageSize());
     }
 
-    private QueryFragaSvarParameter createQueryFragaSvarParameter(LocalDateTime changedFrom, LocalDateTime changedTo, String enhetId, String hsaId,
+    private QueryFragaSvarParameter createQueryFragaSvarParameter(LocalDateTime changedFrom, LocalDateTime changedTo, String enhetId,
+            String hsaId,
             Integer pageSize, Boolean questionFromFK, Boolean questionFromWC, LocalDate replyLatest, Integer startFrom, String vantarPa,
             Boolean vidarebefordrad) {
         QueryFragaSvarParameter res = new QueryFragaSvarParameter();

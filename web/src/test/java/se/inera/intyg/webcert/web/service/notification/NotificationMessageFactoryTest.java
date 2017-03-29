@@ -89,7 +89,7 @@ public class NotificationMessageFactoryTest {
         Utkast utkast = createUtkast(INTYGS_ID);
         final String reference = "ref";
         NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.SIGNAT,
-                SchemaVersion.VERSION_2, reference);
+                SchemaVersion.VERSION_3, reference);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
@@ -99,7 +99,7 @@ public class NotificationMessageFactoryTest {
         assertEquals(INTYGS_TYP, msg.getIntygsTyp());
         assertEquals("SE12345678-1000", msg.getLogiskAdress());
         assertEquals("{model}", msg.getUtkast());
-        assertEquals(SchemaVersion.VERSION_2, msg.getVersion());
+        assertEquals(SchemaVersion.VERSION_3, msg.getVersion());
         assertEquals(reference, msg.getReference());
         assertNull(msg.getFragaSvar());
         assertNotNull(msg.getSkickadeFragor());
@@ -146,7 +146,7 @@ public class NotificationMessageFactoryTest {
         Utkast utkast = createUtkast(INTYGS_ID);
         final String reference = "ref";
         NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.NYFRFV,
-                SchemaVersion.VERSION_2, reference);
+                SchemaVersion.VERSION_3, reference);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
@@ -156,7 +156,7 @@ public class NotificationMessageFactoryTest {
         assertEquals(INTYGS_TYP, msg.getIntygsTyp());
         assertEquals("SE12345678-1000", msg.getLogiskAdress());
         assertEquals("{model}", msg.getUtkast());
-        assertEquals(SchemaVersion.VERSION_2, msg.getVersion());
+        assertEquals(SchemaVersion.VERSION_3, msg.getVersion());
         assertEquals(reference, msg.getReference());
         assertNull(msg.getFragaSvar());
         assertNotNull(msg.getSkickadeFragor());

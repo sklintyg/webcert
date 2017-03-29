@@ -38,9 +38,12 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v1.SendMessageToCareType.SkickatAv;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.*;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Part;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendMessageToCareResponderImplTest {
@@ -69,7 +72,8 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailed() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, ""));
+        when(arendeService.processIncomingMessage(any()))
+                .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, ""));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
@@ -78,7 +82,8 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailedNotSigned() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ""));
+        when(arendeService.processIncomingMessage(any()))
+                .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ""));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
@@ -87,7 +92,8 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailedNotFound() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, ""));
+        when(arendeService.processIncomingMessage(any()))
+                .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, ""));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
@@ -96,7 +102,8 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailedExternalServiceProblem() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any())).thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, ""));
+        when(arendeService.processIncomingMessage(any()))
+                .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, ""));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());

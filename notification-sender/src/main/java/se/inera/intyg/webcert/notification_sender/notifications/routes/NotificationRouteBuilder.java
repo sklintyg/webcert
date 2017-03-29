@@ -32,14 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.common.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.DatePeriodType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.PartialDateType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
@@ -66,7 +66,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
      */
     @Override
     public void configure() throws JAXBException {
-        JaxbDataFormat jaxbMessageDataFormatV2 = initializeJaxbMessageDataFormatV2();
+        JaxbDataFormat jaxbMessageDataFormatV3 = initializeJaxbMessageDataFormatV3();
 
         // Start for aggregation route. All notifications enter this route. Draft saved and signed for non fk7263
         // goes into an aggregation state where we once per minute perform filtering so only the newest ANDRAD per
@@ -110,8 +110,8 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:notificationTransformer")
                 .choice()
-                .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
-                .marshal(jaxbMessageDataFormatV2)
+                .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_3.name()))
+                .marshal(jaxbMessageDataFormatV3)
                 .otherwise()
                 .marshal("jaxbMessageDataFormat")
                 .end()
@@ -123,9 +123,9 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
                 .choice()
-                .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_2.name()))
-                .unmarshal(jaxbMessageDataFormatV2)
-                .to("bean:notificationWSClientV2")
+                .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_3.name()))
+                .unmarshal(jaxbMessageDataFormatV3)
+                .to("bean:notificationWSClientV3")
                 .otherwise()
                 .unmarshal("jaxbMessageDataFormat")
                 .to("bean:notificationWSClient")
@@ -135,7 +135,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .log(LoggingLevel.ERROR, LOG,
                         simple("Permanent exception for intygs-id: ${header[intygsId]}, with message: "
                                 + "${exception.message}\n ${exception.stacktrace}")
-                                .getText())
+                                        .getText())
                 .stop();
 
         from("direct:temporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
@@ -144,7 +144,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .log(LoggingLevel.ERROR, LOG,
                         simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: "
                                 + "${exception.message}\n ${exception.stacktrace}")
-                                .getText())
+                                        .getText())
                 .otherwise()
                 .log(LoggingLevel.WARN, LOG,
                         simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: "
@@ -165,16 +165,16 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
     }
 
     // CHECKSTYLE:OFF LineLength
-    private JaxbDataFormat initializeJaxbMessageDataFormatV2() throws JAXBException {
+    private JaxbDataFormat initializeJaxbMessageDataFormatV3() throws JAXBException {
         // We need to register DatePeriodType with the JAXBContext explicitly for some reason.
-        JaxbDataFormat jaxbMessageDataFormatV2 = new JaxbDataFormat(
+        JaxbDataFormat jaxbMessageDataFormatV3 = new JaxbDataFormat(
                 JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class));
-        jaxbMessageDataFormatV2.setPartClass(
-                "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareType");
-        jaxbMessageDataFormatV2
-                .setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:2",
+        jaxbMessageDataFormatV3.setPartClass(
+                "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType");
+        jaxbMessageDataFormatV3
+                .setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3",
                         "CertificateStatusUpdateForCare"));
-        return jaxbMessageDataFormatV2;
+        return jaxbMessageDataFormatV3;
     }
 
 }

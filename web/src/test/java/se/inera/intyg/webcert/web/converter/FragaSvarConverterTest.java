@@ -20,19 +20,21 @@ package se.inera.intyg.webcert.web.converter;
 
 import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import java.io.IOException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
 
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
  * @author andreaskaltenbach

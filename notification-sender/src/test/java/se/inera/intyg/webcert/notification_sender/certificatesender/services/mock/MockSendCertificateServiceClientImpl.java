@@ -30,17 +30,17 @@ import org.slf4j.LoggerFactory;
 
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.v2.*;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 /**
  * Created by eriklupander on 2015-06-03.
  */
 public class MockSendCertificateServiceClientImpl implements SendCertificateServiceClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MockSendCertificateServiceClientImpl.class);
-
     public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande";
-
+    private static final Logger LOG = LoggerFactory.getLogger(MockSendCertificateServiceClientImpl.class);
     private AtomicInteger count = new AtomicInteger(0);
 
     private ConcurrentHashMap<String, AtomicInteger> attemptsPerMessage = new ConcurrentHashMap<>();
@@ -48,7 +48,8 @@ public class MockSendCertificateServiceClientImpl implements SendCertificateServ
     private List<String> store = new CopyOnWriteArrayList<>();
 
     @Override
-    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient, String logicalAddress) {
+    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient,
+            String logicalAddress) {
         count.incrementAndGet();
 
         if (intygsId.startsWith(FALLERAT_MEDDELANDE)) {
@@ -76,7 +77,6 @@ public class MockSendCertificateServiceClientImpl implements SendCertificateServ
         }
         return attemptsPerMessage.get(key).intValue();
     }
-
 
     public int getNumberOfReceivedMessages() {
         return count.get();

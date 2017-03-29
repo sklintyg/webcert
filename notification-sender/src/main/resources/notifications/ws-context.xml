@@ -42,9 +42,9 @@
     </jaxws:properties>
   </jaxws:client>
 
-  <jaxws:client id="certificateStatusUpdateForCareClientV2"
-    serviceClass="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v2.CertificateStatusUpdateForCareResponderInterface"
-    address="${certificatestatusupdateforcare.ws.endpoint.v2.url}">
+  <jaxws:client id="certificateStatusUpdateForCareClientV3"
+    serviceClass="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface"
+    address="${certificatestatusupdateforcare.ws.endpoint.v3.url}">
     <jaxws:properties>
       <entry key="schema-validation-enabled" value="true" />
     </jaxws:properties>

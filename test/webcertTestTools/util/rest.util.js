@@ -165,7 +165,7 @@ module.exports = {
     },
     queryNotificationStub: function() {
         var options = {
-            url: 'services/notification-stub/notifieringar/v2',
+            url: 'services/notification-stub/notifieringar/v3',
             method: 'GET'
         };
         return restClient.run(options, 'json');

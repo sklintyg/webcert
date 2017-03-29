@@ -18,8 +18,28 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFV;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.KFSIGN;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.MAKULE;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFV;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYSVFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
+
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +49,10 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
@@ -46,27 +70,6 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import java.util.List;
-import java.util.Optional;
-
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFV;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.KFSIGN;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.MAKULE;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFM;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFV;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYSVFM;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -276,8 +279,8 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
         HandelsekodEnum handelse = null;
-        if (SchemaVersion.VERSION_2 == version.get()) {
-            handelse = getHandelseV2(event);
+        if (SchemaVersion.VERSION_3 == version.get()) {
+            handelse = getHandelseV3(event);
         } else {
             handelse = getHandelseV1(event);
         }
@@ -313,7 +316,7 @@ public class NotificationServiceImpl implements NotificationService {
         return null;
     }
 
-    private HandelsekodEnum getHandelseV2(NotificationEvent event) {
+    private HandelsekodEnum getHandelseV3(NotificationEvent event) {
         switch (event) {
         case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
         case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:

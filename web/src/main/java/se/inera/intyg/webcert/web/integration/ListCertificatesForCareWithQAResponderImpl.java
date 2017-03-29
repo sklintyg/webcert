@@ -14,15 +14,15 @@ import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v2.HandelseList;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v2.List;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v2.ListCertificatesForCareWithQAResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v2.ListCertificatesForCareWithQAResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v2.ListCertificatesForCareWithQAType;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v2.ListItem;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.Handelsekod;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.v2.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.HandelseList;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.List;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 
 @SchemaValidation
 public class ListCertificatesForCareWithQAResponderImpl implements ListCertificatesForCareWithQAResponderInterface {

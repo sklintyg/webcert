@@ -119,7 +119,7 @@ public class NotificationServiceImplTest {
 
     @Before
     public void setup() throws Exception {
-        setupMocks(SchemaVersion.VERSION_2);
+        setupMocks(SchemaVersion.VERSION_3);
 
         when(session.createTextMessage(anyString())).thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
     }
@@ -217,16 +217,16 @@ public class NotificationServiceImplTest {
     @Test
     public void testIntygsutkastCreated() throws Exception {
         final String ref = "reference";
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
 
         NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.SKAPAT, INTYG_JSON);
         notMsg.setReference(ref);
         when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.SKAPAT),
-                eq(SchemaVersion.VERSION_2), eq(ref))).thenReturn(notMsg);
+                eq(SchemaVersion.VERSION_3), eq(ref))).thenReturn(notMsg);
 
         notificationService.sendNotificationForDraftCreated(createUtkast(), ref);
         verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.SKAPAT),
-                eq(SchemaVersion.VERSION_2), eq(ref));
+                eq(SchemaVersion.VERSION_3), eq(ref));
     }
 
     @Test
@@ -601,7 +601,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsQuestionReceivedSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
         verifySuccessfulInvocations(HandelsekodEnum.NYFRFM);
@@ -609,7 +609,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsQuestionHandledSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
         verifySuccessfulInvocations(HandelsekodEnum.HANFRFM);
@@ -617,7 +617,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsQuestionUnhandledSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED);
         verifySuccessfulInvocations(HandelsekodEnum.HANFRFM);
@@ -625,7 +625,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsQuestionSentSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_CARE);
         verifySuccessfulInvocations(HandelsekodEnum.NYFRFV);
@@ -633,7 +633,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsQuestionFromCareHandledSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_HANDLED);
         verifySuccessfulInvocations(HandelsekodEnum.HANFRFV);
@@ -641,7 +641,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsQuestionFromCareUnhandledSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_UNHANDLED);
         verifySuccessfulInvocations(HandelsekodEnum.HANFRFV);
@@ -649,7 +649,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsAnswerReceivedSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
         verifySuccessfulInvocations(HandelsekodEnum.NYSVFM);
@@ -657,7 +657,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsAnswerHandledSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
         verifySuccessfulInvocations(HandelsekodEnum.HANFRFV);
@@ -665,7 +665,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsAnswerUnhandledSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED);
         verifySuccessfulInvocations(HandelsekodEnum.HANFRFV);
@@ -673,14 +673,14 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testSendNotificationForQAsAnswerSentSchemaVersion2() throws Exception {
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_2));
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         verifySuccessfulInvocations(HandelsekodEnum.HANFRFM);
     }
 
     private void verifySuccessfulInvocations(HandelsekodEnum kod) throws Exception {
-        verifySuccessfulInvocations(kod, SchemaVersion.VERSION_2);
+        verifySuccessfulInvocations(kod, SchemaVersion.VERSION_3);
     }
 
     private void verifySuccessfulInvocations(HandelsekodEnum kod, SchemaVersion schemaVersion) throws Exception {

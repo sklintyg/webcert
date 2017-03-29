@@ -35,7 +35,7 @@
   <import resource="../integration-test-broker-context.xml"/>
 
   <bean id="certificateStatusUpdateForCareResponderV1" class="se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub"/>
-  <bean id="certificateStatusUpdateForCareResponderV2" class="se.inera.intyg.webcert.notification_sender.mocks.v2.CertificateStatusUpdateForCareResponderStub"/>
+  <bean id="certificateStatusUpdateForCareResponderV3" class="se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub"/>
 
   <bean id="moduleApi" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="se.inera.intyg.common.support.modules.support.api.ModuleApi"/>
