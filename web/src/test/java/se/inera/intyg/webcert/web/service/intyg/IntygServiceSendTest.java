@@ -198,7 +198,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         WebCertUser user = new WebCertUser();
         user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
-        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false));
+        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true));
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
 

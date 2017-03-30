@@ -117,7 +117,7 @@ public class UserResource {
     @Path("/parameters/sjf")
     public Response setSjf() {
         webCertUserService.getUser()
-                .setParameters(new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false));
+                .setParameters(new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false, true));
         return Response.ok().build();
     }
 }

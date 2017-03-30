@@ -77,6 +77,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_COHERENT_JOURNALING = "sjf";
     private static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
+    public static final String PARAM_COPY_OK = "kopieringOK";
     private static final String PARAM_PATIENT_ALTERNATE_SSN = "alternatePatientSSn";
     private static final String PARAM_PATIENT_DECEASED = "avliden";
     private static final String PARAM_PATIENT_EFTERNAMN = "efternamn";
@@ -127,9 +128,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
             @QueryParam(PARAM_REFERENCE) String reference,
             @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased) {
+            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+            @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
         return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress,
-                postnummer, postort, coherentJournaling, reference, inactiveUnit, deceased);
+                postnummer, postort, coherentJournaling, reference, inactiveUnit, deceased, copyOk);
     }
 
     /**
@@ -155,7 +157,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
             @QueryParam(PARAM_REFERENCE) String reference,
             @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased) {
+            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+            @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
         super.validateRedirectToIntyg(intygId);
 
@@ -197,7 +200,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
 
         user.setParameters(new IntegrationParameters(StringUtils.trimToNull(reference), responsibleHospName, alternatePatientSSn, fornamn,
-                mellannamn, efternamn, postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit));
+                mellannamn, efternamn, postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk));
 
         LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, intygsTyp, coherentJournaling);
         return buildRedirectResponse(uriInfo, intygsTyp, intygId, isUtkast);

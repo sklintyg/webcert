@@ -795,6 +795,9 @@
         },
         "inactiveUnit": {
           "type": "boolean"
+        },
+        "copyOk": {
+          "type": "boolean"
         }
       },
       "type": "object"

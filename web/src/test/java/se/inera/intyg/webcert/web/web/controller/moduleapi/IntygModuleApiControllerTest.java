@@ -308,7 +308,7 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-                postort, false, false, false));
+                postort, false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
         user.setOrigin("NORMAL");
@@ -353,7 +353,7 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newReservnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-                postort, false, false, false));
+                postort, false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
         user.setOrigin("NORMAL");
@@ -509,7 +509,7 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-                postort, false, false, false));
+                postort, false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG);
         user.setOrigin("NORMAL");
@@ -597,7 +597,7 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-                postort, false, false, false));
+                postort, false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
         user.setOrigin("NORMAL");
@@ -674,7 +674,7 @@ public class IntygModuleApiControllerTest {
         user.setFeatures(Stream.of(features).map(WebcertFeature::getName).collect(Collectors.toSet()));
         user.getFeatures().addAll(Stream.of(features).map(f -> f.getName() + "." + intygType).collect(Collectors.toSet()));
         user.setParameters(
-                new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false));
+                new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false, true));
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();

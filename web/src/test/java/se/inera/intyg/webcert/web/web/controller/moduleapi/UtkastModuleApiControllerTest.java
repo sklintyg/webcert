@@ -290,7 +290,7 @@ public class UtkastModuleApiControllerTest {
         user.setAuthorities(new HashMap<>());
         user.setFeatures(Stream.of(features).map(WebcertFeature::getName).collect(Collectors.toSet()));
         user.getFeatures().addAll(Stream.of(features).map(f -> f.getName() + "." + intygType).collect(Collectors.toSet()));
-        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling, false, false));
+        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling, false, false, true));
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();

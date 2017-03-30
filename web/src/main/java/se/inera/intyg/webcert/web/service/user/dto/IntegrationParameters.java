@@ -13,11 +13,12 @@ public final class IntegrationParameters {
     private final boolean sjf;
     private final boolean patientDeceased;
     private final boolean inactiveUnit;
+    private final boolean copyOk;
 
     // CHECKSTYLE:OFF ParameterNumber
     public IntegrationParameters(String reference, String responsibleHospName, String alternateSsn, String fornamn, String mellannamn,
             String efternamn, String postadress, String postnummer, String postort, boolean sjf, boolean patientDeceased,
-            boolean inactiveUnit) {
+            boolean inactiveUnit, boolean copyOk) {
         this.reference = reference;
         this.responsibleHospName = responsibleHospName;
         this.alternateSsn = alternateSsn;
@@ -30,6 +31,7 @@ public final class IntegrationParameters {
         this.sjf = sjf;
         this.patientDeceased = patientDeceased;
         this.inactiveUnit = inactiveUnit;
+        this.copyOk = copyOk;
     }
     // CHECKSTYLE:ON ParameterNumber
 
@@ -80,4 +82,9 @@ public final class IntegrationParameters {
     public boolean isInactiveUnit() {
         return inactiveUnit;
     }
+
+    public boolean isCopyOk() {
+        return copyOk;
+    }
+
 }

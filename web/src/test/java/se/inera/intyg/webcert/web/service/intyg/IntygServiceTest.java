@@ -804,7 +804,7 @@ public class IntygServiceTest {
     @Test
     public void testDeceasedIsNotSetForAlivePatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
-        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false));
+        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertFalse(intygData.isDeceased());
     }
@@ -812,7 +812,7 @@ public class IntygServiceTest {
     @Test
     public void testDeceasedIsSetForDeadPatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
-        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false));
+        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertTrue(intygData.isDeceased());
     }

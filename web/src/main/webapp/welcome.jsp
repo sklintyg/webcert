@@ -499,7 +499,8 @@
           postadress: 'Nygatan 14',
           postnummer: '555 66',
           postort: 'Nyberga',
-          sjf: true
+          sjf: true,
+          kopieringOk: true
       };
      $scope.djupintegrationsInloggning = function(evt) {
          evt.preventDefault();
@@ -508,6 +509,7 @@
              var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
              q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
              q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
+             q+='&kopieringOK=' + $scope.intlink.kopieringOk;
              window.location.href=q;
          }, function fail(error) {
              alert("Fel vid djupintegrations-inloggningen!");
@@ -816,6 +818,7 @@
                   <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.postadress" placeholder="Postadress"><br>
                   <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
                   <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
+                  <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.kopieringOk"> <br>
                   <button ng-click="djupintegrationsInloggning($event)" class="btn btn-sm btn-warning" style="width:100%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">länkinloggning</button>
 
                 </div>
