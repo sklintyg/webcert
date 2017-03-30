@@ -111,6 +111,15 @@ module.exports = function() {
         return gotoPatient(patient);
     });
 
+    this.Given(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function() {
+        var patient = {
+            id: '193804139149'
+        };
+        return element(by.id('pnr')).sendKeys(patient.id).then(function() {
+            return element(by.id('skapapersonnummerfortsatt')).sendKeys(protractor.Key.SPACE);
+        });
+    });
+
     this.Given(/^jag går in på en patient som är avliden$/, function() {
         //return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0]);
         var patient = testdataHelpers.shuffle(testdata.values.patienterAvlidna)[0];
@@ -226,6 +235,15 @@ module.exports = function() {
         });
         // }
 
+    });
+
+    this.Given(/^ska ett felmeddelande visas som innehåller texten "([^"]*)"$/, function(errorMsg) {
+        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
+            return elm.getText();
+        });
+        return alertTexts.then(function(result) {
+            return expect(result.join('\n')).to.have.string(errorMsg);
+        });
     });
 
     this.Given(/^ska ett felmeddelande visas$/, function(callback) {
