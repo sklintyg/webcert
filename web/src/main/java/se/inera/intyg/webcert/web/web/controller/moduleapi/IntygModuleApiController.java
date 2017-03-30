@@ -321,11 +321,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Create a copy that is a replacement (ersättning) of an existing certificate.
-     *
-     * @param request
-     * @param intygsTyp
-     * @param orgIntygsId
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/ersatt")

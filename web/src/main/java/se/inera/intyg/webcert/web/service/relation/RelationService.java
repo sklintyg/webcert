@@ -56,8 +56,6 @@ public interface RelationService {
 
     /**
      * Optionally return the latest replacement relation for the given intygsId for the supplied relations.
-     * @param intygId
-     * @return
      */
     Optional<RelationItem> getReplacedByRelation(String intygId);
 

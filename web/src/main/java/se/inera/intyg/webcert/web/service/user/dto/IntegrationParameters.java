@@ -10,7 +10,7 @@ public final class IntegrationParameters {
     private final String postadress;
     private final String postnummer;
     private final String postort;
-    private final boolean sjf;
+    private final boolean sjf; //Sammanhållen JournalFöring
     private final boolean patientDeceased;
     private final boolean inactiveUnit;
     private final boolean copyOk;
