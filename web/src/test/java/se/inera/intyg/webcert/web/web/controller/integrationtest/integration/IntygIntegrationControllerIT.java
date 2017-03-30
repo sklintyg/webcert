@@ -448,7 +448,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("api/anvandare")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
-                .body("parameters." + IntygIntegrationController.PARAM_COPY_OK, equalTo(true));
+                .body("parameters.copyOk", equalTo(true));
     }
 
 }
