@@ -24,6 +24,7 @@
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var utkastPage = pages.intyg.base.utkast;
+var luseUtkastPage = pages.intyg.luse.utkast;
 var helpers = require('./helpers.js');
 
 function signeraUtkast() {
@@ -164,6 +165,11 @@ module.exports = function() {
         return expect(element(by.id('patientNamnPersonnummer')).getText()).to.eventually.not.contain(namn);
 
     });
+
+    this.When(/^jag markerar intyget som klart för signering$/, function() {
+        return luseUtkastPage.markeraKlartForSigneraButton.sendKeys(protractor.Key.SPACE);
+    });
+
 
 
 };

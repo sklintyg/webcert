@@ -35,7 +35,7 @@ exports.config = {
     frameworkPath: require.resolve('protractor-cucumber-framework'),
     ignoreUncaughtExceptions: true,
     specs: [
-        'features/*.feature'
+        'features/**/*.feature'
     ],
     capabilities: {
         shardTestFiles: false,
