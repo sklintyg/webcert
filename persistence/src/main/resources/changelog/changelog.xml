@@ -900,10 +900,17 @@
 
   <changeSet id="43" author="el">
     <addColumn tableName="INTYG">
-      <column name="KLART_FOR_SIGNERING_DATUM" type="datetime">
+      <column name="KLAR_FOR_SIGNERA_DATUM" type="datetime">
         <constraints nullable="true" />
       </column>
     </addColumn>
+  </changeSet>
+
+  <changeSet id="44" author="cf">
+    <renameColumn tableName="INTYG"
+                  oldColumnName="KLAR_FOR_SIGNERA_DATUM"
+                  newColumnName="KLART_FOR_SIGNERING_DATUM"
+                  columnDataType="datetime"/>
   </changeSet>
 
 </databaseChangeLog>
