@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -72,13 +72,13 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                 UtkastPage.markeraSomKlartAttSigneraButtonClick();
 
                 // Vänta på att den modala dialogen öppnas och Yes-knappen blir synlig
-                expect(UtkastPage.markeraKlartAttSigneraModalYesButton.isDisplayed()).toBeTruthy();
+                expect(UtkastPage.markeraKlartForSigneringModalYesButton.isDisplayed()).toBeTruthy();
             });
 
             it('Klicka knappen för Markera utkast redo att signera', function() {
-                UtkastPage.markeraKlartAttSigneraModalYesButton.sendKeys(protractor.Key.SPACE);
+                UtkastPage.markeraKlartForSigneringModalYesButton.sendKeys(protractor.Key.SPACE);
 
-                expect(UtkastPage.markeradKlarForSigneringText.isDisplayed()).toBeTruthy();
+                expect(UtkastPage.markeradKlartForSigneringText.isDisplayed()).toBeTruthy();
             });
 
             xit('Gör REST-anrop till notification-stubben, tillse att vår post finns med KFSIGN', function() {
@@ -105,7 +105,6 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
     });
 
     afterAll(function() {
-        testdataHelper.deleteIntyg(utkastId);
         testdataHelper.deleteUtkast(utkastId);
         restUtil.deregisterEnhetAsDjupintegrerad('TSTNMT2321000156-1039');
     });

@@ -135,7 +135,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
         draftHolder.getRelations().addAll(relationService.getRelations(utkast.getIntygsId())
                 .orElse(RelationItem.createBaseCase(utkast)));
-        draftHolder.setKlarForSigneraDatum(utkast.getKlarForSigneraDatum());
+        draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
 
         return Response.ok(draftHolder).build();
     }

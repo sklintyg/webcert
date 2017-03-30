@@ -24,7 +24,7 @@
     "latestTextVersion": {
       "type": "string"
     },
-    "klarForSigneraDatum": {
+    "klartForSigneringDatum": {
         "type": "string"
     },
     "relations": {

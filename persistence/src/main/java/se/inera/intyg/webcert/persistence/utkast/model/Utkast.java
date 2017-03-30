@@ -142,9 +142,9 @@ public class Utkast {
     @Enumerated(EnumType.STRING)
     private RelationKod relationKod;
 
-    @Column(name = "KLAR_FOR_SIGNERA_DATUM")
+    @Column(name = "KLART_FOR_SIGNERING_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
-    private LocalDateTime klarForSigneraDatum;
+    private LocalDateTime klartForSigneringDatum;
 
     @PrePersist
     void onPrePersist() {
@@ -358,12 +358,12 @@ public class Utkast {
         this.relationKod = relationKod;
     }
 
-    public LocalDateTime getKlarForSigneraDatum() {
-        return klarForSigneraDatum;
+    public LocalDateTime getKlartForSigneringDatum() {
+        return klartForSigneringDatum;
     }
 
-    public void setKlarForSigneraDatum(LocalDateTime klarForSigneraDatum) {
-        this.klarForSigneraDatum = klarForSigneraDatum;
+    public void setKlartForSigneringDatum(LocalDateTime klartForSigneringDatum) {
+        this.klartForSigneringDatum = klartForSigneringDatum;
     }
 
     private byte[] toBytes(String data) {

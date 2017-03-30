@@ -34,9 +34,9 @@ var FkBaseUtkast = BaseUtkast._extend({
         this.at = element(by.css('.edit-form'));
 
         // The "markera klart för att signera" functionality is common to all SIT / SMI intygstyper.
-        this.markeraKlartForSigneraButton = element(by.id('markeraKlartForSigneraButton'));
-        this.markeraKlartAttSigneraModalYesButton = element(by.id('buttonYes'));
-        this.markeradKlarForSigneringText = element(by.id('draft-marked-ready-text'));
+        this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));
+        this.markeraKlartForSigneringModalYesButton = element(by.id('buttonYes'));
+        this.markeradKlartForSigneringText = element(by.id('draft-marked-ready-text'));
     },
 
     isAt: function isAt() {
@@ -48,10 +48,10 @@ var FkBaseUtkast = BaseUtkast._extend({
         return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
     },
     isMarkeraSomKlartAttSigneraButtonDisplayed: function() {
-        return this.markeraKlartForSigneraButton.isDisplayed();
+        return this.markeraKlartForSigneringButton.isDisplayed();
     },
     markeraSomKlartAttSigneraButtonClick: function() {
-        this.markeraKlartForSigneraButton.sendKeys(protractor.Key.SPACE);
+        this.markeraKlartForSigneringButton.sendKeys(protractor.Key.SPACE);
     }
 });
 

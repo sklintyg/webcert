@@ -177,9 +177,9 @@ public class UtkastServiceImpl implements UtkastService {
         validateUserAllowedToSendKFSignNotification(intygsId, intygType);
 
         Utkast utkast = getIntygAsDraft(intygsId, intygType);
-        if (utkast.getKlarForSigneraDatum() == null) {
+        if (utkast.getKlartForSigneringDatum() == null) {
             notificationService.sendNotificationForDraftReadyToSign(utkast);
-            utkast.setKlarForSigneraDatum(LocalDateTime.now());
+            utkast.setKlartForSigneringDatum(LocalDateTime.now());
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
             saveDraft(utkast);
             LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
