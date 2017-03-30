@@ -42,7 +42,7 @@
       address="${intygstjanst.listcertificatesforcare.v3.endpoint.url}" />
 
     <jaxws:client id="sendCertificateClient"
-      serviceClass="se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponderInterface"
+      serviceClass="se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponderInterface"
       address="${intygstjanst.sendcertificate.endpoint.url}" />
 
     <jaxws:client id="revokeCertificateClient"
@@ -50,11 +50,11 @@
       address="${intygstjanst.revokecertificate.endpoint.url}" />
 
     <jaxws:client id="revokeCertificateClientRivta"
-      serviceClass="se.riv.clinicalprocess.healthcond.certificate.revokeCertificate.v1.RevokeCertificateResponderInterface"
+      serviceClass="se.riv.clinicalprocess.healthcond.certificate.revokeCertificate.v2.RevokeCertificateResponderInterface"
       address="${intygstjanst.revokecertificaterivta.endpoint.url}" />
 
     <jaxws:client id="sendMessageToRecipientClient"
-      serviceClass="se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientResponderInterface"
+      serviceClass="se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface"
       address="${intygstjanst.sendmessagetorecipient.endpoint.url}" />
 
     <jaxws:client id="pingIntygstjanstForConfigurationClient"
@@ -70,8 +70,8 @@
         address="${cgi.funktionstjanster.grp.url}" />
 
     <jaxws:client id="registerCertificateClient"
-        serviceClass="se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v2.RegisterCertificateResponderInterface"
-        address="${intygstjanst.registercertificate.v2.endpoint.url}">
+        serviceClass="se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateResponderInterface"
+        address="${intygstjanst.registercertificate.v3.endpoint.url}">
     </jaxws:client>
 
     <jaxws:client id="getCertificateClient"

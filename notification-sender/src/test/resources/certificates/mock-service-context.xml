@@ -29,6 +29,6 @@
   <bean id="mockSendCertificateServiceClient" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl" />
 
   <bean id="mockSendMessageToRecipientResponder" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientResponderInterface" />
+    <constructor-arg value="se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface" />
   </bean>
 </beans>

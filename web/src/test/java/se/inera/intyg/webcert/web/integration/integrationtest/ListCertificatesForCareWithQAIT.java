@@ -65,7 +65,7 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
     public void testResponseRespectsSchema() throws Exception {
 
         String enhetsId = "123456";
-        String personnummer = "intyg-1";
+        String personnummer = "191212121212";
 
         requestTemplate.add("data", new ListCertificatesForCareWithQARequestParameters(personnummer, enhetsId));
 

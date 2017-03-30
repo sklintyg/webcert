@@ -38,9 +38,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
@@ -50,7 +50,7 @@ public class SendMessageToRecipientProcessorTest {
     private static final String INTYG_ID = "intyg-id";
     private static final String LOGICAL_ADDRESS = "logicalAddress";
     private static final String MESSAGE_ID = "b7360a70-80a3-4d24-b10e-621c3c0c826a";
-    private static final String XML_BODY = "<SendMessageToRecipient xmlns=\"urn:riv:clinicalprocess:healthcond:certificate:SendMessageToRecipientResponder:1\"><meddelande-id>"
+    private static final String XML_BODY = "<SendMessageToRecipient xmlns=\"urn:riv:clinicalprocess:healthcond:certificate:SendMessageToRecipientResponder:2\"><meddelande-id>"
             + MESSAGE_ID + "</meddelande-id></SendMessageToRecipient>";
     @InjectMocks
     SendMessageToRecipientProcessor sendMessageProcessor;

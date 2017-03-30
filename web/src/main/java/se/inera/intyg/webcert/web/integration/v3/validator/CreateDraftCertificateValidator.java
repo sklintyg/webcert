@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.integration.v3.validator;
 
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
 public interface CreateDraftCertificateValidator {
 

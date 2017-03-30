@@ -30,9 +30,9 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 

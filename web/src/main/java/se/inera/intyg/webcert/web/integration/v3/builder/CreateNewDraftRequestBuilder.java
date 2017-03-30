@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.integration.v3.builder;
 
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.infrastructure.directory.v1.CommissionType;
 
 public interface CreateNewDraftRequestBuilder {

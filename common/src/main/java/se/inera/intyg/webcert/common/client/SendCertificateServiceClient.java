@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.common.client;
 
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v1.SendCertificateToRecipientResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 
 /**
  * Created by eriklupander on 2015-06-03.

@@ -32,7 +32,7 @@ import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.infra.integration.hsa.util.HsaAttributeExtractor;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.infrastructure.directory.v1.CommissionType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
@@ -59,7 +59,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     }
 
     private HoSPersonal createHoSPerson(
-            se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v2.HosPersonal hoSPersonType,
+            se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal hoSPersonType,
             Vardenhet vardenhet) {
         HoSPersonal hoSPerson = new HoSPersonal();
         hoSPerson.setFullstandigtNamn(hoSPersonType.getFullstandigtNamn());

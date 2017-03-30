@@ -19,7 +19,7 @@
   -->
 
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:cdc="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:2">
+                xmlns:cdc="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3">
 
   <xsl:include href="transform/clinicalprocess-healthcond-3/general-clinicalprocess-healthcond-transform.xslt"/>
 

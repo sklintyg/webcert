@@ -94,7 +94,6 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 /**
  * @author andreaskaltenbach
@@ -208,15 +207,11 @@ public class IntygServiceImpl implements IntygService {
         try {
             ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress, request);
 
-            if (response.getResult().getResultCode() == ResultCodeType.OK) {
-                List<ListIntygEntry> fullIntygItemList = intygConverter
-                        .convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
-                fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList);
-                addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
-                return Pair.of(fullIntygItemList, Boolean.FALSE);
-            } else {
-                LOG.error("Error when calling webservice ListCertificatesForCare: {}", response.getResult().getResultText());
-            }
+            List<ListIntygEntry> fullIntygItemList = intygConverter
+                    .convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
+            fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList);
+            addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
+            return Pair.of(fullIntygItemList, Boolean.FALSE);
 
         } catch (WebServiceException wse) {
             LOG.warn("Error when connecting to intygstjänsten: {}", wse.getMessage());

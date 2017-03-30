@@ -36,7 +36,7 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListaType;
-import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v2.RegisterCertificateType;
+import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
@@ -64,7 +64,6 @@ public class ListCertificatesForCareResponderStub implements ListCertificatesFor
             response.getIntygsLista().getIntyg().add(intyg);
         }
 
-        response.setResult(ResultTypeUtil.okResult());
         return response;
     }
 

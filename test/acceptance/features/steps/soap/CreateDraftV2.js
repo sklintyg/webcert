@@ -43,9 +43,9 @@ module.exports.CreateDraftCertificateV2 = function(user, intygstyp) {
     return '<urn1:CreateDraftCertificate' +
         ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"' +
         ' xmlns:urn="urn:riv:itintegration:registry:1"' +
-        ' xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:2"' +
-        ' xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2"' +
-        ' xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2">' +
+        ' xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3"' +
+        ' xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3"' +
+        ' xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3">' +
         '<urn1:intyg>' +
         '<urn1:typAvIntyg>' +
         '<urn2:code>' + typCode + '</urn2:code>' +

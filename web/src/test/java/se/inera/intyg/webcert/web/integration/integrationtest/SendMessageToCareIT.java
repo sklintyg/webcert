@@ -42,7 +42,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 public class SendMessageToCareIT extends BaseWSIntegrationTest {
 
     private static final String BASE = "Envelope.Body.SendMessageToCareResponse.";
-    private static final String SEND_MESSAGE_TO_CARE_V1_0 = "services/send-message-to-care/v1.0";
+    private static final String SEND_MESSAGE_TO_CARE_V2_0 = "services/send-message-to-care/v2.0";
     BodyExtractorFilter responseBodyExtractorFilter;
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -51,16 +51,16 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
     @Before
     public void setup() throws IOException {
         // Setup String template resource
-        templateGroup = new STGroupFile("integrationtestTemplates/sendMessageToCare.v1.stg");
+        templateGroup = new STGroupFile("integrationtestTemplates/sendMessageToCare.v2.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/SendMessageToCareInteraction/SendMessageToCareResponder_1.0.xsd");
+                .load("interactions/SendMessageToCareInteraction/SendMessageToCareResponder_2.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
         responseBodyExtractorFilter = new BodyExtractorFilter(
-                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1"),
+                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2"),
                 "soap:Envelope/soap:Body/lc:SendMessageToCareResponse");
     }
 
@@ -74,7 +74,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
 
         given().filter(responseBodyExtractorFilter).body(requestTemplate.render())
                 .when()
-                .post(SEND_MESSAGE_TO_CARE_V1_0)
+                .post(SEND_MESSAGE_TO_CARE_V2_0)
                 .then()
                 .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
     }
@@ -86,7 +86,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
 
         given().body(requestTemplate.render()).when()
-                .post(SEND_MESSAGE_TO_CARE_V1_0)
+                .post(SEND_MESSAGE_TO_CARE_V2_0)
                 .then().statusCode(200)
                 .rootPath(BASE)
                 .body("result.resultCode", is(ResultCodeType.ERROR.value()))
@@ -100,7 +100,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
 
         given().body(requestTemplate.render()).when()
-                .post(SEND_MESSAGE_TO_CARE_V1_0)
+                .post(SEND_MESSAGE_TO_CARE_V2_0)
                 .then().statusCode(200)
                 .rootPath(BASE)
                 .body("result.resultCode", is(ResultCodeType.ERROR.value()))
@@ -115,7 +115,7 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
-                .post(SEND_MESSAGE_TO_CARE_V1_0)
+                .post(SEND_MESSAGE_TO_CARE_V2_0)
                 .then()
                 .statusCode(200)
                 .rootPath(BASE)

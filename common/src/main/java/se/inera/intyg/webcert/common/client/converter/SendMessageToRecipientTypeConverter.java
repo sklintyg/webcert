@@ -24,8 +24,8 @@ import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.*;
 
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.ObjectFactory;
-import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v1.SendMessageToRecipientType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.ObjectFactory;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
 public final class SendMessageToRecipientTypeConverter {
 

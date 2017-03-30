@@ -43,7 +43,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 /**
  * Created by eriklupander, marced on 2016-05-10.
  */
-public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
+public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
 
     private static final String LUAE_FS = "LUAE_FS";
     private static final String LUAE_NA = "LUAE_NA";
@@ -53,7 +53,7 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     private static final String TS_DIABETES = "TSTRK1031";
 
     private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
-    private static final String CREATE_DRAFT_CERTIFICATE_V3_0 = "services/create-draft-certificate/v2.0";
+    private static final String CREATE_DRAFT_CERTIFICATE_V3_0 = "services/create-draft-certificate/v3.0";
 
     private static final String DEFAULT_LAKARE_HSAID = "IFV1239877878-1049";
     private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";
@@ -65,16 +65,16 @@ public class CreateDraftCertificateV2IT extends BaseWSIntegrationTest {
     @Before
     public void setup() throws IOException {
         // Setup String template resource
-        templateGroup = new STGroupFile("integrationtestTemplates/createDraftCertificate.v2.stg");
+        templateGroup = new STGroupFile("integrationtestTemplates/createDraftCertificate.v3.stg");
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_2.0.xsd");
+                .load("interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_3.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
         responseBodyExtractorFilter = new BodyExtractorFilter(
-                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:2"),
+                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3"),
                 "soap:Envelope/soap:Body/lc:CreateDraftCertificateResponse");
     }
 

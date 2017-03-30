@@ -27,8 +27,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 @SchemaValidation
 public class ListCertificatesForCareWithQAResponderImpl implements ListCertificatesForCareWithQAResponderInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ListCertificatesForCareWithQAResponderImpl.class);
-
     @Autowired
     private IntygService intygService;
 
@@ -66,7 +64,6 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
             list.getItem().add(item);
         }
         response.setList(list);
-        response.setResult(ResultTypeUtil.okResult());
         return response;
     }
 }
