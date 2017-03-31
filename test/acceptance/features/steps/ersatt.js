@@ -24,7 +24,7 @@
 
 module.exports = function() {
 
-    this.Given(/^ska jag knapp med texten "([^"]*)"$/, function(btnTxt) {
+    this.Given(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
         return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);
     });
 
