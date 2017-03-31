@@ -6,11 +6,8 @@ import static se.inera.intyg.webcert.notification_sender.notifications.services.
 import java.util.stream.Collectors;
 
 import org.apache.cxf.annotations.SchemaValidation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
