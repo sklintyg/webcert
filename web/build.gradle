@@ -168,6 +168,8 @@ dependencies {
 
     testRuntime "com.h2database:h2:${h2Version}"
 
+    apt "com.google.auto.value:auto-value:${autovalueVersion}"
+
     gretty "org.apache.activemq:activemq-client:${activeMqVersion}"
     gretty "org.apache.activemq:activemq-broker:${activeMqVersion}"
     gretty "com.h2database:h2:${h2Version}"
