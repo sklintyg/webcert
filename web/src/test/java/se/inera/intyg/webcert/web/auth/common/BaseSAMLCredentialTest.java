@@ -45,6 +45,8 @@ import static org.mockito.Mockito.mock;
 public abstract class BaseSAMLCredentialTest extends AuthoritiesConfigurationTestSetup {
 
     protected static Assertion assertionPrivatlakare;
+    protected static Assertion assertionPrivatlakareSmartcardPKI;
+    protected static Assertion assertionPrivatlakareMobileTwoFactorContract;
     protected static Assertion assertionLandstingslakare;
     protected static Assertion assertionUnknownAuthCtx;
 
@@ -61,6 +63,18 @@ public abstract class BaseSAMLCredentialTest extends AuthoritiesConfigurationTes
             XMLObject responseXmlObj = readSamlDocument("CGIElegAssertiontest/sample-saml2-response-bankid.xml");
             Response response = (Response) responseXmlObj;
             assertionPrivatlakare = response.getAssertions().get(0);
+        }
+
+        if (assertionPrivatlakareSmartcardPKI == null) {
+            XMLObject responseXmlObj = readSamlDocument("CGIElegAssertiontest/sample-saml2-response-bankid-smartcardpki.xml");
+            Response response = (Response) responseXmlObj;
+            assertionPrivatlakareSmartcardPKI = response.getAssertions().get(0);
+        }
+
+        if (assertionPrivatlakareMobileTwoFactorContract == null) {
+            XMLObject responseXmlObj = readSamlDocument("CGIElegAssertiontest/sample-saml2-response-bankid-twofactor.xml");
+            Response response = (Response) responseXmlObj;
+            assertionPrivatlakareMobileTwoFactorContract = response.getAssertions().get(0);
         }
 
         if (assertionLandstingslakare == null) {
@@ -87,6 +101,14 @@ public abstract class BaseSAMLCredentialTest extends AuthoritiesConfigurationTes
 
     protected SAMLCredential buildPrivatlakareSamlCredential() {
         return new SAMLCredential(mock(NameID.class), assertionPrivatlakare, "", "");
+    }
+
+    protected SAMLCredential buildPrivatlakareSamlCredentialSmartcardPKI() {
+        return new SAMLCredential(mock(NameID.class), assertionPrivatlakareSmartcardPKI, "", "");
+    }
+
+    protected SAMLCredential buildPrivatlakareSamlCredentialMobileTwoFactorContract() {
+        return new SAMLCredential(mock(NameID.class), assertionPrivatlakareMobileTwoFactorContract, "", "");
     }
 
     protected SAMLCredential buildLandstingslakareSamlCredential() {
