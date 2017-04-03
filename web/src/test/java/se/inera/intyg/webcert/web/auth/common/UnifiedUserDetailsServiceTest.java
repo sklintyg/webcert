@@ -66,6 +66,18 @@ public class UnifiedUserDetailsServiceTest extends BaseSAMLCredentialTest {
     }
 
     @Test
+    public void testSmartcardPKI() {
+        unifiedUserDetailsService.loadUserBySAML(buildPrivatlakareSamlCredentialSmartcardPKI());
+        verify(elegWebCertUserDetailsService, times(1)).loadUserBySAML(any(SAMLCredential.class));
+    }
+
+    @Test
+    public void testMobileTwoFactorContract() {
+        unifiedUserDetailsService.loadUserBySAML(buildPrivatlakareSamlCredentialMobileTwoFactorContract());
+        verify(elegWebCertUserDetailsService, times(1)).loadUserBySAML(any(SAMLCredential.class));
+    }
+
+    @Test
     public void testTLSClient() {
         unifiedUserDetailsService.loadUserBySAML(buildLandstingslakareSamlCredential());
         verify(webCertUserDetailsService, times(1)).loadUserBySAML(any(SAMLCredential.class));
