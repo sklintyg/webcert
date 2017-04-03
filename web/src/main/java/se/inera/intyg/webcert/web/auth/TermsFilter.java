@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.auth;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
 
 import java.io.IOException;
@@ -120,6 +121,7 @@ public class TermsFilter extends OncePerRequestFilter {
 
     private boolean isElegAuthContext(WebCertUser webCertUser) {
         return webCertUser.getAuthenticationScheme().equals(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI)
+                || webCertUser.getAuthenticationScheme().equals(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI)
                 || webCertUser.getAuthenticationScheme().equals(FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
     }
 }
