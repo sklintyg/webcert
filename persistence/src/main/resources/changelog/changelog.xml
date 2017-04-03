@@ -920,4 +920,24 @@
           tableName="INTEGRERADE_VARDENHETER"/>
   </changeSet>
 
+  <changeSet id="46" author="kja">
+    <addColumn tableName="HANDELSE">
+      <column name="SISTA_DATUM_FOR_SVAR" type="date">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+    <addColumn tableName="HANDELSE">
+      <column name="AMNE" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="47" author="kja">
+    <createIndex indexName="IDX_HANDELSE_INTYGS_ID"
+      tableName="HANDELSE" unique="false">
+      <column name="INTYGS_ID" />
+    </createIndex>
+  </changeSet>
+
 </databaseChangeLog>

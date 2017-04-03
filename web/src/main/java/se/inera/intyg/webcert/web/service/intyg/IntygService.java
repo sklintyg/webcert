@@ -27,7 +27,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 /**
@@ -124,11 +125,10 @@ public interface IntygService {
 
     /**
      * Gathers the information required to return the list with notifications and creates a list of
-     * IntygWithNotifications objects.
+     * IntygWithNotificationsResponse objects.
      *
-     * @param personnummer
-     * @param enhetsId
+     * @param request
      * @return
      */
-    List<IntygWithNotifications> listCertificatesForCareWithQA(Personnummer personnummer, List<String> enhetsId);
+    List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request);
 }

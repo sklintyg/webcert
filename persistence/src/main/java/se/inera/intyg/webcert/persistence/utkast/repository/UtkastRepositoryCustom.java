@@ -73,6 +73,17 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     List<Utkast> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
+     * Returns all {@link Utkast} entities belonging to a certain patient and belonging to a caregiver and having selected statuses.
+     *
+     * @param patientPnr
+     * @param vardgivarId
+     * @param statuses
+     * @return
+     */
+    @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.vardgivarId = :vardgivarId AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
+    List<Utkast> findDraftsByPatientAndVardgivareAndStatus(@Param("patientPnr") String patientPnr, @Param("vardgivarId") String vardgivarId, @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
+
+    /**
      * Returns a list of all unique hsaId and name (of vardperson who edited the draft) which matches the supplied enhetsId.
      *
      * @param enhetsid

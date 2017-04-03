@@ -726,6 +726,7 @@ public class NotificationServiceImplTest {
 
     private FragaSvar createFragaSvar() {
         FragaSvar fs = new FragaSvar();
+        fs.setAmne(Amne.ARBETSTIDSFORLAGGNING);
         fs.setInternReferens(FRAGASVAR_ID);
         fs.setIntygsReferens(new IntygsReferens());
         fs.getIntygsReferens().setIntygsId(INTYG_ID);

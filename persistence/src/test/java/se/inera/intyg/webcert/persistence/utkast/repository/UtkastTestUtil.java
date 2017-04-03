@@ -78,7 +78,7 @@ public final class UtkastTestUtil {
 
     public static Utkast buildUtkast(String enhetsId, String relationIntygsId, RelationKod relationKod) {
         return buildUtkast(UUID.randomUUID().toString(), enhetsId, UtkastStatus.DRAFT_INCOMPLETE, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
-                PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null, relationIntygsId, relationKod);
+                PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null, relationIntygsId, relationKod, enhetsId);
     }
 
     public static Utkast buildUtkast(String enhetsId, UtkastStatus status, String type, String hoSPersonId,
@@ -92,14 +92,15 @@ public final class UtkastTestUtil {
             String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
             String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum) {
         return buildUtkast(intygsId, enhetsId, status, type, hoSPersonId, hoSPersonNamn, personNummer, personFornamn, personMellannamn,
-                personEfternamn, model, senastSparadDatum, null, null);
+                personEfternamn, model, senastSparadDatum, null, null, enhetsId);
     }
 
     public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String type,
             String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
             String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum, String relationIntygsId,
-            RelationKod relationKod) {
+            RelationKod relationKod, String vardgivarId) {
         Utkast intyg = new Utkast();
+        intyg.setVardgivarId(vardgivarId);
         intyg.setIntygsId(intygsId);
         intyg.setIntygsTyp(type);
         intyg.setEnhetsId(enhetsId);

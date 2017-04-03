@@ -78,7 +78,8 @@ import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -421,28 +422,38 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public List<IntygWithNotifications> listCertificatesForCareWithQA(Personnummer personnummer, List<String> enhetsId) {
-        List<Utkast> utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer),
-                enhetsId, Arrays.asList(UtkastStatus.values()),
-                moduleRegistry.listAllModules().stream()
-                        .map(IntygModule::getId)
-                        .collect(Collectors.toSet()));
+    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request) {
+        List<Utkast> utkastList;
+        if (request.shouldUseEnhetId()) {
+            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
+                    DaoUtil.formatPnrForPersistence(request.getPersonnummer()), request.getEnhetId(), Arrays.asList(UtkastStatus.values()),
+                    moduleRegistry.listAllModules().stream().map(IntygModule::getId).collect(Collectors.toSet()));
+        } else {
+            utkastList = utkastRepository.findDraftsByPatientAndVardgivareAndStatus(
+                    DaoUtil.formatPnrForPersistence(request.getPersonnummer()), request.getVardgivarId(),
+                    Arrays.asList(UtkastStatus.values()),
+                    moduleRegistry.listAllModules().stream().map(IntygModule::getId).collect(Collectors.toSet()));
+        }
 
-        List<IntygWithNotifications> res = new ArrayList<>();
+        List<IntygWithNotificationsResponse> res = new ArrayList<>();
         for (Utkast utkast : utkastList) {
-            List<Handelse> notifications = notificationService.getNotifications(utkast.getIntygsId());
-            // In version 2.0 of ListCertificatesForCareWithQA is Handelse mandatory. Skip certificates without
-            // Handelse.
-            if (!notifications.isEmpty()) {
-                try {
-                    ModuleApi api = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-                    Intyg intyg = api.getIntygFromUtlatande(api.getUtlatandeFromJson(utkast.getModel()));
-                    Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(utkast.getIntygsId(),
-                            utkast.getIntygsTyp());
-                    res.add(new IntygWithNotifications(intyg, notifications, arenden.getLeft(), arenden.getRight()));
-                } catch (ModuleNotFoundException | ModuleException | IOException e) {
-                    LOG.error("Could not convert intyg {} to external format", utkast.getIntygsId());
-                }
+            List<Handelse> notifications = notificationService.getNotifications(utkast.getIntygsId(), request.getStartDate(),
+                    request.getEndDate());
+
+            // If the request contained either start date or end date we should not return any intyg with no handelse in
+            // this time span
+            if (/* (request.getStartDate() != null || request.getEndDate() != null) && */notifications.isEmpty()) {
+                continue;
+            }
+
+            try {
+                ModuleApi api = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+                Intyg intyg = api.getIntygFromUtlatande(api.getUtlatandeFromJson(utkast.getModel()));
+                Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(utkast.getIntygsId(),
+                        utkast.getIntygsTyp());
+                res.add(new IntygWithNotificationsResponse(intyg, notifications, arenden.getLeft(), arenden.getRight()));
+            } catch (ModuleNotFoundException | ModuleException | IOException e) {
+                LOG.error("Could not convert intyg {} to external format", utkast.getIntygsId());
             }
         }
         return res;

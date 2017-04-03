@@ -31,8 +31,11 @@ import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -61,6 +64,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
@@ -215,7 +219,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
         if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
-            sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
+            sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT,
+                    fragaSvar.getSistaDatumForSvar(), ArendeAmne.fromAmne(fragaSvar.getAmne()).orElse(null));
         } else {
             sendNotificationForIncomingQuestionByMail(new MailNotification(fragaSvar.getInternReferens().toString(),
                     fragaSvar.getIntygsReferens().getIntygsId(), Fk7263EntryPoint.MODULE_ID,
@@ -250,7 +255,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendNotificationForAnswerRecieved(Arende arende) {
         if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
-            sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
+            sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT, arende.getSistaDatumForSvar(),
+                    arende.getAmne());
         } else {
             sendNotificationForIncomingAnswerByMail(
                     new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(),
@@ -260,18 +266,31 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotificationForQAs(String intygsId, NotificationEvent event) {
-        Optional<Utkast> utkast = getUtkast(intygsId);
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), event);
-        }
+        sendNotificationForQAs(intygsId, event, null, null);
     }
 
     @Override
-    public List<Handelse> getNotifications(String intygsId) {
-        return handelseRepo.findByIntygsId(intygsId);
+    public List<Handelse> getNotifications(String intygsId, LocalDateTime start, LocalDateTime end) {
+        return handelseRepo.findByIntygsId(intygsId).stream()
+                .filter(handelse -> {
+                    if (start != null && handelse.getTimestamp().isBefore(start)) {
+                        return false;
+                    }
+                    if (end != null && handelse.getTimestamp().isAfter(end)) {
+                        return false;
+                    }
+                    return true;
+                }).collect(Collectors.toList());
     }
 
-    protected void createAndSendNotification(Utkast utkast, NotificationEvent event) {
+    protected void sendNotificationForQAs(String intygsId, NotificationEvent event, LocalDate date, ArendeAmne amne) {
+        Optional<Utkast> utkast = getUtkast(intygsId);
+        if (utkast.isPresent()) {
+            createAndSendNotificationForQAs(utkast.get(), event, date, amne);
+        }
+    }
+
+    protected void createAndSendNotificationForQAs(Utkast utkast, NotificationEvent event, LocalDate date, ArendeAmne amne) {
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
         if (!version.isPresent()) {
@@ -342,6 +361,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference) {
+        createAndSendNotification(utkast, handelse, reference, null, null);
+    }
+
+    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference, LocalDate sistaDatumForSvar,
+            ArendeAmne amne) {
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
         if (!version.isPresent()) {
@@ -351,11 +375,13 @@ public class NotificationServiceImpl implements NotificationService {
 
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(),
                 reference);
-        save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(), utkast.getPatientPersonnummer().getPersonnummer());
+        save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(), utkast.getPatientPersonnummer().getPersonnummer(),
+                sistaDatumForSvar, amne);
         send(notificationMessage, utkast.getEnhetsId());
     }
 
-    private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer) {
+    private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
+            LocalDate sistaDatumForSvar, ArendeAmne amne) {
         Handelse handelse = new Handelse();
         handelse.setCode(notificationMessage.getHandelse());
         handelse.setEnhetsId(enhetsId);
@@ -364,6 +390,8 @@ public class NotificationServiceImpl implements NotificationService {
         handelse.setRef(notificationMessage.getReference());
         handelse.setTimestamp(notificationMessage.getHandelseTid());
         handelse.setVardgivarId(vardgivarId);
+        handelse.setSistaDatumForSvar(sistaDatumForSvar);
+        handelse.setAmne(amne);
         handelseRepo.save(handelse);
     }
 

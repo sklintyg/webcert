@@ -70,7 +70,6 @@ import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -99,7 +98,8 @@ import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeExcep
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -754,12 +754,92 @@ public class IntygServiceTest {
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId))).thenReturn(Arrays.asList(handelse));
+        when(notificationService.getNotifications(eq(intygId), any(null), any(null)))
+                .thenReturn(Arrays.asList(handelse));
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
-        List<IntygWithNotifications> res = intygService.listCertificatesForCareWithQA(new Personnummer(personnummer), enhetList);
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+                new IntygWithNotificationsRequest.Builder().setPersonnummer(new Personnummer(personnummer)).setEnhetId(enhetList).build());
+
+        assertNotNull(res);
+        assertEquals(1, res.size());
+        assertEquals(1, res.get(0).getNotifications().size());
+        assertEquals(HandelsekodEnum.SKAPAT, res.get(0).getNotifications().get(0).getCode());
+        assertEquals(localDateTime, res.get(0).getNotifications().get(0).getTimestamp());
+        assertEquals(1, res.get(0).getSentQuestions().getTotalt());
+        assertEquals(2, res.get(0).getSentQuestions().getEjBesvarade());
+        assertEquals(3, res.get(0).getSentQuestions().getBesvarade());
+        assertEquals(4, res.get(0).getSentQuestions().getHanterade());
+        assertEquals(5, res.get(0).getReceivedQuestions().getTotalt());
+        assertEquals(6, res.get(0).getReceivedQuestions().getEjBesvarade());
+        assertEquals(7, res.get(0).getReceivedQuestions().getBesvarade());
+        assertEquals(8, res.get(0).getReceivedQuestions().getHanterade());
+    }
+
+    // Reenable when Handelse is 0..*
+//    @Test
+    public void testListCertificatesForCareWithQANoNotifications() throws Exception {
+        final String personnummer = "personnummer";
+        final List<String> enhetList = Arrays.asList("enhet");
+        final String intygType = "intygType";
+        final String intygId = "intygId";
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
+        ArendeCount received = new ArendeCount(5, 6, 7, 8);
+
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
+                eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
+        when(notificationService.getNotifications(eq(intygId), eq(null), eq(null))).thenReturn(Collections.emptyList());
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
+
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+                new IntygWithNotificationsRequest.Builder().setPersonnummer(new Personnummer(personnummer)).setEnhetId(enhetList).build());
+
+        assertNotNull(res);
+        assertEquals(1, res.size());
+        assertTrue(res.get(0).getNotifications().isEmpty());
+        assertEquals(1, res.get(0).getSentQuestions().getTotalt());
+        assertEquals(2, res.get(0).getSentQuestions().getEjBesvarade());
+        assertEquals(3, res.get(0).getSentQuestions().getBesvarade());
+        assertEquals(4, res.get(0).getSentQuestions().getHanterade());
+        assertEquals(5, res.get(0).getReceivedQuestions().getTotalt());
+        assertEquals(6, res.get(0).getReceivedQuestions().getEjBesvarade());
+        assertEquals(7, res.get(0).getReceivedQuestions().getBesvarade());
+        assertEquals(8, res.get(0).getReceivedQuestions().getHanterade());
+    }
+
+    @Test
+    public void testListCertificatesForCareWithQAVardgivare() throws Exception {
+        final String personnummer = "personnummer";
+        final String vardgivarId = "vardgivarId";
+        final String intygType = "intygType";
+        final String intygId = "intygId";
+        Handelse handelse = new Handelse();
+        final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
+        handelse.setTimestamp(localDateTime);
+        handelse.setCode(HandelsekodEnum.SKAPAT);
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
+        ArendeCount received = new ArendeCount(5, 6, 7, 8);
+
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
+                eq(Arrays.asList(UtkastStatus.values())),
+                eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
+        when(notificationService.getNotifications(eq(intygId), any(null), any(null)))
+                .thenReturn(Arrays.asList(handelse));
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
+
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+                new IntygWithNotificationsRequest.Builder().setPersonnummer(new Personnummer(personnummer)).setVardgivarId(vardgivarId)
+                        .build());
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -777,21 +857,32 @@ public class IntygServiceTest {
     }
 
     @Test
-    public void testListCertificatesForCareWithQANoNotifications() throws Exception {
+    public void testListCertificatesForCareWithQANoNotificationsTrim() throws Exception {
+        final LocalDateTime start = LocalDateTime.of(2017, Month.APRIL, 1, 1, 1);
+        final LocalDateTime end = LocalDateTime.of(2018, Month.APRIL, 1, 1, 1);
         final String personnummer = "personnummer";
-        final List<String> enhetList = Arrays.asList("enhet");
+        final String vardgivarId = "vardgivarId";
         final String intygType = "intygType";
         final String intygId = "intygId";
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
+        ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
+        when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
+                eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
+        when(notificationService.getNotifications(eq(intygId), eq(start), eq(end))).thenReturn(Collections.emptyList());
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
-        List<IntygWithNotifications> res = intygService.listCertificatesForCareWithQA(new Personnummer(personnummer), enhetList);
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+                new IntygWithNotificationsRequest.Builder().setPersonnummer(new Personnummer(personnummer)).setVardgivarId(vardgivarId)
+                        .setStartDate(start).setEndDate(end).build());
 
         assertNotNull(res);
-        assertTrue(res.isEmpty());
+        assertEquals(0, res.size());
     }
 
     @Test
@@ -804,7 +895,8 @@ public class IntygServiceTest {
     @Test
     public void testDeceasedIsNotSetForAlivePatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
-        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true));
+        when(webcertUser.getParameters())
+                .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertFalse(intygData.isDeceased());
     }
@@ -812,7 +904,8 @@ public class IntygServiceTest {
     @Test
     public void testDeceasedIsSetForDeadPatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
-        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true));
+        when(webcertUser.getParameters())
+                .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertTrue(intygData.isDeceased());
     }

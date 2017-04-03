@@ -18,12 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-
-import java.util.List;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -90,12 +91,21 @@ public interface NotificationService {
     void sendNotificationForQAs(String intygsId, NotificationEvent event);
 
     /**
-     * Returns all notifications saved for an intyg.
+     * Returns all notifications saved for an intyg for a specified time span.<br/>
+     * <br/>
+     *
+     * Returns all {@link Handelse} from the beginning of time if {@code start} is null.<br/>
+     * Returns all {@link Handelse} to now if {@code end} is null.<br/>
+     * If both {@code start} and {@code end} is null every {@link Handelse} is returned.
      *
      * @param intygsId
      *            the id of the intyg
+     * @param start
+     *            start of the period to gather notifications
+     * @param end
+     *            end of the period to gather notifications
      *
-     * @return a list of all the notifications
+     * @return a list of all the notifications matching the specified time span
      */
-    List<Handelse> getNotifications(String intygsId);
+    List<Handelse> getNotifications(String intygsId, LocalDateTime start, LocalDateTime end);
 }

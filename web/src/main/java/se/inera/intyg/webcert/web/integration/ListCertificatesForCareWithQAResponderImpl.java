@@ -1,5 +1,6 @@
 package se.inera.intyg.webcert.web.integration;
 
+import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
 
@@ -9,14 +10,17 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotifications;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.HandelseList;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.List;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
@@ -34,21 +38,50 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         code.setCodeSystem(KV_HANDELSE_CODE_SYSTEM);
         code.setCode(e.getCode().value());
         res.setHandelsekod(code);
+        if (e.getAmne() != null) {
+            res.setAmne(buildAmne(e.getAmne()));
+        }
+        res.setSistaDatumForSvar(e.getSistaDatumForSvar());
         res.setTidpunkt(e.getTimestamp());
 
         return res;
     }
 
+    private static Amneskod buildAmne(ArendeAmne arende) {
+        Amneskod amneskod = new Amneskod();
+        amneskod.setCode(arende.name());
+        amneskod.setCodeSystem(KV_AMNE_CODE_SYSTEM);
+        amneskod.setDisplayName(arende.getDescription());
+        return amneskod;
+    }
+
     @Override
     public ListCertificatesForCareWithQAResponseType listCertificatesForCareWithQA(String s, ListCertificatesForCareWithQAType request) {
+        if (!validate(request)) {
+            throw new IllegalArgumentException("Need either one non-empty list of vardenheter or a vardgivare");
+        }
+
         ListCertificatesForCareWithQAResponseType response = new ListCertificatesForCareWithQAResponseType();
         List list = new List();
+        IntygWithNotificationsRequest.Builder builder = new IntygWithNotificationsRequest.Builder()
+                .setPersonnummer(new Personnummer(request.getPersonId().getExtension()));
 
-        java.util.List<IntygWithNotifications> intygWithNotifications = intygService.listCertificatesForCareWithQA(
-                new Personnummer(request.getPersonId().getExtension()),
-                request.getEnhetsId().stream().map(HsaId::getExtension).collect(Collectors.toList()));
+        if (!request.getEnhetsId().isEmpty()) {
+            builder = builder.setEnhetId(request.getEnhetsId().stream().map(HsaId::getExtension).collect(Collectors.toList()));
+        }
+        if (request.getVardgivarId() != null) {
+            builder = builder.setVardgivarId(request.getVardgivarId().getExtension());
+        }
+        if (request.getFromTidpunkt() != null) {
+            builder = builder.setStartDate(request.getFromTidpunkt());
+        }
+        if (request.getTomTidpunkt() != null) {
+            builder = builder.setEndDate(request.getTomTidpunkt());
+        }
 
-        for (IntygWithNotifications intygHolder : intygWithNotifications) {
+        java.util.List<IntygWithNotificationsResponse> intygWithNotifications = intygService.listCertificatesForCareWithQA(builder.build());
+
+        for (IntygWithNotificationsResponse intygHolder : intygWithNotifications) {
             ListItem item = new ListItem();
             item.setIntyg(intygHolder.getIntyg());
             HandelseList handelseList = new HandelseList();
@@ -62,5 +95,18 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         }
         response.setList(list);
         return response;
+    }
+
+    private boolean validate(ListCertificatesForCareWithQAType request) {
+        if (request.getPersonId() == null) {
+            return false;
+        }
+        if (request.getEnhetsId().isEmpty() && request.getVardgivarId() == null) {
+            return false;
+        }
+        if (!request.getEnhetsId().isEmpty() && request.getVardgivarId() != null) {
+            return false;
+        }
+        return true;
     }
 }
