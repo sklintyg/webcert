@@ -510,6 +510,7 @@
              q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
              q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
              q+='&kopieringOK=' + $scope.intlink.kopieringOk;
+             q+='&avliden=' + $scope.intlink.avliden;
              window.location.href=q;
          }, function fail(error) {
              alert("Fel vid djupintegrations-inloggningen!");
@@ -811,7 +812,7 @@
                   <p>Djupintegrationslänk-genväg: Välj journalsystem-parametrar och tryck på länkinloggning.</p>
 
                   <label for="intlink-id" class="control-label">utkast/intygsid:</label> <input type="text" class="form-control" size="40" id="intlink-id" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
-                  <label for="alternatePatientSSn" class="control-label">alternatePatientSSn:</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
+                  <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
                   <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
                   <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
                   <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
@@ -819,6 +820,7 @@
                   <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
                   <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
                   <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.kopieringOk"> <br>
+                  <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.avliden"> <br>
                   <button ng-click="djupintegrationsInloggning($event)" class="btn btn-sm btn-warning" style="width:100%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">länkinloggning</button>
 
                 </div>
