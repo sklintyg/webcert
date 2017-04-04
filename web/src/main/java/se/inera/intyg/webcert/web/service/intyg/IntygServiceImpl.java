@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -437,12 +438,28 @@ public class IntygServiceImpl implements IntygService {
 
         List<IntygWithNotificationsResponse> res = new ArrayList<>();
         for (Utkast utkast : utkastList) {
-            List<Handelse> notifications = notificationService.getNotifications(utkast.getIntygsId(), request.getStartDate(),
-                    request.getEndDate());
+            List<Handelse> notifications = notificationService.getNotifications(utkast.getIntygsId());
+
+            // We still want to return the reference even if the SKAPAT was not in the time span. Hence we need to
+            // extract this information before filtering.
+            String ref = notifications.stream()
+                    .filter(h -> HandelsekodEnum.SKAPAT == h.getCode())
+                    .findAny()
+                    .map(Handelse::getRef).orElse(null);
+
+            notifications = notifications.stream().filter(handelse -> {
+                if (request.getStartDate() != null && handelse.getTimestamp().isBefore(request.getStartDate())) {
+                    return false;
+                }
+                if (request.getEndDate() != null && handelse.getTimestamp().isAfter(request.getEndDate())) {
+                    return false;
+                }
+                return true;
+            }).collect(Collectors.toList());
 
             // If the request contained either start date or end date we should not return any intyg with no handelse in
             // this time span
-            if (/* (request.getStartDate() != null || request.getEndDate() != null) && */notifications.isEmpty()) {
+            if ((request.getStartDate() != null || request.getEndDate() != null) && notifications.isEmpty()) {
                 continue;
             }
 
@@ -451,7 +468,7 @@ public class IntygServiceImpl implements IntygService {
                 Intyg intyg = api.getIntygFromUtlatande(api.getUtlatandeFromJson(utkast.getModel()));
                 Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(utkast.getIntygsId(),
                         utkast.getIntygsTyp());
-                res.add(new IntygWithNotificationsResponse(intyg, notifications, arenden.getLeft(), arenden.getRight()));
+                res.add(new IntygWithNotificationsResponse(intyg, notifications, arenden.getLeft(), arenden.getRight(), ref));
             } catch (ModuleNotFoundException | ModuleException | IOException e) {
                 LOG.error("Could not convert intyg {} to external format", utkast.getIntygsId());
             }
@@ -659,4 +676,5 @@ public class IntygServiceImpl implements IntygService {
             }
         }
     }
+
 }

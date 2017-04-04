@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -91,21 +90,12 @@ public interface NotificationService {
     void sendNotificationForQAs(String intygsId, NotificationEvent event);
 
     /**
-     * Returns all notifications saved for an intyg for a specified time span.<br/>
-     * <br/>
-     *
-     * Returns all {@link Handelse} from the beginning of time if {@code start} is null.<br/>
-     * Returns all {@link Handelse} to now if {@code end} is null.<br/>
-     * If both {@code start} and {@code end} is null every {@link Handelse} is returned.
+     * Returns all notifications saved for an intyg.
      *
      * @param intygsId
      *            the id of the intyg
-     * @param start
-     *            start of the period to gather notifications
-     * @param end
-     *            end of the period to gather notifications
      *
-     * @return a list of all the notifications matching the specified time span
+     * @return a list of all the notifications
      */
-    List<Handelse> getNotifications(String intygsId, LocalDateTime start, LocalDateTime end);
+    List<Handelse> getNotifications(String intygsId);
 }

@@ -31,30 +31,6 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
     @Autowired
     private IntygService intygService;
 
-    private static Handelse toHandelse(se.inera.intyg.webcert.persistence.handelse.model.Handelse e) {
-        Handelse res = new Handelse();
-
-        Handelsekod code = new Handelsekod();
-        code.setCodeSystem(KV_HANDELSE_CODE_SYSTEM);
-        code.setCode(e.getCode().value());
-        res.setHandelsekod(code);
-        if (e.getAmne() != null) {
-            res.setAmne(buildAmne(e.getAmne()));
-        }
-        res.setSistaDatumForSvar(e.getSistaDatumForSvar());
-        res.setTidpunkt(e.getTimestamp());
-
-        return res;
-    }
-
-    private static Amneskod buildAmne(ArendeAmne arende) {
-        Amneskod amneskod = new Amneskod();
-        amneskod.setCode(arende.name());
-        amneskod.setCodeSystem(KV_AMNE_CODE_SYSTEM);
-        amneskod.setDisplayName(arende.getDescription());
-        return amneskod;
-    }
-
     @Override
     public ListCertificatesForCareWithQAResponseType listCertificatesForCareWithQA(String s, ListCertificatesForCareWithQAType request) {
         if (!validate(request)) {
@@ -91,6 +67,8 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
             item.setHandelser(handelseList);
             item.setSkickadeFragor(toArenden(intygHolder.getSentQuestions()));
             item.setMottagnaFragor(toArenden(intygHolder.getReceivedQuestions()));
+            item.setRef(intygHolder.getRef());
+
             list.getItem().add(item);
         }
         response.setList(list);
@@ -109,4 +87,29 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         }
         return true;
     }
+
+    private static Handelse toHandelse(se.inera.intyg.webcert.persistence.handelse.model.Handelse e) {
+        Handelse res = new Handelse();
+
+        Handelsekod code = new Handelsekod();
+        code.setCodeSystem(KV_HANDELSE_CODE_SYSTEM);
+        code.setCode(e.getCode().value());
+        res.setHandelsekod(code);
+        if (e.getAmne() != null) {
+            res.setAmne(buildAmne(e.getAmne()));
+        }
+        res.setSistaDatumForSvar(e.getSistaDatumForSvar());
+        res.setTidpunkt(e.getTimestamp());
+
+        return res;
+    }
+
+    private static Amneskod buildAmne(ArendeAmne arende) {
+        Amneskod amneskod = new Amneskod();
+        amneskod.setCode(arende.name());
+        amneskod.setCodeSystem(KV_AMNE_CODE_SYSTEM);
+        amneskod.setDisplayName(arende.getDescription());
+        return amneskod;
+    }
+
 }

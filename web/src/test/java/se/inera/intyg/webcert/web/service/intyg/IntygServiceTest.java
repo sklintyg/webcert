@@ -743,10 +743,12 @@ public class IntygServiceTest {
         final List<String> enhetList = Arrays.asList("enhet");
         final String intygType = "intygType";
         final String intygId = "intygId";
-        Handelse handelse = new Handelse();
         final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
+        final String reference = "reference";
+        Handelse handelse = new Handelse();
         handelse.setTimestamp(localDateTime);
         handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setRef(reference);
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
@@ -754,8 +756,7 @@ public class IntygServiceTest {
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId), any(null), any(null)))
-                .thenReturn(Arrays.asList(handelse));
+        when(notificationService.getNotifications(eq(intygId))).thenReturn(Arrays.asList(handelse));
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
@@ -776,10 +777,10 @@ public class IntygServiceTest {
         assertEquals(6, res.get(0).getReceivedQuestions().getEjBesvarade());
         assertEquals(7, res.get(0).getReceivedQuestions().getBesvarade());
         assertEquals(8, res.get(0).getReceivedQuestions().getHanterade());
+        assertEquals(reference, res.get(0).getRef());
     }
 
-    // Reenable when Handelse is 0..*
-//    @Test
+    @Test
     public void testListCertificatesForCareWithQANoNotifications() throws Exception {
         final String personnummer = "personnummer";
         final List<String> enhetList = Arrays.asList("enhet");
@@ -792,7 +793,7 @@ public class IntygServiceTest {
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId), eq(null), eq(null))).thenReturn(Collections.emptyList());
+        when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
@@ -831,7 +832,7 @@ public class IntygServiceTest {
         when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId), any(null), any(null)))
+        when(notificationService.getNotifications(eq(intygId)))
                 .thenReturn(Arrays.asList(handelse));
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -872,7 +873,7 @@ public class IntygServiceTest {
         when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
-        when(notificationService.getNotifications(eq(intygId), eq(start), eq(end))).thenReturn(Collections.emptyList());
+        when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));

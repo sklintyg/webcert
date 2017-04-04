@@ -32,10 +32,8 @@ import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -270,17 +268,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<Handelse> getNotifications(String intygsId, LocalDateTime start, LocalDateTime end) {
-        return handelseRepo.findByIntygsId(intygsId).stream()
-                .filter(handelse -> {
-                    if (start != null && handelse.getTimestamp().isBefore(start)) {
-                        return false;
-                    }
-                    if (end != null && handelse.getTimestamp().isAfter(end)) {
-                        return false;
-                    }
-                    return true;
-                }).collect(Collectors.toList());
+    public List<Handelse> getNotifications(String intygsId) {
+        return handelseRepo.findByIntygsId(intygsId);
     }
 
     protected void sendNotificationForQAs(String intygsId, NotificationEvent event, LocalDate date, ArendeAmne amne) {

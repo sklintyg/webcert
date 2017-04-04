@@ -12,9 +12,10 @@ public class IntygWithNotificationsResponse {
     private final List<Handelse> notifications;
     private final ArendeCount sentQuestions;
     private final ArendeCount receivedQuestions;
+    private final String ref;
 
     public IntygWithNotificationsResponse(Intyg intyg, List<Handelse> notifications,
-            ArendeCount sentQuestions, ArendeCount receivedQuestions) {
+            ArendeCount sentQuestions, ArendeCount receivedQuestions, String ref) {
         this.intyg = intyg;
         if (notifications == null) {
             this.notifications = new ArrayList<>();
@@ -23,6 +24,7 @@ public class IntygWithNotificationsResponse {
         }
         this.sentQuestions = sentQuestions;
         this.receivedQuestions = receivedQuestions;
+        this.ref = ref;
     }
 
     public Intyg getIntyg() {
@@ -39,5 +41,9 @@ public class IntygWithNotificationsResponse {
 
     public ArendeCount getReceivedQuestions() {
         return receivedQuestions;
+    }
+
+    public String getRef() {
+        return ref;
     }
 }

@@ -48,11 +48,10 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         handelse.setTimestamp(LocalDateTime.now());
         handelse.setAmne(ArendeAmne.AVSTMN);
         handelse.setSistaDatumForSvar(deadline);
-        handelse.setRef(reference);
 
         when(intygService.listCertificatesForCareWithQA(any(IntygWithNotificationsRequest.class))).thenReturn(Arrays.asList(
                 new IntygWithNotificationsResponse(null, Arrays.asList(handelse), new ArendeCount(1, 1, 1, 1),
-                        new ArendeCount(2, 2, 2, 2))));
+                        new ArendeCount(2, 2, 2, 2), reference)));
 
         ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
         PersonId personId = new PersonId();
@@ -70,6 +69,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         assertEquals(1, response.getList().getItem().size());
         assertEquals(1, response.getList().getItem().get(0).getHandelser().getHandelse().size());
 
+        assertEquals(reference, response.getList().getItem().get(0).getRef());
         assertEquals(deadline, response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getSistaDatumForSvar());
         assertEquals(HandelsekodEnum.SKAPAT.name(),
                 response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getHandelsekod().getCode());
