@@ -24,7 +24,6 @@
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var utkastPage = pages.intyg.base.utkast;
-var luseUtkastPage = pages.intyg.luse.utkast;
 var helpers = require('./helpers.js');
 
 function signeraUtkast() {
@@ -84,9 +83,6 @@ module.exports = function() {
             }
         }).then(callback);
     });
-
-
-
 
 
 
@@ -161,13 +157,16 @@ module.exports = function() {
     });
     this.Given(/^ska intyget inte innehålla gamla personuppgifter$/, function() {
         var namn = global.intyg.person.fornamn + ' ' + global.intyg.person.efternamn;
-
         return expect(element(by.id('patientNamnPersonnummer')).getText()).to.eventually.not.contain(namn);
 
     });
 
     this.When(/^jag markerar intyget som klart för signering$/, function() {
-        return luseUtkastPage.markeraKlartForSigneraButton.sendKeys(protractor.Key.SPACE);
+        return element(by.id('markeraKlartForSigneringButton')).sendKeys(protractor.Key.SPACE);
+    });
+
+    this.When(/^ska jag se texten "([^"]*)"$/, function(msg) {
+        return expect(element(by.id('draft-marked-ready-text')).getText()).to.eventually.contain(msg);
     });
 
 
