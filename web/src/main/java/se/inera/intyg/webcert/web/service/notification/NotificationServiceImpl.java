@@ -242,23 +242,21 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendNotificationForQuestionReceived(Arende arende) {
         if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
-            sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT);
+            sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT, arende.getSistaDatumForSvar(),
+                    arende.getAmne());
         } else {
-            sendNotificationForIncomingQuestionByMail(
-                    new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(),
-                            arende.getEnhetName(), arende.getSigneratAv()));
+            sendNotificationForIncomingQuestionByMail(new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(),
+                    arende.getIntygTyp(), arende.getEnhetId(), arende.getEnhetName(), arende.getSigneratAv()));
         }
     }
 
     @Override
     public void sendNotificationForAnswerRecieved(Arende arende) {
         if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
-            sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT, arende.getSistaDatumForSvar(),
-                    arende.getAmne());
+            sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
         } else {
-            sendNotificationForIncomingAnswerByMail(
-                    new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(),
-                            arende.getEnhetName(), arende.getSigneratAv()));
+            sendNotificationForIncomingAnswerByMail(new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(),
+                    arende.getIntygTyp(), arende.getEnhetId(), arende.getEnhetName(), arende.getSigneratAv()));
         }
     }
 
@@ -299,6 +297,8 @@ public class NotificationServiceImpl implements NotificationService {
 
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(),
                 null);
+        save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(), utkast.getPatientPersonnummer().getPersonnummer(),
+                date, amne);
         send(notificationMessage, utkast.getEnhetsId());
     }
 
