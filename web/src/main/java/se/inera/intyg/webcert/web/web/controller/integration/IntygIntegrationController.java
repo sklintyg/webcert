@@ -164,6 +164,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         WebCertUser user = getWebCertUserService().getUser();
 
+        if (user.getParameters() != null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
+        }
+
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
 
@@ -199,10 +204,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
                     postort);
         }
 
-        if (user.getParameters() != null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
-        }
         user.setParameters(new IntegrationParameters(StringUtils.trimToNull(reference), responsibleHospName, alternatePatientSSn, fornamn,
                 mellannamn, efternamn, postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk));
 
