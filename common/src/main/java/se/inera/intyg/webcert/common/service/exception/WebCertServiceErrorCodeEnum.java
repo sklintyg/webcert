@@ -19,20 +19,25 @@
 package se.inera.intyg.webcert.common.service.exception;
 
 public enum WebCertServiceErrorCodeEnum {
+    // @formatter:off
 
-    INTERNAL_PROBLEM, // Generic tech problem
-    INVALID_STATE, // Operation not allowed at this state, probably because of concurrency issues
-    INVALID_STATE_REPLACED, // Operation not allowed at this state (because it's replaced). This error code is a
-                            // temporary fix until we can get relations for intyg from IT and therefore disable certain
-                            // actions in gui, (see INTYG-3619)
-    AUTHORIZATION_PROBLEM, // User is not authorized for the operation
-    INDETERMINATE_IDENTITY, // Operation not allowed due to identity being indeterminate-
-    EXTERNAL_SYSTEM_PROBLEM, // Other system in unavailable, gave technical error response
-    MODULE_PROBLEM, // Problem that occured inside a module
-    UNKNOWN_INTERNAL_PROBLEM, // All others
-    DATA_NOT_FOUND, // Certificate (or other resource) not found
+    INTERNAL_PROBLEM,                // Generic tech problem
+    INVALID_STATE,                   // Operation not allowed at this state, probably because of concurrency issues
+
+    INVALID_STATE_REPLACED,          // Operation not allowed at this state (because it's replaced). This error code is a
+                                     // temporary fix until we can get relations for intyg from IT and therefore disable certain
+                                     // actions in gui, (see INTYG-3619)
+
+    AUTHORIZATION_PROBLEM,           // User is not authorized for the operation
+    INDETERMINATE_IDENTITY,          // Operation not allowed due to identity being indeterminate-
+    EXTERNAL_SYSTEM_PROBLEM,         // Other system in unavailable, gave technical error response
+    MODULE_PROBLEM,                  // Problem that occured inside a module
+    UNKNOWN_INTERNAL_PROBLEM,        // All others
+    DATA_NOT_FOUND,                  // Certificate (or other resource) not found
     CERTIFICATE_REVOKED,
     CONCURRENT_MODIFICATION,
     GRP_PROBLEM,
     MISSING_PARAMETER
+
+    // @formatter:on
 }
