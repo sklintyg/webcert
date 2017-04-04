@@ -274,7 +274,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_REPLACED,
                     errorString);
         }
     }
