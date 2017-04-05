@@ -48,6 +48,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
@@ -58,6 +59,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -122,7 +124,7 @@ public class IntygModuleApiControllerTest {
     public void testGetIntygAsPdf() throws Exception {
 
         final String intygType = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, WebcertFeature.UTSKRIFT);
+        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, WebcertFeature.UTSKRIFT);
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
         when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
@@ -138,7 +140,7 @@ public class IntygModuleApiControllerTest {
 
     @Test(expected = AuthoritiesException.class)
     public void testGetIntygAsPdfNotAuthorised() throws Exception {
-        setupUser("", "", false);
+        setupUser("", "", false, true);
         moduleApiController.getIntygAsPdf("fk7263", CERTIFICATE_ID);
 
     }
@@ -147,7 +149,7 @@ public class IntygModuleApiControllerTest {
     public void testGetIntygAsPdfForEmployer() throws Exception {
 
         final String intygType = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, WebcertFeature.ARBETSGIVARUTSKRIFT);
+        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, WebcertFeature.ARBETSGIVARUTSKRIFT);
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
         when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
@@ -163,7 +165,7 @@ public class IntygModuleApiControllerTest {
 
     @Test(expected = AuthoritiesException.class)
     public void testGetIntygAsPdfForEmployerNotAuthorised() throws Exception {
-        setupUser("", "", false);
+        setupUser("", "", false, true);
         moduleApiController.getIntygAsPdf("fk7263", CERTIFICATE_ID);
     }
 
@@ -172,7 +174,7 @@ public class IntygModuleApiControllerTest {
         final String intygsTyp = "fk7263";
         final String intygContent = "CONTENTS";
 
-        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygsTyp, false);
+        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygsTyp, false, true);
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
@@ -190,7 +192,7 @@ public class IntygModuleApiControllerTest {
         final String intygsTyp = "fk7263";
         final String intygContent = "CONTENTS";
 
-        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygsTyp, true);
+        setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygsTyp, true, true);
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
@@ -205,8 +207,27 @@ public class IntygModuleApiControllerTest {
 
     @Test(expected = AuthoritiesException.class)
     public void testGetIntygNotAuthorised() {
-        setupUser("", "", false);
+        setupUser("", "", false, true);
         moduleApiController.getIntyg("fk7263", CERTIFICATE_ID);
+    }
+
+    @Test
+    public void testCreateNewCopyWithCopyOkParamFalse() {
+        //Given
+        final boolean copyOk = false;
+        final String intygsTyp = "fk7263";
+        setupUser(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG, intygsTyp, true, copyOk, WebcertFeature.KOPIERA_INTYG);
+
+        //When
+        try {
+            moduleApiController.createNewCopy(new CopyIntygRequest(), intygsTyp, "");
+        } catch (WebCertServiceException wcse) {
+            //Then an exception is thrown
+            assertEquals(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, wcse.getErrorCode());
+            assertEquals("Authorization failed due to false kopieraOK-parameter", wcse.getMessage());
+            return;
+        }
+        fail("No or wrong exception was thrown");
     }
 
     @Test
@@ -214,7 +235,7 @@ public class IntygModuleApiControllerTest {
         final String intygType = "fk7263";
         final String recipient = "recipient";
 
-        setupUser("", intygType, false, WebcertFeature.SKICKA_INTYG);
+        setupUser("", intygType, false, true, WebcertFeature.SKICKA_INTYG);
 
         when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient))).thenReturn(IntygServiceResult.OK);
 
@@ -229,7 +250,7 @@ public class IntygModuleApiControllerTest {
 
     @Test(expected = AuthoritiesException.class)
     public void testSendSignedIntygNotAuthorised() {
-        setupUser("", "", false);
+        setupUser("", "", false, true);
         moduleApiController.sendSignedIntyg("intygType", CERTIFICATE_ID, null);
     }
 
@@ -239,7 +260,7 @@ public class IntygModuleApiControllerTest {
         final String revokeMessage = "revokeMessage";
         final String revokeReason = "revokeReason";
 
-        setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, WebcertFeature.MAKULERA_INTYG);
+        setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, true, WebcertFeature.MAKULERA_INTYG);
 
         when(intygService.revokeIntyg(CERTIFICATE_ID, intygType, revokeMessage, revokeReason)).thenReturn(IntygServiceResult.OK);
 
@@ -255,7 +276,7 @@ public class IntygModuleApiControllerTest {
 
     @Test(expected = AuthoritiesException.class)
     public void testRevokeSignedIntygNotAuthorised() {
-        setupUser("", "", false);
+        setupUser("", "", false, true);
         moduleApiController.revokeSignedIntyg("intygType", CERTIFICATE_ID, null);
     }
 
@@ -668,13 +689,13 @@ public class IntygModuleApiControllerTest {
         }
     }
 
-    private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, WebcertFeature... features) {
+    private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, boolean copyOk, WebcertFeature... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.setFeatures(Stream.of(features).map(WebcertFeature::getName).collect(Collectors.toSet()));
         user.getFeatures().addAll(Stream.of(features).map(f -> f.getName() + "." + intygType).collect(Collectors.toSet()));
         user.setParameters(
-                new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false, true));
+                new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false, copyOk));
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();

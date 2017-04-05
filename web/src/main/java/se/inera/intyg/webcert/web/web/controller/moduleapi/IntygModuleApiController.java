@@ -215,11 +215,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Create a copy of a certificate.
-     *
-     * @param request
-     * @param intygsTyp
-     * @param orgIntygsId
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/kopiera")
@@ -232,7 +227,14 @@ public class IntygModuleApiController extends AbstractApiController {
 
         WebCertUser user = userService.getUser();
 
-        boolean coherentJournaling = user.getParameters() != null ? user.getParameters().isSjf() : false;
+        boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
+        if (!copyOkParam) {
+            LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
+            final String message = "Authorization failed due to false kopieraOK-parameter";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
+        }
+
+        boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
         LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, orgIntygsId,
                 coherentJournaling);
 
@@ -247,11 +249,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Create a copy that completes an existing certificate.
-     *
-     * @param request
-     * @param intygsTyp
-     * @param orgIntygsId
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/{meddelandeId}/komplettera")
