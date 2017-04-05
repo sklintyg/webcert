@@ -296,7 +296,7 @@ angular.module('rhsIndexApp')
             }
 
             var msg =
-                '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:1" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:2"> \
+                '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3"> \
                     <soapenv:Header> \
                         <urn:LogicalAddress>?</urn:LogicalAddress>  \
                     </soapenv:Header> \
@@ -338,7 +338,7 @@ angular.module('rhsIndexApp')
 
             $http({
                 method: 'POST',
-                url: '/services/send-message-to-care/v1.0',
+                url: '/services/send-message-to-care/v2.0',
                 data: msg
             }).then(function successCallback(response) {
 
