@@ -27,6 +27,14 @@ Patientuppgifter ska ej testas för sekretessmarkering i djupintegration.
 | editera sidan visas |
 | säkerställ att inte | sekretessmarkering visas |
 
+!3 Logga in igen (kan inte gå till integrationslänk 2 ggr med samma session)
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+| skript | !-HanteraAnvandare-! |
+| uppdatera origin till | DJUPINTEGRATION |
+
 !3 Verifiera att sekretessmarkering inte visas på intyg
 
 | skript | !-IntegrationMedJournalsystem-! |
