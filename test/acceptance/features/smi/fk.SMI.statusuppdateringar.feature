@@ -7,7 +7,7 @@ Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
    Och jag går in på intygsutkastet via djupintegrationslänk
 
-@skicka-till-fk
+@skicka-till-fk @SIGNAT @SKAPAT @SKICKA
 Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 

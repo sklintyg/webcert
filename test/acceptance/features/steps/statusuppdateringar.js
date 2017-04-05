@@ -37,7 +37,7 @@ function getNotificationEntries(intygsId, value, numEvents) {
     var selectStatement = 'SELECT utlatandeExtension, handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName;
 
     if (isSMIIntyg || isTSIntyg) {
-        table = 'webcert_requests.statusupdates_2';
+        table = 'webcert_requests.statusupdates_3';
         handelseTidName = 'handelseTid';
         extensionType = 'intygsExtension';
 
