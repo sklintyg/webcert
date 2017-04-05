@@ -40,7 +40,7 @@ module.exports = function() {
 
     this.Given(/^är kopieraknappen tillgänglig$/, function(callback) {
         expect(basePage.copyBtn.isPresent()).to.become(true).then(function() {
-            logger.info('OK - Kopiera knappen hittad');
+            logger.info('OK - Kopiera knapp tillgänglig');
             callback();
             // basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
         }, function(reason) {
@@ -48,12 +48,25 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska det finnas en knapp för att förnya intyget$/, function() {
-        return expect(fkIntygPage.fornyaBtn.isPresent()).to.become(true).then(function() {
-            logger.info('OK - Förnya knapp hittad');
+    this.Given(/^ska det( inte)? finnas en knapp för att förnya intyget$/, function(inte) {
+        var skaFinnas = typeof(inte) === 'undefined';
+
+        return expect(fkIntygPage.fornyaBtn.isPresent()).to.become(skaFinnas).then(function() {
+            logger.info('OK - Förnya knapp synlig: ' + skaFinnas);
         }, function(reason) {
             throw ('FEL : ' + reason);
         });
+    });
+
+
+    this.Given(/^ska det( inte)? finnas en knapp för att kopiera intyget$/, function(inte) {
+        var skaFinnas = typeof(inte) === 'undefined';
+        return expect(basePage.copyBtn.isPresent()).to.become(skaFinnas).then(function() {
+                logger.info('OK - Kopiera knapp synlig:' + skaFinnas);
+            },
+            function(reason) {
+                throw ('FEL : ' + reason);
+            });
     });
 
     this.Given(/^ska det finnas en knapp för att skriva ut utkastet$/, function() {
@@ -84,8 +97,8 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^väljer att visa sökfilter/, function(callback) {
-        unsignedPage.showSearchFilters().then(callback);
+    this.Given(/^väljer att visa sökfilter/, function() {
+        return unsignedPage.showSearchFilters();
     });
 
     this.Given(/^ska sökfiltret Sparat av inte vara tillgängligt/, function(callback) {

@@ -186,12 +186,6 @@ module.exports = function() {
 
     });
 
-
-    this.Given(/^ska jag gå in på intyget med en extra "([^"]*)" parametrar med värdet "([^"]*)"$/, function(param, paramValue) {
-        return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', param + '=' + paramValue);
-
-    });
-
     this.Given(/^jag går till ej signerade utkast$/, function() {
         return element(by.id('menu-unsigned')).click();
     });

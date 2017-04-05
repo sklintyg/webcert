@@ -108,9 +108,9 @@ Scenario: Statusuppdateringar vid ändring av utkast
 
 @vardkontakt-skickas-med
 Scenario: Vårdkontakt skickas med statusuppdateringar
-    Så ska jag gå in på intyget med en extra "ref" parametrar med värdet "testref"
+    När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref"
 
-    När jag fyller i alla nödvändiga fält för intyget
+    Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag kopierar intyget
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"

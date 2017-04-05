@@ -52,3 +52,28 @@ Scenario: Patienten har fått ett reservnummer
     När jag kopierar intyget
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
+
+@parametrar
+Scenario: Parametrar
+    Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+    När jag går in på intygsutkastet via djupintegrationslänk
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+
+    När jag går in på intyget via djupintegrationslänk och har parametern "kopieringOK" satt till "false"
+    Så ska det inte finnas en knapp för att förnya intyget
+    Och ska det inte finnas en knapp för att kopiera intyget
+
+    När jag går in på intyget via djupintegrationslänk och har parametern "inaktivEnhet" satt till "true"
+    Så ska det inte finnas en knapp för att förnya intyget
+    Och ska det inte finnas en knapp för att kopiera intyget
+
+    När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
+    Så ska jag varnas om att "Patienten har avlidit"
+    Och ska det inte finnas en knapp för att förnya intyget
+    Och ska det inte finnas en knapp för att kopiera intyget
+
+
+
+
+
