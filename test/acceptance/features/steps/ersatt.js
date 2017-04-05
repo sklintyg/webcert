@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// globals*/
+/* globals protractor*/
 
 'use strict';
 
@@ -26,6 +26,14 @@ module.exports = function() {
 
     this.Given(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
         return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);
+    });
+
+    this.Given(/^klickar på ersätta knappen$/, function() {
+        return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE);
+    });
+
+    this.Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalMsg) {
+        return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
     });
 
 };
