@@ -259,7 +259,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         verify(intygService).storeIntyg(completedUtkast);
         verify(moduleRegistry).getModuleEntryPoint(INTYG_TYPE);
-        verify(intygService).handleSignedCompletion(completedUtkast, "FK");
+        verify(intygService).handleSignedCompletion(completedUtkast, "FKASSA");
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
@@ -325,7 +325,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         verify(intygService).storeIntyg(completedUtkast);
         verify(moduleRegistry).getModuleEntryPoint(INTYG_TYPE);
-        verify(intygService).handleSignedCompletion(completedUtkast, "FK");
+        verify(intygService).handleSignedCompletion(completedUtkast, "FKASSA");
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
@@ -372,7 +372,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         verify(intygService).storeIntyg(completedUtkast);
         verify(moduleRegistry).getModuleEntryPoint(INTYG_TYPE);
-        verify(intygService).handleSignedCompletion(completedUtkast, "FK");
+        verify(intygService).handleSignedCompletion(completedUtkast, "FKASSA");
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class));

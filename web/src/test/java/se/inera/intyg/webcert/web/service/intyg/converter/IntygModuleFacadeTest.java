@@ -41,7 +41,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -62,6 +61,7 @@ public class IntygModuleFacadeTest {
     private static final String CERTIFICATE_TYPE = "fk7263";
 
     private static final String INT_JSON = "<ext-json>";
+    private static final String HSVARD_RECIPIENT_ID = "HSVARD";
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -126,17 +126,17 @@ public class IntygModuleFacadeTest {
         final String certificateId = "certificateId";
         final String logicalAddress = "logicalAddress";
         ReflectionTestUtils.setField(moduleFacade, "logicalAddress", logicalAddress);
-        when(moduleApi.getCertificate(certificateId, logicalAddress, PartKod.HSVARD)).thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
+        when(moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID)).thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
         CertificateResponse res = moduleFacade.getCertificate(certificateId, CERTIFICATE_TYPE);
 
         assertNotNull(res);
 
-        verify(moduleApi).getCertificate(certificateId, logicalAddress, PartKod.HSVARD);
+        verify(moduleApi).getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetCertificateModuleException() throws Exception {
-        when(moduleApi.getCertificate(anyString(), anyString(), eq(PartKod.HSVARD))).thenThrow(new ModuleException());
+        when(moduleApi.getCertificate(anyString(), anyString(), eq(HSVARD_RECIPIENT_ID))).thenThrow(new ModuleException());
         moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE);
     }
 
