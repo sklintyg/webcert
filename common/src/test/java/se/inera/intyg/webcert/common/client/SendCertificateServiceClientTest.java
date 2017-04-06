@@ -57,7 +57,7 @@ public class SendCertificateServiceClientTest {
     private static final String INTYGS_ID = "intyg-1";
     private static final String PERSON_ID = "person-1";
     private static final String SKICKAT_AV_JSON = createSkickatAvJson();
-    private static final String RECIPIENT = "FK";
+    private static final String RECIPIENT = "FKASSA";
     private static final String LOGICAL_ADDRESS = "logical-address-1";
 
     @Mock

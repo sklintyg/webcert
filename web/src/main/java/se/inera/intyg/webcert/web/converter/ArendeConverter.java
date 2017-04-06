@@ -26,7 +26,6 @@ import javax.xml.ws.WebServiceException;
 
 import com.google.common.base.Strings;
 
-import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -57,7 +56,7 @@ public final class ArendeConverter {
         res.setReferensId(request.getReferensId());
         res.setRubrik(request.getRubrik());
         res.setSistaDatumForSvar(request.getSistaDatumForSvar());
-        res.setSkickatAv(PartKod.valueOf(request.getSkickatAv().getPart().getCode()).getValue());
+        res.setSkickatAv(request.getSkickatAv().getPart().getCode());
         res.setSkickatTidpunkt(request.getSkickatTidpunkt());
         if (request.getSvarPa() != null) {
             res.setSvarPaId(request.getSvarPa().getMeddelandeId());

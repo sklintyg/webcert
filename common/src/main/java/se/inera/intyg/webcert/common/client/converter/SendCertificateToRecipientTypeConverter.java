@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.common.client.converter;
 
-import se.inera.intyg.common.support.common.enumerations.PartKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -54,11 +53,9 @@ public final class SendCertificateToRecipientTypeConverter {
     }
 
     private static Part buildPart(String recipient) {
-        PartKod partKod = PartKod.fromValue(recipient);
         Part part = new Part();
-        part.setCode(partKod.name());
+        part.setCode(recipient);
         part.setCodeSystem(KV_PART_CODE_SYSTEM);
-        part.setDisplayName(partKod.getDisplayName());
         return part;
     }
 

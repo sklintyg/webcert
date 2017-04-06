@@ -47,7 +47,7 @@ public class SendCertificateToRecipientTypeConverterTest {
         final String vardgivarid = "vardgivarid";
         final String vardgivarNamn = "vardgivarNamn";
         final String forskrivarKod = "forskrivarKod";
-        final String recipient = "TS";
+        final String recipient = "TRANSP";
 
         HoSPersonal skickatAv = buildHosPersonal(enhetsId, enhetsnamn, skapadAvFullstandigtNamn, skapadAvPersonId, arbetsplatsKod,
                 postadress,

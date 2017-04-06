@@ -94,7 +94,7 @@ public class ArendeConverterTest {
         assertEquals(amneskod, res.getAmne());
         assertEquals(intygId, res.getIntygsId());
         assertEquals(kontaktInfo, res.getKontaktInfo().get(0));
-        assertEquals("FK", res.getSkickatAv());
+        assertEquals("FKASSA", res.getSkickatAv());
         assertEquals(frageId, res.getKomplettering().get(0).getFrageId());
         assertEquals(instans, res.getKomplettering().get(0).getInstans());
         assertEquals(kompletteringsText, res.getKomplettering().get(0).getText());
