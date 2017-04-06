@@ -49,6 +49,14 @@ module.exports = function() {
         return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE);
     });
 
+    this.Given(/^om jag klickar på ersätta knappen så ska det finnas en avbryt\-knapp med texten "([^"]*)"$/, function(btnText) {
+        return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE).then(function() {
+            return element(by.css('.modal-dialog')).getText().then(function(modalText) {
+                return expect(modalText).to.contain(btnText);
+            });
+        });
+    });
+
     this.Given(/^klickar på ersätta knappen och ersätter intyget$/, function() {
         global.ersattintyg = {};
         global.ersattintyg.id = intyg.id;
