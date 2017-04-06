@@ -24,34 +24,40 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import javax.jms.*;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.support.destination.DestinationResolutionException;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.notification.*;
+import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -61,6 +67,15 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -127,8 +142,9 @@ public class NotificationServiceImplTest {
     private void setupMocks(SchemaVersion schemaVersion) {
         when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(schemaVersion));
 
-        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), any(HandelsekodEnum.class),
-                eq(schemaVersion), eq(null))).thenAnswer(invocation -> createNotificationMessage(((HandelsekodEnum) invocation.getArguments()[1]), INTYG_JSON));
+        when(mockNotificationMessageFactory.createNotificationMessage(
+                any(Utkast.class), any(HandelsekodEnum.class), eq(schemaVersion), anyString(), any(Amneskod.class), any(LocalDate.class)))
+                    .thenAnswer(invocation -> createNotificationMessage(((HandelsekodEnum) invocation.getArguments()[1]), INTYG_JSON));
     }
 
     @Test
@@ -139,8 +155,11 @@ public class NotificationServiceImplTest {
         when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_1));
 
         NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.ANDRAT, INTYG_JSON);
-        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
-                eq(SchemaVersion.VERSION_1), eq(null))).thenReturn(notMsg);
+
+        when(mockNotificationMessageFactory.createNotificationMessage(
+                any(Utkast.class), eq(HandelsekodEnum.ANDRAT), eq(SchemaVersion.VERSION_1),
+                anyString(), any(Amneskod.class), any(LocalDate.class))).thenReturn(notMsg);
+
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
 
         Utkast utkast = createUtkast();
@@ -167,8 +186,10 @@ public class NotificationServiceImplTest {
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
         assertEquals(SchemaVersion.VERSION_1, captNotMsg.getVersion());
         assertNull(captNotMsg.getReference());
+
+        // verify call has been made
         verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
-                eq(SchemaVersion.VERSION_1), eq(null));
+                eq(SchemaVersion.VERSION_1), anyString(), any(Amneskod.class), any(LocalDate.class));
         verify(handelseRepository).save(any(Handelse.class));
     }
 
@@ -182,8 +203,10 @@ public class NotificationServiceImplTest {
 
         NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.ANDRAT, INTYG_JSON);
         notMsg.setReference(ref);
+
         when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
-                eq(SchemaVersion.VERSION_1), eq(ref))).thenReturn(notMsg);
+                eq(SchemaVersion.VERSION_1), eq(ref), any(Amneskod.class), any(LocalDate.class))).thenReturn(notMsg);
+
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
 
         Utkast utkast = createUtkast();
@@ -210,23 +233,29 @@ public class NotificationServiceImplTest {
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
         assertEquals(SchemaVersion.VERSION_1, captNotMsg.getVersion());
         assertEquals(ref, captNotMsg.getReference());
+
+        // verify call has been made
         verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
-                eq(SchemaVersion.VERSION_1), eq(ref));
+                eq(SchemaVersion.VERSION_1), eq(ref), any(Amneskod.class), any(LocalDate.class));
     }
 
     @Test
     public void testIntygsutkastCreated() throws Exception {
         final String ref = "reference";
+
         when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
 
         NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.SKAPAT, INTYG_JSON);
         notMsg.setReference(ref);
+
         when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.SKAPAT),
-                eq(SchemaVersion.VERSION_3), eq(ref))).thenReturn(notMsg);
+                eq(SchemaVersion.VERSION_3), eq(ref), any(Amneskod.class), any(LocalDate.class))).thenReturn(notMsg);
 
         notificationService.sendNotificationForDraftCreated(createUtkast(), ref);
+
+        // verify call has been made
         verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.SKAPAT),
-                eq(SchemaVersion.VERSION_3), eq(ref));
+                eq(SchemaVersion.VERSION_3), eq(ref), any(Amneskod.class), any(LocalDate.class));
     }
 
     @Test
@@ -685,7 +714,7 @@ public class NotificationServiceImplTest {
 
     private void verifySuccessfulInvocations(HandelsekodEnum kod, SchemaVersion schemaVersion) throws Exception {
         verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(kod),
-                eq(schemaVersion), eq(null));
+                eq(schemaVersion), anyString(), any(Amneskod.class), any(LocalDate.class));
 
         ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
         verify(template).send(messageCaptor.capture());
@@ -695,8 +724,10 @@ public class NotificationServiceImplTest {
         assertEquals(INTYG_TYP_FK, res.getStringProperty(NotificationRouteHeaders.INTYGS_TYP));
         assertEquals(kod.value(), res.getStringProperty(NotificationRouteHeaders.HANDELSE));
         assertNotNull(((TextMessage) res).getText());
+
         NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
         assertEquals(INTYG_JSON, nm.getUtkast());
+
         verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID);
         verify(handelseRepository).save(any(Handelse.class));
     }
@@ -704,8 +735,10 @@ public class NotificationServiceImplTest {
     private NotificationMessage createNotificationMessage(HandelsekodEnum handelse, String utkastJson) {
         FragorOchSvar fs = FragorOchSvar.getEmpty();
         LocalDateTime time = LocalDateTime.of(2001, 12, 31, 12, 34, 56, 789);
-        NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR, utkastJson, fs,
-                null, null, SchemaVersion.VERSION_1, null);
+
+        NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR,
+                utkastJson, fs,null, null, SchemaVersion.VERSION_1, null);
+
         return notMsg;
     }
 
@@ -749,4 +782,5 @@ public class NotificationServiceImplTest {
         arende.setIntygTyp(INTYG_TYP_FK);
         return arende;
     }
+
 }

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2017 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -51,15 +51,13 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -72,6 +70,10 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -261,88 +263,20 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendNotificationForQAs(String intygsId, NotificationEvent event) {
-        sendNotificationForQAs(intygsId, event, null, null);
+    public List<Handelse> getNotifications(String intygsId) {
+        return handelseRepo.findByIntygsId(intygsId);
     }
 
     @Override
-    public List<Handelse> getNotifications(String intygsId) {
-        return handelseRepo.findByIntygsId(intygsId);
+    public void sendNotificationForQAs(String intygsId, NotificationEvent event) {
+        sendNotificationForQAs(intygsId, event, null, null);
     }
 
     protected void sendNotificationForQAs(String intygsId, NotificationEvent event, LocalDate date, ArendeAmne amne) {
         Optional<Utkast> utkast = getUtkast(intygsId);
         if (utkast.isPresent()) {
-            createAndSendNotificationForQAs(utkast.get(), event, date, amne);
+            createAndSendNotificationForQAs(utkast.get(), event, amne, date);
         }
-    }
-
-    protected void createAndSendNotificationForQAs(Utkast utkast, NotificationEvent event, LocalDate date, ArendeAmne amne) {
-        Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
-
-        if (!version.isPresent()) {
-            LOGGER.debug("Will not send notification message");
-            return;
-        }
-        HandelsekodEnum handelse = null;
-        if (SchemaVersion.VERSION_3 == version.get()) {
-            handelse = getHandelseV3(event);
-        } else {
-            handelse = getHandelseV1(event);
-        }
-        if (handelse == null) {
-            LOGGER.debug("Will not send notification message for event {} in version {}", event.name(), version.get().name());
-            return;
-        }
-
-        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(),
-                null);
-        save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(), utkast.getPatientPersonnummer().getPersonnummer(),
-                date, amne);
-        send(notificationMessage, utkast.getEnhetsId());
-    }
-
-    private HandelsekodEnum getHandelseV1(NotificationEvent event) {
-        switch (event) {
-        case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-            return HANFRFV;
-        case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-        case NEW_ANSWER_FROM_RECIPIENT:
-            return NYSVFM;
-        case NEW_ANSWER_FROM_CARE:
-        case QUESTION_FROM_RECIPIENT_HANDLED:
-            return HANFRFM;
-        case NEW_QUESTION_FROM_RECIPIENT:
-        case QUESTION_FROM_RECIPIENT_UNHANDLED:
-            return NYFRFM;
-        case NEW_QUESTION_FROM_CARE:
-            return NYFRFV;
-        case QUESTION_FROM_CARE_HANDLED:
-        case QUESTION_FROM_CARE_UNHANDLED:
-            return null;
-        }
-        return null;
-    }
-
-    private HandelsekodEnum getHandelseV3(NotificationEvent event) {
-        switch (event) {
-        case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-        case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-        case QUESTION_FROM_CARE_HANDLED:
-        case QUESTION_FROM_CARE_UNHANDLED:
-            return HANFRFV;
-        case NEW_ANSWER_FROM_CARE:
-        case QUESTION_FROM_RECIPIENT_HANDLED:
-        case QUESTION_FROM_RECIPIENT_UNHANDLED:
-            return HANFRFM;
-        case NEW_QUESTION_FROM_CARE:
-            return NYFRFV;
-        case NEW_QUESTION_FROM_RECIPIENT:
-            return NYFRFM;
-        case NEW_ANSWER_FROM_RECIPIENT:
-            return NYSVFM;
-        }
-        return null;
     }
 
     protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse) {
@@ -353,24 +287,103 @@ public class NotificationServiceImpl implements NotificationService {
         createAndSendNotification(utkast, handelse, reference, null, null);
     }
 
-    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference, LocalDate sistaDatumForSvar,
-            ArendeAmne amne) {
-        Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
+    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference,
+                                             ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
+        Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
         if (!version.isPresent()) {
-            LOGGER.debug("Will not send notification message for event {}", handelse);
+            LOGGER.debug("Schema version is not present. Notification message not sent for event {}", handelse);
             return;
         }
 
-        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse, version.get(),
-                reference);
-        save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(), utkast.getPatientPersonnummer().getPersonnummer(),
-                sistaDatumForSvar, amne);
+        createAndSendNotification(utkast, handelse, reference, amne, sistaDatumForSvar, version.get());
+    }
+
+    private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference,
+                                           ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version) {
+        Amneskod amneskod = null;
+        if (amne != null) {
+            amneskod = AmneskodCreator.create(amne.name(), amne.getDescription());
+        }
+
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse,
+                version, reference, amneskod, sistaDatumForSvar);
+
+        save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(),
+                utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar);
+
         send(notificationMessage, utkast.getEnhetsId());
     }
 
+    protected void createAndSendNotificationForQAs(Utkast utkast, NotificationEvent event, ArendeAmne amne, LocalDate sistaDatumForSvar) {
+
+        Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
+        if (!version.isPresent()) {
+            LOGGER.debug("Schema version is not present. Notification message not sent");
+            return;
+        }
+
+        HandelsekodEnum handelse = null;
+        if (SchemaVersion.VERSION_3 == version.get()) {
+            handelse = getHandelseV3(event);
+        } else {
+            handelse = getHandelseV1(event);
+        }
+
+        if (handelse == null) {
+            LOGGER.debug("Notification message not sent for event {} in version {}", event.name(), version.get().name());
+            return;
+        }
+
+        createAndSendNotification(utkast, handelse, null, amne, sistaDatumForSvar, version.get());
+    }
+
+    private HandelsekodEnum getHandelseV1(NotificationEvent event) {
+        switch (event) {
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+                return HANFRFV;
+            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+            case NEW_ANSWER_FROM_RECIPIENT:
+                return NYSVFM;
+            case NEW_ANSWER_FROM_CARE:
+            case QUESTION_FROM_RECIPIENT_HANDLED:
+                return HANFRFM;
+            case NEW_QUESTION_FROM_RECIPIENT:
+            case QUESTION_FROM_RECIPIENT_UNHANDLED:
+                return NYFRFM;
+            case NEW_QUESTION_FROM_CARE:
+                return NYFRFV;
+            case QUESTION_FROM_CARE_HANDLED:
+            case QUESTION_FROM_CARE_UNHANDLED:
+                return null;
+        }
+        return null;
+    }
+
+    private HandelsekodEnum getHandelseV3(NotificationEvent event) {
+        switch (event) {
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+            case QUESTION_FROM_CARE_HANDLED:
+            case QUESTION_FROM_CARE_UNHANDLED:
+                return HANFRFV;
+            case NEW_ANSWER_FROM_CARE:
+            case QUESTION_FROM_RECIPIENT_HANDLED:
+            case QUESTION_FROM_RECIPIENT_UNHANDLED:
+                return HANFRFM;
+            case NEW_QUESTION_FROM_CARE:
+                return NYFRFV;
+            case NEW_QUESTION_FROM_RECIPIENT:
+                return NYFRFM;
+            case NEW_ANSWER_FROM_RECIPIENT:
+                return NYSVFM;
+        }
+        return null;
+    }
+
     private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
-            LocalDate sistaDatumForSvar, ArendeAmne amne) {
+                      ArendeAmne amne, LocalDate sistaDatumForSvar) {
+
         Handelse handelse = new Handelse();
         handelse.setCode(notificationMessage.getHandelse());
         handelse.setEnhetsId(enhetsId);
@@ -379,8 +392,9 @@ public class NotificationServiceImpl implements NotificationService {
         handelse.setRef(notificationMessage.getReference());
         handelse.setTimestamp(notificationMessage.getHandelseTid());
         handelse.setVardgivarId(vardgivarId);
-        handelse.setSistaDatumForSvar(sistaDatumForSvar);
         handelse.setAmne(amne);
+        handelse.setSistaDatumForSvar(sistaDatumForSvar);
+
         handelseRepo.save(handelse);
     }
 

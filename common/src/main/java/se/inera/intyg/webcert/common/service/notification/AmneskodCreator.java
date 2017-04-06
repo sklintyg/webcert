@@ -10,25 +10,37 @@
  *
  * sklintyg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.notification;
+package se.inera.intyg.webcert.common.service.notification;
 
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
+
+import org.springframework.util.Assert;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
-import java.time.LocalDate;
+/**
+ * @author Magnus Ekstrand on 2017-04-05.
+ */
+public final class AmneskodCreator {
 
-public interface NotificationMessageFactory {
+    // It's an utility class, hide the default constructor
+    private AmneskodCreator() {
+    }
 
-    NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version,
-                                                  String reference, Amneskod amne, LocalDate sistaSvarsDatum);
+    public static Amneskod create(String code, String displayName) {
+        Assert.notNull(code, "The code argument must not be null");
+
+        Amneskod amne = new Amneskod();
+        amne.setCode(code);
+        amne.setCodeSystem(KV_AMNE_CODE_SYSTEM);
+        amne.setDisplayName(displayName);
+
+        return amne;
+    }
 
 }

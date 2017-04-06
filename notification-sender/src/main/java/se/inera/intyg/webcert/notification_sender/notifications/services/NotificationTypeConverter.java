@@ -22,6 +22,7 @@ import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 
 import com.google.common.base.Strings;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -71,11 +72,18 @@ public final class NotificationTypeConverter {
         handelseKod.setCode(notificationMessage.getHandelse().value());
         handelseKod.setDisplayName(notificationMessage.getHandelse().description());
 
-        Handelse handelseType = new Handelse();
-        handelseType.setHandelsekod(handelseKod);
-        handelseType.setTidpunkt(notificationMessage.getHandelseTid());
+        Handelse handelse = new Handelse();
+        handelse.setHandelsekod(handelseKod);
+        handelse.setTidpunkt(notificationMessage.getHandelseTid());
 
-        statusUpdateType.setHandelse(handelseType);
+        // JIRA INTYG-3715 föreskriver att ämne och sista svarsdatum endast ska läggas
+        // till om händelsen är av typen NYFRFM (ny fråga från mottagare).
+        if (HandelsekodEnum.fromValue(handelseKod.getCode()) == HandelsekodEnum.NYFRFM) {
+            handelse.setAmne(notificationMessage.getAmne());
+            handelse.setSistaDatumForSvar(notificationMessage.getSistaSvarsDatum());
+        }
+
+        statusUpdateType.setHandelse(handelse);
     }
 
     private static void decorateWithArenden(CertificateStatusUpdateForCareType statusUpdateType, NotificationMessage notificationMessage) {
