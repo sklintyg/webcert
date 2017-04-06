@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +33,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.FragorOchS
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 @Component
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {
@@ -43,16 +45,9 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
     @Autowired
     private FragorOchSvarCreator fragorOchSvarCreator;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.notification.NotificationMessageFactory#createNotificationMessage(se.inera.
-     * intyg.webcert.web.
-     * persistence.utkast.model.Utkast, se.inera.intyg.common.support.common.enumerations.HandelsekodEnum)
-     */
     @Override
-    public NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version, String reference) {
+    public NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version,
+                                                         String reference, Amneskod amne, LocalDate sistaSvarsDatum) {
 
         String intygsId = utkast.getIntygsId();
         String intygsTyp = utkast.getIntygsTyp();
@@ -62,6 +57,10 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
 
         String utkastJson = utkast.getModel();
 
+        FragorOchSvar fragaSvar = null;
+        ArendeCount skickadeFragor = null;
+        ArendeCount mottagnaFragor = null;
+
         if (SchemaVersion.VERSION_3 == version) {
             Pair<ArendeCount, ArendeCount> arenden = Pair.of(ArendeCount.getEmpty(), ArendeCount.getEmpty());
 
@@ -70,19 +69,20 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
                 arenden = fragorOchSvarCreator.createArenden(intygsId, intygsTyp);
             }
 
-            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, null, arenden.getLeft(),
-                    arenden.getRight(), version, reference);
+            skickadeFragor = arenden.getLeft();
+            mottagnaFragor = arenden.getRight();
+
         } else {
-            FragorOchSvar fragaSvar = FragorOchSvar.getEmpty();
+            fragaSvar = FragorOchSvar.getEmpty();
 
             // Add a count of questions to the message
             if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
                 fragaSvar = fragorOchSvarCreator.createFragorOchSvar(intygsId);
             }
-
-            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson, fragaSvar, null, null,
-                    version, reference);
         }
+
+        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson,
+                fragaSvar, skickadeFragor, mottagnaFragor, version, reference, amne, sistaSvarsDatum);
     }
 
 }
