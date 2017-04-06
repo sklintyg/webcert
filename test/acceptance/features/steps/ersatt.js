@@ -17,27 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, intyg, browser, Promise, logger */
+/* globals protractor, intyg, browser, logger */
 
 'use strict';
 
-function intygURL(typAvIntyg, intygId) {
-    if (typAvIntyg === 'Läkarutlåtande för sjukersättning') {
-        return Promise.resolve(process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id);
-    } else if (typAvIntyg === 'Läkarintyg för sjukpenning') {
-        return Promise.resolve(process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + global.intyg.id);
-    } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-        return Promise.resolve(process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + global.intyg.id);
-    } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-        return Promise.resolve(process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + global.intyg.id);
-    } else if (typAvIntyg === 'Läkarintyg FK 7263') {
-        return Promise.resolve(process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id);
-    } else if (typAvIntyg === 'Transportstyrelsens läkarintyg, diabetes') {
-        return Promise.resolve(process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-diabetes/' + global.intyg.id);
-    } else if (typAvIntyg === 'Transportstyrelsens läkarintyg') {
-        return Promise.resolve(process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + global.intyg.id);
-    }
-}
+var helpers = require('./helpers');
+var intygURL = helpers.intygURL;
 
 module.exports = function() {
 
@@ -71,10 +56,9 @@ module.exports = function() {
 
     this.Given(/^gå tillbaka till det ersatta intyget$/, function() {
         return browser.sleep(4000).then(function() {
-            return intygURL(global.ersattintyg.typ, global.ersattintyg.id).then(function(url) {
-                return browser.get(url).then(function() {
-                    logger.info('Går till url: ' + url);
-                });
+            var url = intygURL(global.ersattintyg.typ, global.ersattintyg.id);
+            return browser.get(url).then(function() {
+                logger.info('Går till url: ' + url);
             });
         });
     });

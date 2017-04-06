@@ -139,7 +139,7 @@ module.exports = function() {
             url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';
 
         } else if (intygstyp === 'intyget' && origin === undefined) {
-            url = intygURL(intyg.typ);
+            url = intygURL(intyg.typ, intyg.id);
             /*if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
                 url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
             } else {

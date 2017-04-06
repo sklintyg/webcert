@@ -32,8 +32,8 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
         createIntygWithStatus(intygstyp, status).then(function() {
 
             //Gå till det nyskapade intyget
-            console.log(helpers.intygURL(intygstyp));
-            browser.get(helpers.intygURL(intygstyp)).then(function() {
+            console.log(helpers.intygURL(intygstyp, global.intyg.id));
+            browser.get(helpers.intygURL(intygstyp, global.intyg.id)).then(function() {
                 cb();
             });
         });

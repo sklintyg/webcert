@@ -230,21 +230,21 @@ module.exports = {
         return browser.executeScript('window.errs=typeof(errs)=="undefined" ? [] : window.errs; window.console.error = function(msg){window.errs.push(msg); }; ');
     },
 
-    intygURL: function(typAvIntyg) {
+    intygURL: function(typAvIntyg, intygsId) {
         if (typAvIntyg === 'Läkarutlåtande för sjukersättning') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + intygsId;
         } else if (typAvIntyg === 'Läkarintyg för sjukpenning') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + global.intyg.id;
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + intygsId;
         } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + global.intyg.id;
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + intygsId;
         } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + global.intyg.id;
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + intygsId;
         } else if (typAvIntyg === 'Läkarintyg FK 7263') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + intygsId;
         } else if (typAvIntyg === 'Transportstyrelsens läkarintyg, diabetes') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-diabetes/' + global.intyg.id;
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-diabetes/' + intygsId;
         } else if (typAvIntyg === 'Transportstyrelsens läkarintyg') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + global.intyg.id;
+            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + intygsId;
         }
     }
 
