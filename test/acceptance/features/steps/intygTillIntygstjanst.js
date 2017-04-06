@@ -39,7 +39,7 @@
 
      if (isSMIIntyg) {
          console.log('is isSMIIntyg');
-         url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/register-certificate-se/v2.0?wsdl';
+         url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/register-certificate-se/v3.0?wsdl';
          url = url.replace('https', 'http');
          console.log(global.user);
          body = soapMessageBodies.RegisterCertificate(

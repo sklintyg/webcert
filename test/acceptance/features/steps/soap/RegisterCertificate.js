@@ -27,9 +27,9 @@ module.exports.RegisterCertificate = function(personId, personName1, personName2
     //global.intyg = generateIntygByType(intyg.typ);
     // if (intygsTyp === 'Läkarutlåtande för sjukersättning') {
     return '<urn2:RegisterCertificate \n' +
-        '               xmlns="urn:riv:clinicalprocess:healthcond:certificate:2" \n' +
-        '                xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:2" \n' +
-        '                xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:types:2" \n' +
+        '               xmlns="urn:riv:clinicalprocess:healthcond:certificate:3" \n' +
+        '                xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:3" \n' +
+        '                xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:types:3" \n' +
         '                xmlns:urn4="urn:riv:itintegration:registry:1">\n' +
         '         <urn2:intyg>\n' +
         '            <intygs-id>\n' +
