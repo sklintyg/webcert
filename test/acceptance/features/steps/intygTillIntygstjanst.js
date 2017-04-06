@@ -41,15 +41,17 @@
          console.log('is isSMIIntyg');
          url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/register-certificate-se/v2.0?wsdl';
          url = url.replace('https', 'http');
+         console.log(global.user);
          body = soapMessageBodies.RegisterCertificate(
              global.person.id,
              global.person.fornamn,
              global.person.efternamn,
              global.user.hsaId,
              global.user.fornamn + ' ' + global.user.efternamn,
-             global.user.global.user.enhetId,
+             global.user.enhetId,
              global.user.enhetName,
              global.intyg.id);
+         console.log('HÄR SKRIVER JAG UT URLEN');
          console.log(url);
          console.log(body);
          soap.createClient(url, function(err, client) {
