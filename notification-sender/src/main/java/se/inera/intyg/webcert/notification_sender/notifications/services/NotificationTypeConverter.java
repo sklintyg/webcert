@@ -22,6 +22,8 @@ import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 
 import com.google.common.base.Strings;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
@@ -35,6 +37,8 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 public final class NotificationTypeConverter {
 
     protected static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationTypeConverter.class);
 
     private NotificationTypeConverter() {
     }
@@ -79,7 +83,14 @@ public final class NotificationTypeConverter {
         // JIRA INTYG-3715 föreskriver att ämne och sista svarsdatum endast ska läggas
         // till om händelsen är av typen NYFRFM (ny fråga från mottagare).
         if (HandelsekodEnum.fromValue(handelseKod.getCode()) == HandelsekodEnum.NYFRFM) {
+            if (notificationMessage.getAmne() == null) {
+                LOGGER.debug("Vid händelsetypen NYFRFM var ämneskod null");
+            }
             handelse.setAmne(notificationMessage.getAmne());
+
+            if (notificationMessage.getSistaSvarsDatum() == null) {
+                LOGGER.debug("Vid händelsetypen NYFRFM var sista datum för svars null");
+            }
             handelse.setSistaDatumForSvar(notificationMessage.getSistaSvarsDatum());
         }
 
