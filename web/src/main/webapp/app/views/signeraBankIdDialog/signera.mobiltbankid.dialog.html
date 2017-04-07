@@ -1,0 +1,31 @@
+<style>
+  .modal {
+    text-align: center;
+  }
+  
+  .modal-dialog {
+    width: 98%;
+    height: 92%;
+    padding: 0;
+  }
+
+  .modal-content {
+    height: 99%;
+  }
+
+  .modal-body {
+    top:40%;
+    text-align:center;
+  }
+
+</style>
+<div class="modal-header">
+  <button type="button" class="close" ng-click="close();">×</button>
+</div>
+
+<div class="modal-body">
+  <img aria-labelledby="loading-message" src="/img/ajax-loader.gif" />
+  <h3 ng-if="biljettStatus() !== 'BEARBETAR'">Ditt intyg signeras.</h3>
+  <div ng-if="biljettStatus() !== 'BEARBETAR'">Detta kan ta några sekunder.</div>
+  <div ng-if="biljettStatus() === 'BEARBETAR'">Starta mobilt BankID på den enhet du har det installerat.</div>
+</div>
