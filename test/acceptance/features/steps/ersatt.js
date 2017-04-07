@@ -73,34 +73,28 @@ module.exports = function() {
 
     this.Given(/^ska det inte finnas knappar för "([^"]*)"$/, function(buttons) {
         buttons = buttons.split(',');
-        logger.info(buttons);
         var errors = [];
-        logger.info('INSIDE LOOP');
         buttons.forEach(function(button) {
             logger.info(button);
             if ('skicka' === button) {
-                logger.info('skicka');
                 element(by.id('sendBtn')).isPresent().then(function(isPresent) {
                     if (!isPresent) {
                         errors.push('sendBtn');
                     }
                 });
             } else if ('kopiera' === button) {
-                logger.info('kopiera');
                 element(by.id('copyBtn')).isPresent().then(function(isPresent) {
                     if (!isPresent) {
                         errors.push('copyBtn');
                     }
                 });
             } else if ('ersätta' === button) {
-                logger.info('ersätta');
                 element(by.id('ersattBtn')).isPresent().then(function(isPresent) {
                     if (!isPresent) {
                         errors.push('ersattBtn');
                     }
                 });
             } else if ('förnya' === button) {
-                logger.info('förnya');
                 element(by.id('fornyaBtn')).isPresent().then(function(isPresent) {
                     if (!isPresent) {
                         errors.push('fornyaBtn');
