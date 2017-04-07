@@ -25,7 +25,7 @@
 
 <div class="modal-body">
   <img aria-labelledby="loading-message" src="/img/ajax-loader.gif" />
-  <h3 ng-if="biljettStatus() !== 'BEARBETAR'">Ditt intyg signeras.</h3>
-  <div ng-if="biljettStatus() !== 'BEARBETAR'">Detta kan ta några sekunder.</div>
-  <div ng-if="biljettStatus() === 'BEARBETAR'">Starta mobilt BankID på den enhet du har det installerat.</div>
+  <h3 ng-if="biljettStatus() !== 'BEARBETAR'"><span message key="common.modal.label.signing"/></h3>
+  <div ng-if="biljettStatus() !== 'BEARBETAR'"><span message key="common.modal.label.signing.seconds"/></div>
+  <div ng-if="biljettStatus() === 'BEARBETAR'"><span message key="common.modal.label.signing.open.mobilt.bankid"/></div>
 </div>
