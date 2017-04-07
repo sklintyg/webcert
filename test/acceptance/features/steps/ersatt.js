@@ -30,7 +30,7 @@ module.exports = function() {
         return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);
     });
 
-    this.Given(/^klickar på ersätta knappen$/, function() {
+    this.Given(/^jag klickar på ersätta knappen$/, function() {
         return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE);
     });
 
@@ -42,7 +42,7 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^klickar på ersätta knappen och ersätter intyget$/, function() {
+    this.Given(/^jag klickar på ersätta knappen och ersätter intyget$/, function() {
         global.ersattintyg = {};
         global.ersattintyg.id = intyg.id;
         global.ersattintyg.typ = intyg.typ;
@@ -54,7 +54,7 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^gå tillbaka till det ersatta intyget$/, function() {
+    this.Given(/^jag går tillbaka till det ersatta intyget$/, function() {
         return browser.sleep(4000).then(function() {
             var url = intygURL(global.ersattintyg.typ, global.ersattintyg.id);
             return browser.get(url).then(function() {
@@ -69,6 +69,48 @@ module.exports = function() {
 
     this.Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalMsg) {
         return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
+    });
+
+    this.Given(/^ska det inte finnas knappar för "([^"]*)"$/, function(buttons) {
+        buttons = buttons.split(',');
+        logger.info(buttons);
+        var errors = [];
+        logger.info('INSIDE LOOP');
+        buttons.forEach(function(button) {
+            logger.info(button);
+            if ('skicka' === button) {
+                logger.info('skicka');
+                element(by.id('sendBtn')).isPresent().then(function(isPresent) {
+                    if (!isPresent) {
+                        errors.push('sendBtn');
+                    }
+                });
+            } else if ('kopiera' === button) {
+                logger.info('kopiera');
+                element(by.id('copyBtn')).isPresent().then(function(isPresent) {
+                    if (!isPresent) {
+                        errors.push('copyBtn');
+                    }
+                });
+            } else if ('ersätta' === button) {
+                logger.info('ersätta');
+                element(by.id('ersattBtn')).isPresent().then(function(isPresent) {
+                    if (!isPresent) {
+                        errors.push('ersattBtn');
+                    }
+                });
+            } else if ('förnya' === button) {
+                logger.info('förnya');
+                element(by.id('fornyaBtn')).isPresent().then(function(isPresent) {
+                    if (!isPresent) {
+                        errors.push('fornyaBtn');
+                    }
+                });
+            }
+        });
+
+        logger.info('ERRORS: ' + errors.length + ' =>' + errors);
+        return expect(errors).to.be.empty;
     });
 
 };
