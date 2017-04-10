@@ -308,7 +308,7 @@ module.exports = function() {
         if (isSMIIntyg) {
             body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
             console.log(body);
-            var path = '/send-message-to-care/v1.0?wsdl';
+            var path = '/send-message-to-care/v2.0?wsdl';
             url = process.env.INTYGTJANST_URL + path;
             url = url.replace('https', 'http');
 
@@ -385,7 +385,7 @@ module.exports = function() {
 
             body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ' + global.intyg.guidcheck, false);
             console.log(body);
-            var path = '/send-message-to-care/v1.0?wsdl';
+            var path = '/send-message-to-care/v2.0?wsdl';
             url = process.env.INTYGTJANST_URL + path;
             url = url.replace('https', 'http');
 

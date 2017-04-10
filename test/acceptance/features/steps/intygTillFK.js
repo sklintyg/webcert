@@ -39,40 +39,6 @@
 
          if (isSMIIntyg) {
              console.log('is isSMIIntyg');
-             /*var amneCode = helpers.subjectCodes[amne];
-
-            body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
-            console.log(body);
-            var path = '/send-message-to-care/v1.0?wsdl';
-            url = process.env.INTYGTJANST_URL + path;
-            url = url.replace('https', 'http');
-
-            soap.createClient(url, function(err, client) {
-                logger.info(url);
-                if (err) {
-                    callback(err);
-                } else {
-                    client.SendMessageToCare(body, function(err, result, resBody) {
-                        console.log(resBody);
-                        if (err) {
-                            callback(err);
-                        } else {
-                            var resultcode = result.result.resultCode;
-                            logger.info('ResultCode: ' + resultcode);
-                            console.log(result);
-                            if (resultcode !== 'OK') {
-                                logger.info(result);
-                                callback('ResultCode: ' + resultcode + '\n' + resBody);
-                            } else {
-                                logger.info('ResultCode: ' + resultcode);
-                                console.log(JSON.stringify(result));
-                                callback();
-                            }
-
-                        }
-                    });
-                }
-            });*/
          } else {
              url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/send-certificate/v1.0?wsdl';
              url = url.replace('https', 'http');

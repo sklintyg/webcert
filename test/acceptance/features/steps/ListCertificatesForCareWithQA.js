@@ -37,14 +37,7 @@
                      if (err) {
                          throw (err);
                      } else {
-                         var resultcode = result.result.resultCode;
-                         logger.info('ResultCode: ' + resultcode);
-                         if (resultcode !== 'OK') {
-                             logger.info(result);
-                             throw ('ResultCode: ' + resultcode + '\n' + resBody);
-                         } else {
-                             resolve(result);
-                         }
+                         resolve(result);
                      }
                  });
              }

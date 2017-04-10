@@ -27,20 +27,26 @@ module.exports.getBody = function(personID, enhetHSA) {
         personIDRoot = '1.2.752.129.2.1.3.3';
     }
 
-    return '      <urn1:ListCertificatesForCareWithQA' +
+    return '<urn1:ListCertificatesForCareWithQA' +
         ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"' +
         ' xmlns:urn="urn:riv:itintegration:registry:1"' +
-        ' xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:2"' +
-        ' xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:2"' +
+        ' xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:3"' +
+        ' xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3"' +
         '>' +
-        '         <urn1:person-id>' +
-        '            <urn2:root>' + personIDRoot + '</urn2:root>' +
-        '            <urn2:extension>' + personID.replace('-', '') + '</urn2:extension>' +
-        '         </urn1:person-id>' +
-        '         <urn1:enhets-id>' +
-        '            <urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
-        '            <urn2:extension>' + enhetHSA + '</urn2:extension>' +
-        '         </urn1:enhets-id>' +
-        '      </urn1:ListCertificatesForCareWithQA>';
+        '   <urn1:person-id>' +
+        '      <urn2:root>' + personIDRoot + '</urn2:root>' +
+        '      <urn2:extension>' + personID.replace('-', '') + '</urn2:extension>' +
+        '   </urn1:person-id>' +
+        '   <urn1:enhets-id>' +
+        '      <urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
+        '      <urn2:extension>' + enhetHSA + '</urn2:extension>' +
+        '   </urn1:enhets-id>' +
+        // '   <urn1:vardgivar-id>' +
+        // '      <urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
+        // '      <urn2:extension>?</urn2:extension>' +
+        // '   </urn1:vardgivar-id>' +
 
+        // '   <urn1:fromTidpunkt>?</urn1:fromTidpunkt>'+
+        // '   <urn1:tomTidpunkt>?</urn1:tomTidpunkt>'+
+        '</urn1:ListCertificatesForCareWithQA>';
 };

@@ -32,7 +32,7 @@ module.exports = function() {
 
         var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne) + ' ' + global.intyg.guidcheck, amne);
         console.log(body);
-        var path = '/send-message-to-care/v1.0?wsdl';
+        var path = '/send-message-to-care/v2.0?wsdl';
         var url = process.env.INTYGTJANST_URL + path;
         url = url.replace('https', 'http');
 

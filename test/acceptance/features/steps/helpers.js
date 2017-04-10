@@ -247,7 +247,4 @@ module.exports = {
             return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + intygsId;
         }
     }
-
-
-
 };
