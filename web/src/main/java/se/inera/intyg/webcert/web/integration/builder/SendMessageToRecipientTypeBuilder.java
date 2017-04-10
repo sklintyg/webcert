@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.integration.builder;
 
 import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
 
+import org.apache.commons.lang3.StringUtils;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
@@ -90,12 +91,12 @@ public final class SendMessageToRecipientTypeBuilder {
             AbstractVardenhet valdVardenhet = (AbstractVardenhet) sourceVardenhet;
             enhet.setArbetsplatskod(InternalConverterUtil.getArbetsplatsKod(valdVardenhet.getArbetsplatskod()));
             enhet.setEnhetsId(InternalConverterUtil.getHsaId(valdVardenhet.getId()));
-            enhet.setEnhetsnamn(valdVardenhet.getNamn());
-            enhet.setEpost(valdVardenhet.getEpost());
-            enhet.setPostadress(valdVardenhet.getPostadress());
-            enhet.setPostnummer(valdVardenhet.getPostnummer());
-            enhet.setPostort(valdVardenhet.getPostort());
-            enhet.setTelefonnummer(valdVardenhet.getTelefonnummer());
+            enhet.setEnhetsnamn(StringUtils.defaultString(valdVardenhet.getNamn()));
+            enhet.setEpost(StringUtils.trimToNull(valdVardenhet.getEpost()));
+            enhet.setPostadress(StringUtils.defaultString(valdVardenhet.getPostadress()));
+            enhet.setPostnummer(StringUtils.defaultString(valdVardenhet.getPostnummer()));
+            enhet.setPostort(StringUtils.defaultString(valdVardenhet.getPostort()));
+            enhet.setTelefonnummer(StringUtils.defaultString(valdVardenhet.getTelefonnummer()));
         }
         enhet.setVardgivare(buildVardgivare(user.getValdVardgivare()));
         return enhet;
@@ -105,7 +106,7 @@ public final class SendMessageToRecipientTypeBuilder {
         Vardgivare vardgivare = new Vardgivare();
         if (valdVardgivare != null) {
             vardgivare.setVardgivareId(InternalConverterUtil.getHsaId(valdVardgivare.getId()));
-            vardgivare.setVardgivarnamn(valdVardgivare.getNamn());
+            vardgivare.setVardgivarnamn(StringUtils.defaultString(valdVardgivare.getNamn()));
         }
         return vardgivare;
     }

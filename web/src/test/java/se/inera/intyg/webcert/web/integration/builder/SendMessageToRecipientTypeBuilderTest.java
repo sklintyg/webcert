@@ -68,7 +68,7 @@ public class SendMessageToRecipientTypeBuilderTest {
     @Test
     public void buildTest() {
         final Arende arende = buildArende();
-        final WebCertUser skickatAv = buildWebCertUser();
+        final WebCertUser skickatAv = buildWebCertUser(true);
         final String logiskAdressMottagare = "logical address";
         SendMessageToRecipientType result = SendMessageToRecipientTypeBuilder.build(arende, skickatAv, logiskAdressMottagare);
 
@@ -113,13 +113,29 @@ public class SendMessageToRecipientTypeBuilderTest {
     public void buildQuestionTest() {
         final Arende arende = buildArende();
         arende.setSvarPaId(null); // question
-        final WebCertUser skickatAv = buildWebCertUser();
+        final WebCertUser skickatAv = buildWebCertUser(true);
         final String logiskAdressMottagare = "logical address";
         SendMessageToRecipientType result = SendMessageToRecipientTypeBuilder.build(arende, skickatAv, logiskAdressMottagare);
 
         assertNotNull(result);
         assertEquals(AMNE.name(), result.getAmne().getCode());
         assertNull(result.getSvarPa());
+    }
+
+    @Test
+    public void buildTestNullToEmptyString() {
+        final Arende arende = buildArende();
+        final WebCertUser skickatAv = buildWebCertUser(false);
+        final String logiskAdressMottagare = "logical address";
+        SendMessageToRecipientType result = SendMessageToRecipientTypeBuilder.build(arende, skickatAv, logiskAdressMottagare);
+
+        assertEquals("", result.getSkickatAv().getEnhet().getEnhetsnamn());
+        assertEquals("", result.getSkickatAv().getEnhet().getPostadress());
+        assertEquals("", result.getSkickatAv().getEnhet().getPostnummer());
+        assertEquals("", result.getSkickatAv().getEnhet().getPostort());
+        assertEquals("", result.getSkickatAv().getEnhet().getTelefonnummer());
+        assertNull(result.getSkickatAv().getEnhet().getEpost());
+        assertEquals("", result.getSkickatAv().getEnhet().getVardgivare().getVardgivarnamn());
     }
 
     private Arende buildArende() {
@@ -140,23 +156,27 @@ public class SendMessageToRecipientTypeBuilderTest {
         return arende;
     }
 
-    private WebCertUser buildWebCertUser() {
+    private WebCertUser buildWebCertUser(boolean complete) {
         WebCertUser user = new WebCertUser();
         user.setHsaId(PERSONAL_HSA_ID);
         user.setNamn(USER_NAMN);
         user.setForskrivarkod(USER_FORSKRIVARKOD);
         Vardenhet valdVardenhet = new Vardenhet();
         valdVardenhet.setArbetsplatskod(ARBETSPLATSKOD);
-        valdVardenhet.setEpost(VARDENHET_EPOST);
         valdVardenhet.setId(VARDENHET_ENHET_ID);
-        valdVardenhet.setNamn(VARDENHET_NAMN);
-        valdVardenhet.setPostadress(VARDENHET_POSTADRESS);
-        valdVardenhet.setPostnummer(VARDENHET_POSTNUMMER);
-        valdVardenhet.setPostort(VARDENHET_POSTORT);
-        valdVardenhet.setTelefonnummer(VARDENHET_TELEFONNUMMER);
         Vardgivare valdVardgivare = new Vardgivare();
         valdVardgivare.setId(VARDGIVARE_ID);
-        valdVardgivare.setNamn(VARDGIVARE_NAMN);
+
+        if (complete) {
+            valdVardenhet.setNamn(VARDENHET_NAMN);
+            valdVardenhet.setPostadress(VARDENHET_POSTADRESS);
+            valdVardenhet.setPostnummer(VARDENHET_POSTNUMMER);
+            valdVardenhet.setPostort(VARDENHET_POSTORT);
+            valdVardenhet.setTelefonnummer(VARDENHET_TELEFONNUMMER);
+            valdVardenhet.setEpost(VARDENHET_EPOST);
+            valdVardgivare.setNamn(VARDGIVARE_NAMN);
+        }
+
         user.setValdVardenhet(valdVardenhet);
         user.setValdVardgivare(valdVardgivare);
         return user;
