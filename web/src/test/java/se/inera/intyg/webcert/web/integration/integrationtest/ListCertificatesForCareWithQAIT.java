@@ -77,33 +77,24 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void messageNotFollowingXSDFailsWithValidationError() throws Exception {
+    public void messageNotFollowingXSDFails() throws Exception {
         String personnummer = "<root>123456</root>";
         String enhetsid = "enhetsid";
         requestTemplate.add("data", new ListCertificatesForCareWithQARequestParameters(personnummer, enhetsid));
 
         given().body(requestTemplate.render()).when()
                 .post(LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL)
-                .then().statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+                .then().statusCode(500);
     }
 
-    /**
-     * Check that even when sending invalid request, Soap faults should get transformed to a valid error response.
-     */
     @Test
-    public void testMessageWithInvalidXMLFailsWithApplicationError() {
+    public void testMessageWithInvalidXMLFails() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
                 .when()
                 .post(LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL)
                 .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
+                .statusCode(500);
     }
 
     private static class ListCertificatesForCareWithQARequestParameters {
