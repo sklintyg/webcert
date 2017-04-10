@@ -58,7 +58,7 @@ public class IntegreradEnhet {
     private boolean schemaVersion1;
 
     @Column(name = "SCHEMA_VERSION_3")
-    private boolean schemaVersion2;
+    private boolean schemaVersion3;
     @PrePersist
     void onPrePersist() {
         if (skapadDatum == null) {
@@ -75,7 +75,7 @@ public class IntegreradEnhet {
     public String toString() {
         return "IntegreradEnhet [enhetsId=" + enhetsId + ", enhetsNamn=" + enhetsNamn + ", vardgivarId=" + vardgivarId + ", vardgivarNamn="
                 + vardgivarNamn + ", skapadDatum=" + skapadDatum + ", senasteKontrollDatum=" + senasteKontrollDatum + ", version1="
-                + isSchemaVersion1() + ", version2=" + isSchemaVersion2() + "]";
+                + isSchemaVersion1() + ", version2=" + isSchemaVersion3() + "]";
     }
 
     public String getEnhetsId() {
@@ -134,11 +134,11 @@ public class IntegreradEnhet {
         this.schemaVersion1 = schemaVersion1;
     }
 
-    public boolean isSchemaVersion2() {
-        return schemaVersion2;
+    public boolean isSchemaVersion3() {
+        return schemaVersion3;
     }
 
-    public void setSchemaVersion2(boolean schemaVersion2) {
-        this.schemaVersion2 = schemaVersion2;
+    public void setSchemaVersion3(boolean schemaVersion3) {
+        this.schemaVersion3 = schemaVersion3;
     }
 }

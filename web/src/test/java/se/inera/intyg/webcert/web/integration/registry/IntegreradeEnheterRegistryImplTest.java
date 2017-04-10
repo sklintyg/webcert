@@ -67,7 +67,7 @@ public class IntegreradeEnheterRegistryImplTest {
         ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
         verify(integreradEnhetRepository).save(enhetCaptor.capture());
 
-        assertTrue(enhetCaptor.getValue().isSchemaVersion2());
+        assertTrue(enhetCaptor.getValue().isSchemaVersion3());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
         IntegreradEnhet integreradEnhet = new IntegreradEnhet();
         integreradEnhet.setSchemaVersion1(false);
-        integreradEnhet.setSchemaVersion2(true);
+        integreradEnhet.setSchemaVersion3(true);
 
         when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(integreradEnhet);
         when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
@@ -87,7 +87,7 @@ public class IntegreradeEnheterRegistryImplTest {
         verify(integreradEnhetRepository, times(1)).save(enhetCaptor.capture());
 
         assertTrue(enhetCaptor.getValue().isSchemaVersion1());
-        assertTrue(enhetCaptor.getValue().isSchemaVersion2());
+        assertTrue(enhetCaptor.getValue().isSchemaVersion3());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, vardgivarId);
         IntegreradEnhet integreradEnhet = new IntegreradEnhet();
         integreradEnhet.setEnhetsId("another enhetsId");
-        integreradEnhet.setSchemaVersion2(true);
+        integreradEnhet.setSchemaVersion3(true);
         integreradEnhet.setVardgivarId(vardgivarId);
 
         // already exists
@@ -132,7 +132,7 @@ public class IntegreradeEnheterRegistryImplTest {
         verify(integreradEnhetRepository, times(3)).save(enhetCaptor.capture());
 
         assertNotNull(enhetCaptor.getAllValues().get(0).getSenasteKontrollDatum());
-        assertTrue(enhetCaptor.getAllValues().get(1).isSchemaVersion2());
+        assertTrue(enhetCaptor.getAllValues().get(1).isSchemaVersion3());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, vardgivarId);
         IntegreradEnhet integreradEnhet = new IntegreradEnhet();
         integreradEnhet.setEnhetsId(enhetsId);
-        integreradEnhet.setSchemaVersion2(true);
+        integreradEnhet.setSchemaVersion3(true);
         integreradEnhet.setVardgivarId(vardgivarId);
 
         when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
@@ -195,7 +195,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(true);
-        enhet.setSchemaVersion2(true);
+        enhet.setSchemaVersion3(true);
         when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
@@ -209,7 +209,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(false);
-        enhet.setSchemaVersion2(false);
+        enhet.setSchemaVersion3(false);
         when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
 
         assertFalse(registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID).isPresent());
@@ -222,7 +222,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(false);
-        enhet.setSchemaVersion2(true);
+        enhet.setSchemaVersion3(true);
         when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(enhet);
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID);

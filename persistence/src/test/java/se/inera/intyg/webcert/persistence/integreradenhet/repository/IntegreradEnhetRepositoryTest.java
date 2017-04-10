@@ -51,7 +51,7 @@ public class IntegreradEnhetRepositoryTest {
         enhet.setVardgivarId("SE1234567890-2B01");
         enhet.setVardgivarNamn("Vardgivare 1");
         enhet.setSchemaVersion1(true);
-        enhet.setSchemaVersion2(false);
+        enhet.setSchemaVersion3(false);
 
         IntegreradEnhet savedEnhet = repository.save(enhet);
 
@@ -59,7 +59,7 @@ public class IntegreradEnhetRepositoryTest {
         assertNotNull(savedEnhet.getSkapadDatum());
         assertNull(savedEnhet.getSenasteKontrollDatum());
         assertTrue(savedEnhet.isSchemaVersion1());
-        assertFalse(savedEnhet.isSchemaVersion2());
+        assertFalse(savedEnhet.isSchemaVersion3());
     }
 
 }

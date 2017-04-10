@@ -77,8 +77,7 @@ public class FilterConverterTest {
     @Test
     public void testNullSafeBoolean() {
         QueryFragaSvarParameter source = createQueryFragaSvarParameter(LocalDateTime.now(), LocalDateTime.now(), "enhetId", "hsaId", 5,
-                null,
-                null, LocalDate.now(), 0, "KOMPLETTERING_FRAN_VARDEN", Boolean.TRUE);
+                null, null, LocalDate.now(), 0, "KOMPLETTERING_FRAN_VARDEN", Boolean.TRUE);
 
         Filter result = FilterConverter.convert(source, new ArrayList<>(), Stream.of("fk7263").collect(Collectors.toSet()));
         assertFalse(result.isQuestionFromFK());
@@ -88,8 +87,7 @@ public class FilterConverterTest {
     @Test
     public void testNoPageSizeNorStartFrom() {
         QueryFragaSvarParameter source = createQueryFragaSvarParameter(LocalDateTime.now(), LocalDateTime.now(), "enhetId", "hsaId", null,
-                Boolean.FALSE,
-                Boolean.TRUE, LocalDate.now(), null, "KOMPLETTERING_FRAN_VARDEN", Boolean.TRUE);
+                Boolean.FALSE, Boolean.TRUE, LocalDate.now(), null, "KOMPLETTERING_FRAN_VARDEN", Boolean.TRUE);
 
         Filter result = FilterConverter.convert(source, new ArrayList<>(), Stream.of("fk7263").collect(Collectors.toSet()));
 
@@ -98,9 +96,8 @@ public class FilterConverterTest {
     }
 
     private QueryFragaSvarParameter createQueryFragaSvarParameter(LocalDateTime changedFrom, LocalDateTime changedTo, String enhetId,
-            String hsaId,
-            Integer pageSize, Boolean questionFromFK, Boolean questionFromWC, LocalDate replyLatest, Integer startFrom, String vantarPa,
-            Boolean vidarebefordrad) {
+            String hsaId, Integer pageSize, Boolean questionFromFK, Boolean questionFromWC, LocalDate replyLatest, Integer startFrom,
+            String vantarPa, Boolean vidarebefordrad) {
         QueryFragaSvarParameter res = new QueryFragaSvarParameter();
         res.setChangedFrom(changedFrom);
         res.setChangedTo(changedTo);

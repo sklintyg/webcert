@@ -57,7 +57,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      */
     @Override
     @Transactional("jpaTransactionManager")
-    public void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion2) {
+    public void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion3) {
 
         String enhetsId = entry.getEnhetsId();
 
@@ -67,8 +67,8 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
             if (schemaVersion1) {
                 intEnhet.setSchemaVersion1(schemaVersion1);
             }
-            if (schemaVersion2) {
-                intEnhet.setSchemaVersion2(schemaVersion2);
+            if (schemaVersion3) {
+                intEnhet.setSchemaVersion3(schemaVersion3);
             }
         } else {
             intEnhet = new IntegreradEnhet();
@@ -77,7 +77,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
             intEnhet.setVardgivarId(entry.getVardgivareId());
             intEnhet.setVardgivarNamn(entry.getVardgivareNamn());
             intEnhet.setSchemaVersion1(schemaVersion1);
-            intEnhet.setSchemaVersion2(schemaVersion2);
+            intEnhet.setSchemaVersion3(schemaVersion3);
             LOG.debug("Adding unit to registry: {}", intEnhet.toString());
         }
         integreradEnhetRepository.save(intEnhet);
@@ -103,7 +103,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
             IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(enhet);
 
             if (orgEntry != null && orgEntry.compareTo(newEntry) != 0) {
-                putIntegreradEnhet(newEntry, enhet.isSchemaVersion1(), enhet.isSchemaVersion2());
+                putIntegreradEnhet(newEntry, enhet.isSchemaVersion1(), enhet.isSchemaVersion3());
             }
         }
     }
@@ -131,7 +131,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
          * This is complicated because we have a transition period for fk7263 where we still send notifications for
          * events for old certificates.
          *
-         * First if-case handles new (which means rivta version 2 - SIT certificates, but also TS certificates).
+         * First if-case handles new (which means rivta version 3 - SIT certificates, but also TS certificates).
          * These certificates should only use VERSION_3.
          *
          * Then we get to the case where fk7263 is handled during a transition period. When this is the case VERSION_1
@@ -142,11 +142,11 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
          * If VERSION_1 is set we use the latest version available.
          */
         if (!oldIntygTypes.contains(intygType)) {
-            return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_3) : Optional.empty();
+            return enhet.isSchemaVersion3() ? Optional.of(SchemaVersion.VERSION_3) : Optional.empty();
         } else if (!enhet.isSchemaVersion1()) {
             return Optional.empty();
         } else {
-            return enhet.isSchemaVersion2() ? Optional.of(SchemaVersion.VERSION_3) : Optional.of(SchemaVersion.VERSION_1);
+            return enhet.isSchemaVersion3() ? Optional.of(SchemaVersion.VERSION_3) : Optional.of(SchemaVersion.VERSION_1);
         }
     }
 

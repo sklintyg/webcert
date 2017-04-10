@@ -80,9 +80,9 @@ public class RouteTest {
     private ModuleApi moduleApi; // this is a mock from unit-test-notification-sender-config.xml
     @Autowired
     private IntygModuleRegistry moduleRegistry; // this is a mock from unit-test-notification-sender-config.xml
-                                                                     // unit-test-notification-sender-config.xml
     @Autowired
     private Fk7263InternalToNotification mockInternalToNotification; // this is a mock from
+                                                                     // unit-test-notification-sender-config.xml
     @Produce(uri = "direct:receiveNotificationForAggregationRequestEndpoint")
     private ProducerTemplate producerTemplate;
     @EndpointInject(uri = "mock:bean:notificationAggregator")

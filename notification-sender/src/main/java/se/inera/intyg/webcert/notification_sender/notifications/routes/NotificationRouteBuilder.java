@@ -176,5 +176,6 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                         "CertificateStatusUpdateForCare"));
         return jaxbMessageDataFormatV3;
     }
+    // CHECKSTYLE:ON LineLength
 
 }
