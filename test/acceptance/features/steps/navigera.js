@@ -158,7 +158,6 @@ module.exports = function() {
         var loginIfSessionUsed = function() {
             console.log('Går till url: ' + url);
             if (global.sessionUsed) {
-                global.sessionUsed = true;
                 console.log('Loggar in med tidigare användare..');
                 return loginHelpers.logInAsUser({
                     fornamn: global.user.fornamn,
@@ -169,7 +168,6 @@ module.exports = function() {
                     origin: global.user.origin
                 });
             } else {
-                global.sessionUsed = true;
                 return Promise.resolve('Använder tidigare session');
             }
 
@@ -181,7 +179,7 @@ module.exports = function() {
 
             return browser.get(url).then(function() {
                 helpers.injectConsoleTracing();
-
+                global.sessionUsed = true;
                 if (!usingCreateDraft2) { // om djupintegration v1 så kommer det fram uppdragsval
                     var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
                     enhetSelectorLink.isPresent().then(function(isPresent) {
