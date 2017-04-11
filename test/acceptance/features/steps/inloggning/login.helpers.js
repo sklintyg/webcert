@@ -60,7 +60,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         secondBrowser.sleep(3000);
     }
 
-    global.sessionUsed = true;
+    global.sessionUsed = false;
 
     return login.then(function() {
         return helpers.injectConsoleTracing();
