@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals protractor, wcTestTools, browser, intyg, logger,person, JSON */
+/*globals protractor, wcTestTools, browser, intyg, logger,person, JSON, Promise */
 
 'use strict';
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
@@ -26,6 +26,7 @@ var testdataHelpers = wcTestTools.helpers.testdata;
 var testdata = wcTestTools.testdata;
 var testpatienter = testdata.values.patienter;
 var intygURL = helpers.intygURL;
+var loginHelpers = require('./inloggning/login.helpers.js');
 
 
 module.exports = function() {
@@ -154,31 +155,54 @@ module.exports = function() {
             url += addToUrl;
         }
 
-        return browser.get(url).then(function() {
+        var loginIfSessionUsed = function() {
             console.log('Går till url: ' + url);
+            if (global.sessionUsed) {
+                global.sessionUsed = true;
+                console.log('Loggar in med tidigare användare..');
+                return loginHelpers.logInAsUser({
+                    fornamn: global.user.fornamn,
+                    efternamn: global.user.efternamn,
+                    hsaId: global.user.hsaId,
+                    enhetId: global.user.enhetId,
+                    lakare: global.user.lakare,
+                    origin: global.user.origin
+                });
+            } else {
+                global.sessionUsed = true;
+                return Promise.resolve('Använder tidigare session');
+            }
 
-            helpers.injectConsoleTracing();
+        };
 
-            if (!usingCreateDraft2) { // om djupintegration v1 så kommer det fram uppdragsval
-                var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
-                enhetSelectorLink.isPresent().then(function(isPresent) {
-                    if (isPresent) {
-                        return enhetSelectorLink.click().then(function() {
+        return loginIfSessionUsed().then(function() {
+
+
+
+            return browser.get(url).then(function() {
+                helpers.injectConsoleTracing();
+
+                if (!usingCreateDraft2) { // om djupintegration v1 så kommer det fram uppdragsval
+                    var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
+                    enhetSelectorLink.isPresent().then(function(isPresent) {
+                        if (isPresent) {
+                            return enhetSelectorLink.click().then(function() {
+                                return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                                    return helpers.fetchMessageIds(intyg.typ);
+                                });
+                            });
+                        } else {
                             return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
                                 return helpers.fetchMessageIds(intyg.typ);
                             });
-                        });
-                    } else {
-                        return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
-                            return helpers.fetchMessageIds(intyg.typ);
-                        });
-                    }
+                        }
 
-                });
-            } else {
-                return helpers.fetchMessageIds(intyg.typ);
-            }
+                    });
+                } else {
+                    return helpers.fetchMessageIds(intyg.typ);
+                }
 
+            });
         });
     }
     this.When(/^jag går in på intyget via djupintegrationslänk och har parametern "([^"]*)" satt till "([^"]*)"$/, function(param, paramValue) {

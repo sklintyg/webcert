@@ -60,7 +60,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         secondBrowser.sleep(3000);
     }
 
-
+    global.sessionUsed = true;
 
     return login.then(function() {
         return helpers.injectConsoleTracing();
@@ -78,8 +78,5 @@ module.exports = {
             var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
             return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn);
         });
-
     }
-
-
 };

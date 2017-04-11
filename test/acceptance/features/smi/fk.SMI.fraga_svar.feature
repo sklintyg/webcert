@@ -15,9 +15,13 @@ Scenariomall: FK skickar fråga på "LUSE"
 	Och jag svarar på frågan
 	Så ska det synas vem som svarat
 
-	Exempel:
+@AVSTMN
+  Exempel:
     |    ämne           |
     |  "AVSTMN"         | 
+
+	Exempel:
+    |    ämne           |
     |  "KONTKT"	    		|	
   	| "OVRIGT"		     	|
 

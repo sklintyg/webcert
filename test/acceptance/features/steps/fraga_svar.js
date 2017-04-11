@@ -229,6 +229,8 @@ module.exports = function() {
                 return helpers.fetchMessageIds(intyg.typ);
             })
             .then(function() {
+                console.log(intyg.messages);
+                console.log(global.meddelanden);
                 for (var k = 0; k < intyg.messages.length; k++) {
                     logger.info('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg));
                     var amneMatcharSkickadFraga = intyg.messages[k].amne === helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg);
