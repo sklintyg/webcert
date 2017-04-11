@@ -218,6 +218,8 @@ module.exports = function(grunt) {
             environment = defaultEnv;
         }
 
+        process.env.environmentName = environment.toUpperCase();
+
         if (grunt.option('gridnodeinstances')) {
             if (grunt.option('gridnodeinstances') > 1) {
                 grunt.config.set('protractor.acc.options.args.capabilities.shardTestFiles', true);
