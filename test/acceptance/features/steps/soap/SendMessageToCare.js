@@ -96,7 +96,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
         '      <urn2:root>1.2.752.129.2.1.3.1</urn2:root>' +
         '      <urn2:extension>' + person.id.replace('-', '') + '</urn2:extension>' +
         '   </urn1:patientPerson-id>' +
-        '   <urn1:logiskAdressMottagare>' + user.enhetId + '</urn1:logiskAdressMottagare>' +
+        '   <urn1:logiskAdressMottagare>' + 'nmtWebcert' + process.env.environmentName + '</urn1:logiskAdressMottagare>' +
         '   <urn1:amne>' +
         '      <urn2:code>' + amneCode + '</urn2:code>' +
         '      <urn2:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</urn2:codeSystem>' +
