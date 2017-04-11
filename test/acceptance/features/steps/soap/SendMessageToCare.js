@@ -42,7 +42,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
             amne: amneCode
         });
     } else {
-        // Om ämne inte skickas med till funktionen så behandlar vi det som 
+        // Om ämne inte skickas med till funktionen så behandlar vi det som
         // ett svarsmeddelande och kopierar ämne från tidigare
         amneCode = global.meddelanden[0].amne;
         svarPa = '<urn1:svarPa>' + '<urn3:meddelande-id>' + global.meddelanden[0].id + '</urn3:meddelande-id>' + '</urn1:svarPa>';
@@ -70,7 +70,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
                 continue; // Frage-id 24 finns inte
             }
             kompletteringar.push(
-                '<urn:1komplettering>' +
+                '<urn1:komplettering>' +
                 '<urn1:frage-id>' + k + '</urn1:frage-id>' +
                 '<urn1:text>Komplettering #' + k + '</urn1:text>' +
                 '</urn1:komplettering>'
