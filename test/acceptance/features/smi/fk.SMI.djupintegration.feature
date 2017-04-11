@@ -70,8 +70,7 @@ Scenario: Parametrar
 
     När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
     Så ska jag varnas om att "Patienten har avlidit"
-    Och ska det inte finnas en knapp för att förnya intyget
-    Och ska det inte finnas en knapp för att kopiera intyget
+    Så ska det inte finnas knappar för "kopiera,ersätta,förnya"
 
 
 
