@@ -100,9 +100,7 @@ module.exports = {
                     messageId = messageId.replace('arende-handled-', '');
 
                     //Fånga ämne
-                    console.log('headerText');
-                    console.log(headerText);
-                    messageAmne = headerText.split('Ämne: ')[1].split('\n')[0];
+                    messageAmne = headerText.split(' - ')[0].replace('Ämne: ', '');
 
                     logger.info('Meddelanden som finns på intyget: ' + messageId + ', ' + messageAmne + ' Hanterad:' + isHandled);
                     intyg.messages.push({

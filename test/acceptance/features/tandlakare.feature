@@ -1,7 +1,7 @@
 # language: sv
 
 @tandlakare
-Egenskap: Kontrollera funktioner för tandläkare
+Egenskap: Tandläkare
 
 # Bakgrund: Jag befinner mig på webcerts förstasida
 
