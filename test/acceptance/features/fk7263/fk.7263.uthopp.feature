@@ -1,7 +1,7 @@
 # language: sv
 
 @uthopp @uthoppsläge
-Egenskap: Uthoppsläge Fk7263
+Egenskap: FK7263 - Uthoppsläge
 
 @fråga-uthopp @mailnotifikation
 Scenario: Mail när fråga på intyg inkommer
