@@ -85,7 +85,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
         when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
+        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
@@ -109,7 +109,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
 
-        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
+        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         verifyZeroInteractions(logService);
     }
 
@@ -129,7 +129,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
 
-        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
+        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         verifyZeroInteractions(logService);
     }
 
@@ -149,7 +149,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
+        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
@@ -170,7 +170,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
         when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
+        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
@@ -185,7 +185,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         doThrow(new RuntimeException("")).when(logService).logSendIntygToRecipient(any(LogRequest.class));
 
         try {
-            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK");
+            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
             Assert.fail("RuntimeException expected");
         } catch (RuntimeException e) {
             // Expected

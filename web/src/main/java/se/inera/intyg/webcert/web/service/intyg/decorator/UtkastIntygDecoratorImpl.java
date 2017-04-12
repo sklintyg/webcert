@@ -68,7 +68,7 @@ public class UtkastIntygDecoratorImpl implements UtkastIntygDecorator {
 
         if (utkast.getAterkalladDatum() != null && !isRevoked) {
             // Add revoked status flag
-            Status revokedStatus = new Status(CertificateState.CANCELLED, "HV", utkast.getAterkalladDatum());
+            Status revokedStatus = new Status(CertificateState.CANCELLED, "HSVARD", utkast.getAterkalladDatum());
             certificate.getMetaData().getStatus().add(revokedStatus);
         }
     }

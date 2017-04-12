@@ -114,7 +114,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     private CertificateMetaData buildCertificateMetaData() {
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<Status>());
-        Status statusSigned = new Status(CertificateState.RECEIVED, "FK", LocalDateTime.now());
+        Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
         metaData.getStatus().add(statusSigned);
         return metaData;
     }

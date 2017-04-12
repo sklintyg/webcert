@@ -69,20 +69,20 @@ function _buildIntyg(intygOptions) {
 
     var stateList = [{
         state: 'RECEIVED',
-        target: 'MI',
+        target: 'HSVARD',
         timestamp: intygOptions.issued + 'T12:00:00.000'
     }];
     if (intygOptions.sent) {
         stateList.push({
             state: 'SENT',
-            target: 'FK',
+            target: 'FKASSA',
             timestamp: intygOptions.issued + 'T12:00:10.000'
         });
     }
     if (intygOptions.revoked) {
         stateList.push({
             state: 'CANCELLED',
-            target: 'MI',
+            target: 'HSVARD',
             timestamp: intygOptions.issued + 'T13:00:00.000'
         });
     }

@@ -243,7 +243,7 @@ public class UtkastBootstrapBean {
                 "intygHash", "signatur"));
         utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSenastSparadDatum(json.getGrundData().getSigneringsdatum());
-        utkast.setSkickadTillMottagare("FK");
+        utkast.setSkickadTillMottagare("FKASSA");
         utkast.setSkickadTillMottagareDatum(json.getGrundData().getSigneringsdatum().plusMinutes(2));
         utkast.setVardgivarId(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
         utkast.setVardgivarNamn(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());

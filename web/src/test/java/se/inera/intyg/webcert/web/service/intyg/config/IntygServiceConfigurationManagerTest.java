@@ -40,25 +40,25 @@ public class IntygServiceConfigurationManagerTest {
     @Test
     public void testUnmarshallForSendIntygWithConsent() {
 
-        String configAsJson = "{\"recipient\":\"FK\"}";
+        String configAsJson = "{\"recipient\":\"FKASSA\"}";
 
         SendIntygConfiguration config = configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
         assertNotNull(config);
-        assertEquals("FK", config.getRecipient());
-        assertTrue(config.getPatientConsentMessage().contains("mottagare FK"));
+        assertEquals("FKASSA", config.getRecipient());
+        assertTrue(config.getPatientConsentMessage().contains("mottagare FKASSA"));
     }
 
     @Test
     public void testUnmarshallForSendIntygWithoutConsentToTs() {
 
-        String configAsJson = "{\"recipient\":\"TS\"}";
+        String configAsJson = "{\"recipient\":\"TRANSP\"}";
 
         SendIntygConfiguration config = configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
         assertNotNull(config);
-        assertEquals("TS", config.getRecipient());
-        assertTrue(config.getPatientConsentMessage().contains("mottagare TS"));
+        assertEquals("TRANSP", config.getRecipient());
+        assertTrue(config.getPatientConsentMessage().contains("mottagare TRANSP"));
     }
 
 }
