@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, intyg, browser, logger */
+/* globals protractor, intyg, browser, logger, Promise */
 
 'use strict';
 
@@ -71,40 +71,44 @@ module.exports = function() {
         return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
     });
 
-    this.Given(/^ska det inte finnas knappar för "([^"]*)"$/, function(buttons) {
+    this.Given(/^ska det( inte)? finnas knappar för "([^"]*)"$/, function(inte, buttons) {
         buttons = buttons.split(',');
-        var errors = [];
+        var shouldBePresent = typeof(inte) === 'undefined';
+        var promiseArr = [];
         buttons.forEach(function(button) {
-            logger.info(button);
             if ('skicka' === button) {
-                element(by.id('sendBtn')).isPresent().then(function(isPresent) {
-                    if (!isPresent) {
-                        errors.push('sendBtn');
-                    }
-                });
+                promiseArr.push(expect(element(by.id('sendBtn')).isPresent()).to.become(shouldBePresent)
+                    .then(function(val) {
+                        logger.info('OK - sendBtn - present: ' + shouldBePresent);
+                    }, function(val) {
+                        throw ('NOK - sendBtn - expected isPresent to be:' + shouldBePresent);
+                    }));
             } else if ('kopiera' === button) {
-                element(by.id('copyBtn')).isPresent().then(function(isPresent) {
-                    if (!isPresent) {
-                        errors.push('copyBtn');
-                    }
-                });
+                promiseArr.push(expect(element(by.id('copyBtn')).isPresent()).to.become(shouldBePresent)
+                    .then(function(val) {
+                        logger.info('OK - copyBtn - present: ' + shouldBePresent);
+                    }, function(val) {
+                        throw ('NOK - copyBtn - expected isPresent to be:' + shouldBePresent);
+                    }));
             } else if ('ersätta' === button) {
-                element(by.id('ersattBtn')).isPresent().then(function(isPresent) {
-                    if (!isPresent) {
-                        errors.push('ersattBtn');
-                    }
-                });
+                promiseArr.push(expect(element(by.id('ersattBtn')).isPresent()).to.become(shouldBePresent)
+                    .then(function(val) {
+                        logger.info('OK - ersattBtn - present: ' + shouldBePresent);
+                    }, function(val) {
+                        throw ('NOK - ersattBtn - expected isPresent to be:' + shouldBePresent);
+                    }));
             } else if ('förnya' === button) {
-                element(by.id('fornyaBtn')).isPresent().then(function(isPresent) {
-                    if (!isPresent) {
-                        errors.push('fornyaBtn');
-                    }
-                });
+                promiseArr.push(expect(element(by.id('fornyaBtn')).isPresent()).to.become(shouldBePresent)
+                    .then(function(val) {
+                        logger.info('OK - fornyaBtn - present: ' + shouldBePresent);
+                    }, function(val) {
+                        throw ('NOK - fornyaBtn - expected isPresent to be:' + shouldBePresent);
+                    }));
+            } else {
+                throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');
             }
         });
-
-        logger.info('ERRORS: ' + errors.length + ' =>' + errors);
-        return expect(errors).to.be.empty;
+        return Promise.all(promiseArr);
     });
 
 };
