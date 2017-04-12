@@ -30,10 +30,10 @@
     url: http://central.maven.org/maven2/org/apache/activemq/activemq-openwire-legacy/{{ activemq_version }}/activemq-openwire-legacy-{{ activemq_version }}.jar
     dest: "{{ tomcat_lib }}/activemq-openwire-legacy-{{ activemq_version }}.jar"
     
-- name: Download mysql-connector-java-5.1.26.jar
+- name: Download mysql-connector-java-5.1.40.jar
   get_url:
-    url: http://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.26/mysql-connector-java-5.1.26.jar
-    dest: "{{ tomcat_lib }}/mysql-connector-java-5.1.26.jar"
+    url: http://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.40/mysql-connector-java-5.1.40.jar
+    dest: "{{ tomcat_lib }}/mysql-connector-java-5.1.40.jar"
 
 - name: Download javax.servlet.jsp.jstl-api-1.2.1.jar
   get_url:
