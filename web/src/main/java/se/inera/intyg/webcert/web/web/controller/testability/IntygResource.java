@@ -414,7 +414,7 @@ public class IntygResource {
                 utkast.setSignatur(sig);
             }
 
-            utkast.setSkickadTillMottagare("FK");
+            utkast.setSkickadTillMottagare("FKASSA");
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
 
             utkastRepository.save(utkast);

@@ -7,12 +7,12 @@
     "certificateStates": [
         {
             "state": "RECEIVED",
-            "target": "HV",
+            "target": "HSVARD",
             "timestamp": "2011-01-26T00:00:00.000"
         },
         {
             "state": "SENT",
-            "target": "FK",
+            "target": "FKASSA",
             "timestamp": "2011-01-28T00:00:00.000"
         }
     ],

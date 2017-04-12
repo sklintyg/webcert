@@ -62,7 +62,7 @@ public class SendCertificateToRecipientResponderStub implements SendCertificateT
         }
 
         intygStore.addStatus(parameters.getIntygsId().getExtension(),
-                new CertificateStateHolder("FK", CertificateState.SENT, LocalDateTime.now()));
+                new CertificateStateHolder("FKASSA", CertificateState.SENT, LocalDateTime.now()));
 
         ResultType resultType = new ResultType();
         resultType.setResultCode(ResultCodeType.OK);

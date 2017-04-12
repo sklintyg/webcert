@@ -133,7 +133,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         signeraUtkastWithTestabilityApi(intygsId);
 
         SendSignedIntygParameter sendParam = new SendSignedIntygParameter();
-        sendParam.setRecipient("FK");
+        sendParam.setRecipient("FKASSA");
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).body(sendParam)
                 .expect().statusCode(200)
                 .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/skicka")

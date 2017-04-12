@@ -37,7 +37,7 @@ module.exports = {
             deleted: false,
             deletedByCareGiver: false,
             certificateStates: [{
-                target: 'HV',
+                target: 'HSVARD',
                 state: 'RECEIVED',
                 timestamp: '2016-04-28T14:00:00.000'
             }],
@@ -65,7 +65,7 @@ module.exports = {
             deleted: false,
             deletedByCareGiver: false,
             certificateStates: [{
-                target: 'HV',
+                target: 'HSVARD',
                 state: 'RECEIVED',
                 timestamp: '2016-04-28T14:00:00.000'
             }],
@@ -93,7 +93,7 @@ module.exports = {
             deleted: false,
             deletedByCareGiver: false,
             certificateStates: [{
-                target: 'HV',
+                target: 'HSVARD',
                 state: 'RECEIVED',
                 timestamp: '2016-04-28T14:00:00.000'
             }],
@@ -121,7 +121,7 @@ module.exports = {
             deleted: false,
             deletedByCareGiver: false,
             certificateStates: [{
-                target: 'HV',
+                target: 'HSVARD',
                 state: 'RECEIVED',
                 timestamp: '2016-04-28T14:00:00.000'
             }],
@@ -149,7 +149,7 @@ module.exports = {
             deleted: false,
             deletedByCareGiver: false,
             certificateStates: [{
-                target: 'HV',
+                target: 'HSVARD',
                 state: 'RECEIVED',
                 timestamp: '2016-04-28T14:00:00.000'
             }],

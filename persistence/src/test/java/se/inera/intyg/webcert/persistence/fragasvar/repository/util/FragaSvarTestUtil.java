@@ -57,7 +57,7 @@ public final class FragaSvarTestUtil {
 
         f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
 
-        if (fragestallare.equalsIgnoreCase("FK")) {
+        if (fragestallare.equalsIgnoreCase("FKASSA")) {
             f.setExternReferens("externReferens-" + fragaSvarId);
         }
 

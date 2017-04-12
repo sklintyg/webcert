@@ -7,7 +7,7 @@
     "certificateStates": [
         {
             "state": "RECEIVED",
-            "target": "HV",
+            "target": "HSVARD",
             "timestamp": "2011-01-26T00:00:00.000"
         }
     ],

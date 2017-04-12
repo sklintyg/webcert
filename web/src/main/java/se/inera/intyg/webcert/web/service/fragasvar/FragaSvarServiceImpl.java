@@ -613,7 +613,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private boolean isCertificateSentToFK(List<se.inera.intyg.common.support.model.Status> statuses) {
         if (statuses != null) {
             for (se.inera.intyg.common.support.model.Status status : statuses) {
-                if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
+                if ("FKASSA".equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }
             }
