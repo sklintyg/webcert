@@ -24,6 +24,9 @@ Scenario: Hämta en lista med intyg och utkast för en patient med samordningsnu
 @händelser
 Scenario: Hämta händelser för ett intyg
    När jag går in på intygsutkastet via djupintegrationslänk
+   Och jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten
+   Så ska svaret innehålla intyget jag var inne på
+
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan
