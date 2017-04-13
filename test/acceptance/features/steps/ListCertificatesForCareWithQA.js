@@ -125,6 +125,10 @@
          return Promise.all(idPromises);
      });
 
+     this.Then(/^ska svaret innehålla ref med värdet "([^"]*)"$/, function(referens) {
+         return expect(responseIntyg.ref).to.contain(referens);
+     });
+
 
      this.Then(/^ska svaret visa intyghändelse "([^"]*)"$/, function(handelseKod) {
          var handelser = responseIntyg.handelser.handelse.map(function(obj) {

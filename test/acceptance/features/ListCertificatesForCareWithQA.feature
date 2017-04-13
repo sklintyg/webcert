@@ -66,7 +66,6 @@ Scenario: Hämta fråga/svar händelser för frågor från vården
     Så ska responsen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska responsen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
 
-
 @fråga-från-fk
 Scenario: Hämta fråga/svar händelser för frågor från FK
   När jag går in på intygsutkastet via djupintegrationslänk

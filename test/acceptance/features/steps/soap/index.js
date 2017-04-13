@@ -157,5 +157,5 @@ module.exports = {
     RegisterMedicalCertificate: require('./RegisterMedicalCertificate').RegisterMedicalCertificate,
     SendMedicalCertificate: require('./SendMedicalCertificate').SendMedicalCertificate,
     RegisterCertificate: require('./RegisterCertificate').RegisterCertificate,
-    ListCertificatesForCareWithQA: require('./ListCertificatesForCareWithQA2')
+    ListCertificatesForCareWithQA: require('./ListCertificatesForCareWithQA3')
 };
