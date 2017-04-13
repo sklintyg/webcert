@@ -106,14 +106,19 @@ Scenario: Statusuppdateringar vid ändring av utkast
     När jag ändrar i slumpat fält
     Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
 
-@vardkontakt-skickas-med
-Scenario: Vårdkontakt skickas med statusuppdateringar
-    När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref"
+@referens-skickas-med
+Scenario: Referens skickas med statusuppdateringar
+    När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref-X"
 
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag kopierar intyget
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
-    Och ska statusuppdateringen visa att parametern "ref" är mottagen med värdet "testref"
+    Och ska statusuppdateringen visa att parametern "ref" är mottagen med värdet "testref-X"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+
+    När jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten
+    Så ska svaret innehålla intyget jag var inne på
+    Och ska svaret innehålla ref med värdet "testref-X"
+
