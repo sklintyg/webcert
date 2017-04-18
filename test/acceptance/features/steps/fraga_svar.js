@@ -233,7 +233,7 @@ module.exports = function() {
                 console.log(global.meddelanden);
                 for (var k = 0; k < intyg.messages.length; k++) {
                     logger.info('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg));
-                    var amneMatcharSkickadFraga = intyg.messages[k].amne === helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg);
+                    var amneMatcharSkickadFraga = helpers.splitHeader(intyg.messages[k].amne) === helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg);
                     if (amneMatcharSkickadFraga && !intyg.messages[k].isHandled) {
                         messageID = intyg.messages[k].id;
                     }

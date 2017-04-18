@@ -22,6 +22,10 @@
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
 
+function sh(value) {
+    return (value.search(/\s-\s/g) !== -1) ? value.split(/\s-\s/g)[0].replace('Ämne: ', '') : value.split(/\n/g)[0].replace('Ämne: ', '');
+}
+
 module.exports = {
     insertDashInPnr: function(pnrString) {
         if (pnrString.indexOf('-') >= 0) {
@@ -100,7 +104,7 @@ module.exports = {
                     messageId = messageId.replace('arende-handled-', '');
 
                     //Fånga ämne
-                    messageAmne = headerText.split(' - ')[0].replace('Ämne: ', '');
+                    messageAmne = sh(headerText);
 
                     logger.info('Meddelanden som finns på intyget: ' + messageId + ', ' + messageAmne + ' Hanterad:' + isHandled);
                     intyg.messages.push({
@@ -173,6 +177,9 @@ module.exports = {
             }
         }
         return null;
+    },
+    splitHeader: function(value) {
+        return sh(value);
     },
     randomTextString: function() {
         var text = '';
