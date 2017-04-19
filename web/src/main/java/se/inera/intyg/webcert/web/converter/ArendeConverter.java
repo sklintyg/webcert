@@ -34,6 +34,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.converter.util.FragestallareConverterUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
@@ -56,7 +57,7 @@ public final class ArendeConverter {
         res.setReferensId(request.getReferensId());
         res.setRubrik(request.getRubrik());
         res.setSistaDatumForSvar(request.getSistaDatumForSvar());
-        res.setSkickatAv(request.getSkickatAv().getPart().getCode());
+        res.setSkickatAv(FragestallareConverterUtil.partToFrageStallarKod(request.getSkickatAv().getPart().getCode()));
         res.setSkickatTidpunkt(request.getSkickatTidpunkt());
         if (request.getSvarPa() != null) {
             res.setSvarPaId(request.getSvarPa().getMeddelandeId());
