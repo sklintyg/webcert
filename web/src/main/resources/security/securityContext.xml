@@ -129,7 +129,7 @@
   <!-- These URLs are unsecured in all profiles except wc-security-prod -->
   <!-- =============================================================== -->
   <beans profile="dev,wc-security-dev,wc-security-test">
-    <security:http security="none" pattern="/welcome.jsp"/>
+    <security:http security="none" pattern="/welcome.html"/>
 
     <!--
       This enables access to the stubs of log-sender and notification-sender
@@ -151,6 +151,11 @@
     <security:http security="none" pattern="/testability/anvandare/**"/>
     <security:http security="none" pattern="/testability/arendetest/**"/>
     <security:http security="none" pattern="/testability/utkast/**"/>
+
+    <!--
+      This enable access to the HSA service stub
+    -->
+    <security:http security="none" pattern="/hsa-api/**"/>
   </beans>
 
   <!-- =============================================================== -->
@@ -163,7 +168,7 @@
     <beans profile="dev,wc-security-dev">
       <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
         <security:csrf disabled="true"/>
-        <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
+        <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
         <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
@@ -184,7 +189,7 @@
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
     <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
-      <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
@@ -194,7 +199,7 @@
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
       <security:csrf disabled="true"/>
-      <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>

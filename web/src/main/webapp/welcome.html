@@ -1,4 +1,4 @@
-<%--
+<!--
   ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
@@ -15,10 +15,7 @@
   ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
---%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+-->
 
 <!DOCTYPE html>
 <html lang="sv" id="ng-app" ng-app="WcWelcomeApp">
@@ -29,7 +26,7 @@
 
 <title>Webcert test inloggning</title>
 
-<link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
+<link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon" />
 
 <!-- bower:css -->
 <link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
@@ -469,15 +466,6 @@
 </script>
 
 <script type="text/javascript">
-  function updateJsonInput() {
-    var jsonEl = document.getElementById("userJson");
-    var jsonElView = document.getElementById("userJsonDisplay");
-    var selector = document.getElementById("jsonSelect");
-
-    jsonElView.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 1);
-    jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 1));
-  }
-  ;
 
   window.doneLoading = true;
   window.rendered = true;
@@ -487,36 +475,83 @@
   ]);
 
   angular.module('WcWelcomeApp.controllers', []).controller('welcomeController', function($scope, $http) {
-    $scope.loginModel = loginArr;
-    $scope.selectedIndex = '40';
 
-      $scope.intlink = {
-          id: '',
-          alternatePatientSSn: '',
-          fornamn: 'Nils',
-          mellannamn: 'Nisse',
-          efternamn: 'Nygren',
-          postadress: 'Nygatan 14',
-          postnummer: '555 66',
-          postort: 'Nyberga',
-          sjf: true,
-          kopieringOk: true
-      };
-     $scope.djupintegrationsInloggning = function(evt) {
-         evt.preventDefault();
-         var jsonEl = angular.element(document.querySelector('#userJsonDisplay'));
-         $http.post('/fake', "userJsonDisplay=" +jsonEl.text(), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
-             var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
-             q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
-             q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
-             q+='&kopieringOK=' + $scope.intlink.kopieringOk;
-             q+='&avliden=' + $scope.intlink.avliden;
-             window.location.href=q;
-         }, function fail(error) {
-             alert("Fel vid djupintegrations-inloggningen!");
-         });
+    function _getHsaPersons() {
+      $http.get('/services/hsa-api/person').
+      success(function(response) {
+        $scope.loginModel = response
+      }).
+      error(function(data, status) {
+        $log.error('error ' + status);
+      });
+    }
 
-     };
+    function _isArray(obj) {
+      return Object.prototype.toString.call(obj) == "[object Array]";
+    }
+
+    function _replacer(key, value) {
+      // Filtering out properties by key
+      var keys = ['fakeProperties', '$$hashKey', 'origin']
+      if (keys.indexOf(key) > -1) {
+        return undefined;
+      }
+
+      // Filtering out properties by value
+      if (value === null || (_isArray(value) && value.length === 0)) {
+        return undefined;
+      }
+
+      return value;
+    }
+
+    //$scope.loginModel = loginArr;
+    $scope.loginModel = [];
+    $scope.logins = [];
+    $scope.selectedIndex = '1';
+
+    $scope.intlink = {
+        id: '',
+        alternatePatientSSn: '',
+        fornamn: 'Nils',
+        mellannamn: 'Nisse',
+        efternamn: 'Nygren',
+        postadress: 'Nygatan 14',
+        postnummer: '555 66',
+        postort: 'Nyberga',
+        sjf: true,
+        kopieringOk: true
+    };
+
+    $scope.environment = {
+      name: 'all',
+      origin: 'NORMAL'
+    };
+
+    // Fetch fake logins
+    _getHsaPersons();
+
+    $scope.$watch('loginModel', function(newLoginModel, oldLoginModel) {
+      $scope.logins = newLoginModel
+        .reduce(
+          (function(outerProp, innerProp) {
+            var f = function(p, c, i, a) {
+              if (c[outerProp] && c[outerProp][innerProp]) {
+                c[outerProp][innerProp]
+                  .forEach(function(element) {
+                    element.id = c.hsaId;
+                  });
+                p.push(c[outerProp][innerProp]);
+              }
+              return p;
+            }
+            return f;
+          })('fakeProperties', 'logins'),[])
+        .reduce(
+          function(a, b) {
+            return a.concat(b);
+          },[]);
+    });
 
     $scope.$watch('selectedIndex', function(newSelected, oldVal) {
       $scope.updateUserContext(newSelected, oldVal);
@@ -526,20 +561,43 @@
       $scope.updateUserContext($scope.selectedIndex);
     });
 
+    $scope.djupintegrationsInloggning = function(evt) {
+      evt.preventDefault();
+      var jsonEl = angular.element(document.querySelector('#userJsonDisplay'));
+      $http.post('/fake', "userJsonDisplay=" +jsonEl.text(), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
+        var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
+        q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
+        q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
+        q+='&kopieringOK=' + $scope.intlink.kopieringOk;
+        q+='&avliden=' + $scope.intlink.avliden;
+        window.location.href=q;
+      }, function fail(error) {
+        alert("Fel vid djupintegrations-inloggningen!");
+      });
+    };
+
+    function _getHsaPersonFromModel(hsaId) {
+      var hsaPerson = data.find(function(element) {
+        return element.hsaId === hsaId;
+      });
+      return hsaPerson;
+    }
+
     $scope.updateUserContext = function(newSelected, oldVal) {
       var jsonEl = angular.element(document.querySelector('#userJson'));
       var jsonElView = angular.element(document.querySelector('#userJsonDisplay'));
       var selector = angular.element(document.querySelector('#jsonSelect'));
       var origin = $scope.environment.origin;
+
+      var hsaId = $scope.logins[newSelected].id;
+      var hsaPerson = $scope.loginModel.find(function(element) {
+        return element.hsaId === hsaId;
+      });
+
       $scope.loginModel[newSelected].origin = origin;
-      var loginJson = JSON.stringify($scope.loginModel[newSelected], undefined, 1);
+      var loginJson = JSON.stringify(hsaPerson, _replacer, 1);
       jsonElView.text(loginJson);
       jsonEl.text(escape(loginJson));
-    };
-
-    $scope.environment = {
-      name: 'all',
-      origin: 'NORMAL'
     };
 
     $scope.whichEnv = function(env) {
@@ -756,6 +814,7 @@
   <form id="loginForm" action="/fake" method="POST" class="form-inline" accept-charset="UTF-8">
     <div class="container">
 
+      <pre>{{logins | json}}</pre>
       <div id="content-container">
         <div class="content row">
 
@@ -778,15 +837,13 @@
             </h4>
             <select name="jsonSelect" id="jsonSelect" ng-model="selectedIndex" size="15" class="form-control"
                     style="width: 100%">
-              <option ng-repeat="option in data.availableOptions" ng-if="whichEnv(option.env)" id="{{option.hsaId}}"
-                      value="{{option.id}}">{{option.name}}
+              <option ng-repeat="login in logins" ng-if="whichEnv(login.env)" id="{{login.id}}"
+                      value="{{$index}}">{{login.beskrivning}}
               </option>
             </select>
 
-
-
-            <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-lg"
-                   style="margin-top: 20px; width: 100%">
+              <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-lg"
+                     style="margin-top: 20px; width: 100%">
           </div>
 
           <div class="form-group col-xs-4">
@@ -824,7 +881,6 @@
                   <button ng-click="djupintegrationsInloggning($event)" class="btn btn-sm btn-warning" style="width:100%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">länkinloggning</button>
 
                 </div>
-
 
           </div>
 
