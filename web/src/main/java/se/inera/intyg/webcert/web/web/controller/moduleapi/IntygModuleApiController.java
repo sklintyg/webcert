@@ -478,7 +478,6 @@ public class IntygModuleApiController extends AbstractApiController {
                 .orThrow();
     }
 
-
     private void validateCopyAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.KOPIERA_INTYG)

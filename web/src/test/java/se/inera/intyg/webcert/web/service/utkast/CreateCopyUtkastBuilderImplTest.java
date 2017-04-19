@@ -53,12 +53,12 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -169,11 +169,11 @@ public class CreateCopyUtkastBuilderImplTest {
 
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
-                false);
+                false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -192,6 +192,25 @@ public class CreateCopyUtkastBuilderImplTest {
                 requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testPopulateCopyUtkastFromSignedIntygCheckVardgivare() throws Exception {
+
+        IntygContentHolder ich = createIntygContentHolder();
+        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, true)).thenReturn(ich);
+
+        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
+                "postort");
+
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
+
+        copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
+                true, true);
+    }
+
     @Test
     public void testPopulateCopyUtkastFromOriginal() throws Exception {
 
@@ -204,11 +223,11 @@ public class CreateCopyUtkastBuilderImplTest {
 
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false,
-                false);
+                false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -217,6 +236,20 @@ public class CreateCopyUtkastBuilderImplTest {
         assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
         assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testPopulateCopyUtkastFromOriginalCheckVardgivare() throws Exception {
+
+        Utkast orgUtkast = createOriginalUtkast();
+        orgUtkast.setVardgivarId("OTHER_ID");
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
+
+        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
+                "postort");
+
+        copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false, true, true);
     }
 
     @Test
@@ -231,10 +264,10 @@ public class CreateCopyUtkastBuilderImplTest {
 
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, null, false, false);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, null, false, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -255,10 +288,10 @@ public class CreateCopyUtkastBuilderImplTest {
 
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, null, false, false);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, null, false, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -349,6 +382,7 @@ public class CreateCopyUtkastBuilderImplTest {
         vardenhet.setId(VARDENHET_ID);
         vardenhet.setNamn(VARDENHET_NAME);
         user.setValdVardenhet(vardenhet);
+        user.setValdVardgivare(vGivare);
         return user;
     }
 }
