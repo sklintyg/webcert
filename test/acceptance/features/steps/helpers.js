@@ -212,7 +212,7 @@ module.exports = {
     pageField: {
         'LISJP': ['aktivitetsbegransning', 'sysselsattning', 'funktionsnedsattning'],
         'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
-        'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
+        'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'ovrigt'],
         'LUAE_FS': ['funktionsnedsattningDebut', 'funktionsnedsattningPaverkan', 'ovrigt'],
         'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod'],
         'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion']
