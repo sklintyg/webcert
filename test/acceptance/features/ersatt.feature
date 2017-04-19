@@ -1,25 +1,20 @@
 #language: sv
 
 @ersatt
-Egenskap: Funktionallitet som rör ersätt
+Egenskap: Ersätta intyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
     När jag går in på en patient
+    
 
-@ersatta-btn
-Scenario: Finns ersätta-knappen
+@ersatta-btn @avbryt
+Scenario: Kan ersätta signerade intyg
     När jag går in på att skapa ett slumpat intyg
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Så ska jag se en knapp med texten "Ersätt"
-
-@ersatta-btn-avbryt
-Scenario: Finns ersätta-knappen
-    När jag går in på att skapa ett slumpat intyg
-    Och jag fyller i alla nödvändiga fält för intyget
-    Och jag signerar intyget
-    Så om jag klickar på ersätta knappen så ska det finnas en avbryt-knapp med texten "Avbryt, ersätt ej"
+    Och om jag klickar på ersätta knappen så ska det finnas en avbryt-knapp med texten "Avbryt, ersätt ej"
 
 @ersatta-text
 Scenario: När man klickat på ersätta-knappen så ska följande text visas
