@@ -87,9 +87,8 @@ function changeField(intygShortcode, field, callback, clearFlag) {
         if (field === 'aktivitetsbegransning') {
             intyg.aktivitetsbegransning = helpers.randomTextString();
             lisjpUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
-        } else if (field === 'funktionsnedsattning') {
-            intyg.funktionsnedsattning = helpers.randomTextString();
-            lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
+        } else if (field === 'ovrigt') {
+            element(by.id('ovrigt')).sendKeys(helpers.randomTextString()).then(callback);
         } else if (field === 'sjukdomsforlopp') {
             lisjpUtkastPage.angeSysselsattning({
                 typ: 'Arbetssökande'

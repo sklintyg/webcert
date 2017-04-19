@@ -100,7 +100,7 @@ module.exports = function() {
         createBody(intygstyp, callback);
     });
 
-    //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer 
+    //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
     this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat intyg( med samordningsnummer eller personnummer)?$/, function(samEllerPersonNummer, callback) {
         global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
         if (samEllerPersonNummer) {
