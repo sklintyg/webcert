@@ -4,8 +4,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
-import java.util.stream.Stream;
-
 public final class FragestallareConverterUtil {
     private FragestallareConverterUtil() {
     }
@@ -19,11 +17,6 @@ public final class FragestallareConverterUtil {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "Invalid PartCode found when converting Arende");
         }
-    }
-
-    public static String frageStallareToPartKod(String frageStallarKod) {
-        PartToFragestallare p = PartToFragestallare.getByKod(frageStallarKod);
-        return p.name();
     }
 
     /**
@@ -42,12 +35,5 @@ public final class FragestallareConverterUtil {
             this.fragestallarKod = fragestallarKod;
         }
 
-        static PartToFragestallare getByKod(String fragestallarKod) {
-            return Stream.of(PartToFragestallare.values())
-                    .filter(p -> fragestallarKod.equals(p.fragestallarKod))
-                    .findFirst()
-                    .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                            "Invalid FrageStallareKod found when converting Arende"));
-        }
     }
 }
