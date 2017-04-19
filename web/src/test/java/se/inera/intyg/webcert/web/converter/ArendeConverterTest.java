@@ -63,6 +63,8 @@ import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeConverterTest {
+    private static final String FRAGESTALLARKOD_FORSAKRINGSKASSA = "FK";
+    private static final String PARTKOD_FKASSA = "FKASSA";
 
     @Mock
     HsaEmployeeService hsaEmployeeService;
@@ -72,7 +74,7 @@ public class ArendeConverterTest {
         final ArendeAmne amneskod = ArendeAmne.AVSTMN;
         final String intygId = "intygId";
         final String kontaktInfo = "kontaktInfo";
-        final String skickatAv = "FKASSA";
+        final String skickatAv = PARTKOD_FKASSA;
         final String frageId = "frageId";
         final Integer instans = 1;
         final String kompletteringsText = "kompletteringsText";
@@ -94,7 +96,7 @@ public class ArendeConverterTest {
         assertEquals(amneskod, res.getAmne());
         assertEquals(intygId, res.getIntygsId());
         assertEquals(kontaktInfo, res.getKontaktInfo().get(0));
-        assertEquals("FKASSA", res.getSkickatAv());
+        assertEquals(FRAGESTALLARKOD_FORSAKRINGSKASSA, res.getSkickatAv());
         assertEquals(frageId, res.getKomplettering().get(0).getFrageId());
         assertEquals(instans, res.getKomplettering().get(0).getInstans());
         assertEquals(kompletteringsText, res.getKomplettering().get(0).getText());
