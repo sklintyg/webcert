@@ -249,7 +249,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
             verifyNotReplaced(replacementRequest.getOriginalIntygId(), "create replacement");
 
-
             CopyUtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
@@ -302,10 +301,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false,
-                    copyRequest.isCoherentJournaling());
+                    copyRequest.isCoherentJournaling(), false);
         } else {
             builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
-                    copyRequest.isCoherentJournaling());
+                    copyRequest.isCoherentJournaling(), false);
         }
 
         return builderResponse;
@@ -319,10 +318,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
-                    false);
+                    false, false);
         } else {
             builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
-                    false);
+                    false, false);
         }
 
         return builderResponse;
@@ -336,9 +335,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
-                    false);
+                    false, false);
         } else {
-            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation, false);
+            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
+                    false, false);
         }
 
         return builderResponse;
@@ -353,11 +353,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(replacementCopyRequest, patientDetails,
-                    true,
-                    replacementCopyRequest.isCoherentJournaling());
+                    true, replacementCopyRequest.isCoherentJournaling(), true);
         } else {
             builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(replacementCopyRequest, patientDetails, true,
-                    replacementCopyRequest.isCoherentJournaling());
+                    replacementCopyRequest.isCoherentJournaling(), true);
         }
 
         return builderResponse;
@@ -365,7 +364,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private Person updatePatientDetails(CreateCopyRequest copyRequest) {
         // I djupintegration version 1 (fk7263) kommer inte patientinformation med i copyrequest.
-        // I djupintegration version 2 (nya fkintygen) är patientinformation i copyrequest obligatorisk.
+        // I djupintegration version 3 (nya fkintygen) är patientinformation i copyrequest obligatorisk.
         if (copyRequest.isDjupintegrerad()) {
             return copyPatientDetailsFromRequest(copyRequest);
         } else {
