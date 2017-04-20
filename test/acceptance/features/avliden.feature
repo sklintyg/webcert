@@ -8,17 +8,16 @@ Egenskap: Avliden patient
      Så ska jag varnas om att "Patienten har avlidit"
 
 
-  @skicka-till-FK
-  Scenario: Kan skicka och ställa frågor på intyg
-
+ @skicka-till-FK
+ Scenario: Kan skicka och ställa frågor på intyg
      Givet att jag är inloggad som djupintegrerad läkare
      När jag skickar ett SMI-intyg till intygstjänsten på en avliden person
      Och jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
      Och jag skickar intyget till Försäkringskassan
      Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system"
 
-  @svara-på-fråga
-  Scenario: Försäkringskassan kan ställa frågor på ett intyg
+ @svara-på-fråga
+ Scenario: Försäkringskassan kan ställa frågor på ett intyg
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
@@ -30,20 +29,19 @@ Egenskap: Avliden patient
     Och jag svarar på frågan
     Så ska det synas vem som svarat
 
-
-  Scenario: Kan svara på komplettering med ett nytt intyg
+@notReady
+Scenario: Kan svara på komplettering med ett nytt intyg
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     #Och jag går in på ett slumpat SMI-intyg med status "Signerat"
-    
+
     När jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
-    
+
     När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
     Och jag skickar intyget till Försäkringskassan
     När Försäkringskassan skickar ett "KOMPLT" meddelande på intyget
     Och jag går in på intyget
     Och jag väljer att svara med ett nytt intyg
     #Och jag går tillbaka till intyget som behöver kompletteras
- 
