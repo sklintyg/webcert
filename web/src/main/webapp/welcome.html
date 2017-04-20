@@ -16,7 +16,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
 <!DOCTYPE html>
 <html lang="sv" id="ng-app" ng-app="WcWelcomeApp">
 <head>
@@ -51,421 +50,6 @@
 <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
 
 <script type="text/javascript">
-  //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar
-
-  var loginArr = [
-
-    // Läkare, Vård och Behandling Webcert Enhet 1 (Webcert Vårdgivare 1)
-    {
-      "fornamn": "Jan",
-      "efternamn": "Nilsson",
-      "hsaId": "IFV1239877878-1049",
-      "enhetId": "IFV1239877878-1042",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare, Vård och Behandling Webcert-Enhet 1 (Webcert Vårdgivare 1)
-    {
-      "fornamn": "Åsa",
-      "efternamn": "Andersson",
-      "hsaId": "IFV1239877878-104B",
-      "enhetId": "IFV1239877878-1042",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
-    {
-      "fornamn": "Åsa",
-      "efternamn": "Andersson",
-      "hsaId": "IFV1239877878-104B",
-      "enhetId": "IFV1239877878-1045",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
-    {
-      "fornamn": "Åsa",
-      "efternamn": "Andersson",
-      "hsaId": "IFV1239877878-104B",
-      "enhetId": "IFV1239877878-1046",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
-    {
-      "fornamn": "Åsa",
-      "efternamn": "Andersson",
-      "hsaId": "IFV1239877878-104B",
-      "enhetId": "IFV1239877878-104C",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare, Statistik Webcert Enhet 3 (Webcert Vårdgivare 2) (Kan inte logga in)
-    {
-      "fornamn": "Åsa",
-      "efternamn": "Andersson",
-      "hsaId": "IFV1239877878-104B",
-      "enhetId": "IFV1239877878-104D",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
-    {
-      "fornamn": "Lars",
-      "efternamn": "Andersson",
-      "hsaId": "IFV1239877878-104K",
-      "enhetId": "IFV1239877878-1045",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare, Vård och Behandling Webcert Enhet 3 (Webcert Vårdgivare 2)
-    {
-      "fornamn": "Lars",
-      "efternamn": "Andersson",
-      "hsaId": "IFV1239877878-104K",
-      "enhetId": "IFV1239877878-104D",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Statistik Webcert Enhet 3 (Webcert Vårdgivare 2)
-    {
-      "fornamn": "Anna",
-      "efternamn": "Persson",
-      "hsaId": "IFV1239877878-104L",
-      "enhetId": "IFV1239877878-104D",
-      "lakare": false
-    },
-
-    // AT Läkare Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
-    {
-      "fornamn": "Anders",
-      "efternamn": "Larsson",
-      "hsaId": "IFV1239877878-104M",
-      "enhetId": "IFV1239877878-1045",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Vårdadministratör Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
-    {
-      "fornamn": "Lena",
-      "efternamn": "Karlsson",
-      "hsaId": "IFV1239877878-104N",
-      "enhetId": "IFV1239877878-1045",
-      "lakare": false,
-      "forskrivarKod": "2481632"
-    },
-
-    // Markus Gran Testanvändare @ VårdEnhet1A
-    {
-      "fornamn": "Markus",
-      "efternamn": "Gran",
-      "hsaId": "TST5565594230-106J",
-      "enhetId": "IFV1239877878-103F",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Markus Gran Testanvändare @ VårdEnhet2A
-    {
-      "fornamn": "Markus",
-      "efternamn": "Gran",
-      "hsaId": "TST5565594230-106J",
-      "enhetId": "IFV1239877878-103H",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-    // Markus Gran Testanvändare @ VårdEnhetA
-    {
-      "fornamn": "Markus",
-      "efternamn": "Gran",
-      "hsaId": "TST5565594230-106J",
-      "enhetId": "IFV1239877878-103D",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare med flera enheter & mottagningar
-    {
-      "fornamn": "Eva",
-      "efternamn": "Holgersson",
-      "hsaId": "eva",
-      "enhetId": "centrum-vast",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare med massor av enheter & mottagningar
-    {
-      "fornamn": "Staffan",
-      "efternamn": "Stafett",
-      "hsaId": "staffan",
-      "enhetId": "linkoping",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Läkare för test av djupintegration
-    {
-      "fornamn": "Journa",
-      "efternamn": "La System",
-      "hsaId": "SE4815162344-1B02",
-      "enhetId": "SE4815162344-1A03",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    {
-      "fornamn": "Ivar",
-      "efternamn": "Integration",
-      "hsaId": "SE4815162344-1B01",
-      "enhetId": "SE4815162344-1A02",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-
-    // Admin personal med flera enheter & mottagningar
-    {
-      "fornamn": "Adam",
-      "efternamn": "Admin",
-      "hsaId": "adam",
-      "enhetId": "centrum-vast",
-      "lakare": false,
-      "forskrivarKod": "2481632"
-    },
-
-    // Admin personal med 3 enheter och mottagningar
-    {
-      "fornamn": "Adamo",
-      "efternamn": "Admin",
-      "hsaId": "adamo",
-      "enhetId": "centrum-vast",
-      "lakare": false,
-      "forskrivarKod": "2481632"
-    },
-
-    // Admin personal med 3 enheter och mottagningar
-    {
-      "fornamn": "Adamo",
-      "efternamn": "Admin",
-      "hsaId": "adamo",
-      "enhetId": "centrum-ost",
-      "lakare": false,
-      "forskrivarKod": "2481632"
-    },
-
-    {
-      "fornamn": "Test",
-      "efternamn": "Testsson",
-      "hsaId": "fitness1",
-      "enhetId": "vardenhet-fit-1",
-      "lakare": false,
-      "forskrivarKod": "2481632"
-    },
-
-    // FitNesse Admin personal med 1 enhet
-    {
-      "fornamn": "fit",
-      "efternamn": "nesse",
-      "hsaId": "fitness2",
-      "enhetId": "vardenhet-fit-2",
-      "lakare": false,
-      "forskrivarKod": "2481632"
-    },
-
-    {
-      "fornamn": "Han",
-      "efternamn": "Solo",
-      "hsaId": "hansolo",
-      "enhetId": "centrum-norr",
-      "lakare": false,
-      "forskrivarKod": "2481632"
-    },
-
-    {
-      "fornamn": "Per",
-      "efternamn": "Persson",
-      "hsaId": "perpersson",
-      "enhetId": "anestesikliniken",
-      "lakare": true,
-      "forskrivarKod": "1111"
-    },
-
-    // Privatläkare
-    {
-      "firstName": "Tolvan",
-      "lastName": "Privatläkarsson",
-      "personId": "19121212-1212",
-      "privatLakare": true
-    },
-
-    {
-      "firstName": "Nina",
-      "lastName": "Greger",
-      "personId": "19730906-9289",
-      "privatLakare": true
-    },
-
-    // Tandläkare
-    {
-      "fornamn": "Tore",
-      "efternamn": "Tandläkare",
-      "hsaId": "tore-tandlakare",
-      "enhetId": "tandenheten-1",
-      "tandlakare": true,
-      "forskrivarKod": "6745341"
-    },
-
-    // NMT testperson
-    {
-      "fornamn": "Åsa",
-      "efternamn": "Svensson",
-      "hsaId": "TSTNMT2321000156-100L",
-      "enhetId": "TSTNMT2321000156-1003",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    },
-
-    // Tandläkare som ska finnas i demo-miljö och därmed i test-HSA
-    {
-      "fornamn": "Louise",
-      "efternamn": "Ericsson",
-      "hsaId": "TSTNMT2321000156-103B",
-      "enhetId": "TSTNMT2321000156-1039",
-      "tandlakare": true
-    },
-
-    // Läkare inom EU/ESS/Schweiz som ska finnas i demo-miljö och därmed i test-HSA
-    {
-      "fornamn": "Leonie",
-      "efternamn": "Koehl",
-      "hsaId": "TSTNMT2321000156-103F",
-      "enhetId": "TSTNMT2321000156-1039",
-      "lakare": true,
-      "forskrivarKod": "9300005",
-      "befattningsKod": "203090"
-    },
-
-    // Läkare utom EU/ESS/Schweiz som ska finnas i demo-miljö och därmed i test-HSA
-    {
-      "fornamn": "Bill",
-      "efternamn": "Smith",
-      "hsaId": "TSTNMT2321000156-103G",
-      "enhetId": "TSTNMT2321000156-1039",
-      "lakare": true,
-      "forskrivarKod": "9400003",
-      "befattningsKod": "203090"
-    },
-
-    // Vikarierande examinerad läkare som ska finnas i demo-miljö och därmed i test-HSA
-    {
-      "fornamn": "Martin",
-      "efternamn": "Johansson",
-      "hsaId": "TSTNMT2321000156-103H",
-      "enhetId": "TSTNMT2321000156-1039",
-      "lakare": true,
-      "forskrivarKod": "9100009",
-      "befattningsKod": "204090"
-    },
-
-    // NMT test-läkare
-    {
-      "fornamn": "Erik",
-      "efternamn": "Nilsson",
-      "hsaId": "TSTNMT2321000156-105H",
-      "enhetId": "TSTNMT2321000156-105F",
-      "lakare": true,
-      "forskrivarKod": "9300005",
-      "befattningsKod": "204090"
-    },
-
-    {
-      "fornamn": "Susanne",
-      "efternamn": "Karlsson",
-      "hsaId": "TSTNMT2321000156-105J",
-      "enhetId": "TSTNMT2321000156-105F",
-      "lakare": false,
-      "forskrivarKod": "9300005"
-    },
-
-    // Användare för Rehabstöd som ska finnas i:
-    // - Test HSA
-    // - Rehabstöd
-    // - Webcert
-    // - Intygstjänsten
-
-    // Läkare 1
-    {
-      "fornamn": "Emma",
-      "efternamn": "Nilsson",
-      "hsaId": "TSTNMT2321000156-105R",
-      "enhetId": "TSTNMT2321000156-105N",
-      "lakare": true
-    },
-
-    // Läkare 2
-    {
-      "fornamn": "Anders",
-      "efternamn": "Karlsson",
-      "hsaId": "TSTNMT2321000156-105S",
-      "enhetId": "TSTNMT2321000156-105N",
-      "lakare": true
-    },
-
-    // Läkare 3
-    {
-      "fornamn": "Ingrid",
-      "efternamn": "Nilsson Olsson",
-      "hsaId": "TSTNMT2321000156-105T",
-      "enhetId": "TSTNMT2321000156-105P",
-      "lakare": true
-    },
-
-    // C-bio
-    {
-      "fornamn": "Elin",
-      "efternamn": "Johansson",
-      "hsaId": "TSTNMT2321000156-1067",
-      "enhetId": "TSTNMT2321000156-1062",
-      "lakare": true
-    }, {
-      "fornamn": "Lars",
-      "efternamn": "Olsson",
-      "hsaId": "TSTNMT2321000156-1066",
-      "enhetId": "TSTNMT2321000156-1062",
-      "lakare": false
-    },
-
-    // Dev-läkare med bootstrappad data för intyg och ärenden på tolvan
-    {
-      "fornamn": "Arnold",
-      "efternamn": "Johansson",
-      "hsaId": "TSTNMT2321000156-1079",
-      "enhetId": "TSTNMT2321000156-1077",
-      "lakare": true
-    },
-    // Läkare med flera enheter ingen blir förvald vid inloggning
-    {
-      "fornamn": "Åsa",
-      "efternamn": "Andersson",
-      "hsaId": "IFV1239877878-104B",
-      "enhetId": "",
-      "lakare": true,
-      "forskrivarKod": "2481632"
-    }
-  ];
-</script>
-
-<script type="text/javascript">
 
   window.doneLoading = true;
   window.rendered = true;
@@ -479,7 +63,9 @@
     function _getHsaPersons() {
       $http.get('/services/hsa-api/person').
       success(function(response) {
-        $scope.loginModel = response
+        $scope.loginModel = _loginModel(response);
+        $scope.loginOptions = _loginOptions();
+        $scope.selectedIndex = '0';
       }).
       error(function(data, status) {
         $log.error('error ' + status);
@@ -490,25 +76,127 @@
       return Object.prototype.toString.call(obj) == "[object Array]";
     }
 
-    function _replacer(key, value) {
-      // Filtering out properties by key
-      var keys = ['fakeProperties', '$$hashKey', 'origin']
-      if (keys.indexOf(key) > -1) {
-        return undefined;
+    function _loginModel(data) {
+      if (_isArray(data)) {
+        return data
+          .filter(function(item) {
+            // Remove all entries where fakeProperties are not set
+            return !!item.fakeProperties;
+          })
+          .sort(function(a, b) {
+            // Sort entries by displayOrder
+            return parseInt(a.fakeProperties.displayOrder, 10) - parseInt(b.fakeProperties.displayOrder, 10);
+          });
       }
 
-      // Filtering out properties by value
+      return [];
+    }
+
+    /*
+     * This method creates the available login options by
+     * reducing the original HSA-person array to a new array.
+     * Each HSA-person is on the form:
+     *
+     *  {
+     *    hsaId: "TST5565594230-106J",
+     *    forNamn: "Markus",
+     *    efterNamn: "Gran",
+     *    specialiseringar: [],
+     *    enhetIds: [],
+     *    titel: "Läkare",
+     *    legitimeradeYrkesgrupper: [],
+     *    befattningsKod: null,
+     *    forskrivarKod: null,
+     *    fakeProperties: {
+     *        displayOrder: "320",
+     *        env: "dev",
+     *        readOnly: true,
+     *        logins: [
+     *          {
+     *            "forvaldEnhet":"IFV1239877878-103D",
+     *            "beskrivning":"Markus Gran (Läkare | VårdEnhetA)"
+     *          }
+     *        ]
+     *     }
+     *  }
+     *
+     * The reduced login option will be on the form:
+     *
+     *  {
+     *    beskrivning: "Markus Gran (Läkare | VårdEnhetA)"
+     *    forvaldEnhet: "IFV1239877878-103D"
+     *    hsaId: "TST5565594230-106J"
+     *    index: "11"
+     *  }
+     */
+    function _loginOptions() {
+      var index = 0;
+      return $scope.loginModel
+        .reduce(
+          (function(outerProp, innerProp) {
+
+            // Reduce executes the callback function once for each element
+            // present in the array, excluding holes in the array, receiving
+            // four arguments:
+            //   * accumulator
+            //   * currentValue
+            //   * currentIndex
+            //   * array
+
+            var f = function(acc, val, ind, arr) {
+              console.log('- - - - - - - -');
+              console.log(JSON.stringify(val));
+              if (val[outerProp] && val[outerProp][innerProp]) {
+                val[outerProp][innerProp]
+                  .forEach(function(obj) {
+                    // Add properties to object
+                    obj.index = ''+index++;
+                    obj.hsaId = val.hsaId;
+
+                  });
+                acc.push(val[outerProp][innerProp]);
+              }
+              return acc;
+            }
+            return f;
+
+          })('fakeProperties', 'logins'), [])
+        .reduce(
+          function(a, b) {
+            return a.concat(b);
+          },[]);
+    }
+
+    function _replacer(key, value) {
       if (value === null || (_isArray(value) && value.length === 0)) {
         return undefined;
       }
-
       return value;
     }
 
-    //$scope.loginModel = loginArr;
+    function _stringify(hsaPerson) {
+      var validProperties = [
+          'hsaId',
+          'forNamn',
+          'efterNamn',
+          'enhetId',
+          'legitimeradeYrkesgrupper',
+          'befattningsKod',
+          'forskrivarKod',
+          'origin'];
+
+      var string = JSON.stringify(hsaPerson, validProperties, 1);
+      var object = JSON.parse(string);
+
+      return JSON.stringify(object, _replacer, 1);
+    }
+
+    function _updateObject(object, propertyKey, propertyValue) {
+      object[propertyKey] = propertyValue;
+    }
+
     $scope.loginModel = [];
-    $scope.logins = [];
-    $scope.selectedIndex = '1';
+    $scope.loginOptions = [];
 
     $scope.intlink = {
         id: '',
@@ -528,34 +216,9 @@
       origin: 'NORMAL'
     };
 
-    // Fetch fake logins
-    _getHsaPersons();
-
-    $scope.$watch('loginModel', function(newLoginModel, oldLoginModel) {
-      $scope.logins = newLoginModel
-        .reduce(
-          (function(outerProp, innerProp) {
-            var f = function(p, c, i, a) {
-              if (c[outerProp] && c[outerProp][innerProp]) {
-                c[outerProp][innerProp]
-                  .forEach(function(element) {
-                    element.id = c.hsaId;
-                  });
-                p.push(c[outerProp][innerProp]);
-              }
-              return p;
-            }
-            return f;
-          })('fakeProperties', 'logins'),[])
-        .reduce(
-          function(a, b) {
-            return a.concat(b);
-          },[]);
-    });
-
     $scope.$watch('selectedIndex', function(newSelected, oldVal) {
       $scope.updateUserContext(newSelected, oldVal);
-    }, true);
+    });
 
     $scope.$watch('environment.origin', function() {
       $scope.updateUserContext($scope.selectedIndex);
@@ -576,26 +239,25 @@
       });
     };
 
-    function _getHsaPersonFromModel(hsaId) {
-      var hsaPerson = data.find(function(element) {
-        return element.hsaId === hsaId;
-      });
-      return hsaPerson;
-    }
-
     $scope.updateUserContext = function(newSelected, oldVal) {
+      if (newSelected === undefined) {
+          return;
+      }
+
       var jsonEl = angular.element(document.querySelector('#userJson'));
       var jsonElView = angular.element(document.querySelector('#userJsonDisplay'));
       var selector = angular.element(document.querySelector('#jsonSelect'));
-      var origin = $scope.environment.origin;
 
-      var hsaId = $scope.logins[newSelected].id;
-      var hsaPerson = $scope.loginModel.find(function(element) {
-        return element.hsaId === hsaId;
+      var login = $scope.loginOptions[newSelected];
+      var hsaPerson = $scope.loginModel.find(function(item) {
+        return item.hsaId === login.hsaId;
       });
 
-      $scope.loginModel[newSelected].origin = origin;
-      var loginJson = JSON.stringify(hsaPerson, _replacer, 1);
+      // Add properties to object
+      _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
+      _updateObject(hsaPerson, 'origin', $scope.environment.origin);
+
+      var loginJson = _stringify(hsaPerson);
       jsonElView.text(loginJson);
       jsonEl.text(escape(loginJson));
     };
@@ -614,198 +276,8 @@
       return false;
     };
 
-    $scope.data = {
-      repeatSelect: null,
-      availableOptions: [
-        {
-          id: 40,
-          hsaId: 'TSTNMT2321000156-1079_TSTNMT2321000156-1077',
-          env: 'demo',
-          name: 'Arnold Johansson (Läkare / Vård och Behandling, HAR INTYG OCH ÄRENDEN)'
-        },
-        {
-          id: 30,
-          hsaId: 'TSTNMT2321000156-100F_TSTNMT2321000156-1039',
-          env: 'demo',
-          name: 'Leonie Koehl (Läkare inom EU/ESS/Schweiz / Vård och Behandling)'
-        },
-        {
-          id: 0,
-          hsaId: 'IFV1239877878-1049_IFV1239877878-1042',
-          env: 'dev',
-          name: 'Jan Nilsson - WebCert Enhet 1 (Läkare / Vård och Behandling + Admin)'
-        },
-        {
-          id: 1,
-          hsaId: 'IFV1239877878-104B_IFV1239877878-1042',
-          env: 'dev',
-          name: 'Åsa Andersson - WebCert Enhet 1 (Läkare / Vård och Behandling)'
-        },
-        {
-          id: 2,
-          hsaId: 'IFV1239877878-104B_IFV1239877878-1045',
-          env: 'dev',
-          name: 'Åsa Andersson - WebCert Enhet 2 + 2UE (Läkare / Vård och Behandling)'
-        },
-        {
-          id: 3,
-          hsaId: 'IFV1239877878-104B_IFV1239877878-1046',
-          env: 'dev',
-          name: 'Åsa Andersson - WebCert Enhet 2 - Underenhet 1 (Läkare / Vård och Behandling)'
-        },
-        {
-          id: 4,
-          hsaId: 'IFV1239877878-104B_IFV1239877878-104C',
-          env: 'dev',
-          name: 'Åsa Andersson - WebCert Enhet 2 - Underenhet 2  (Läkare / Vård och Behandling)'
-        },
-        {
-          id: 5,
-          hsaId: 'IFV1239877878-104B_IFV1239877878-104D',
-          env: 'dev',
-          name: 'Åsa Andersson - WebCert Enhet 3 (Läkare+Vårdadmin)'
-        },
-        {
-          id: 6,
-          hsaId: 'IFV1239877878-104K_IFV1239877878-1045',
-          env: 'dev',
-          name: 'Lars Andersson - WebCert Enhet 2 + 2UE (Läkare / Vård och Behandling)'
-        },
-        {
-          id: 7,
-          hsaId: 'IFV1239877878-104K_IFV1239877878-104D',
-          env: 'dev',
-          name: 'Lars Andersson - WebCert Enhet 3 (Läkare / Vård och Behandling)'
-        },
-        {
-          id: 8,
-          hsaId: 'IFV1239877878-104L_IFV1239877878-104D',
-          env: 'dev',
-          name: 'Anna Persson - WebCert Enhet 3 (Statistik)'
-        },
-        {
-          id: 9,
-          hsaId: 'IFV1239877878-104M_IFV1239877878-1045',
-          env: 'dev',
-          name: 'Anders Larsson WebCert Enhet 2 + 2UE (AT Läkare / Vård och Behandling)'
-        },
-        {
-          id: 10,
-          hsaId: 'IFV1239877878-104N_IFV1239877878-1045',
-          env: 'dev',
-          name: 'Lena Karlsson - WebCert Enhet 2 + 2UE (Vårdadmin / Vård och Behandling)'
-        },
-        {
-          id: 11,
-          hsaId: 'TST5565594230-106J_IFV1239877878-103F',
-          env: 'dev',
-          name: 'Markus Gran (Läkare / VårdEnhet1A)'
-        },
-        {
-          id: 12,
-          hsaId: 'TST5565594230-106J_IFV1239877878-103H',
-          env: 'dev',
-          name: 'Markus Gran (Läkare / VårdEnhet2A)'
-        },
-        {id: 13, hsaId: 'TST5565594230-106J_IFV1239877878-103D', env: 'dev', name: 'Markus Gran (Läkare / VårdEnhetA)'},
-        {id: 14, hsaId: 'eva_centrum-vast', env: 'dev', name: 'Eva Holgersson (Läkare / Centrum Väst)'},
-        {id: 15, hsaId: 'staffan', env: 'dev', name: 'Staffan Stafett (Läkare / Centrum Väst, Linköping, Norrköping)'},
-        {
-          id: 16,
-          hsaId: 'SE4815162344-1B02_SE4815162344-1A03',
-          env: 'dev',
-          name: 'Journa La System (Läkare, djupintegration / WebCert-Integration Enhet 2)'
-        },
-        {
-          id: 17,
-          hsaId: 'SE4815162344-1B01_SE4815162344-1A02',
-          env: 'dev',
-          name: 'Ivar Integration (Läkare, djupintegration / WebCert-Integration Enhet 1)'
-        },
-        {id: 18, hsaId: 'adam_centrum-vast', env: 'dev', name: 'Adam Admin (Vårdadmin / Centrum Väst)'},
-        {id: 19, hsaId: 'adamo_centrum-vast', env: 'dev', name: 'Adamo Admin (Vårdadmin / Centrum Väst)'},
-        {id: 20, hsaId: 'adamo_centrum-ost', env: 'dev', name: 'Adamo Admin (Vårdadmin / Centrum Öst)'},
-        {id: 21, hsaId: 'fitnesse-admin1', env: 'dev', name: 'Fitnesse Admin (Vårdadmin / Vardenhet Fitnesse 1)'},
-        {id: 22, hsaId: 'fitnesse-admin2', env: 'dev', name: 'Fitnesse Admin-1 (Vårdadmin / Vardenhet Fitnesse 2)'},
-        {id: 23, hsaId: 'hansolo_centrum-norr', env: 'dev', name: 'Han Solo (Vårdadmin / Centrum Norr)'},
-        {id: 24, hsaId: 'perpersson_anestesikliniken', env: 'dev', name: 'Per Persson (Läkare / Anestesikliniken)'},
-        {id: 25, hsaId: 'private-practitioner-1', env: 'dev', name: 'Tolvan Privatläkarsson (Privatläkare, godkänd)'},
-        {id: 26, hsaId: 'private-practitioner-2', env: 'dev', name: 'Nina Greger (Privatläkare, ej godkänd)'},
-        {id: 27, hsaId: 'tore-tandlakare', env: 'dev', name: 'Tore Tandläkare (Tandläkare)'},
-        {
-          id: 28,
-          hsaId: 'TSTNMT2321000156-100L_TSTNMT2321000156-1003',
-          env: 'demo',
-          name: 'Åsa Svensson (NMT variabel testperson)'
-        },
-        {
-          id: 29,
-          hsaId: 'TSTNMT2321000156-100B_TSTNMT2321000156-1039',
-          env: 'demo',
-          name: 'Louise Ericsson (Tandläkare / Vård och Behandling)'
-        },
-        {
-          id: 31,
-          hsaId: 'TSTNMT2321000156-100G_TSTNMT2321000156-1039',
-          env: 'demo',
-          name: 'Bill Smith (Läkare utom EU/ESS/Schweiz / Vård och Behandling)'
-        },
-        {
-          id: 32,
-          hsaId: 'TSTNMT2321000156-100H_TSTNMT2321000156-1039',
-          env: 'demo',
-          name: 'Martin Johansson (Vikarierande examinerad läkare / Vård och Behandling)'
-        },
-        {
-          id: 33,
-          hsaId: 'TSTNMT2321000156-105H_TSTNMT2321000156-105F',
-          env: 'demo',
-          name: 'Erik Nilsson (NMT Läkare / Vård och Behandling)'
-        },
-        {
-          id: 34,
-          hsaId: 'TSTNMT2321000156-105J_TSTNMT2321000156-105F',
-          env: 'demo',
-          name: 'Susanne Karlsson (NMT Administratör / Vård och Behandling)'
-        },
-        {
-          id: 35,
-          hsaId: 'TSTNMT2321000156-105R_TSTNMT2321000156-105N',
-          env: 'demo',
-          name: 'Emma Nilsson (Rehabstöd / Läkare 1 / Vård och Behandling)'
-        },
-        {
-          id: 36,
-          hsaId: 'TSTNMT2321000156-105S_TSTNMT2321000156-105N',
-          env: 'demo',
-          name: 'Anders Karlsson (Rehabstöd / Läkare 2 / Vård och Behandling)'
-        },
-        {
-          id: 37,
-          hsaId: 'TSTNMT2321000156-105T_TSTNMT2321000156-105P',
-          env: 'demo',
-          name: 'Ingrid Nilsson Olsson (Rehabstöd / Läkare 3 / Vård och Behandling)'
-        },
-        {
-          id: 38,
-          hsaId: 'TSTNMT2321000156-1067_TSTNMT2321000156-1062',
-          env: 'demo',
-          name: 'Elin Johansson (Cambio / Läkare / Vård och Behandling)'
-        },
-        {
-          id: 39,
-          hsaId: 'TSTNMT2321000156-1066_TSTNMT2321000156-1062',
-          env: 'demo',
-          name: 'Lars Olsson (Cambio / Administratör / Vård och Behandling)'
-        },
-        {
-          id: 41,
-          hsaId: 'IFV1239877878-104B',
-          env: 'dev',
-          name: 'Åsa Andersson (Läkare Ej förvald enhet) - Har WebCert Enhet 1 & 2'
-        }
-      ]
-    };
+    // Fetch fake logins
+    _getHsaPersons();
 
   });
 </script>
@@ -814,7 +286,6 @@
   <form id="loginForm" action="/fake" method="POST" class="form-inline" accept-charset="UTF-8">
     <div class="container">
 
-      <pre>{{logins | json}}</pre>
       <div id="content-container">
         <div class="content row">
 
@@ -837,8 +308,8 @@
             </h4>
             <select name="jsonSelect" id="jsonSelect" ng-model="selectedIndex" size="15" class="form-control"
                     style="width: 100%">
-              <option ng-repeat="login in logins" ng-if="whichEnv(login.env)" id="{{login.id}}"
-                      value="{{$index}}">{{login.beskrivning}}
+              <option ng-repeat="login in loginOptions" ng-if="whichEnv(login.env)" id="{{login.hsaId}}_{{login.forvaldEnhet}}"
+                      value="{{login.index}}">{{login.beskrivning}}
               </option>
             </select>
 
