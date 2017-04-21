@@ -18,17 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.util.Optional;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -62,6 +58,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
+
+import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -207,16 +205,20 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         LOG.debug("Creating renewal for intyg '{}'", originalIntygId);
 
+        WebCertUser user = userService.getUser();
+        boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+
         try {
-            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
+            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), coherentJournaling)) {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
             verifyNotReplaced(copyRequest.getOriginalIntygId(), "create renewal");
 
-            CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true);
+            CopyUtkastBuilderResponse builderResponse =
+                    buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true, coherentJournaling);
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse, user);
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -278,11 +280,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse) {
+    private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse, WebCertUser user) {
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
         // notify
-        WebCertUser user = userService.getUser();
         String reference = user.getParameters() != null ? user.getParameters().getReference() : null;
         notificationService.sendNotificationForDraftCreated(savedUtkast, reference);
 
@@ -291,6 +292,11 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
         logService.logCreateIntyg(logRequest);
         return savedUtkast;
+    }
+
+    private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse) {
+        WebCertUser user = userService.getUser();
+        return saveAndNotify(originalIntygId, builderResponse, user);
     }
 
     private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId)
@@ -328,17 +334,17 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private CopyUtkastBuilderResponse buildRenewalUtkastBuilderResponse(CreateRenewalCopyRequest copyRequest, String originalIntygId,
-            boolean addRelation) throws ModuleNotFoundException, ModuleException {
+            boolean addRelation, boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         Person patientDetails = updatePatientDetails(copyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
-                    false, false);
+                    coherentJournaling, false);
         } else {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
-                    false, false);
+                    coherentJournaling, false);
         }
 
         return builderResponse;

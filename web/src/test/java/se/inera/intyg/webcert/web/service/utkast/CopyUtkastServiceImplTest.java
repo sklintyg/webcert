@@ -18,23 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -72,6 +61,17 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.security.WebCertUserOriginType.DJUPINTEGRATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -345,11 +345,49 @@ public class CopyUtkastServiceImplTest {
 
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class), eq(false));
+                any(boolean.class), eq(false), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
+    }
+
+    @Test
+    public void testCreateRenewalWhenIntegratedAndSjfTrue() throws Exception {
+
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setOrigin(DJUPINTEGRATION.name());
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", true, false, false, true));
+        when(userService.getUser()).thenReturn(user);
+
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
+
+        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
+
+        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+
+        CreateRenewalCopyRequest copyReq = buildRenewalRequest();
+        copyReq.setDjupintegrerad(true);
+
+        CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
+
+
+        assertNotNull(renewalResponse);
+        assertEquals(INTYG_COPY_ID, renewalResponse.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, renewalResponse.getNewDraftIntygType());
+        assertEquals(INTYG_ID, renewalResponse.getOriginalIntygId());
+
+        verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
+                any(boolean.class), eq(true), eq(false));
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(userService).getUser();
+        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, true);
+        verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
+                anyString());
     }
 
     @Test
