@@ -1,8 +1,10 @@
-            {
-                "fornamn": "Jan",
-                "efternamn": "Nilsson",
-                "hsaId": "IFV1239877878-1049",
-                "enhetId": "IFV1239877878-1042",
-                "lakare": true,
-                "forskrivarKod": "2481632"
-            }
+{
+  "forNamn": "Jan",
+  "efterNamn": "Nilsson",
+  "hsaId": "IFV1239877878-1049",
+  "enhetId": "IFV1239877878-1042",
+  "legitimeradeYrkesgrupper": [
+    "Läkare"
+  ],
+  "forskrivarKod": "2481632"
+}

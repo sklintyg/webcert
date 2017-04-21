@@ -31,7 +31,7 @@ describe('Verify logging in without vardEnhet selected', function() {
         WelcomePage.get();
         //User  IFV1239877878-104B förväntas ha fakeinloggnings pararamtern enhetId tom, men flera enheter att välja på.
         //Detta skall göra att ingen enhet väljs vid inloggningen i backend.
-        WelcomePage.login('IFV1239877878-104B', false);
+        WelcomePage.login('staffan_', false);
 
         //Inloggning via welcomesidan innebär sidbyte, så vi väntar på att angular testability är redo så att testet kan fortsätta..
         specHelper.waitForAngularTestability();
@@ -44,7 +44,7 @@ describe('Verify logging in without vardEnhet selected', function() {
     it('should be able to select a unit in unit selection dialog', function() {
 
         //Ett känt tillgängligt enhetsId-val skall nu vara tillgängligt.
-        var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-IFV1239877878-1042-link'));
+        var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-linkoping-link'));
         expect(enhetSelectorLink.isDisplayed()).toBeTruthy();
 
         // Välj enheten...
