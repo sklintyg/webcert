@@ -18,27 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.xml.ws.WebServiceException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -96,6 +83,16 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -264,14 +261,16 @@ public class IntygServiceImpl implements IntygService {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
             IntygContentHolder intyg = getIntygDataPreferWebcert(intygsId, intygsTyp);
-
-            verifyEnhetsAuth(intyg.getUtlatande(), true);
+            boolean coherentJournaling = userIsDjupintegreradWithSjf();
+            if (!coherentJournaling) {
+                verifyEnhetsAuth(intyg.getUtlatande(), true);
+            }
 
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
                     isEmployer);
 
             // Log print as PDF to PDL log
-            logPdfPrinting(intyg);
+            logPdfPrinting(intyg, coherentJournaling);
 
             return intygPdf;
 
@@ -281,17 +280,26 @@ public class IntygServiceImpl implements IntygService {
     }
 
     /**
+     * Returns true if user has Origin DJUPINTEGRATION and Integration parameter sjf=true.
+     */
+    private boolean userIsDjupintegreradWithSjf() {
+        WebCertUser user = webCertUserService.getUser();
+        return user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())
+                && user.getParameters().isSjf();
+    }
+
+    /**
      * Creates log events for PDF printing actions. Creates both PDL and monitoring log events
      * depending the state of the intyg.
      *
      * @param intyg
      */
-    private void logPdfPrinting(IntygContentHolder intyg) {
+    private void logPdfPrinting(IntygContentHolder intyg, boolean coherentJournaling) {
 
         final String intygsId = intyg.getUtlatande().getId();
         final String intygsTyp = intyg.getUtlatande().getTyp();
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande(), coherentJournaling);
 
         // Are we printing a draft?
         if (intyg.getUtlatande().getGrundData().getSigneringsdatum() == null) {
@@ -416,7 +424,8 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public boolean isRevoked(String intygsId, String intygsTyp, boolean coherentJournaling) {
-        IntygContentHolder intygData = getIntygData(intygsId, intygsTyp, coherentJournaling);
+
+        IntygContentHolder intygData = getIntygData(intygsId, intygsTyp, false);
         // Log read of revoke status to monitoring log
         monitoringService.logIntygRevokeStatusRead(intygsId, intygsTyp);
         return intygData.isRevoked();
