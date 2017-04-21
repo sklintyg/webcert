@@ -37,11 +37,14 @@ public abstract class FragaSvarView {
     @Nullable
     public abstract AnsweredWithIntyg getAnsweredWithIntyg();
 
-    public static FragaSvarView create(FragaSvar fragaSvar, AnsweredWithIntyg besvaratMedIntyg) {
-        return new AutoValue_FragaSvarView(fragaSvar, besvaratMedIntyg);
+    @Nullable
+    public abstract String getAnswerDraft();
+
+    public static FragaSvarView create(FragaSvar fragaSvar, AnsweredWithIntyg besvaratMedIntyg, String answerDraft) {
+        return new AutoValue_FragaSvarView(fragaSvar, besvaratMedIntyg, answerDraft);
     }
 
     public static FragaSvarView create(FragaSvar fragaSvar) {
-        return new AutoValue_FragaSvarView(fragaSvar, null);
+        return new AutoValue_FragaSvarView(fragaSvar, null, null);
     }
 }

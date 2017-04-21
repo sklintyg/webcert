@@ -42,6 +42,9 @@ public abstract class ArendeConversationView {
     @Nullable
     public abstract ImmutableList<ArendeView> getPaminnelser();
 
+    @Nullable
+    public abstract String getDraftText();
+
     public static Builder builder() {
         return new AutoValue_ArendeConversationView.Builder();
     }
@@ -60,6 +63,8 @@ public abstract class ArendeConversationView {
         public abstract Builder setSenasteHandelse(LocalDateTime senasteHandelse);
 
         public abstract Builder setPaminnelser(ImmutableList<ArendeView> paminnelser);
+
+        public abstract Builder setDraftText(String draftText);
     }
 
 }

@@ -60,6 +60,7 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -75,6 +76,7 @@ import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -142,6 +144,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    @Autowired
+    private ArendeDraftService arendeDraftService;
 
     @Override
     public FragaSvar processIncomingQuestion(FragaSvar fragaSvar) {
@@ -226,12 +231,18 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // property in which case we could have used an order by in the query.
         Collections.sort(fragaSvarList, SENASTE_HANDELSE_DATUM_COMPARATOR);
 
-        // INTYG-3318
+        List<ArendeDraft> drafts = arendeDraftService.listAnswerDrafts(intygId);
+
         List<AnsweredWithIntyg> bmi = AnsweredWithIntygUtil.findAllKomplementForGivenIntyg(intygId, utkastRepository);
         List<FragaSvarView> fragaSvarWithBesvaratMedIntygInfo = fragaSvarList.stream()
                 .map(fs -> FragaSvarView.create(fs,
                         fs.getFrageSkickadDatum() == null ? null
-                                : AnsweredWithIntygUtil.returnOldestKompltOlderThan(fs.getFrageSkickadDatum(), bmi)))
+                                : AnsweredWithIntygUtil.returnOldestKompltOlderThan(fs.getFrageSkickadDatum(), bmi),
+                        drafts.stream()
+                                .filter(d -> Long.toString(fs.getInternReferens()).equals(d.getQuestionId()))
+                                .findAny()
+                                .map(ArendeDraft::getText)
+                                .orElse(null)))
                 .collect(Collectors.toList());
         return fragaSvarWithBesvaratMedIntygInfo;
     }
@@ -316,6 +327,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_ANSWER_FROM_CARE);
+
+        arendeDraftService.delete(fragaSvar.getIntygsReferens().getIntygsId(), Long.toString(fragaSvar.getInternReferens()));
 
         // Implement Business Rule FS-045
         if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
@@ -413,6 +426,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_QUESTION_FROM_CARE);
+
+        arendeDraftService.delete(intygId, null);
 
         return saved;
     }
@@ -578,6 +593,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setStatus(Status.CLOSED);
         FragaSvar closedFragaSvar = fragaSvarRepository.save(fragaSvar);
         sendNotification(closedFragaSvar, notificationEvent);
+
+        if (!fragaSvar.getFrageStallare().equals(FrageStallare.WEBCERT.getKod())) {
+            arendeDraftService.delete(fragaSvar.getIntygsReferens().getIntygsId(), Long.toString(fragaSvar.getInternReferens()));
+        }
 
         return closedFragaSvar;
     }

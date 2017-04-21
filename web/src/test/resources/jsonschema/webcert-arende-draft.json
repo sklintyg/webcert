@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "intygId": {
+      "type": "string"
+    },
+    "questionId": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "amne": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "intygId"
+  ]
+}

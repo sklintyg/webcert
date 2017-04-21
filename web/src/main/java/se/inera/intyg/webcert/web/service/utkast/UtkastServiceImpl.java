@@ -527,7 +527,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         draftValidation.setStatus(ValidationStatus.INVALID);
 
-        // Only bother with returning validation (e.g. error) messages if the Draft is INVALID.
+        // Only bother with returning validation (e.g. error) messages if the ArendeDraft is INVALID.
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
             draftValidation.addMessage(new DraftValidationMessage(
                     validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage(), validationMsg.getDynamicKey()));
@@ -639,7 +639,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     private Utkast saveDraft(Utkast utkast) {
         Utkast savedUtkast = utkastRepository.save(utkast);
-        LOG.debug("Draft '{}' saved", savedUtkast.getIntygsId());
+        LOG.debug("ArendeDraft '{}' saved", savedUtkast.getIntygsId());
         return savedUtkast;
     }
 

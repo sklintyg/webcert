@@ -254,7 +254,8 @@ public class ArendeViewConverterTest {
                 buildArende(fragaMeddelandeId, senasteHandelseFraga, LocalDateTime.now()),
                 buildArende(svarMeddelandeId, null, LocalDateTime.now()), null,
                 Arrays.asList(buildArende(paminnelse2MeddelandeId, null, paminnelse2Timestamp),
-                        buildArende(paminnelse1MeddelandeId, null, paminnelse1Timestamp)));
+                        buildArende(paminnelse1MeddelandeId, null, paminnelse1Timestamp)),
+                null);
 
         assertNotNull(res);
         assertNotNull(res.getFraga());
@@ -286,7 +287,8 @@ public class ArendeViewConverterTest {
         arendeList.add(buildArende(UUID.randomUUID().toString(), decemberYear9999, decemberYear9999));
         arendeList.add(buildArende(UUID.randomUUID().toString(), january, january));
 
-        List<ArendeConversationView> result = converter.buildArendeConversations(intygsId, arendeList, Collections.emptyList());
+        List<ArendeConversationView> result = converter.buildArendeConversations(intygsId, arendeList, Collections.emptyList(),
+                Collections.emptyList());
 
         assertEquals(4, result.size());
         assertEquals(1, result.get(0).getPaminnelser().size());
@@ -314,7 +316,7 @@ public class ArendeViewConverterTest {
 
         // When
         ArendeConversationView messageThread = converter.convertToArendeConversationView(fraga, svar, null,
-                ImmutableList.of(p3, p1, p2));
+                ImmutableList.of(p3, p1, p2), null);
 
         // Then
         List<ArendeView> expectedPaminnelserOrder = Stream.of(p3, p2, p1)
@@ -344,7 +346,8 @@ public class ArendeViewConverterTest {
         List<Arende> mixedThreads = ImmutableList.of(fraga1, fraga2, p11, p21, p12, p22, p13, svar2, svar1);
 
         // When
-        List<ArendeConversationView> createdList = converter.buildArendeConversations(intygsId, mixedThreads, Collections.emptyList());
+        List<ArendeConversationView> createdList = converter.buildArendeConversations(intygsId, mixedThreads, Collections.emptyList(),
+                Collections.emptyList());
 
         // Then
         List<ArendeView> expectedPaminnelser1Dtos = Stream.of(p13, p12, p11)
@@ -369,7 +372,7 @@ public class ArendeViewConverterTest {
 
         // When
         List<ArendeConversationView> res = converter.buildArendeConversations(fraga.getIntygsId(), ImmutableList.of(fraga, svar),
-                Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList());
 
         // Then
         Assertions.assertThat(res)
@@ -390,7 +393,8 @@ public class ArendeViewConverterTest {
             converter.buildArendeConversations(
                     fraga.getIntygsId(),
                     ImmutableList.of(fraga, svar),
-                    null);
+                    null,
+                    Collections.emptyList());
         });
 
         // Then
@@ -409,7 +413,7 @@ public class ArendeViewConverterTest {
 
         // When
         List<ArendeConversationView> messageThreads = converter.buildArendeConversations(fraga.getIntygsId(), ImmutableList.of(fraga),
-                komplt);
+                komplt, Collections.emptyList());
 
         // Then
         Assertions.assertThat(messageThreads)

@@ -197,7 +197,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
 
         if (isUtkast) {
-            // INTYG-3212: Draft patient info should always be up-to-date with the patient info supplied by the
+            // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
             ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn, fornamn, mellannamn, efternamn,
                     postadress, postnummer,

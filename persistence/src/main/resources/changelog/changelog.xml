@@ -940,4 +940,25 @@
     </createIndex>
   </changeSet>
 
+  <changeSet id="48" author="kja">
+    <createTable tableName="ARENDE_UTKAST">
+      <column name="ID" type="bigint">
+        <constraints unique="true" nullable="false"/>
+      </column>
+      <column name="QUESTION_ID" type="varchar(255)">
+        <constraints unique="true"/>
+      </column>
+      <column name="INTYGS_ID" type="varchar(255)"/>
+      <column name="TEXT" type="text"/>
+      <column name="AMNE" type="varchar(255)"/>
+    </createTable>
+
+    <addAutoIncrement tableName="ARENDE_UTKAST" columnName="ID" columnDataType="bigint" incrementBy="1" startWith="1" />
+
+    <createIndex tableName="ARENDE_UTKAST" indexName="ARENDE_UTKAST_INTYGS_ID_IDX">
+      <column name="INTYGS_ID"/>
+      <column name="QUESTION_ID"/>
+    </createIndex>
+  </changeSet>
+
 </databaseChangeLog>

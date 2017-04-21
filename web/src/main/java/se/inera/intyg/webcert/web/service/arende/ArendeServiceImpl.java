@@ -132,6 +132,9 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private CertificateSenderService certificateSenderService;
 
+    @Autowired
+    private ArendeDraftService arendeDraftService;
+
     @Override
     public Arende processIncomingMessage(Arende arende) {
         if (arendeRepository.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
@@ -176,7 +179,9 @@ public class ArendeServiceImpl implements ArendeService {
                 webcertUserService.getUser().getNamn(), hsaEmployeeService);
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE);
-        return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>());
+
+        arendeDraftService.delete(intygId, null);
+        return arendeViewConverter.convertToArendeConversationView(saved, null, null, new ArrayList<>(), null);
     }
 
     @Override
@@ -220,8 +225,10 @@ public class ArendeServiceImpl implements ArendeService {
         if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())) {
             closeCompletionsAsHandled(svarPaMeddelande.getIntygsId(), svarPaMeddelande.getIntygTyp());
         }
+
+        arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
-                arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId));
+                arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId), null);
     }
 
     @Override
@@ -234,7 +241,8 @@ public class ArendeServiceImpl implements ArendeService {
         return arendeViewConverter.convertToArendeConversationView(updatedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
                 null,
-                arendeRepository.findByPaminnelseMeddelandeId(meddelandeId));
+                arendeRepository.findByPaminnelseMeddelandeId(meddelandeId),
+                null);
     }
 
     @Override
@@ -267,7 +275,8 @@ public class ArendeServiceImpl implements ArendeService {
         return arendeViewConverter.convertToArendeConversationView(openedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
                 null,
-                arendeRepository.findByPaminnelseMeddelandeId(meddelandeId));
+                arendeRepository.findByPaminnelseMeddelandeId(meddelandeId),
+                null);
     }
 
     @Override
@@ -302,7 +311,8 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<AnsweredWithIntyg> kompltToIntyg = AnsweredWithIntygUtil.findAllKomplementForGivenIntyg(intygsId, utkastRepository);
 
-        return arendeViewConverter.buildArendeConversations(intygsId, arendeList, kompltToIntyg);
+        return arendeViewConverter.buildArendeConversations(intygsId, arendeList, kompltToIntyg,
+                arendeDraftService.listAnswerDrafts(intygsId));
     }
 
     @Override
@@ -367,7 +377,8 @@ public class ArendeServiceImpl implements ArendeService {
             return arendeViewConverter.convertToArendeConversationView(closedArende,
                     arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
                     null,
-                    arendeRepository.findByPaminnelseMeddelandeId(meddelandeId));
+                    arendeRepository.findByPaminnelseMeddelandeId(meddelandeId),
+                    null);
         }
     }
 
@@ -541,6 +552,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende closedArende = arendeRepository.save(arendeToClose);
 
         sendNotification(closedArende, notificationEvent);
+        arendeDraftService.delete(closedArende.getIntygsId(), closedArende.getMeddelandeId());
 
         return closedArende;
     }

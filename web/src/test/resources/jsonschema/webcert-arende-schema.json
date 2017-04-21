@@ -194,6 +194,9 @@
       "items": {
         "type": "object"
       }
+    },
+    "draftText": {
+      "type": "string"
     }
   },
   "required": [

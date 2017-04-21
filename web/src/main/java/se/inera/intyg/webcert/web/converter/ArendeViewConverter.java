@@ -43,7 +43,9 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
@@ -60,6 +62,25 @@ public class ArendeViewConverter {
 
     @Autowired
     private IntygServiceImpl intygService;
+
+    private static String getThreadRootMessageId(Arende arende) {
+        String referenceId = (arende.getSvarPaId() != null) ? arende.getSvarPaId() : arende.getPaminnelseMeddelandeId();
+        return (referenceId != null) ? referenceId : arende.getMeddelandeId();
+    }
+
+    private static boolean conversationContainsFraga(List<Arende> thread) {
+        return thread.stream().filter(a -> getArendeType(a) == ArendeType.FRAGA).findAny().isPresent();
+    }
+
+    private static ArendeType getArendeType(Arende arende) {
+        if (ArendeAmne.PAMINN == arende.getAmne()) {
+            return ArendeType.PAMINNELSE;
+        } else if (arende.getSvarPaId() != null) {
+            return ArendeType.SVAR;
+        } else {
+            return ArendeType.FRAGA;
+        }
+    }
 
     public ArendeView convertToDto(Arende arende) {
         if (arende == null) {
@@ -91,7 +112,7 @@ public class ArendeViewConverter {
     }
 
     public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, AnsweredWithIntyg komplt,
-            List<Arende> paminnelser) {
+            List<Arende> paminnelser, String draftText) {
         return ArendeConversationView.builder()
                 .setFraga(convertToDto(fraga))
                 .setSvar(convertToDto(svar))
@@ -102,6 +123,7 @@ public class ArendeViewConverter {
                                 .sorted(Comparator.comparing(ArendeView::getTimestamp).reversed())
                                 .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf)))
                 .setSenasteHandelse(fraga.getSenasteHandelse())
+                .setDraftText(draftText)
                 .build();
     }
 
@@ -122,7 +144,7 @@ public class ArendeViewConverter {
      *         same intyg
      */
     public List<ArendeConversationView> buildArendeConversations(String intygsId, List<Arende> intygMessages,
-            List<AnsweredWithIntyg> kompltToIntyg) {
+            List<AnsweredWithIntyg> kompltToIntyg, List<ArendeDraft> arendeDrafts) {
         Objects.requireNonNull(kompltToIntyg);
         Objects.requireNonNull(intygMessages);
         // Group by conversation thread.
@@ -131,7 +153,7 @@ public class ArendeViewConverter {
 
         List<ArendeConversationView> arendeConversations = threads.values().stream()
                 .filter(ArendeViewConverter::conversationContainsFraga)
-                .map(conversation -> createConversationViewFromArendeList(conversation, kompltToIntyg))
+                .map(conversation -> createConversationViewFromArendeList(conversation, kompltToIntyg, arendeDrafts))
                 .collect(Collectors.toList());
 
         Collections.sort(arendeConversations, (a, b) -> {
@@ -149,7 +171,7 @@ public class ArendeViewConverter {
     }
 
     private ArendeConversationView createConversationViewFromArendeList(List<Arende> messagesInThread,
-            List<AnsweredWithIntyg> kompltForIntyg) {
+            List<AnsweredWithIntyg> kompltForIntyg, List<ArendeDraft> arendeDrafts) {
         Optional<Arende> fraga = messagesInThread.stream()
                 .filter(a -> getArendeType(a) == ArendeType.FRAGA)
                 .reduce((element, otherElement) -> {
@@ -168,21 +190,21 @@ public class ArendeViewConverter {
             throw new IllegalArgumentException("No fraga found for the given message thread.");
         }
 
+        String draftText = null;
+        if (!svar.isPresent() && !FrageStallare.WEBCERT.getKod().equals(fraga.get().getSkickatAv())) {
+            draftText = arendeDrafts.stream()
+                    .filter(d -> d.getQuestionId().equals(fraga.get().getMeddelandeId()))
+                    .findAny()
+                    .map(ArendeDraft::getText)
+                    .orElse(null);
+        }
+
         // Find oldest intyg among kompletterande intyg, that's newer than the fraga
         AnsweredWithIntyg komplt = null;
         if (!svar.isPresent() && fraga.get().getAmne() == ArendeAmne.KOMPLT) {
             komplt = AnsweredWithIntygUtil.returnOldestKompltOlderThan(fraga.get().getTimestamp(), kompltForIntyg);
         }
-        return convertToArendeConversationView(fraga.get(), svar.orElse(null), komplt, paminnelser);
-    }
-
-    private static String getThreadRootMessageId(Arende arende) {
-        String referenceId = (arende.getSvarPaId() != null) ? arende.getSvarPaId() : arende.getPaminnelseMeddelandeId();
-        return (referenceId != null) ? referenceId : arende.getMeddelandeId();
-    }
-
-    private static boolean conversationContainsFraga(List<Arende> thread) {
-        return thread.stream().filter(a -> getArendeType(a) == ArendeType.FRAGA).findAny().isPresent();
+        return convertToArendeConversationView(fraga.get(), svar.orElse(null), komplt, paminnelser, draftText);
     }
 
     private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId,
@@ -225,15 +247,5 @@ public class ArendeViewConverter {
     private int getListPositionForInstanceId(MedicinsktArende arende) {
         Integer instanceId = arende.getInstans();
         return instanceId != null && instanceId > 0 ? instanceId : 0;
-    }
-
-    private static ArendeType getArendeType(Arende arende) {
-        if (ArendeAmne.PAMINN == arende.getAmne()) {
-            return ArendeType.PAMINNELSE;
-        } else if (arende.getSvarPaId() != null) {
-            return ArendeType.SVAR;
-        } else {
-            return ArendeType.FRAGA;
-        }
     }
 }
