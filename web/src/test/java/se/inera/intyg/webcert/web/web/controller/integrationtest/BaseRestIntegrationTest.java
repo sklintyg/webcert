@@ -53,6 +53,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -70,21 +71,23 @@ public abstract class BaseRestIntegrationTest {
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";
 
+    private static final List<String> LAKARE = asList("Läkare");
+
     /** Use to create a ROUTEID cookie to ensure the correct tomcat-node is used */
     public static String routeId;
     public static SessionFilter sessionFilter;
 
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
-            "IFV1239877878-1042").legitimeradeYrkesgrupper(asList("Läkare")).build();
+            "IFV1239877878-1042").legitimeradeYrkesgrupper(LAKARE).build();
 
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
-            "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(asList("Läkare")).build();
+            "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(LAKARE).build();
 
     /**
      * Has multiple vardenheter.
      */
     protected static FakeCredentials ASA_ANDERSSON = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-            "IFV1239877878-1046").legitimeradeYrkesgrupper(asList("Läkare")).build();
+            "IFV1239877878-1046").legitimeradeYrkesgrupper(LAKARE).build();
 
     protected final String DEFAULT_PATIENT_PERSONNUMMER = "19010101-0101";
 
@@ -120,6 +123,7 @@ public abstract class BaseRestIntegrationTest {
         String credentialsJson;
         try {
             credentialsJson = objectMapper.writeValueAsString(fakeCredentials);
+            System.err.println(credentialsJson);
             return getAuthSession(credentialsJson);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

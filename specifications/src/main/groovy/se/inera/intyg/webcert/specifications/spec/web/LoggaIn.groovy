@@ -28,7 +28,7 @@ class LoggaIn extends ExceptionHandlingFixture {
 
     def loggaInSom(String id) {
         Browser.drive {
-            go "/welcome.jsp"
+            go "/welcome.html"
 
             waitFor {
                 at WelcomePage

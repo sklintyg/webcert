@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.auth.fake;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 /**
@@ -82,20 +83,6 @@ public class FakeCredentials implements Serializable {
         return hsaId;
     }
 
-    public boolean isLakare() {
-        if (legitimeradeYrkesgrupper == null) {
-            return false;
-        }
-        return legitimeradeYrkesgrupper.contains(LAKARE);
-    }
-
-    public boolean isTandlakare() {
-        if (legitimeradeYrkesgrupper == null) {
-            return false;
-        }
-        return legitimeradeYrkesgrupper.contains(TANDLAKARE);
-    }
-
     public String getOrigin() {
         return origin;
     }
@@ -103,6 +90,24 @@ public class FakeCredentials implements Serializable {
     public List<String> getLegitimeradeYrkesgrupper() {
         return legitimeradeYrkesgrupper;
     }
+
+
+    @JsonIgnore
+    public boolean isLakare() {
+        if (legitimeradeYrkesgrupper == null) {
+            return false;
+        }
+        return legitimeradeYrkesgrupper.contains(LAKARE);
+    }
+
+    @JsonIgnore
+    public boolean isTandlakare() {
+        if (legitimeradeYrkesgrupper == null) {
+            return false;
+        }
+        return legitimeradeYrkesgrupper.contains(TANDLAKARE);
+    }
+
 
     @Override
     public String toString() {

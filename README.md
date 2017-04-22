@@ -18,7 +18,7 @@ Webbapplikationen kan startas med Jetty enligt följande:
 ```
 $ cd webcert
 $ ./gradlew appRun
-$ open http://localhost:9088/welcome.jsp
+$ open http://localhost:9088/welcome.html
 ```
 
 Detta startar Webcert med stubbar för alla externa tjänster som Webcert använder. För att köra både Mina intyg och Webcert samtidigt behöver [Intygstjänsten](https://github.com/sklintyg/intygstjanst) startas före Mina intyg och Webcert.
