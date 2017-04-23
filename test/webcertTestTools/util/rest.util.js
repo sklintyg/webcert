@@ -29,15 +29,16 @@ module.exports = {
 
     login: function(userJson) {
 
-        // login with doctor Jan Nilsson if noone else is specified
+        // login with doctor Leonie Koehl if noone else is specified
         var user = userJson || {
-                'fornamn': 'Leonie',
-                'efternamn': 'Koehl',
                 'hsaId': 'TSTNMT2321000156-103F',
+                'forNamn': 'Leonie',
+                'efterNamn': 'Koehl',
                 'enhetId': 'TSTNMT2321000156-1039',
-                'lakare': true,
+                'legitimeradeYrkesgrupper': [ 'Läkare' ],
                 'forskrivarKod': '9300005',
-                'befattningsKod': '203090'
+                'befattningsKod': '203090',
+                'origin': 'NORMAL'
             };
 
         var options = {

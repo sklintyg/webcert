@@ -20,21 +20,11 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static java.util.Arrays.asList;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.After;
-import org.junit.Before;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
@@ -42,7 +32,8 @@ import com.jayway.restassured.filter.session.SessionFilter;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
-
+import org.junit.After;
+import org.junit.Before;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -57,6 +48,14 @@ import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 
+import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
  *
@@ -68,21 +67,30 @@ public abstract class BaseRestIntegrationTest {
     protected static final String DEFAULT_UTKAST_PATIENT_EFTERNAMN = "Restman";
     protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
     protected static final String DEFAULT_INTYGSTYP = "fk7263";
+
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";
+
+    private static final List<String> LAKARE = asList("Läkare");
+
     /** Use to create a ROUTEID cookie to ensure the correct tomcat-node is used */
     public static String routeId;
     public static SessionFilter sessionFilter;
+
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
-            "IFV1239877878-1042").lakare(true).build();
+            "IFV1239877878-1042").legitimeradeYrkesgrupper(LAKARE).build();
+
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
-            "TSTNMT2321000156-1039").lakare(true).build();
+            "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(LAKARE).build();
+
     /**
      * Has multiple vardenheter.
      */
     protected static FakeCredentials ASA_ANDERSSON = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-            "IFV1239877878-1046").lakare(true).build();
+            "IFV1239877878-1046").legitimeradeYrkesgrupper(LAKARE).build();
+
     protected final String DEFAULT_PATIENT_PERSONNUMMER = "19010101-0101";
+
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 
     /**
@@ -115,6 +123,7 @@ public abstract class BaseRestIntegrationTest {
         String credentialsJson;
         try {
             credentialsJson = objectMapper.writeValueAsString(fakeCredentials);
+            System.err.println(credentialsJson);
             return getAuthSession(credentialsJson);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -221,7 +230,7 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Creates a new sent intyg, with a komplettering relation to the given intyg id. It is assumed that the specified
      * intyg already exists (and is signed & sent), otherwise setting the relation will fail.
-     * 
+     *
      * @param earlierSentIntygId
      * @param intygTyp
      * @param patientPersonnummer
@@ -403,7 +412,7 @@ public abstract class BaseRestIntegrationTest {
         vardperson.setHsaId(DEFAULT_LAKARE.getHsaId());
         vardperson.setVardgivarId("TESTVG");
         vardperson.setVardgivarnamn("VG TEST SYD");
-        vardperson.setNamn(DEFAULT_LAKARE.getFornamn() + " " + DEFAULT_LAKARE.getEfternamn());
+        vardperson.setNamn(DEFAULT_LAKARE.getForNamn() + " " + DEFAULT_LAKARE.getEfterNamn());
         fs.setVardperson(vardperson);
 
         Komplettering komplettering = new Komplettering();
@@ -475,7 +484,7 @@ public abstract class BaseRestIntegrationTest {
         arende.setKomplettering(Collections.emptyList());
         /*
          * Due to problem with (json) deserialization in the testability api because of
-         * 
+         *
          * @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
          * in Arende.java, this property is not set
          *
@@ -499,7 +508,7 @@ public abstract class BaseRestIntegrationTest {
 
     /**
      * Creates a 'fake signature' for the given utkast, which is now for all (?) intents and purposes, an intyg.
-     * 
+     *
      * @param utkastId
      */
     protected void signUtkast(String utkastId) {

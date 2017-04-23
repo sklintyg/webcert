@@ -19,7 +19,9 @@
 package se.inera.intyg.webcert.web.auth.fake;
 
 import java.io.Serializable;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 /**
@@ -29,15 +31,18 @@ public class FakeCredentials implements Serializable {
 
     private static final long serialVersionUID = -7620199916206349045L;
 
+    private static final String LAKARE = "Läkare";
+    private static final String TANDLAKARE = "Tandläkare";
+
     private String hsaId;
-    private String fornamn;
-    private String efternamn;
+    private String forNamn;
+    private String efterNamn;
     private String enhetId;
-    private boolean lakare = false;
-    private boolean tandlakare = false;
     private String befattningsKod;
     private String forskrivarKod;
     private String origin = WebCertUserOriginType.NORMAL.name();
+
+    private List<String> legitimeradeYrkesgrupper;
 
     public FakeCredentials() {
         // Needed for deserialization
@@ -45,123 +50,97 @@ public class FakeCredentials implements Serializable {
 
     public FakeCredentials(FakeCredentialsBuilder builder) {
         this.hsaId = builder.hsaId;
+        this.forNamn = builder.forNamn;
+        this.efterNamn = builder.efterNamn;
         this.enhetId = builder.enhetId;
-        this.lakare = builder.lakare;
-        this.tandlakare = builder.tandlakare;
         this.befattningsKod = builder.befattningsKod;
         this.forskrivarKod = builder.forskrivarKod;
         this.origin = builder.origin;
+        this.legitimeradeYrkesgrupper = builder.legitimeradeYrkesgrupper;
     }
 
     public String getBefattningsKod() {
         return befattningsKod;
     }
 
-    public void setBefattningsKod(String befattningsKod) {
-        this.befattningsKod = befattningsKod;
-    }
-
-    public String getEfternamn() {
-        return efternamn;
-    }
-
-    public void setEfternamn(String efternamn) {
-        this.efternamn = efternamn;
+    public String getEfterNamn() {
+        return efterNamn;
     }
 
     public String getEnhetId() {
         return enhetId;
     }
 
-    public void setEnhetId(String enhetId) {
-        this.enhetId = enhetId;
-    }
-
-    public String getFornamn() {
-        return fornamn;
-    }
-
-    public void setFornamn(String fornamn) {
-        this.fornamn = fornamn;
+    public String getForNamn() {
+        return forNamn;
     }
 
     public String getForskrivarKod() {
         return forskrivarKod;
     }
 
-    public void setForskrivarKod(String forskrivarKod) {
-        this.forskrivarKod = forskrivarKod;
-    }
-
     public String getHsaId() {
         return hsaId;
-    }
-
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
-
-    public boolean isLakare() {
-        return lakare;
-    }
-
-    public boolean isTandlakare() {
-        return tandlakare;
-    }
-
-    public void setTandlakare(boolean tandlakare) {
-        this.tandlakare = tandlakare;
     }
 
     public String getOrigin() {
         return origin;
     }
 
-    public void setOrigin(String origin) {
-        this.origin = origin;
+    public List<String> getLegitimeradeYrkesgrupper() {
+        return legitimeradeYrkesgrupper;
     }
+
+
+    @JsonIgnore
+    public boolean isLakare() {
+        if (legitimeradeYrkesgrupper == null) {
+            return false;
+        }
+        return legitimeradeYrkesgrupper.contains(LAKARE);
+    }
+
+    @JsonIgnore
+    public boolean isTandlakare() {
+        if (legitimeradeYrkesgrupper == null) {
+            return false;
+        }
+        return legitimeradeYrkesgrupper.contains(TANDLAKARE);
+    }
+
 
     @Override
     public String toString() {
         return "FakeCredentials{"
                 + "hsaId='" + hsaId + '\''
-                + ", fornamn='" + fornamn + '\''
-                + ", efternamn='" + efternamn + '\''
-                + ", lakare=" + lakare
+                + ", fornamn='" + forNamn + '\''
+                + ", efternamn='" + efterNamn + '\''
+                + ", enhetId='" + enhetId + '\''
                 + '}';
     }
 
     public static class FakeCredentialsBuilder {
         private String hsaId;
+        private String forNamn;
+        private String efterNamn;
         private String enhetId;
-        private boolean lakare = false;
-        private boolean tandlakare = false;
         private String befattningsKod;
         private String forskrivarKod;
         private String origin;
+        private List<String> legitimeradeYrkesgrupper;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
             this.hsaId = hsaId;
             this.enhetId = enhetId;
         }
 
-        public FakeCredentialsBuilder hsaId(String hsaId) {
-            this.hsaId = hsaId;
+        public FakeCredentialsBuilder forNamn(String forNamn) {
+            this.forNamn = forNamn;
             return this;
         }
 
-        public FakeCredentialsBuilder enhetId(String enhetId) {
-            this.enhetId = enhetId;
-            return this;
-        }
-
-        public FakeCredentialsBuilder lakare(boolean lakare) {
-            this.lakare = lakare;
-            return this;
-        }
-
-        public FakeCredentialsBuilder tandlakare(boolean tandlakare) {
-            this.tandlakare = tandlakare;
+        public FakeCredentialsBuilder efterNamn(String efterNamn) {
+            this.efterNamn = efterNamn;
             return this;
         }
 
@@ -177,6 +156,11 @@ public class FakeCredentials implements Serializable {
 
         public FakeCredentialsBuilder origin(String origin) {
             this.origin = origin;
+            return this;
+        }
+
+        public FakeCredentialsBuilder legitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
+            this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
             return this;
         }
 

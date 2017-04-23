@@ -30,9 +30,10 @@ var SokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var SokSkrivValjUtkastType = pages.sokSkrivIntyg.valjUtkastType;
 
 module.exports = {
+
     login: function(userOptional) {
         WelcomePage.get();
-        WelcomePage.login(userOptional || 'TSTNMT2321000156-100F_TSTNMT2321000156-1039');
+        WelcomePage.login(userOptional || 'TSTNMT2321000156-103F_TSTNMT2321000156-1039');
         this.waitForAngularTestability();
         expect(SokSkrivIntygPage.getDoctorText()).toContain('Leonie Koehl');
     },

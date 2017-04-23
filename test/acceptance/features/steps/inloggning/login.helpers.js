@@ -53,7 +53,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     } else {
         logger.info('Loggar in i andra webbläsaren >>');
         secondBrowser.ignoreSynchronization = true;
-        secondBrowser.get('welcome.jsp');
+        secondBrowser.get('welcome.html');
         secondBrowser.sleep(2000);
         login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
         secondBrowser.ignoreSynchronization = false;

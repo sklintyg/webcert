@@ -1,0 +1,377 @@
+<!--
+  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="sv" id="ng-app" ng-app="WcWelcomeApp">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="ROBOTS" content="nofollow, noindex" />
+
+<title>Webcert test inloggning</title>
+
+<link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon" />
+
+<!-- bower:css -->
+<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
+<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+<!-- endbower -->
+
+<style type="text/css">
+  textarea {
+    font-family: Consolas, Lucida Console, monospace;
+    font-size: 0.7em;
+  }
+
+  .envButtons {
+    margin-right: 0.6em;
+  }
+
+  .envButtons input {
+    margin-right: 0.2em;
+  }
+</style>
+
+<script type="text/javascript" src="/bower_components/angular/angular.js"></script>
+
+<script type="text/javascript">
+
+  window.doneLoading = true;
+  window.rendered = true;
+
+  angular.module('WcWelcomeApp', [
+    'WcWelcomeApp.controllers'
+  ]);
+
+  angular.module('WcWelcomeApp.controllers', []).controller('welcomeController', function($scope, $http) {
+
+    function _getHsaPersons() {
+      $http.get('/services/hsa-api/person').
+      success(function(response) {
+        $scope.loginModel = _loginModel(response);
+        $scope.loginOptions = _loginOptions();
+        $scope.selectedIndex = '0';
+      }).
+      error(function(data, status) {
+        $log.error('error ' + status);
+      });
+    }
+
+    function _isArray(obj) {
+      return Object.prototype.toString.call(obj) == "[object Array]";
+    }
+
+    function _loginModel(data) {
+      if (_isArray(data)) {
+        return data
+          .filter(function(item) {
+            // Remove all entries where fakeProperties are not set
+            return !!item.fakeProperties;
+          })
+          .sort(function(a, b) {
+            // Sort entries by displayOrder
+            return parseInt(a.fakeProperties.displayOrder, 10) - parseInt(b.fakeProperties.displayOrder, 10);
+          });
+      }
+
+      return [];
+    }
+
+    /*
+     * This method creates the available login options by
+     * reducing the original HSA-person array to a new array.
+     * Each HSA-person is on the form:
+     *
+     *  {
+     *    hsaId: "TST5565594230-106J",
+     *    forNamn: "Markus",
+     *    efterNamn: "Gran",
+     *    specialiseringar: [],
+     *    enhetIds: [],
+     *    titel: "Läkare",
+     *    legitimeradeYrkesgrupper: [],
+     *    befattningsKod: null,
+     *    forskrivarKod: null,
+     *    fakeProperties: {
+     *        displayOrder: "320",
+     *        env: "dev",
+     *        readOnly: true,
+     *        logins: [
+     *          {
+     *            "forvaldEnhet":"IFV1239877878-103D",
+     *            "beskrivning":"Markus Gran (Läkare | VårdEnhetA)"
+     *          }
+     *        ]
+     *     }
+     *  }
+     *
+     * The reduced login option will be on the form:
+     *
+     *  {
+     *    beskrivning: "Markus Gran (Läkare | VårdEnhetA)"
+     *    forvaldEnhet: "IFV1239877878-103D"
+     *    hsaId: "TST5565594230-106J"
+     *    index: "11"
+     *  }
+     */
+    function _loginOptions() {
+      var index = 0;
+      return $scope.loginModel
+        .reduce(
+          (function(outerProp, innerProp) {
+
+            // Reduce executes the callback function once for each element
+            // present in the array, excluding holes in the array, receiving
+            // four arguments:
+            //   * accumulator
+            //   * currentValue
+            //   * currentIndex
+            //   * array
+
+            var f = function(acc, val, ind, arr) {
+              console.log('- - - - - - - -');
+              console.log(JSON.stringify(val));
+              if (val[outerProp] && val[outerProp][innerProp]) {
+                val[outerProp][innerProp]
+                  .forEach(function(obj) {
+                    // Add properties to object
+                    obj.index = ''+index++;
+                    obj.hsaId = val.hsaId;
+
+                  });
+                acc.push(val[outerProp][innerProp]);
+              }
+              return acc;
+            }
+            return f;
+
+          })('fakeProperties', 'logins'), [])
+        .reduce(
+          function(a, b) {
+            return a.concat(b);
+          },[]);
+    }
+
+    function _replacer(key, value) {
+      if (value === null || (_isArray(value) && value.length === 0)) {
+        return undefined;
+      }
+      return value;
+    }
+
+    function _stringify(hsaPerson) {
+      var validProperties = [
+          'hsaId',
+          'forNamn',
+          'efterNamn',
+          'enhetId',
+          'legitimeradeYrkesgrupper',
+          'befattningsKod',
+          'forskrivarKod',
+          'origin'];
+
+      var string = JSON.stringify(hsaPerson, validProperties, 1);
+      var object = JSON.parse(string);
+
+      return JSON.stringify(object, _replacer, 1);
+    }
+
+    function _updateObject(object, propertyKey, propertyValue) {
+      object[propertyKey] = propertyValue;
+    }
+
+    $scope.loginModel = [];
+    $scope.loginOptions = [];
+
+    $scope.intlink = {
+        id: '',
+        alternatePatientSSn: '',
+        fornamn: 'Nils',
+        mellannamn: 'Nisse',
+        efternamn: 'Nygren',
+        postadress: 'Nygatan 14',
+        postnummer: '555 66',
+        postort: 'Nyberga',
+        sjf: true,
+        kopieringOk: true
+    };
+
+    $scope.environment = {
+      name: 'all',
+      origin: 'NORMAL'
+    };
+
+    $scope.$watch('selectedIndex', function(newSelected, oldVal) {
+      $scope.updateUserContext(newSelected, oldVal);
+    });
+
+    $scope.$watch('environment.origin', function() {
+      $scope.updateUserContext($scope.selectedIndex);
+    });
+
+    $scope.djupintegrationsInloggning = function(evt) {
+      evt.preventDefault();
+      var jsonEl = angular.element(document.querySelector('#userJsonDisplay'));
+      $http.post('/fake', "userJsonDisplay=" +jsonEl.text(), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
+        var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
+        q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
+        q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
+        q+='&kopieringOK=' + $scope.intlink.kopieringOk;
+        q+='&avliden=' + $scope.intlink.avliden;
+        window.location.href=q;
+      }, function fail(error) {
+        alert("Fel vid djupintegrations-inloggningen!");
+      });
+    };
+
+    $scope.updateUserContext = function(newSelected, oldVal) {
+      if (newSelected === undefined) {
+          return;
+      }
+
+      var jsonEl = angular.element(document.querySelector('#userJson'));
+      var jsonElView = angular.element(document.querySelector('#userJsonDisplay'));
+      var selector = angular.element(document.querySelector('#jsonSelect'));
+
+      var login = $scope.loginOptions[newSelected];
+      var hsaPerson = $scope.loginModel.find(function(item) {
+        return item.hsaId === login.hsaId;
+      });
+
+      // Add properties to object
+      _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
+      _updateObject(hsaPerson, 'origin', $scope.environment.origin);
+
+      var loginJson = _stringify(hsaPerson);
+      jsonElView.text(loginJson);
+      jsonEl.text(escape(loginJson));
+    };
+
+    $scope.whichEnv = function(env) {
+      if ($scope.environment.name === 'all') {
+        return true;
+      }
+      if ($scope.environment.name === 'dev' && env === 'dev') {
+        return true;
+      }
+      if ($scope.environment.name === 'demo' && env === 'demo') {
+        return true;
+      }
+
+      return false;
+    };
+
+    // Fetch fake logins
+    _getHsaPersons();
+
+  });
+</script>
+</head>
+<body ng-controller="welcomeController">
+  <form id="loginForm" action="/fake" method="POST" class="form-inline" accept-charset="UTF-8">
+    <div class="container">
+
+      <div id="content-container">
+        <div class="content row">
+
+          <h1>Testinloggningar Webcert</h1>
+
+          <p class="well">Template-lista till vänster. Observera att identitet knuten till hsaId behöver finnas i
+            antingen HSA-stubbe (dev,test) eller i test-HSA över NTjP (demo,qa). 'hsaId' kan ändras i
+            inloggningsprofilen i högerspalten om man har ett känt hsaId vars identitet finns i stubbe eller test-HSA
+            men som inte förekommer i template-listan.</p>
+
+          <div class="form-group col-xs-8">
+            <h4>Visa Mallar för : <span class="envButtons"><label for="all"><input id="all" name="all" type="radio"
+                                                                                 ng-model="environment.name"
+                                                                                 value="all" /> Alla</label></span>
+            <span class="envButtons"><label for="dev"><input id="dev" name="dev" type="radio"
+                                                             ng-model="environment.name"
+                                                             value="dev" /> Dev</label></span>
+            <span class="envButtons"><label for="demo"><input id="demo" name="demo" type="radio"
+                                                              ng-model="environment.name" value="demo" /> Demo</label></span>
+            </h4>
+            <select name="jsonSelect" id="jsonSelect" ng-model="selectedIndex" size="15" class="form-control"
+                    style="width: 100%">
+              <option ng-repeat="login in loginOptions" ng-if="whichEnv(login.env)" id="{{login.hsaId}}_{{login.forvaldEnhet}}"
+                      value="{{login.index}}">{{login.beskrivning}}
+              </option>
+            </select>
+
+              <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-lg"
+                     style="margin-top: 20px; width: 100%">
+          </div>
+
+          <div class="form-group col-xs-4">
+            <div style="padding-top: 0.6em;">
+              <h4>Inloggningsprofil</h4>
+              <input type="hidden" id="userJson" name="userjson" />
+              <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
+                        style="height: 200px; width: 100%;">
+                        </textarea>
+            </div>
+
+            <h5>Logga in med origin: </h5>
+              <span class="originButtons"><label for="NORMAL"><input id="NORMAL" name="origin" type="radio"
+                                                                     ng-model="environment.origin" value="NORMAL"
+                                                                     checked /> NORMAL</label></span>
+              <span class="originButtons"><label for="DJUPINTEGRATION"><input id="DJUPINTEGRATION" name="origin"
+                                                                              type="radio" ng-model="environment.origin"
+                                                                              value="DJUPINTEGRATION" /> DJUPINTEGRATION</label></span>
+              <span class="originButtons"><label for="UTHOPP"><input id="UTHOPP" name="origin" type="radio"
+                                                                     ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
+                <div ng-if="environment.origin === 'DJUPINTEGRATION'" class="panel panel-body panel-info">
+
+                  <p>Djupintegrationslänk-genväg: Välj journalsystem-parametrar och tryck på länkinloggning.</p>
+
+                  <label for="intlink-id" class="control-label">utkast/intygsid:</label> <input type="text" class="form-control" size="40" id="intlink-id" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
+                  <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
+                  <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
+                  <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
+                  <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
+                  <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.postadress" placeholder="Postadress"><br>
+                  <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
+                  <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
+                  <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.kopieringOk"> <br>
+                  <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.avliden"> <br>
+                  <button ng-click="djupintegrationsInloggning($event)" class="btn btn-sm btn-warning" style="width:100%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">länkinloggning</button>
+
+                </div>
+
+          </div>
+
+        </div>
+        <div class="content row">
+          <hr style="padding-top:16px;" />
+        </div>
+        <div class="content row">
+          <h1>Hjälplänkar</h1>
+          <p class="well">Nedan finns ett antal snabblänkar till hjälpfunktioner för utvecklings- och teständamål.</p>
+          <a href="/version.jsp" target="_blank">Versions- och bygginformation</a><br />
+          <a href="/healthcheck.jsp" target="_blank">Healthcheck</a><br />
+          <a href="/swagger-ui/index.html" target="_blank">REST-dokumentation</a><br />
+          <a href="/pubapp/showcase/index.html" target="_blank">Komponentbilbiotek (kräver ej inloggning)</a><br />
+        </div>
+      </div>
+    </div>
+
+
+  </form>
+
+</body>
+</html>

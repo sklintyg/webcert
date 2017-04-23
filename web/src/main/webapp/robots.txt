@@ -11,4 +11,4 @@ Disallow: /error.jsp        # indexera inte ointressanta filer --
 Disallow: /healthcheck.jsp
 Disallow: /siths.jsp
 Disallow: /version.jsp
-Disallow: /welcome.jsp
+Disallow: /welcome.html

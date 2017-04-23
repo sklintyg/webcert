@@ -30,7 +30,7 @@ var jsonDisplay = element(by.id('userJsonDisplay'));
 module.exports = {
     loginButton:loginButton,
     get: function() {
-        return browser.get('welcome.jsp');
+        return browser.get('welcome.html');
     },
 
     disableCookieConsentBanner: function(secondBrowser) {

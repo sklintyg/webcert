@@ -41,6 +41,7 @@
   <import resource="ws-config.xml" />
   <import resource="mail-config.xml" />
   <import resource="classpath:/mail-stub-context.xml" />
+  <import resource="classpath:/hsa-stub-context.xml" />
   <import resource="classpath*:module-config.xml" />
   <import resource="classpath*:wc-module-cxf-servlet.xml" />
   <import resource="classpath:/notification-sender-config.xml" />
@@ -89,6 +90,12 @@
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
     <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
   </beans>
+
+  <!--
+  <beans profile="dev,wc-hsa-stub">
+    <bean id="hsaServiceStub" class="se.inera.intyg.infra.integration.hsa.stub.HsaServiceStub" />
+  </beans>
+  -->
 
   <beans profile="dev,wc-init-data">
     <!-- In dev mode we bootstrap data -->
