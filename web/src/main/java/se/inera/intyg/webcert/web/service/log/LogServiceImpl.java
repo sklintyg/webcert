@@ -20,23 +20,18 @@ package se.inera.intyg.webcert.web.service.log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.infra.logmessages.ActivityPurpose;
-import se.inera.intyg.infra.logmessages.Enhet;
-import se.inera.intyg.infra.logmessages.Patient;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.infra.logmessages.PdlResource;
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygPrintMessage;
@@ -54,7 +49,6 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import java.time.LocalDateTime;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -74,14 +68,11 @@ public class LogServiceImpl implements LogService {
     @Qualifier("jmsPDLLogTemplate")
     private JmsTemplate jmsTemplate;
 
-    @Value("${pdlLogging.systemId}")
-    private String systemId;
-
-    @Value("${pdlLogging.systemName}")
-    private String systemName;
-
     @Autowired
     private WebCertUserService webCertUserService;
+
+    @Autowired
+    private LogMessagePopulator logMessagePopulator;
 
     @PostConstruct
     public void checkJmsTemplate() {
@@ -97,7 +88,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logCreateIntyg(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygCreateMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygCreateMessage.build(logRequest.getIntygId()), user));
     }
 
     @Override
@@ -107,7 +98,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logUpdateIntyg(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygUpdateMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygUpdateMessage.build(logRequest.getIntygId()), user));
     }
 
     @Override
@@ -117,7 +108,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logReadIntyg(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygReadMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygReadMessage.build(logRequest.getIntygId()), user));
     }
 
     @Override
@@ -127,7 +118,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logDeleteIntyg(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygDeleteMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygDeleteMessage.build(logRequest.getIntygId()), user));
     }
 
     @Override
@@ -137,7 +128,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logSignIntyg(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygSignMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygSignMessage.build(logRequest.getIntygId()), user));
     }
 
     @Override
@@ -147,7 +138,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logRevokeIntyg(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygRevokeMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygRevokeMessage.build(logRequest.getIntygId()), user));
     }
 
     @Override
@@ -157,7 +148,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintIntygAsPDF(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_PDF), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_PDF), user));
     }
 
     @Override
@@ -167,7 +158,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintIntygAsDraft(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_DRAFT), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_DRAFT), user));
     }
 
     @Override
@@ -177,7 +168,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED), user));
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED),
+                user));
     }
 
     @Override
@@ -187,7 +179,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logSendIntygToRecipient(LogRequest logRequest, LogUser user) {
-        send(populateLogMessage(logRequest, IntygSendMessage.build(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
+        send(logMessagePopulator.populateLogMessage(logRequest,
+                IntygSendMessage.build(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
     }
 
     @Override
@@ -202,45 +195,6 @@ public class LogServiceImpl implements LogService {
                 .enhetsNamn(valdVardenhet.getNamn())
                 .vardgivareNamn(valdVardgivare.getNamn())
                 .build();
-    }
-
-    private PdlLogMessage populateLogMessage(LogRequest logRequest, PdlLogMessage logMsg, LogUser user) {
-
-        populateWithCurrentUserAndCareUnit(logMsg, user);
-
-        String careUnitId = logRequest.getIntygCareUnitId();
-        String careUnitName = logRequest.getIntygCareUnitName();
-
-        String careGiverId = logRequest.getIntygCareGiverId();
-        String careGiverName = logRequest.getIntygCareGiverName();
-
-        Patient patient = new Patient(logRequest.getPatientId().getPersonnummer().replace("-", "").replace("+", ""),
-                logRequest.getPatientName());
-        Enhet resourceOwner = new Enhet(careUnitId, careUnitName, careGiverId, careGiverName);
-
-        PdlResource pdlResource = new PdlResource();
-        pdlResource.setPatient(patient);
-        pdlResource.setResourceOwner(resourceOwner);
-        pdlResource.setResourceType(ResourceType.RESOURCE_TYPE_INTYG.getResourceTypeName());
-
-        logMsg.getPdlResourceList().add(pdlResource);
-
-        logMsg.setSystemId(systemId);
-        logMsg.setSystemName(systemName);
-        logMsg.setTimestamp(LocalDateTime.now());
-        logMsg.setPurpose(ActivityPurpose.CARE_TREATMENT);
-
-        return logMsg;
-    }
-
-    private void populateWithCurrentUserAndCareUnit(PdlLogMessage logMsg, LogUser user) {
-        logMsg.setUserId(user.getUserId());
-        logMsg.setUserName(user.getUserName());
-        logMsg.setUserAssignment(user.getUserAssignment());
-        logMsg.setUserTitle(user.getUserTitle());
-
-        Enhet vardenhet = new Enhet(user.getEnhetsId(), user.getEnhetsNamn(), user.getVardgivareId(), user.getVardgivareNamn());
-        logMsg.setUserCareUnit(vardenhet);
     }
 
     private void send(PdlLogMessage logMsg) {
@@ -280,4 +234,8 @@ public class LogServiceImpl implements LogService {
         }
     }
 
+    @VisibleForTesting
+    void setLogMessagePopulator(LogMessagePopulator logMessagePopulator) {
+        this.logMessagePopulator = logMessagePopulator;
+    }
 }
