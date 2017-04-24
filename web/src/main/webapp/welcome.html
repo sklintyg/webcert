@@ -60,7 +60,13 @@
 
   angular.module('WcWelcomeApp.controllers', []).controller('welcomeController', function($scope, $http) {
 
-    function _getHsaPersons() {
+    function _findHsaPerson(hsaId) {
+      return $scope.loginModel.filter(function(item) {
+        return item.hsaId === hsaId;
+      })[0];
+    }
+
+    function _fetchHsaPersons() {
       $http.get('/services/hsa-api/person').
       success(function(response) {
         $scope.loginModel = _loginModel(response);
@@ -144,8 +150,6 @@
             //   * array
 
             var f = function(acc, val, ind, arr) {
-              console.log('- - - - - - - -');
-              console.log(JSON.stringify(val));
               if (val[outerProp] && val[outerProp][innerProp]) {
                 val[outerProp][innerProp]
                   .forEach(function(obj) {
@@ -248,12 +252,13 @@
       var jsonElView = angular.element(document.querySelector('#userJsonDisplay'));
       var selector = angular.element(document.querySelector('#jsonSelect'));
 
+      // Catch user login option
       var login = $scope.loginOptions[newSelected];
-      var hsaPerson = $scope.loginModel.find(function(item) {
-        return item.hsaId === login.hsaId;
-      });
 
-      // Add properties to object
+      // Get the HSA person from model
+      var hsaPerson = _findHsaPerson(login.hsaId);
+
+      // Add properties to HSA person
       _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
       _updateObject(hsaPerson, 'origin', $scope.environment.origin);
 
@@ -277,7 +282,7 @@
     };
 
     // Fetch fake logins
-    _getHsaPersons();
+    _fetchHsaPersons();
 
   });
 </script>
