@@ -25,7 +25,7 @@ var logInAsUserRehabstod = function(userObj, roleName, skipCookieConsent) {
     if (skipCookieConsent) {
         logger.info('Lämnar inte samtycke för kakor');
     }
-    logger.info('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn);
+    logger.info('Loggar in som ' + userObj.forNamn + ' ' + userObj.efterNamn);
 
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));

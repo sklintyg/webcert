@@ -44,10 +44,10 @@
          console.log(global.user);
          body = soapMessageBodies.RegisterCertificate(
              global.person.id,
-             global.person.fornamn,
-             global.person.efternamn,
+             global.person.forNamn,
+             global.person.efterNamn,
              global.user.hsaId,
-             global.user.fornamn + ' ' + global.user.efternamn,
+             global.user.forNamn + ' ' + global.user.efterNamn,
              global.user.enhetId,
              global.user.enhetName,
              global.intyg.id);
@@ -84,10 +84,10 @@
          //function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId)
          body = soapMessageBodies.RegisterMedicalCertificate(
              global.person.id,
-             global.person.fornamn,
-             global.person.efternamn,
+             global.person.forNamn,
+             global.person.efterNamn,
              global.user.hsaId,
-             global.user.fornamn + ' ' + global.user.efternamn,
+             global.user.forNamn + ' ' + global.user.efterNamn,
              global.user.enhetId,
              global.user.enhetId,
              global.intyg.id);
@@ -129,8 +129,8 @@
          }
 
          //console.log(personId);
-         //                'patientFornamn': 'Tolvan',
-         //      'patientEfternamn': 'Tolvansson',
+         //                'patientforNamn': 'Tolvan',
+         //      'patientefterNamn': 'Tolvansson',
 
          intygTillIntygtjanst(intygCode, callback);
 
@@ -138,16 +138,16 @@
      this.Given(/^jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten$/, function(callback) {
          global.intyg.id = testdataHelper.generateTestGuid();
          global.person = testdataHelper.shuffle(testvalues.patienter)[0];
-         global.person.fornamn = 'Fornamn';
-         global.person.efternamn = 'Efternamn';
+         global.person.forNamn = 'forNamn';
+         global.person.efterNamn = 'efterNamn';
          console.log(global.intyg);
          intygTillIntygtjanst('Läkarintyg FK 7263', callback);
      });
      this.When(/^jag skickar ett SMI\-intyg till intygstjänsten på en avliden person$/, function(callback) {
          global.intyg.id = testdataHelper.generateTestGuid();
          global.person = testdataHelper.shuffle(testvalues.patienterAvlidna)[0];
-         global.person.fornamn = 'Fornamn';
-         global.person.efternamn = 'Efternamn';
+         global.person.forNamn = 'forNamn';
+         global.person.efterNamn = 'efterNamn';
          console.log(global.intyg);
          intygTillIntygtjanst('Läkarutlåtande för sjukersättning', callback);
 

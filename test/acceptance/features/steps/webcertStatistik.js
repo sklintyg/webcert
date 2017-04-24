@@ -64,8 +64,8 @@ module.exports = function() {
         browser.baseUrl = process.env.STATISTIKTJANST_URL;
         // VG_TestAutomation => TSTNMT2321000156-107M => TSTNMT2321000156-107Q
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             vardgivarIdSomProcessLedare: [
                 'TSTNMT2321000156-107M'

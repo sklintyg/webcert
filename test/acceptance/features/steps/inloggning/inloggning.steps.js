@@ -215,8 +215,8 @@ module.exports = function() {
 
         // User
         userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: 'TSTNMT2321000156-107Q'
         };

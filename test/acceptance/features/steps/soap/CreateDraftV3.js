@@ -26,9 +26,9 @@ module.exports.CreateDraftCertificateV3 = function(user, intygstyp) {
         throw 'Enhet TSTNMT2321000156-102R är reserverad för djupintegration v1';
     }
 
-    if (!global.person.fornamn || !global.person.efternamn) {
-        global.person.fornamn = 'test';
-        global.person.efternamn = 'testsson';
+    if (!global.person.forNamn || !global.person.efterNamn) {
+        global.person.forNamn = 'test';
+        global.person.efterNamn = 'testsson';
     }
 
     if (!global.person.adress) {
@@ -58,8 +58,8 @@ module.exports.CreateDraftCertificateV3 = function(user, intygstyp) {
         '                  <urn2:root>1.2.752.129.2.1.3.1</urn2:root>' +
         '                  <urn2:extension>' + global.person.id.replace('-', '') + '</urn2:extension>' +
         '               </urn3:person-id>' +
-        '               <urn3:fornamn>' + global.person.fornamn + '</urn3:fornamn>' +
-        '               <urn3:efternamn>' + global.person.efternamn + '</urn3:efternamn>' +
+        '               <urn3:fornamn>' + global.person.forNamn + '</urn3:fornamn>' +
+        '               <urn3:efternamn>' + global.person.efterNamn + '</urn3:efternamn>' +
         '               <urn3:postadress>' + global.person.adress.postadress + '</urn3:postadress>' +
         '               <urn3:postnummer>' + global.person.adress.postnummer + '</urn3:postnummer>' +
         '               <urn3:postort>' + global.person.adress.postort + '</urn3:postort>' +
@@ -69,7 +69,7 @@ module.exports.CreateDraftCertificateV3 = function(user, intygstyp) {
         '                  <urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
         '                  <urn2:extension>' + user.hsaId + '</urn2:extension>' +
         '               </urn1:personal-id>' +
-        '               <urn1:fullstandigtNamn>' + user.fornamn + ' ' + user.efternamn + '</urn1:fullstandigtNamn>' +
+        '               <urn1:fullstandigtNamn>' + user.forNamn + ' ' + user.efterNamn + '</urn1:fullstandigtNamn>' +
         '               <urn1:enhet>' +
         '                  <urn1:enhets-id>' +
         '                     <urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +

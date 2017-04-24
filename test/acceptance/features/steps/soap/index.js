@@ -75,7 +75,7 @@ module.exports = {
             '    <urn:adressVard>' +
             '      <urn1:hosPersonal>' +
             '        <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="' + user.hsaId + '"/>' +
-            '        <urn2:fullstandigtNamn>' + user.fornamn + ' ' + user.efternamn + '</urn2:fullstandigtNamn>' +
+            '        <urn2:fullstandigtNamn>' + user.forNamn + ' ' + user.efterNamn + '</urn2:fullstandigtNamn>' +
             '        <urn2:enhet>' +
             '          <urn2:enhets-id extension="' + user.enhetId + '" root="1.2.752.129.2.1.4.1"/>' +
             '          <urn2:enhetsnamn>unitName</urn2:enhetsnamn>' +

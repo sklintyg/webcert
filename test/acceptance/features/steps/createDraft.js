@@ -78,7 +78,7 @@ function createBody(intygstyp, callback) {
         path = '/services/create-draft-certificate/v1.0?wsdl';
         body = soapMessageBodies.CreateDraftCertificate(
             global.user.hsaId,
-            global.user.fornamn + ' ' + global.user.efternamn,
+            global.user.forNamn + ' ' + global.user.efterNamn,
             global.user.enhetId,
             'Enhetsnamn'
         );

@@ -47,7 +47,7 @@
              body = soapMessageBodies.SendMedicalCertificate(
                  global.person.id,
                  global.user.hsaId,
-                 global.user.fornamn + ' ' + global.user.efternamn,
+                 global.user.forNamn + ' ' + global.user.efterNamn,
                  global.user.enhetId,
                  global.user.enhetId,
                  global.intyg.id);

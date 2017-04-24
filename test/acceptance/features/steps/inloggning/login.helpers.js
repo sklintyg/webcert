@@ -25,7 +25,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     if (skipCookieConsent) {
         logger.info('Lämnar inte samtycke för kakor');
     }
-    logger.info('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn);
+    logger.info('Loggar in som ' + userObj.forNamn + ' ' + userObj.efterNamn);
 
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
@@ -76,7 +76,7 @@ module.exports = {
         return logInAsUser(userObj, skipCookieConsent, secondBrowser).then(function() {
             logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
             var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
-            return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn);
+            return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
         });
     }
 };

@@ -35,7 +35,7 @@ module.exports = function() {
     });
 
     // this.Given(/^ska intyget visa det nya namnet$/, function() {
-    //     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.fornamn + ' ' + person.efternamn);
+    //     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.forNamn + ' ' + person.efterNamn);
     // });
 
     this.Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {

@@ -39,8 +39,8 @@ module.exports = function() {
     });
     this.Given(/^att jag är inloggad som läkare utan adress till enheten$/, function() {
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: 'TSTNMT2321000156-ULLA',
             lakare: 'true',
@@ -84,16 +84,16 @@ module.exports = function() {
 
     this.Given(/^att jag är inloggad som läkare( "([^"]*)")?$/, function(hasLakarnamn, lakarNamn) {
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: 'TSTNMT2321000156-107Q'
         };
 
         if (lakarNamn) {
             userObj.enhetId = 'TSTNMT2321000156-107Q';
-            userObj.fornamn = lakarNamn.split(' ')[0];
-            userObj.efternamn = lakarNamn.split(' ')[1];
+            userObj.forNamn = lakarNamn.split(' ')[0];
+            userObj.efterNamn = lakarNamn.split(' ')[1];
 
             if (lakarNamn && lakarNamn === 'Karin Persson') {
                 userObj.hsaId = 'TSTNMT2321000156-107T';
@@ -113,8 +113,8 @@ module.exports = function() {
 
     this.Given(/^att jag är inloggad som läkare på (vårdenhet|underenhet) "([^"]*)"$/, function(enhettyp, ve) {
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: ve,
             'origin': 'NORMAL'
@@ -125,8 +125,8 @@ module.exports = function() {
     this.Given(/^att jag är inloggad som djupintegrerad läkare$/, function() {
 
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: 'TSTNMT2321000156-INT1',
             origin: 'DJUPINTEGRATION'
@@ -136,8 +136,8 @@ module.exports = function() {
 
     this.Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"$/, function(enhetHsa) {
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: enhetHsa,
             forskrivarKod: '2481632',
@@ -148,8 +148,8 @@ module.exports = function() {
 
     this.Given(/^att jag är inloggad som uthoppsläkare$/, function() {
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: 'TSTNMT2321000156-107Q',
             origin: 'UTHOPP'
@@ -159,8 +159,8 @@ module.exports = function() {
 
     this.Given(/^att jag loggar in som läkare utan medarbetaruppdrag$/, function() {
         var userObj = {
-            fornamn: 'Johnny',
-            efternamn: 'Drama',
+            forNamn: 'Johnny',
+            efterNamn: 'Drama',
             hsaId: 'TSTNMT2321000156-6789',
             enhetId: 'TSTNMT2321000156-107P'
         };
@@ -172,16 +172,16 @@ module.exports = function() {
         var userObj;
         if (harInteEnhet === 'TSTNMT2321000156-107P') {
             userObj = {
-                'fornamn': 'Karin',
-                'efternamn': 'Persson',
+                'forNamn': 'Karin',
+                'efterNamn': 'Persson',
                 'hsaId': 'TSTNMT2321000156-107T',
                 'enhetId': harInteEnhet,
                 'origin': 'NORMAL'
             };
         } else if (harInteEnhet === 'TSTNMT2321000156-107J') {
             userObj = {
-                fornamn: 'Johan',
-                efternamn: 'Johansson',
+                forNamn: 'Johan',
+                efterNamn: 'Johansson',
                 hsaId: 'TSTNMT2321000156-107V',
                 enhetId: harInteEnhet
             };
@@ -218,8 +218,8 @@ module.exports = function() {
     //För att se vilka felaktigheter som bör finnas i HSA se https://inera-certificate.atlassian.net/wiki/display/IT/Negativa+tester+HSA
     this.Given(/^jag loggar in med felaktig uppgift om telefonuppgift i HSAkatalogen$/, function() {
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: 'TSTNMT2321000156-107Q'
         };
@@ -227,8 +227,8 @@ module.exports = function() {
     });
     this.Given(/^jag loggar in med felaktig uppgift om befattning i HSAkatalogen$/, function() {
         var userObj = {
-            fornamn: 'Susanne Gustafsson',
-            efternamn: 'Ericsson',
+            forNamn: 'Susanne Gustafsson',
+            efterNamn: 'Ericsson',
             hsaId: 'TSTNMT2321000156-107W',
             enhetId: 'TSTNMT2321000156-107P'
         };
@@ -237,8 +237,8 @@ module.exports = function() {
 
     this.Given(/^jag loggar in med felaktig uppgift om adress i HSAkatalogen$/, function() {
         var userObj = {
-            fornamn: 'Karin',
-            efternamn: 'Persson',
+            forNamn: 'Karin',
+            efterNamn: 'Persson',
             hsaId: 'TSTNMT2321000156-107T',
             enhetId: 'TSTNMT2321000156-1098'
         };

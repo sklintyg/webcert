@@ -428,7 +428,7 @@ module.exports = function() {
                     body = soapMessageBodies.ReceiveMedicalCertificateAnswer(
                         global.person.id,
                         global.user.hsaId,
-                        global.user.fornamn + '' + global.user.efternamn,
+                        global.user.forNamn + '' + global.user.efterNamn,
                         global.user.enhetId,
                         'WebCert Enhet 1',
                         'Enhetsnamn',
@@ -615,7 +615,7 @@ module.exports = function() {
         return expect(element(by.id('unhandled-vidarebefordraEjHanterad')).isPresent()).to.eventually.be.ok;
     });
     this.Then(/^ska det synas vem som svarat$/, function() {
-        var name = global.user.fornamn + ' ' + global.user.efternamn;
+        var name = global.user.forNamn + ' ' + global.user.efterNamn;
         return element.all(by.css('.arende-sender.ng-binding.ng-scope')).map(function(data) {
             return data.getText();
         }).then(function(theNames) {

@@ -156,7 +156,7 @@ module.exports = function() {
         });
     });
     this.Given(/^ska intyget inte innehålla gamla personuppgifter$/, function() {
-        var namn = global.intyg.person.fornamn + ' ' + global.intyg.person.efternamn;
+        var namn = global.intyg.person.forNamn + ' ' + global.intyg.person.efterNamn;
         return expect(element(by.id('patientNamnPersonnummer')).getText()).to.eventually.not.contain(namn);
 
     });

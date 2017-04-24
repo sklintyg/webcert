@@ -69,8 +69,8 @@ module.exports = function() {
     });
 
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn$/, function() {
-        person.fornamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
-        person.efternamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];
+        person.forNamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
+        person.efterNamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];
         return gotoIntyg('intygsutkastet', ' via djupintegrationslänk');
     });
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med annan adress$/, function() {
@@ -123,8 +123,8 @@ module.exports = function() {
                 url = process.env.WEBCERT_URL + 'visa/intyg/';
                 url = url + intygShortCode + '/' + global.intyg.id;
                 url = url + '?';
-                url += 'fornamn=' + encodeURIComponent(person.fornamn) + '&';
-                url += 'efternamn=' + encodeURIComponent(person.efternamn) + '&';
+                url += 'forNamn=' + encodeURIComponent(person.forNamn) + '&';
+                url += 'efterNamn=' + encodeURIComponent(person.efterNamn) + '&';
                 url += 'postadress=' + encodeURIComponent(person.adress.postadress) + '&';
                 url += 'postnummer=' + encodeURIComponent(person.adress.postnummer) + '&';
                 url += 'postort=' + encodeURIComponent(person.adress.postort) + '&';
@@ -160,8 +160,8 @@ module.exports = function() {
             if (global.sessionUsed) {
                 console.log('Loggar in med tidigare användare..');
                 return loginHelpers.logInAsUser({
-                    fornamn: global.user.fornamn,
-                    efternamn: global.user.efternamn,
+                    forNamn: global.user.forNamn,
+                    efterNamn: global.user.efterNamn,
                     hsaId: global.user.hsaId,
                     enhetId: global.user.enhetId,
                     lakare: global.user.lakare,

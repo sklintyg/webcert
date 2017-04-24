@@ -143,7 +143,7 @@ module.exports = function() {
         element(by.id(elementId)).click().then(function() {
             browser.sleep(2000).then(function() {
                 var headerboxUser = element(by.css('.headerbox-user-profile'));
-                return expect(headerboxUser.getText()).to.eventually.contain(userObj.roleName + ' - ' + userObj.fornamn + ' ' + userObj.efternamn);
+                return expect(headerboxUser.getText()).to.eventually.contain(userObj.roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
             });
         });
     });
@@ -176,8 +176,8 @@ module.exports = function() {
         // Setting rehabstod to new bas url
         browser.baseUrl = process.env.REHABSTOD_URL;
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: 'TSTNMT2321000156-107P'
         };
@@ -189,8 +189,8 @@ module.exports = function() {
         // Setting webcert to new bas url
         browser.baseUrl = process.env.WEBCERT_URL;
         var userObj = {
-            fornamn: 'Johan',
-            efternamn: 'Johansson',
+            forNamn: 'Johan',
+            efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: enhetsId
         };

@@ -40,7 +40,7 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
     if (skipCookieConsent) {
         logger.info('Lämnar inte samtycke för kakor');
     }
-    logger.info('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn);
+    logger.info('Loggar in som ' + userObj.forNamn + ' ' + userObj.efterNamn);
 
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
@@ -70,14 +70,14 @@ module.exports = {
             var headerboxUserProfile = element(by.css('.headerbox-user-profile'));
             browser.driver.switchTo().alert().then(function(alert) {
                     alert.accept();
-                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
+                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn);
 
                 },
                 function(err) {
-                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
+                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn);
                 });
             // browser.sleep(3000).then(function() {
-            //     return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
+            //     return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn);
             // });
         });
 

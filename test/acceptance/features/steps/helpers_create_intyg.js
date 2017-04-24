@@ -32,8 +32,8 @@ function writeNewIntyg(typ, status) {
     var standardUser = global.user;
 
     var userObj = {
-        fornamn: 'Johan',
-        efternamn: 'Johansson',
+        forNamn: 'Johan',
+        efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: standardUser.enhetId,
         lakare: true
@@ -91,8 +91,8 @@ function writeNewIntyg(typ, status) {
                 .then(function() { // Logga in med tidigare användare
                     console.log('Loggar in med tidigare användare..');
                     return loginHelpers.logInAsUser({
-                        fornamn: standardUser.fornamn,
-                        efternamn: standardUser.efternamn,
+                        forNamn: standardUser.forNamn,
+                        efterNamn: standardUser.efterNamn,
                         hsaId: standardUser.hsaId,
                         enhetId: standardUser.enhetId,
                         lakare: standardUser.lakare,
