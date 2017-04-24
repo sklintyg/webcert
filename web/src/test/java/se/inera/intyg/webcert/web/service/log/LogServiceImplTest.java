@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +31,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.support.destination.DestinationResolutionException;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -40,6 +40,7 @@ import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -75,17 +76,22 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private WebCertUserService userService = mock(WebCertUserService.class);
-
+    
     @InjectMocks
     private LogServiceImpl logService = new LogServiceImpl();
 
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
+    @Before
+    public void setup() {
+        LogMessagePopulator logMessagePopulator = new LogMessagePopulatorImpl();
+        ReflectionTestUtils.setField(logMessagePopulator, "systemId", "webcert");
+        ReflectionTestUtils.setField(logMessagePopulator, "systemName", "WebCert");
+        logService.setLogMessagePopulator(logMessagePopulator);
+    }
+
     @Test
     public void serviceSendsDocumentAndIdForCreate() throws Exception {
-        ReflectionTestUtils.setField(logService, "systemId", "webcert");
-        ReflectionTestUtils.setField(logService, "systemName", "WebCert");
-
         when(userService.getUser()).thenReturn(createUser());
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
@@ -138,9 +144,6 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = JmsException.class)
     public void logServiceJmsException() throws Exception {
-        ReflectionTestUtils.setField(logService, "systemId", "webcert");
-        ReflectionTestUtils.setField(logService, "systemName", "WebCert");
-
         when(userService.getUser()).thenReturn(createUser());
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
@@ -154,6 +157,16 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         } finally {
             verify(template, times(1)).send(any(MessageCreator.class));
         }
+    }
+
+    public void testActivityArgsAreIdenticalToAdditionalInfo() {
+        LogRequest logRequest = new LogRequest();
+        logRequest.setIntygId("abc123");
+        logRequest.setPatientId(new Personnummer("19121212-1212"));
+        logRequest.setPatientName("Hans Olof van der Test");
+        logRequest.setAdditionalInfo("this is additional");
+
+        logService.logPrintIntygAsPDF(logRequest);
     }
 
     private WebCertUser createUser() {
