@@ -548,13 +548,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, null, null, false);
+        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, null, null, null, false);
     }
 
     private IntygContentHolder getUnsentIntygContentHolder() {
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, null, null, false);
+        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, null, null, null, false);
     }
 
     private IntygContentHolder getRevokedIntygContentHolder() {
@@ -562,7 +562,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.CANCELLED, "HSVARD", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, true, null, null,false);
+        return new IntygContentHolder("<external-json/>", getUtlatande(), status, true, null, null, null, false);
     }
 
     @Test(expected = WebCertServiceException.class)

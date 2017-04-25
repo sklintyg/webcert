@@ -183,6 +183,12 @@ public class CopyUtkastServiceImplTest {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(false);
     }
 
+    @Before
+    public void byDefaultReturnNoRelationsFromRelationService() {
+        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getLatestComplementedByRelation(any(String.class))).thenReturn(Optional.empty());
+    }
+
     @Test
     public void testCreateCopy() throws Exception {
 
@@ -231,7 +237,6 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 eq(true), any(boolean.class), eq(true))).thenReturn(resp);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
 
@@ -331,8 +336,6 @@ public class CopyUtkastServiceImplTest {
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
-
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
         CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
@@ -366,8 +369,6 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setDjupintegrerad(true);
@@ -403,7 +404,6 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setDjupintegrerad(true);
@@ -441,7 +441,6 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);

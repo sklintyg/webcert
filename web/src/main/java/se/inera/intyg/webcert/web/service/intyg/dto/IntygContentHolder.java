@@ -39,10 +39,12 @@ public class IntygContentHolder {
     private final boolean revoked;
     private final List<RelationItem> relations;
     private final RelationItem replacedByRelation;
+    private final RelationItem complementedByRelation;
     private final boolean deceased;
 
     public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked, List<RelationItem> relations,
             RelationItem replacedByRelation,
+            RelationItem complementedByRelation,
             boolean deceased) {
         this.contents = contents;
         this.utlatande = utlatande;
@@ -54,6 +56,7 @@ public class IntygContentHolder {
             this.relations = relations;
         }
         this.replacedByRelation = replacedByRelation;
+        this.complementedByRelation = complementedByRelation;
         this.deceased = deceased;
     }
 
@@ -80,9 +83,13 @@ public class IntygContentHolder {
     public RelationItem getReplacedByRelation() {
         return replacedByRelation;
     }
+
+    public RelationItem getComplementedByRelation() {
+        return complementedByRelation;
+    }
+
     public boolean isDeceased() {
         return deceased;
     }
-
 
 }

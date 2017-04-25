@@ -28,6 +28,8 @@ public enum WebCertServiceErrorCodeEnum {
                                      // temporary fix until we can get relations for intyg from IT and therefore disable certain
                                      // actions in gui, (see INTYG-3619)
 
+    INVALID_STATE_COMPLEMENT,        // Due to existance of complement intyg, operation is not allowed.
+
     AUTHORIZATION_PROBLEM,           // User is not authorized for the operation
     INDETERMINATE_IDENTITY,          // Operation not allowed due to identity being indeterminate-
     EXTERNAL_SYSTEM_PROBLEM,         // Other system in unavailable, gave technical error response

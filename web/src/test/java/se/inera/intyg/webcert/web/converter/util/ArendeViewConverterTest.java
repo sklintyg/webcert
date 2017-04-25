@@ -122,7 +122,7 @@ public class ArendeViewConverterTest {
                 .thenReturn(new IntygContentHolder("",
                         buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
                                 LocalDateTime.now().minusDays(2)),
-                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null,
+                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null, null,
                         false));
 
         ArendeView result = converter.convertToDto(buildArende("luse"));
@@ -156,7 +156,7 @@ public class ArendeViewConverterTest {
                 .thenReturn(new IntygContentHolder("",
                         buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
                                 LocalDateTime.now().minusDays(2)),
-                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null,
+                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null, null,
                         false));
 
         ArendeView result = converter.convertToDto(buildArende("lisjp"));
@@ -185,7 +185,7 @@ public class ArendeViewConverterTest {
                                 buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
                                         SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)),
                                 Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false,
-                                null, null,false));
+                                null, null, null, false));
 
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
@@ -207,7 +207,7 @@ public class ArendeViewConverterTest {
                 .thenReturn(new IntygContentHolder("",
                         buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
                                 LocalDateTime.now().minusDays(2)),
-                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null,
+                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null, null,
                         false));
 
         Arende arende = buildArende("lisjp");
@@ -232,7 +232,7 @@ public class ArendeViewConverterTest {
                                 buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
                                         SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)),
                                 Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false,
-                                null,null, false));
+                                null,null, null, false));
 
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));

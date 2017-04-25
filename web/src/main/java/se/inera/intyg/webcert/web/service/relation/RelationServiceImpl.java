@@ -92,6 +92,14 @@ public class RelationServiceImpl implements RelationService {
         return descendants.stream().filter(r -> RelationKod.ERSATT.name().equals(r.getKod())).findFirst();
     }
 
+    @Override
+    public Optional<RelationItem> getLatestComplementedByRelation(String intygId) {
+        return getChildRelations(intygId).stream()
+                .filter(r -> r.getKod().equals(RelationKod.KOMPLT.name()))
+                .sorted((r1, r2) -> r1.getDate().compareTo(r2.getDate()))
+                .findFirst();
+    }
+
     private boolean isAuthorized(String enhetsId) {
         return userService.getUser().getIdsOfSelectedVardenhet().contains(enhetsId);
     }

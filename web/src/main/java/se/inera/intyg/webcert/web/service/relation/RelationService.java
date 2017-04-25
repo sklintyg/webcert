@@ -59,4 +59,10 @@ public interface RelationService {
      */
     Optional<RelationItem> getReplacedByRelation(String intygId);
 
+    /**
+     * Return the latest complement relation for the given intyg (if any exist)
+     * @param intygsId
+     * @return
+     */
+    Optional<RelationItem> getLatestComplementedByRelation(String intygsId);
 }

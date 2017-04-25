@@ -18,13 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -58,8 +62,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
-
-import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -133,6 +135,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
 
             verifyNotReplaced(originalIntygId, "create copy");
+            verifyNotComplemented(originalIntygId, "create copy");
 
             CopyUtkastBuilderResponse builderResponse;
 
@@ -214,9 +217,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
             verifyNotReplaced(copyRequest.getOriginalIntygId(), "create renewal");
+            verifyNotComplemented(copyRequest.getOriginalIntygId(), "create renewal");
 
-            CopyUtkastBuilderResponse builderResponse =
-                    buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true, coherentJournaling);
+            CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true,
+                    coherentJournaling);
 
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse, user);
 
@@ -250,6 +254,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                         "Can not create replacement copy - Original certificate is revoked");
             }
             verifyNotReplaced(replacementRequest.getOriginalIntygId(), "create replacement");
+            verifyNotComplemented(replacementRequest.getOriginalIntygId(), "create replacement");
 
             CopyUtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
@@ -276,6 +281,19 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_REPLACED,
+                    errorString);
+        }
+    }
+
+    // INTYG-3620
+    private void verifyNotComplemented(String originalIntygId, String operation) {
+        Optional<RelationItem> complementedByRelation = relationService.getLatestComplementedByRelation(originalIntygId);
+        if (complementedByRelation.isPresent()) {
+            String errorString = String.format("Cannot %s for certificate id '%s', the certificate is complemented by certificate '%s'",
+                    operation, originalIntygId, complementedByRelation.get().getIntygsId());
+            LOG.debug(errorString);
+            // INVALID_STATE_COMPLEMENT is needed to provide specific error message in frontend, in intyg list view
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_COMPLEMENT,
                     errorString);
         }
     }

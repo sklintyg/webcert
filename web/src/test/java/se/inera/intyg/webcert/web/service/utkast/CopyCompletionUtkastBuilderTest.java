@@ -305,7 +305,7 @@ public class CopyCompletionUtkastBuilderTest {
         status.add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
         Fk7263Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
-        return new IntygContentHolder("<external-json/>", utlatande, status, false, null, null, false);
+        return new IntygContentHolder("<external-json/>", utlatande, status, false, null, null, null, false);
     }
 
     private Utkast createOriginalUtkast() {

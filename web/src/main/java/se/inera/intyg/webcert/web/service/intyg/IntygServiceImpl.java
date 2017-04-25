@@ -562,15 +562,18 @@ public class IntygServiceImpl implements IntygService {
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             List<RelationItem> relationsList = null;
             Optional<RelationItem> replacedByRelation = Optional.empty();
+            Optional<RelationItem> complementedByRelation = Optional.empty();
             if (relations) {
                 relationsList = relationService.getRelations(intygId).orElse(
                         RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name()));
                 replacedByRelation = relationService.getReplacedByRelation(intygId);
+                complementedByRelation = relationService.getLatestComplementedByRelation(intygId);
             }
             return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), certificate.getMetaData().getStatus(),
                     certificate.isRevoked(),
                     relationsList,
-                    replacedByRelation.isPresent() ? replacedByRelation.get() : null,
+                    replacedByRelation.orElse(null),
+                    complementedByRelation.orElse(null),
                     isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()));
 
         } catch (IntygModuleFacadeException me) {
@@ -608,13 +611,16 @@ public class IntygServiceImpl implements IntygService {
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
         List<RelationItem> relationsList = null;
         Optional<RelationItem> replacedByRelation = Optional.empty();
+        Optional<RelationItem> complementedByRelation = Optional.empty();
         if (relations) {
             relationsList = relationService.getRelations(utkast.getIntygsId()).orElse(RelationItem.createBaseCase(utkast));
             replacedByRelation = relationService.getReplacedByRelation(utkast.getIntygsId());
+            complementedByRelation = relationService.getLatestComplementedByRelation(utkast.getIntygsId());
         }
         return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null,
                 relationsList,
-                replacedByRelation.isPresent() ? replacedByRelation.get() : null,
+                replacedByRelation.orElse(null),
+                complementedByRelation.orElse(null),
                 isDeceased(utkast.getPatientPersonnummer()));
     }
 

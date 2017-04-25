@@ -251,6 +251,13 @@ public class IntygServiceTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(getPersonSvar(false));
     }
 
+    @Before
+    public void byDefaultReturnNoRelationsFromRelationService() {
+        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+        when(relationService.getLatestComplementedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+    }
+
     @Test
     public void testFetchIntyg() throws Exception {
 
@@ -297,9 +304,6 @@ public class IntygServiceTest {
 
     @Test
     public void testFetchIntygDataWithRelation() throws Exception {
-        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
-        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
-
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
         assertNotNull(res);
@@ -318,8 +322,6 @@ public class IntygServiceTest {
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new IntygModuleFacadeException(""));
         when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
-        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
-        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
@@ -339,8 +341,6 @@ public class IntygServiceTest {
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new WebServiceException(""));
         when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
-        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
-        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
