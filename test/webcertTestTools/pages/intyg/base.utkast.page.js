@@ -97,18 +97,43 @@ var BaseUtkast = JClass._extend({
         });
     },
     angeEnhetAdress: function(adressObj) {
+
+        var postAddrEL = this.enhetensAdress.postAdress;
+        var postOrtEL = this.enhetensAdress.postOrt;
+        var enhetTelefonEL = this.enhetensAdress.enhetsTelefon;
+        var postNummerEL = this.enhetensAdress.postNummer;
+
         return Promise.all([
-            this.enhetensAdress.postAdress.clear().sendKeys(adressObj.postadress),
-            this.enhetensAdress.postNummer.clear().sendKeys(adressObj.postnummer),
-            this.enhetensAdress.postOrt.clear().sendKeys(adressObj.postort),
-            this.enhetensAdress.enhetsTelefon.clear().sendKeys(adressObj.telefon)
+            postAddrEL.clear().then(function() {
+                return postAddrEL.sendKeys(adressObj.postadress);
+            }),
+            postNummerEL.clear().then(function() {
+                return postNummerEL.sendKeys(adressObj.postnummer);
+            }),
+            postOrtEL.clear().then(function() {
+                return postOrtEL.sendKeys(adressObj.postort);
+            }),
+            enhetTelefonEL.clear().then(function() {
+                return enhetTelefonEL.sendKeys(adressObj.telefon);
+            })
         ]);
     },
     angePatientAdress: function(adressObj) {
+
+        var postAddrEL = this.patientAdress.postAdress;
+        var postNummerEL = this.patientAdress.postNummer;
+        var postOrtEL = this.patientAdress.postOrt;
+
         return Promise.all([
-            this.patientAdress.postAdress.clear().sendKeys(adressObj.postadress),
-            this.patientAdress.postNummer.clear().sendKeys(adressObj.postnummer),
-            this.patientAdress.postOrt.clear().sendKeys(adressObj.postort)
+            postAddrEL.clear().then(function() {
+                return postAddrEL.sendKeys(adressObj.postadress);
+            }),
+            postNummerEL.clear().then(function() {
+                return postNummerEL.sendKeys(adressObj.postnummer);
+            }),
+            postOrtEL.clear().then(function() {
+                return postOrtEL.sendKeys(adressObj.postort);
+            }),
         ]);
 
 

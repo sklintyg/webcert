@@ -123,8 +123,8 @@ module.exports = function() {
                 url = process.env.WEBCERT_URL + 'visa/intyg/';
                 url = url + intygShortCode + '/' + global.intyg.id;
                 url = url + '?';
-                url += 'forNamn=' + encodeURIComponent(person.forNamn) + '&';
-                url += 'efterNamn=' + encodeURIComponent(person.efterNamn) + '&';
+                url += 'fornamn=' + encodeURIComponent(person.forNamn) + '&';
+                url += 'efternamn=' + encodeURIComponent(person.efterNamn) + '&';
                 url += 'postadress=' + encodeURIComponent(person.adress.postadress) + '&';
                 url += 'postnummer=' + encodeURIComponent(person.adress.postnummer) + '&';
                 url += 'postort=' + encodeURIComponent(person.adress.postort) + '&';
