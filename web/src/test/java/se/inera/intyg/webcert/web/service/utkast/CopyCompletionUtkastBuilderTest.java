@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -305,7 +306,16 @@ public class CopyCompletionUtkastBuilderTest {
         status.add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
         Fk7263Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
-        return new IntygContentHolder("<external-json/>", utlatande, status, false, null, null, null, false);
+        return IntygContentHolder.builder()
+                .setContents("<external-json/>")
+                .setUtlatande(utlatande)
+                .setStatuses(status)
+                .setRevoked(false)
+                .setRelations(Collections.emptyList())
+                .setReplacedByRelation(null)
+                .setComplementedByRelation(null)
+                .setDeceased(false)
+                .build();
     }
 
     private Utkast createOriginalUtkast() {

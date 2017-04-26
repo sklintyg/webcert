@@ -174,7 +174,7 @@ public class RelationServiceImplTest {
 
     @Test
     public void testGetRelations() {
-        List<RelationItem> res = relationService.getRelations(INTYGID_3).get();
+        List<RelationItem> res = relationService.getRelations(INTYGID_3);
         assertNotNull(res);
         assertEquals(5, res.size());
 
@@ -192,19 +192,19 @@ public class RelationServiceImplTest {
 
     @Test
     public void testGetRelationsNotExisting() {
-        assertFalse(relationService.getRelations("doesNotExist").isPresent());
+        assertTrue(relationService.getRelations("doesNotExist").isEmpty());
     }
 
     @Test
     public void testWrongUnit() {
         when(userService.getUser()).thenReturn(createUser("anotherUnit"));
-        assertFalse(relationService.getRelations(INTYGID_4).isPresent());
+        assertTrue(relationService.getRelations(INTYGID_4).isEmpty());
     }
 
     @Test
     public void testWrongSubunit() {
         when(userService.getUser()).thenReturn(createUser(UNIT_1));
-        List<RelationItem> list = relationService.getRelations(INTYGID_3).get();
+        List<RelationItem> list = relationService.getRelations(INTYGID_3);
         assertEquals(3, list.size());
         assertEquals(INTYGID_4, list.get(0).getIntygsId());
         assertEquals(INTYGID_3, list.get(1).getIntygsId());

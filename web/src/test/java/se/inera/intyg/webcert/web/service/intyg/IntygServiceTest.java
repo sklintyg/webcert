@@ -253,7 +253,7 @@ public class IntygServiceTest {
 
     @Before
     public void byDefaultReturnNoRelationsFromRelationService() {
-        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(new ArrayList<>());
         when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
         when(relationService.getLatestComplementedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
     }

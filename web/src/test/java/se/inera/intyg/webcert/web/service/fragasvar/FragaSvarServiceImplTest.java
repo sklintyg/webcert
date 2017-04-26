@@ -73,7 +73,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -82,6 +81,7 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -330,8 +330,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
         // create mocked Utlatande from intygstjansten
-        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false)).thenReturn(
-                getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
+                .thenReturn(
+                        getIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
 
@@ -374,8 +375,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
         // create mocked Utlatande from intygstjansten
-        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false)).thenReturn(
-                getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
+                .thenReturn(
+                        getIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
 
@@ -467,8 +469,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     public void testSaveSvarOK() throws IOException {
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
 
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
@@ -505,7 +508,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         String intygsId = fraga.getIntygsReferens().getIntygsId();
         // Setup when - given -then
 
-        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp(), false)).thenReturn(getUnsentIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp(), false))
+                .thenReturn(getUnsentIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
@@ -528,7 +532,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         String intygsId = fraga.getIntygsReferens().getIntygsId();
         // Setup when - given -then
 
-        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp(), false)).thenReturn(getRevokedIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp(), false))
+                .thenReturn(getRevokedIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
@@ -548,13 +553,31 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, null, null, null, false);
+        return IntygContentHolder.builder()
+                .setContents("<external-json/>")
+                .setUtlatande(getUtlatande())
+                .setStatuses(status)
+                .setRevoked(false)
+                .setRelations(Collections.emptyList())
+                .setReplacedByRelation(null)
+                .setComplementedByRelation(null)
+                .setDeceased(false)
+                .build();
     }
 
     private IntygContentHolder getUnsentIntygContentHolder() {
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false, null, null, null, false);
+        return IntygContentHolder.builder()
+                .setContents("<external-json/>")
+                .setUtlatande(getUtlatande())
+                .setStatuses(status)
+                .setRevoked(false)
+                .setRelations(Collections.emptyList())
+                .setReplacedByRelation(null)
+                .setComplementedByRelation(null)
+                .setDeceased(false)
+                .build();
     }
 
     private IntygContentHolder getRevokedIntygContentHolder() {
@@ -562,7 +585,16 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.CANCELLED, "HSVARD", LocalDateTime.now()));
-        return new IntygContentHolder("<external-json/>", getUtlatande(), status, true, null, null, null, false);
+        return IntygContentHolder.builder()
+                .setContents("<external-json/>")
+                .setUtlatande(getUtlatande())
+                .setStatuses(status)
+                .setRevoked(true)
+                .setRelations(Collections.emptyList())
+                .setReplacedByRelation(null)
+                .setComplementedByRelation(null)
+                .setDeceased(false)
+                .build();
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -570,8 +602,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
 
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
@@ -594,8 +627,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     public void testSaveSvarWsHTMLError() throws Exception {
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
 
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
@@ -622,8 +656,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
 
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
@@ -652,8 +687,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
 
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
         WebCertUser nonDoctor = createUser();
         when(webCertUserService.getUser()).thenReturn(nonDoctor);
 
@@ -670,8 +706,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
 
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
 
         WebCertUser webcertUser = createUser();
         Privilege privilege = new Privilege();
@@ -713,8 +750,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar otherSubject = buildFragaSvar(4L, LocalDateTime.now(), LocalDateTime.now());
         otherSubject.setAmne(Amne.KONTAKT);
 
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
         WebCertUser webcertUser = createUser();
         Privilege privilege = new Privilege();
         privilege.setRequestOrigins(new ArrayList<>());
@@ -727,7 +765,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         wsResponse.setResult(ResultOfCallUtil.okResult());
         when(sendAnswerToFKClientMock.sendMedicalCertificateAnswer(any(AttributedURIType.class),
                 any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
-        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(INTYG_ID)).thenReturn(Arrays.asList(fragaSvar, komplt1, otherSubject, komplt2));
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(INTYG_ID))
+                .thenReturn(Arrays.asList(fragaSvar, komplt1, otherSubject, komplt2));
 
         FragaSvar result = service.saveSvar(1L, "svarsText");
 
@@ -742,7 +781,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         for (FragaSvar fs : fragaSvarCaptor.getAllValues()) {
             assertEquals(Status.CLOSED, fs.getStatus());
             assertNotEquals(otherSubject.getInternReferens(), fs.getInternReferens());
-            assertTrue(Arrays.asList(fragaSvar.getInternReferens(), komplt1.getInternReferens(), komplt2.getInternReferens()).contains(fs.getInternReferens()));
+            assertTrue(Arrays.asList(fragaSvar.getInternReferens(), komplt1.getInternReferens(), komplt2.getInternReferens())
+                    .contains(fs.getInternReferens()));
         }
         assertEquals("svarsText", result.getSvarsText());
         assertEquals(Status.CLOSED, result.getStatus());
@@ -754,8 +794,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setAmne(Amne.PAMINNELSE);
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
         when(webCertUserService.getUser()).thenReturn(createUser());
 
         try {
@@ -770,8 +811,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     public void testSaveSvarNotAuthorizedForunit() {
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
-        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(), false))
-                .thenReturn(getIntygContentHolder());
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp(),
+                false))
+                        .thenReturn(getIntygContentHolder());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(false);
 
         try {
@@ -1065,8 +1107,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         queryResult.add(new Object[] { "HSA1", 2L });
         queryResult.add(new Object[] { "HSA2", 4L });
 
-        when(fragasvarRepositoryMock.countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class), Mockito.anySetOf(String.class)))
-                .thenReturn(queryResult);
+        when(fragasvarRepositoryMock.countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
+                Mockito.anySetOf(String.class)))
+                        .thenReturn(queryResult);
 
         Map<String, Long> res = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList("HSA1", "HSA2"),
                 Stream.of("fk7263").collect(Collectors.toSet()));
@@ -1099,7 +1142,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvarAlreadyClosed = buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvarAlreadyClosed.setStatus(Status.CLOSED);
         final String intygId = "intygId";
-        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(intygId)).thenReturn(Arrays.asList(fragaSvarFromWc, fragaSvarFromFk, fragaSvarAlreadyClosed));
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(intygId))
+                .thenReturn(Arrays.asList(fragaSvarFromWc, fragaSvarFromFk, fragaSvarAlreadyClosed));
         when(fragasvarRepositoryMock.save(any(FragaSvar.class))).thenAnswer(invocation -> (FragaSvar) invocation.getArguments()[0]);
 
         service.closeAllNonClosedQuestions(intygId);
@@ -1130,7 +1174,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar4.setStatus(Status.CLOSED); // already closed
         fragaSvar4.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
 
-        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(intygId)).thenReturn(Arrays.asList(fragaSvar1, fragaSvar2, fragaSvar3, fragaSvar4));
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(intygId))
+                .thenReturn(Arrays.asList(fragaSvar1, fragaSvar2, fragaSvar3, fragaSvar4));
         ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.save(fsCapture.capture())).thenAnswer(invocation -> (FragaSvar) invocation.getArguments()[0]);
 

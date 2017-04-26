@@ -21,75 +21,69 @@ package se.inera.intyg.webcert.web.service.intyg.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.auto.value.AutoValue;
 
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
-public class IntygContentHolder {
+@AutoValue
+@JsonDeserialize(builder = AutoValue_IntygContentHolder.Builder.class)
+public abstract class IntygContentHolder {
 
+    @Nullable
     @JsonRawValue
-    private final String contents;
+    public abstract String getContents();
 
+    @Nullable
     @JsonIgnore
-    private final Utlatande utlatande;
-    private final List<Status> statuses;
-    private final boolean revoked;
-    private final List<RelationItem> relations;
-    private final RelationItem replacedByRelation;
-    private final RelationItem complementedByRelation;
-    private final boolean deceased;
+    public abstract Utlatande getUtlatande();
 
-    public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked, List<RelationItem> relations,
-            RelationItem replacedByRelation,
-            RelationItem complementedByRelation,
-            boolean deceased) {
-        this.contents = contents;
-        this.utlatande = utlatande;
-        this.statuses = statuses;
-        this.revoked = revoked;
-        if (relations == null) {
-            this.relations = new ArrayList<>();
-        } else {
-            this.relations = relations;
-        }
-        this.replacedByRelation = replacedByRelation;
-        this.complementedByRelation = complementedByRelation;
-        this.deceased = deceased;
+    @Nullable
+    public abstract List<Status> getStatuses();
+
+    public abstract boolean isRevoked();
+
+    public abstract List<RelationItem> getRelations();
+
+    @Nullable
+    public abstract RelationItem getReplacedByRelation();
+
+    @Nullable
+    public abstract RelationItem getComplementedByRelation();
+
+    public abstract boolean isDeceased();
+
+    public static Builder builder() {
+        return new AutoValue_IntygContentHolder.Builder()
+                .setRelations(new ArrayList<>());
     }
 
-    public String getContents() {
-        return contents;
-    }
+    @AutoValue.Builder
+    public abstract static class Builder {
 
-    public Utlatande getUtlatande() {
-        return utlatande;
-    }
+        public abstract IntygContentHolder build();
 
-    public List<Status> getStatuses() {
-        return statuses;
-    }
+        public abstract Builder setContents(String contents);
 
-    public boolean isRevoked() {
-        return revoked;
-    }
+        public abstract Builder setUtlatande(Utlatande utlatande);
 
-    public List<RelationItem> getRelations() {
-        return relations;
-    }
+        public abstract Builder setStatuses(List<Status> statuses);
 
-    public RelationItem getReplacedByRelation() {
-        return replacedByRelation;
-    }
+        public abstract Builder setRevoked(boolean revoked);
 
-    public RelationItem getComplementedByRelation() {
-        return complementedByRelation;
-    }
+        public abstract Builder setRelations(List<RelationItem> relations);
 
-    public boolean isDeceased() {
-        return deceased;
+        public abstract Builder setReplacedByRelation(RelationItem replacedByRelation);
+
+        public abstract Builder setComplementedByRelation(RelationItem complementedByRelation);
+
+        public abstract Builder setDeceased(boolean deceased);
     }
 
 }

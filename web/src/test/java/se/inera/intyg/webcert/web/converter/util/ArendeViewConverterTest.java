@@ -115,16 +115,27 @@ public class ArendeViewConverterTest {
         when(moduleApi.getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class))).thenReturn(map);
     }
 
+    @Before
+    public void setupDefaultMocksForIntygService() {
+        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
+                .thenReturn(
+                        IntygContentHolder.builder()
+                                .setContents("")
+                                .setUtlatande(buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                                        SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)))
+                                .setStatuses(
+                                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))))
+                                .setRevoked(false)
+                                .setRelations(Collections.emptyList())
+                                .setReplacedByRelation(null)
+                                .setComplementedByRelation(null)
+                                .setDeceased(false)
+                                .build());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertToArendeForLuse() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(new IntygContentHolder("",
-                        buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
-                                LocalDateTime.now().minusDays(2)),
-                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null, null,
-                        false));
-
         ArendeView result = converter.convertToDto(buildArende("luse"));
 
         assertNotNull(result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -152,13 +163,6 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertToArendeForLisjp() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(new IntygContentHolder("",
-                        buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
-                                LocalDateTime.now().minusDays(2)),
-                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null, null,
-                        false));
-
         ArendeView result = converter.convertToDto(buildArende("lisjp"));
 
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1,
@@ -179,14 +183,6 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertKompletteringWithoutInstans() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(
-                        new IntygContentHolder("",
-                                buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                                        SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)),
-                                Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false,
-                                null, null, null, false));
-
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
         ArendeView result = converter.convertToDto(arende);
@@ -203,13 +199,6 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertKompletteringInstansTooHigh() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(new IntygContentHolder("",
-                        buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson", SKAPADAV_PERSON_ID,
-                                LocalDateTime.now().minusDays(2)),
-                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false, null, null, null,
-                        false));
-
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", 3, "arende1")));
         ArendeView result = converter.convertToDto(arende);
@@ -226,14 +215,6 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testConvertKompletteringUnknownQuestionId() throws ModuleNotFoundException {
-        when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(
-                        new IntygContentHolder("",
-                                buildLisjpUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                                        SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)),
-                                Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))), false,
-                                null,null, null, false));
-
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));
         ArendeView result = converter.convertToDto(arende);

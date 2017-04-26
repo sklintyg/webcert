@@ -71,15 +71,15 @@ public class RelationServiceImpl implements RelationService {
     }
 
     @Override
-    public Optional<List<RelationItem>> getRelations(String intygsId) {
+    public List<RelationItem> getRelations(String intygsId) {
         Utkast baseCertificate = utkastRepo.findOne(intygsId);
         if (baseCertificate != null && isAuthorized(baseCertificate.getEnhetsId())) {
             List<RelationItem> res = getChildRelations(intygsId);
             res.add(new RelationItem(baseCertificate));
             res.addAll(getParentRelations(intygsId));
-            return Optional.of(res);
+            return res;
         } else {
-            return Optional.empty();
+            return new ArrayList<>();
         }
     }
 

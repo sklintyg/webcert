@@ -66,6 +66,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastModuleApiControllerTest {
@@ -118,7 +119,7 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         when(utkastService.getDraft(CERTIFICATE_ID, intygTyp, false)).thenReturn(buildUtkast(intygTyp, intygId));
-        when(relationService.getRelations(eq(intygId))).thenReturn(Optional.empty());
+        when(relationService.getRelations(eq(intygId))).thenReturn(new ArrayList<RelationItem>());
 
         Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
         verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp, false);
@@ -132,7 +133,7 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, true, WebcertFeature.HANTERA_INTYGSUTKAST);
 
         when(utkastService.getDraft(CERTIFICATE_ID, intygTyp, true)).thenReturn(buildUtkast(intygTyp, intygId));
-        when(relationService.getRelations(eq(intygId))).thenReturn(Optional.empty());
+        when(relationService.getRelations(eq(intygId))).thenReturn(new ArrayList<RelationItem>());
 
         Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
         verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp, true);

@@ -18,14 +18,28 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -83,16 +97,6 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -560,21 +564,28 @@ public class IntygServiceImpl implements IntygService {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
-            List<RelationItem> relationsList = null;
+            List<RelationItem> relationsList = Collections.emptyList();
             Optional<RelationItem> replacedByRelation = Optional.empty();
             Optional<RelationItem> complementedByRelation = Optional.empty();
             if (relations) {
-                relationsList = relationService.getRelations(intygId).orElse(
-                        RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name()));
+                relationsList = relationService.getRelations(intygId);
+                if (relationsList.isEmpty()) {
+                    relationsList = RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(),
+                            CertificateState.RECEIVED.name());
+                }
                 replacedByRelation = relationService.getReplacedByRelation(intygId);
                 complementedByRelation = relationService.getLatestComplementedByRelation(intygId);
             }
-            return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), certificate.getMetaData().getStatus(),
-                    certificate.isRevoked(),
-                    relationsList,
-                    replacedByRelation.orElse(null),
-                    complementedByRelation.orElse(null),
-                    isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()));
+            return IntygContentHolder.builder()
+                    .setContents(internalIntygJsonModel)
+                    .setUtlatande(certificate.getUtlatande())
+                    .setStatuses(certificate.getMetaData().getStatus())
+                    .setRevoked(certificate.isRevoked())
+                    .setRelations(relationsList)
+                    .setReplacedByRelation(replacedByRelation.orElse(null))
+                    .setComplementedByRelation(complementedByRelation.orElse(null))
+                    .setDeceased(isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
+                    .build();
 
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
@@ -609,19 +620,27 @@ public class IntygServiceImpl implements IntygService {
     private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
         Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
-        List<RelationItem> relationsList = null;
+        List<RelationItem> relationsList = new ArrayList<>();
         Optional<RelationItem> replacedByRelation = Optional.empty();
         Optional<RelationItem> complementedByRelation = Optional.empty();
         if (relations) {
-            relationsList = relationService.getRelations(utkast.getIntygsId()).orElse(RelationItem.createBaseCase(utkast));
+            relationsList = relationService.getRelations(utkast.getIntygsId());
+            if (relationsList.isEmpty()) {
+                relationsList = RelationItem.createBaseCase(utkast);
+            }
             replacedByRelation = relationService.getReplacedByRelation(utkast.getIntygsId());
             complementedByRelation = relationService.getLatestComplementedByRelation(utkast.getIntygsId());
         }
-        return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null,
-                relationsList,
-                replacedByRelation.orElse(null),
-                complementedByRelation.orElse(null),
-                isDeceased(utkast.getPatientPersonnummer()));
+        return IntygContentHolder.builder()
+                .setContents(utkast.getModel())
+                .setUtlatande(utlatande)
+                .setStatuses(statuses)
+                .setRevoked(utkast.getAterkalladDatum() != null)
+                .setRelations(relationsList)
+                .setReplacedByRelation(replacedByRelation.orElse(null))
+                .setComplementedByRelation(complementedByRelation.orElse(null))
+                .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
+                .build();
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
