@@ -89,6 +89,24 @@
         }
       }
     },
+    "complementedByRelation": {
+      "id": "complementedByRelation",
+      "type": "object",
+      "properties": {
+        "intygsId": {
+          "type": "string"
+        },
+        "kod": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        }
+      }
+    },
     "deceased": {
       "id": "deceased",
       "type": "boolean"
