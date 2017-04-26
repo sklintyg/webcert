@@ -115,7 +115,7 @@ public class FakeCredentials implements Serializable {
                 + "hsaId='" + hsaId + '\''
                 + ", fornamn='" + forNamn + '\''
                 + ", efternamn='" + efterNamn + '\''
-                + ", enhetId='" + enhetId + '\''
+                + ", lakare='" + isLakare() + '\''
                 + '}';
     }
 

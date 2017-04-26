@@ -50,7 +50,6 @@
 <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
 
 <script type="text/javascript">
-
   window.doneLoading = true;
   window.rendered = true;
 
@@ -58,233 +57,253 @@
     'WcWelcomeApp.controllers'
   ]);
 
-  angular.module('WcWelcomeApp.controllers', []).controller('welcomeController', function($scope, $http) {
+  angular.module('WcWelcomeApp.controllers', []).controller('welcomeController',
+    ['$scope', '$http', '$log', function($scope, $http, $log) {
 
-    function _findHsaPerson(hsaId) {
-      return $scope.loginModel.filter(function(item) {
-        return item.hsaId === hsaId;
-      })[0];
-    }
+      function _filterLoginIdentity(allowedApps, appName) {
+          if (!_isArray(allowedApps)) {
+              return false;
+          }
 
-    function _fetchHsaPersons() {
-      $http.get('/services/hsa-api/person').
-      success(function(response) {
-        $scope.loginModel = _loginModel(response);
-        $scope.loginOptions = _loginOptions();
-        $scope.selectedIndex = '0';
-      }).
-      error(function(data, status) {
-        $log.error('error ' + status);
-      });
-    }
-
-    function _isArray(obj) {
-      return Object.prototype.toString.call(obj) == "[object Array]";
-    }
-
-    function _loginModel(data) {
-      if (_isArray(data)) {
-        return data
-          .filter(function(item) {
-            // Remove all entries where fakeProperties are not set
-            return !!item.fakeProperties;
-          })
-          .sort(function(a, b) {
-            // Sort entries by displayOrder
-            return parseInt(a.fakeProperties.displayOrder, 10) - parseInt(b.fakeProperties.displayOrder, 10);
-          });
+          // Allow if array is empty OR app's name is in array
+          return allowedApps.length === 0 || allowedApps.indexOf(appName) > -1;
       }
 
-      return [];
-    }
+      function _findHsaPerson(hsaId) {
+        return $scope.loginModel.filter(function(item) {
+          return item.hsaId === hsaId;
+        })[0];
+      }
 
-    /*
-     * This method creates the available login options by
-     * reducing the original HSA-person array to a new array.
-     * Each HSA-person is on the form:
-     *
-     *  {
-     *    hsaId: "TST5565594230-106J",
-     *    forNamn: "Markus",
-     *    efterNamn: "Gran",
-     *    specialiseringar: [],
-     *    enhetIds: [],
-     *    titel: "Läkare",
-     *    legitimeradeYrkesgrupper: [],
-     *    befattningsKod: null,
-     *    forskrivarKod: null,
-     *    fakeProperties: {
-     *        displayOrder: "320",
-     *        env: "dev",
-     *        readOnly: true,
-     *        logins: [
-     *          {
-     *            "forvaldEnhet":"IFV1239877878-103D",
-     *            "beskrivning":"Markus Gran (Läkare | VårdEnhetA)"
-     *          }
-     *        ]
-     *     }
-     *  }
-     *
-     * The reduced login option will be on the form:
-     *
-     *  {
-     *    beskrivning: "Markus Gran (Läkare | VårdEnhetA)"
-     *    forvaldEnhet: "IFV1239877878-103D"
-     *    hsaId: "TST5565594230-106J"
-     *    index: "11"
-     *  }
-     */
-    function _loginOptions() {
-      var index = 0;
-      return $scope.loginModel
-        .reduce(
-          (function(outerProp, innerProp) {
+      function _fetchHsaPersons() {
+        $http.get('/services/hsa-api/person').
+        success(function(response) {
+          $scope.loginModel = _loginModel(response);
+          $scope.loginOptions = _loginOptions();
+          $scope.selectedIndex = '0';
+        }).
+        error(function(data, status) {
+          $log.error('error ' + status);
+        });
+      }
 
-            // Reduce executes the callback function once for each element
-            // present in the array, excluding holes in the array, receiving
-            // four arguments:
-            //   * accumulator
-            //   * currentValue
-            //   * currentIndex
-            //   * array
+      function _isArray(obj) {
+        return Object.prototype.toString.call(obj) == "[object Array]";
+      }
 
-            var f = function(acc, val, ind, arr) {
-              if (val[outerProp] && val[outerProp][innerProp]) {
-                val[outerProp][innerProp]
-                  .forEach(function(obj) {
-                    // Add properties to object
-                    obj.index = ''+index++;
-                    obj.hsaId = val.hsaId;
-
-                  });
-                acc.push(val[outerProp][innerProp]);
+      function _loginModel(data) {
+        if (_isArray(data)) {
+          return data
+            .filter(function(item) {
+              // Remove all entries where
+              //  - fakeProperties are not present
+              if (!item.fakeProperties) {
+                return false;
               }
-              return acc;
-            }
-            return f;
+              //  - identity allowed in applications are false
+              return _filterLoginIdentity(item.fakeProperties.allowedInApplications, "WC");
+            })
+            .sort(function(a, b) {
+              // Sort entries by displayOrder
+              var value = parseInt(a.fakeProperties.displayOrder, 10) - parseInt(b.fakeProperties.displayOrder, 10);
+              if (isNaN(value)) {
+                return 1000;
+              }
+              return value;
+            });
+        }
 
-          })('fakeProperties', 'logins'), [])
-        .reduce(
-          function(a, b) {
-            return a.concat(b);
-          },[]);
-    }
-
-    function _replacer(key, value) {
-      if (value === null || (_isArray(value) && value.length === 0)) {
-        return undefined;
+        return [];
       }
-      return value;
-    }
 
-    function _stringify(hsaPerson) {
-      var validProperties = [
-          'hsaId',
-          'forNamn',
-          'efterNamn',
-          'enhetId',
-          'legitimeradeYrkesgrupper',
-          'befattningsKod',
-          'forskrivarKod',
-          'origin'];
+      /*
+       * This method creates the available login options by
+       * reducing the original HSA-person array to a new array.
+       * Each HSA-person is on the form:
+       *
+       *  {
+       *    hsaId: "TST5565594230-106J",
+       *    forNamn: "Markus",
+       *    efterNamn: "Gran",
+       *    specialiseringar: [],
+       *    enhetIds: [],
+       *    titel: "Läkare",
+       *    legitimeradeYrkesgrupper: [],
+       *    befattningsKod: null,
+       *    forskrivarKod: null,
+       *    fakeProperties: {
+       *        allowedInApplications: [],
+       *        displayOrder: "320",
+       *        env: "dev",
+       *        readOnly: true,
+       *        logins: [
+       *          {
+       *            "forvaldEnhet":"IFV1239877878-103D",
+       *            "beskrivning":"Markus Gran (Läkare | VårdEnhetA)"
+       *          }
+       *        ]
+       *     }
+       *  }
+       *
+       * The reduced login option will be on the form:
+       *
+       *  {
+       *    beskrivning: "Markus Gran (Läkare | VårdEnhetA)"
+       *    forvaldEnhet: "IFV1239877878-103D"
+       *    hsaId: "TST5565594230-106J"
+       *    index: "11"
+       *  }
+       */
+      function _loginOptions() {
+        var index = 0;
+        return $scope.loginModel
+          .reduce(
+            (function(outerProp, innerProp) {
 
-      var string = JSON.stringify(hsaPerson, validProperties, 1);
-      var object = JSON.parse(string);
+              // Reduce executes the callback function once for each element
+              // present in the array, excluding holes in the array, receiving
+              // four arguments:
+              //   * accumulator
+              //   * currentValue
+              //   * currentIndex
+              //   * array
 
-      return JSON.stringify(object, _replacer, 1);
-    }
+              var f = function(acc, val, ind, arr) {
+                if (val[outerProp] && val[outerProp][innerProp]) {
+                  val[outerProp][innerProp]
+                    .forEach(function(obj) {
+                      // Add properties to object
+                      obj.index = ''+index++;
+                      obj.hsaId = val.hsaId;
 
-    function _updateObject(object, propertyKey, propertyValue) {
-      object[propertyKey] = propertyValue;
-    }
+                    });
+                  acc.push(val[outerProp][innerProp]);
+                }
+                return acc;
+              };
+              return f;
 
-    $scope.loginModel = [];
-    $scope.loginOptions = [];
+            })('fakeProperties', 'logins'), [])
+          .reduce(
+            function(a, b) {
+              return a.concat(b);
+            },[]);
+      }
 
-    $scope.intlink = {
-        id: '',
-        alternatePatientSSn: '',
-        fornamn: 'Nils',
-        mellannamn: 'Nisse',
-        efternamn: 'Nygren',
-        postadress: 'Nygatan 14',
-        postnummer: '555 66',
-        postort: 'Nyberga',
-        sjf: true,
-        kopieringOk: true
-    };
+      function _replacer(key, value) {
+        if (value === null || (_isArray(value) && value.length === 0)) {
+          return undefined;
+        }
+        return value;
+      }
 
-    $scope.environment = {
-      name: 'all',
-      origin: 'NORMAL'
-    };
+      function _stringify(hsaPerson) {
+        var validProperties = [
+            'hsaId',
+            'forNamn',
+            'efterNamn',
+            'enhetId',
+            'legitimeradeYrkesgrupper',
+            'befattningsKod',
+            'forskrivarKod',
+            'origin'];
 
-    $scope.$watch('selectedIndex', function(newSelected, oldVal) {
-      $scope.updateUserContext(newSelected, oldVal);
-    });
+        var string = JSON.stringify(hsaPerson, validProperties, 1);
+        var object = JSON.parse(string);
 
-    $scope.$watch('environment.origin', function() {
-      $scope.updateUserContext($scope.selectedIndex);
-    });
+        return JSON.stringify(object, _replacer, 1);
+      }
 
-    $scope.djupintegrationsInloggning = function(evt) {
-      evt.preventDefault();
-      var jsonEl = angular.element(document.querySelector('#userJsonDisplay'));
-      $http.post('/fake', "userJsonDisplay=" +jsonEl.text(), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
-        var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
-        q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
-        q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
-        q+='&kopieringOK=' + $scope.intlink.kopieringOk;
-        q+='&avliden=' + $scope.intlink.avliden;
-        window.location.href=q;
-      }, function fail(error) {
-        alert("Fel vid djupintegrations-inloggningen!");
+      function _updateObject(object, propertyKey, propertyValue) {
+        object[propertyKey] = propertyValue;
+      }
+
+      $scope.loginModel = [];
+      $scope.loginOptions = [];
+
+      $scope.intlink = {
+          id: '',
+          alternatePatientSSn: '',
+          fornamn: 'Nils',
+          mellannamn: 'Nisse',
+          efternamn: 'Nygren',
+          postadress: 'Nygatan 14',
+          postnummer: '555 66',
+          postort: 'Nyberga',
+          sjf: true,
+          kopieringOk: true
+      };
+
+      $scope.environment = {
+        name: 'all',
+        origin: 'NORMAL'
+      };
+
+      $scope.$watch('selectedIndex', function(newSelected, oldVal) {
+        $scope.updateUserContext(newSelected, oldVal);
       });
-    };
 
-    $scope.updateUserContext = function(newSelected, oldVal) {
-      if (newSelected === undefined) {
-          return;
-      }
+      $scope.$watch('environment.origin', function() {
+        $scope.updateUserContext($scope.selectedIndex);
+      });
 
-      var jsonEl = angular.element(document.querySelector('#userJson'));
-      var jsonElView = angular.element(document.querySelector('#userJsonDisplay'));
-      var selector = angular.element(document.querySelector('#jsonSelect'));
+      $scope.djupintegrationsInloggning = function(evt) {
+        evt.preventDefault();
+        var jsonEl = angular.element(document.querySelector('#userJsonDisplay'));
+        $http.post('/fake', "userJsonDisplay=" +jsonEl.text(), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
+          var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
+          q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
+          q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
+          q+='&kopieringOK=' + $scope.intlink.kopieringOk;
+          q+='&avliden=' + $scope.intlink.avliden;
+          window.location.href=q;
+        }, function fail(error) {
+          alert("Fel vid djupintegrations-inloggningen!");
+        });
+      };
 
-      // Catch user login option
-      var login = $scope.loginOptions[newSelected];
+      $scope.updateUserContext = function(newSelected, oldVal) {
+        if (newSelected === undefined) {
+            return;
+        }
 
-      // Get the HSA person from model
-      var hsaPerson = _findHsaPerson(login.hsaId);
+        var jsonEl = angular.element(document.querySelector('#userJson'));
+        var jsonElView = angular.element(document.querySelector('#userJsonDisplay'));
+        var selector = angular.element(document.querySelector('#jsonSelect'));
 
-      // Add properties to HSA person
-      _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
-      _updateObject(hsaPerson, 'origin', $scope.environment.origin);
+        // Catch user login option
+        var login = $scope.loginOptions[newSelected];
 
-      var loginJson = _stringify(hsaPerson);
-      jsonElView.text(loginJson);
-      jsonEl.text(escape(loginJson));
-    };
+        // Get the HSA person from model
+        var hsaPerson = _findHsaPerson(login.hsaId);
 
-    $scope.whichEnv = function(env) {
-      if ($scope.environment.name === 'all') {
-        return true;
-      }
-      if ($scope.environment.name === 'dev' && env === 'dev') {
-        return true;
-      }
-      if ($scope.environment.name === 'demo' && env === 'demo') {
-        return true;
-      }
+        // Add properties to HSA person
+        _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
+        _updateObject(hsaPerson, 'origin', $scope.environment.origin);
 
-      return false;
-    };
+        var loginJson = _stringify(hsaPerson);
+        jsonElView.text(loginJson);
+        jsonEl.text(escape(loginJson));
+      };
 
-    // Fetch fake logins
-    _fetchHsaPersons();
+      $scope.whichEnv = function(env) {
+        if ($scope.environment.name === 'all') {
+          return true;
+        }
+        if ($scope.environment.name === 'dev' && env === 'dev') {
+          return true;
+        }
+        if ($scope.environment.name === 'demo' && env === 'demo') {
+          return true;
+        }
 
-  });
+        return false;
+      };
+
+      // Fetch fake logins from the HSA stub
+      _fetchHsaPersons();
+    }]
+  );
 </script>
 </head>
 <body ng-controller="welcomeController">
