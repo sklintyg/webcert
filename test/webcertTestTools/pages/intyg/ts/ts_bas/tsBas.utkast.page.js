@@ -121,8 +121,8 @@ var TsBasUtkast = BaseTsUtkast._extend({
             aNo: element(by.id('kognitivtan'))
         };
         this.somnOchVakenhetsStorningar = {
-            JA: element(by.id('somnvakenheta')),
-            NEJ: element(by.id('somnvakenhetb'))
+            JA: element(by.css('input[name="somnvakenheta"][value="true"]')),
+            NEJ: element(by.css('input[name="somnvakenheta"][value="false"]'))
         };
         this.patientAdress = {
             postAdress: element(by.id('patientPostadress')),
