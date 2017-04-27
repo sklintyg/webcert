@@ -55,13 +55,11 @@
     state: absent
     path: "{{ webapps_folder }}/ROOT"
 
-- name: Remove old version of war
-  file:
-    state: absent
-    path: "{{ webapps_folder }}/ROOT.war"
-
 - name: Deploy webcert-web-{{ version }}.war as ROOT.war
-  command: "cp {{ releases_folder }}/webcert-web-{{ version }}.war {{ webapps_folder }}/ROOT.war"
+  copy:
+    src: "{{ releases_folder }}/webcert-web-{{ version }}.war"
+    dest: "{{ webapps_folder }}/ROOT.war"
+    remote_src: True
 
 - name: Download log-sender-{{ version }}.war
   get_url:
@@ -80,13 +78,11 @@
     state: absent
     path: "{{ webapps_folder }}/log-sender"
 
-- name: Remove old version of log-sender war
-  file:
-    state: absent
-    path: "{{ webapps_folder }}/log-sender.war"
-
 - name: Deploy log-sender-{{ version }}.war as log-sender.war
-  command: "cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war"
+  copy:
+    src: "{{ releases_folder }}/log-sender-{{ version }}.war"
+    dest: "{{ webapps_folder }}/log-sender.war"
+    remote_src: True
 
 - name: Fetch configuration repo to get new branches
   command: git fetch origin

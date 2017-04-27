@@ -1,6 +1,5 @@
 ---
 
-# Configuration repository
 environment_name: "demo"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
