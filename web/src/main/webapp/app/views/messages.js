@@ -93,6 +93,7 @@ angular.module('webcert').constant('webcert.messages', {
         'error.failedtofornyaintyg': 'Kunde inte förnya intyget. Försök igen senare.',
         'error.failedtofornyaintyg.personidnotfound': 'Kunde inte förnya intyget. Det nya person-id:t kunde inte hittas.',
         'error.failedtofornyaintyg.replaced': 'Intyget kunde inte förnyas eftersom det har blivit ersatt av ett senare intyg.',
+        'error.failedtofornyaintyg.complemented': 'Intyget kunde inte förnyas eftersom det har blivit kompletterat av ett senare intyg.',
         'error.failedtoersattintyg': 'Kunde inte ersätta intyget. Försök igen senare.',
         'error.failedtosendintyg': 'Kunde inte skicka intyget. Försök igen senare.',
         'error.pu.namenotfound': 'Personnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt.<br>Observera att det inte går att ange reservnummer. Webcert hanterar enbart person- och samordningsnummer.',
