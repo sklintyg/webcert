@@ -30,14 +30,14 @@ I mappen src/test/resources finns två csv-filer. En med intyg och en med testpe
 ### Skapa frågor
 Seedning av en enskild fråga kan ske genom följande simulering:
 
-- mvn test -DsimulationClass=se.inera.webcert.InjiceraFraga
+- gradle gatling -DgatlingSimulation=InjiceraFraga
 
 Vill man seeda in fler frågor är det enklast att redigera InjiceraFraga och ändra users(1) till users(N)
 
 ### Radera frågor
 Man kan även radera frågor som skapats enl. ovan mha:
 
-- mvn test -DsimulationClass=se.inera.webcert.TaBortFraga
+- gradle gatling -DgatlingSimulation=TaBortFraga
 
 ### Testpersonnummer
 Testpersonnummer används primärt mot demo/QA eller annan miljö där PU-tjänstens testmiljö är aktiv.
@@ -48,22 +48,22 @@ iteration som skall författa och signera ett intyg.
 ## Hur startar jag en simulering
 
 ### Välj målmiljö
-Ett alternativ är att öppna pom.xml och redigera element under <properties>
+Ett alternativ är att öppna build.gradle och redigera certificate.baseUrl i ext-blocket
 
-- <baseUrl>http://localhost:9088</baseUrl>
+- "http://localhost:9088"
 
-Alternativt kan man ange -DbaseUrl=....... på kommandoraden.
+Alternativt kan man ange -Dcertificate.baseUrl=....... på kommandoraden.
 
 ### Exekvering från command-lineß
 
 Från command-line fungerar följande:
 
 - Fråga/Svar
-  mvn test -DsimulationClass=se.inera.webcert.FragaSvar
+  gradle gatling -DgatlingSimulation=FragaSvar
+
   
 - Skriv, signera och skicka intyg
-  mvn test -DsimulationClass=se.inera.webcert.SkrivSigneraSkickaIntyg
-
+  gradle gatling -DgatlingSimulation=SkrivSigneraSkickaIntyg
 
 ## Hur följer jag upp utfallet?
 Medan testet kör skriver Gatling ut lite progress-info på command-line men den ger ganska rudimentär information. Det intressanta är att titta på rapporterna som genereras efter att testerna slutförts. Dessa finns under mappen:
