@@ -4,7 +4,9 @@
 
 <div class="modal-body">
   <img aria-labelledby="loading-message" src="/img/ajax-loader.gif" />
-  <h3><span message key="common.modal.label.signing"></span></h3>
-  <div><span message key="common.modal.label.signing.seconds"></span></div>
-  <div ng-if="biljettStatus() === 'BEARBETAR'"><span message key="common.modal.label.signing.open.bankid"></span></div>
+
+  <h3 ng-if="biljettStatus() !== 'BEARBETAR' && biljettStatus() !== 'NO_CLIENT'"><span message key="common.modal.label.signing"/></h3>
+  <div ng-if="biljettStatus() !== 'BEARBETAR' && biljettStatus() !== 'NO_CLIENT'"><span message key="common.modal.label.signing.seconds"/></div>
+  <div ng-if="biljettStatus() === 'NO_CLIENT'"><span message key="common.modal.label.signing.bankid.noclient"/></div>
+  <div ng-if="biljettStatus() === 'BEARBETAR'"><span message key="common.modal.label.signing.open.bankid"/></div>
 </div>
