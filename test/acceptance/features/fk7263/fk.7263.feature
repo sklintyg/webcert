@@ -30,7 +30,7 @@ Scenario: Makulera ett skickat intyg
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
 	När jag går till Mina intyg för patienten
-	Så ska intygets status i Mina intyg visa "Makulerat"
+    Så ska intyget inte finnas i Mina intyg
 
 @kopiera
 Scenario: Kopiera ett signerat intyg

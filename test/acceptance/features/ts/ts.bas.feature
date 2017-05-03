@@ -27,6 +27,9 @@ Scenario: Makulera ett skickat intyg
     Så ska intygets status vara "Intyget är signerat, skickat och mottaget av Transportstyrelsens system"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
+    
+    När jag går till Mina intyg för patienten
+    Så ska intyget inte finnas i Mina intyg
 
 @saknatFalt
 Scenario: Validera uteblivna fält i intyget

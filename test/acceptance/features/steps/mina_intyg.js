@@ -35,39 +35,41 @@ function stringToArray(text) {
 
 module.exports = function() {
 
-    this.Given(/^ska intyget finnas i Mina intyg$/, function() {
+    this.Given(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
+        var skaFinnas = typeof(inte) === 'undefined';
         var intygElement = element(by.id('certificate-' + intyg.id));
-        return expect(intygElement.isPresent()).to.eventually.equal(true).then(function(value) {
-            logger.info('OK - Intyget visas i mina intyg = ' + value);
+        return expect(intygElement.isPresent()).to.eventually.equal(skaFinnas).then(function(value) {
+            logger.info('OK - skaFinnas=' + skaFinnas + ':' + value);
         }, function(reason) {
-            throw ('FEL, Intyget visas inte i mina intyg,' + reason);
+            throw ('FEL,Expected skaFinnas=' + skaFinnas + ' Reason:' + reason);
         });
     });
 
     this.Given(/^jag går till Mina intyg för patienten$/, function(callback) {
         browser.ignoreSynchronization = true;
-        browser.get(process.env.MINAINTYG_URL + '/welcome.jsp');
-        element(by.id('guid')).sendKeys(global.person.id);
-        element(by.css('input.btn')).sendKeys(protractor.Key.SPACE).then(function() {
+        browser.get(process.env.MINAINTYG_URL + '/web/sso?guid=' + global.person.id);
+        // element(by.id('guid')).sendKeys(global.person.id);
+        // element(by.css('input.btn')).sendKeys(protractor.Key.SPACE).then(function() {
 
-            // Detta behövs pga att Mina intyg är en extern sida
-            browser.sleep(2000);
+        // Detta behövs pga att Mina intyg är en extern sida
+        browser.sleep(3000);
 
-            // Om samtyckesruta visas
-            element(by.id('consentTerms')).isPresent().then(function(result) {
-                if (result) {
-                    logger.info('Lämnar samtycke..');
-                    element(by.id('giveConsentButton')).sendKeys(protractor.Key.SPACE)
-                        .then(function() {
-                            return browser.sleep(3000);
-                        })
-                        .then(callback);
-                } else {
-                    browser.ignoreSynchronization = false;
-                    callback();
-                }
-            });
+        // Om samtyckesruta visas
+        element(by.id('consentTerms')).isPresent().then(function(result) {
+            if (result) {
+                logger.info('Lämnar samtycke..');
+                element(by.id('giveConsentButton')).sendKeys(protractor.Key.SPACE)
+                    .then(function() {
+                        browser.ignoreSynchronization = false;
+                        return browser.sleep(3000);
+                    })
+                    .then(callback);
+            } else {
+                browser.ignoreSynchronization = false;
+                callback();
+            }
         });
+        //  });
     });
 
     this.Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
