@@ -16,7 +16,6 @@
         "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se",
         "INTYGTJANST_URL": "https://webcert.inera.nordicmedtest.se/inera-certificate",
         "SELENIUM_ADDRESS": "http://sklintyg:a936d295-3256-4d88-aeb1-34cc4c02e200@ondemand.saucelabs.com:80/wd/hub"
-        //"SELENIUM_ADDRESS": "http://selenium1.nordicmedtest.se:4444/wd/hub"
     },
     "qa": {
         "WEBCERT_URL": "https://verifiering.webcert.intygstjanster.se/",
