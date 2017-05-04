@@ -46,6 +46,18 @@ stage('restAssured') {
    }
 }
 
+stage('restAssured2') {
+    node {
+        try {
+            shgradle "restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/ \
+                 -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+        } finally {
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest2', \
+               reportFiles: 'index.html', reportName: 'RestAssured 2 results'
+        }
+    }
+}
+
 stage('protractor') {
    node {
        try {

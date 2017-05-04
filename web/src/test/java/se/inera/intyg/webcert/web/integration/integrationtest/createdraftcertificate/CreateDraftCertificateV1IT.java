@@ -68,6 +68,10 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
         responseBodyExtractorFilter = new BodyExtractorFilter(
                 ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:1"),
                 "soap:Envelope/soap:Body/lc:CreateDraftCertificateResponse");
+
+        // Make a dummy request, ignore response...
+        given().get("/services").then().statusCode(greaterThan(199));
+        
     }
 
     private String createRequestBody(String utlatandeTyp, String lakareHsaId) {
@@ -77,10 +81,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
 
     @Test
     public void testCreateFk7263Draft() throws IOException {
-
-        // Make a dummy request, ignore response...
-        given().get("/services").then().statusCode(greaterThan(199));
-
+        
         given().body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
