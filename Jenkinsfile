@@ -49,7 +49,7 @@ stage('restAssured') {
 stage('protractor') {
    node {
        try {
-           sh(script: """sed -i "s,\\(e.code === 'ECONNRESET'\\),\1 || e.code === 'ETIMEDOUT'," test/node_modules/selenium-webdriver/http/index.js""") // NMT magic
+           sh(script: '''sed -i "s,\\(e.code === 'ECONNRESET'\\),\1 || e.code === 'ETIMEDOUT'," test/node_modules/selenium-webdriver/http/index.js''') // NMT magic
            sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
            wrap([$class: 'Xvfb']) {
                shgradle "protractorTests -Dprotractor.env=build-server \
