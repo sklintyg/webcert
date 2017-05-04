@@ -1,6 +1,8 @@
 package se.inera.intyg.webcert.web.service.user.dto;
 
-public final class IntegrationParameters {
+import java.io.Serializable;
+
+public final class IntegrationParameters implements Serializable {
     private final String reference;
     private final String responsibleHospName;
     private final String alternateSsn;
