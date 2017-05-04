@@ -18,7 +18,38 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +59,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
@@ -67,41 +99,14 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final LocalDateTime JANUARY = LocalDateTime.parse("2013-01-12T11:22:11");
     private static final LocalDateTime FEBRUARY = LocalDateTime.parse("2013-02-12T11:22:11");
     private static final LocalDateTime DECEMBER_YEAR_9999 = LocalDateTime.parse("9999-12-11T10:22:00");
+    private static final long FIXED_TIME_NANO = 1456329300599000L;
+    private static final Instant FIXED_TIME_INSTANT = Instant.ofEpochSecond(FIXED_TIME_NANO / 1_000_000, FIXED_TIME_NANO % 1_000_000);
     private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
     private static final String INTYG_ID = "intyg-1";
     private static final String INTYG_TYP = "luse";
@@ -143,16 +148,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Before
     public void setUp() {
-        // DateTimeUtils.setCurrentMillisFixed(FIXED_TIME_MILLIS);
+        service.setMockSystemClock(Clock.fixed(FIXED_TIME_INSTANT, ZoneId.systemDefault()));
 
         // always return the Arende that is saved
         when(arendeRepository.save(any(Arende.class))).thenAnswer(invocation -> (Arende) invocation.getArguments()[0]);
 
-    }
-
-    @After
-    public void cleanUp() {
-        // DateTimeUtils.setCurrentMillisSystem();
     }
 
     @Test
@@ -169,8 +169,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende res = service.processIncomingMessage(arende);
 
         assertNotNull(res);
-        assertNotNull(res.getTimestamp());
-        assertNotNull(res.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT, res.getTimestamp().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+        assertEquals(FIXED_TIME_INSTANT,
+                res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(utkast.getSignatur().getSigneradAv(), res.getSigneratAv());
         assertEquals(signeratAvName, res.getSigneratAvName());
 
@@ -258,14 +259,16 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Arende res = service.processIncomingMessage(svararende);
         assertEquals(Status.ANSWERED, res.getStatus());
-        assertNotNull(res.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT,
+                res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
         verify(arendeRepository).findOneByMeddelandeId(eq(frageid));
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(arendeRepository, times(2)).save(arendeCaptor.capture());
 
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
-        assertNotNull(updatedQuestion.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT,
+                updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(Status.ANSWERED, updatedQuestion.getStatus());
         verify(notificationService, only()).sendNotificationForAnswerRecieved(any(Arende.class));
     }
@@ -288,14 +291,16 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(arendeRepository.findOneByMeddelandeId(eq(paminnelseid))).thenReturn(paminnelse);
 
         Arende res = service.processIncomingMessage(svararende);
-        assertNotNull(res.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT,
+                res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
         verify(arendeRepository).findOneByMeddelandeId(eq(paminnelseid));
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(arendeRepository, times(2)).save(arendeCaptor.capture());
 
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
-        assertNotNull(updatedQuestion.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT,
+                updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(notificationService, only()).sendNotificationForQuestionReceived(any(Arende.class));
     }
 
@@ -353,7 +358,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         }
     }
 
-
     @Test
     public void createQuestionTest() throws CertificateSenderException {
         LocalDateTime now = LocalDateTime.now();
@@ -366,7 +370,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArendeConversationView result = service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
         assertNotNull(result.getFraga());
         assertNull(result.getSvar());
-        assertNotNull(result.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT,
+                result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
         verify(arendeRepository).save(any(Arende.class));
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyBoolean());
@@ -473,7 +478,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
-        assertNotNull(result.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT,
+                result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
         verify(arendeRepository, times(2)).save(any(Arende.class));
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyBoolean());
@@ -612,7 +618,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository, times(4)).save(arendeCaptor.capture());
         for (Arende a : arendeCaptor.getAllValues()) {
             assertEquals(Status.CLOSED, a.getStatus());
-            assertTrue(Arrays.asList(result.getSvar().getInternReferens(), svarPaMeddelandeId, komplt1.getId(), komplt2.getId()).contains(a.getId()));
+            assertTrue(Arrays.asList(result.getSvar().getInternReferens(), svarPaMeddelandeId, komplt1.getId(), komplt2.getId())
+                    .contains(a.getId()));
         }
     }
 
@@ -630,7 +637,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
-        assertNotNull(result.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT,
+                result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyBoolean());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
@@ -639,7 +647,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository, times(2)).save(arendeCaptor.capture());
 
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
-        assertNotNull(updatedQuestion.getSenasteHandelse());
+        assertEquals(FIXED_TIME_INSTANT,
+                updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(Status.CLOSED, updatedQuestion.getStatus());
     }
 
@@ -1156,7 +1165,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arendeFromWc.setStatus(Status.ANSWERED);
         Arende arendeFromFk = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
         arendeFromFk.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
-        Arende arendeAlreadyClosed = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
+        Arende arendeAlreadyClosed = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(),
+                ENHET_ID);
         arendeAlreadyClosed.setStatus(Status.CLOSED);
         // svar and paminnelse will be ignored
         Arende arendeSvar = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
@@ -1240,7 +1250,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         return buildArende(meddelandeId, INTYG_ID, senasteHandelse, timestamp, ENHET_ID);
     }
 
-    private Arende buildArende(String meddelandeId, String intygId, LocalDateTime senasteHandelse, LocalDateTime timestamp, String enhetId) {
+    private Arende buildArende(String meddelandeId, String intygId, LocalDateTime senasteHandelse, LocalDateTime timestamp,
+            String enhetId) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setAmne(ArendeAmne.OVRIGT);

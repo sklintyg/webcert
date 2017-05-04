@@ -18,13 +18,30 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import com.google.common.base.Strings;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
@@ -66,18 +83,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
-import javax.xml.bind.JAXBException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional("jpaTransactionManager")
 public class ArendeServiceImpl implements ArendeService {
@@ -91,6 +96,8 @@ public class ArendeServiceImpl implements ArendeService {
             ArendeAmne.AVSTMN,
             ArendeAmne.KONTKT,
             ArendeAmne.OVRIGT);
+
+    private Clock systemClock = Clock.systemDefaultZone();
 
     @Value("${sendmessagetofk.logicaladdress}")
     private String sendMessageToFKLogicalAddress;
@@ -135,7 +142,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateArende(arende.getIntygsId(), utkast);
 
-        ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(), hsaEmployeeService);
+        ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), hsaEmployeeService);
 
         updateRelated(arende);
 
@@ -165,7 +172,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         verifyEnhetsAuth(utkast.getEnhetsId(), false);
 
-        Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(),
+        Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
                 webcertUserService.getUser().getNamn(), hsaEmployeeService);
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE);
@@ -204,7 +211,7 @@ public class ArendeServiceImpl implements ArendeService {
                     + svarPaMeddelandeId + " and amne (" + svarPaMeddelande.getAmne()
                     + ") can only be answered by user that is Lakare");
         }
-        Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(),
+        Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
                 webcertUserService.getUser().getNamn());
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE);
@@ -416,6 +423,11 @@ public class ArendeServiceImpl implements ArendeService {
         return arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper)
                 .stream()
                 .collect(Collectors.toMap(a -> (String) a[0], a -> (Long) a[1]));
+    }
+
+    @VisibleForTesting
+    void setMockSystemClock(Clock systemClock) {
+        this.systemClock = systemClock;
     }
 
     private void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
