@@ -74,8 +74,13 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
         return requestTemplate.render();
     }
 
-   // @Test
+    @Test
     public void testCreateFk7263Draft() throws IOException {
+
+        // Make a dummy request, ignore response...
+        given().body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
+                .when()
+                .post(CREATE_DRAFT_CERTIFICATE_V1_0);
 
         given().body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
