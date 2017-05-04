@@ -36,6 +36,7 @@ import java.io.InputStream;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 
 /**
@@ -78,9 +79,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     public void testCreateFk7263Draft() throws IOException {
 
         // Make a dummy request, ignore response...
-        given().body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
-                .when()
-                .post(CREATE_DRAFT_CERTIFICATE_V1_0);
+        given().get("/services").then().statusCode(greaterThan(199));
 
         given().body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
