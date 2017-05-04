@@ -120,7 +120,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.label.draft-status': 'Status',
         'th.help.draft-status': 'Visar utkastets status:<ul><li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas</li><li>Utkast, kan signeras = Utkastet är sparat och kan signeras</li><li>Signerat = Intyget är signerat</li><li>Skickat = Intyget är signerat och skickat till mottagaren</li><li>Mottaget = Intyget är signerat, skickat och mottaget av mottagarens system</li><li>Makulerat = Intyget är makulerat</li></ul>',
         'th.label.draft-saved-date': 'Senast sparat',
-        'th.help.draft-saved-date': 'Datum då utkastet senast sparades.',
+        'th.help.draft-saved-date': 'Datum och klockslag då utkastet senast sparades.',
         'th.label.draft-patient': 'Patient',
         'th.help.draft-patient': 'Personnummer för patient som utkastet gäller.',
         'th.label.draft-saved-by': 'Sparat av',
