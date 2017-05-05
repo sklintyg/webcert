@@ -59,7 +59,7 @@ ext {
 buildscript {
     repositories {
         mavenLocal()
-        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
         maven { url "https://plugins.gradle.org/m2/" }
     }
 
@@ -75,7 +75,7 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
-        maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
+        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
 
@@ -103,7 +103,7 @@ allprojects {
     task createVersionPropertyFile(type: VersionPropertyFileTask)
 
     uploadArchives.repositories.mavenDeployer {
-        repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
+        repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
             authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
         }
     }
