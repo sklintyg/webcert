@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @ts @bas
+@statusuppdateringar @ts @bas @waitingForFix
 Egenskap: Statusuppdateringar för TS-bas intyg
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.

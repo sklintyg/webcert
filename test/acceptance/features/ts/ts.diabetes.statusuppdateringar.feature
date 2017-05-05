@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @ts @diabetes
+@statusuppdateringar @ts @diabetes @waitingForFix
 Egenskap: Statusuppdateringar för TS-diabetes intyg
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
