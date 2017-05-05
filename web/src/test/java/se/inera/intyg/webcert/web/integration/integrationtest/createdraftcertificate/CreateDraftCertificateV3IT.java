@@ -36,7 +36,6 @@ import java.io.InputStream;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 
 /**
@@ -75,10 +74,6 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
         responseBodyExtractorFilter = new BodyExtractorFilter(
                 ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3"),
                 "soap:Envelope/soap:Body/lc:CreateDraftCertificateResponse");
-
-        // Make a dummy request, ignore response...
-        given().get("/services").then().statusCode(greaterThan(199));
-        
     }
 
     private String createRequestBody(String intygstyp, String lakareHsaId) {
@@ -89,7 +84,9 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLuaefsDraft() throws IOException {
 
-        given().body(createRequestBody(LUAE_FS, DEFAULT_LAKARE_HSAID))
+        given()
+                .cookie("ROUTEID", "1")
+                .body(createRequestBody(LUAE_FS, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()
@@ -105,7 +102,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLuaenaDraft() throws IOException {
 
-        given().body(createRequestBody(LUAE_NA, DEFAULT_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody(LUAE_NA, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()
@@ -120,7 +118,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLuseDraft() throws IOException {
 
-        given().body(createRequestBody(LUSE, DEFAULT_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody(LUSE, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()
@@ -135,7 +134,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateTsBasDraft() throws IOException {
 
-        given().body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()
@@ -150,7 +150,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateTsDiabetesDraft() throws IOException {
 
-        given().body(createRequestBody(TS_DIABETES, DEFAULT_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody(TS_DIABETES, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()
@@ -165,7 +166,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLisjpDraft() throws IOException {
 
-        given().body(createRequestBody(LISJP, DEFAULT_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody(LISJP, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()
@@ -178,7 +180,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     }
 
     private void testMatchesSchemaForType(String type) throws IOException {
-        given().filter(
+        given().cookie("ROUTEID", "1")
+                .filter(
                 responseBodyExtractorFilter)
                 .body(createRequestBody(type, DEFAULT_LAKARE_HSAID))
                 .when()
@@ -192,7 +195,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftForUnknownTypeFailsWithValidationError() {
 
-        given().body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()
@@ -208,7 +212,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
-        given().body(brokenTemplate.render())
+        given().cookie("ROUTEID", "1")
+                .body(brokenTemplate.render())
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()
@@ -224,7 +229,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftFailsWithValidationErrorWhenIssuerHasNoMiUOnUnit() {
 
-        given().body(createRequestBody(LISJP, OTHER_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody(LISJP, OTHER_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
                 .then()

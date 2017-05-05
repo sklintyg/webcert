@@ -82,7 +82,8 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateFk7263Draft() throws IOException {
         
-        given().body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
@@ -95,7 +96,8 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
 
     @Test
     public void testMatchesSchema() throws IOException {
-        given().filter(
+        given().cookie("ROUTEID", "1")
+                .filter(
                 responseBodyExtractorFilter)
                 .body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
@@ -109,7 +111,8 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftForUnknownTypeFailsWithValidationError() {
 
-        given().body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
@@ -125,7 +128,8 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
-        given().body(brokenTemplate.render())
+        given().cookie("ROUTEID", "1")
+                .body(brokenTemplate.render())
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
@@ -140,7 +144,8 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
      */
     @Test
     public void testCreateDraftFailsWithValidationErrorWhenNoMiUOnUnit() {
-        given().body(createRequestBody(FK_7263, OTHER_LAKARE_HSAID))
+        given().cookie("ROUTEID", "1")
+                .body(createRequestBody(FK_7263, OTHER_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
