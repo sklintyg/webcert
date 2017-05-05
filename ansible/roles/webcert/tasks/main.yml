@@ -13,7 +13,7 @@
 
 - name: download intygstjanst-liquibase-runner-{{ version }}.zip
   get_url:
-    url: https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
+    url: https://build-inera.nordicmedtest.se/nexus/repository/releases/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
     dest: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip"
   when: deploy_from_repo|bool
 
