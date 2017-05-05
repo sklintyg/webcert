@@ -49,7 +49,7 @@ stage('restAssured') {
 stage('protractor') {
    node {
        try {
-           def sedString = """"s,(e.code === 'ECONNRESET'),\\1 || e.code === 'ETIMEDOUT',"""
+           def sedString = """s,(e.code === 'ECONNRESET'),\\1 || e.code === 'ETIMEDOUT',"""
            sh(script: "sed -i -r '${sedString}' test/node_modules/selenium-webdriver/http/index.js")// NMT magic
            sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
            wrap([$class: 'Xvfb']) {
