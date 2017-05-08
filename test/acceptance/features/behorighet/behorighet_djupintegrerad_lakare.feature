@@ -19,7 +19,7 @@ Scenario: Kan förnya och signera ett läkarintyg
    
    Och ska det finnas en knapp för att skriva ut intyget
 
-@skriv-ut @fornya @signera @ts @waitingForFix
+@skriv-ut @fornya @signera @ts
 Scenario: Signera ett ts-intyg
    När att vårdsystemet skapat ett intygsutkast för slumpat TS-intyg
    Och jag går in på intygsutkastet via djupintegrationslänk

@@ -121,8 +121,9 @@ module.exports = function() {
                 intygShortCode = intygShortCode.toLowerCase();
                 console.log(intygShortCode);
                 url = process.env.WEBCERT_URL + 'visa/intyg/';
-                url = url + intygShortCode + '/' + global.intyg.id;
-                url = url + '?';
+                //url += intygShortCode +'/';
+                url += global.intyg.id;
+                url += '?';
                 url += 'fornamn=' + encodeURIComponent(person.forNamn) + '&';
                 url += 'efternamn=' + encodeURIComponent(person.efterNamn) + '&';
                 url += 'postadress=' + encodeURIComponent(person.adress.postadress) + '&';
