@@ -20,11 +20,27 @@
 /**
  * Created by stephenwhite on 31/08/15.
  */
-angular.module('webcert.pub.login', ['ui.bootstrap'])
-    .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', function($scope, $sce, $uibModal, $window, $http) {
+
+// deferredBootstrapper.bootstrap({
+//     element: document.body,
+//     module: 'webcert.pub.login',
+//     resolve: {
+//         LINKS: ['$http', function($http) {
+//             'use strict';
+//             return $http.get('/api/config/links');
+//         }]
+//     }});
+
+angular.module('webcert.pub.login', ['ui.bootstrap', 'common.dynamiclink'])
+    .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', 'dynamicLinkService', function($scope, $sce, $uibModal, $window, $http, dynamicLinkService) {
         'use strict';
         var expand = $sce.trustAsHtml('Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
         var collapse = $sce.trustAsHtml('Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
+
+        $http.get('/api/config/links').then(function(links) {
+            dynamicLinkService.addLinks(links.data);
+        });
+        
         $scope.collapseLoginDesc = true;
         $scope.loginDescText = expand;
         $scope.toggleLoginDesc = function(evt){

@@ -68,6 +68,9 @@
   </c:otherwise>
 </c:choose>
 
+<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamicLink.service.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamiclink.directive.js"></script>
+
 </head>
 <body class="start jsp" id="errorPage" ng-controller="LoginController">
   <div class="container-fluid">
@@ -191,8 +194,7 @@
           Allmän information om kakor (cookies) och lagen om elektronisk kommunikation finns på Post- och telestyrelsens
           webbplats.</p>
         <p>
-          <a href='https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/'
-             target='_blank'>Mer om kakor (cookies) på Post- och telestyrelsens webbplats</a>
+          <span dynamiclink key="ptsCookiesMerOm" />
         </p>
       </div>
     </div>

@@ -18,14 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
+import com.jayway.restassured.RestAssured;
+import org.junit.Test;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-
-import org.junit.Test;
-
-import com.jayway.restassured.RestAssured;
-
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 public class ConfigApiControllerIT extends BaseRestIntegrationTest {
 
@@ -36,6 +34,15 @@ public class ConfigApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(200)
                 .when().get("api/config")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-config-response-schema.json"));
+    }
+
+    @Test
+    public void testGetLinks() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/config/links")
+                .then().statusCode(200);
     }
 
 }

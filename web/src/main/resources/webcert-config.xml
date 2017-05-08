@@ -52,6 +52,9 @@
     <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>
   </context:component-scan>
 
+  <!-- Load dynamic link classes -->
+  <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
+
   <beans>
     <!-- All config files must be present in other modes than dev -->
     <context:property-placeholder

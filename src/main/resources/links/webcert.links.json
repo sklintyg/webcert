@@ -1,0 +1,83 @@
+[
+  {
+    "key": "ineraKundserviceFel",
+    "url": "http://www.inera.se/KONTAKT_KUNDSERVICE/Felanmalan-och-support/Anmal-fel",
+    "text": "Ineras nationella kundservice",
+    "target": "_blank"
+  },
+  {
+    "key": "testaEleg",
+    "url": "https://eid.primeportal.com/EID/Pages/Testa-e-legitimation.aspx",
+    "text": "Läs om tekniska krav och testa din e-legitimation",
+    "target": "_blank"
+  },
+  {
+    "key": "ptsCookies",
+    "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
+    "text": "Post- och telestyrelsens webbplats (extern länk). XXX",
+    "target": "_blank"
+  },
+  {
+    "key": "ptsCookiesBanner",
+    "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
+    "text": "Post- och telestyrelsens webbplats",
+    "target": "_blank"
+  },
+  {
+    "key": "ptsCookiesMerOm",
+    "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
+    "text": "Mer om kakor (cookies) på Post- och telestyrelsens webbplats",
+    "target": "_blank"
+  },
+  {
+    "key": "socialstyrelsenFmbAnvandas",
+    "url": "http://www.socialstyrelsen.se/riktlinjer/forsakringsmedicinsktbeslutsstod/omforsakringsmedicinsktbeslutsstod/saskabeslutsstodetanvandas",
+    "text": "klicka här",
+    "target": "_blank"
+  },
+  {
+    "key": "elegInformation",
+    "url": "http://www.e-legitimation.se",
+    "text": "http://www.e-legitimation.se",
+    "target": "_blank"
+  },
+  {
+    "key": "testSiths",
+    "url": "https://test.siths.se/",
+    "text": "test.siths.se",
+    "tooltip": "Detta är en tooltip",
+    "target": "_blank"
+  },
+  {
+    "key": "ineraStartsida",
+    "url": "http://www.inera.se",
+    "text": "Inera AB",
+    "target": "_blank"
+  },
+  {
+    "key": "ineraKundserviceAnmalFel",
+    "url": "http://www.inera.se/felanmalan",
+    "text": "Ineras Nationell kundservice",
+    "target": "_blank"
+  },
+  {
+    "key": "transportstyrelsen",
+    "url": "http://www.transportstyrelsen.se",
+    "text": "www.transportstyrelsen.se",
+    "target": "_blank"
+  },
+  {
+    "key": "fmbSoc",
+    "url": "http://www.socialstyrelsen.se/riktlinjer/forsakringsmedicinsktbeslutsstod",
+    "text": "Socialstyrelsens försäkringsmedicinska beslutsstöd",
+    "target": "_blank",
+    "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos"
+  },
+  {
+    "key": "fmbSocWithIcon",
+    "url": "http://www.socialstyrelsen.se/riktlinjer/forsakringsmedicinsktbeslutsstod",
+    "text": "Socialstyrelsens försäkringsmedicinska beslutsstöd <img src='/img/link_icon.png'/>",
+    "target": "_blank",
+    "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos"
+  }
+]

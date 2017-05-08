@@ -47,13 +47,20 @@
     var moduleArray = [];
     var moduleConfig;
     var user;
+    var _links;
 
     var app = angular.module('webcert',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'ng.shims.placeholder', 'ui.select']);
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'ng.shims.placeholder', 'ui.select', 'common.dynamiclink']);
 
     app.value('networkConfig', {
         defaultTimeout: 30000 // test: 1000
     });
+
+    function getDynamicLinks() {
+        return $.get('/api/config/links').then(function(data) {
+            return data;
+        });
+    }
 
     function getModuleConfig() {
         return $.get('/api/config').then(function(data) {
@@ -156,8 +163,8 @@
 
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.moduleService',
-             'common.UserModel', 'formlyConfig', 'webcert.messages', 'common.MonitoringLogService',
-        function($log, $rootScope, $window, $location, $state, $q, messageService, moduleService, UserModel, formlyConfig, wcMessages, MonitoringLogService) {
+             'common.UserModel', 'formlyConfig', 'webcert.messages', 'common.MonitoringLogService', 'dynamicLinkService',
+        function($log, $rootScope, $window, $location, $state, $q, messageService, moduleService, UserModel, formlyConfig, wcMessages, MonitoringLogService, dynamicLinkService) {
 
             // Configure formly to use default hide directive.
             // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
@@ -172,7 +179,10 @@
             UserModel.termsAccepted = user.privatLakareAvtalGodkand;
 
             messageService.addResources(wcMessages);
+            messageService.addLinks(_links);
             moduleService.setModules(moduleArray);
+
+            dynamicLinkService.addLinks(_links);
 
             $rootScope.$on('$stateChangeStart',
                 function(event, toState, toParams/*, fromState, fromParams*/) {
@@ -257,6 +267,10 @@
         // Get a list of all modules to find all files to load.
         getUser().then(function(data) {
             user = data;
+
+            getDynamicLinks().then(function(links) {
+                _links = links;
+            });
 
             getModules().then(function(modules) {
                 var modulePromises = [];

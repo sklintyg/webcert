@@ -44,7 +44,7 @@
     <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.min.js?<spring:message code="buildNumber" />"></script>
-    <script type="text/javascript" src="/public/login.controller.js"></script>
+
   </c:when>
   <c:otherwise>
     <!-- bower:js -->
@@ -62,9 +62,12 @@
     <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
     <!-- endbower -->
-    <script type="text/javascript" src="/public/login.controller.js"></script>
   </c:otherwise>
 </c:choose>
+
+<script type="text/javascript" src="/public/login.controller.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamicLink.service.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamiclink.directive.js"></script>
 
 </head>
 <body class="start jsp" id="indexPage" ng-controller="LoginController">
@@ -119,8 +122,7 @@
         Allmän information om kakor (cookies) och lagen om elektronisk kommunikation finns på Post- och telestyrelsens
         webbplats.</p>
       <p>
-        <a href='https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/'
-           target='_blank'>Mer om kakor (cookies) på Post- och telestyrelsens webbplats</a>
+        <span dynamiclink key="ptsCookiesMerOm"></span>
       </p>
     </div>
   </div>
