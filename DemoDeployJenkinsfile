@@ -12,7 +12,7 @@ stage('checkout') {
 stage('deploy') {
     node {
         util.run({
-                def itVersion = util.latestVersion("webcert-web", baseVersion)
+                def itVersion = util.latestVersion("se/inera/intyg/webcert/webcert-web", baseVersion)
 
                 ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.106", deploy_from_repo: "true"],
                                 installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/demo', playbook: 'ansible/deploy.yml')
