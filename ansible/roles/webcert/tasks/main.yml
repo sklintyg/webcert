@@ -39,7 +39,7 @@
 
 - name: Download webcert-web-{{ version }}.war
   get_url:
-    url: https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r=releases&g=se.inera.intyg.webcert&a=webcert-web&v={{ version }}&p=war
+    url: https://build-inera.nordicmedtest.se/nexus/repository/releases/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
     dest: "{{ releases_folder }}/webcert-web-{{ version }}.war"
     timeout: 120
   when: deploy_from_repo|bool
@@ -65,7 +65,7 @@
 
 - name: Download log-sender-{{ version }}.war
   get_url:
-    url: https://build-inera.nordicmedtest.se/nexus/service/local/artifact/maven/redirect?r=releases&g=se.inera.intyg.webcert&a=log-sender&v={{ version }}&p=war
+    url: https://build-inera.nordicmedtest.se/nexus/repository/releases/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
     dest: "{{ releases_folder }}/log-sender-{{ version }}.war"
   when: deploy_from_repo|bool
 
