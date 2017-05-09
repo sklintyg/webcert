@@ -76,8 +76,8 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         assertEquals(ArendeAmne.AVSTMN.name(), response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getAmne().getCode());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testListCertificatesForCareWithQABadRequestBothEnhetAndVardgivareNull() {
+    @Test
+    public void missingBothEnhetAndVardgivareShouldNotThrow() {
         ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
         PersonId personId = new PersonId();
         personId.setExtension("191212121212");
@@ -87,7 +87,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testListCertificatesForCareWithQABadRequestBothEnhetAndVardgivareExisting() {
+    public void bothEnhetAndVardgivareExistingShouldThrow() {
         ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
         PersonId personId = new PersonId();
         personId.setExtension("191212121212");
@@ -103,7 +103,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testListCertificatesForCareWithQABadRequestMissingPersonnummer() {
+    public void missingPersonnummerShouldThrow() {
         ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
         HsaId hsaId = new HsaId();
         hsaId.setExtension("enhetId");

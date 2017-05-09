@@ -4,6 +4,7 @@ import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.cxf.annotations.SchemaValidation;
@@ -33,8 +34,9 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
 
     @Override
     public ListCertificatesForCareWithQAResponseType listCertificatesForCareWithQA(String s, ListCertificatesForCareWithQAType request) {
+        Objects.requireNonNull(request.getEnhetsId());
         if (!validate(request)) {
-            throw new IllegalArgumentException("Need either one non-empty list of vardenheter or a vardgivare");
+            throw new IllegalArgumentException();
         }
 
         ListCertificatesForCareWithQAResponseType response = new ListCertificatesForCareWithQAResponseType();
@@ -79,13 +81,19 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         if (request.getPersonId() == null) {
             return false;
         }
-        if (request.getEnhetsId().isEmpty() && request.getVardgivarId() == null) {
-            return false;
-        }
-        if (!request.getEnhetsId().isEmpty() && request.getVardgivarId() != null) {
+        if (!validateEnhetIdAndVardgivarId(request)) {
             return false;
         }
         return true;
+    }
+
+    private boolean validateEnhetIdAndVardgivarId(ListCertificatesForCareWithQAType request) {
+        // Giltigt fall: Noll till flera enhetsid:n anges, men inget vårdgivar-id
+        if (request.getVardgivarId() == null) {
+            return true;
+        }
+        // Giltigt fall: Ett vårdgivar-id, men inga enhetsid:n
+        return request.getEnhetsId().isEmpty();
     }
 
     private static Handelse toHandelse(se.inera.intyg.webcert.persistence.handelse.model.Handelse e) {
