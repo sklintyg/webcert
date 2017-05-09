@@ -33,6 +33,9 @@ Scenario: Statusuppdateringar då intyg raderas
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
 
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Så ska ett fel-meddelande visa "Intyget gick inte att läsa in"
+
 @fråga-från-fk
 Scenario: Statusuppdateringar vid fråga från FK
     När jag fyller i alla nödvändiga fält för intyget
