@@ -17,12 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, intyg, logger,protractor, JSON,wcTestTools */
+/*global browser, intyg, logger,protractor, JSON,wcTestTools, Promise, testdata */
 'use strict';
 var createIntygWithStatus = require('./helpers_create_intyg.js').createIntygWithStatus;
 var helpers = require('./helpers.js');
 var getIntygElementRow = helpers.getIntygElementRow;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
+var fillIn = require('./fillin').fillIn;
+
+function signNewIntyg() {
+    return browser.refresh().then(function() {
+        logger.info('Fyller i det nya ersatta intyget.');
+        global.intyg = testdata.fk.LUAE_FS.getRandom(intyg.id, false);
+        console.log(intyg);
+        return fillIn(global.intyg);
+    });
+}
+
+function ifIntygReplaced() {
+    var replacedMsgDiv = element(by.id('wc-intyg-replaced-message'));
+    return expect(replacedMsgDiv.getText()).to.eventually.contain('Intyget har ersatts av').then(function() {
+        return replacedMsgDiv.element(by.css('a')).click().then(function() {
+            logger.info('Intyget är ersatt. Går in på nya intyget.');
+            return Promise.resolve(true);
+        });
+    }, function() {
+        logger.info('Intyget är inte ersatt. Fortsätter...');
+        return Promise.resolve(false);
+    });
+}
 
 function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 
@@ -48,14 +71,35 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 function getIER(intygstyp, status, callback) {
     getIntygElementRow(intygstyp, status, function(el) {
         gotoIntyg(intygstyp, status, el, function(err) {
-            browser.getCurrentUrl().then(function(text) {
-                intyg.id = text.split('/').slice(-1)[0];
-                intyg.id = intyg.id.split('?')[0];
-                logger.info('intyg.id:' + intyg.id);
-                if (err) {
-                    callback(JSON.stringify(err));
+            ifIntygReplaced().then(function(ifIntygReplaced) {
+                if (ifIntygReplaced) {
+                    signNewIntyg().then(function() {
+                        logger.info('Signerar intyget.');
+
+                        browser.sleep(3000).then(function() {
+                            element(by.id('grundData.patient.postadress')).clear().sendKeys('ygvuhbjnk').then(function() {
+                                element(by.id('grundData.patient.postnummer')).clear().sendKeys('12345').then(function() {
+                                    element(by.id('grundData.patient.postort')).clear().sendKeys('ygvuhbjnk').then(function() {
+                                        browser.sleep(3000).then(function() {
+                                            element(by.id('signera-utkast-button')).sendKeys(protractor.Key.SPACE).then(callback);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+
+                    });
                 } else {
-                    callback();
+                    browser.getCurrentUrl().then(function(text) {
+                        intyg.id = text.split('/').slice(-1)[0];
+                        intyg.id = intyg.id.split('?')[0];
+                        logger.info('intyg.id:' + intyg.id);
+                        if (err) {
+                            callback(JSON.stringify(err));
+                        } else {
+                            callback();
+                        }
+                    });
                 }
             });
         });
