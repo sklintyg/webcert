@@ -9,7 +9,7 @@ ext {
     intygTransportstyrelsenSchemasVersion = "1.0.4"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
-    rivtaClinicalprocessSchemasVersion = "3.0.0-RC2.1"
+    rivtaClinicalprocessSchemasVersion = "3.1.0-RC1.1"
     rivtaInsuranceprocessSchemasVersion = "3.1.0.4"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
     rivtaItintegrationSchemasVersion = "1.0.0.4"
