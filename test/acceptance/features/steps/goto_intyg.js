@@ -23,7 +23,7 @@ var createIntygWithStatus = require('./helpers_create_intyg.js').createIntygWith
 var helpers = require('./helpers.js');
 var getIntygElementRow = helpers.getIntygElementRow;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
-var fillIn = require('./fillin').fillIn;
+var fillIn = require('./fillIn').fillIn;
 
 function signNewIntyg() {
     return browser.refresh().then(function() {
