@@ -18,12 +18,27 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.persistence.OptimisticLockException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -65,18 +80,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -193,8 +196,8 @@ public class UtkastServiceImpl implements UtkastService {
         if (intygsTyper.size() == 0 || !intygsTyper.contains(intygType)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not allowed to send KFSIGN notification for utkast '" + intygsId + "', "
-                    + "user must be Vardadministrator or intygsTyp '" + intygType + "' is not eligible "
-                    + "for KFSIGN notifications.");
+                            + "user must be Vardadministrator or intygsTyp '" + intygType + "' is not eligible "
+                            + "for KFSIGN notifications.");
         }
     }
 
@@ -258,12 +261,10 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional(readOnly = true)
-    public Utkast getDraft(String intygId, String intygType, boolean coherentJournaling) {
+    public Utkast getDraft(String intygId, String intygType) {
         Utkast utkast = getIntygAsDraft(intygId, intygType);
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast, coherentJournaling);
-        if (!coherentJournaling) {
-            abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
-        }
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
 
         // Log read to PDL
         logService.logReadIntyg(logRequest);

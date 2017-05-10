@@ -56,7 +56,6 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
@@ -118,12 +117,9 @@ public class UtkastModuleApiController extends AbstractApiController {
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
-        WebCertUser user = userService.getUser();
-        boolean coherentJournaling = user.getParameters() != null ? user.getParameters().isSjf() : false;
+        LOG.debug("Retrieving Intyg with id {} and type {}", intygsId, intygsTyp);
 
-        LOG.debug("Retrieving Intyg with id {} and type {}, coherent journaling: {}", intygsId, intygsTyp, coherentJournaling);
-
-        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, coherentJournaling);
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 

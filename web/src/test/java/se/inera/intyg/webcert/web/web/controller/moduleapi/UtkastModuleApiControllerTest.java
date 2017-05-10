@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -118,25 +117,11 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        when(utkastService.getDraft(CERTIFICATE_ID, intygTyp, false)).thenReturn(buildUtkast(intygTyp, intygId));
+        when(utkastService.getDraft(CERTIFICATE_ID, intygTyp)).thenReturn(buildUtkast(intygTyp, intygId));
         when(relationService.getRelations(eq(intygId))).thenReturn(new ArrayList<RelationItem>());
 
         Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
-        verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp, false);
-        assertEquals(OK.getStatusCode(), response.getStatus());
-    }
-
-    @Test
-    public void testGetDraftWithCoherentJournaling() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, true, WebcertFeature.HANTERA_INTYGSUTKAST);
-
-        when(utkastService.getDraft(CERTIFICATE_ID, intygTyp, true)).thenReturn(buildUtkast(intygTyp, intygId));
-        when(relationService.getRelations(eq(intygId))).thenReturn(new ArrayList<RelationItem>());
-
-        Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
-        verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp, true);
+        verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 

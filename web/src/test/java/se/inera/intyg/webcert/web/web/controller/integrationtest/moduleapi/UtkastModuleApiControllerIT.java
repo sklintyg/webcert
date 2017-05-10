@@ -64,7 +64,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void testGetDraftFromDifferentCareUnitWithCoherentJournalingFlagSuccess() {
+    public void testThatGetDraftIgnoresCoherentJournaling() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -82,14 +82,15 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         setSjf();
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(200)
+                .expect().statusCode(500)
                 .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
     }
 
     @Test
-    public void testGetDraftFromDifferentCareUnitWithoutCoherentJournalingFlagFail() {
+    public void testThatGetDraftBelongingToDifferentCareUnitFails() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsTyp = "fk7263";
@@ -218,7 +219,8 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash")
+                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+                        + "/signeringshash")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
     }
 
@@ -230,7 +232,8 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeraserver")
+                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+                        + "/signeraserver")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
     }
 
@@ -242,7 +245,8 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         Response reponseTicket = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion() + "/signeringshash")
+                .when().post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+                        + "/signeringshash")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(reponseTicket.body().asString());
