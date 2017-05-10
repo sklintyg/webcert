@@ -14,7 +14,7 @@
   {
     "key": "ptsCookies",
     "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
-    "text": "Post- och telestyrelsens webbplats (extern länk). XXX",
+    "text": "Post- och telestyrelsens webbplats (extern länk).",
     "target": "_blank"
   },
   {
@@ -45,7 +45,6 @@
     "key": "testSiths",
     "url": "https://test.siths.se/",
     "text": "test.siths.se",
-    "tooltip": "Detta är en tooltip",
     "target": "_blank"
   },
   {
