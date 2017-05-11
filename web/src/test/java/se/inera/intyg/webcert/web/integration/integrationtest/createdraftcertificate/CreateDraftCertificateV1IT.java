@@ -82,7 +82,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateFk7263Draft() throws IOException {
         
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
@@ -96,7 +96,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
 
     @Test
     public void testMatchesSchema() throws IOException {
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .filter(
                 responseBodyExtractorFilter)
                 .body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
@@ -111,7 +111,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftForUnknownTypeFailsWithValidationError() {
 
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
@@ -128,7 +128,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(brokenTemplate.render())
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
@@ -144,7 +144,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
      */
     @Test
     public void testCreateDraftFailsWithValidationErrorWhenNoMiUOnUnit() {
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody(FK_7263, OTHER_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
