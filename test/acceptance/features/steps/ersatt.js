@@ -64,7 +64,15 @@ module.exports = function() {
     });
 
     this.Given(/^ska jag se en texten "([^"]*)" som innehåller en länk till det ersatta intyget$/, function(replacedMessage) {
-        return expect(element(by.id('wc-intyg-replaced-message')).getText()).to.eventually.contain(replacedMessage);
+        var replaceMsg = element(by.id('wc-intyg-replaced-message'));
+        replaceMsg.isPresent().then(function(isPresent) {
+            if (isPresent) {
+                return expect(replaceMsg.getText()).to.eventually.contain(replacedMessage);
+            } else {
+                return expect(element(by.id('intyg-already-replaced-warning')).getText()).to.eventually.contain(replacedMessage);
+            }
+
+        });
     });
 
     this.Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalMsg) {
