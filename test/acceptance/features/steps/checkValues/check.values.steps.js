@@ -67,5 +67,8 @@ module.exports = function() {
 
     });
 
+    this.Then(/^ska jag se signerande läkare "([^"]*)"$/, function(name) {
+        return expect(fkUtkastPage.signingDoctorName.getText()).to.eventually.equal(name);
+    });
 
 };

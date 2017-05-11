@@ -58,6 +58,9 @@ Scenario: Parametrar
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
+
+    När jag går in på intyget via djupintegrationslänk och har parametern "responsibleHospName" satt till "Peter Parameter"
+    Så ska jag se signerande läkare "Peter Parameter"
     Och jag signerar intyget
 
     När jag går in på intyget via djupintegrationslänk och har parametern "kopieringOK" satt till "false"
