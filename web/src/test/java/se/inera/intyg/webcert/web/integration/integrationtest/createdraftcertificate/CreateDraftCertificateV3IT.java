@@ -85,7 +85,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     public void testCreateLuaefsDraft() throws IOException {
 
         given()
-                .cookie("ROUTEID", "1")
+                .cookie("ROUTEID", ".1")
                 .body(createRequestBody(LUAE_FS, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
@@ -102,7 +102,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLuaenaDraft() throws IOException {
 
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody(LUAE_NA, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
@@ -118,7 +118,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLuseDraft() throws IOException {
 
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody(LUSE, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
@@ -134,7 +134,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateTsBasDraft() throws IOException {
 
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
@@ -150,7 +150,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateTsDiabetesDraft() throws IOException {
 
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody(TS_DIABETES, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
@@ -166,7 +166,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateLisjpDraft() throws IOException {
 
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody(LISJP, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
@@ -180,7 +180,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     }
 
     private void testMatchesSchemaForType(String type) throws IOException {
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .filter(
                 responseBodyExtractorFilter)
                 .body(createRequestBody(type, DEFAULT_LAKARE_HSAID))
@@ -195,7 +195,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftForUnknownTypeFailsWithValidationError() {
 
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody("NON_EXISTING_TYPE", DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
@@ -212,7 +212,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(brokenTemplate.render())
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
@@ -229,7 +229,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftFailsWithValidationErrorWhenIssuerHasNoMiUOnUnit() {
 
-        given().cookie("ROUTEID", "1")
+        given().cookie("ROUTEID", ".1")
                 .body(createRequestBody(LISJP, OTHER_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V3_0)
