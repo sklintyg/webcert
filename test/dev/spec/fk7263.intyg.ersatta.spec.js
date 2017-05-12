@@ -85,8 +85,8 @@ describe('Verify replace intyg ', function() {
         });
 
         it('should show warning message with link to replacing utkast', function() {
-            expect(element(by.id('wc-intyg-replaced-message')).isDisplayed()).toBe(true);
-            element(by.css('#wc-intyg-replaced-message a')).click();
+            expect(element(by.id('wc-intyg-related-other-intyg-message')).isDisplayed()).toBe(true);
+            element(by.css('#wc-intyg-related-other-intyg-message a')).click();
             expect(FkUtkastPage.isAt()).toBeTruthy();
         });
     });
