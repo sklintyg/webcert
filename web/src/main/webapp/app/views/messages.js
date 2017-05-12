@@ -90,6 +90,7 @@ angular.module('webcert').constant('webcert.messages', {
         'error.failedtocopyintyg': 'Kunde inte kopiera intyget. Försök igen senare.',
         'error.failedtocopyintyg.personidnotfound': 'Kunde inte kopiera intyget. Det nya person-id:t kunde inte hittas.',
         'error.failedtocopyintyg.replaced': 'Intyget kunde inte kopieras eftersom det har blivit ersatt av ett senare intyg. Kopiera ett annat intyg istället.',
+        'error.failedtocopyintyg.complemented': 'Intyget kunde inte kopieras eftersom det har blivit kompletterat av ett senare intyg. Kopiera ett annat intyg istället.',
         'error.failedtofornyaintyg': 'Kunde inte förnya intyget. Försök igen senare.',
         'error.failedtofornyaintyg.personidnotfound': 'Kunde inte förnya intyget. Det nya person-id:t kunde inte hittas.',
         'error.failedtofornyaintyg.replaced': 'Intyget kunde inte förnyas eftersom det har blivit ersatt av ett senare intyg.',
