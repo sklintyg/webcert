@@ -27,10 +27,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
@@ -84,18 +86,23 @@ public class RelationServiceImpl implements RelationService {
     }
 
     @Override
-    public Optional<RelationItem> getReplacedByRelation(String intygId) {
-        // Get all intyg that are (some type of) descendant of this certificate
-        List<RelationItem> descendants = getChildRelations(intygId);
-
-        // Among those, find the first that is a replacement
-        return descendants.stream().filter(r -> RelationKod.ERSATT.name().equals(r.getKod())).findFirst();
+    public Optional<RelationItem> findNewestReplacingIntyg(String intygId) {
+        return findNewestRelatedIntyg(intygId, RelationKod.ERSATT);
     }
 
     @Override
-    public Optional<RelationItem> getLatestComplementedByRelation(String intygId) {
+    public Optional<RelationItem> findNewestComplementingIntyg(String intygId) {
+        return findNewestRelatedIntyg(intygId, RelationKod.KOMPLT);
+    }
+
+    @VisibleForTesting
+    Optional<RelationItem> findNewestRelatedIntyg(String intygId, RelationKod relationKod) {
         return getChildRelations(intygId).stream()
-                .filter(r -> r.getKod().equals(RelationKod.KOMPLT.name()))
+                .filter(r -> r.getKod().equals(relationKod.name()))
+                // All other possible values for status other than DRAFT_INCOMPLETE and DRAFT_COMPLETE implicitly means
+                // SIGNED.
+                .filter(r -> !(r.getStatus().equals(UtkastStatus.DRAFT_INCOMPLETE.name())
+                        || r.getStatus().equals(UtkastStatus.DRAFT_COMPLETE.name())))
                 .sorted((r1, r2) -> r1.getDate().compareTo(r2.getDate()))
                 .findFirst();
     }

@@ -275,7 +275,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private void verifyNotReplaced(String originalIntygId, String operation) {
-        final Optional<RelationItem> replacedByRelation = relationService.getReplacedByRelation(originalIntygId);
+        final Optional<RelationItem> replacedByRelation = relationService.findNewestReplacingIntyg(originalIntygId);
         if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
@@ -287,7 +287,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     // INTYG-3620
     private void verifyNotComplemented(String originalIntygId, String operation) {
-        Optional<RelationItem> complementedByRelation = relationService.getLatestComplementedByRelation(originalIntygId);
+        Optional<RelationItem> complementedByRelation = relationService.findNewestComplementingIntyg(originalIntygId);
         if (complementedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is complemented by certificate '%s'",
                     operation, originalIntygId, complementedByRelation.get().getIntygsId());

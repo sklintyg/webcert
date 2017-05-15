@@ -185,8 +185,8 @@ public class CopyUtkastServiceImplTest {
 
     @Before
     public void byDefaultReturnNoRelationsFromRelationService() {
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
-        when(relationService.getLatestComplementedByRelation(any(String.class))).thenReturn(Optional.empty());
+        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.empty());
+        when(relationService.findNewestComplementingIntyg(any(String.class))).thenReturn(Optional.empty());
     }
 
     @Test
@@ -202,7 +202,7 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.empty());
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
 
@@ -270,7 +270,7 @@ public class CopyUtkastServiceImplTest {
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 eq(true), any(boolean.class), eq(true))).thenReturn(resp);
         RelationItem ersattRelation = new RelationItem("ersattnings-intyg-id", "SIGNED", null);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.of(ersattRelation));
+        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.of(ersattRelation));
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
 

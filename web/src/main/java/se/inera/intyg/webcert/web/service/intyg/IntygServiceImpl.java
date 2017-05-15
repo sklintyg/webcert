@@ -364,7 +364,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void verifyNotReplaced(String intygsId, String operation) {
-        final Optional<RelationItem> replacedByRelation = relationService.getReplacedByRelation(intygsId);
+        final Optional<RelationItem> replacedByRelation = relationService.findNewestReplacingIntyg(intygsId);
         if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s certificate '%s', the certificate is replaced by certificate '%s'",
                     operation, intygsId, replacedByRelation.get().getIntygsId());
@@ -573,8 +573,8 @@ public class IntygServiceImpl implements IntygService {
                     relationsList = RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(),
                             CertificateState.RECEIVED.name());
                 }
-                replacedByRelation = relationService.getReplacedByRelation(intygId);
-                complementedByRelation = relationService.getLatestComplementedByRelation(intygId);
+                replacedByRelation = relationService.findNewestReplacingIntyg(intygId);
+                complementedByRelation = relationService.findNewestComplementingIntyg(intygId);
             }
             return IntygContentHolder.builder()
                     .setContents(internalIntygJsonModel)
@@ -628,8 +628,8 @@ public class IntygServiceImpl implements IntygService {
             if (relationsList.isEmpty()) {
                 relationsList = RelationItem.createBaseCase(utkast);
             }
-            replacedByRelation = relationService.getReplacedByRelation(utkast.getIntygsId());
-            complementedByRelation = relationService.getLatestComplementedByRelation(utkast.getIntygsId());
+            replacedByRelation = relationService.findNewestReplacingIntyg(utkast.getIntygsId());
+            complementedByRelation = relationService.findNewestComplementingIntyg(utkast.getIntygsId());
         }
         return IntygContentHolder.builder()
                 .setContents(utkast.getModel())

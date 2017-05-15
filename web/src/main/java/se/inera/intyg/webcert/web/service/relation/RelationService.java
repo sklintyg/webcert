@@ -55,15 +55,15 @@ public interface RelationService {
     List<RelationItem> getRelations(String intygsId);
 
     /**
-     * Optionally return the latest replacement relation for the given intygsId for the supplied relations.
+     * Return the latest replacement relation to another intyg for the given intygId (if any exist).
      */
-    Optional<RelationItem> getReplacedByRelation(String intygId);
+    Optional<RelationItem> findNewestReplacingIntyg(String intygId);
 
     /**
-     * Return the latest complement relation for the given intyg (if any exist).
+     * Return the latest complement relation to another intyg for the given intygId (if any exist).
      *
-     * @param intygsId
+     * @param intygId
      * @return
      */
-    Optional<RelationItem> getLatestComplementedByRelation(String intygsId);
+    Optional<RelationItem> findNewestComplementingIntyg(String intygId);
 }

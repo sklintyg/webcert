@@ -29,7 +29,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,10 +43,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -83,7 +88,7 @@ public class RelationServiceImplTest {
         /*
          * This is setup as following:
          * Utkast 1 -- Utkast 2 -- Utkast 3 -- Utkast 4
-         *                                  \- Utkast 5
+         * \- Utkast 5
          */
         when(utkastRepo.findOne(eq(INTYGID_5))).thenReturn(UTKAST_5);
         when(utkastRepo.findOne(eq(INTYGID_4))).thenReturn(UTKAST_4);
@@ -145,23 +150,19 @@ public class RelationServiceImplTest {
     }
 
     @Test
-    public void testGetReplacedByRelation() {
-        //3 is replaced by 4.
-        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_3);
+    public void testFindNewestRelatedIntygExpectingOneResult() {
+        // 3 is replaced by 4.
+        Optional<RelationItem> res = relationService.findNewestRelatedIntyg(INTYGID_3, RelationKod.ERSATT);
         assertTrue(res.isPresent());
 
         assertEquals(INTYGID_4, res.get().getIntygsId());
-        verify(utkastRepo, times(1)).findAllByRelationIntygsId(eq(INTYGID_3));
     }
 
     @Test
-    public void testGetReplacedByRelationNone() {
-        //4 is not replaced by anything.
-        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_4);
+    public void testFindNewestRelatedIntygExpectingNoResult() {
+        // 4 is not replaced by anything.
+        Optional<RelationItem> res = relationService.findNewestRelatedIntyg(INTYGID_4, RelationKod.ERSATT);
         assertFalse(res.isPresent());
-
-
-        verify(utkastRepo, times(1)).findAllByRelationIntygsId(eq(INTYGID_4));
     }
 
     @Test

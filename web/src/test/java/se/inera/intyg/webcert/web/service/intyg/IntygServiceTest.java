@@ -254,8 +254,8 @@ public class IntygServiceTest {
     @Before
     public void byDefaultReturnNoRelationsFromRelationService() {
         when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(new ArrayList<>());
-        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
-        when(relationService.getLatestComplementedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+        when(relationService.findNewestReplacingIntyg(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+        when(relationService.findNewestComplementingIntyg(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
     }
 
     @Test
@@ -314,7 +314,7 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
+        verify(relationService).findNewestReplacingIntyg(eq(CERTIFICATE_ID));
     }
 
     @Test
@@ -333,7 +333,7 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
+        verify(relationService).findNewestReplacingIntyg(eq(CERTIFICATE_ID));
     }
 
     @Test
@@ -352,7 +352,7 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
+        verify(relationService).findNewestReplacingIntyg(eq(CERTIFICATE_ID));
     }
 
     @Test
@@ -730,7 +730,7 @@ public class IntygServiceTest {
 
         when(intygRepository.findOne(intygId)).thenReturn(utkast);
         when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
-        when(relationService.getReplacedByRelation(eq(intygId))).thenReturn(Optional.empty());
+        when(relationService.findNewestReplacingIntyg(eq(intygId))).thenReturn(Optional.empty());
 
         intygService.handleSignedCompletion(utkast, recipient);
 
