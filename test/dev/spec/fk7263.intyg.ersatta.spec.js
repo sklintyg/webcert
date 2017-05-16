@@ -72,23 +72,22 @@ describe('Verify replace intyg ', function() {
             expect(FkIntygPage.isAt()).toBeTruthy();
         });
 
-        it('should no longer show send/copy/renew/replace buttons', function() {
+        it('should still show send/copy/renew/replace buttons, since the utkast has not been signed', function() {
             FkIntygPage.get(intygId);
             expect(FkIntygPage.isAt()).toBeTruthy();
-            expect(FkIntygPage.copy.button.isPresent()).toBe(false);
-            expect(FkIntygPage.skicka.knapp.isPresent()).toBe(false);
-            expect(FkIntygPage.replaceBtn().isPresent()).toBe(false);
+            expect(FkIntygPage.copy.button.isPresent()).toBe(true);
+            expect(FkIntygPage.skicka.knapp.isPresent()).toBe(true);
+            expect(FkIntygPage.replaceBtn().isPresent()).toBe(true);
 
             //fornya exists for fk7263
-            expect(FkIntygPage.fornya.button.isPresent()).toBe(false);
+            expect(FkIntygPage.fornya.button.isPresent()).toBe(true);
 
         });
 
-        it('should show warning message with link to replacing utkast', function() {
-            expect(element(by.id('wc-intyg-related-other-intyg-message')).isDisplayed()).toBe(true);
-            element(by.css('#wc-intyg-related-other-intyg-message a')).click();
-            expect(FkUtkastPage.isAt()).toBeTruthy();
-        });
+        it('should still not show warning message with link to replacing utkast, since utkast has not been signed',
+            function() {
+                expect(element(by.id('wc-intyg-related-other-intyg-message')).isDisplayed()).toBe(false);
+            });
     });
 
     afterAll(function() {
