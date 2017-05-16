@@ -80,14 +80,6 @@ public class ASN1UtilImpl implements ASN1Util {
         }
     }
 
-    private String returnAsString(byte[] value) {
-        if (value != null) {
-            return new String(value, Charsets.UTF_8);
-        } else {
-            return null;
-        }
-    }
-
     /**
      * Tries to parse a hsaId from the supplied base64-encoded signature data.
      *
@@ -106,4 +98,11 @@ public class ASN1UtilImpl implements ASN1Util {
         }
     }
 
+    private String returnAsString(byte[] value) {
+        if (value != null) {
+            return new String(value, Charsets.UTF_8);
+        } else {
+            return null;
+        }
+    }
 }

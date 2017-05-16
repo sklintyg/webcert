@@ -176,6 +176,13 @@ public class SignaturServiceImpl implements SignaturService {
         if (user.getAuthenticationMethod() == AuthenticationMethod.SITHS) {
             String signaturHsaId = asn1Util.parseHsaId(IOUtils.toInputStream(rawSignatur));
 
+            if (signaturHsaId == null) {
+                String errMsg = "Cannot finalize signing of Utkast, the signature does not contain hsaId in the correct format in the ASN.1"
+                        + " signature data from the client.";
+                LOG.error(errMsg);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
+            }
+
             if (verifyHsaIdEqual(user, signaturHsaId)) {
                 String errMsg = "Cannot finalize signing of Utkast, the logged in user's hsaId and the hsaId in the ASN.1 "
                         + "signature data from the NetID client does not match.";

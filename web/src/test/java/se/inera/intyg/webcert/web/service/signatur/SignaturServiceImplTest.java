@@ -133,6 +133,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(anyString(), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(INTYG_JSON);
+        when(asn1Util.parseHsaId(any())).thenReturn(user.getHsaId());
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
@@ -156,6 +157,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user.setVardgivare(Collections.singletonList(vardgivare));
         user.setValdVardenhet(vardenhet);
         user.setValdVardgivare(vardgivare);
+        user.setAuthenticationMethod(AuthenticationMethod.SITHS);
 
         return user;
     }
@@ -238,6 +240,13 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Assert ticket status has changed from BEARBETAR to SIGNERAD
         status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void clientSignaturNoHsaId() throws IOException {
+        when(asn1Util.parseHsaId(any())).thenReturn(null);
+        String signature = "{\"signatur\":\"SIGNATURE\"}";
+        intygSignatureService.clientSignature("", signature);
     }
 
     @Test
