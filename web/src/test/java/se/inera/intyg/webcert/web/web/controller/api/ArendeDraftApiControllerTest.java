@@ -129,7 +129,7 @@ public class ArendeDraftApiControllerTest {
 
         Response res = controller.getQuestionDraft(intygId);
         assertNotNull(res);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), res.getStatus());
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), res.getStatus());
         verify(arendeDraftService).getQuestionDraft(intygId);
     }
 

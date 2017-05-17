@@ -17,7 +17,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeDraftEntry;
 
-@Path("/draft")
+@Path("/arende/draft")
 public class ArendeDraftApiController {
 
     @Autowired
@@ -55,7 +55,7 @@ public class ArendeDraftApiController {
         if (questionDraft != null) {
             return Response.ok(ArendeDraftEntry.fromArendeDraft(questionDraft)).build();
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 }

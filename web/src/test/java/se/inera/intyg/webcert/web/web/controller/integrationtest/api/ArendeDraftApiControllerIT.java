@@ -27,7 +27,7 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
                 .expect()
                     .statusCode(200)
                 .when()
-                    .get("api/draft/{intygId}")
+                    .get("api/arende/draft/{intygId}")
                 .then()
                     .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-draft.json"))
                     .body("text", equalTo(text))
@@ -43,7 +43,7 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
                 .expect()
                     .statusCode(200)
                 .when()
-                    .delete("api/draft/{intygId}");
+                    .delete("api/arende/draft/{intygId}");
     }
 
     private void createArendeDraft(String intygId, String text, String amne) {
@@ -56,6 +56,6 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
                 .expect()
                     .statusCode(200)
                 .when()
-                    .put("api/draft");
+                    .put("api/arende/draft");
     }
 }
