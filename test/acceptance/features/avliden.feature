@@ -1,7 +1,7 @@
 #language: sv
 @avliden
 Egenskap: Avliden patient
-
+@kristi
   Scenario: Varning om patient är avliden
      Givet att jag är inloggad som läkare
      När jag går in på en patient som är avliden
@@ -29,7 +29,7 @@ Egenskap: Avliden patient
     Och jag svarar på frågan
     Så ska det synas vem som svarat
 
-@notReady
+@notReady 
 Scenario: Kan svara på komplettering med ett nytt intyg
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
@@ -42,6 +42,6 @@ Scenario: Kan svara på komplettering med ett nytt intyg
     När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
     Och jag skickar intyget till Försäkringskassan
     När Försäkringskassan skickar ett "KOMPLT" meddelande på intyget
-    Och jag går in på intyget
+    Och jag går in på intyget via djupintegrationslänk
     Och jag väljer att svara med ett nytt intyg
     #Och jag går tillbaka till intyget som behöver kompletteras

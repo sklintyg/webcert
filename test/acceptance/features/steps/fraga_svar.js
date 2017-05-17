@@ -118,7 +118,7 @@ module.exports = function() {
                                         // Ange patientens address om den inte är ifylld i utkastet
                                         // Den angivna addressen sparas endast för aktuellt intyg och följer inte med vid komplettering (PA-003)
                                         // Fältet måste därför fyllas i igen, speciellt om patienten inte har adress i PU.
-                                        return utkast.angePatientAdress(global.person.adress);
+                                        return require('./fillIn/common.js').setPatientAdressIfNotGiven();
                                     }
                                 }
 
