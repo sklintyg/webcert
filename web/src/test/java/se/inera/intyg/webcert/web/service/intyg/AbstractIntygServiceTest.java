@@ -18,24 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.core.io.ClassPathResource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
@@ -46,12 +37,25 @@ import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSet
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.intyg.decorator.IntygRelationHelper;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.inera.intyg.webcert.web.service.relation.RelationService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
@@ -86,10 +90,13 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     protected MonitoringLogService monitoringService;
 
     @Mock
-    protected RelationService relationService;
+    protected CertificateRelationService certificateRelationService;
 
     @Mock
     protected CertificateSenderService certificateSenderService;
+
+    @Mock
+    protected IntygRelationHelper intygRelationHelper;
 
     @Spy
     protected ObjectMapper objectMapper = new CustomObjectMapper();
@@ -109,6 +116,10 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
+        when(certificateRelationService.getRelationOfType(anyString(), any(RelationKod.class))).thenReturn(Optional.empty());
+        when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
+        doNothing().when(intygRelationHelper).decorateIntygListWithRelations(anyList());
+        //when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(), any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
     }
 
     private CertificateMetaData buildCertificateMetaData() {

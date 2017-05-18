@@ -18,20 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Optional;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Assert;
@@ -40,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
@@ -52,6 +37,8 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
@@ -59,8 +46,22 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
@@ -83,7 +84,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
-        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.empty());
+       // when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
@@ -119,8 +120,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
-        RelationItem ersattRelation = new RelationItem("ersattnings-intyg-id", "SIGNED", null);
-        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.of(ersattRelation));
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED);
+        when(certificateRelationService.getRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT))).thenReturn(Optional.of(ersattRelation));
 
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<>());
@@ -147,7 +148,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(completionUtlatande);
 
-        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.empty());
+        when(certificateRelationService.getRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT))).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
@@ -168,7 +169,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
-        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.empty());
+       // when(certificateRelationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);

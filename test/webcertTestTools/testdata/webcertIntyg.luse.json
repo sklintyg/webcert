@@ -77,10 +77,13 @@
     },
     "utkastStatus": "SIGNED",
     "revoked": false,
-    "relations": [
-        {
+    "relations":{
+        "parent": {
             "intygsId": "testid",
-            "status": "INTYG"
-        }
-    ]
+            "relationKod": "ERSATT",
+            "status": "SIGNED",
+            "skapad": "2016-05-03"
+        },
+        "children": []
+    }
 }

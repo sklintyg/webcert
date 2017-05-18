@@ -25,8 +25,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
 // CHECKSTYLE:OFF LineLength
 @Transactional(value = "jpaTransactionManager", readOnly = true)
@@ -42,11 +43,12 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * Should only be used for testability!
      *
      * Should return a list of {@link Utkast} entities in the repository that has an enhetsId matching one of the
-     * supplied list of id's. Is also discards any entity with a {@link UtkastStatus} not in the list. The result is NOT ordered.
+     * supplied list of id's. Is also discards any entity with a {@link UtkastStatus} not in the list. The result is NOT
+     * ordered.
      *
      * @param enhetsIds
      * @return A list of {@link Utkast} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
+     *         an empty list.
      */
     @Query("SELECT u from Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses)")
     List<Utkast> findByEnhetsIdsAndStatuses(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses);
@@ -55,14 +57,17 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * Should return a count of {@link Utkast} entities in the repository that has an enhetsId matching one of the
      * supplied list of id's. Is also discards any entity with a {@link UtkastStatus} not in the list.
      *
-     * @param enhetsIds List of hsa unit id's that should match the counted intyg entities
+     * @param enhetsIds
+     *            List of hsa unit id's that should match the counted intyg entities
      * @return A count of {@link Utkast} matching the search criteria.
      */
     @Query("SELECT u.enhetsId, count(u) FROM Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper) GROUP BY u.enhetsId")
-    List<Object[]> countIntygWithStatusesGroupedByEnhetsId(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
+    List<Object[]> countIntygWithStatusesGroupedByEnhetsId(@Param("enhetsIds") List<String> enhetsIds,
+            @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
-     * Returns all {@link Utkast} entities belonging to a certain patient and belonging to one of several careUnit and having selected statuses.
+     * Returns all {@link Utkast} entities belonging to a certain patient and belonging to one of several careUnit and
+     * having selected statuses.
      *
      * @param patientPnr
      * @param enhetsIds
@@ -70,10 +75,12 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @return
      */
     @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
-    List<Utkast> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
+    List<Utkast> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds,
+            @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
-     * Returns all {@link Utkast} entities belonging to a certain patient and belonging to a caregiver and having selected statuses.
+     * Returns all {@link Utkast} entities belonging to a certain patient and belonging to a caregiver and having
+     * selected statuses.
      *
      * @param patientPnr
      * @param vardgivarId
@@ -81,10 +88,12 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @return
      */
     @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.vardgivarId = :vardgivarId AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
-    List<Utkast> findDraftsByPatientAndVardgivareAndStatus(@Param("patientPnr") String patientPnr, @Param("vardgivarId") String vardgivarId, @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
+    List<Utkast> findDraftsByPatientAndVardgivareAndStatus(@Param("patientPnr") String patientPnr, @Param("vardgivarId") String vardgivarId,
+            @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
-     * Returns a list of all unique hsaId and name (of vardperson who edited the draft) which matches the supplied enhetsId.
+     * Returns a list of all unique hsaId and name (of vardperson who edited the draft) which matches the supplied
+     * enhetsId.
      *
      * @param enhetsid
      * @return A list of Object[] where the first [0] value is the HsaId and the second [1] is the name
@@ -92,10 +101,12 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     @Query("SELECT DISTINCT u.senastSparadAv.hsaId, u.senastSparadAv.namn FROM Utkast u "
             + "WHERE u.enhetsId = :enhetsid AND u.status IN (:statuses) "
             + "ORDER BY u.senastSparadAv.namn ASC")
-    List<Object[]> findDistinctLakareFromIntygEnhetAndStatuses(@Param("enhetsid") String enhetsid, @Param("statuses") List<UtkastStatus> statuses);
+    List<Object[]> findDistinctLakareFromIntygEnhetAndStatuses(@Param("enhetsid") String enhetsid,
+            @Param("statuses") List<UtkastStatus> statuses);
 
     /**
      * Return the status of a draft.
+     *
      * @param intygsId
      * @return
      */
@@ -104,9 +115,25 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
 
     /**
      * Return the HSA-ID for the Enhet on which the Utkast was created.
+     *
      * @param intygsId
      * @return
      */
     @Query("SELECT u.enhetsId from Utkast u WHERE u.intygsId = :intygsId")
     String getIntygsVardenhetsHsaId(@Param("intygsId") String intygsId);
+
+    /**
+     * Returns (if applicable) the parent relation of the specified intygsId.
+     *
+     * @param intygsId
+     * @return
+     */
+    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.relationIntygsId, u.relationKod, u.senastSparadDatum, u2.status) FROM Utkast u, Utkast u2 WHERE u2.intygsId = u.relationIntygsId AND u.intygsId = :intygsId")
+    List<WebcertCertificateRelation> findParentRelation(@Param("intygsId") String intygsId);
+
+    /**
+     * Returns 0..n child relations of the specified intygsId.
+     */
+    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.intygsId, u.relationKod, u.senastSparadDatum, u.status) FROM Utkast u WHERE u.relationIntygsId = :intygsId ORDER BY u.senastSparadDatum DESC")
+    List<WebcertCertificateRelation> findChildRelations(@Param("intygsId") String intygsId);
 }

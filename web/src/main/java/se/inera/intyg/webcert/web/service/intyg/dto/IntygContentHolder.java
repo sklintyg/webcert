@@ -18,19 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
-
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 @AutoValue
 @JsonDeserialize(builder = AutoValue_IntygContentHolder.Builder.class)
@@ -49,19 +46,13 @@ public abstract class IntygContentHolder {
 
     public abstract boolean isRevoked();
 
-    public abstract List<RelationItem> getRelations();
-
-    @Nullable
-    public abstract RelationItem getReplacedByRelation();
-
-    @Nullable
-    public abstract RelationItem getComplementedByRelation();
+    public abstract Relations getRelations();
 
     public abstract boolean isDeceased();
 
     public static Builder builder() {
         return new AutoValue_IntygContentHolder.Builder()
-                .setRelations(new ArrayList<>());
+                .setRelations(new Relations());
     }
 
     @AutoValue.Builder
@@ -77,11 +68,11 @@ public abstract class IntygContentHolder {
 
         public abstract Builder setRevoked(boolean revoked);
 
-        public abstract Builder setRelations(List<RelationItem> relations);
+        public abstract Builder setRelations(Relations relations);
 
-        public abstract Builder setReplacedByRelation(RelationItem replacedByRelation);
-
-        public abstract Builder setComplementedByRelation(RelationItem complementedByRelation);
+//        public abstract Builder setReplacedByRelation(RelationItem replacedByRelation);
+//
+//        public abstract Builder setComplementedByRelation(RelationItem complementedByRelation);
 
         public abstract Builder setDeceased(boolean deceased);
     }

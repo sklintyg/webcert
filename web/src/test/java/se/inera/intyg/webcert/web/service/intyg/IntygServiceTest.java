@@ -47,11 +47,11 @@ import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
@@ -60,6 +60,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
+import se.inera.intyg.webcert.web.service.intyg.decorator.IntygRelationHelper;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
@@ -70,11 +71,12 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.inera.intyg.webcert.web.service.relation.RelationService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
@@ -97,7 +99,6 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -105,6 +106,7 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -140,6 +142,9 @@ public class IntygServiceTest {
     private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
 
     @Mock
+    private IntygRelationHelper intygRelationHelper;
+
+    @Mock
     private IntygModuleFacade moduleFacade;
 
     @Mock
@@ -158,7 +163,7 @@ public class IntygServiceTest {
     private MonitoringLogService mockMonitoringService;
 
     @Mock
-    private RelationService relationService;
+    private CertificateRelationService certificateRelationService;
 
     @Mock
     private NotificationService notificationService;
@@ -212,6 +217,10 @@ public class IntygServiceTest {
         listResponse = context.createUnmarshaller()
                 .unmarshal(new StreamSource(response.getInputStream()), ListCertificatesForCareResponseType.class)
                 .getValue();
+
+        when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
+        doNothing().when(intygRelationHelper).decorateIntygListWithRelations(anyList());
+        when(certificateRelationService.getRelations(anyString())).thenReturn(new Relations());
     }
 
     @Before
@@ -253,9 +262,9 @@ public class IntygServiceTest {
 
     @Before
     public void byDefaultReturnNoRelationsFromRelationService() {
-        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(new ArrayList<>());
-        when(relationService.findNewestReplacingIntyg(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
-        when(relationService.findNewestComplementingIntyg(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+        when(certificateRelationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(new Relations());
+        when(certificateRelationService.getRelationOfType(anyString(), any(RelationKod.class))).thenReturn(Optional.empty());
+    //    when(relationService.getLatestComplementedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
     }
 
     @Test
@@ -299,7 +308,7 @@ public class IntygServiceTest {
         verifyNoMoreInteractions(intygRepository);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verifyNoMoreInteractions(relationService);
+        verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
     }
 
     @Test
@@ -308,13 +317,12 @@ public class IntygServiceTest {
 
         assertNotNull(res);
         assertNotNull(res.getRelations());
-        assertNull(res.getReplacedByRelation());
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).findNewestReplacingIntyg(eq(CERTIFICATE_ID));
+        verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
+     //   verify(certificateRelationService).getRelationOfType(eq(CERTIFICATE_ID), RelationKod.ERSATT);
     }
 
     @Test
@@ -332,8 +340,7 @@ public class IntygServiceTest {
         verify(intygRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).findNewestReplacingIntyg(eq(CERTIFICATE_ID));
+        verify(certificateRelationService).getRelations(eq(CERTIFICATE_ID));
     }
 
     @Test
@@ -351,8 +358,7 @@ public class IntygServiceTest {
         verify(intygRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).findNewestReplacingIntyg(eq(CERTIFICATE_ID));
+        verify(certificateRelationService).getRelations(eq(CERTIFICATE_ID));
     }
 
     @Test
@@ -730,7 +736,7 @@ public class IntygServiceTest {
 
         when(intygRepository.findOne(intygId)).thenReturn(utkast);
         when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
-        when(relationService.findNewestReplacingIntyg(eq(intygId))).thenReturn(Optional.empty());
+        when(certificateRelationService.getRelationOfType(eq(intygId), eq(RelationKod.ERSATT))).thenReturn(Optional.empty());
 
         intygService.handleSignedCompletion(utkast, recipient);
 

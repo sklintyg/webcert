@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 
 public class UtkastFilter {
 

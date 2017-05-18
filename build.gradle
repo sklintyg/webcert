@@ -5,6 +5,7 @@ ext {
     commonsIoVersion = "2.4"
     funktionstjansterGrpSchemasVersion = "1.0.3"
     insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
+    intygClinicalprocessSchemasVersion = "1.0.7-beta3"
     intygInsuranceprocessSchemasVersion = "1.0.4"
     intygTransportstyrelsenSchemasVersion = "1.0.4"
     ppSchemasVersion = "1.0.4"

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.persistence.utkast.model;
+package se.inera.intyg.webcert.common.model;
 
 /**
  * Possible statuses for a Utkast entity in Webcert.

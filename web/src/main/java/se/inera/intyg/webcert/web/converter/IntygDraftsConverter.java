@@ -18,17 +18,10 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -38,6 +31,12 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class IntygDraftsConverter {
@@ -146,8 +145,6 @@ public class IntygDraftsConverter {
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
         entry.setPatientId(new Personnummer(source.getPatient().getPersonId().getExtension()));
-
         return entry;
     }
-
 }

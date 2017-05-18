@@ -65,18 +65,18 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
 
 @Transactional
@@ -425,7 +425,7 @@ public class IntygResource {
         private JsonNode contents;
         private boolean revoked;
         private UtkastStatus utkastStatus;
-        private List<RelationItem> relations;
+        private Relations relations;
 
         JsonNode getContents() {
             return contents;
@@ -447,11 +447,11 @@ public class IntygResource {
             this.utkastStatus = utkastStatus;
         }
 
-        List<RelationItem> getRelations() {
+        public Relations getRelations() {
             return relations;
         }
 
-        void setRelations(List<RelationItem> relations) {
+        public void setRelations(Relations relations) {
             this.relations = relations;
         }
     }

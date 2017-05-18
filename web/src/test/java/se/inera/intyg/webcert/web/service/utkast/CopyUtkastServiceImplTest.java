@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -34,6 +35,8 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -45,7 +48,7 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.inera.intyg.webcert.web.service.relation.RelationService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -58,8 +61,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -106,7 +109,7 @@ public class CopyUtkastServiceImplTest {
     private IntygService intygService;
 
     @Mock
-    private RelationService relationService;
+    private CertificateRelationService certificateRelationService;
 
     @Mock
     private PUService mockPUService;
@@ -185,8 +188,7 @@ public class CopyUtkastServiceImplTest {
 
     @Before
     public void byDefaultReturnNoRelationsFromRelationService() {
-        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.empty());
-        when(relationService.findNewestComplementingIntyg(any(String.class))).thenReturn(Optional.empty());
+        when(certificateRelationService.getRelationOfType(anyString(), any(RelationKod.class))).thenReturn(Optional.empty());
     }
 
     @Test
@@ -202,7 +204,7 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.empty());
+       // when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
 
@@ -257,7 +259,7 @@ public class CopyUtkastServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testCreateReplacementCopyFaildIfAlreadyReplaced() throws Exception {
+    public void testCreateReplacementCopyFailedIfAlreadyReplaced() throws Exception {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
@@ -269,8 +271,8 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 eq(true), any(boolean.class), eq(true))).thenReturn(resp);
-        RelationItem ersattRelation = new RelationItem("ersattnings-intyg-id", "SIGNED", null);
-        when(relationService.findNewestReplacingIntyg(anyString())).thenReturn(Optional.of(ersattRelation));
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
+        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
 

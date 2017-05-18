@@ -18,13 +18,16 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.*;
 
 public final class UtkastTestUtil {
 
@@ -67,6 +70,11 @@ public final class UtkastTestUtil {
     public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status) {
         return buildUtkast(intygsId, enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
                 PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
+    }
+
+    public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String relationIntygsId, RelationKod relationKod, LocalDateTime senastSparadDatum) {
+        return buildUtkast(intygsId, enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
+                PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, senastSparadDatum, relationIntygsId, relationKod, "vg1");
     }
 
     public static Utkast buildUtkast(String enhetsId, String hoSPersonId, String hoSPersonNamn, UtkastStatus status,

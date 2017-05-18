@@ -18,17 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.util.Optional;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -36,6 +33,7 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -48,7 +46,7 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.inera.intyg.webcert.web.service.relation.RelationService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
@@ -61,7 +59,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
+
+import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -72,7 +71,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private IntygService intygService;
 
     @Autowired
-    private RelationService relationService;
+    private CertificateRelationService certificateRelationService;
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -274,8 +273,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
+    // Duplicate in IntygServiceImpl, refactor.
     private void verifyNotReplaced(String originalIntygId, String operation) {
-        final Optional<RelationItem> replacedByRelation = relationService.findNewestReplacingIntyg(originalIntygId);
+        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getRelationOfType(originalIntygId,
+                RelationKod.ERSATT);
         if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
@@ -287,7 +288,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     // INTYG-3620
     private void verifyNotComplemented(String originalIntygId, String operation) {
-        Optional<RelationItem> complementedByRelation = relationService.findNewestComplementingIntyg(originalIntygId);
+        Optional<WebcertCertificateRelation> complementedByRelation = certificateRelationService.getRelationOfType(originalIntygId,
+                RelationKod.KOMPLT);
         if (complementedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is complemented by certificate '%s'",
                     operation, originalIntygId, complementedByRelation.get().getIntygsId());

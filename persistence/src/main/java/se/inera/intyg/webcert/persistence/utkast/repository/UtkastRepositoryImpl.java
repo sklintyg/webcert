@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.google.common.base.Strings;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,13 +31,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 

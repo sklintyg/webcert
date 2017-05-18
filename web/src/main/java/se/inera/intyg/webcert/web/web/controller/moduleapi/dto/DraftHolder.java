@@ -19,11 +19,10 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Container for a draft and its current status.
@@ -47,7 +46,7 @@ public class DraftHolder {
 
     private String latestTextVersion;
 
-    private List<RelationItem> relations;
+    private Relations relations = new Relations();
     private LocalDateTime klartForSigneringDatum;
 
     public long getVersion() {
@@ -106,11 +105,12 @@ public class DraftHolder {
         return latestTextVersion;
     }
 
-    public List<RelationItem> getRelations() {
-        if (relations == null) {
-            relations = new ArrayList<>();
-        }
+    public Relations getRelations() {
         return relations;
+    }
+
+    public void setRelations(Relations relations) {
+        this.relations = relations;
     }
 
     public LocalDateTime getKlartForSigneringDatum() {

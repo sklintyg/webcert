@@ -18,28 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.xml.ws.WebServiceException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -61,11 +47,12 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
@@ -76,6 +63,7 @@ import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderSer
 import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
+import se.inera.intyg.webcert.web.service.intyg.decorator.IntygRelationHelper;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
@@ -88,15 +76,25 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.inera.intyg.webcert.web.service.relation.RelationService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -152,7 +150,10 @@ public class IntygServiceImpl implements IntygService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private RelationService relationService;
+    private IntygRelationHelper intygRelationHelper;
+
+    @Autowired
+    private CertificateRelationService certificateRelationService;
 
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
@@ -212,6 +213,9 @@ public class IntygServiceImpl implements IntygService {
 
             List<ListIntygEntry> fullIntygItemList = intygConverter
                     .convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
+
+            intygRelationHelper.decorateIntygListWithRelations(fullIntygItemList);
+
             fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList);
             addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
             return Pair.of(fullIntygItemList, Boolean.FALSE);
@@ -364,7 +368,8 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void verifyNotReplaced(String intygsId, String operation) {
-        final Optional<RelationItem> replacedByRelation = relationService.findNewestReplacingIntyg(intygsId);
+        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getRelationOfType(intygsId,
+                RelationKod.ERSATT);
         if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s certificate '%s', the certificate is replaced by certificate '%s'",
                     operation, intygsId, replacedByRelation.get().getIntygsId());
@@ -564,26 +569,14 @@ public class IntygServiceImpl implements IntygService {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
-            List<RelationItem> relationsList = Collections.emptyList();
-            Optional<RelationItem> replacedByRelation = Optional.empty();
-            Optional<RelationItem> complementedByRelation = Optional.empty();
-            if (relations) {
-                relationsList = relationService.getRelations(intygId);
-                if (relationsList.isEmpty()) {
-                    relationsList = RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(),
-                            CertificateState.RECEIVED.name());
-                }
-                replacedByRelation = relationService.findNewestReplacingIntyg(intygId);
-                complementedByRelation = relationService.findNewestComplementingIntyg(intygId);
-            }
+            Relations certificateRelations = intygRelationHelper.getRelationsForIntyg(intygId);
+
             return IntygContentHolder.builder()
                     .setContents(internalIntygJsonModel)
                     .setUtlatande(certificate.getUtlatande())
                     .setStatuses(certificate.getMetaData().getStatus())
                     .setRevoked(certificate.isRevoked())
-                    .setRelations(relationsList)
-                    .setReplacedByRelation(replacedByRelation.orElse(null))
-                    .setComplementedByRelation(complementedByRelation.orElse(null))
+                    .setRelations(certificateRelations)
                     .setDeceased(isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
                     .build();
 
@@ -620,25 +613,14 @@ public class IntygServiceImpl implements IntygService {
     private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
         Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
-        List<RelationItem> relationsList = new ArrayList<>();
-        Optional<RelationItem> replacedByRelation = Optional.empty();
-        Optional<RelationItem> complementedByRelation = Optional.empty();
-        if (relations) {
-            relationsList = relationService.getRelations(utkast.getIntygsId());
-            if (relationsList.isEmpty()) {
-                relationsList = RelationItem.createBaseCase(utkast);
-            }
-            replacedByRelation = relationService.findNewestReplacingIntyg(utkast.getIntygsId());
-            complementedByRelation = relationService.findNewestComplementingIntyg(utkast.getIntygsId());
-        }
+        Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
+
         return IntygContentHolder.builder()
                 .setContents(utkast.getModel())
                 .setUtlatande(utlatande)
                 .setStatuses(statuses)
                 .setRevoked(utkast.getAterkalladDatum() != null)
-                .setRelations(relationsList)
-                .setReplacedByRelation(replacedByRelation.orElse(null))
-                .setComplementedByRelation(complementedByRelation.orElse(null))
+                .setRelations(certificateRelations)
                 .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
                 .build();
     }

@@ -109,10 +109,26 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 });
             }
 
+
+            $scope.isCopyAllowed = function(intyg) {
+                return !$scope.patientModel.sekretessmarkering && intyg.status !== 'CANCELLED' && intyg.status !== 'DRAFT_COMPLETE' &&
+                    intyg.status !== 'DRAFT_INCOMPLETE' && !isErsatt(intyg);
+            };
+
+            function isErsatt(intyg) {
+                if (typeof intyg.relations !== 'undefined' && typeof intyg.relations.children !== 'undefined') {
+                    for(var a = 0; a < intyg.relations.children.length; a++) {
+                        if (intyg.relations.children[a].relationKod === 'ERSATT') {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
             /**
              * Watches
              */
-
             $scope.$watch('viewState.intygFilter', function() {
                 $scope.updateIntygList();
             });

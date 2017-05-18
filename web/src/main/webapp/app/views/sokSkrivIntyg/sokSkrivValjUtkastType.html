@@ -150,7 +150,7 @@
                               id="fornyaBtn-{{intyg.intygId}}"
                               class="btn btn-info"
                               ng-switch-when="fk7263"
-                              ng-if="!patientModel.sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
+                              ng-if="isCopyAllowed(intyg)"
                               ng-click="fornyaIntyg(intyg)"
                               uib-popover="{{messageService.getProperty('common.fornya.tooltip')}}"
                               popover-trigger="mouseenter"
@@ -166,7 +166,7 @@
                               id="copyBtn-{{intyg.intygId}}"
                               class="btn btn-info"
                               ng-switch-default
-                              ng-if="!patientModel.sekretessmarkering && intyg.status != 'CANCELLED' && intyg.status != 'DRAFT_COMPLETE' && intyg.status != 'DRAFT_INCOMPLETE'"
+                              ng-if="isCopyAllowed(intyg)"
                               ng-click="copyIntyg(intyg)"
                               uib-popover="{{messageService.getProperty('common.copy.tooltip')}}"
                               popover-trigger="mouseenter"

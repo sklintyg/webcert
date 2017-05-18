@@ -25,31 +25,40 @@
       "type": "string"
     },
     "klartForSigneringDatum": {
-        "type": "string"
+      "type": "string"
     },
     "relations": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "intygsId": {
-            "type": "string"
-          },
-          "kod": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          },
-          "date": {
-            "type": "string"
-          }
+      "type": "object",
+      "properties": {
+        "parent": {
+          "type": "object"
         },
-        "additionalProperties": false,
-        "required": [
-          "intygsId",
-          "status"
-        ]
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "franIntygsId": {
+                "type": "string"
+              },
+              "tillIntygsId": {
+                "type": "string"
+              },
+              "relationKod": {
+                "type": "string"
+              },
+              "skapad": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "franIntygsId",
+              "tillIntygsId",
+              "relationKod"
+            ]
+          }
+        }
       }
     }
   },

@@ -18,29 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static se.inera.intyg.webcert.persistence.utkast.model.UtkastStatus.DRAFT_INCOMPLETE;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.MODULEAPI_UTKAST_BASE;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
-
+import org.junit.Test;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -49,6 +32,18 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.MODULEAPI_UTKAST_BASE;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -426,12 +421,18 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
                 .when().get(MODULEAPI_UTKAST_BASE + "/fk7263/" + utkastId).then()
-                .body("relations[0].intygsId", equalTo(utkastId))
-                .body("relations[0].kod", equalTo(RelationKod.ERSATT.name()))
-                .body("relations[0].status", equalTo(DRAFT_INCOMPLETE.name()))
+                .body("relations.parent.intygsId", equalTo(intygsId))
+                .body("relations.parent.relationKod", equalTo(RelationKod.ERSATT.name()));
+                //.body("relations.children[1].franIntygsId", equalTo(intygsId));
+                //.body("relations[1].status", equalTo(CertificateState.RECEIVED.name()));
 
-                .body("relations[1].intygsId", equalTo(intygsId))
-                .body("relations[1].status", equalTo(CertificateState.RECEIVED.name()));
+        // Verify the original certficate has a child relationship
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("moduleapi/intyg/fk7263/" + intygsId).then()
+                .body("relations.children[0].intygsId", equalTo(utkastId))
+                .body("relations.children[0].relationKod", equalTo(RelationKod.ERSATT.name()));
+
 
     }
 

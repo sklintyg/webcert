@@ -18,8 +18,30 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
+import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
+import se.inera.intyg.webcert.web.service.signatur.SignaturService;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
 
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
@@ -37,32 +59,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.OptimisticLockingFailureException;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.common.services.texts.IntygTextsService;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.relation.RelationService;
-import se.inera.intyg.webcert.web.service.signatur.SignaturService;
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
-import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RelationItem;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Controller for module interaction with drafts.
@@ -93,8 +90,10 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private IntygTextsService intygTextsService;
 
+//    @Autowired
+//    private RelationService relationService;
     @Autowired
-    private RelationService relationService;
+    private CertificateRelationService certificateRelationService;
 
     @Autowired
     private WebCertUserService userService;
@@ -131,11 +130,13 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
         draftHolder.setContent(utkast.getModel());
         draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
-        List<RelationItem> relations = relationService.getRelations(utkast.getIntygsId());
-        if (relations.isEmpty()) {
-            relations = RelationItem.createBaseCase(utkast);
-        }
-        draftHolder.getRelations().addAll(relations);
+
+        Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
+//        List<RelationItem> relations = relationService.getRelationsForIntyg(utkast.getIntygsId());
+//        if (relations.isEmpty()) {
+//            relations = RelationItem.createBaseCase(utkast);
+//        }
+        draftHolder.setRelations(relations1);
         draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
 
         return Response.ok(draftHolder).build();

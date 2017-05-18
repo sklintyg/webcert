@@ -39,6 +39,9 @@
           },
           "version": {
             "type": "integer"
+          },
+          "relations": {
+            "type": "object"
           }
         },
         "additionalProperties": false,

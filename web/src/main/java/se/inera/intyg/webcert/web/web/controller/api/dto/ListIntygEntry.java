@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import java.time.LocalDateTime;
-
 import se.inera.intyg.schemas.contract.Personnummer;
+
+import java.time.LocalDateTime;
 
 public class ListIntygEntry {
 
@@ -41,6 +41,8 @@ public class ListIntygEntry {
     private boolean vidarebefordrad;
 
     private long version;
+
+    private Relations relations = new Relations();
 
     public String getIntygId() {
         return intygId;
@@ -112,6 +114,14 @@ public class ListIntygEntry {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public Relations getRelations() {
+        return relations;
+    }
+
+    public void setRelations(Relations relations) {
+        this.relations = relations;
     }
 
     @Override
