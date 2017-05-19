@@ -8,7 +8,7 @@ Egenskap: Avliden patient
      Så ska jag varnas om att "Patienten har avlidit"
 
 
- @skicka-till-FK
+ @skicka-till-FK @notReady
  Scenario: Kan skicka och ställa frågor på intyg
      Givet att jag är inloggad som djupintegrerad läkare
      När jag skickar ett SMI-intyg till intygstjänsten på en avliden person
