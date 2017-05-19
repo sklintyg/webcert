@@ -61,26 +61,19 @@
     dest: "{{ webapps_folder }}/ROOT.war"
     remote_src: True
 
-- name: Download log-sender-{{ version }}.war
+- name: Download logsender-{{ logsender_version }}.war
   get_url:
-    url: https://build-inera.nordicmedtest.se/nexus/repository/releases/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
-    dest: "{{ releases_folder }}/log-sender-{{ version }}.war"
-  when: deploy_from_repo|bool
+    url: https://build-inera.nordicmedtest.se/nexus/repository/releases/se/inera/intyg/logsender/logsender/{{ logsender_version }}/logsender-{{ logsender_version }}.war
+    dest: "{{ releases_folder }}/logsender-{{ logsender_version }}.war"
 
-- name: Copy log-sender-{{ version }}.war
-  copy:
-    src: "{{ playbook_dir }}/../log-sender/build/libs/log-sender-{{ version }}.war"
-    dest: "{{ releases_folder }}/log-sender-{{ version }}.war"
-  when: not deploy_from_repo|bool
-
-- name: Remove old version of unpacked log-sender war
+- name: Remove old logsender_version of unpacked log-sender war
   file:
     state: absent
     path: "{{ webapps_folder }}/log-sender"
 
-- name: Deploy log-sender-{{ version }}.war as log-sender.war
+- name: Deploy logsender-{{ logsender_version }}.war as log-sender.war
   copy:
-    src: "{{ releases_folder }}/log-sender-{{ version }}.war"
+    src: "{{ releases_folder }}/logsender-{{ logsender_version }}.war"
     dest: "{{ webapps_folder }}/log-sender.war"
     remote_src: True
 

@@ -2,7 +2,6 @@ rootProject.name = 'webcert'
 
 include ':webcert-common'
 include ':webcert-persistence'
-include ':log-sender'
 include ':notification-sender'
 include ':pp-integration'
 include ':fmb-integration'
@@ -17,7 +16,6 @@ include ':webcert-protractor'
 
 project(':webcert-common').projectDir = "$rootDir/common" as File
 project(':webcert-persistence').projectDir = "$rootDir/persistence" as File
-project(':log-sender').projectDir = "$rootDir/log-sender" as File
 project(':notification-sender').projectDir = "$rootDir/notification-sender" as File
 project(':pp-integration').projectDir = "$rootDir/integration/pp-integration" as File
 project(':fmb-integration').projectDir = "$rootDir/integration/fmb-integration" as File
