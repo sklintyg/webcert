@@ -242,7 +242,7 @@ module.exports = function(grunt) {
             // ska koras (dvs. selenium-grid). 
             if (grunt.option('gridnodeinstances')) {
 
-                var files = grunt.file.expand('acceptance/features/*.feature');
+                var files = grunt.file.expand('features/*.feature');
                 var featureFiles = [];
 
                 files.forEach(function(filePath) {
