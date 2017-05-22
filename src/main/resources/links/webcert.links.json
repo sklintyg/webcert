@@ -2,7 +2,7 @@
   {
     "key": "ineraKundserviceFel",
     "url": "http://www.inera.se/KONTAKT_KUNDSERVICE/Felanmalan-och-support/Anmal-fel",
-    "text": "Ineras nationella kundservice",
+    "text": "Ineras kundservice",
     "target": "_blank"
   },
   {
@@ -56,7 +56,7 @@
   {
     "key": "ineraKundserviceAnmalFel",
     "url": "http://www.inera.se/felanmalan",
-    "text": "Ineras Nationell kundservice",
+    "text": "Ineras kundservice",
     "target": "_blank"
   },
   {
