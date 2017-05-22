@@ -94,6 +94,9 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
     }
 
     private ListRelationsForCertificateResponseType getRelationsFromIntygstjanst(List<String> intygIds) {
+        if (intygIds == null || intygIds.size() == 0) {
+            return new ListRelationsForCertificateResponseType();
+        }
         ListRelationsForCertificateType request = new ListRelationsForCertificateType();
         request.getIntygsId().addAll(intygIds);
         return listRelationsForCertificateResponderInterface.listRelationsForCertificate(logicalAddress, request);

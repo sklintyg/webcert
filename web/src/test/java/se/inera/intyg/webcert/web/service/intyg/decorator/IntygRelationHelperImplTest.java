@@ -25,6 +25,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvRelation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -116,6 +118,14 @@ public class IntygRelationHelperImplTest {
         testee.decorateIntygListWithRelations(listIntygEntries);
         ListIntygEntry lie = listIntygEntries.get(0);
         assertEquals(3, lie.getRelations().getChildren().size());
+    }
+
+    @Test
+    public void testDecorateWithEmptyList() {
+        when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(buildWebcertRelationsWithParent());
+        List<ListIntygEntry> listIntygEntries = new ArrayList<>();
+        testee.decorateIntygListWithRelations(listIntygEntries);
+        verifyZeroInteractions(listRelationsForCertificateResponderInterface);
     }
 
     private List<ListIntygEntry> buildList() {
