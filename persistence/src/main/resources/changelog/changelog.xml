@@ -961,4 +961,15 @@
     </createIndex>
   </changeSet>
 
+  <changeSet id="49" author="kja">
+      <modifyDataType
+          tableName="INTYG"
+          columnName="MODEL"
+          newDataType="MEDIUMBLOB" />
+      <addNotNullConstraint
+          tableName="INTYG"
+          columnName="MODEL"
+          columnDataType="MEDIUMBLOB" />
+  </changeSet>
+
 </databaseChangeLog>
