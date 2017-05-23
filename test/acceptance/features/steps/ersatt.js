@@ -112,9 +112,17 @@ module.exports = function() {
                     }, function(val) {
                         throw ('NOK - fornyaBtn - expected isPresent to be:' + shouldBePresent);
                     }));
+            } else if ('makulera' === button) {
+                promiseArr.push(expect(element(by.id('makuleraBtn')).isPresent()).to.become(shouldBePresent)
+                    .then(function(val) {
+                        logger.info('OK - makuleraBtn - present: ' + shouldBePresent);
+                    }, function(val) {
+                        throw ('NOK - makuleraBtn - expected isPresent to be:' + shouldBePresent);
+                    }));
             } else {
                 throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');
             }
+
         });
         return Promise.all(promiseArr);
     });

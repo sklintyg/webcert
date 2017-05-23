@@ -175,33 +175,32 @@ module.exports = function() {
         };
 
         return loginIfSessionUsed().then(function() {
-
-
-
-            return browser.get(url).then(function() {
-                helpers.injectConsoleTracing();
-                global.sessionUsed = true;
-                if (!usingCreateDraft2) { // om djupintegration v1 så kommer det fram uppdragsval
-                    var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
-                    enhetSelectorLink.isPresent().then(function(isPresent) {
-                        if (isPresent) {
-                            return enhetSelectorLink.click().then(function() {
+            return browser.get(url)
+                .then(function() {
+                    return expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true);
+                }).then(function() {
+                    helpers.injectConsoleTracing();
+                    global.sessionUsed = true;
+                    if (!usingCreateDraft2) { // om djupintegration v1 så kommer det fram uppdragsval
+                        var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
+                        enhetSelectorLink.isPresent().then(function(isPresent) {
+                            if (isPresent) {
+                                return enhetSelectorLink.click().then(function() {
+                                    return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                                        return helpers.fetchMessageIds(intyg.typ);
+                                    });
+                                });
+                            } else {
                                 return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
                                     return helpers.fetchMessageIds(intyg.typ);
                                 });
-                            });
-                        } else {
-                            return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
-                                return helpers.fetchMessageIds(intyg.typ);
-                            });
-                        }
+                            }
 
-                    });
-                } else {
-                    return helpers.fetchMessageIds(intyg.typ);
-                }
-
-            });
+                        });
+                    } else {
+                        return helpers.fetchMessageIds(intyg.typ);
+                    }
+                });
         });
     }
     this.When(/^jag går in på intyget via djupintegrationslänk och har parametern "([^"]*)" satt till "([^"]*)"$/, function(param, paramValue) {

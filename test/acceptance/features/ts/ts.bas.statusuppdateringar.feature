@@ -2,12 +2,12 @@
 @statusuppdateringar @ts @bas
 Egenskap: Statusuppdateringar för TS-bas intyg
 
-Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
+Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
    Och att vårdsystemet skapat ett intygsutkast för "Transportstyrelsens läkarintyg"
    Och jag går in på intygsutkastet via djupintegrationslänk
 
-@skicka-till-ts
+@skicka-till-ts @SIGNAT
 Scenario: Statusuppdateringar då intyg skickas till Transportstyrelsen
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 

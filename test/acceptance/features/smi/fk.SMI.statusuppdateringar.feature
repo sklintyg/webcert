@@ -36,7 +36,7 @@ Scenario: Statusuppdateringar då intyg raderas
     Och jag går in på intygsutkastet via djupintegrationslänk
     Så ska ett fel-meddelande visa "Intyget gick inte att läsa in"
 
-@fråga-från-fk
+@fråga-från-fk @NYFRFM
 Scenario: Statusuppdateringar vid fråga från FK
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget

@@ -64,18 +64,19 @@ Scenario: Parametrar
     Och jag signerar intyget
 
     När jag går in på intyget via djupintegrationslänk och har parametern "kopieringOK" satt till "false"
-    Så ska det inte finnas en knapp för att förnya intyget
-    Och ska det inte finnas en knapp för att kopiera intyget
+    Så ska det inte finnas knappar för "kopiera,förnya"
 
     När jag går in på intyget via djupintegrationslänk och har parametern "inaktivEnhet" satt till "true"
-    Så ska det inte finnas en knapp för att förnya intyget
-    Och ska det inte finnas en knapp för att kopiera intyget
+    Så ska det inte finnas knappar för "kopiera,förnya"
 
     När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
     Så ska jag varnas om att "Patienten har avlidit"
     Så ska det inte finnas knappar för "kopiera,ersätta,förnya"
 
-
+    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+    När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
+    Så ska det finnas knappar för "kopiera,förnya"
+    Och ska det inte finnas knappar för "ersätta,makulera"
 
 
 

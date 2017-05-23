@@ -167,8 +167,12 @@ module.exports = function() {
         return logInAsUser(userObj);
     });
 
-    this.Given(/^att jag är inloggad som läkare på (underenhet|vårdenhet) "([^"]*)" och inte har uppdrag på "([^"]*)"$/, function(typ, harEnhet, harInteEnhet) {
-
+    this.Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vårdenhet) "([^"]*)" och inte har uppdrag på "([^"]*)"$/, function(selectedOrigin, typ, harEnhet, harInteEnhet) {
+        console.log(selectedOrigin);
+        var origin = 'NORMAL';
+        if (selectedOrigin === ' djupintegrerad') {
+            origin = 'DJUPINTEGRATION';
+        }
         var userObj;
         if (harInteEnhet === 'TSTNMT2321000156-107P') {
             userObj = {
@@ -176,14 +180,23 @@ module.exports = function() {
                 'efterNamn': 'Persson',
                 'hsaId': 'TSTNMT2321000156-107T',
                 'enhetId': harInteEnhet,
-                'origin': 'NORMAL'
+                'origin': origin
             };
         } else if (harInteEnhet === 'TSTNMT2321000156-107J') {
             userObj = {
                 forNamn: 'Johan',
                 efterNamn: 'Johansson',
                 hsaId: 'TSTNMT2321000156-107V',
-                enhetId: harInteEnhet
+                enhetId: harInteEnhet,
+                'origin': origin
+            };
+        } else if (harInteEnhet === 'TSTNMT2321000156-INT2') {
+            userObj = {
+                forNamn: 'Jenny',
+                efterNamn: 'Larsson',
+                hsaId: 'TSTNMT2321000156-1084',
+                enhetId: harInteEnhet,
+                'origin': origin
             };
         } else {
             throw 'Användare för detta saknas';
