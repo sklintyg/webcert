@@ -1,11 +1,5 @@
 [
   {
-    "key": "ineraKundserviceFel",
-    "url": "http://www.inera.se/KONTAKT_KUNDSERVICE/Felanmalan-och-support/Anmal-fel",
-    "text": "Ineras kundservice",
-    "target": "_blank"
-  },
-  {
     "key": "testaEleg",
     "url": "https://eid.primeportal.com/EID/Pages/Testa-e-legitimation.aspx",
     "text": "Läs om tekniska krav och testa din e-legitimation",
@@ -32,7 +26,7 @@
   {
     "key": "socialstyrelsenFmbAnvandas",
     "url": "http://www.socialstyrelsen.se/riktlinjer/forsakringsmedicinsktbeslutsstod/omforsakringsmedicinsktbeslutsstod/saskabeslutsstodetanvandas",
-    "text": "klicka här",
+    "text": "här",
     "target": "_blank"
   },
   {
@@ -48,9 +42,27 @@
     "target": "_blank"
   },
   {
+    "key": "minaintyg",
+    "url": "https://minaintyg.se/",
+    "text": "minaintyg.se",
+    "target": "_blank"
+  },
+  {
+    "key": "1177",
+    "url": "https://www.1177.se/",
+    "text": "www.1177.se",
+    "target": "_blank"
+  },
+  {
     "key": "ineraStartsida",
     "url": "http://www.inera.se",
     "text": "Inera AB",
+    "target": "_blank"
+  },
+  {
+    "key": "ineraKundserviceFel",
+    "url": "http://www.inera.se/KONTAKT_KUNDSERVICE/Felanmalan-och-support/Anmal-fel",
+    "text": "Ineras kundservice",
     "target": "_blank"
   },
   {
