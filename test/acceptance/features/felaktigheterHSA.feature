@@ -15,9 +15,9 @@ Exempel:
   
 
 @adminstratör @skapa-utkast
-Scenario:En vårdadministratör ska kunna skapa intygsutkast med CreateDraft:2
-Givet att jag är inloggad som uthoppad vårdadministratör
-Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning"
+Scenario:En vårdadministratör ska kunna skapa intygsutkast med CreateDraft
+Givet att jag är inloggad som djupintegrerad vårdadministratör
+Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
 Så jag går in på intygsutkastet via djupintegrationslänk
 
 
