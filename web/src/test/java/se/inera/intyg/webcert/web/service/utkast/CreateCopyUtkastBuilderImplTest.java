@@ -193,7 +193,7 @@ public class CreateCopyUtkastBuilderImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testPopulateCopyUtkastFromSignedIntygCheckVardgivare() throws Exception {
+    public void testPopulateCopyUtkastFromSignedIntygEnforceVardenhet() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, true)).thenReturn(ich);
@@ -239,10 +239,10 @@ public class CreateCopyUtkastBuilderImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testPopulateCopyUtkastFromOriginalCheckVardgivare() throws Exception {
+    public void testPopulateCopyUtkastFromOriginalEnforceVardenhet() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
-        orgUtkast.setVardgivarId("OTHER_ID");
+        orgUtkast.setEnhetsId("OTHER_ID");
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
         CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
