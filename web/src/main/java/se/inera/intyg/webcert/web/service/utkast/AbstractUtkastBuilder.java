@@ -18,12 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Relation;
@@ -54,9 +58,6 @@ import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import java.util.Arrays;
-import java.util.Objects;
 
 public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> implements CopyUtkastBuilder<T> {
     private static final String SPACE = " ";
@@ -90,7 +91,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
      */
     @Override
     public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling, boolean checkVardgivare) throws ModuleNotFoundException, ModuleException {
+            boolean coherentJournaling, boolean enforceEnhet) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
         String intygsTyp = copyRequest.getTyp();
@@ -100,8 +101,8 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         GrundData grundData = signedIntygHolder.getUtlatande().getGrundData();
         se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
 
-        if (coherentJournaling && checkVardgivare) {
-            verifyVardgivarId(vardenhet.getVardgivare().getVardgivarid());
+        if (coherentJournaling && enforceEnhet) {
+            verifyEnhetsAuth(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), true);
         }
 
         LOG.debug("Populating copy with details from signed Intyg '{}'", orignalIntygsId);
@@ -153,20 +154,16 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
     public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling, boolean checkVardgivare) throws ModuleNotFoundException, ModuleException {
+            boolean coherentJournaling, boolean enforceEnhet) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
         Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
 
         // Perform enhets auth if coherent journaling is not active.
-        if (!coherentJournaling) {
-            verifyEnhetsAuth(orgUtkast, true);
+        if (!coherentJournaling || enforceEnhet) {
+            verifyEnhetsAuth(orgUtkast.getVardgivarId(), orgUtkast.getEnhetsId(), true);
         } else {
-            if (checkVardgivare) {
-                verifyVardgivarId(orgUtkast.getVardgivarId());
-            }
-            // If it is, log the read to PDL with additional info indicating that coherent journaling is active.
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
             logService.logReadIntyg(logRequest);
         }
@@ -206,21 +203,11 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         return builderResponse;
     }
 
-    protected void verifyEnhetsAuth(Utkast utlatande, boolean isReadOnlyOperation) {
-        String vardgivarId = utlatande.getVardgivarId();
-        String enhetsId = utlatande.getEnhetsId();
-        if (!webCertUserService.isAuthorizedForUnit(vardgivarId, enhetsId, isReadOnlyOperation)) {
-            String msg = "User not authorized for enhet " + enhetsId;
+    protected void verifyEnhetsAuth(String vardgivarId, String enhetId, boolean isReadOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(vardgivarId, enhetId, isReadOnlyOperation)) {
+            String msg = "User not authorized for enhet " + enhetId;
             LOG.debug(msg);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
-        }
-    }
-
-    protected void verifyVardgivarId(String vardgivarId) {
-        if (!Objects.equals(vardgivarId, webCertUserService.getUser().getValdVardgivare().getId())) {
-            String message = "VardgivarId of user and utkast does not match";
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
         }
     }
 
