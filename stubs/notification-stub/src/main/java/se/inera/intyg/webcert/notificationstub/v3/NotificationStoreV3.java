@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
-import java.util.Collection;
-
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+
+import java.util.Collection;
 
 public interface NotificationStoreV3 {
 
-    void put(String utlatandeId, CertificateStatusUpdateForCareType request);
+    void put(CertificateStatusUpdateForCareType request);
 
     Collection<CertificateStatusUpdateForCareType> getNotifications();
 

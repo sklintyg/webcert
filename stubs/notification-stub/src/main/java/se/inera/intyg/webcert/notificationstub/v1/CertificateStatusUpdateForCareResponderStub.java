@@ -82,7 +82,7 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
                 + "*********************************************************************************", logicalAddress, utlatandeId,
                 handelseKod, sb.toString());
 
-        notificationStore.put(utlatandeId, request);
+        notificationStore.put(request);
 
         CertificateStatusUpdateForCareResponseType response = new CertificateStatusUpdateForCareResponseType();
         response.setResult(ResultTypeUtil.okResult());

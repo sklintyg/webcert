@@ -18,40 +18,54 @@
  */
 package se.inera.intyg.webcert.notificationstub;
 
-import static org.junit.Assert.assertEquals;
-
-import java.time.LocalDateTime;
-import java.util.*;
-
+import com.google.common.collect.Iterables;
+import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.*;
-
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+
 public class NotificationStoreTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationStoreTest.class);
 
     private static List<String> INTYG_IDS = Arrays.asList("intyg1", "intyg2", "intyg3", "intyg4", "intyg5", "intyg6", "intyg7", "intyg8", "intyg9",
             "intyg10");
 
+    @Before
+    public void init() {
+        File dataFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "notificationsv1.data");
+        dataFile.exists();
+        if (dataFile.delete()) {
+            LOG.info("Deleted notificationStore data file");
+        }
+    }
+
     @Test
     public void testPurge() {
 
-        Multimap<String, CertificateStatusUpdateForCareType> notificationsMap = initNotificationsMap(110);
-        assertEquals(110, notificationsMap.size());
+        NotificationStoreImpl notificationStore = new NotificationStoreImpl(UUID.randomUUID().toString(), 100);
+        populateNotificationsMap(100, notificationStore);
 
-        NotificationStoreImpl notificationStore = new NotificationStoreImpl(100);
-        notificationStore.purge(notificationsMap);
-
-        assertEquals(80, notificationsMap.size());
+        notificationStore.purge();
+        assertEquals(80, notificationStore.getNotifications().size());
     }
 
-    private Multimap<String, CertificateStatusUpdateForCareType> initNotificationsMap(int nbr) {
+    private void populateNotificationsMap(int nbr, NotificationStoreImpl notificationStore) {
 
         Iterator<String> intygsIdIter = Iterables.cycle(INTYG_IDS).iterator();
-
-        Multimap<String, CertificateStatusUpdateForCareType> notificationsMap = ArrayListMultimap.create();
 
         LocalDateTime baseTime = LocalDateTime.now();
 
@@ -71,10 +85,8 @@ public class NotificationStoreTest {
             CertificateStatusUpdateForCareType type = new CertificateStatusUpdateForCareType();
             type.setUtlatande(utl);
 
-            notificationsMap.put(intygsId, type);
+            notificationStore.put(type);
         }
-
-        return notificationsMap;
     }
 
 }

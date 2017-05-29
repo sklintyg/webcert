@@ -18,112 +18,42 @@
  */
 package se.inera.intyg.webcert.notificationstub;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.*;
-
+import org.apache.commons.lang3.tuple.Pair;
+import se.inera.intyg.webcert.notificationstub.store.BaseStore;
+import se.inera.intyg.webcert.notificationstub.store.StoreFactory;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
-import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.time.LocalDateTime;
 
+public class NotificationStoreImpl extends BaseStore<CertificateStatusUpdateForCareType>
+        implements NotificationStore {
 
-public class NotificationStoreImpl implements NotificationStore {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationStore.class);
-
-    private static final double LOAD = 0.8;
-
-    private final int maxSize;
-
-    private final int minSize;
-
-    public NotificationStoreImpl(int maxSize) {
-        this.maxSize = maxSize;
-        this.minSize = Double.valueOf(maxSize * LOAD).intValue();
+    public NotificationStoreImpl(String cacheName, int maxSize) {
+        super(maxSize);
+        super.notificationsMap = StoreFactory.getChronicleMap(cacheName, minSize, AVERAGE_VALUE_SIZE, AVERAGE_KEY);
     }
 
-    private Multimap<String, CertificateStatusUpdateForCareType> rawNotificationsMap = ArrayListMultimap.create();
-    private Multimap<String, CertificateStatusUpdateForCareType> notificationsMap = Multimaps.synchronizedMultimap(rawNotificationsMap);
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.webcert.notificationstub.NotificationStore#put(java.lang.String,
-     * se.inera.certificate.clinicalprocess
-     * .healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType)
-     */
     @Override
-    public void put(String utlatandeId, CertificateStatusUpdateForCareType request) {
-        notificationsMap.put(utlatandeId, request);
-        if (notificationsMap.size() >= maxSize) {
-            purge(notificationsMap);
+    protected LocalDateTime getTidpunkt(Pair<String, CertificateStatusUpdateForCareType> left) {
+        return left
+                .getValue()
+                .getUtlatande()
+                .getHandelse()
+                .getHandelsetidpunkt();
+    }
+
+    @Override
+    protected CertificateStatusUpdateForCareType transform(String s) {
+        try {
+            return objectMapper.readValue(s, CertificateStatusUpdateForCareType.class);
+        } catch (IOException e) {
+            return null;
         }
     }
 
-    public int size() {
-        return this.notificationsMap.size();
-    }
-
-    public void purge(Multimap<String, CertificateStatusUpdateForCareType> notificationsMap) {
-
-        LOG.debug("NotificationStore contains {} notifications, pruning old ones...", notificationsMap.size());
-
-        // find the oldest ones
-        Ordering<CertificateStatusUpdateForCareType> order = new Ordering<CertificateStatusUpdateForCareType>() {
-
-            @Override
-            public int compare(@Nonnull CertificateStatusUpdateForCareType left, @Nonnull CertificateStatusUpdateForCareType right) {
-                LocalDateTime lDate = left.getUtlatande().getHandelse().getHandelsetidpunkt();
-                LocalDateTime rDate = right.getUtlatande().getHandelse().getHandelsetidpunkt();
-
-                return lDate.compareTo(rDate);
-            }
-        };
-
-        // sort the list of entries in the map so that the oldest entries are first
-        List<CertificateStatusUpdateForCareType> sortedEntries = order.sortedCopy(notificationsMap.values());
-
-        Iterator<CertificateStatusUpdateForCareType> iter = sortedEntries.iterator();
-
-        // trim map down to minSize
-        while (notificationsMap.size() > minSize) {
-            CertificateStatusUpdateForCareType objToRemove = iter.next();
-            String intygsId = objToRemove.getUtlatande().getUtlatandeId().getExtension();
-            notificationsMap.remove(intygsId, objToRemove);
-        }
-
-        LOG.debug("Pruning done! NotificationStore now contains {} notifications", notificationsMap.size());
-    }
-
-    public int getMaxSize() {
-        return maxSize;
-    }
-
-    public int getMinSize() {
-        return minSize;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.webcert.notificationstub.NotificationStore#getNotifications()
-     */
     @Override
-    public Collection<CertificateStatusUpdateForCareType> getNotifications() {
-        return notificationsMap.values();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.webcert.notificationstub.NotificationStore#clear()
-     */
-    @Override
-    public void clear() {
-        notificationsMap.clear();
+    public void purge() {
+        super.purge();
     }
 }
