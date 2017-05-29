@@ -88,6 +88,14 @@
     dest: "{{ config_folder }}"
     version: "{{ config_version }}"
 
+- name: Create stubdata directory
+  file:
+    path: "{{ stubdata_folder }}"
+    owner: "{{ tomcat7_user }}"
+    group: "{{ tomcat7_group }}"
+    state: directory
+    recurse: yes
+
 - name: Start tomcat
   service:
     name: "{{ tomcat_service }}"

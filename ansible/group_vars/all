@@ -33,6 +33,8 @@ tomcat_conf: "{{ inera_tomcat_folder }}/conf"
 tomcat_bin: "{{ inera_tomcat_folder }}/bin"
 tomcat_lib: "{{ inera_tomcat_folder }}/lib"
 webapps_folder: "{{ inera_tomcat_folder }}/webapps"
+tomcat7_user: "inera-tomcat"
+tomcat7_group: "inera-tomcat"
 
 # Database configuration
 database_server: localhost
@@ -60,3 +62,6 @@ activemq_conf: "{{ inera_root }}/activemq/conf"
 
 # Logsender configuration
 logsender_version: 5.3.7
+
+# Stub data folder
+stubdata_folder: "{{ inera_root }}/stubdata/webcert"

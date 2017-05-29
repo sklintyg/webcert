@@ -18,38 +18,70 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import net.openhft.chronicle.map.ChronicleMap;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Ordering;
-
+import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class NotificationStoreV3Impl implements NotificationStoreV3 {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationStoreV3Impl.class);
 
     private static final double LOAD = 0.8;
+    private static final String WEBCERT_STUB_DATA_FOLDER = "webcert.stub.data.folder";
+    private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+    public static final int AVERAGE_VALUE_SIZE = 1024;
 
     private final int maxSize;
-
     private final int minSize;
-    private Multimap<String, CertificateStatusUpdateForCareType> rawNotificationsMap = ArrayListMultimap.create();
-    private Multimap<String, CertificateStatusUpdateForCareType> notificationsMap = Multimaps.synchronizedMultimap(rawNotificationsMap);
+
+    private ChronicleMap<String, String> notificationsMap;
+
+    private CustomObjectMapper objectMapper = new CustomObjectMapper();
 
     public NotificationStoreV3Impl(int maxSize) {
         this.maxSize = maxSize;
         this.minSize = Double.valueOf(maxSize * LOAD).intValue();
+        String notificationStubFile = getStubDataFile();
+
+        LOG.info("Created disk-persistent ChronicleMap for notificationstub at {} with minsize {}.", notificationStubFile, minSize);
+
+        try {
+            notificationsMap = ChronicleMap
+                    .of(String.class, String.class)
+                    .name("notificationsv3")
+                    .averageKey("963d957f-6662-4cd3-bb99-d3d9fb419b51")
+                    .averageValueSize(AVERAGE_VALUE_SIZE)
+                    .entries(minSize)
+                    .createOrRecoverPersistedTo(new File(notificationStubFile));
+            LOG.info("Successfully created disk-persistent ChronicleMap for notificationstub at {}", notificationStubFile);
+        } catch (IOException e) {
+            LOG.error("Could not create persistent notifications store: " + e.getMessage());
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private String getStubDataFile() {
+        if (System.getProperty(WEBCERT_STUB_DATA_FOLDER) != null) {
+            return System.getProperty(WEBCERT_STUB_DATA_FOLDER) + File.separator + "notificationstubv3.data";
+        } else if (System.getProperty(JAVA_IO_TMPDIR) != null) {
+            return System.getProperty(JAVA_IO_TMPDIR) + File.separator + "notificationstubv3.data";
+        } else {
+            throw new IllegalStateException("Error booting stub - cannot determine stub data folder from system properties.");
+        }
     }
 
     /*
@@ -61,9 +93,14 @@ public class NotificationStoreV3Impl implements NotificationStoreV3 {
      */
     @Override
     public void put(String utlatandeId, CertificateStatusUpdateForCareType request) {
-        notificationsMap.put(utlatandeId, request);
-        if (notificationsMap.size() >= maxSize) {
-            purge(notificationsMap);
+        try {
+            notificationsMap.put(UUID.randomUUID().toString(), objectMapper.writeValueAsString(request));
+            if (notificationsMap.size() >= maxSize) {
+                purge(notificationsMap);
+            }
+
+        } catch (JsonProcessingException e) {
+            LOG.error(e.getMessage());
         }
     }
 
@@ -71,32 +108,26 @@ public class NotificationStoreV3Impl implements NotificationStoreV3 {
         return this.notificationsMap.size();
     }
 
-    public void purge(Multimap<String, CertificateStatusUpdateForCareType> notificationsMap) {
+    private void purge(ChronicleMap<String, String> notificationsMap) {
 
         LOG.debug("NotificationStoreV3 contains {} notifications, pruning old ones...", notificationsMap.size());
 
-        // find the oldest ones
-        Ordering<CertificateStatusUpdateForCareType> order = new Ordering<CertificateStatusUpdateForCareType>() {
-
-            @Override
-            public int compare(@Nonnull CertificateStatusUpdateForCareType left, @Nonnull CertificateStatusUpdateForCareType right) {
-                LocalDateTime lDate = left.getHandelse().getTidpunkt();
-                LocalDateTime rDate = right.getHandelse().getTidpunkt();
-
-                return lDate.compareTo(rDate);
+        List<Pair<String, CertificateStatusUpdateForCareType>> values = notificationsMap.entrySet().stream().map(entry -> {
+            try {
+                return Pair.of(entry.getKey(), objectMapper.readValue(entry.getValue(), CertificateStatusUpdateForCareType.class));
+            } catch (IOException e) {
+                return null;
             }
-        };
-
-        // sort the list of entries in the map so that the oldest entries are first
-        List<CertificateStatusUpdateForCareType> sortedEntries = order.sortedCopy(notificationsMap.values());
-
-        Iterator<CertificateStatusUpdateForCareType> iter = sortedEntries.iterator();
+        })
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(left -> left.getRight().getHandelse().getTidpunkt()))
+                .collect(Collectors.toList());
+        Iterator<Pair<String, CertificateStatusUpdateForCareType>> iter = values.iterator();
 
         // trim map down to minSize
         while (notificationsMap.size() > minSize) {
-            CertificateStatusUpdateForCareType objToRemove = iter.next();
-            String intygsId = objToRemove.getIntyg().getIntygsId().getExtension();
-            notificationsMap.remove(intygsId, objToRemove);
+            Pair<String, CertificateStatusUpdateForCareType> objToRemove = iter.next();
+            notificationsMap.remove(objToRemove.getKey(), objToRemove.getValue());
         }
 
         LOG.debug("Pruning done! NotificationStoreV3 now contains {} notifications", notificationsMap.size());
@@ -109,7 +140,15 @@ public class NotificationStoreV3Impl implements NotificationStoreV3 {
      */
     @Override
     public Collection<CertificateStatusUpdateForCareType> getNotifications() {
-        return notificationsMap.values();
+        return notificationsMap.values().stream().map(s -> {
+            try {
+                return objectMapper.readValue(s, CertificateStatusUpdateForCareType.class);
+            } catch (IOException e) {
+                return null;
+            }
+        })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /*
