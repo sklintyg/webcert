@@ -966,10 +966,6 @@
           tableName="INTYG"
           columnName="MODEL"
           newDataType="MEDIUMBLOB" />
-      <addNotNullConstraint
-          tableName="INTYG"
-          columnName="MODEL"
-          columnDataType="MEDIUMBLOB" />
   </changeSet>
 
 </databaseChangeLog>
