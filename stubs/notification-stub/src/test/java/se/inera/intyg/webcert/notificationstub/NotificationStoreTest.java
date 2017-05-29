@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.notificationstub;
 
 import com.google.common.collect.Iterables;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,11 +47,11 @@ public class NotificationStoreTest {
             "intyg10");
 
     @Before
+    @After
     public void init() {
         File dataFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "notificationsv1.data");
-        dataFile.exists();
-        if (dataFile.delete()) {
-            LOG.info("Deleted notificationStore data file");
+        if (dataFile.exists()) {
+            dataFile.delete();
         }
     }
 
@@ -57,25 +59,27 @@ public class NotificationStoreTest {
     public void testPurge() {
 
         NotificationStoreImpl notificationStore = new NotificationStoreImpl(UUID.randomUUID().toString(), 100);
-        populateNotificationsMap(100, notificationStore);
+        LocalDateTime now = LocalDateTime.now();
+        populateNotificationsMap(100, notificationStore, now);
 
         notificationStore.purge();
         assertEquals(80, notificationStore.getNotifications().size());
+
+        LOG.info(notificationStore.getNotifications().stream().map(n -> n.getUtlatande().getHandelse().getHandelsetidpunkt().toString()).sorted()
+                .collect(Collectors.joining("\n")));
+        LOG.info("Oldest should be: {}", now.minusMinutes(100).toString());
     }
 
-    private void populateNotificationsMap(int nbr, NotificationStoreImpl notificationStore) {
+    private void populateNotificationsMap(int nbr, NotificationStoreImpl notificationStore, LocalDateTime baseTime) {
 
         Iterator<String> intygsIdIter = Iterables.cycle(INTYG_IDS).iterator();
-
-        LocalDateTime baseTime = LocalDateTime.now();
 
         for (int i = 0; i < nbr; i++) {
 
             String intygsId = intygsIdIter.next();
 
             Handelse handelse = new Handelse();
-            baseTime = baseTime.minusMinutes(1);
-            handelse.setHandelsetidpunkt(baseTime);
+            handelse.setHandelsetidpunkt(baseTime.minusMinutes(nbr - i));
 
             UtlatandeType utl = new UtlatandeType();
             utl.setHandelse(handelse);

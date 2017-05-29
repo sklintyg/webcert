@@ -23,7 +23,7 @@ public final class StoreFactory {
     public static ChronicleMap<String, String> getChronicleMap(String name, int minSize, int averageValueSize, String averageKey) {
         String notificationStubFile = getStubDataFile(name);
 
-        LOG.info("Created disk-persistent ChronicleMap for notificationstub at {} with minsize {}.", notificationStubFile, minSize);
+        LOG.info("Creating disk-persistent ChronicleMap for notificationstub at {} with minsize {}.", notificationStubFile, minSize);
 
         try {
             ChronicleMap notificationsMap = ChronicleMap

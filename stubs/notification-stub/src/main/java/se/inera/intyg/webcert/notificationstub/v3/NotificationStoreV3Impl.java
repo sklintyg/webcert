@@ -23,6 +23,7 @@ import se.inera.intyg.webcert.notificationstub.store.BaseStore;
 import se.inera.intyg.webcert.notificationstub.store.StoreFactory;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -31,6 +32,13 @@ public class NotificationStoreV3Impl extends BaseStore<CertificateStatusUpdateFo
     public NotificationStoreV3Impl(String cacheName, int maxSize) {
         super(maxSize);
         this.notificationsMap = StoreFactory.getChronicleMap(cacheName, minSize, AVERAGE_VALUE_SIZE, AVERAGE_KEY);
+    }
+
+    @PreDestroy
+    public void close() {
+        if (this.notificationsMap != null) {
+            this.notificationsMap.close();
+        }
     }
 
     @Override

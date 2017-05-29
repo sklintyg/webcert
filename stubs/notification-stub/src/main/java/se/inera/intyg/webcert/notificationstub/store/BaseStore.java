@@ -44,7 +44,7 @@ public abstract class BaseStore<T> {
     public void put(T request) {
         try {
             notificationsMap.put(UUID.randomUUID().toString(), objectMapper.writeValueAsString(request));
-            if (notificationsMap.size() >= maxSize) {
+            if (notificationsMap.values().size() >= maxSize) {
                 purge();
             }
 
@@ -56,7 +56,7 @@ public abstract class BaseStore<T> {
 
     protected void purge() {
 
-        LOG.debug("NotificationStoreV3 contains {} notifications, pruning old ones...", notificationsMap.size());
+        LOG.debug("NotificationStoreV3 contains {} notifications, pruning old ones...", notificationsMap.values().size());
 
         List<Pair<String, T>> values = notificationsMap.entrySet().stream()
                 .map(entry -> Pair.of(entry.getKey(), transform(entry.getValue())))
