@@ -102,6 +102,7 @@ function changeField(intygShortcode, field, callback, clearFlag) {
             intyg.funktionsnedsattning.debut = helpers.randomTextString();
             browser.findElement(by.id('funktionsnedsattningDebut')).sendKeys(intyg.funktionsnedsattning.debut).then(callback);
         } else if (field === 'funktionsnedsattningPaverkan') {
+            intyg.funktionsnedsattning = {};
             intyg.funktionsnedsattning.paverkan = helpers.randomTextString();
             luaeFSUtkastPage.funktionsnedsattning.paverkan.sendKeys(intyg.funktionsnedsattning.paverkan).then(callback);
         } else if (field === 'ovrigt') {
