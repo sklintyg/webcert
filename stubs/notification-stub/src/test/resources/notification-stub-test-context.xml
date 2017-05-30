@@ -24,7 +24,7 @@
 >
 
   <beans profile="dev,wc-all-stubs,wc-notificationsender-stub,testability-api">
-    <bean id="notificationStore" class="se.inera.intyg.webcert.notificationstub.NotificationStoreImpl">
+    <bean id="notificationStore" class="se.inera.intyg.webcert.notificationstub.v1.NotificationStoreImpl">
       <constructor-arg type="java.lang.String" value="notificationsv1" />
       <constructor-arg type="int" value="100" />
     </bean>

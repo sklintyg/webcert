@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.notificationstub;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.notificationstub.v1.NotificationStore;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
 import se.inera.intyg.webcert.notificationstub.v3.stat.NotificationStubEntry;
 import se.inera.intyg.webcert.notificationstub.v3.stat.StatTransformerUtil;
