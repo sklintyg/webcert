@@ -26,13 +26,13 @@ public final class StoreFactory {
         LOG.info("Creating disk-persistent ChronicleMap for notificationstub at {} with minsize {}.", notificationStubFile, minSize);
 
         try {
-            ChronicleMap notificationsMap = ChronicleMap
+            ChronicleMap<String, String> notificationsMap = ChronicleMap
                     .of(String.class, String.class)
                     .name(name)
                     .averageKey(averageKey)
                     .averageValueSize(averageValueSize)
                     .entries(minSize)
-                    .createOrRecoverPersistedTo(new File(notificationStubFile));
+                    .createPersistedTo(new File(notificationStubFile));
             LOG.info("Successfully created disk-persistent ChronicleMap for notificationstub at {}", notificationStubFile);
             return notificationsMap;
         } catch (IOException e) {
