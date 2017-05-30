@@ -21,6 +21,7 @@
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
+var mysql = require('mysql');
 
 function sh(value) {
     return (value.search(/\s-\s/g) !== -1) ? value.split(/\s-\s/g)[0].replace('Ämne: ', '') : value.split(/\n/g)[0].replace('Ämne: ', '');
@@ -125,13 +126,46 @@ module.exports = {
     },
     getIntygElementRow: function(intygstyp, status, cb) {
         var qaTable = element(by.css('table.table-qa'));
-        qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
-            return elem.all(by.css('td')).get(2).getText().then(function(text) {
-                return (text === intygstyp);
-            });
-        }).then(function(filteredElements) {
-            cb(filteredElements[0]);
+
+        var connection = mysql.createConnection({
+            host: 'mysql.ip30.nordicmedtest.se',
+            user: process.env.DATABASE_USER,
+            password: process.env.DATABASE_PASSWORD,
+            // database: process.env.DATABASE_NAME,
+            multipleStatements: true
         });
+
+        qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
+                return elem.all(by.css('td')).get(2).getText().then(function(text) {
+                    return (text === intygstyp);
+                });
+            })
+            // Kontrollera att intyget ej är ersatt
+            // Förhoppningsvis temporärt tills vi har någon label att gå på istället
+            .filter(function(el, i) {
+                return el.element(by.cssContainingText('button', 'Visa')).getAttribute('id')
+                    .then(function(id) {
+                        id = id.replace('showBtn-', '');
+                        var query = 'SELECT RELATION_KOD FROM webcert_ip30.INTYG where INTYGS_ID = "39ec9e48-c3ec-433e-8738-4b919807935e"';
+
+                        return new Promise(function(resolve, reject) {
+                            connection.query(query,
+                                function(err, rows, fields) {
+                                    if (err) {
+                                        throw (err);
+                                    }
+                                    console.log(rows);
+                                    resolve(rows[0].RELATION_KOD !== 'ERSATT');
+                                });
+
+                        });
+                    });
+            })
+            .then(function(filteredElements) {
+                console.log('connection.end()');
+                connection.end();
+                cb(filteredElements[0]);
+            });
     },
     getAbbrev: function(value) {
         for (var key in this.intygShortcode) {
