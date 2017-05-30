@@ -79,46 +79,27 @@ module.exports = function() {
         return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
     });
 
-    this.Given(/^ska det( inte)? finnas knappar för "([^"]*)"$/, function(inte, buttons) {
+    this.Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typText, typ) {
+
+        if (typ && intyg.typ !== typ) {
+            console.log('Intygstyp är inte ' + typ);
+            return Promise.resolve();
+        }
+
         buttons = buttons.split(',');
         var shouldBePresent = typeof(inte) === 'undefined';
         var promiseArr = [];
         buttons.forEach(function(button) {
             if ('skicka' === button) {
-                promiseArr.push(expect(element(by.id('sendBtn')).isPresent()).to.become(shouldBePresent)
-                    .then(function(val) {
-                        logger.info('OK - sendBtn - present: ' + shouldBePresent);
-                    }, function(val) {
-                        throw ('NOK - sendBtn - expected isPresent to be:' + shouldBePresent);
-                    }));
+                promiseArr.push(checkIfButtonIsUsable('sendBtn', shouldBePresent));
             } else if ('kopiera' === button) {
-                promiseArr.push(expect(element(by.id('copyBtn')).isPresent()).to.become(shouldBePresent)
-                    .then(function(val) {
-                        logger.info('OK - copyBtn - present: ' + shouldBePresent);
-                    }, function(val) {
-                        throw ('NOK - copyBtn - expected isPresent to be:' + shouldBePresent);
-                    }));
+                promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
             } else if ('ersätta' === button) {
-                promiseArr.push(expect(element(by.id('ersattBtn')).isPresent()).to.become(shouldBePresent)
-                    .then(function(val) {
-                        logger.info('OK - ersattBtn - present: ' + shouldBePresent);
-                    }, function(val) {
-                        throw ('NOK - ersattBtn - expected isPresent to be:' + shouldBePresent);
-                    }));
+                promiseArr.push(checkIfButtonIsUsable('ersattBtn', shouldBePresent));
             } else if ('förnya' === button) {
-                promiseArr.push(expect(element(by.id('fornyaBtn')).isPresent()).to.become(shouldBePresent)
-                    .then(function(val) {
-                        logger.info('OK - fornyaBtn - present: ' + shouldBePresent);
-                    }, function(val) {
-                        throw ('NOK - fornyaBtn - expected isPresent to be:' + shouldBePresent);
-                    }));
+                promiseArr.push(checkIfButtonIsUsable('fornyaBtn', shouldBePresent));
             } else if ('makulera' === button) {
-                promiseArr.push(expect(element(by.id('makuleraBtn')).isPresent()).to.become(shouldBePresent)
-                    .then(function(val) {
-                        logger.info('OK - makuleraBtn - present: ' + shouldBePresent);
-                    }, function(val) {
-                        throw ('NOK - makuleraBtn - expected isPresent to be:' + shouldBePresent);
-                    }));
+                promiseArr.push(checkIfButtonIsUsable('makuleraBtn', shouldBePresent));
             } else {
                 throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');
             }
@@ -128,3 +109,21 @@ module.exports = function() {
     });
 
 };
+
+
+function checkIfButtonIsUsable(btnId, shouldBePresent) {
+    return expect(element(by.id(btnId)).isPresent()).to.become(shouldBePresent)
+        .then(function(val) {
+            logger.info('OK - ' + btnId + ' - present: ' + shouldBePresent);
+        }, function(val) {
+            console.log('NOK - ' + btnId + ' - expected isPresent to be:' + shouldBePresent);
+            console.log('Maybe its just not displayed? Checking..');
+
+            return expect(element(by.id(btnId)).isDisplayed()).to.become(shouldBePresent)
+                .then(function(val) {
+                    logger.info('OK - ' + btnId + ' - isDisplayed: ' + shouldBePresent);
+                }, function(val) {
+                    throw ('NOK - ' + btnId + ' - expected isDisplayed to be:' + shouldBePresent);
+                });
+        });
+}
