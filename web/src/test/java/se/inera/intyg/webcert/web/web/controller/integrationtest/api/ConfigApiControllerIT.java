@@ -42,7 +42,8 @@ public class ConfigApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
                 .when().get("api/config/links")
-                .then().statusCode(200);
+                .then().statusCode(200).and()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-links-schema.json"));
     }
 
 }

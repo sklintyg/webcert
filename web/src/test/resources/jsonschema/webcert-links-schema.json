@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    ".{1,}": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
