@@ -1,5 +1,11 @@
 ---
 # This playbook deploys WebCert
+- hosts: activemq
+  become: yes
+  environment:
+    "{{ proxy_env }}"
+  roles:
+    - stub-resources
 
 - hosts: tomcat
   serial: 1
