@@ -146,7 +146,7 @@ module.exports = {
                 return el.element(by.cssContainingText('button', 'Visa')).getAttribute('id')
                     .then(function(id) {
                         id = id.replace('showBtn-', '');
-                        var query = 'SELECT RELATION_KOD FROM webcert_ip30.INTYG where INTYGS_ID = "39ec9e48-c3ec-433e-8738-4b919807935e"';
+                        var query = 'SELECT RELATION_KOD FROM webcert_ip30.INTYG where RELATION_INTYG_ID = "' + id + '"  AND RELATION_KOD = "ERSATT"';
 
                         return new Promise(function(resolve, reject) {
                             connection.query(query,
@@ -155,7 +155,7 @@ module.exports = {
                                         throw (err);
                                     }
                                     console.log(rows);
-                                    resolve(rows[0].RELATION_KOD !== 'ERSATT');
+                                    resolve(rows.length <= 0);
                                 });
 
                         });
