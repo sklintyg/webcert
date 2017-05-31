@@ -52,11 +52,9 @@ var LisuUtkast = BaseSmiUtkast._extend({
                 nuvarandeArbete: element(by.id('sysselsattning.typ-1')),
                 arbetssokande: element(by.id('sysselsattning.typ-2')),
                 foraldraledighet: element(by.id('sysselsattning.typ-3')),
-                studier: element(by.id('sysselsattning.typ-4')),
-                arbetmarknadspolitisktProgram: element(by.id('sysselsattning.typ-5'))
+                studier: element(by.id('sysselsattning.typ-4'))
             },
-            nuvarandeArbeteBeskrivning: element(by.id('nuvarandeArbete')),
-            arbetsmarknadspolitisktProgramBeskrivning: element(by.id('arbetsmarknadspolitisktProgram'))
+            nuvarandeArbeteBeskrivning: element(by.id('nuvarandeArbete'))
         };
         this.konsekvenser = {
             funktionsnedsattning: element(by.id('funktionsnedsattning')),
@@ -285,8 +283,6 @@ var LisuUtkast = BaseSmiUtkast._extend({
             .then(function() {
                 if (sysselsattning.yrkesAktiviteter) {
                     return sysselsattningEL.nuvarandeArbeteBeskrivning.sendKeys(sysselsattning.yrkesAktiviteter);
-                } else if (sysselsattning.programAktiviteter) {
-                    return sysselsattningEL.arbetsmarknadspolitisktProgramBeskrivning.sendKeys(sysselsattning.programAktiviteter);
                 } else {
                     return Promise.resolve();
                 }

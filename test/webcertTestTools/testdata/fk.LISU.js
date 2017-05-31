@@ -34,9 +34,6 @@ function getRandomSysselsattning() {
         typ: 'Föräldraledighet för vård av barn'
     }, {
         typ: 'Studier'
-    }, {
-        typ: 'Deltagande i arbetsmarknadspolitiskt program',
-        programAktiviteter: testdataHelper.randomTextString()
     }])[0];
 }
 
