@@ -1,6 +1,6 @@
 ---
 # This playbook deploys WebCert
-- hosts: activemq
+- hosts: stubdata
   become: yes
   environment:
     "{{ proxy_env }}"

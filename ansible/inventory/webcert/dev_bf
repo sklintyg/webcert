@@ -6,3 +6,6 @@ webcert-dev-bf ansible_ssh_host=164.40.180.105 ansible_ssh_user=ine-intyg-build 
 
 [activemq]
 webcert-dev-bf ansible_ssh_host=164.40.180.105 ansible_ssh_user=ine-intyg-build ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
+
+[stubdata]
+webcert-dev-bf ansible_ssh_host=164.40.180.105 ansible_ssh_user=ine-intyg-build ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/ine-build_rsa

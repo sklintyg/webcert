@@ -6,3 +6,6 @@ webcert-lab ansible_ssh_host=intygspoc.inera.nordicmedtest.se ansible_ssh_user=i
 
 [activemq]
 webcert-lab ansible_ssh_host=intygspoc.inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=13022 ansible_ssh_private_key_file=~/.ssh/inera_rsa
+
+[stubdata]
+webcert-lab ansible_ssh_host=intygspoc.inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=13022 ansible_ssh_private_key_file=~/.ssh/inera_rsa

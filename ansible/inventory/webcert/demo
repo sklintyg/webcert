@@ -7,3 +7,6 @@ webcert-demo ansible_ssh_host=ine-dib-app02.sth.basefarm.net ansible_ssh_user=in
 
 [activemq]
 webcert-demo ansible_ssh_host=ine-dib-app02.sth.basefarm.net ansible_ssh_user=ine-intyg-build ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
+
+[stubdata]
+webcert-demo ansible_ssh_host=ine-dib-app02.sth.basefarm.net ansible_ssh_user=ine-intyg-build ansible_ssh_private_key_file=~/.ssh/ine-build_rsa
