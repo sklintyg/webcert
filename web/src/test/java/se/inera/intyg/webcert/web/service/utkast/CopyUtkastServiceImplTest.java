@@ -196,7 +196,7 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
 
@@ -231,7 +231,7 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 eq(true), any(boolean.class), eq(true))).thenReturn(resp);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
 
@@ -265,7 +265,7 @@ public class CopyUtkastServiceImplTest {
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 eq(true), any(boolean.class), eq(true))).thenReturn(resp);
         RelationItem ersattRelation = new RelationItem("ersattnings-intyg-id", "SIGNED", null);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.of(ersattRelation));
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.of(ersattRelation));
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
 
@@ -331,7 +331,7 @@ public class CopyUtkastServiceImplTest {
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
@@ -367,7 +367,7 @@ public class CopyUtkastServiceImplTest {
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setDjupintegrerad(true);
@@ -403,7 +403,7 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setDjupintegrerad(true);
@@ -441,7 +441,7 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);

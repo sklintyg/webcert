@@ -298,7 +298,7 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygDataWithRelation() throws Exception {
         when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
-        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID), eq(false))).thenReturn(Optional.empty());
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
@@ -310,7 +310,25 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID), eq(false));
+    }
+
+    @Test
+    public void testFetchIntygDataWithRelationCoherentJournaling() throws Exception {
+        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID), eq(true))).thenReturn(Optional.empty());
+
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, true);
+
+        assertNotNull(res);
+        assertNotNull(res.getRelations());
+        assertNull(res.getReplacedByRelation());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(relationService).getRelations(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID), eq(true));
     }
 
     @Test
@@ -319,7 +337,7 @@ public class IntygServiceTest {
         when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
         when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
-        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID), eq(false))).thenReturn(Optional.empty());
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
@@ -331,7 +349,28 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID), eq(false));
+    }
+
+    @Test
+    public void testFetchIntygDataWithRelationNotFoundInITCoherentJournaling() throws Exception {
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new IntygModuleFacadeException(""));
+        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
+                .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
+        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID), eq(true))).thenReturn(Optional.empty());
+
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, true);
+
+        assertNotNull(res);
+        assertNotNull(res.getRelations());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(intygRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(relationService).getRelations(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID), eq(true));
     }
 
     @Test
@@ -340,7 +379,7 @@ public class IntygServiceTest {
         when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
         when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
-        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID), eq(false))).thenReturn(Optional.empty());
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
@@ -352,7 +391,28 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(relationService).getRelations(eq(CERTIFICATE_ID));
-        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID), eq(false));
+    }
+
+    @Test
+    public void testFetchIntygDataWithRelationITUnavailableCoherentJournaling() throws Exception {
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new WebServiceException(""));
+        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
+                .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
+        when(relationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(Optional.of(new ArrayList<>()));
+        when(relationService.getReplacedByRelation(eq(CERTIFICATE_ID), eq(true))).thenReturn(Optional.empty());
+
+        IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, true);
+
+        assertNotNull(res);
+        assertNotNull(res.getRelations());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(intygRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(relationService).getRelations(eq(CERTIFICATE_ID));
+        verify(relationService).getReplacedByRelation(eq(CERTIFICATE_ID), eq(true));
     }
 
     @Test
@@ -730,7 +790,7 @@ public class IntygServiceTest {
 
         when(intygRepository.findOne(intygId)).thenReturn(utkast);
         when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
-        when(relationService.getReplacedByRelation(eq(intygId))).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(eq(intygId), eq(false))).thenReturn(Optional.empty());
 
         intygService.handleSignedCompletion(utkast, recipient);
 

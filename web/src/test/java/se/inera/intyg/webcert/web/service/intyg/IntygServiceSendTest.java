@@ -83,7 +83,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
@@ -120,7 +120,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
         RelationItem ersattRelation = new RelationItem("ersattnings-intyg-id", "SIGNED", null);
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.of(ersattRelation));
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.of(ersattRelation));
 
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<>());
@@ -147,7 +147,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(completionUtlatande);
 
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
@@ -168,7 +168,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
-        when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+        when(relationService.getReplacedByRelation(anyString(), eq(false))).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);

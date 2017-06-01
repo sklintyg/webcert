@@ -147,7 +147,7 @@ public class RelationServiceImplTest {
     @Test
     public void testGetReplacedByRelation() {
         //3 is replaced by 4.
-        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_3);
+        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_3, false);
         assertTrue(res.isPresent());
 
         assertEquals(INTYGID_4, res.get().getIntygsId());
@@ -155,9 +155,28 @@ public class RelationServiceImplTest {
     }
 
     @Test
+    public void testGetReplacedByRelationWithCoherentJournaling() {
+        //3 is replaced by 4.
+        when(userService.getUser()).thenReturn(createUser("anotherunit"));
+        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_3, true);
+        assertTrue(res.isPresent());
+
+        assertEquals(INTYGID_4, res.get().getIntygsId());
+        verify(utkastRepo, times(1)).findAllByRelationIntygsId(eq(INTYGID_3));
+    }
+
+    @Test
+    public void testGetReplacedByRelationAnotherUnit() {
+        //3 is replaced by 4.
+        when(userService.getUser()).thenReturn(createUser("anotherunit"));
+        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_3, false);
+        assertFalse(res.isPresent());
+    }
+
+    @Test
     public void testGetReplacedByRelationNone() {
         //4 is not replaced by anything.
-        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_4);
+        Optional<RelationItem> res = relationService.getReplacedByRelation(INTYGID_4, false);
         assertFalse(res.isPresent());
 
 

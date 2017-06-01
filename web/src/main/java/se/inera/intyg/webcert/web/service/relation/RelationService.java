@@ -57,6 +57,6 @@ public interface RelationService {
     /**
      * Optionally return the latest replacement relation for the given intygsId for the supplied relations.
      */
-    Optional<RelationItem> getReplacedByRelation(String intygId);
+    Optional<RelationItem> getReplacedByRelation(String intygId, boolean coherentJournaling);
 
 }

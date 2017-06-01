@@ -270,7 +270,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private void verifyNotReplaced(String originalIntygId, String operation) {
-        final Optional<RelationItem> replacedByRelation = relationService.getReplacedByRelation(originalIntygId);
+        final Optional<RelationItem> replacedByRelation = relationService.getReplacedByRelation(originalIntygId, false);
         if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());

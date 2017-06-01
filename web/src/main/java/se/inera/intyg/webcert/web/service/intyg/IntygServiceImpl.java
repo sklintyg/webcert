@@ -179,7 +179,7 @@ public class IntygServiceImpl implements IntygService {
      * @return
      */
     private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling) {
-        IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
+        IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations, coherentJournaling);
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
 
         if (!coherentJournaling) {
@@ -360,7 +360,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void verifyNotReplaced(String intygsId, String operation) {
-        final Optional<RelationItem> replacedByRelation = relationService.getReplacedByRelation(intygsId);
+        final Optional<RelationItem> replacedByRelation = relationService.getReplacedByRelation(intygsId, false);
         if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s certificate '%s', the certificate is replaced by certificate '%s'",
                     operation, intygsId, replacedByRelation.get().getIntygsId());
@@ -378,7 +378,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage, String reason) {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
-        IntygContentHolder intyg = getIntygData(intygsId, intygsTyp, false);
+        IntygContentHolder intyg = getIntygData(intygsId, intygsTyp, false, false);
         verifyEnhetsAuth(intyg.getUtlatande(), true);
         verifyIsSigned(intyg.getStatuses());
 
@@ -412,7 +412,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public String getIssuingVardenhetHsaId(String intygId, String intygsTyp) {
         try {
-            IntygContentHolder intygData = getIntygData(intygId, intygsTyp, false);
+            IntygContentHolder intygData = getIntygData(intygId, intygsTyp, false, false);
             return intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
         } catch (WebCertServiceException e) {
             if (e.getErrorCode() == WebCertServiceErrorCodeEnum.DATA_NOT_FOUND) {
@@ -425,7 +425,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public boolean isRevoked(String intygsId, String intygsTyp, boolean coherentJournaling) {
 
-        IntygContentHolder intygData = getIntygData(intygsId, intygsTyp, false);
+        IntygContentHolder intygData = getIntygData(intygsId, intygsTyp, false, false);
         // Log read of revoke status to monitoring log
         monitoringService.logIntygRevokeStatusRead(intygsId, intygsTyp);
         return intygData.isRevoked();
@@ -555,7 +555,7 @@ public class IntygServiceImpl implements IntygService {
      *
      * @param relations
      */
-    private IntygContentHolder getIntygData(String intygId, String typ, boolean relations) {
+    private IntygContentHolder getIntygData(String intygId, String typ, boolean relations, boolean coherentJournaling) {
         try {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
@@ -565,7 +565,7 @@ public class IntygServiceImpl implements IntygService {
             if (relations) {
                 relationsList = relationService.getRelations(intygId).orElse(
                         RelationItem.createBaseCase(intygId, certificate.getMetaData().getSignDate(), CertificateState.RECEIVED.name()));
-                replacedByRelation = relationService.getReplacedByRelation(intygId);
+                replacedByRelation = relationService.getReplacedByRelation(intygId, coherentJournaling);
             }
             return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), certificate.getMetaData().getStatus(),
                     certificate.isRevoked(),
@@ -580,7 +580,7 @@ public class IntygServiceImpl implements IntygService {
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
-            return buildIntygContentHolder(utkast, relations);
+            return buildIntygContentHolder(utkast, relations, coherentJournaling);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygId, typ);
@@ -589,7 +589,7 @@ public class IntygServiceImpl implements IntygService {
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
-            return buildIntygContentHolder(utkast, relations);
+            return buildIntygContentHolder(utkast, relations, coherentJournaling);
         }
     }
 
@@ -600,17 +600,17 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        return (utkast != null) ? buildIntygContentHolder(utkast, false) : getIntygData(intygId, intygTyp, false);
+        return (utkast != null) ? buildIntygContentHolder(utkast, false, false) : getIntygData(intygId, intygTyp, false, false);
     }
 
-    private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
+    private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations, boolean coherentJournaling) {
         Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
         List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
         List<RelationItem> relationsList = null;
         Optional<RelationItem> replacedByRelation = Optional.empty();
         if (relations) {
             relationsList = relationService.getRelations(utkast.getIntygsId()).orElse(RelationItem.createBaseCase(utkast));
-            replacedByRelation = relationService.getReplacedByRelation(utkast.getIntygsId());
+            replacedByRelation = relationService.getReplacedByRelation(utkast.getIntygsId(), coherentJournaling);
         }
         return new IntygContentHolder(utkast.getModel(), utlatande, statuses, utkast.getAterkalladDatum() != null,
                 relationsList,
@@ -621,7 +621,7 @@ public class IntygServiceImpl implements IntygService {
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
         Utkast utkast = utkastRepository.findOne(intygId);
         return (utkast != null) ? modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel())
-                : getIntygData(intygId, typ, false).getUtlatande();
+                : getIntygData(intygId, typ, false, false).getUtlatande();
     }
 
     /**
