@@ -18,15 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.signatur;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import javax.persistence.OptimisticLockException;
-
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -34,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -45,11 +35,11 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
@@ -65,10 +55,20 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
 public class SignaturServiceImpl implements SignaturService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SignaturServiceImpl.class);
+
+    private static final String X509_SERIAL = "2.5.4.5";
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -161,34 +161,49 @@ public class SignaturServiceImpl implements SignaturService {
 
         // Privatläkare som loggat in med NET_ID-klient måste signera med NetID med samma identitet som i sessionen.
         if (user.isPrivatLakare() && user.getAuthenticationMethod() == AuthenticationMethod.NET_ID) {
-            String signaturPersonId = asn1Util.parsePersonId(IOUtils.toInputStream(rawSignatur));
-
-            if (verifyPersonIdEqual(user, signaturPersonId)) {
-                String errMsg = "Cannot finalize signing of Utkast, the logged in user's personId and the personId in the ASN.1 "
-                        + "signature data from the NetID client does not match.";
-                LOG.error(errMsg);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
-            }
-
+            validatePrivatePractitionerSignature(user, rawSignatur);
         }
 
         // Siths-inloggade måste signera med samma SITHS-kort som de loggade in med.
         if (user.getAuthenticationMethod() == AuthenticationMethod.SITHS) {
-            String signaturHsaId = asn1Util.parseHsaId(IOUtils.toInputStream(rawSignatur));
+            validateSithsSignature(user, rawSignatur);
+        }
+    }
 
-            if (signaturHsaId == null) {
-                String errMsg = "Cannot finalize signing of Utkast, the signature does not contain hsaId in the correct format in the ASN.1"
-                        + " signature data from the client.";
-                LOG.error(errMsg);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
-            }
+    private void validateSithsSignature(WebCertUser user, String rawSignatur) {
+        String signaturHsaId = asn1Util.getValue(X509_SERIAL, IOUtils.toInputStream(rawSignatur));
 
-            if (verifyHsaIdEqual(user, signaturHsaId)) {
-                String errMsg = "Cannot finalize signing of Utkast, the logged in user's hsaId and the hsaId in the ASN.1 "
-                        + "signature data from the NetID client does not match.";
-                LOG.error(errMsg);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
-            }
+        // If null, there were a problem and no x.520 serialNumber could be found in the signature container.
+        if (signaturHsaId == null) {
+            String errMsg = "Cannot finalize signing of Utkast, the signature does not contain hsaId in the correct "
+                    + "format in the ASN.1 signature data from the client.";
+            LOG.error(errMsg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
+        }
+
+        if (verifyHsaIdEqual(user, signaturHsaId)) {
+            String errMsg = "Cannot finalize signing of Utkast, the logged in user's hsaId and the hsaId in the ASN.1 "
+                    + "signature data from the NetID client does not match.";
+            LOG.error(errMsg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
+        }
+    }
+
+    private void validatePrivatePractitionerSignature(WebCertUser user, String rawSignatur) {
+        String signaturPersonId = asn1Util.getValue(X509_SERIAL, IOUtils.toInputStream(rawSignatur));
+
+        // If null, there were a problem and no x.520 serialNumber could be found in the signature container.
+        if (signaturPersonId == null) {
+            String errMsg = "Cannot finalize signing of Utkast, the signature does not contain personId in the correct "
+                    + "format in the ASN.1 signature data from the client.";
+            LOG.error(errMsg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
+        }
+        if (verifyPersonIdEqual(user, signaturPersonId)) {
+            String errMsg = "Cannot finalize signing of Utkast, the logged in user's personId and the personId in the ASN.1 "
+                    + "signature data from the NetID client does not match.";
+            LOG.error(errMsg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
         }
     }
 

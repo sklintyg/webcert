@@ -18,17 +18,22 @@
  */
 package se.inera.intyg.webcert.web.service.signatur.asn1;
 
-import static se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Type.SEQUENCE;
-import static se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Type.OBJECT_IDENTIFIER;
-import static se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Type.PRINTABLE_STRING;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import com.google.common.base.Charsets;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DERObject;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.pkcs.ContentInfo;
+import org.bouncycastle.asn1.pkcs.SignedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Provides a mechanism to parse the value of a x.520 DN serial from
@@ -42,67 +47,69 @@ public class ASN1UtilImpl implements ASN1Util {
 
     private static final Logger LOG = LoggerFactory.getLogger(ASN1UtilImpl.class);
 
-    private static final int SEQUENCE_LENGTH = 19;   // 0x13
-    private static final int OBJECT_ID_LENGTH = 3;   // 0x03
-    private static final int PERSON_ID_LENGTH = 12;  // 0x0C
-
-    // Defines a sequence of bytes that marks a X520 DN person serialNumber.
-    private static final int[] X520_SERIAL_MARKER_BYTE_SEQ = new int[]{
-            SEQUENCE, SEQUENCE_LENGTH,
-            OBJECT_IDENTIFIER, OBJECT_ID_LENGTH, 0x55, 0x04, 0x05,
-            PRINTABLE_STRING, PERSON_ID_LENGTH
-    };
-
-    private static final int[] X520_SERIAL_MARKER_BYTE_SEQ_NO_LENGTH = new int[] {
-            OBJECT_IDENTIFIER, OBJECT_ID_LENGTH, 0x55, 0x04, 0x05,
-            PRINTABLE_STRING
-    };
-
-    /**
-     * Tries to parse a personnummer (X520 DN serial) from the supplied base64-encoded signature data.
-     *
-     * @param asn1Signature
-     *      Base64-encoded signature. Please note that the underlying parser will have to make sure each byte is
-     *      unsigned before using it.
-     * @return
-     *      serialNumber (e.g. personnummer) extracted from the raw signature
-     * @throws
-     *      IllegalArgumentException if no serialNumber (e.g. personnummer) could be parsed from the signature.
-     */
     @Override
-    public String parsePersonId(InputStream asn1Signature) {
+    public String getValue(String identifier, InputStream asn1Signature) {
+        ByteArrayInputStream bais = null;
+        ASN1InputStream asn1InputStream = null;
         try {
-            byte[] value = new ASN1StreamParser().parse(asn1Signature, X520_SERIAL_MARKER_BYTE_SEQ, PERSON_ID_LENGTH);
-            return returnAsString(value);
+            bais = convertStream(asn1Signature);
+            asn1InputStream = new ASN1InputStream(bais);
+            DERObject obj = asn1InputStream.readObject();
+            ContentInfo contentInfo = ContentInfo.getInstance(obj);
+
+            // Extract certificates
+            SignedData signedData = SignedData.getInstance(contentInfo.getContent());
+            return findInCertificate(identifier, (DERObject) signedData.getCertificates().getObjectAt(0));
         } catch (IOException e) {
-            LOG.error("Could not parse personId from NetID signature: " + e.getMessage());
-            throw new IllegalArgumentException("Could not parse personId from NetID signature, will not sign utkast: " + e.getMessage());
+            LOG.error("Error parsing signature: {}", e.getMessage());
+            throw new IllegalStateException(e);
+        } finally {
+            IOUtils.closeQuietly(bais);
+            IOUtils.closeQuietly(asn1InputStream);
         }
     }
 
-    /**
-     * Tries to parse a hsaId from the supplied base64-encoded signature data.
-     *
-     * Should be present in the X520 DN serial field, but since length of the hsaId is indeterminate, we must use
-     * the ASN.1 length bits to determine how many bytes to read after the marker.
-     */
-    @Override
-    public String parseHsaId(InputStream asn1Signature) {
-        try {
-            byte[] value = new ASN1StreamParser().parseDynamicLength(asn1Signature, X520_SERIAL_MARKER_BYTE_SEQ_NO_LENGTH);
-            return returnAsString(value);
-
-        } catch (IOException e) {
-            LOG.error("Could not parse hsaId from NetID signature: " + e.getMessage());
-            throw new IllegalArgumentException("Could not parse hsaId from NetID signature, will not sign utkast: " + e.getMessage());
-        }
+    private ByteArrayInputStream convertStream(InputStream signatureIn) throws IOException {
+        byte[] bytes = IOUtils.toByteArray(signatureIn);
+        IOUtils.closeQuietly(signatureIn);
+        byte[] decoded = Base64.decodeBase64(bytes);
+        return new ByteArrayInputStream(decoded);
     }
 
-    private String returnAsString(byte[] value) {
-        if (value != null) {
-            return new String(value, Charsets.UTF_8);
-        } else {
-            return null;
+    private String findInCertificate(String identifier, DERObject certObj) {
+        String value = null;
+        if (certObj instanceof DERSet) {
+            value = handleDERSet(identifier, (DERSet) certObj);
         }
+        if (certObj instanceof DERSequence) {
+            value = handleDERSequence(identifier, (DERSequence) certObj);
+        }
+        return value;
+    }
+
+    private String handleDERSequence(String identifier, DERSequence seq) {
+        String value = null;
+        for (int a = 0; a < seq.size() && value == null; a++) {
+            DERObject obj = seq.getObjectAt(a).getDERObject();
+            if (obj instanceof ASN1ObjectIdentifier) {
+                ASN1ObjectIdentifier objectIdentifier = (ASN1ObjectIdentifier) obj;
+                if (objectIdentifier.getId().equals(identifier)) {
+                    value = seq.getObjectAt(a + 1).toString();
+                    break;
+                }
+            } else {
+                value = findInCertificate(identifier, obj);
+            }
+        }
+        return value;
+    }
+
+    private String handleDERSet(String identifier, DERSet set) {
+        String value = null;
+        for (int a = 0; a < set.size() && value == null; a++) {
+            DERObject obj = set.getObjectAt(a).getDERObject();
+            value = findInCertificate(identifier, obj);
+        }
+        return value;
     }
 }

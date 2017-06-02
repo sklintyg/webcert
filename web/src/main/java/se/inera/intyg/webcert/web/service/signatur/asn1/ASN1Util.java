@@ -21,13 +21,21 @@ package se.inera.intyg.webcert.web.service.signatur.asn1;
 import java.io.InputStream;
 
 /**
- * A declarative interface for accessing data within an ASN.1 container.
+ * Interface for accessing data from an ASN.1 container.
  *
- * Created by eriklupander on 2015-09-04.
+ * Created by eriklupander on 2015-09-04, revamped 2017-06-02.
  */
 public interface ASN1Util {
 
-    String parsePersonId(InputStream asn1Signature);
-
-    String parseHsaId(InputStream asn1Signature);
+    /**
+     * Tries to find the value identified by the supplied identifier.
+     *
+     * @param identifier
+     *      X.520 identifier to get value for, typically '2.5.4.5' i.e. serialNumber.
+     * @param asn1Signature
+     *      Base64-encoded (implementor must decode if necessary) stream of a signature in ASN1.
+     * @return
+     *      A string value or null if not found within the container.
+     */
+    String getValue(String identifier, InputStream asn1Signature);
 }

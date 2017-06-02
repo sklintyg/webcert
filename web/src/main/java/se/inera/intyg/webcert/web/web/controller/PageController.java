@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 /**
@@ -125,7 +126,11 @@ public class PageController {
 
         WebCertUser user = webCertUserService.getUser();
         if (!user.changeValdVardenhet(enhetHsaId)) {
-            return new ResponseEntity<>("Behörighet saknas för vårdenhet '" + enhetHsaId + "'", HttpStatus.UNAUTHORIZED);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            URI uri = UriBuilder.fromPath("/error.jsp").queryParam("reason", "login.medarbetaruppdrag").build();
+            httpHeaders.setLocation(uri);
+            return new ResponseEntity<>(httpHeaders, HttpStatus.FOUND);
+            //return new ResponseEntity<>("Behörighet saknas för vårdenhet '" + enhetHsaId + "'", HttpStatus.UNAUTHORIZED);
         }
 
         URI uri = mailLinkService.intygRedirect(typ, intygId);

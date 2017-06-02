@@ -135,7 +135,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(anyString(), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(INTYG_JSON);
-        when(asn1Util.parseHsaId(any())).thenReturn(user.getHsaId());
+        when(asn1Util.getValue(anyString(), any())).thenReturn(user.getHsaId());
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
@@ -246,7 +246,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void clientSignaturNoHsaId() throws IOException {
-        when(asn1Util.parseHsaId(any())).thenReturn(null);
+        when(asn1Util.getValue(anyString(), any())).thenReturn(null);
         String signature = "{\"signatur\":\"SIGNATURE\"}";
         intygSignatureService.clientSignature("", signature);
     }
@@ -464,7 +464,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user = createWebCertUser(true);
         user.setAuthenticationMethod(AuthenticationMethod.SITHS);
         when(webcertUserService.getUser()).thenReturn(user);
-        when(asn1Util.parseHsaId(any(InputStream.class))).thenReturn("other-hsa-1");
+        when(asn1Util.getValue(anyString(), any(InputStream.class))).thenReturn("other-hsa-1");
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         intygSignatureService.clientSignature(ticket.getId(), "test");
@@ -484,7 +484,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
         when(webcertUserService.getUser()).thenReturn(user);
-        when(asn1Util.parsePersonId(any(InputStream.class))).thenReturn("other-person-id-1");
+        when(asn1Util.getValue(anyString(), any(InputStream.class))).thenReturn("other-person-id-1");
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         intygSignatureService.clientSignature(ticket.getId(), "test");
