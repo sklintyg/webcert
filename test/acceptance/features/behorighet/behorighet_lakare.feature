@@ -46,7 +46,7 @@ Scenario: Kan inte se intyg på överliggande enhet när jag är inne på undere
 	Och går till den sparade länken
 	Så ska ett fel-meddelande visa "Kunde inte hämta intyget eftersom du saknar behörighet"
 
-	@fornya-utkast 
+	@fornya-utkast @waitingForFix
 Scenario: Det går att förnya signerade och mottagna intyg från intygslistan men inte utkast
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient
