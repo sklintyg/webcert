@@ -63,7 +63,11 @@ public class RelationServiceImpl implements RelationService {
 
     @Override
     public List<RelationItem> getChildRelations(String intygsId) {
-        return getChildRelations(intygsId, false);
+        return utkastRepo.findAllByRelationIntygsId(intygsId).stream()
+                .filter(utkast -> userService.getUser().getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId()))
+                .map(RelationItem::new)
+                .sorted(Comparator.comparing(RelationItem::getDate).reversed())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -81,23 +85,13 @@ public class RelationServiceImpl implements RelationService {
 
     @Override
     public Optional<RelationItem> getReplacedByRelation(String intygId, boolean coherentJournaling) {
-        // Get all intyg that are (some type of) descendant of this certificate
-        List<RelationItem> descendants = getChildRelations(intygId, coherentJournaling);
-
-        // Among those, find the first that is a replacement
-        return descendants.stream().filter(r -> RelationKod.ERSATT.name().equals(r.getKod())).findFirst();
+        return utkastRepo.findAllByRelationIntygsId(intygId).stream()
+                .filter(utkast -> coherentJournaling || userService.getUser().getValdVardgivare().getId().equals(utkast.getVardgivarId()))
+                .map(RelationItem::new)
+                .filter(r -> RelationKod.ERSATT.name().equals(r.getKod())).findFirst();
     }
 
     private boolean isAuthorized(String enhetsId) {
         return userService.getUser().getIdsOfSelectedVardenhet().contains(enhetsId);
     }
-
-    private List<RelationItem> getChildRelations(String intygsId, boolean coherentJournaling) {
-        return utkastRepo.findAllByRelationIntygsId(intygsId).stream()
-                .filter(utkast -> coherentJournaling || userService.getUser().getIdsOfSelectedVardenhet().contains(utkast.getEnhetsId()))
-                .map(RelationItem::new)
-                .sorted(Comparator.comparing(RelationItem::getDate).reversed())
-                .collect(Collectors.toList());
-    }
-
 }
