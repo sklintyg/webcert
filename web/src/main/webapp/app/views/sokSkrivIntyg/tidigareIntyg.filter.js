@@ -21,19 +21,51 @@ angular.module('webcert').filter('TidigareIntygFilter',
     function() {
         'use strict';
 
+        function isErsatt(intyg) {
+            if (typeof intyg.relations !== 'undefined' && typeof intyg.relations.children !== 'undefined') {
+                for(var a = 0; a < intyg.relations.children.length; a++) {
+                    if (intyg.relations.children[a].relationKod === 'ERSATT') {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function isKompletterad(intyg) {
+            if (typeof intyg.relations !== 'undefined' && typeof intyg.relations.children !== 'undefined') {
+                for(var a = 0; a < intyg.relations.children.length; a++) {
+                    if (intyg.relations.children[a].relationKod === 'KOMPLT') {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         return function(intygList, intygToInclude) {
             var result = [];
 
-            if (intygToInclude === 'all') {
-                return intygList;
+            switch(intygToInclude) {
+            case 'revoked':
+                angular.forEach(intygList, function(intyg) {
+                    if (intyg.status === 'CANCELLED' || isErsatt(intyg) || isKompletterad(intyg)) {
+                        result.push(intyg);
+                    }
+                });
+                break;
+            case 'current':
+                angular.forEach(intygList, function(intyg) {
+                    if (intyg.status !== 'CANCELLED' && !isErsatt(intyg) && !isKompletterad(intyg)) {
+                        result.push(intyg);
+                    }
+                });
+                break;
+            case 'all':
+                result = intygList;
+                break;
             }
-
-            angular.forEach(intygList, function(intyg) {
-                if ((intygToInclude === 'current' && intyg.status !== 'CANCELLED') ||
-                    (intygToInclude === 'revoked' && intyg.status === 'CANCELLED')) {
-                    result.push(intyg);
-                }
-            });
+            
             return result;
         };
     });
