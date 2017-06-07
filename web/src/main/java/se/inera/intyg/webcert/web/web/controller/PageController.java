@@ -127,10 +127,12 @@ public class PageController {
         WebCertUser user = webCertUserService.getUser();
         if (!user.changeValdVardenhet(enhetHsaId)) {
             HttpHeaders httpHeaders = new HttpHeaders();
-            URI uri = UriBuilder.fromPath("/error.jsp").queryParam("reason", "login.medarbetaruppdrag").build();
+            URI uri = UriBuilder.fromPath("/error.jsp")
+                    .queryParam("reason", "enhet.auth.exception")
+                    .queryParam("enhetHsaId", enhetHsaId)
+                    .build();
             httpHeaders.setLocation(uri);
             return new ResponseEntity<>(httpHeaders, HttpStatus.FOUND);
-            //return new ResponseEntity<>("Behörighet saknas för vårdenhet '" + enhetHsaId + "'", HttpStatus.UNAUTHORIZED);
         }
 
         URI uri = mailLinkService.intygRedirect(typ, intygId);
