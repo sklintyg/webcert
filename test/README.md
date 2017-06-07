@@ -43,7 +43,7 @@ Om du vill köra webcert med grunt server, använd port 9089, annars använd por
      },
 ```
 
-###### 4) Starta dockercontainer med selenium
+##### 4) Starta dockercontainer med selenium
 ```sh
 >docker run --shm-size=1800M -p 4444:4444 -e SE_OPTS="-browserTimeout 60 -sessionTimeout 60" selenium/standalone-firefox:2.48.2
 ```
@@ -54,6 +54,18 @@ webcert>./gradlew protractorTests
 ```
 
 
+### För att se webbläsaren, medan testerna körs
+Det behövs en mindre ändring av dockerkommandot:
+```sh
+>docker run --shm-size=1800M -p 4444:4444 - p 5900:5900 -e SE_OPTS="-browserTimeout 60 -sessionTimeout 60" selenium/standalone-firefox-debug:2.48.2
+```
+
+Debug-containern har en vnc-server uppe, som du sedan connectar till på port 5900. På mac os x så kan det göras med den inbyggda vnc-clienten som följande:
+```sh
+>open vnc://127.0.0.1:5900
+```
+
+lösenordet för vnc är "*secret*"
 
 
 ## För att slippa ändra version på webcert-testtools och köra npm install vid varje ändring så behöver följande kommandon köras:
