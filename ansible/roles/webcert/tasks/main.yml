@@ -11,7 +11,7 @@
     path: "{{ releases_folder }}"
     state: directory
 
-- name: download intygstjanst-liquibase-runner-{{ version }}.zip
+- name: download webcert-liquibase-runner-{{ version }}.zip
   get_url:
     url: https://build-inera.nordicmedtest.se/nexus/repository/releases/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.zip
     dest: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip"
@@ -76,6 +76,21 @@
     src: "{{ releases_folder }}/logsender-{{ logsender_version }}.war"
     dest: "{{ webapps_folder }}/log-sender.war"
     remote_src: True
+
+- name: Remove webcert-liquibase-runner-{{ version }}.zip from releases
+  file:
+    state: absent
+    path: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip"
+
+- name: Remove webcert-web-{{ version }}.war from releases (as it is now deployed to tomcat)
+  file:
+    state: absent
+    path: "{{ releases_folder }}/webcert-web-{{ version }}.war"
+
+- name: Remove logsender-{{ logsender_version }}.war from releases
+  file:
+    state: absent
+    path: "{{ releases_folder }}/logsender-{{ logsender_version }}.war"
 
 - name: Fetch configuration repo to get new branches
   command: git fetch origin
