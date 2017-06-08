@@ -118,8 +118,8 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
             }
         }
 
-        // If we could init the authentication, we create a SignaturTicket, reusing the mechanism already present for
-        // SITHS
+        // If we could init the authentication, we create a SignaturTicket, reusing
+        // the mechanism already present for SITHS
         String orderRef = orderResponse.getOrderRef();
         String transactionId = validateOrderResponseTxId(authRequest, orderResponse);
 

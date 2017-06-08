@@ -123,7 +123,6 @@ public abstract class BaseRestIntegrationTest {
         String credentialsJson;
         try {
             credentialsJson = objectMapper.writeValueAsString(fakeCredentials);
-            System.err.println(credentialsJson);
             return getAuthSession(credentialsJson);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
