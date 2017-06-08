@@ -30,9 +30,10 @@ var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-xdescribe('Verify replace intyg ', function() {
+fdescribe('Verify replace intyg ', function() {
 
     var intygId;
+    var utkastId;
 
     describe('prepare test with intyg', function() {
         it('should generate fk max intyg', function() {
@@ -63,8 +64,13 @@ xdescribe('Verify replace intyg ', function() {
         it('should replace intyg and view resulting utkast', function() {
             expect(FkIntygPage.replaceBtn().isPresent()).toBe(true);
             FkIntygPage.replaceBtn().click();
+            expect(element(by.id('ersattUtkastPaborjat')).isPresent()).toBe(false);
+            expect(FkIntygPage.replaceDialogContinueBtn().isPresent()).toBe(false);
             FkIntygPage.replaceDialogConfirmBtn().click();
             expect(FkUtkastPage.isAt()).toBeTruthy();
+            browser.getCurrentUrl().then(function(url) {
+                utkastId = url.split('/').pop();
+            });
         });
 
         it('should view original replaced fk intyg', function() {
@@ -86,8 +92,23 @@ xdescribe('Verify replace intyg ', function() {
 
         it('should still not show warning message with link to replacing utkast, since utkast has not been signed',
             function() {
-                expect(element(by.id('wc-intyg-related-other-intyg-message')).isDisplayed()).toBe(false);
+                expect(element(by.id('wc-intyg-related-other-intyg-message')).isPresent()).toBe(false);
             });
+
+        it('should display warning that replacement utkast exists when clicking on replace', function() {
+            FkIntygPage.replaceBtn().click();
+            expect(element(by.id('ersattUtkastPaborjat')).isDisplayed()).toBe(true);
+            expect(FkIntygPage.replaceDialogContinueBtn().isPresent()).toBe(true);
+        });
+
+        it('should take us to the existing utkast when clicking the continue button', function() {
+            FkIntygPage.replaceDialogContinueBtn().click();
+            expect(FkUtkastPage.isAt()).toBeTruthy();
+            browser.getCurrentUrl().then(function(url) {
+                var replacementUtkastId = url.split('/').pop();
+                expect(replacementUtkastId === utkastId).toBe(true);
+            });
+        });
     });
 
     afterAll(function() {

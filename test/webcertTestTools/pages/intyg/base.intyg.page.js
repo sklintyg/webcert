@@ -59,7 +59,8 @@ var BaseIntyg = JClass._extend({
         };
         this.replace = {
             button: element(by.id('ersattBtn')),
-            dialogConfirmButton: element(by.id('button1ersatt-dialog'))
+            dialogConfirmButton: element(by.id('button1ersatt-dialog')),
+            dialogContinueButton: element(by.id('button2ersatt-dialog'))
         };
         this.copyBtn = element(by.css('.btn.btn-info'));
         this.backBtn = element(by.id('tillbakaButton'));
@@ -160,6 +161,9 @@ var BaseIntyg = JClass._extend({
     },
     replaceDialogConfirmBtn: function() {
         return this.replace.dialogConfirmButton;
+    },
+    replaceDialogContinueBtn: function() {
+        return this.replace.dialogContinueButton;
     },
     copyBtn: function() {
         return this.copy.button;
