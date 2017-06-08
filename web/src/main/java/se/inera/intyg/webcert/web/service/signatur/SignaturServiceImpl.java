@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.signatur;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturData;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
@@ -157,16 +159,26 @@ public class SignaturServiceImpl implements SignaturService {
         return finalizeClientSignature(ticketId, rawSignatur, user);
     }
 
+
     private void validateSigningIdentity(WebCertUser user, String rawSignatur) {
 
-        // Privatläkare som loggat in med NET_ID-klient måste signera med NetID med samma identitet som i sessionen.
-        if (user.isPrivatLakare() && user.getAuthenticationMethod() == AuthenticationMethod.NET_ID) {
-            validatePrivatePractitionerSignature(user, rawSignatur);
-        }
+        try {
+            SignaturData asn1SignatureData = new ObjectMapper().readValue(rawSignatur, SignaturData.class);
 
-        // Siths-inloggade måste signera med samma SITHS-kort som de loggade in med.
-        if (user.getAuthenticationMethod() == AuthenticationMethod.SITHS) {
-            validateSithsSignature(user, rawSignatur);
+            // Privatläkare som loggat in med NET_ID-klient måste signera med NetID med samma identitet som i sessionen.
+            if (user.isPrivatLakare() && user.getAuthenticationMethod() == AuthenticationMethod.NET_ID) {
+                validatePrivatePractitionerSignature(user, asn1SignatureData.getSignatur());
+            }
+
+            // Siths-inloggade måste signera med samma SITHS-kort som de loggade in med.
+            if (user.getAuthenticationMethod() == AuthenticationMethod.SITHS) {
+                validateSithsSignature(user, asn1SignatureData.getSignatur());
+            }
+        } catch (IOException e) {
+            String errMsg = "Cannot finalize signing of Utkast, the ASN.1 signature data from the client could not be parsed: "
+                    + e.getMessage();
+            LOG.error(errMsg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INDETERMINATE_IDENTITY, errMsg);
         }
     }
 

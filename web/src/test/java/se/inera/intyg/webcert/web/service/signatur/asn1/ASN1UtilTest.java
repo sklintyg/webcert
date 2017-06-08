@@ -33,6 +33,7 @@ public class ASN1UtilTest {
 
     private static final String PERSON_ID = "197309069289";
     private static final String HSA_ID = "TSTNMT2321000156-1028";
+    private static final String HSA_ID_2 = "TSTNMT2321000156-1025";
 
     private final ASN1UtilImpl asn1Util = new ASN1UtilImpl();
 
@@ -52,5 +53,11 @@ public class ASN1UtilTest {
         assertEquals(HSA_ID, value);
     }
 
-
+    @Test
+    public void decodeHsaIdFromASN1SigData2() throws IOException {
+        InputStream is = new ClassPathResource("netid-siths-sig2.txt").getInputStream();
+        String value = asn1Util.getValue("2.5.4.5", is);
+        is.close();
+        assertEquals(HSA_ID_2, value);
+    }
 }

@@ -37,7 +37,7 @@ import java.io.InputStream;
 
 /**
  * Provides a mechanism to parse the value of a x.520 DN serial from
- * a ASN.1 container. Typical use is to extract information from a
+ * an ASN.1 container. Typical use is to extract information from a
  * NetID signature.
  *
  * Created by eriklupander on 2015-09-04.

@@ -18,12 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.signatur;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -52,6 +55,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.signatur.asn1.ASN1Util;
+import se.inera.intyg.webcert.web.service.signatur.asn1.ASN1UtilImpl;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -98,8 +102,9 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private IntygModuleRegistry moduleRegistry;
     @Mock
     private ModuleApi moduleApi;
-    @Mock
-    private ASN1Util asn1Util;
+
+    @Spy
+    private ASN1Util asn1Util = new ASN1UtilImpl();
 
     @InjectMocks
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
@@ -135,7 +140,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(anyString(), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(INTYG_JSON);
-        when(asn1Util.getValue(anyString(), any())).thenReturn(user.getHsaId());
+        
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
@@ -207,7 +212,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         completedUtkast.setModel("{}");
 
-        String signature = "{\"signatur\":\"SIGNATURE\"}";
+        String signature = buildSignature();
 
         intygSignatureService.clientSignature(ticket.getId(), signature);
     }
@@ -217,12 +222,13 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        user.setHsaId("TSTNMT2321000156-1025");
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
 
-        String signature = "{\"signatur\":\"SIGNATURE\"}";
+        String signature = buildSignature();
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         // Do the call
@@ -243,10 +249,14 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
     }
+    
+    private String buildSignature() throws IOException {
+        InputStream is = new ClassPathResource("netid-siths-sig2.txt").getInputStream();
+        return "{\"signatur\":\"" + IOUtils.toString(is) + "\"}";
+    }
 
-    @Test(expected = WebCertServiceException.class)
+    @Test(expected = IllegalStateException.class)
     public void clientSignaturNoHsaId() throws IOException {
-        when(asn1Util.getValue(anyString(), any())).thenReturn(null);
         String signature = "{\"signatur\":\"SIGNATURE\"}";
         intygSignatureService.clientSignature("", signature);
     }
@@ -256,12 +266,13 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         completedUtkast.setRelationKod(RelationKod.KOMPLT);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        user.setHsaId("TSTNMT2321000156-1025");
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
 
-        String signature = "{\"signatur\":\"SIGNATURE\"}";
+        String signature = buildSignature();
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
         when(moduleRegistry.getModuleEntryPoint(INTYG_TYPE)).thenReturn(new Fk7263EntryPoint());
 
@@ -464,10 +475,11 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user = createWebCertUser(true);
         user.setAuthenticationMethod(AuthenticationMethod.SITHS);
         when(webcertUserService.getUser()).thenReturn(user);
-        when(asn1Util.getValue(anyString(), any(InputStream.class))).thenReturn("other-hsa-1");
-
+        
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
-        intygSignatureService.clientSignature(ticket.getId(), "test");
+
+        String signature = buildSignature();
+        intygSignatureService.clientSignature(ticket.getId(), signature);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -484,10 +496,11 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
         when(webcertUserService.getUser()).thenReturn(user);
-        when(asn1Util.getValue(anyString(), any(InputStream.class))).thenReturn("other-person-id-1");
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
-        intygSignatureService.clientSignature(ticket.getId(), "test");
+
+        String signature = buildSignature();
+        intygSignatureService.clientSignature(ticket.getId(), signature);
     }
 
     private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson, String enhetsId) {
