@@ -1,3 +1,0 @@
-!4 Semi-automatiserade hjälp-sidor för sändning av frågor och svar, att användas vid manuella tester tillsammans med Försäkringskassan.
-
-!contents -R2 -g -p -f -H

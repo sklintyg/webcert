@@ -1,5 +1,0 @@
-!4 Denna svit innehåller automatiserade tester som förutsätter att WebCert körs mot test-stubber för alla externa integrationer.
-
-Dessa test-stubbar tillhandahåller testbarhets-api:er, så att interaktionen med de externa systemen kan säkerställas.
-
-!contents -R2 -g -p -f -H

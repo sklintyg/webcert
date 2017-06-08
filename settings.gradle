@@ -5,7 +5,6 @@ include ':webcert-persistence'
 include ':notification-sender'
 include ':pp-integration'
 include ':fmb-integration'
-include ':webcert-specifications'
 include ':fk-stub'
 include ':intygstjanst-stub'
 include ':mail-stub'
@@ -24,6 +23,5 @@ project(':intygstjanst-stub').projectDir = "$rootDir/stubs/intygstjanst-stub" as
 project(':mail-stub').projectDir = "$rootDir/stubs/mail-stub" as File
 project(':notification-stub').projectDir = "$rootDir/stubs/notification-stub" as File
 project(':webcert-web').projectDir = "$rootDir/web" as File
-project(':webcert-specifications').projectDir = "$rootDir/specifications" as File
 project(':webcert-liquibase-runner').projectDir = "$rootDir/tools/liquibase-runner" as File
 project(':webcert-protractor').projectDir = "$rootDir/test" as File

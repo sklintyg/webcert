@@ -1,4 +1,0 @@
-!define geb.env {saucelabsfirefox}
-
-!contents
-

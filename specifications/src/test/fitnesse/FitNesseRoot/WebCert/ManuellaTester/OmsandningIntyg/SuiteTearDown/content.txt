@@ -1,8 +1,0 @@
-!3 Resetta stubben
-
-| skript | !-IntygstjanstAsynk-! |
-| reset intygtjanst stub |
-
-!3 Stäng browser
-!|skript|Browser|
-|stäng          |

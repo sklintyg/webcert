@@ -1,9 +1,0 @@
-!3 Ta bort test-intyg och fråga
-
-|ta bort Intyg|
-|id|
-|fitnesse-intyg-1|
-
-|Ta bort fraga|
-|externReferens|
-|fitnesse|

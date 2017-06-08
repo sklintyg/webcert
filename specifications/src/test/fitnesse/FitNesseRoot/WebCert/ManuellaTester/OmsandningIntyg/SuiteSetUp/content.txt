@@ -1,8 +1,0 @@
-!include -c .WebCert.ManuellaTester.SuiteSetUp
-!| Config |
-| property | value |
-| geb.env | chrome |
-
-!2 Starta browser
-!| skript | Browser |
-| öppna |
