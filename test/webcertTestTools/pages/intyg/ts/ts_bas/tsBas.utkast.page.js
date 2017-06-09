@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by,protractor, Promise*/
+/*globals element,by,protractor, Promise,browser*/
 'use strict';
 
 // NOTE: This file is loaded before helpers in protractor.conf.js onPrepare. Therefore helpers are not available in file scope.
@@ -240,6 +240,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
         }
         if (utkast.hjartRisk === 'Ja') {
             promiseArr.push(hjartKarlCEl.cYes.sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    return browser.sleep(1000); // Testar att vänta på animering eller nästa tick
+                })
                 .then(function() {
                     return hjartKarlCEl.cText.sendKeys('TIA och förmaksflimmer.');
                 }));
