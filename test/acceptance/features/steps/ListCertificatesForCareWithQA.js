@@ -58,15 +58,17 @@
          console.log(body);
          return sendListCertificatesForCareWithQA(body).then(function(result) {
              response = result;
-
+             console.log(result);
              //Spara svar för aktuellt intyg i responseIntyg variabel
-             response.list.item.forEach(function(element) {
-                 var intygID = element.intyg['intygs-id'].extension;
-                 if (intygID === intyg.id) {
-                     responseIntyg = element;
-                     console.log(JSON.stringify(responseIntyg));
-                 }
-             });
+             if (response.list && response.list.item) {
+                 response.list.item.forEach(function(element) {
+                     var intygID = element.intyg['intygs-id'].extension;
+                     if (intygID === intyg.id) {
+                         responseIntyg = element;
+                         console.log(JSON.stringify(responseIntyg));
+                     }
+                 });
+             }
 
          });
      });
