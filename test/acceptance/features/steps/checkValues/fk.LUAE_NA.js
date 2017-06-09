@@ -67,8 +67,11 @@ function checkDiagnos(diagnos) {
     var diagnoser = diagnos.diagnoser;
     var nyBedomning = testdataHelper.boolTillJaNej(diagnos.nyBedomning);
     var promiseArr = [];
+
+    var regexp;
     for (var i = 0; i < diagnoser.length; i++) {
-        promiseArr.push(expect(luaenaPage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.equal(diagnoser[i].kod));
+        regexp = new RegExp(diagnoser[i].kod + '(?:\\d|\\s|[A-Z]|)', 'g');
+        promiseArr.push(expect(luaenaPage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.match(regexp));
     }
     promiseArr.push(expect(luaenaPage.diagnoser.grund.getText()).to.eventually.equal(diagnos.narOchVarStalldesDiagnoserna));
     promiseArr.push(expect(luaenaPage.diagnoser.nyBedomningDiagnosgrund.getText()).to.eventually.contain(nyBedomning));
