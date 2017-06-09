@@ -960,4 +960,11 @@
       <column name="QUESTION_ID"/>
     </createIndex>
   </changeSet>
+
+  <changeSet id="49" author="kja">
+    <modifyDataType
+      columnName="MODEL"
+      newDataType="mediumblob"
+      tableName="INTYG"/>
+  </changeSet>
 </databaseChangeLog>
