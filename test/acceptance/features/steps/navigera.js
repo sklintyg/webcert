@@ -85,7 +85,12 @@ module.exports = function() {
 
     this.Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer$/, function() {
         global.ursprungligPerson = JSON.parse(JSON.stringify(global.person));
-        global.person = testdataHelpers.shuffle(testpatienter)[0];
+
+        // Ta bort tidigare person så att vi inte råkar välja samma
+        var valbaraPatienter = helpers.removeFromArray(global.ursprungligPerson, testpatienter);
+
+        global.person = testdataHelpers.shuffle(valbaraPatienter)[0];
+        logger.info('Går in på personnummer: ' + global.person.id);
         return gotoIntyg('intygsutkastet', ' via djupintegrationslänk', 'alternatePatientSSn=' + global.person.id);
     });
 

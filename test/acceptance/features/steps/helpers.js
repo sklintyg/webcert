@@ -36,6 +36,7 @@ module.exports = {
     },
     intygShortcode: commonTools.helpers.intygShortcode,
 
+
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
     updateEnhetAdressForNewIntyg: function() {
@@ -287,5 +288,12 @@ module.exports = {
         } else if (typAvIntyg === 'Transportstyrelsens läkarintyg') {
             return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + intygsId;
         }
+    },
+    removeFromArray: function(value, array) {
+        var index = array.indexOf(value);
+        if (index > -1) {
+            array.splice(index, 1);
+        }
+        return array;
     }
 };
