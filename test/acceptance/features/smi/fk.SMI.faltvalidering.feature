@@ -39,4 +39,4 @@ Scenario: Intyget kan inte signeras om slut är före startdatum
     Och jag fyller i alla nödvändiga fält för intyget
     Och anger ett slutdatum som är tidigare än startdatum
     Och jag klickar på signera-knappen
-    Så ska valideringsfelet "Fältet får inte vara tomt" visas
+    Så ska valideringsfelet "Startdatum får inte vara efter slutdatum" visas
