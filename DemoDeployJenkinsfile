@@ -2,10 +2,52 @@
 
 def baseVersion = "5.3.*"
 
-stage('checkout') {
+stage('checkout tools') {
+    node {
+        util.run {
+            dir('base_tools') {
+                git url: "https://github.com/sklintyg/tools.git", branch: "develop"
+            }
+        }
+    }
+}
+
+stage('checkout webcert') {
     node {
         git url: "https://github.com/sklintyg/webcert.git", branch: GIT_BRANCH
         util.run { checkout scm }
+    }
+}
+
+stage('run cleanup scripts') {
+    node {
+        util.run {
+            dir('base_tools') {
+                ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.105"], installation: 'ansible-yum',
+                        inventory: 'ansible/inventory/webcert/demo', playbook: 'ansible/cleanup.yml')
+            }
+        }
+    }
+}
+
+stage('provision (tools)') {
+    node {
+        util.run {
+            dir('base_tools') {
+                ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.105"], installation: 'ansible-yum',
+                        inventory: 'ansible/inventory/webcert/demo', playbook: 'ansible/provision.yml')
+            }
+        }
+    }
+}
+
+stage('provision') {
+    node {
+        util.run {
+            ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.105", gitcrypt_key_file: "/home/jenkins/git-crypt4.key"],
+                    installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/demo',
+                    playbook: 'ansible/provision.yml')
+        }
     }
 }
 
