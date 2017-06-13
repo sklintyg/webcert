@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <texter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" giltigFrom="2016-10-25" typ="LISJP" version="1.0" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard/texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 <text id="DFR_1.3.RBK">Ange vad annat är</text>
-<text id="DFR_17.1.HLP">Ge konkreta exempel på situationer och aktiviteter i patientens sysselsättning där svårigheter uppstår. Beskriv hur ofta dessa situationer uppstår och graden av svårigheterna.
+<text id="DFR_17.1.HLP">Ge konkreta exempel på situationer och aktiviteter i patientens sysselsättning där svårigheter uppstår. Beskriv hur ofta dessa situationer uppstår och graden av svårigheterna. 
 
-Beskriv hur du själv har observerat begränsningarna. Om uppgiften baseras på anamnes/intervju eller någon annans observationer anger du det.
+Beskriv hur du själv har observerat begränsningarna. Om uppgiften baseras på anamnes/intervju eller någon annans observationer anger du det. 
 
 Ange även om det finns någon typ av aktivitet som patienten bör undvika på grund av betydande medicinsk risk eller allvarlig olycksrisk.</text>
 <text id="DFR_17.1.RBK">Beskriv vad patienten inte kan göra på grund av sin sjukdom. Ange vad uppgiften grundas på.</text>
 <text id="DFR_19.1.RBK">Ange vad syftet är och om möjligt tidplan samt ansvarig vårdenhet.</text>
 <text id="DFR_20.1.RBK">Ange vad syftet är och om möjligt tidplan samt ansvarig vårdenhet.</text>
-<text id="DFR_26.1.RBK">Jag önskar att Försökringskassan kontaktar mig.</text>
+<text id="DFR_26.1.RBK">Jag önskar att Försäkringskassan kontaktar mig.</text>
 <text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt.</text>
 <text id="DFR_33.2.RBK">Beskriv medicinska skäl till annan förläggning av arbetstiden</text>
 <text id="DFR_35.1.HLP">Ange observerade nedsättningar (direkt och indirekt), exempelvis
-- avvikelser i somatiskt och psykiskt status
-- röntgen- och laboratoriefynd
-- resultat av kliniskt fysiologiska undersökningar
-- andra testresultat, exempelvis neuropsykologiska.
+-   avvikelser i somatiskt och psykiskt status
+-   röntgen- och laboratoriefynd
+-   resultat av kliniskt fysiologiska undersökningar
+-   andra testresultat, exempelvis neuropsykologiska.
 
 Vid psykisk sjukdom, ange förutom basalt psykiskt status även den del av anamnesen som du bedömer talar för ett psykiatriskt tillstånd.</text>
 <text id="DFR_35.1.RBK">Beskriv undersökningsfynd, testresultat och observationer</text>
-<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
+<text id="DFR_6.2.RBK">Diagnoskod enligt  ICD-10 SE</text>
 <text id="FRG_1.HLP">Enligt Socialstyrelsens föreskrifter (SOSFS 2005:29) om utfärdande av intyg inom hälso- och sjukvården med mera ska ett intyg som regel utfärdas efter en personlig undersökning av intygspersonen. Om ett intyg inte grundas på en personlig undersökning, ska skälet till detta anges i intyget.
 
 Att intyget grundas på det som framkommit vid en personlig undersökning är också viktigt för att Försäkringskassan ska kunna bedöma om din patient har rätt till sjukpenning.
@@ -29,7 +29,7 @@ Om intyget inte grundas på en personlig undersökning ska du förklara under "�
 <text id="FRG_1.RBK">Intyget är baserat på</text>
 <text id="FRG_17.RBK">Aktivitetsbegränsning</text>
 <text id="FRG_19.RBK">Pågående medicinska behandlingar/åtgärder</text>
-<text id="FRG_20.RBK">Planerade medicinska behandlingar/åtgärder.</text>
+<text id="FRG_20.RBK">Planerade medicinska behandlingar/åtgärder. </text>
 <text id="FRG_25.RBK">Övriga upplysningar</text>
 <text id="FRG_26.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
 <text id="FRG_26.RBK">Kontakt med Försäkringskassan</text>
@@ -45,9 +45,9 @@ Om intyget inte grundas på en personlig undersökning ska du förklara under "�
 <text id="FRG_33.RBK">Finns det medicinska skäl att förlägga arbetstiden på något annat sätt än att minska arbetstiden lika mycket varje dag?</text>
 <text id="FRG_34.RBK">Resor till och från arbetet med annat färdmedel än normalt kan göra det möjligt för patienten att återgå till arbetet under sjukskrivningsperioden.</text>
 <text id="FRG_35.RBK">Funktionsnedsättning</text>
-<text id="FRG_37.HLP">- Om sjukdomen inte följer förväntat förlopp ska det framgå på vilket sätt.
-- Om det inträffar komplikationer som gör att det tar längre tid att återfå arbetsförmåga ska du beskriva komplikationerna eller sjukdomstillstånden och skriva en förklaring till varför dessa fördröjer tillfrisknandet.
-- Om sjukskrivningstidens längd påverkas av flera sjukdomar som orsakar en längre period med aktivitetsbegränsning än varje sjukdom för sig, samsjuklighet, ska du beskriva och förklara detta.</text>
+<text id="FRG_37.HLP"> - Om sjukdomen inte följer förväntat förlopp ska det framgå på vilket sätt.
+ - Om det inträffar komplikationer som gör att det tar längre tid att återfå arbetsförmåga ska du beskriva komplikationerna eller sjukdomstillstånden och skriva en förklaring till varför dessa fördröjer tillfrisknandet.
+ - Om sjukskrivningstidens längd påverkas av flera sjukdomar som orsakar en längre period med aktivitetsbegränsning än varje sjukdom för sig, samsjuklighet, ska du beskriva och förklara detta.</text>
 <text id="FRG_37.RBK">Patientens arbetsförmåga bedöms nedsatt längre tid än den som Socialstyrelsens försäkringsmedicinska beslutsstöd anger, därför att</text>
 <text id="FRG_39.HLP">En viktig information för att underlätta planeringen.</text>
 <text id="FRG_39.RBK">Prognos för arbetsförmåga utifrån aktuellt undersökningstillfälle</text>
@@ -58,27 +58,22 @@ Om intyget inte grundas på en personlig undersökning ska du förklara under "�
 Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan anges dessa under "övriga upplysningar".</text>
 <text id="FRG_6.RBK">Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga</text>
 <text id="FRM_1.RBK">Vad är sjukpenning?
-Sjukpenning är en ersättning för personer som arbetar i Sverige och har en nedsatt arbetsförmåga på grund av sjukdom. Beroende på hur mycket
-arbetsförmågan är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukpenning.
+Sjukpenning är en ersättning för personer som arbetar i Sverige och har en nedsatt arbetsförmåga på grund av sjukdom. Beroende på hur mycket arbetsförmågan är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukpenning. 
+
 Andra förmåner som detta läkarintyg används till
 Om du stänger av patienten enligt smittskyddslagen ska du även använda detta intyg
 Om din patient får ersättning aktivitetsstöd eller utvecklingsersättning för deltagande i arbetsmaknadspolitiskt program ska du även använda detta intyg.</text>
 <text id="FRM_2.RBK">Om du inte känner patienten ska hen styrka sin identitet genom legitimation med foto (SOSFS 2005:29).
 
 Vad är sjukpenning?
-Sjukpenning är en ersättning för personer som har en nedsatt arbetsförmåga på grund av sjukdom. Beroende på hur mycket arbetsförmågan är nedsatt kan man
-få en fjärdedels, halv, tre fjärdedels eller hel sjukpenning.
+Sjukpenning är en ersättning för personer som har en nedsatt arbetsförmåga på grund av sjukdom. Beroende på hur mycket arbetsförmågan är nedsatt kan man få en fjärdedels, halv, tre fjärdedels eller hel sjukpenning.
 
 Förutsättningar för att få sjukpenning
-Arbetsförmågan bedöms i förhållande till personens sysselsättning som kan vara nuvarande arbete, föräldraledighet för vård av barn eller deltagande i
-arbetsmarknadspolitiskt program. För personer som är arbetslösa bedöms arbetsförmågan i förhållandet till att utföra sådant arbete som är normalt
-förekommande på arbetsmarknaden.
+Arbetsförmågan bedöms i förhållande till personens sysselsättning som kan vara nuvarande arbete, föräldraledighet för vård av barn eller deltagande i arbetsmarknadspolitiskt program. För personer som är arbetslösa bedöms arbetsförmågan i förhållandet till att utföra sådant arbete som är normalt förekommande på arbetsmarknaden. 
 
-Förutsättningar förutom nedsatt arbetsförmåga är att tillhöra svensk socialförsäkring och ha inkomst från arbete. Försäkringskassan beslutar hur mycket
-sjukpenning personen kan få.
+Förutsättningar förutom nedsatt arbetsförmåga är att tillhöra svensk socialförsäkring och ha inkomst från arbete. Försäkringskassan beslutar hur mycket sjukpenning personen kan få.
 
-Från den åttonde dagen i en sjukperiod måste det finnas ett läkarintyg. Läkarintyget ska tydligt beskriva hur patientens sjukdom påverkar patientens förmåga att
-utföra sin sysselsättning.
+Från den åttonde dagen i en sjukperiod måste det finnas ett läkarintyg. Läkarintyget ska tydligt beskriva hur patientens sjukdom påverkar patientens förmåga att utföra sin sysselsättning.
 
 Studerande
 En person kan få behålla sitt studiemedel om förmågan att studera är helt nedsatt. Försäkringskassan bedömer i vilken omfattning förmågan bedöms nedsatt.
@@ -86,40 +81,30 @@ En person kan få behålla sitt studiemedel om förmågan att studera är helt n
 Den som ansöker om att få behålla sitt studiemedel ska från och med den femtonde dagen i sjukperioden styrka sin nedsatta studieförmåga med ett läkarintyg.
 
 Deltagande i arbetsmarknadspolitiskt program
-En person kan få behålla sin ersättning (aktivitetsstöd eller utvecklingsersättning) om förmågan att delta i sitt arbetsmarknadspolitiska program är nedsatt.
-Förmågan ska då vara nedsatt gentemot de aktiviteter som personen utför i sitt arbetsmarknadspolitiska program. Försäkringskassan bedömer i vilken omfattning
-förmågan är nedsatt.
+En person kan få behålla sin ersättning (aktivitetsstöd eller utvecklingsersättning) om förmågan att delta i sitt arbetsmarknadspolitiska program är nedsatt. Förmågan ska då vara nedsatt gentemot de aktiviteter som personen utför i sitt arbetsmarknadspolitiska program. Försäkringskassan bedömer i vilken omfattning förmågan är nedsatt.
 
 Den som ansöker om aktivitetsstöd vid sjukdom ska från och med den åttonde dagen i sjukperioden styrka sin nedsatta arbetsförmåga med ett läkarintyg.
 
 Smittbärarpenning
-En person kan få ersättning om hen måste avstå från sin sysselsättning på grund av läkarens beslut om avstängning enligt smittskyddslagen eller
-läkarundersökning alternativt hälsokontroll som syftar till att klarlägga sjukdom, smitta, sår eller annan skada som gör att hen inte får hantera livsmedel.
+En person kan få ersättning om hen måste avstå från sin sysselsättning på grund av läkarens beslut om avstängning enligt smittskyddslagen eller läkarundersökning alternativt hälsokontroll som syftar till att klarlägga sjukdom, smitta, sår eller annan skada som gör att hen inte får hantera livsmedel.
 
-Den som ansöker om smittbärarpenning ska skicka med ett läkarintyg.
+Den som ansöker om smittbärarpenning ska skicka med ett läkarintyg. 
 
 Mer om Bedömning av arbetsförmåga
 Försäkringskassan bedömer arbetsförmågan enligt rehabiliteringskedjan, som innebär följande:
-- Under de första 90 dagarna som patienten är sjukskriven kan Försäkringskassan betala sjukpenning om patienten inte kan utföra sitt vanliga arbete eller ett
-annat tillfälligt arbete hos sin arbetsgivare.
+- Under de första 90 dagarna som patienten är sjukskriven kan Försäkringskassan betala sjukpenning om patienten inte kan utföra sitt vanliga arbete eller ett annat tillfälligt arbete hos sin arbetsgivare.
 - Efter 90 dagar kan Försäkringskassan betala sjukpenning om patienten inte kan utföra något arbete alls hos sin arbetsgivare.
-- Efter 180 dagar kan Försäkringskassan betala ut sjukpenning om patienten inte kan utföra sådant arbete som är normalt förekommande på arbetsmarknaden.
-Men detta gäller inte om Försäkringskassan bedömer att patienten med stor sannolikhet kommer att kunna gå tillbaka till ett arbete hos sin arbetsgivare före dag
-366. I dessa fall bedöms arbetsförmågan i förhållande till ett arbete hos arbetsgivaren även efter dag 180. Regeln gäller inte heller om det kan anses oskäligt att
-bedöma patientens arbetsförmåga i förhållande till arbete som är normalt förekommande på arbetsmarknaden.
-- Efter 365 dagar kan Försäkringskassan betala ut sjukpenning om patienten inte kan utföra sådant arbete som är normalt förekommande på arbetsmarknaden.
-Undantag från detta kan göras om det kan anses oskäligt att bedöma patientens arbetsförmåga i förhållande till sådant arbete som normalt förekommer på
-arbetsmarknaden.
+- Efter 180 dagar kan Försäkringskassan betala ut sjukpenning om patienten inte kan utföra sådant arbete som är normalt förekommande på arbetsmarknaden. Men detta gäller inte om Försäkringskassan bedömer att patienten med stor sannolikhet kommer att kunna gå tillbaka till ett arbete hos sin arbetsgivare före dag 366. I dessa fall bedöms arbetsförmågan i förhållande till ett arbete hos arbetsgivaren även efter dag 180. Regeln gäller inte heller om det kan anses oskäligt att bedöma patientens arbetsförmåga i förhållande till arbete som är normalt förekommande på arbetsmarknaden.
+- Efter 365 dagar kan Försäkringskassan betala ut sjukpenning om patienten inte kan utföra sådant arbete som är normalt förekommande på arbetsmarknaden. Undantag från detta kan göras om det kan anses oskäligt att bedöma patientens arbetsförmåga i förhållande till sådant arbete som normalt förekommer på arbetsmarknaden.
 
 Rehabiliteringskedjan gäller fullt ut bara för den som har en anställning.
 
-Egna företagares arbetsförmåga bedöms i förhållande till de vanliga arbetsuppgifterna fram till och med dag 180. Sedan bedöms arbetsförmågan i förhållande till
-sådant arbete som normalt förekommer på arbetsmarknaden.
+Egna företagares arbetsförmåga bedöms i förhållande till de vanliga arbetsuppgifterna fram till och med dag 180. Sedan bedöms arbetsförmågan i förhållande till sådant arbete som normalt förekommer på arbetsmarknaden.
 
 För arbetslösa bedöms arbetsförmågan i förhållande till arbeten som normalt förekommer på arbetsmarknaden redan från första dagen i sjukperioden.</text>
 <text id="KAT_1.RBK">Grund för medicinskt underlag</text>
 <text id="KAT_10.HLP">Fylls i om hon eller han måste avstå från sitt arbete på grund av:
-- Intygsskrivande läkares beslut enligt smittskyddslagen
+- Intygsskrivande läkares beslut enligt smittskyddslagen 
 - Läkarundersökning eller hälsokontroll som syftar till att klarlägga om hon eller han är smittad av en allmänfarlig sjukdom eller om personen har en sjukdom, en smitta, ett sår eller annan skada som gör att hon eller han inte får hantera livsmedel.</text>
 <text id="KAT_10.RBK">Smittbärarpenning</text>
 <text id="KAT_2.RBK">Sysselsättning</text>
@@ -163,20 +148,4 @@ För arbetslösa bedöms arbetsförmågan i förhållande till arbeten som norma
 <text id="KV_FKMU_0007.SEXTIO_DGR.RBK">2 månader.</text>
 <text id="KV_FKMU_0007.TREHUNDRASEXTIOFEM_DAGAR.RBK">12 månader.</text>
 <text id="KV_FKMU_0007.TRETTIO_DGR.RBK">1 månad.</text>
-
-  <!-- Manuellt tillagda tilläggsfrågor så att vi kan testa den funktionaliteten -->
-  <text id="KAT_9999.RBK">Tilläggsfrågor</text>
-  <text id="KAT_9999.HLP">TBD</text>
-
-  <tillagg>
-    <tillaggsfraga id="9001">
-      <text id="DFR_9001.1.RBK">Tycker du att denna tilläggsfråga är meningfull?</text>
-      <text id="DFR_9001.1.HLP">Beskriv i detalj varför du anser detta. Ge exempel på värdet det tillför patienten.
-      </text>
-    </tillaggsfraga>
-    <tillaggsfraga id="9002">
-      <text id="DFR_9002.1.RBK">Är raktvål bättre än rakskum?</text>
-      <text id="DFR_9002.1.HLP">Motivera varför och hur detta påverkar patientens vardag.</text>
-    </tillaggsfraga>
-  </tillagg>
 </texter>
