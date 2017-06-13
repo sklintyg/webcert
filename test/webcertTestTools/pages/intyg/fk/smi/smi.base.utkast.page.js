@@ -261,21 +261,25 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var fillIn = function fillInUtr(val, index) {
             var row = utredningarElement.underlagRow(index);
 
-            return Promise.all([
-                sendKeysWithBackspaceFix(row.datum, val.datum),
-                row.underlag.click().then(function() {
-                    return row.underlag.element(by.cssContainingText('.ui-select-choices-row', val.underlag)).click();
-                }),
-                row.information.sendKeys(val.infoOmUtredningen)
-            ]);
+            return sendKeysWithBackspaceFix(row.datum, val.datum)
+                .then(function() {
+                    return row.underlag.click()
+                        .then(function() {
+                            return row.underlag.element(by.cssContainingText('.ui-select-choices-row', val.underlag)).click();
+                        });
+                })
+                .then(function() {
+                    return row.information.sendKeys(val.infoOmUtredningen);
+                });
         };
 
         if (utredningar) {
             return utredningarElement.finns.JA.sendKeys(protractor.Key.SPACE)
                 .then(function() {
-                    browser.sleep(2000);
-                    var actions = utredningar.map(fillIn);
-                    return actions;
+                    return browser.sleep(2000)
+                        .then(function() {
+                            return utredningar.map(fillIn);
+                        });
                 });
         } else {
             return utredningarElement.finns.NEJ.sendKeys(protractor.Key.SPACE);

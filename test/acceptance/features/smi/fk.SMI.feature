@@ -1,5 +1,5 @@
 # language: sv
- @nedsattarbetsformaga @smi
+@smi @hantera
 Egenskap: Hantera SMI intyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida

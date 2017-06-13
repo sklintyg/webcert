@@ -185,9 +185,11 @@ var tsValues = {
         //     lamplighet = null;
         // }
 
+
         var bedomningsObj = {
             stallningstagande: stalltagande,
             lamplighet: null
+
         };
 
 

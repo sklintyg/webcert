@@ -75,11 +75,15 @@ var BaseTsUtkast = BaseUtkast._extend({
         return Promise.resolve('Inget svar på lämplighet angivet');
     },
     fillInBedomning: function(bedomningObj) {
-        return Promise.all([
-            element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE),
-            pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter),
-            this.fillInBedomningLamplighet(bedomningObj.lamplighet)
-        ]);
+        var fillInLamplighet = this.fillInBedomningLamplighet;
+
+        return element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE)
+            .then(function() {
+                return pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
+                    .then(function() {
+                        return fillInLamplighet(bedomningObj.lamplighet);
+                    });
+            });
     },
     fillInOvrigKommentar: function(utkast) {
         return this.kommentar.sendKeys(utkast.kommentar);
