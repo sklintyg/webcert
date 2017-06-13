@@ -26,7 +26,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 
 @makulera @smoke
 Scenario: Makulera ett skickat intyg
-	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Mottaget"
+	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Skickat"
     Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
 

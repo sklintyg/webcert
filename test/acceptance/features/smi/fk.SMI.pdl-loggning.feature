@@ -50,7 +50,7 @@ Scenario: Radera SMI utkast
 
 @makulera
 Scenario: Makulera SMI intyg
-	När  jag går in på ett slumpat SMI-intyg med status "Mottaget"
+	När  jag går in på ett slumpat SMI-intyg med status "Skickat"
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 

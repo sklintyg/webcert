@@ -26,7 +26,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
 
 @textsvar 
 Scenario: Ska kunna besvara komplettering med textmeddelande
-   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget
    Så ska jag se kompletteringsfrågan på intygs-sidan

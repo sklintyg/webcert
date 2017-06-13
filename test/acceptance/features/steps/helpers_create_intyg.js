@@ -75,8 +75,8 @@ function writeNewIntyg(typ, status) {
                 .then(function() {
                     return browser.sleep(2000);
                 })
-                .then(function() { // Skicka till mottagare om intyget ska vara Mottaget
-                    if (status === 'Mottaget') {
+                .then(function() { // Skicka till mottagare om intyget ska vara Skickat
+                    if (status === 'Skickat') {
                         console.log('Klickar på skicka knapp..');
                         return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE)
                             .then(function() {

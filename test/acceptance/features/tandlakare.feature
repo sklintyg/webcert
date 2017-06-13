@@ -42,7 +42,7 @@ Scenario: Skapa, Skicka och Makulera FK7263
 Scenario: Svara och skicka fråga till Försäkringskassan
    Givet att jag är inloggad som tandläkare
    När jag går in på en patient
-   Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   Och jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Så ska jag ha möjlighet att vidarebefordra frågan
 

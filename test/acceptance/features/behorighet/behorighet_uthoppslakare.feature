@@ -41,7 +41,7 @@ Scenario: Kan inte kopiera Transportstyrelsens läkarintyg, diabetes intyg
 @makulera @fk7263
 Scenario: Kan inte makulera intyg
    När jag går in på en patient
-   Och jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   Och jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    Så ska makuleraknappen inte vara tillgänglig
 
 @filtrera @osignerade-intyg
@@ -54,7 +54,7 @@ Scenario: Kan inte filtrera osignerade intyg på läkare
 Scenario: Ska kunna svara på frågor från Försäkringskassan
    När går in på Sök/skriv intyg
    Och jag går in på en patient
-   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
@@ -62,7 +62,7 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
 @nyttIntyg
 Scenario: Ska få varning vid svar med nytt intyg
    När jag går in på en patient
-   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan
@@ -72,7 +72,7 @@ Scenario: Ska få varning vid svar med nytt intyg
 @komplettering
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på en patient
-   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan

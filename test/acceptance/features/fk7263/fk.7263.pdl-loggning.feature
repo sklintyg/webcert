@@ -49,7 +49,7 @@ Scenario: Radera utkast
 
 @makulera
 Scenario: Makulera intyg
-	När  jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+	När  jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 

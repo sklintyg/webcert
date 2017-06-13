@@ -66,7 +66,7 @@ Exempel:
 
 @makulera @smoke @fksmoke
 Scenario: Makulera ett skickat ett SMI-intyg
-	När jag går in på ett slumpat SMI-intyg med status "Mottaget"
+	När jag går in på ett slumpat SMI-intyg med status "Skickat"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
 

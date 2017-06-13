@@ -32,13 +32,13 @@ Scenario: Signera ett ts-intyg
 
 
 Scenario: Besvara kompletteringsfråga
-   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    Och Försäkringskassan ställer en "Kontakt" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
 Scenario: Svara med nytt intyg
-   När jag går in på ett "Läkarintyg FK 7263" med status "Mottaget"
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
 
    När jag går in på intygsutkastet via djupintegrationslänk

@@ -217,7 +217,7 @@ module.exports = function() {
         }
         return Promise.all([
             checkRowForBtnWithText('Signerat', 'Förnya', true),
-            checkRowForBtnWithText('Mottaget', 'Förnya', true),
+            checkRowForBtnWithText('Skickat', 'Förnya', true),
             checkRowForBtnWithText('Makulerat', 'Förnya', false)
         ]);
     });
