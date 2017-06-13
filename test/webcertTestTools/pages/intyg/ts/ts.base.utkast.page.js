@@ -26,7 +26,11 @@
 var pageHelpers = require('../../pageHelper.util.js');
 var BaseUtkast = require('../base.utkast.page.js');
 
-
+var bedomning = {
+    form: element(by.id('bedomningForm')),
+    yes: element(by.id('bedomningy')),
+    no: element(by.id('bedomningn'))
+};
 
 var BaseTsUtkast = BaseUtkast._extend({
     init: function init() {
@@ -38,11 +42,7 @@ var BaseTsUtkast = BaseUtkast._extend({
 
         this.identitetForm = element(by.id('identitetForm'));
 
-        this.bedomning = {
-            form: element(by.id('bedomningForm')),
-            yes: element(by.id('bedomningy')),
-            no: element(by.id('bedomningn'))
-        };
+        this.bedomning = bedomning;
 
         this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.checkbox'));
 
@@ -67,9 +67,9 @@ var BaseTsUtkast = BaseUtkast._extend({
     fillInBedomningLamplighet: function(lamplighet) {
         if (lamplighet) {
             if (lamplighet === 'Ja') {
-                return this.bedomning.yes.sendKeys(protractor.Key.SPACE);
+                return bedomning.yes.sendKeys(protractor.Key.SPACE);
             } else {
-                return this.bedomning.no.sendKeys(protractor.Key.SPACE);
+                return bedomning.no.sendKeys(protractor.Key.SPACE);
             }
         }
         return Promise.resolve('Inget svar på lämplighet angivet');
