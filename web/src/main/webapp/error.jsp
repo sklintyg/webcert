@@ -68,8 +68,7 @@
   </c:otherwise>
 </c:choose>
 
-<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamicLink.service.js"></script>
-<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamiclink.directive.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamicLink.module.js"></script>
 
 </head>
 <body class="start jsp" id="errorPage" ng-controller="LoginController">
