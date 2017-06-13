@@ -76,10 +76,11 @@ var BaseTsUtkast = BaseUtkast._extend({
     },
     fillInBedomning: function(bedomningObj) {
         var fillInLamplighet = this.fillInBedomningLamplighet;
+        var bedomningKorkortsTyperChecks = this.bedomningKorkortsTyperChecks;
 
         return element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return pageHelpers.clickAll(this.bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
+                return pageHelpers.clickAll(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
                     .then(function() {
                         return fillInLamplighet(bedomningObj.lamplighet);
                     });
