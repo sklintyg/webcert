@@ -308,7 +308,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
                 .thenReturn(getIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
-        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
+        when(webCertUserService.isAuthorizedForUnit(eq("VardenhetY"), eq(false))).thenReturn(true);
 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fraga);

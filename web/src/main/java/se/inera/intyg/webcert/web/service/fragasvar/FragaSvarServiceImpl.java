@@ -361,11 +361,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         WebCertUser user = webCertUserService.getUser();
 
         // Get vardperson that posed the question
-        HoSPersonal hoSPersonal = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
-        Vardperson vardPerson = FragaSvarConverter.convert(hoSPersonal);
 
         // Is user authorized to save an answer to this question?
-        verifyEnhetsAuth(vardPerson.getEnhetsId(), false);
+        verifyEnhetsAuth(intyg.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), false);
         // Verksamhetsregel FS-001 (Is the certificate sent to FK)
         if (!isCertificateSentToFK(intyg.getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
@@ -379,6 +377,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(intyg.getUtlatande());
+        HoSPersonal hoSPersonal = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
+        Vardperson vardPerson = FragaSvarConverter.convert(hoSPersonal);
 
         FragaSvar fraga = new FragaSvar();
         fraga.setFrageStallare(FrageStallare.WEBCERT.getKod());
