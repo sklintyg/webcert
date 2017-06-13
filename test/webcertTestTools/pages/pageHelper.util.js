@@ -21,13 +21,13 @@
  * Created by BESA on 2015-11-25.
  * Holds helper functions for actions that are needed often in pages.
  */
-/*globals protractor */
+/*globals protractor, Promise */
 'use strict';
 
 module.exports = {
     clickAll: function(elementArray, elementTextsArray) {
         if (!elementTextsArray) {
-            return false;
+            return Promise.resolve();
 
         }
         // filter all elemenets matching elementTextsArray
