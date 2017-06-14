@@ -348,8 +348,6 @@ public class CreateCopyUtkastBuilderImplTest {
                 .setStatuses(status)
                 .setRevoked(false)
                 .setRelations(new Relations())
-               // .setReplacedByRelation(null)
-               // .setComplementedByRelation(null)
                 .setDeceased(false)
                 .build();
     }

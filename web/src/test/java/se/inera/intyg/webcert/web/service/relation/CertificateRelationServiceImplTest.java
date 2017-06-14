@@ -100,6 +100,4 @@ public class CertificateRelationServiceImplTest {
                 new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED))
                 .collect(Collectors.toList());
     }
-
-    // TODO More tests
 }

@@ -29,8 +29,6 @@ import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -48,9 +46,6 @@ public class UtkastRepositoryCustomTest {
 
     @Autowired
     private UtkastRepositoryCustom utkastRepositoryCustom;
-
-    @PersistenceContext
-    private EntityManager em;
 
     /**
      * Testing several @Query methods in same test to save setup/teardown time.

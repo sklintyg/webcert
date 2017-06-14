@@ -39,10 +39,7 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
     @Override
     public Optional<WebcertCertificateRelation> findParentRelation(String intygsId) {
         List<WebcertCertificateRelation> parentRelations = utkastRepoCustom.findParentRelation(intygsId);
-        if (parentRelations != null && parentRelations.size() > 0) {
-            return Optional.of(parentRelations.get(0));
-        }
-        return Optional.empty();
+        return parentRelations.stream().findFirst();
     }
 
     @Override

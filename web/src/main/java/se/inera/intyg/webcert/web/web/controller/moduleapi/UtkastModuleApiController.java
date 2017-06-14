@@ -90,8 +90,6 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private IntygTextsService intygTextsService;
 
-//    @Autowired
-//    private RelationService relationService;
     @Autowired
     private CertificateRelationService certificateRelationService;
 
@@ -132,10 +130,6 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
 
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
-//        List<RelationItem> relations = relationService.getRelationsForIntyg(utkast.getIntygsId());
-//        if (relations.isEmpty()) {
-//            relations = RelationItem.createBaseCase(utkast);
-//        }
         draftHolder.setRelations(relations1);
         draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
 
