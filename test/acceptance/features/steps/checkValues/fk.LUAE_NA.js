@@ -23,6 +23,7 @@
 
 var luaenaPage = pages.intyg.luaeNA.intyg;
 var testdataHelper = wcTestTools.helpers.testdata;
+var regExp = require('./common.js').regExp;
 
 
 function checkBaseratPa(baseratPa) {
@@ -70,7 +71,7 @@ function checkDiagnos(diagnos) {
 
     var regexp;
     for (var i = 0; i < diagnoser.length; i++) {
-        regexp = new RegExp(diagnoser[i].kod + '(?:\\d|\\s|[A-Z]|)', 'g');
+        regexp = regExp(diagnoser[i].kod + '(?:\\d|\\s|[A-Z]|)');
         promiseArr.push(expect(luaenaPage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.match(regexp));
     }
     promiseArr.push(expect(luaenaPage.diagnoser.grund.getText()).to.eventually.equal(diagnos.narOchVarStalldesDiagnoserna));

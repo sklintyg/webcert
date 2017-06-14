@@ -46,5 +46,9 @@ module.exports = {
             })
         ]);
 
+    },
+
+    regExp: function(regexp) {
+        return new RegExp(regexp, 'g');
     }
 };

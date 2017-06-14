@@ -23,6 +23,7 @@
 
 var lusePage = pages.intyg.luse.intyg;
 var testdataHelper = wcTestTools.helpers.testdata;
+var regExp = require('./common.js').regExp;
 
 
 function checkBaseratPa(baseratPa) {
@@ -67,9 +68,13 @@ function checkDiagnos(diagnos) {
     var diagnoser = diagnos.diagnoser;
     var nyBedomning = testdataHelper.boolTillJaNej(diagnos.nyBedomning);
     var promiseArr = [];
+
+    var regexp;
     for (var i = 0; i < diagnoser.length; i++) {
-        promiseArr.push(expect(lusePage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.equal(diagnoser[i].kod));
+        regexp = regExp(diagnoser[i].kod + '(?:\\d|\\s|[A-Z]|)');
+        promiseArr.push(expect(lusePage.diagnoser.getDiagnos(i).kod.getText()).to.eventually.match(regexp));
     }
+
     promiseArr.push(expect(lusePage.diagnoser.grund.getText()).to.eventually.equal(diagnos.narOchVarStalldesDiagnoserna));
     promiseArr.push(expect(lusePage.diagnoser.nyBedomningDiagnosgrund.getText()).to.eventually.contain(nyBedomning));
 
