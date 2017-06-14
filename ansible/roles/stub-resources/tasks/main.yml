@@ -7,9 +7,12 @@
 
 - name: Create stubdata directory
   file:
-    path: "{{ inera_root }}/stubdata/webcert"
+    path: "{{ stubdata_folder }}"
     owner: "{{ tomcat7_user }}"
     group: "{{ tomcat7_group }}"
     mode: 0755
     state: directory
     recurse: yes
+
+- name: explicitly set correct ownership
+  command: "chmod -R {{ tomcat7_user }}:{{ tomcat7_group }} {{ stubdata_folder }}"
