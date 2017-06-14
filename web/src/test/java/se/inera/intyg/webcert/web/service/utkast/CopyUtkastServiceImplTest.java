@@ -67,6 +67,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -204,7 +205,10 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-       // when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
+
+        // Also tests that copy is allowed if the replacement utkast isn't signed.
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
+        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
 
@@ -224,6 +228,36 @@ public class CopyUtkastServiceImplTest {
 
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testCreateCopyFailIfSignedReplacementExists() throws Exception {
+
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
+
+        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
+
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED);
+        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
+
+        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+
+        try {
+            CreateNewDraftCopyResponse copyResp = copyService.createCopy(copyReq);
+            fail("An exception should have been thrown.");
+        } catch (Exception e) {
+            verifyZeroInteractions(mockUtkastRepository);
+            verifyZeroInteractions(mockNotificationService);
+            verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
+            // Assert no pdl logging
+            verifyZeroInteractions(logService);
+            throw e;
+        }
     }
 
     @Test
@@ -259,7 +293,7 @@ public class CopyUtkastServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testCreateReplacementCopyFailedIfAlreadyReplaced() throws Exception {
+    public void testCreateReplacementCopyFailedIfAlreadyReplacedBySignedIntyg() throws Exception {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
@@ -338,6 +372,11 @@ public class CopyUtkastServiceImplTest {
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
+        // Also tests that renew is allowed if the replacement utkast isn't signed.
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
+        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
+
+
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
         CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
@@ -355,6 +394,40 @@ public class CopyUtkastServiceImplTest {
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testCreateRenewalFailsWhenReplacedBySignedIntyg() throws Exception {
+
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+        when(userService.getUser()).thenReturn(user);
+
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
+
+        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
+
+        // Also tests that renew is allowed if the replacement utkast isn't signed.
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED);
+        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
+
+
+        CreateRenewalCopyRequest copyReq = buildRenewalRequest();
+
+        try {
+            copyService.createRenewalCopy(copyReq);
+            fail("An exception should have been thrown.");
+        } catch (Exception e) {
+            verifyZeroInteractions(mockUtkastRepository);
+            verifyZeroInteractions(mockNotificationService);
+            verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
+            // Assert no pdl logging
+            verifyZeroInteractions(logService);
+            throw e;
+        }
     }
 
     @Test

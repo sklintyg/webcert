@@ -30,7 +30,7 @@ var FkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-fdescribe('Verify replace intyg ', function() {
+describe('Verify replace intyg ', function() {
 
     var intygId;
     var utkastId;
@@ -78,17 +78,39 @@ fdescribe('Verify replace intyg ', function() {
             expect(FkIntygPage.isAt()).toBeTruthy();
         });
 
-        it('should still show send/copy/renew/replace buttons, since the utkast has not been signed', function() {
-            FkIntygPage.get(intygId);
-            expect(FkIntygPage.isAt()).toBeTruthy();
-            expect(FkIntygPage.copy.button.isPresent()).toBe(true);
-            expect(FkIntygPage.skicka.knapp.isPresent()).toBe(true);
-            expect(FkIntygPage.replaceBtn().isPresent()).toBe(true);
+        describe('Expected functionality should still be available', function() {
+            it('should still show send/copy/renew/replace buttons, since the replacing utkast has not been signed', function() {
+                FkIntygPage.get(intygId);
+                expect(FkIntygPage.isAt()).toBeTruthy();
+                expect(FkIntygPage.copy.button.isPresent()).toBe(true);
+                expect(FkIntygPage.skicka.knapp.isPresent()).toBe(true);
+                expect(FkIntygPage.replaceBtn().isPresent()).toBe(true);
 
-            //fornya exists for fk7263
-            expect(FkIntygPage.fornya.button.isPresent()).toBe(true);
+                //fornya exists for fk7263
+                expect(FkIntygPage.fornya.button.isPresent()).toBe(true);
+            });
 
+            it('should send without error, since the replacing utkast has not been signed', function() {
+                FkIntygPage.skicka.knapp.click();
+                FkIntygPage.skicka.dialogKnapp.click();
+            });
+
+            it('should renew without error, since the replacing utkast has not been signed', function() {
+                 FkIntygPage.fornya.button.click();
+                 FkIntygPage.fornya.dialogConfirmButton.click();
+                 expect(FkUtkastPage.isAt()).toBeTruthy();
+                 FkIntygPage.get(intygId);
+            });
+
+            it('should copy without error, since the replacing utkast has not been signed', function() {
+                FkIntygPage.copy.button.click();
+                FkIntygPage.copy.dialogConfirmButton.click();
+                expect(FkUtkastPage.isAt()).toBeTruthy();
+                FkIntygPage.get(intygId);
+            });
         });
+
+
 
         it('should still not show warning message with link to replacing utkast, since utkast has not been signed',
             function() {

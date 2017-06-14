@@ -351,7 +351,7 @@ public class IntygServiceImpl implements IntygService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is revoked");
         }
 
-        verifyNotReplaced(intygsId, "send");
+        verifyNotReplacedBySignedIntyg(intygsId, "send");
 
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, webCertUserService.getUser());
 
@@ -367,10 +367,10 @@ public class IntygServiceImpl implements IntygService {
         return sendIntygToCertificateSender(sendConfig, intyg);
     }
 
-    private void verifyNotReplaced(String intygsId, String operation) {
+    private void verifyNotReplacedBySignedIntyg(String intygsId, String operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getRelationOfType(intygsId,
                 RelationKod.ERSATT);
-        if (replacedByRelation.isPresent()) {
+        if (replacedByRelation.isPresent() && replacedByRelation.get().getStatus() == UtkastStatus.SIGNED) {
             String errorString = String.format("Cannot %s certificate '%s', the certificate is replaced by certificate '%s'",
                     operation, intygsId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);

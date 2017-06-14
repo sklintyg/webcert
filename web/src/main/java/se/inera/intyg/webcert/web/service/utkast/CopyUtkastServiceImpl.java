@@ -33,6 +33,7 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -60,6 +61,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -133,7 +135,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
 
-            verifyNotReplaced(originalIntygId, "create copy");
+            verifyNotReplacedWithStateCheck(originalIntygId, "create copy", UtkastStatus.SIGNED);
             verifyNotComplemented(originalIntygId, "create copy");
 
             CopyUtkastBuilderResponse builderResponse;
@@ -215,7 +217,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
-            verifyNotReplaced(copyRequest.getOriginalIntygId(), "create renewal");
+            verifyNotReplacedWithStateCheck(copyRequest.getOriginalIntygId(), "create renewal", UtkastStatus.SIGNED);
             verifyNotComplemented(copyRequest.getOriginalIntygId(), "create renewal");
 
             CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true,
@@ -274,6 +276,18 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     // Duplicate in IntygServiceImpl, refactor.
+    private void verifyNotReplacedWithStateCheck(String originalIntygId, String operation, UtkastStatus... unallowedStates) {
+        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getRelationOfType(originalIntygId,
+                RelationKod.ERSATT);
+        if (replacedByRelation.isPresent() && Arrays.asList(unallowedStates).contains(replacedByRelation.get().getStatus())) {
+            String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
+                    operation, originalIntygId, replacedByRelation.get().getIntygsId());
+            LOG.debug(errorString);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_REPLACED,
+                    errorString);
+        }
+    }
+
     private void verifyNotReplaced(String originalIntygId, String operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getRelationOfType(originalIntygId,
                 RelationKod.ERSATT);
