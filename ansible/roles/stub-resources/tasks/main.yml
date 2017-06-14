@@ -4,8 +4,6 @@
   file:
     state: absent
     path: "{{ stubdata_folder }}/"
-    owner: "{{ tomcat7_user }}"
-    group: "{{ tomcat7_group }}"
 
 - name: Create stubdata directory
   file:
