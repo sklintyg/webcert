@@ -7,7 +7,7 @@
 
 - name: Create stubdata directory
   file:
-    path: "{{ stubdata_folder }}"
+    path: "{{ inera_root }}/stubdata/webcert"
     owner: "{{ tomcat7_user }}"
     group: "{{ tomcat7_group }}"
     mode: 0755
