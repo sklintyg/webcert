@@ -42,15 +42,12 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^jag klickar på ersätta knappen och ersätter intyget$/, function() {
-        global.ersattintyg = {};
-        global.ersattintyg.id = intyg.id;
-        global.ersattintyg.typ = intyg.typ;
+    this.When(/^jag klickar på ersätt\-knappen i dialogen$/, function() {
+        global.ersattintyg = JSON.parse(JSON.stringify(intyg));
 
-        return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE).then(function() {
-            return element(by.id('button1ersatt-dialog')).sendKeys(protractor.Key.SPACE).then(function() {
-                logger.info('Clicked ersätt button');
-            });
+
+        return element(by.id('button1ersatt-dialog')).sendKeys(protractor.Key.SPACE).then(function() {
+            logger.info('Clicked ersätt button');
         });
     });
 

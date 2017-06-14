@@ -27,31 +27,43 @@ var utkastPage = pages.intyg.base.utkast;
 var helpers = require('./helpers.js');
 
 function signeraUtkast() {
-    return browser.sleep(2000).then(function() { // fix för nåt med animering?
 
-        return expect(fkUtkastPage.sparatOchKomplettMeddelande.isDisplayed()).to.eventually.equal(true)
-            .then(function() {
-                return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
-            })
-            .then(function() {
-                // Verifiera att det inte finns valideringsfel
-                var ejKomplettEL = element(by.cssContainingText('h3', 'Utkastet saknar uppgifter i följande avsnitt'));
-                return expect(ejKomplettEL.isPresent()).to.become(false)
-                    .then(function(val) {
-                        //Elementet finns inte i DOM
-                        return Promise.resolve();
-                    }, function(val) {
-                        //Om elementet finns tillgänligt på sidan så ska det iallafall inte vara synligt!
-                        return expect(ejKomplettEL.isDisplayed()).to.become(false)
-                            .then(function() {
-                                return Promise.resolve('Elementet är inte tillgänligt och inte synligt');
-                            }, function() {
-                                throw ('Utkastet är inte komplett och kunde inte signeras. Se screenshot' + '\n' + val);
+    var uppdateraAdressOmErsattandeIntyg = function() {
+        if (global.ersattintyg) {
+            console.log('Intyget ersätter ett annat intyg');
+            return require('./fillIn/common.js').setPatientAdressIfNotGiven();
+        }
 
-                            });
+        return Promise.resolve();
+    };
 
-                    });
-            });
+    return uppdateraAdressOmErsattandeIntyg().then(function() {
+        return browser.sleep(2000).then(function() { // fix för nåt med animering?
+
+            return expect(fkUtkastPage.sparatOchKomplettMeddelande.isDisplayed()).to.eventually.equal(true)
+                .then(function() {
+                    return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+                })
+                .then(function() {
+                    // Verifiera att det inte finns valideringsfel
+                    var ejKomplettEL = element(by.cssContainingText('h3', 'Utkastet saknar uppgifter i följande avsnitt'));
+                    return expect(ejKomplettEL.isPresent()).to.become(false)
+                        .then(function(val) {
+                            //Elementet finns inte i DOM
+                            return Promise.resolve();
+                        }, function(val) {
+                            //Om elementet finns tillgänligt på sidan så ska det iallafall inte vara synligt!
+                            return expect(ejKomplettEL.isDisplayed()).to.become(false)
+                                .then(function() {
+                                    return Promise.resolve('Elementet är inte tillgänligt och inte synligt');
+                                }, function() {
+                                    throw ('Utkastet är inte komplett och kunde inte signeras. Se screenshot' + '\n' + val);
+
+                                });
+
+                        });
+                });
+        });
     });
 }
 
