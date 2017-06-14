@@ -252,32 +252,37 @@ var TsBasUtkast = BaseTsUtkast._extend({
         return Promise.all(promiseArr);
     },
     fillInDiabetes: function(diabetesObj) {
-        var promiseArr = [];
+        var diabetes = this.diabetes;
         if (diabetesObj.hasDiabetes === 'Ja') {
-            promiseArr.push(this.diabetes.aYes.sendKeys(protractor.Key.SPACE));
+            return diabetes.aYes.sendKeys(protractor.Key.SPACE).then(function() {
 
-            if (diabetesObj.typ === 'Typ 1') {
-                promiseArr.push(this.diabetes.typ1.sendKeys(protractor.Key.SPACE));
-            } else {
-                promiseArr.push(this.diabetes.typ2.sendKeys(protractor.Key.SPACE));
-            }
-            // Ange behandlingstyp 
-            if (diabetesObj.typ === 'Typ 2') {
-                var typ = diabetesObj.behandlingsTyper;
-                if (typ.indexOf('Endast kost') > -1) {
-                    promiseArr.push(this.diabetes.endastkost.sendKeys(protractor.Key.SPACE));
+                if (diabetesObj.typ === 'Typ 1') {
+                    return diabetes.typ1.sendKeys(protractor.Key.SPACE);
+                } else {
+                    return diabetes.typ2.sendKeys(protractor.Key.SPACE);
                 }
-                if (typ.indexOf('Tabletter') > -1) {
-                    promiseArr.push(this.diabetes.tabletter.sendKeys(protractor.Key.SPACE));
+
+                // Ange behandlingstyp 
+                if (diabetesObj.typ === 'Typ 2') {
+                    var promiseArr = [];
+                    var typ = diabetesObj.behandlingsTyper;
+                    if (typ.indexOf('Endast kost') > -1) {
+                        promiseArr.push(diabetes.endastkost.sendKeys(protractor.Key.SPACE));
+                    }
+                    if (typ.indexOf('Tabletter') > -1) {
+                        promiseArr.push(diabetes.tabletter.sendKeys(protractor.Key.SPACE));
+                    }
+                    if (typ.indexOf('Insulin') > -1) {
+                        promiseArr.push(diabetes.insulin.sendKeys(protractor.Key.SPACE));
+                    }
+                    return Promise.all(promiseArr);
                 }
-                if (typ.indexOf('Insulin') > -1) {
-                    promiseArr.push(this.diabetes.insulin.sendKeys(protractor.Key.SPACE));
-                }
-            }
+
+            });
         } else {
-            promiseArr.push(this.diabetes.aNo.sendKeys(protractor.Key.SPACE));
+            return diabetes.aNo.sendKeys(protractor.Key.SPACE);
         }
-        return Promise.all(promiseArr);
+
     },
     fillInNeurologiskaSjukdomar: function(utkast) {
         var promiseArr = [];
