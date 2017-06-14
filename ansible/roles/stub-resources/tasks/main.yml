@@ -3,7 +3,7 @@
 - name: Clean stubdata directory
   file:
     state: absent
-    path: "{{ stubdata_folder }}/"
+    path: "{{ stubdata_folder }}"
 
 - name: Create stubdata directory
   file:
