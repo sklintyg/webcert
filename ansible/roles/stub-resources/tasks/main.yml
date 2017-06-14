@@ -13,6 +13,3 @@
     mode: 0755
     state: directory
     recurse: yes
-
-- name: explicitly set correct ownership
-  command: "chmod -R {{ tomcat7_user }}:{{ tomcat7_group }} {{ stubdata_folder }}"

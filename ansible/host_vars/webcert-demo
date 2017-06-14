@@ -6,5 +6,5 @@ proxy_env:
   http_proxy: http://bf-proxy.sth:8888
   https_proxy: http://bf-proxy.sth:8888
 
-tomcat7_user: "root"
-tomcat7_group: "root"
+tomcat7_user: ine-app
+tomcat7_group: ine-app
