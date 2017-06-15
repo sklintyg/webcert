@@ -259,25 +259,23 @@ var TsBasUtkast = BaseTsUtkast._extend({
                 if (diabetesObj.typ === 'Typ 1') {
                     return diabetes.typ1.sendKeys(protractor.Key.SPACE);
                 } else {
-                    return diabetes.typ2.sendKeys(protractor.Key.SPACE);
+                    return diabetes.typ2.sendKeys(protractor.Key.SPACE)
+                        .then(function() {
+                            // Ange behandlingstyp 
+                            var promiseArr = [];
+                            var typ = diabetesObj.behandlingsTyper;
+                            if (typ.indexOf('Endast kost') > -1) {
+                                promiseArr.push(diabetes.endastkost.sendKeys(protractor.Key.SPACE));
+                            }
+                            if (typ.indexOf('Tabletter') > -1) {
+                                promiseArr.push(diabetes.tabletter.sendKeys(protractor.Key.SPACE));
+                            }
+                            if (typ.indexOf('Insulin') > -1) {
+                                promiseArr.push(diabetes.insulin.sendKeys(protractor.Key.SPACE));
+                            }
+                            return Promise.all(promiseArr);
+                        });
                 }
-
-                // Ange behandlingstyp 
-                if (diabetesObj.typ === 'Typ 2') {
-                    var promiseArr = [];
-                    var typ = diabetesObj.behandlingsTyper;
-                    if (typ.indexOf('Endast kost') > -1) {
-                        promiseArr.push(diabetes.endastkost.sendKeys(protractor.Key.SPACE));
-                    }
-                    if (typ.indexOf('Tabletter') > -1) {
-                        promiseArr.push(diabetes.tabletter.sendKeys(protractor.Key.SPACE));
-                    }
-                    if (typ.indexOf('Insulin') > -1) {
-                        promiseArr.push(diabetes.insulin.sendKeys(protractor.Key.SPACE));
-                    }
-                    return Promise.all(promiseArr);
-                }
-
             });
         } else {
             return diabetes.aNo.sendKeys(protractor.Key.SPACE);
