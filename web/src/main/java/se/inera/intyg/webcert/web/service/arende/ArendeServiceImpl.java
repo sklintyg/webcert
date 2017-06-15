@@ -549,6 +549,7 @@ public class ArendeServiceImpl implements ArendeService {
     private Arende closeArendeAsHandled(Arende arendeToClose) {
         NotificationEvent notificationEvent = determineNotificationEvent(arendeToClose, false);
         arendeToClose.setStatus(Status.CLOSED);
+        arendeToClose.setSenasteHandelse(LocalDateTime.now(systemClock));
         Arende closedArende = arendeRepository.save(arendeToClose);
 
         sendNotification(closedArende, notificationEvent);

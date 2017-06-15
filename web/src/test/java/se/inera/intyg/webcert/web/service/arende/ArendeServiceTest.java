@@ -40,7 +40,10 @@ import static org.mockito.Mockito.when;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1252,6 +1255,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(0).getStatus());
         assertEquals(arende3.getMeddelandeId(), arendeCaptor.getAllValues().get(1).getMeddelandeId());
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(1).getStatus());
+        assertEquals(FIXED_TIME_INSTANT, arendeCaptor.getAllValues().get(0).getSenasteHandelse()
+                .toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+        assertEquals(FIXED_TIME_INSTANT, arendeCaptor.getAllValues().get(1).getSenasteHandelse()
+                .toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(notificationService, times(2)).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
     }
 
