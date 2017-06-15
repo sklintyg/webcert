@@ -87,7 +87,11 @@ module.exports = function() {
         global.ursprungligPerson = JSON.parse(JSON.stringify(global.person));
 
         // Ta bort tidigare person så att vi inte råkar välja samma
-        var valbaraPatienter = helpers.removeFromArray(global.ursprungligPerson, testpatienter);
+        var valbaraPatienter = testpatienter.filter(function(el) {
+            return el.id !== global.ursprungligPerson.id;
+        });
+        console.log(testpatienter);
+        console.log(valbaraPatienter);
 
         global.person = testdataHelpers.shuffle(valbaraPatienter)[0];
         logger.info('Går in på personnummer: ' + global.person.id);

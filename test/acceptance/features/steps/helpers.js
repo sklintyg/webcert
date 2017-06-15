@@ -288,12 +288,5 @@ module.exports = {
         } else if (typAvIntyg === 'Transportstyrelsens läkarintyg') {
             return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + intygsId;
         }
-    },
-    removeFromArray: function(value, array) {
-        var index = array.indexOf(value);
-        if (index > -1) {
-            array.splice(index, 1);
-        }
-        return array;
     }
 };
