@@ -18,13 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -60,9 +65,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -135,8 +137,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
 
-            verifyNotReplacedWithStateCheck(originalIntygId, "create copy", UtkastStatus.SIGNED);
-            verifyNotComplemented(originalIntygId, "create copy");
+            verifyNotReplacedWithSigned(originalIntygId, "create copy");
+            verifyNotComplementedWithSigned(originalIntygId, "create copy");
 
             CopyUtkastBuilderResponse builderResponse;
 
@@ -217,8 +219,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
-            verifyNotReplacedWithStateCheck(copyRequest.getOriginalIntygId(), "create renewal", UtkastStatus.SIGNED);
-            verifyNotComplemented(copyRequest.getOriginalIntygId(), "create renewal");
+            verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
+            verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
 
             CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, true,
                     coherentJournaling);
@@ -255,7 +257,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                         "Can not create replacement copy - Original certificate is revoked");
             }
             verifyNotReplaced(replacementRequest.getOriginalIntygId(), "create replacement");
-            verifyNotComplemented(replacementRequest.getOriginalIntygId(), "create replacement");
+            verifyNotComplementedWithSigned(replacementRequest.getOriginalIntygId(), "create replacement");
 
             CopyUtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
@@ -276,10 +278,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     // Duplicate in IntygServiceImpl, refactor.
-    private void verifyNotReplacedWithStateCheck(String originalIntygId, String operation, UtkastStatus... unallowedStates) {
-        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getRelationOfType(originalIntygId,
-                RelationKod.ERSATT);
-        if (replacedByRelation.isPresent() && Arrays.asList(unallowedStates).contains(replacedByRelation.get().getStatus())) {
+    private void verifyNotReplacedWithSigned(String originalIntygId, String operation, UtkastStatus... unallowedStates) {
+        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
+                RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED));
+        if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);
@@ -289,8 +291,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private void verifyNotReplaced(String originalIntygId, String operation) {
-        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getRelationOfType(originalIntygId,
-                RelationKod.ERSATT);
+        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
+                RelationKod.ERSATT, Arrays.asList(UtkastStatus.values()));
         if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
@@ -301,9 +303,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     // INTYG-3620
-    private void verifyNotComplemented(String originalIntygId, String operation) {
-        Optional<WebcertCertificateRelation> complementedByRelation = certificateRelationService.getRelationOfType(originalIntygId,
-                RelationKod.KOMPLT);
+    private void verifyNotComplementedWithSigned(String originalIntygId, String operation) {
+        Optional<WebcertCertificateRelation> complementedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
+                RelationKod.KOMPLT, Arrays.asList(UtkastStatus.SIGNED));
         if (complementedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is complemented by certificate '%s'",
                     operation, originalIntygId, complementedByRelation.get().getIntygsId());

@@ -18,7 +18,39 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.helpers.FileUtils;
@@ -31,6 +63,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -80,38 +115,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -263,8 +266,9 @@ public class IntygServiceTest {
     @Before
     public void byDefaultReturnNoRelationsFromRelationService() {
         when(certificateRelationService.getRelations(eq(CERTIFICATE_ID))).thenReturn(new Relations());
-        when(certificateRelationService.getRelationOfType(anyString(), any(RelationKod.class))).thenReturn(Optional.empty());
-    //    when(relationService.getLatestComplementedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class)))
+                .thenReturn(Optional.empty());
+        // when(relationService.getLatestComplementedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
     }
 
     @Test
@@ -322,7 +326,6 @@ public class IntygServiceTest {
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
-     //   verify(certificateRelationService).getRelationOfType(eq(CERTIFICATE_ID), RelationKod.ERSATT);
     }
 
     @Test
@@ -696,7 +699,8 @@ public class IntygServiceTest {
     @Test
     public void testLoggingFetchIntygAsPdfWithSJF() throws IOException, IntygModuleFacadeException {
         // Set up user
-        IntegrationParameters parameters = new IntegrationParameters(null, null, null, null, null, null, null,null,null,true, false, false, false);
+        IntegrationParameters parameters = new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false,
+                false, false);
         when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters()).thenReturn(parameters);
 
@@ -736,7 +740,9 @@ public class IntygServiceTest {
 
         when(intygRepository.findOne(intygId)).thenReturn(utkast);
         when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
-        when(certificateRelationService.getRelationOfType(eq(intygId), eq(RelationKod.ERSATT))).thenReturn(Optional.empty());
+        when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
+                eq(Arrays.asList(UtkastStatus.SIGNED))))
+                        .thenReturn(Optional.empty());
 
         intygService.handleSignedCompletion(utkast, recipient);
 

@@ -32,6 +32,7 @@ import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -48,6 +49,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Matchers.any;
@@ -116,7 +118,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
-        when(certificateRelationService.getRelationOfType(anyString(), any(RelationKod.class))).thenReturn(Optional.empty());
+        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class))).thenReturn(Optional.empty());
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
         doNothing().when(intygRelationHelper).decorateIntygListWithRelations(anyList());
         //when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(), any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());

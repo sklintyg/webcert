@@ -368,9 +368,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void verifyNotReplacedBySignedIntyg(String intygsId, String operation) {
-        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getRelationOfType(intygsId,
-                RelationKod.ERSATT);
-        if (replacedByRelation.isPresent() && replacedByRelation.get().getStatus() == UtkastStatus.SIGNED) {
+        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(intygsId,
+                RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED));
+        if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s certificate '%s', the certificate is replaced by certificate '%s'",
                     operation, intygsId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);

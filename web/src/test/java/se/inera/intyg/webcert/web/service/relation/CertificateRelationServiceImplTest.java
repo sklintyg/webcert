@@ -1,30 +1,32 @@
 package se.inera.intyg.webcert.web.service.relation;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepositoryCustom;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepositoryCustom;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 /**
  * Created by eriklupander on 2017-05-15.
@@ -77,7 +79,8 @@ public class CertificateRelationServiceImplTest {
     @Test
     public void testGetRelationOfPresentType() {
         when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
-        Optional<WebcertCertificateRelation> relationOfType = testee.getRelationOfType(INTYG_ID, RelationKod.ERSATT);
+        Optional<WebcertCertificateRelation> relationOfType = testee.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT,
+                Arrays.asList(UtkastStatus.values()));
         assertTrue(relationOfType.isPresent());
         assertEquals(CHILD_INTYG_ID_1, relationOfType.get().getIntygsId());
     }
@@ -85,8 +88,17 @@ public class CertificateRelationServiceImplTest {
     @Test
     public void testGetRelationOfNonPresentType() {
         when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
-        Optional<WebcertCertificateRelation> relationOfType = testee.getRelationOfType(INTYG_ID, RelationKod.FRLANG);
+        Optional<WebcertCertificateRelation> relationOfType = testee.getNewestRelationOfType(INTYG_ID, RelationKod.FRLANG,
+                Arrays.asList(UtkastStatus.values()));
         assertFalse(relationOfType.isPresent());
+    }
+
+    @Test
+    public void testFilteringOnStatus() {
+        when(utkastRepositoryCustom.findParentRelation(anyString())).thenReturn(buildParentRelations());
+        when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
+
+
     }
 
     private List<WebcertCertificateRelation> buildParentRelations() {
@@ -96,7 +108,8 @@ public class CertificateRelationServiceImplTest {
 
     private List<WebcertCertificateRelation> buildChildRelations() {
         return Stream.of(
-                new WebcertCertificateRelation(CHILD_INTYG_ID_1, RelationKod.ERSATT, LocalDateTime.now().minusDays(5), UtkastStatus.DRAFT_INCOMPLETE),
+                new WebcertCertificateRelation(CHILD_INTYG_ID_1, RelationKod.ERSATT, LocalDateTime.now().minusDays(5),
+                        UtkastStatus.DRAFT_INCOMPLETE),
                 new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED))
                 .collect(Collectors.toList());
     }

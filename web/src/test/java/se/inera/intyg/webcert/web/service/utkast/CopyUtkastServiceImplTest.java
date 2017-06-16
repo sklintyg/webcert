@@ -18,12 +18,30 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.security.WebCertUserOriginType.DJUPINTEGRATION;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -61,21 +79,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.security.WebCertUserOriginType.DJUPINTEGRATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -189,7 +192,8 @@ public class CopyUtkastServiceImplTest {
 
     @Before
     public void byDefaultReturnNoRelationsFromRelationService() {
-        when(certificateRelationService.getRelationOfType(anyString(), any(RelationKod.class))).thenReturn(Optional.empty());
+        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class)))
+                .thenReturn(Optional.empty());
     }
 
     @Test
@@ -206,9 +210,8 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        // Also tests that copy is allowed if the replacement utkast isn't signed.
-        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
-        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
+        when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
+                .thenReturn(Optional.empty());
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
 
@@ -242,8 +245,10 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED);
-        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
+                UtkastStatus.SIGNED);
+        when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
+                .thenReturn(Optional.of(ersattRelation));
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
 
@@ -305,8 +310,10 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 eq(true), any(boolean.class), eq(true))).thenReturn(resp);
-        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
-        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
+                UtkastStatus.SIGNED);
+        when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.values())))
+                .thenReturn(Optional.of(ersattRelation));
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
 
@@ -372,15 +379,12 @@ public class CopyUtkastServiceImplTest {
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        // Also tests that renew is allowed if the replacement utkast isn't signed.
-        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
-        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
-
+        when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
+                .thenReturn(Optional.empty());
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
         CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
-
 
         assertNotNull(renewalResponse);
         assertEquals(INTYG_COPY_ID, renewalResponse.getNewDraftIntygId());
@@ -410,10 +414,10 @@ public class CopyUtkastServiceImplTest {
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        // Also tests that renew is allowed if the replacement utkast isn't signed.
-        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED);
-        when(certificateRelationService.getRelationOfType(INTYG_ID, RelationKod.ERSATT)).thenReturn(Optional.of(ersattRelation));
-
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
+                UtkastStatus.SIGNED);
+        when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
+                .thenReturn(Optional.of(ersattRelation));
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
@@ -449,7 +453,6 @@ public class CopyUtkastServiceImplTest {
         copyReq.setDjupintegrerad(true);
 
         CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
-
 
         assertNotNull(renewalResponse);
         assertEquals(INTYG_COPY_ID, renewalResponse.getNewDraftIntygId());
@@ -609,6 +612,7 @@ public class CopyUtkastServiceImplTest {
     private CreateRenewalCopyRequest buildRenewalRequest() {
         return new CreateRenewalCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson);
     }
+
     private CreateReplacementCopyRequest buildReplacementCopyRequest() {
         return new CreateReplacementCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
 
