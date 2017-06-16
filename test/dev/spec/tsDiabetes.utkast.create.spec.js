@@ -29,7 +29,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 var tsdIntygPage = wcTestTools.pages.intyg.ts.diabetes.intyg;
 
-describe('Create and Sign ts-diabetes utkast', function() {
+xdescribe('Create and Sign ts-diabetes utkast', function() {
 
     var utkast = null;
 

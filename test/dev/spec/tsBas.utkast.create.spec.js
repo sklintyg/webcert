@@ -30,7 +30,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var tsdBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 var tsdBasIntygPage = wcTestTools.pages.intyg.ts.bas.intyg;
 
-describe('Create and Sign ts-bas utkast', function() {
+xdescribe('Create and Sign ts-bas utkast', function() {
 
     var utkast = null;
 
