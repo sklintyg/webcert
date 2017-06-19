@@ -26,7 +26,7 @@ var fs = require('fs');
 
 exports.config = {
     baseUrl: process.env.WEBCERT_URL,
-    allScriptsTimeout: 100000000000000, // En timeout som är högre än för cucumber så att den returnerar först
+    allScriptsTimeout: 100000,
     getPageTimeout: 20000,
     seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
     framework: 'custom',
