@@ -87,18 +87,28 @@ module.exports = function() {
         var shouldBePresent = typeof(inte) === 'undefined';
         var promiseArr = [];
         buttons.forEach(function(button) {
-            if ('skicka' === button) {
-                promiseArr.push(checkIfButtonIsUsable('sendBtn', shouldBePresent));
-            } else if ('kopiera' === button) {
-                promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
-            } else if ('ersätta' === button) {
-                promiseArr.push(checkIfButtonIsUsable('ersattBtn', shouldBePresent));
-            } else if ('förnya' === button) {
-                promiseArr.push(checkIfButtonIsUsable('fornyaBtn', shouldBePresent));
-            } else if ('makulera' === button) {
-                promiseArr.push(checkIfButtonIsUsable('makuleraBtn', shouldBePresent));
-            } else {
-                throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');
+
+            switch (button) {
+                case 'skicka':
+                    promiseArr.push(checkIfButtonIsUsable('sendBtn', shouldBePresent));
+                    break;
+                case 'kopiera':
+                    promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
+                    break;
+                case 'ersätta':
+                    promiseArr.push(checkIfButtonIsUsable('ersattBtn', shouldBePresent));
+                    break;
+                case 'förnya':
+                    promiseArr.push(checkIfButtonIsUsable('fornyaBtn', shouldBePresent));
+                    break;
+                case 'makulera':
+                    promiseArr.push(checkIfButtonIsUsable('makuleraBtn', shouldBePresent));
+                    break;
+                case 'fråga/svar':
+                    promiseArr.push(checkIfButtonIsUsable('askArendeBtn', shouldBePresent));
+                    break;
+                default:
+                    throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');
             }
 
         });
