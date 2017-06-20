@@ -98,7 +98,7 @@ module.exports = function(grunt) {
                         }
                     }
                 },
-                partialReportPattern: 'node_modules/common-testtools/cucumber-html-report/*_acc_results.json',
+                partialReportPattern: 'node_modules/common-testtools/cucumber-html-report/acc_results.*.json',
                 reportFile: 'node_modules/common-testtools/cucumber-html-report/acc_results.json'
             }
         },
