@@ -1,21 +1,21 @@
 
-## Kör protractor på mac os x med docker, utan att behöva installera firefox lokalt
+## Kör protractor på macOS med docker, utan att behöva installera firefox lokalt
 
 Testat med el capitan.
 
-Installera docker för mac os x från (https://store.docker.com/editions/community/docker-ce-desktop-mac)
+Installera docker för macOS från (https://store.docker.com/editions/community/docker-ce-desktop-mac)
 
 
 ### Utför sedan följande steg:
 
-##### 1) Starta intygstjänst lokalt
+##### 1) Starta Intygstjänst lokalt
 ```sh
 intygtjanst>./gradlew appRun
 ```
 
-##### 2) Starta webcert lokalt
+##### 2) Starta Webcert lokalt
 ```sh
-webcert>./gradlew :webcert-web:appRun
+webcert>./gradlew :appRun
 ```
 
 Starta även upp grunt server, om du vill att protractortesterna ska gå direkt mot dina källkodsfiler för frontend, via
@@ -23,13 +23,13 @@ Starta även upp grunt server, om du vill att protractortesterna ska gå direkt 
 webcert/web>grunt server
 ```
 
-##### 3) Ändra envConfig.json så att protractortesterna körs mot din riktiga maskins ip
-Detta är en workaround för mac os x, då dockercontainrar på mac os x körs via en virtuell maskin med linux som i sin tur kör docker. På linux bör man kunna peka mot localhost istället.
+##### 3) Ändra envConfig.json så att Protractortesterna körs mot din riktiga maskins IP-adress
+Detta är en workaround för macOS då dockercontainrar på macOS körs via en virtuell maskin med linux som i sin tur kör Docker. På Linux bör man kunna peka mot localhost istället.
 
-Hitta ditt nätverkskorts (wifi/ethernet) ip mha 'ifconfig' låt oss kalla den _\<IP\>_
-Om du vill köra webcert med grunt server, använd port 9089, annars använd port 9088 som vanligt för Webcert, låt oss kalla porten för _\<PORT\>_
+Hitta ditt nätverkskorts (wifi/ethernet) IP-adress med hjälp av 'ifconfig'
+Om du vill köra Webcert med grunt server, använd port 9089, annars använd port 9088 som vanligt för Webcert
 
-Ändra webcert/test/webcertTestTools/envConfig.json, se diff:en nedan:
+Ändra webcert/test/webcertTestTools/envConfig.json. Se diff:en nedan:
 ```sh
 {
      "dev": {
@@ -54,13 +54,13 @@ webcert>./gradlew protractorTests
 ```
 
 
-### För att se webbläsaren, medan testerna körs
-Det behövs en mindre ändring av dockerkommandot:
+### För att se webbläsaren medan testerna körs
+Det behövs en mindre ändring av Dockerkommandot:
 ```sh
 >docker run --shm-size=1800M -p 4444:4444 - p 5900:5900 -e SE_OPTS="-browserTimeout 60 -sessionTimeout 60" selenium/standalone-firefox-debug:2.48.2
 ```
 
-Debug-containern har en vnc-server uppe, som du sedan connectar till på port 5900. På mac os x så kan det göras med den inbyggda vnc-clienten som följande:
+Debug-containern har en vnc-server uppe, som du sedan kopplar upp dig till på port 5900. På macOS så kan det göras med den inbyggda vnc-clienten som följande:
 ```sh
 >open vnc://127.0.0.1:5900
 ```
