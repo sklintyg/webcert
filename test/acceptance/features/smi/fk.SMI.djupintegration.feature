@@ -53,7 +53,7 @@ Scenario: Patienten har fått ett reservnummer
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
-@parametrar 
+@parametrar @intygsdelning-vårdenhet
 Scenario: Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenheter
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
@@ -82,4 +82,5 @@ Scenario: Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenhe
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-107P"
 	När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "false"
 	Så ska det inte finnas knappar för "ersätta,makulera,fråga/svar"
-	Så ska det finnas knappar för "kopiera,förnya"
+	Så ska det finnas knappar för "kopiera"
+	Och ska det finnas knappar för "förnya" om intygstyp är "Läkarintyg för sjukpenning"
