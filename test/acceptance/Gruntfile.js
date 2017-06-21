@@ -121,22 +121,24 @@ module.exports = function(grunt) {
             files.forEach(function(item, index) {
                 var fileText = grunt.file.read(item);
 
-                if (firstWrite) {
-                    firstWrite = true;
-                } else {
-                    combinedReport += ',';
-                }
+
 
                 // Ibland är delrapporter tomma eller innehaller endast en []. 
                 // Hoppa over dessa.
                 if (fileText !== '[]' && fileText !== '') {
+                    if (firstWrite) {
+                        firstWrite = false;
+                    } else {
+                        combinedReport += ',';
+                    }
+
                     combinedReport += fileText.substring(1, (fileText.length - 2));
                 } else {
                     grunt.log.subhead(fileText);
                 }
 
                 // Ta bort fil efter att den processats
-                // grunt.file.delete(item);
+                grunt.file.delete(item);
             });
             combinedReport += ']';
             grunt.file.write(grunt.config.get('protractor.acc.reportFile'), combinedReport);
@@ -224,7 +226,7 @@ module.exports = function(grunt) {
         tasks.push('env:' + environment);
         tasks.push('protractor_webdriver');
         tasks.push('force:protractor:acc');
-        tasks.push('force:genReport');
+        tasks.push('genReport');
         grunt.task.run(tasks);
     });
 };
