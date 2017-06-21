@@ -82,7 +82,7 @@ module.exports = function(grunt) {
         protractor: {
             options: {
                 //configFile: './protractor.cli.conf.js', // Target-specific config file
-                keepAlive: false, // If false, the grunt process stops when the test fails.
+                keepAlive: true, // If false, the grunt process stops when the test fails.
                 noColor: false, // If true, protractor will not use colors in its output.
                 args: {
                     // Arguments passed to the command
@@ -91,6 +91,7 @@ module.exports = function(grunt) {
             acc: {
                 options: {
                     configFile: 'protractor-conf.js',
+                    keepAlive: true,
                     args: {
                         params: {
                             // En fil där cucumber fyller i alla externa länkar som hittas.
@@ -105,6 +106,7 @@ module.exports = function(grunt) {
 
         protractor_webdriver: { // jshint ignore:line
             options: {
+                keepAlive: true,
                 // Task-specific options go here.
             }
         }
@@ -113,27 +115,33 @@ module.exports = function(grunt) {
 
     grunt.registerTask('genReport', 'Genererar rapport från testkörningen', function() {
         var files = grunt.file.expand(grunt.config.get('protractor.acc.partialReportPattern'));
+        var firstWrite = true;
         var combinedReport = '[';
-        files.forEach(function(item, index) {
-            var fileText = grunt.file.read(item);
-            // Ibland är delrapporter tomma eller innehaller endast en []. 
-            // Hoppa over dessa.
-            if (fileText !== '[]' && fileText !== '') {
-                combinedReport += fileText.substring(1, (fileText.length - 2));
+        if (files.length >= 1) {
+            files.forEach(function(item, index) {
+                var fileText = grunt.file.read(item);
 
-                if (index < files.length - 1) {
+                if (firstWrite) {
+                    firstWrite = true;
+                } else {
                     combinedReport += ',';
                 }
-            } else {
-                grunt.log.subhead(fileText);
-            }
-        });
-        combinedReport += ']';
-        grunt.file.write(grunt.config.get('protractor.acc.reportFile'), combinedReport);
 
-        files.forEach(function(item) {
-            grunt.file.delete(item);
-        });
+                // Ibland är delrapporter tomma eller innehaller endast en []. 
+                // Hoppa over dessa.
+                if (fileText !== '[]' && fileText !== '') {
+                    combinedReport += fileText.substring(1, (fileText.length - 2));
+                } else {
+                    grunt.log.subhead(fileText);
+                }
+
+                // Ta bort fil efter att den processats
+                // grunt.file.delete(item);
+            });
+            combinedReport += ']';
+            grunt.file.write(grunt.config.get('protractor.acc.reportFile'), combinedReport);
+
+        }
 
         // Gör en kontroll om vi fick något fel i tidigare task. Denna hantering finns pga att vi tvingades köra med 'force' i 
         // task 'protractor:acc' då ett eventuellt fail i testfall i protractor-steget hindrar den här tasken från att köra 
@@ -216,7 +224,7 @@ module.exports = function(grunt) {
         tasks.push('env:' + environment);
         tasks.push('protractor_webdriver');
         tasks.push('force:protractor:acc');
-        tasks.push('genReport');
+        //tasks.push('force:genReport');
         grunt.task.run(tasks);
     });
 };
