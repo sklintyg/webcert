@@ -215,7 +215,6 @@
                     } else {
                         if (!redirectToUnitSelection()) {
                             termsCheck();
-                            $window.doneLoading = false;
                         }
                     }
                 });
@@ -232,7 +231,6 @@
                     if (!UserModel.termsAccepted && UserModel.transitioning && toState.name === 'webcert.terms') {
                         UserModel.transitioning = false;
                     }
-                    $window.doneLoading = true;
                 });
 
             $rootScope.$on('$stateChangeError',
@@ -242,16 +240,8 @@
                     $log.debug(error);
                 });
 
-            $rootScope.$on('$viewContentLoading', function(/*event, viewConfig*/) {
-                // runs on individual scopes, so putting it in "run" doesn't work.
-                $window.rendered = false;
-                $log.debug('+++ $viewContentLoading, rendered : ' + $window.rendered);
-            });
-
             $rootScope.$on('$viewContentLoaded', function(event) {
                 $log.debug('$viewContentLoaded - fired after dom rendered',event);
-                $window.rendered = true;
-                $log.debug('--- $viewContentLoaded, rendered : ' + $window.rendered);
             });
 
             // INTYG-3069

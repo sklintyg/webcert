@@ -21,10 +21,10 @@
  * Controller for logic related to viewing signed certs
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
-    ['$rootScope', '$state', '$stateParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
+    ['$rootScope', '$state', '$stateParams', '$scope', '$location', '$q', 'common.dialogService',
         'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
         'common.featureService', 'common.moduleService',
-        function($rootScope, $state, $stateParams, $scope, $window, $location, $q, dialogService, UtkastProxy,
+        function($rootScope, $state, $stateParams, $scope, $location, $q, dialogService, UtkastProxy,
             UserPreferencesService, fragaSvarCommonService, featureService, moduleService) {
             'use strict';
 
@@ -73,7 +73,6 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                         bodyTextId: 'label.qacheckhanterad.body',
                                         templateUrl: '/app/partials/qa-check-hanterad-dialog.html',
                                         button1click: function() {
-                                            $window.doneLoading = false; // should be resolved in the ajax callback in QACtrl
                                             var deferred = $q.defer();
                                             $scope.$broadcast('markAnsweredAsHandledEvent', deferred, unhandledQas);
                                             deferred.promise.then(function() {
