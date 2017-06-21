@@ -9,7 +9,7 @@ Bakgrund: Jag befinner mig på Rehabstöds förstasida
 Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
     När jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-107P"
-    Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
+    Och jag klickar på knappen "Visa pågående sjukfall" i Rehabstöd
     Och jag söker efter slumpvald patient och sparar antal intyg
 
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107P"
@@ -21,14 +21,14 @@ Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
     När jag går in på Rehabstöd
     Och jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-107P"
-    Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
+    Och jag klickar på knappen "Visa pågående sjukfall" i Rehabstöd
     Så ska antalet intyg ökat med 1 på patient som sparats från Rehabstöd
 
 @integration @makulera
 Scenario: Ett makulerat FK7263 intyg ska tas bort från Rehabstöd
     När jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-107P"
-    Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
+    Och jag klickar på knappen "Visa pågående sjukfall" i Rehabstöd
     Och jag söker efter slumpvald patient och sparar antal intyg
 
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107P"
@@ -40,7 +40,7 @@ Scenario: Ett makulerat FK7263 intyg ska tas bort från Rehabstöd
     När jag går in på Rehabstöd
     Och jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-107P"
-    Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
+    Och jag klickar på knappen "Visa pågående sjukfall" i Rehabstöd
     Så ska antalet intyg ökat med 1 på patient som sparats från Rehabstöd
 
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107P"
@@ -50,5 +50,5 @@ Scenario: Ett makulerat FK7263 intyg ska tas bort från Rehabstöd
     När jag går in på Rehabstöd
     Och jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-107P"
-    Och jag klickar på knappen "Visa mina sjukfall" i Rehabstöd
+    Och jag klickar på knappen "Visa pågående sjukfall" i Rehabstöd
     Så ska antalet intyg ökat med 0 på patient som sparats från Rehabstöd

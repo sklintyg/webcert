@@ -140,8 +140,8 @@ module.exports = function() {
     this.Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
         var elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
         var userObj = global.user;
-        element(by.id(elementId)).click().then(function() {
-            browser.sleep(2000).then(function() {
+        return element(by.id(elementId)).click().then(function() {
+            return browser.sleep(2000).then(function() {
                 var headerboxUser = element(by.css('.headerbox-user-profile'));
                 return expect(headerboxUser.getText()).to.eventually.contain(userObj.roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
             });
@@ -149,7 +149,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag klickar på knappen "([^"]*)" i Rehabstöd$/, function(buttonTxt) {
-        element(by.cssContainingText('.btn', buttonTxt)).click();
+        return element(by.cssContainingText('.btn', buttonTxt)).click();
     });
 
     this.Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(callback) {
