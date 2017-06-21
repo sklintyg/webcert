@@ -64,8 +64,8 @@ module.exports = function() {
         browser.baseUrl = process.env.STATISTIKTJANST_URL;
         // VG_TestAutomation => TSTNMT2321000156-107M => TSTNMT2321000156-107Q
         var userObj = {
-            forNamn: 'Johan',
-            efterNamn: 'Johansson',
+            fornamn: 'Johan',
+            efternamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             vardgivarIdSomProcessLedare: [
                 'TSTNMT2321000156-107M'
@@ -123,7 +123,7 @@ module.exports = function() {
                 global.statistik.nrOfSjukfall += nrOfIntygs;
             }
         } else {
-            return Promise.reject('diagnosKod och nrOfIntygs får inte vara tomma.');
+            throw ('diagnosKod och nrOfIntygs får inte vara tomma.');
         }
 
         return element.all(by.css('.table-condensed')).then(function(promiseArr) {
@@ -134,8 +134,7 @@ module.exports = function() {
                             logger.info('Antal intyg i GUI: %s', nrOfIntygs);
                             return expect(global.statistik.nrOfSjukfall).to.equal(nrOfIntygs);
                         } else {
-                            logger.info('Antal intyg i GUI: %s', txt.split(' ')[0]);
-                            return Promise.reject();
+                            throw ('Antal intyg i GUI: %s', txt.split(' ')[0]);
                         }
                     }
                 });
