@@ -206,7 +206,7 @@ module.exports = function(grunt) {
         //Tasks
         var tasks = [];
         if (!grunt.option('CI')) {
-            tasks = ['jshint:acc', 'jsbeautifier:verify'];
+            tasks = ['jshint:acc', 'jsbeautifier:modify'];
         }
 
         if (grunt.file.exists(grunt.config.get('protractor.acc.options.args.params.externalLinksFile'))) {
