@@ -224,7 +224,7 @@ module.exports = function(grunt) {
         tasks.push('env:' + environment);
         tasks.push('protractor_webdriver');
         tasks.push('force:protractor:acc');
-        //tasks.push('force:genReport');
+        tasks.push('force:genReport');
         grunt.task.run(tasks);
     });
 };
