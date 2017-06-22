@@ -111,7 +111,7 @@ public class ConvertToFKTypesTest {
 
         assertNotNull(res);
         assertEquals(intygsId, res.getLakarutlatandeId());
-        assertEquals(patientNamn, res.getPatient().getFullstandigtNamn());
+        assertNull(res.getPatient().getFullstandigtNamn());
         assertEquals("1.2.752.129.2.1.3.1", res.getPatient().getPersonId().getRoot());
         assertEquals(patientId, res.getPatient().getPersonId().getExtension());
         assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
@@ -132,7 +132,7 @@ public class ConvertToFKTypesTest {
 
         assertNotNull(res);
         assertEquals(intygsId, res.getLakarutlatandeId());
-        assertEquals(patientNamn, res.getPatient().getFullstandigtNamn());
+        assertNull(res.getPatient().getFullstandigtNamn());
         assertEquals("1.2.752.129.2.1.3.3", res.getPatient().getPersonId().getRoot());
         assertEquals(patientId, res.getPatient().getPersonId().getExtension());
         assertEquals(signeringsdatum, res.getSigneringsTidpunkt());

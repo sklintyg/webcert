@@ -53,7 +53,7 @@ public class IntygConverterUtilTest {
         assertTrue(res.getVardReferensId().contains("SEND-123-"));
 
         assertEquals("123", res.getLakarutlatande().getLakarutlatandeId());
-        assertEquals("Test Testorsson", res.getLakarutlatande().getPatient().getFullstandigtNamn());
+        assertNull(res.getLakarutlatande().getPatient().getFullstandigtNamn());
         assertEquals("19121212-1212", res.getLakarutlatande().getPatient().getPersonId().getExtension());
         assertNotNull(res.getLakarutlatande().getSigneringsTidpunkt());
         assertNull(res.getAdressVard().getHosPersonal().getForskrivarkod());

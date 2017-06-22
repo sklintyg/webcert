@@ -157,7 +157,6 @@ public class FragaSvarConverter {
         intygsReferens.setIntygsId(utlatande.getId());
         intygsReferens.setIntygsTyp(utlatande.getTyp());
         intygsReferens.setPatientId(utlatande.getGrundData().getPatient().getPersonId());
-        intygsReferens.setPatientNamn(utlatande.getGrundData().getPatient().getFullstandigtNamn());
         intygsReferens.setSigneringsDatum(utlatande.getGrundData().getSigneringsdatum());
         return intygsReferens;
     }

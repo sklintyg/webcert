@@ -52,11 +52,8 @@ public class CreateUtkastRequest {
             return false;
         }
 
-        if (Strings.nullToEmpty(patientFornamn).trim().isEmpty() || Strings.nullToEmpty(patientEfternamn).trim().isEmpty()) {
-            return false;
-        }
-
-        return patientFornamn.length() <= NAME_MAX_LENGTH && patientEfternamn.length() <= NAME_MAX_LENGTH;
+        return (patientFornamn == null || patientFornamn.length() <= NAME_MAX_LENGTH)
+                && (patientEfternamn == null || patientEfternamn.length() <= NAME_MAX_LENGTH);
     }
 
     public String getIntygType() {

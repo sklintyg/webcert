@@ -55,7 +55,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(), createVardenhetFromMIU(miuOnUnit));
         enrichHoSPerson(hosPerson);
         return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), null, hosPerson,
-                TransportConverterUtil.getPatient(intyg.getPatient()));
+                TransportConverterUtil.getPatient(intyg.getPatient(), true));
     }
 
     private HoSPersonal createHoSPerson(

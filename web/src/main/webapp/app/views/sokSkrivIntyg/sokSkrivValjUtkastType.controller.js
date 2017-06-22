@@ -169,13 +169,14 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 var createDraftRequestPayload = {
                     intygType: IntygTypeSelectorModel.intygType,
                     patientPersonnummer: PatientModel.personnummer,
-                    patientFornamn: PatientModel.fornamn,
-                    patientMellannamn: PatientModel.mellannamn,
-                    patientEfternamn: PatientModel.efternamn,
-                    patientPostadress: PatientModel.postadress,
-                    patientPostnummer: PatientModel.postnummer,
-                    patientPostort: PatientModel.postort
                 };
+                createDraftRequestPayload.patientFornamn = PatientModel.fornamn;
+                createDraftRequestPayload.patientMellannamn = PatientModel.mellannamn;
+                createDraftRequestPayload.patientEfternamn = PatientModel.efternamn;
+                createDraftRequestPayload.patientPostadress = PatientModel.postadress;
+                createDraftRequestPayload.patientPostnummer = PatientModel.postnummer;
+                createDraftRequestPayload.patientPostort = PatientModel.postor;
+
                 UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
                     Viewstate.createErrorMessageKey = undefined;
                     $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId, true);

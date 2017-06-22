@@ -93,7 +93,6 @@ public final class ConvertToFKTypes {
         lu.setLakarutlatandeId(ir.getIntygsId());
 
         PatientType pt = new PatientType();
-        pt.setFullstandigtNamn(ir.getPatientNamn());
 
         String root = PERSON_ID_OID;
         if (SamordningsnummerValidator.isSamordningsNummer(ir.getPatientId())) {

@@ -18,14 +18,27 @@
  */
 package se.inera.intyg.webcert.web.bootstrap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -52,37 +65,21 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
 public class UtkastBootstrapBean {
 
+    public static final Logger LOG = LoggerFactory.getLogger(UtkastBootstrapBean.class);
     @Autowired
     private IntygModuleRegistry registry;
-
     @Autowired
     private UtkastRepository utkastRepo;
-
     @Autowired
     private FragaSvarRepository fragaRepo;
-
     @Autowired
     private ArendeRepository arendeRepo;
-
     private CustomObjectMapper mapper = new CustomObjectMapper();
-
     private List<Amne> fsAmnen = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE, Amne.KONTAKT, Amne.OVRIGT);
     private List<ArendeAmne> arendeAmnen = Arrays.asList(ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT);
     private Random rand = new Random();
-
-    public static final Logger LOG = LoggerFactory.getLogger(UtkastBootstrapBean.class);
 
     @PostConstruct
     public void init() throws IOException {
@@ -189,9 +186,8 @@ public class UtkastBootstrapBean {
         }
         fs.setFrageStallare(fragestallare.getKod());
         fs.setFrageText("Detta är frågan");
-        fs.setIntygsReferens(
-                new IntygsReferens(utlatande.getId(), utlatande.getTyp(), utlatande.getGrundData().getPatient().getPersonId(),
-                        utlatande.getGrundData().getPatient().getFullstandigtNamn(), utlatande.getGrundData().getSigneringsdatum()));
+        fs.setIntygsReferens(new IntygsReferens(utlatande.getId(), utlatande.getTyp(), utlatande.getGrundData().getPatient().getPersonId(),
+                null, utlatande.getGrundData().getSigneringsdatum()));
         if (komplettering) {
             fs.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
             Komplettering kompl1 = new Komplettering();
@@ -219,10 +215,7 @@ public class UtkastBootstrapBean {
         utkast.setIntygsTyp(json.getTyp());
         utkast.setModel(mapper.writeValueAsString(json));
         utkast.setPatientEfternamn(json.getGrundData().getPatient().getEfternamn());
-        // This is a required field. However we do not supply it in RegisterMedicalCertificate so we put empty string if
-        // this is null.
-        utkast.setPatientFornamn(
-                json.getGrundData().getPatient().getFornamn() == null ? "" : json.getGrundData().getPatient().getFornamn());
+        utkast.setPatientFornamn(json.getGrundData().getPatient().getFornamn());
         utkast.setPatientMellannamn(json.getGrundData().getPatient().getMellannamn());
         utkast.setPatientPersonnummer(json.getGrundData().getPatient().getPersonId());
         utkast.setRelationIntygsId(null);

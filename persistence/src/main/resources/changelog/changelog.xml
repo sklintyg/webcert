@@ -967,4 +967,16 @@
       newDataType="mediumblob"
       tableName="INTYG"/>
   </changeSet>
+
+  <changeSet id="50" author="kja">
+    <dropNotNullConstraint
+      columnDataType="varchar(255)"
+      columnName="PATIENT_FORNAMN"
+      tableName="INTYG"/>
+    <dropNotNullConstraint
+      columnDataType="varchar(255)"
+      columnName="PATIENT_EFTERNAMN"
+      tableName="INTYG"/>
+  </changeSet>
+
 </databaseChangeLog>
