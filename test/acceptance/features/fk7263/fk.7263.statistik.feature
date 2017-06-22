@@ -26,11 +26,11 @@ Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort
 
     När jag går in på Statistiktjänsten
     Och jag är inloggad som läkare i Statistiktjänsten
-    Och jag går till statistiksidan för diagnoskod Z76
-    Och jag kollar att totala "Z76" diagnoser som finns är "0"
+    Och jag går till statistiksidan för diagnoskod "Z76"
+    Och jag kollar totala "Z76" diagnoser som finns
     Och jag anropar statitisk-APIet processIntyg
     Och laddar om sidan
-    Så ska totala "Z76" diagnoser som finns vara "1"
+    Så ska totala "Z76" diagnoser som finns vara "1" extra
 
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
     Och jag går in på intyget som tidigare skapats
@@ -40,5 +40,5 @@ Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort
 
     När jag går in på Statistiktjänsten
     Och jag är inloggad som läkare i Statistiktjänsten
-    Och jag går till statistiksidan för diagnoskod Z76
-    Så ska totala "Z76" diagnoser som finns vara "0"
+    Och jag går till statistiksidan för diagnoskod "Z76"
+    Så ska totala "Z76" diagnoser som finns vara "1" mindre
