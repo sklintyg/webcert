@@ -227,6 +227,9 @@ public class IntygServiceImpl implements IntygService {
         // If intygstjansten was unavailable, we return whatever certificates we can find and clearly inform
         // the caller that the set of certificates are only those that have been issued by WebCert.
         List<ListIntygEntry> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
+        for(ListIntygEntry lie : intygItems) {
+            lie.setRelations(certificateRelationService.getRelations(lie.getIntygId()));
+        }
         return Pair.of(intygItems, Boolean.TRUE);
     }
 
