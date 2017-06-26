@@ -1,5 +1,6 @@
 package se.inera.intyg.webcert.web.service.relation;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,9 +30,33 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
         parentRelation.ifPresent(relations::setParent);
 
         List<WebcertCertificateRelation> childRelations = findChildRelations(intygsId);
-        relations.getChildren().addAll(childRelations);
+        relations.setLatestChildRelations(prepareChildRelationDataForFrontend(childRelations));
 
         return relations;
+    }
+
+    private Relations.FrontendRelations prepareChildRelationDataForFrontend(List<WebcertCertificateRelation> childRelations) {
+        Collections.sort(childRelations, (r1, r2) -> r1.getSkapad().compareTo(r2.getSkapad()) * -1); // Descending
+                                                                                                     // order.
+        Relations.FrontendRelations latestChildRelations = new Relations.FrontendRelations();
+        latestChildRelations.setReplacedByIntyg(findRelationOfType(childRelations, RelationKod.ERSATT, true));
+        latestChildRelations.setReplacedByUtkast(findRelationOfType(childRelations, RelationKod.ERSATT, false));
+        latestChildRelations.setComplementedByIntyg(findRelationOfType(childRelations, RelationKod.KOMPLT, true));
+        latestChildRelations.setComplementedByUtkast(findRelationOfType(childRelations, RelationKod.KOMPLT, false));
+        return latestChildRelations;
+    }
+
+    private WebcertCertificateRelation findRelationOfType(List<WebcertCertificateRelation> relations, RelationKod relationKod,
+            boolean signed) {
+        for (WebcertCertificateRelation wcr : relations) {
+            if (wcr.getRelationKod() == relationKod) {
+                if ((signed && wcr.getStatus() == UtkastStatus.SIGNED) ||
+                        (!signed && (wcr.getStatus() == UtkastStatus.DRAFT_INCOMPLETE || wcr.getStatus() == UtkastStatus.DRAFT_COMPLETE))) {
+                    return wcr;
+                }
+            }
+        }
+        return null;
     }
 
     /**

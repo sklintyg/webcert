@@ -70,10 +70,6 @@ public abstract class IntygContentHolder {
 
         public abstract Builder setRelations(Relations relations);
 
-//        public abstract Builder setReplacedByRelation(RelationItem replacedByRelation);
-//
-//        public abstract Builder setComplementedByRelation(RelationItem complementedByRelation);
-
         public abstract Builder setDeceased(boolean deceased);
     }
 

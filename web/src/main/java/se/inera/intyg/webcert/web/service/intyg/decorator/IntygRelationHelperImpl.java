@@ -70,8 +70,6 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
                         for (Relation r : ir.getRelation()) {
                             applyRelation(lie.getIntygId(), lie.getRelations(), r);
                         }
-                        // Sort
-                        sortRelations(lie);
                     }
                 }
             }
@@ -83,9 +81,6 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
 
             Relations relations = certificateRelationService.getRelations(lie.getIntygId());
             mergeRelations(lie.getRelations(), relations);
-
-            // Sort
-            sortRelations(lie);
         }
     }
 
@@ -103,15 +98,40 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
     }
 
     private void applyRelation(String intygId, Relations certificateRelations, Relation r) {
-
         // In this context, all statuses are SIGNED.
+        WebcertCertificateRelation wcr = new WebcertCertificateRelation(r.getFranIntygsId().getExtension(),
+                    RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED);
         if (r.getTillIntygsId().getExtension().equals(intygId)) {
-            certificateRelations.getChildren().add(new WebcertCertificateRelation(r.getFranIntygsId().getExtension(),
-                    RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED));
+            Relations.FrontendRelations latest = certificateRelations.getLatestChildRelations();
+            switch(wcr.getRelationKod()) {
+                case ERSATT:
+                    if(wcr.getStatus() == UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByIntyg())) {
+                        latest.setReplacedByIntyg(wcr);
+                    } else if(wcr.getStatus() != UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByUtkast())) {
+                        latest.setReplacedByUtkast(wcr);
+                    }
+                    break;
+                case KOMPLT:
+                    if(wcr.getStatus() == UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByIntyg())) {
+                        latest.setComplementedByIntyg(wcr);
+                    } else if(wcr.getStatus() != UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByUtkast())) {
+                        latest.setComplementedByUtkast(wcr);
+                    }
+                    break;
+            }
         } else if (r.getFranIntygsId().getExtension().equals(intygId)) {
-            certificateRelations.setParent(new WebcertCertificateRelation(r.getTillIntygsId().getExtension(),
-                    RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED));
+            certificateRelations.setParent(wcr);
         }
+    }
+
+    private boolean firstSkapadLaterDateThanSecond(WebcertCertificateRelation first, WebcertCertificateRelation second) {
+        if(first == null) {
+            return false;
+        }
+        if(second == null) {
+            return true;
+        }
+        return first.getSkapad().compareTo(second.getSkapad()) > 0;
     }
 
     private void mergeRelations(Relations startRelations, Relations augmentWith) {
@@ -124,19 +144,18 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
             startRelations.setParent(augmentWith.getParent());
         }
 
-        // Perform a matching, any relation NOT already present on the Relations of the ListIntygEntry shall be added.
-        List<WebcertCertificateRelation> others = augmentWith.getChildren().stream()
-                .filter(cr -> !startRelations.getChildren().contains(cr))
-                .collect(Collectors.toList());
-        if (others.size() > 0) {
-            startRelations.getChildren().addAll(others);
+        // Save the latest of each type of relation if found both in webcert and intygstjanst.
+        if(firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getReplacedByIntyg(), startRelations.getLatestChildRelations().getReplacedByIntyg())) {
+            startRelations.getLatestChildRelations().setReplacedByIntyg(augmentWith.getLatestChildRelations().getReplacedByIntyg());
+        }
+        if(firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getReplacedByUtkast(), startRelations.getLatestChildRelations().getReplacedByUtkast())) {
+            startRelations.getLatestChildRelations().setReplacedByUtkast(augmentWith.getLatestChildRelations().getReplacedByUtkast());
+        }
+        if(firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByIntyg(), startRelations.getLatestChildRelations().getComplementedByIntyg())) {
+            startRelations.getLatestChildRelations().setComplementedByIntyg(startRelations.getLatestChildRelations().getComplementedByIntyg());
+        }
+        if(firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByUtkast(), startRelations.getLatestChildRelations().getComplementedByUtkast())) {
+            startRelations.getLatestChildRelations().setComplementedByUtkast(startRelations.getLatestChildRelations().getComplementedByUtkast());
         }
     }
-
-    private void sortRelations(ListIntygEntry lie) {
-        lie.getRelations().setChildren(lie.getRelations().getChildren().stream()
-                .sorted((cr1, cr2) -> cr2.getSkapad().compareTo(cr1.getSkapad()))
-                .collect(Collectors.toList()));
-    }
-
 }
