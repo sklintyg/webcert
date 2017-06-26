@@ -52,12 +52,12 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             function onPageLoad() {
 
-                if(ObjectHelper.isEmpty(PatientModel.personnummer)) {
+                if (ObjectHelper.isEmpty(PatientModel.personnummer)) {
                     $state.go('webcert.create-choosepatient-index');
                     return;
                 }
 
-                if(PatientModel.isValid()){
+                if (PatientModel.isValid()) {
                     // All is well just load the rest
                     loadUtkastTypesAndIntyg();
                 } else {
@@ -80,10 +80,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                         Viewstate.loadErrorMessageKey = errorId;
                         Viewstate.patientLoading = false;
 
-                        if(errorId === null){
+                        if (errorId === null) {
                             // If the pu-service isn't available the doctor can write any name they want.
                             // redirect to edit patient name
-                            $state.go('webcert.create-edit-patientname', {mode:'errorOccured'});
+                            $state.go('webcert.create-edit-patientname', {mode: 'errorOccured'});
                         }
                     });
                 }
@@ -111,20 +111,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
 
             $scope.isCopyAllowed = function(intyg) {
-                return !$scope.patientModel.sekretessmarkering && intyg.status !== 'CANCELLED' && intyg.status !== 'DRAFT_COMPLETE' &&
-                    intyg.status !== 'DRAFT_INCOMPLETE' && !isErsatt(intyg);
+                return !$scope.patientModel.sekretessmarkering && intyg.status !== 'CANCELLED' &&
+                    !(intyg.relations.latestChildRelations.replacedByIntyg ||
+                    intyg.relations.latestChildRelations.complementedByIntyg);
             };
-
-            function isErsatt(intyg) {
-                if (typeof intyg.relations !== 'undefined' && typeof intyg.relations.children !== 'undefined') {
-                    for(var a = 0; a < intyg.relations.children.length; a++) {
-                        if (intyg.relations.children[a].relationKod === 'ERSATT') {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
 
             /**
              * Watches
