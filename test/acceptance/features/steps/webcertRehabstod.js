@@ -149,7 +149,17 @@ module.exports = function() {
     });
 
     this.Given(/^jag klickar på knappen "([^"]*)" i Rehabstöd$/, function(buttonTxt) {
-        return element(by.cssContainingText('.btn', buttonTxt)).click();
+        return element(by.cssContainingText('.btn', buttonTxt)).click().then(function() {
+            element(by.id('rhs-pdlconsent-modal-checkbox-label')).isPresent().then(function(isPresent) {
+                if (isPresent) {
+                    return element(by.id('rhs-pdlconsent-modal-give-consent-checkbox')).sendKeys(protractor.Key.SPACE).then(function() {
+                        return elemen(by.id('rhs-pdlconsent-modal-give-consent-btn')).sendKeys(protractor.Key.SPACE);
+                    });
+                } else {
+                    return element(by.cssContainingText('.btn', buttonTxt)).click();
+                }
+            })
+        });
     });
 
     this.Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(callback) {
