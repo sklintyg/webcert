@@ -83,10 +83,7 @@ var LisuUtkast = BaseSmiUtkast._extend({
                 ja: element(by.id('arbetstidsforlaggningYes')),
                 beskrivning: element(by.id('arbetstidsforlaggningMotivering'))
             },
-            arbetsresor: {
-                nej: element(by.id('arbetsresorNo')),
-                ja: element(by.id('arbetsresorYes'))
-            },
+            arbetsresor: element(by.id('formly_1_checkbox-inline_arbetsresor_4')),
             formagaTrotsBegransningBeskrivning: element(by.id('formagaTrotsBegransning')),
             // prognos: {
             //     typ: {
@@ -226,9 +223,9 @@ var LisuUtkast = BaseSmiUtkast._extend({
     },
     angeResorTillArbete: function(resor) {
         if (resor) {
-            return this.sjukskrivning.arbetsresor.ja.sendKeys(protractor.Key.SPACE);
+            return this.sjukskrivning.arbetsresor.sendKeys(protractor.Key.SPACE);
         } else {
-            return this.sjukskrivning.arbetsresor.nej.sendKeys(protractor.Key.SPACE);
+            return Promise.resolve();
         }
     },
     angeDiagnos: function(diagnos) {
