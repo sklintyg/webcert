@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, logger, pages, person, wcTestTools, testdata, intyg, Promise */
+/*global browser, logger, pages, person, wcTestTools, testdata, intyg, Promise, protractor */
 'use strict';
 
 var fillIn = require('./fillIn/').fillIn;
@@ -153,12 +153,12 @@ module.exports = function() {
             element(by.id('rhs-pdlconsent-modal-checkbox-label')).isPresent().then(function(isPresent) {
                 if (isPresent) {
                     return element(by.id('rhs-pdlconsent-modal-give-consent-checkbox')).sendKeys(protractor.Key.SPACE).then(function() {
-                        return elemen(by.id('rhs-pdlconsent-modal-give-consent-btn')).sendKeys(protractor.Key.SPACE);
+                        return element(by.id('rhs-pdlconsent-modal-give-consent-btn')).sendKeys(protractor.Key.SPACE);
                     });
                 } else {
                     return element(by.cssContainingText('.btn', buttonTxt)).click();
                 }
-            })
+            });
         });
     });
 
