@@ -1,8 +1,13 @@
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.IntygRelations;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponseType;
@@ -14,10 +19,6 @@ import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by eriklupander on 2017-05-18.
@@ -99,36 +100,40 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
 
     private void applyRelation(String intygId, Relations certificateRelations, Relation r) {
         // In this context, all statuses are SIGNED.
-        WebcertCertificateRelation wcr = new WebcertCertificateRelation(r.getFranIntygsId().getExtension(),
-                    RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED);
         if (r.getTillIntygsId().getExtension().equals(intygId)) {
             Relations.FrontendRelations latest = certificateRelations.getLatestChildRelations();
-            switch(wcr.getRelationKod()) {
-                case ERSATT:
-                    if(wcr.getStatus() == UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByIntyg())) {
-                        latest.setReplacedByIntyg(wcr);
-                    } else if(wcr.getStatus() != UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByUtkast())) {
-                        latest.setReplacedByUtkast(wcr);
-                    }
-                    break;
-                case KOMPLT:
-                    if(wcr.getStatus() == UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByIntyg())) {
-                        latest.setComplementedByIntyg(wcr);
-                    } else if(wcr.getStatus() != UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByUtkast())) {
-                        latest.setComplementedByUtkast(wcr);
-                    }
-                    break;
+            WebcertCertificateRelation wcr = new WebcertCertificateRelation(r.getFranIntygsId().getExtension(),
+                    RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED);
+            switch (wcr.getRelationKod()) {
+            case ERSATT:
+                if (wcr.getStatus() == UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByIntyg())) {
+                    latest.setReplacedByIntyg(wcr);
+                } else if (wcr.getStatus() != UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByUtkast())) {
+                    latest.setReplacedByUtkast(wcr);
+                }
+                break;
+            case KOMPLT:
+                if (wcr.getStatus() == UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByIntyg())) {
+                    latest.setComplementedByIntyg(wcr);
+                } else if (wcr.getStatus() != UtkastStatus.SIGNED
+                        && firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByUtkast())) {
+                    latest.setComplementedByUtkast(wcr);
+                }
+                break;
+            case FRLANG:
+                break;
             }
         } else if (r.getFranIntygsId().getExtension().equals(intygId)) {
-            certificateRelations.setParent(wcr);
+            certificateRelations.setParent(new WebcertCertificateRelation(r.getTillIntygsId().getExtension(),
+                    RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED));
         }
     }
 
     private boolean firstSkapadLaterDateThanSecond(WebcertCertificateRelation first, WebcertCertificateRelation second) {
-        if(first == null) {
+        if (first == null) {
             return false;
         }
-        if(second == null) {
+        if (second == null) {
             return true;
         }
         return first.getSkapad().compareTo(second.getSkapad()) > 0;
@@ -145,17 +150,23 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
         }
 
         // Save the latest of each type of relation if found both in webcert and intygstjanst.
-        if(firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getReplacedByIntyg(), startRelations.getLatestChildRelations().getReplacedByIntyg())) {
+        if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getReplacedByIntyg(),
+                startRelations.getLatestChildRelations().getReplacedByIntyg())) {
             startRelations.getLatestChildRelations().setReplacedByIntyg(augmentWith.getLatestChildRelations().getReplacedByIntyg());
         }
-        if(firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getReplacedByUtkast(), startRelations.getLatestChildRelations().getReplacedByUtkast())) {
+        if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getReplacedByUtkast(),
+                startRelations.getLatestChildRelations().getReplacedByUtkast())) {
             startRelations.getLatestChildRelations().setReplacedByUtkast(augmentWith.getLatestChildRelations().getReplacedByUtkast());
         }
-        if(firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByIntyg(), startRelations.getLatestChildRelations().getComplementedByIntyg())) {
-            startRelations.getLatestChildRelations().setComplementedByIntyg(startRelations.getLatestChildRelations().getComplementedByIntyg());
+        if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByIntyg(),
+                startRelations.getLatestChildRelations().getComplementedByIntyg())) {
+            startRelations.getLatestChildRelations()
+                    .setComplementedByIntyg(augmentWith.getLatestChildRelations().getComplementedByIntyg());
         }
-        if(firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByUtkast(), startRelations.getLatestChildRelations().getComplementedByUtkast())) {
-            startRelations.getLatestChildRelations().setComplementedByUtkast(startRelations.getLatestChildRelations().getComplementedByUtkast());
+        if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByUtkast(),
+                startRelations.getLatestChildRelations().getComplementedByUtkast())) {
+            startRelations.getLatestChildRelations()
+                    .setComplementedByUtkast(startRelations.getLatestChildRelations().getComplementedByUtkast());
         }
     }
 }

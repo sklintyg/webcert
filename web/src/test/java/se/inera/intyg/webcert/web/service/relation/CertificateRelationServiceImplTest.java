@@ -33,7 +33,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateRelationServiceImplTest {
-/*
     private static final String INTYG_ID = "123";
     private static final String OTHER_INTYG_ID = "456";
     private static final String CHILD_INTYG_ID_1 = "789-1";
@@ -55,7 +54,7 @@ public class CertificateRelationServiceImplTest {
     public void testGetWithNoRelations() {
         Relations relations = testee.getRelations(INTYG_ID);
         assertNull(relations.getParent());
-        assertEquals(0, relations.getLatestChildren().size());
+        assertFrontendRelations(relations.getLatestChildRelations(), null, null, null, null);
     }
 
     @Test
@@ -63,7 +62,7 @@ public class CertificateRelationServiceImplTest {
         when(utkastRepositoryCustom.findParentRelation(anyString())).thenReturn(buildParentRelations());
         Relations relations = testee.getRelations(INTYG_ID);
         assertEquals(OTHER_INTYG_ID, relations.getParent().getIntygsId());
-        assertEquals(0, relations.getLatestChildren().size());
+        assertFrontendRelations(relations.getLatestChildRelations(), null, null, null, null);
     }
 
     @Test
@@ -71,9 +70,7 @@ public class CertificateRelationServiceImplTest {
         when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
         Relations relations = testee.getRelations(INTYG_ID);
         assertNull(OTHER_INTYG_ID, relations.getParent());
-        assertEquals(2, relations.getLatestChildren().size());
-        assertEquals(CHILD_INTYG_ID_2, relations.getLatestChildren().get(0).getIntygsId());
-        assertEquals(CHILD_INTYG_ID_1, relations.getLatestChildren().get(1).getIntygsId());
+        assertFrontendRelationsIntygsIds(relations.getLatestChildRelations(), CHILD_INTYG_ID_2, null, null, CHILD_INTYG_ID_1);
     }
 
     @Test
@@ -93,14 +90,6 @@ public class CertificateRelationServiceImplTest {
         assertFalse(relationOfType.isPresent());
     }
 
-    @Test
-    public void testFilteringOnStatus() {
-        when(utkastRepositoryCustom.findParentRelation(anyString())).thenReturn(buildParentRelations());
-        when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
-
-
-    }
-
     private List<WebcertCertificateRelation> buildParentRelations() {
         return Stream.of(new WebcertCertificateRelation(OTHER_INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED))
                 .collect(Collectors.toList());
@@ -113,5 +102,40 @@ public class CertificateRelationServiceImplTest {
                 new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED))
                 .collect(Collectors.toList());
     }
-*/
+
+    private void assertFrontendRelations(Relations.FrontendRelations fr, WebcertCertificateRelation complementedByIntyg,
+            WebcertCertificateRelation complementedByUtkast, WebcertCertificateRelation replacedByIntyg,
+            WebcertCertificateRelation replacedByUtkast) {
+        assertEquals(complementedByIntyg, fr.getComplementedByIntyg());
+        assertEquals(complementedByUtkast, fr.getComplementedByUtkast());
+        assertEquals(replacedByIntyg, fr.getReplacedByIntyg());
+        assertEquals(replacedByUtkast, fr.getReplacedByUtkast());
+    }
+
+    private void assertFrontendRelationsIntygsIds(Relations.FrontendRelations fr, String complementedByIntygIntygsId,
+            String complementedByUtkastIntygsId, String replacedByIntygIntygsId, String replacedByUtkastIntygsId) {
+        if (fr.getComplementedByIntyg() != null) {
+            assertEquals(complementedByIntygIntygsId, fr.getComplementedByIntyg().getIntygsId());
+        } else {
+            assertNull(complementedByIntygIntygsId);
+        }
+
+        if (fr.getComplementedByUtkast() != null) {
+            assertEquals(complementedByUtkastIntygsId, fr.getComplementedByUtkast().getIntygsId());
+        } else {
+            assertNull(complementedByUtkastIntygsId);
+        }
+
+        if (fr.getReplacedByIntyg() != null) {
+            assertEquals(replacedByIntygIntygsId, fr.getReplacedByIntyg().getIntygsId());
+        } else {
+            assertNull(replacedByIntygIntygsId);
+        }
+
+        if (fr.getReplacedByUtkast() != null) {
+            assertEquals(replacedByUtkastIntygsId, fr.getReplacedByUtkast().getIntygsId());
+        } else {
+            assertNull(replacedByUtkastIntygsId);
+        }
+    }
 }

@@ -50,8 +50,9 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
             boolean signed) {
         for (WebcertCertificateRelation wcr : relations) {
             if (wcr.getRelationKod() == relationKod) {
-                if ((signed && wcr.getStatus() == UtkastStatus.SIGNED) ||
-                        (!signed && (wcr.getStatus() == UtkastStatus.DRAFT_INCOMPLETE || wcr.getStatus() == UtkastStatus.DRAFT_COMPLETE))) {
+                if ((signed && wcr.getStatus() == UtkastStatus.SIGNED)
+                        || (!signed
+                                && (wcr.getStatus() == UtkastStatus.DRAFT_INCOMPLETE || wcr.getStatus() == UtkastStatus.DRAFT_COMPLETE))) {
                     return wcr;
                 }
             }
