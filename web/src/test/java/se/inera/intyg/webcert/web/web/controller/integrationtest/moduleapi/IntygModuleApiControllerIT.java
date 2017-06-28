@@ -423,15 +423,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .when().get(MODULEAPI_UTKAST_BASE + "/fk7263/" + utkastId).then()
                 .body("relations.parent.intygsId", equalTo(intygsId))
                 .body("relations.parent.relationKod", equalTo(RelationKod.ERSATT.name()));
-                //.body("relations.children[1].franIntygsId", equalTo(intygsId));
-                //.body("relations[1].status", equalTo(CertificateState.RECEIVED.name()));
 
         // Verify the original certficate has a child relationship
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
                 .when().get("moduleapi/intyg/fk7263/" + intygsId).then()
-                .body("relations.children[0].intygsId", equalTo(utkastId))
-                .body("relations.children[0].relationKod", equalTo(RelationKod.ERSATT.name()));
+                .body("relations.latestChildRelations.replacedByUtkast.intygsId", equalTo(utkastId))
+                .body("relations.latestChildRelations.replacedByUtkast.relationKod", equalTo(RelationKod.ERSATT.name()));
 
 
     }
