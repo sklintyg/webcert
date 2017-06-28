@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.swagger.annotations.Api;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -52,6 +53,9 @@ public class UserApiController extends AbstractApiController {
 
     @Autowired
     private AvtalService avtalService;
+
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
 
     /**
      * Retrieves the security context of the logged in user as JSON.
@@ -109,6 +113,8 @@ public class UserApiController extends AbstractApiController {
             LOG.error("Unit '{}' is not present in the MIUs for user '{}'", request.getId(), user.getHsaId());
             return Response.status(Status.BAD_REQUEST).entity("Unit change failed").build();
         }
+
+        user.setFeatures(webcertFeatureService.getActiveFeatures(user.getValdVardenhet().getId(), user.getValdVardgivare().getId()));
 
         LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
 

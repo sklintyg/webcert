@@ -18,12 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.feature;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +38,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import se.inera.intyg.infra.security.common.service.Feature;
+import com.google.common.base.Joiner;
+
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.infra.security.common.service.Feature;
+import se.inera.intyg.infra.security.common.service.PilotService;
 
 /**
  * Service that keeps track of active features of Webcert and installed modules.
@@ -48,19 +56,15 @@ import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 public class WebcertFeatureServiceImpl implements WebcertFeatureService, EnvironmentAware {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebcertFeatureService.class);
-
-    private static final String COMMA_SEP = ", ";
     private static final String DOT_SEP = ".";
-
+    private final Map<String, Boolean> featuresMap = new HashMap<>();
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
     @Autowired
     @Qualifier("webcertFeatures")
     private Properties features;
-
-    private final Map<String, Boolean> featuresMap = new HashMap<>();
-
+    @Autowired
+    private PilotService pilotService;
     private Environment env;
 
     /**
@@ -72,13 +76,13 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         initModuleFeatures(featuresMap);
         processWebcertAndModuleFeatureProperties(features, featuresMap);
 
-        LOG.info("Active Webcert features is: {}", Joiner.on(COMMA_SEP).join(getActiveFeatures()));
+        LOG.info("Active Webcert features is: {}", Joiner.on(", ").join(getActiveFeatures()));
     }
 
     /**
      * Inits the featuresMap with all Webcert features set to FALSE.
      */
-    public void initWebcertFeatures(Map<String, Boolean> featuresMap) {
+    protected void initWebcertFeatures(Map<String, Boolean> featuresMap) {
 
         Assert.notNull(featuresMap);
 
@@ -98,7 +102,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * using the ModuleEntryPoint of the module. The names of the module feature is then qualified
      * using the id of the module.
      */
-    public void initModuleFeatures(Map<String, Boolean> featuresMap) {
+    protected void initModuleFeatures(Map<String, Boolean> featuresMap) {
 
         Assert.notNull(featuresMap);
 
@@ -134,7 +138,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /**
      * Reads the supplied properties and updates the state of the feature in the featuresMap.
      */
-    public void processWebcertAndModuleFeatureProperties(Properties featureProps, Map<String, Boolean> featuresMap) {
+    protected void processWebcertAndModuleFeatureProperties(Properties featureProps, Map<String, Boolean> featuresMap) {
 
         Assert.notNull(featureProps);
         Assert.notEmpty(featuresMap);
@@ -198,16 +202,12 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
      * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#getActiveFeatures()
      */
     @Override
-    public Set<String> getActiveFeatures() {
-        Set<String> activeFeatures = new TreeSet<>();
-
-        for (Entry<String, Boolean> feature : featuresMap.entrySet()) {
-            if (feature.getValue().equals(Boolean.TRUE)) {
-                activeFeatures.add(feature.getKey());
-            }
-        }
-
-        return activeFeatures;
+    public Set<String> getActiveFeatures(String... hsaIds) {
+        return merge(featuresMap.entrySet().stream()
+                .filter(entry -> entry.getValue())
+                .map(Entry::getKey)
+                .collect(Collectors.toSet()),
+                pilotService.getFeatures(Arrays.asList(hsaIds)));
     }
 
     public Properties getFeatures() {
@@ -233,4 +233,13 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         this.env = environment;
     }
 
+    private Set<String> merge(Set<String> defaultFeatures, Map<String, Boolean> pilotFeatures) {
+        // Separates the pilotfeaturesmap into two sets, one with all positives and one with all the negatives
+        Map<Boolean, Set<String>> split = pilotFeatures.entrySet().stream()
+                .collect(Collectors.partitioningBy(entry -> entry.getValue(),
+                        Collectors.mapping(Entry::getKey, Collectors.toSet())));
+        defaultFeatures.addAll(split.get(Boolean.TRUE));
+        defaultFeatures.removeAll(split.get(Boolean.FALSE));
+        return defaultFeatures;
+    }
 }

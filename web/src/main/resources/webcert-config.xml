@@ -118,6 +118,7 @@
 
     <bean id="intygTextsService" class="se.inera.intyg.common.services.texts.IntygTextsServiceImpl" />
     <bean id="intygTextsRepository" class="se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl" />
+    <bean id="webcertPilotService" class="se.inera.intyg.infra.security.common.service.PilotServiceImpl" />
 
     <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService" />
 

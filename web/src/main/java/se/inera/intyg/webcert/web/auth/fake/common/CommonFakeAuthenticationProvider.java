@@ -28,6 +28,7 @@ import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.core.impl.AssertionBuilder;
 import org.opensaml.saml2.core.impl.AttributeStatementBuilder;
 import org.opensaml.saml2.core.impl.NameIDBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
@@ -46,6 +47,7 @@ import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 
 /**
  * @author andreaskaltenbach
@@ -53,6 +55,9 @@ import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
     private SAMLUserDetailsService userDetails;
+
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
 
     @Override
     public Authentication authenticate(Authentication token) throws AuthenticationException {
@@ -62,12 +67,19 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
 
         addAbsentAttributesFromFakeCredentials(token, details);
         selectVardenhetFromFakeCredentials(token, details);
+        updateFeatures(details);
         applyUserOrigin(token, details);
-        ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
-                new ArrayList<>());
+        ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential, new ArrayList<>());
         result.setDetails(details);
 
         return result;
+    }
+
+    private void updateFeatures(Object details) {
+        if (details instanceof IntygUser) {
+            IntygUser user = (IntygUser) details;
+            user.setFeatures(webcertFeatureService.getActiveFeatures(user.getValdVardenhet().getId(), user.getValdVardgivare().getId()));
+        }
     }
 
     private void applyUserOrigin(Authentication token, Object details) {

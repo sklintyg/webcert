@@ -1,0 +1,25 @@
+---
+pilots:
+  - hsaIds:
+      - TSTNMT2321000156-1077
+    features:
+      srs: true
+      fk7263.srs: true
+      lisjp.srs: true
+
+  - hsaIds:
+      - IFV1239877878-103D
+    features:
+      hanteraFragor.fk7263: false
+      hanteraIntygsutkast.fk7263: false
+      kopieraIntyg.fk7263: false
+      makuleraIntyg.fk7263: false
+      skapaNyFraga.fk7263: false
+      skickaIntyg.fk7263: false
+      utskrift.fk7263: false
+      arbetsgivarUtskrift.fk7263: false
+
+  - hsaIds:
+      - y
+    features:
+      lisjp.srs: false

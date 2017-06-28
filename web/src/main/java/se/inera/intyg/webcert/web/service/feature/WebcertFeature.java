@@ -31,7 +31,8 @@ public enum WebcertFeature implements Feature {
     UTSKRIFT("utskrift"),
     ARBETSGIVARUTSKRIFT("arbetsgivarUtskrift"),
     JS_LOGGNING("jsLoggning"),
-    JS_MINIFIED("jsMinified", "webcert.useMinifiedJavaScript");
+    JS_MINIFIED("jsMinified", "webcert.useMinifiedJavaScript"),
+    SRS("srs");
 
     private final String name;
     private final String envName;

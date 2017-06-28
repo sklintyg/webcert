@@ -23,11 +23,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -46,12 +50,16 @@ import com.google.common.base.Joiner;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.infra.security.common.service.PilotService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebcertFeatureServiceTest {
 
     private static final String MODULE1 = "m1";
     private static final String MODULE2 = "m2";
+
+    @Mock
+    private PilotService pilotService;
 
     @Mock
     private IntygModuleRegistry mockModuleRegistry;
@@ -84,6 +92,7 @@ public class WebcertFeatureServiceTest {
         when(module2EntryPoint.getModuleId()).thenReturn(MODULE2);
         when(module1EntryPoint.getModuleFeatures()).thenReturn(module1Features);
         when(module2EntryPoint.getModuleFeatures()).thenReturn(module2Features);
+        when(pilotService.getFeatures(any())).thenReturn(Collections.EMPTY_MAP);
     }
 
     @Test
@@ -91,7 +100,7 @@ public class WebcertFeatureServiceTest {
         Map<String, Boolean> featuresMap = new HashMap<>();
         featureService.initWebcertFeatures(featuresMap);
         assertFalse(featuresMap.isEmpty());
-        assertEquals(10, featuresMap.size());
+        assertEquals(11, featuresMap.size());
     }
 
     @Test
@@ -100,7 +109,7 @@ public class WebcertFeatureServiceTest {
         featureService.initModuleFeatures(featuresMap);
 
         assertFalse(featuresMap.isEmpty());
-        assertEquals(16, featuresMap.size());
+        assertEquals(18, featuresMap.size());
 
         assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1)));
         assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2)));
@@ -152,7 +161,7 @@ public class WebcertFeatureServiceTest {
         featureService.setFeatures(featureProps);
         featureService.initFeaturesMap();
 
-        assertEquals(26, featureService.getFeaturesMap().size());
+        assertEquals(29, featureService.getFeaturesMap().size());
 
         assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
         assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST));
@@ -195,6 +204,33 @@ public class WebcertFeatureServiceTest {
         Set<String> res = featureService.getActiveFeatures();
 
         assertThat(res, contains("hanteraFragor", "hanteraFragor.m2", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
+        // Invoked twice because initFeaturesMap uses this to log active features..
+        verify(pilotService, times(2)).getFeatures(eq(Collections.emptyList()));
     }
 
+    @Test
+    public void testGetActiveFeaturesPilot() {
+
+        Properties featureProps = new Properties();
+        featureProps.setProperty(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), "true");
+        featureProps.setProperty(WebcertFeature.HANTERA_FRAGOR.getName(), "true");
+        featureProps.setProperty(WebcertFeature.MAKULERA_INTYG.getName(), "false");
+        featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1), "false");
+        featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2), "true");
+
+        featureService.setFeatures(featureProps);
+        featureService.initFeaturesMap();
+
+        final String hsaId1 = "hsaId1";
+        final String hsaId2 = "hsaId2";
+        Map<String, Boolean> pilotMap = new HashMap<>();
+        pilotMap.put(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1), true);
+        pilotMap.put(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2), false);
+        when(pilotService.getFeatures(eq(Arrays.asList(hsaId1, hsaId2)))).thenReturn(pilotMap);
+
+        Set<String> res = featureService.getActiveFeatures(hsaId1, hsaId2);
+
+        assertThat(res, contains("hanteraFragor", "hanteraFragor.m1", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
+        verify(pilotService).getFeatures(eq(Arrays.asList(hsaId1, hsaId2)));
+    }
 }
