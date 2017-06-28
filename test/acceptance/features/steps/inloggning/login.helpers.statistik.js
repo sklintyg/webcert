@@ -70,11 +70,11 @@ module.exports = {
             var headerboxUserProfile = element(by.css('.headerbox-user-profile'));
             browser.driver.switchTo().alert().then(function(alert) {
                     alert.accept();
-                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn);
+                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
 
                 },
                 function(err) {
-                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn);
+                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
                 });
             // browser.sleep(3000).then(function() {
             //     return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn);

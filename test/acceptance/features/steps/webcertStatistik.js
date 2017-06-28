@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg, browser, logger, protractor, wcTestTools, Promise */
+/* globals intyg, browser, logger, protractor, wcTestTools */
 'use strict';
 var db = require('./dbActions');
 var request = require('request');
@@ -64,8 +64,8 @@ module.exports = function() {
         browser.baseUrl = process.env.STATISTIKTJANST_URL;
         // VG_TestAutomation => TSTNMT2321000156-107M => TSTNMT2321000156-107Q
         var userObj = {
-            forNamn: 'Johan',
-            efterNamn: 'Johansson',
+            fornamn: 'Johan',
+            efternamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             vardgivarIdSomProcessLedare: [
                 'TSTNMT2321000156-107M'
@@ -105,37 +105,68 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^jag går till statistiksidan för diagnoskod Z76$/, function() {
-        // 736870bed816a6a18a65b01c05dc3e44 === diagnoskod 'Z76'
+    this.Given(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagnosKod) {
+
         var url = process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/736870bed816a6a18a65b01c05dc3e44?vgid=TSTNMT2321000156-107M';
         return browser.get(url).then(function() {
-            logger.info('Går till url för diagnoskod Z76: ' + url);
+            logger.info('Går till url för diagnoskod ' + diagnosKod + ': ' + url);
         });
     });
 
-    this.Given(/^(?:ska|jag kollar att) totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)"$/, function(diagnosKod, nrOfIntygs) {
-        if (diagnosKod && nrOfIntygs) {
-            global.statistik.diagnosKod = diagnosKod;
-            nrOfIntygs = parseInt(nrOfIntygs, 10);
-            if (global.statistik.nrOfSjukfall === 1 && nrOfIntygs === 0) {
-                global.statistik.nrOfSjukfall = global.statistik.nrOfSjukfall - 1;
-            } else {
-                global.statistik.nrOfSjukfall += nrOfIntygs;
-            }
-        } else {
-            return Promise.reject('diagnosKod och nrOfIntygs får inte vara tomma.');
-        }
+    this.Given(/^jag kollar totala "([^"]*)" diagnoser som finns$/, function(diagnosKod) {
 
         return element.all(by.css('.table-condensed')).then(function(promiseArr) {
             return promiseArr.forEach(function(entry) {
                 return entry.getText().then(function(txt) {
                     if (txt.indexOf(diagnosKod) === -1) {
-                        if (txt.startsWith(nrOfIntygs)) { // => Antal sjukfall totalt
-                            logger.info('Antal intyg i GUI: %s', nrOfIntygs);
-                            return expect(global.statistik.nrOfSjukfall).to.equal(nrOfIntygs);
+                        if (typeof(parseInt(txt.split(' ')[0], 10)) === 'number') {
+                            global.statistik.nrOfSjukfall = txt.split(' ')[0];
+                            logger.info('global.statistik.nrOfSjukfall: ' + global.statistik.nrOfSjukfall);
+                            return;
                         } else {
-                            logger.info('Antal intyg i GUI: %s', txt.split(' ')[0]);
-                            return Promise.reject();
+                            throw ('Kunde inte hitta aktuellt antal intyg' + parseInt(txt.split(' ')[0], 10));
+                        }
+                    }
+                });
+            });
+
+        });
+
+
+
+    });
+
+
+    this.Given(/^(?:ska|jag kollar att) totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntygs, modifer) {
+
+        logger.info('global.statistik.nrOfSjukfall: ' + global.statistik.nrOfSjukfall);
+        if (diagnosKod && nrOfIntygs) {
+            if (modifer === 'extra') {
+                nrOfIntygs = parseInt(global.statistik.nrOfSjukfall, 10) + parseInt(nrOfIntygs, 10);
+            } else if (modifer === 'mindre') {
+                nrOfIntygs = parseInt(global.statistik.nrOfSjukfall, 10) - parseInt(nrOfIntygs, 10);
+            } else {
+                throw ('test steget förväntar sig extra eller mindre variabel.');
+            }
+            global.statistik.nrOfSjukfall = nrOfIntygs;
+
+        } else {
+            throw ('diagnosKod och nrOfIntygs får inte vara tomma.');
+        }
+
+        //var nrOfIntygs = *;
+        return element.all(by.css('.table-condensed')).then(function(promiseArr) {
+            return promiseArr.forEach(function(entry) {
+                return entry.getText().then(function(txt) {
+                    //logger.info('txt: ' + txt);
+                    if (txt.indexOf(diagnosKod) === -1) {
+                        //logger.info('_txt: ' + txt);
+                        if (typeof(parseInt(txt.split(' ')[0], 10)) === 'number') {
+                            logger.info('Förväntar mig antalet intyg att vara: ' + nrOfIntygs);
+
+                            return expect(parseInt(txt.split(' ')[0], 10)).to.equal(nrOfIntygs);
+                        } else {
+                            throw ('Kunde inte hitta aktuellt antal intyg' + parseInt(txt.split(' ')[0], 10));
                         }
                     }
                 });
