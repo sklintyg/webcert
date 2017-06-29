@@ -210,40 +210,6 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Create a copy of a certificate.
-     */
-//    @POST
-//    @Path("/{intygsTyp}/{intygsId}/kopiera")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-//    public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
-//            @PathParam("intygsId") String orgIntygsId) {
-//
-//        validateCopyAuthority(intygsTyp);
-//
-//        WebCertUser user = userService.getUser();
-//
-//        boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
-//        if (!copyOkParam) {
-//            LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
-//            final String message = "Authorization failed due to false kopieraOK-parameter";
-//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
-//        }
-//
-//        boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
-//        LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, orgIntygsId,
-//                coherentJournaling);
-//
-//        if (!request.isValid()) {
-//            LOG.error("Request to create copy of '{}' is not valid", orgIntygsId);
-//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
-//        }
-//
-//        CopyIntygResponse result = copyIntyg(request, intygsTyp, orgIntygsId, coherentJournaling);
-//        return Response.ok().entity(result).build();
-//    }
-
-    /**
      * Create a copy that completes an existing certificate.
      */
     @POST
@@ -412,27 +378,6 @@ public class IntygModuleApiController extends AbstractApiController {
         return req;
     }
 
-//    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest,
-//            boolean coherentJournaling) {
-//        HoSPersonal hosPerson = createHoSPersonFromUser();
-//        Patient patient = createPatientFromCopyIntygRequest(copyRequest);
-//
-//        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson, coherentJournaling);
-//
-//        IntegrationParameters parameters = userService.getUser().getParameters();
-//        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-//            LOG.debug("Adding new personnummer to request");
-//            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-//        }
-//
-//        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-//            LOG.debug("Setting djupintegrerad flag on request to true");
-//            req.setDjupintegrerad(true);
-//        }
-//
-//        return req;
-//    }
-
     private Patient createPatientFromCopyIntygRequest(CopyIntygRequest copyRequest) {
         WebCertUser user = getWebCertUserService().getUser();
         IntegrationParameters parameters = user.getParameters();
@@ -458,16 +403,6 @@ public class IntygModuleApiController extends AbstractApiController {
     private IntygServiceResult revokeIntyg(String intygsTyp, String intygsId, RevokeSignedIntygParameter param) {
         return intygService.revokeIntyg(intygsId, intygsTyp, param.getMessage(), param.getReason());
     }
-
-//    private CopyIntygResponse copyIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId, boolean coherentJournaling) {
-//        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request, coherentJournaling);
-//        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
-//
-//        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", orgIntygsId, serviceResponse.getNewDraftIntygId(),
-//                serviceResponse.getNewDraftIntygType());
-//
-//        return new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
-//    }
 
     private void validateRevokeAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)

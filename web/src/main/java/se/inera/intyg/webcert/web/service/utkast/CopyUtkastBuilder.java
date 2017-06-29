@@ -21,10 +21,10 @@ package se.inera.intyg.webcert.web.service.utkast;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 
-public interface CopyUtkastBuilder<T extends CreateCopyRequest> {
+public interface CopyUtkastBuilder<T extends AbstractCreateCopyRequest> {
 
     CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
             boolean coherentJournaling, boolean checkVardgivare)

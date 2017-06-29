@@ -24,7 +24,7 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
 
-public abstract class CreateCopyRequest {
+public abstract class AbstractCreateCopyRequest {
     private String originalIntygId;
 
     private String typ;
@@ -37,14 +37,14 @@ public abstract class CreateCopyRequest {
 
     private boolean djupintegrerad = false;
 
-    public CreateCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson) {
+    public AbstractCreateCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson) {
         this.originalIntygId = orginalIntygsId;
         this.typ = intygsTyp;
         this.patient = patient;
         this.hosPerson = hosPerson;
     }
 
-    public CreateCopyRequest() {
+    public AbstractCreateCopyRequest() {
         // Needed for deserialization
     }
 

@@ -18,16 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.util.Arrays;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Relation;
@@ -55,14 +51,16 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
+import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
-public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> implements CopyUtkastBuilder<T> {
+import java.util.Arrays;
+
+public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest> implements CopyUtkastBuilder<T> {
     private static final String SPACE = " ";
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateCopyUtkastBuilder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractUtkastBuilder.class);
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -239,7 +237,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         utkast.setRelationKod(relation.getRelationKod());
     }
 
-    private CreateDraftCopyHolder createModuleRequestForCopying(CreateCopyRequest copyRequest, Person person, Relation relation) {
+    private CreateDraftCopyHolder createModuleRequestForCopying(AbstractCreateCopyRequest copyRequest, Person person, Relation relation) {
 
         String newDraftCopyId = intygsIdStrategy.createId();
 
@@ -270,7 +268,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         return newDraftCopyHolder;
     }
 
-    private void populateUtkastWithVardenhetAndHoSPerson(Utkast utkast, CreateCopyRequest copyRequest) {
+    private void populateUtkastWithVardenhetAndHoSPerson(Utkast utkast, AbstractCreateCopyRequest copyRequest) {
         Vardenhet vardenhet = copyRequest.getHosPerson().getVardenhet();
 
         utkast.setEnhetsId(vardenhet.getEnhetsid());
@@ -336,7 +334,7 @@ public abstract class AbstractUtkastBuilder<T extends CreateCopyRequest> impleme
         return res;
     }
 
-    private void replacePatientPersonnummerWithNew(Utkast utkast, CreateCopyRequest copyRequest) {
+    private void replacePatientPersonnummerWithNew(Utkast utkast, AbstractCreateCopyRequest copyRequest) {
         if (copyRequest.containsNyttPatientPersonnummer()) {
             utkast.setPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
             LOG.debug("Replaced patient SSN with new one");

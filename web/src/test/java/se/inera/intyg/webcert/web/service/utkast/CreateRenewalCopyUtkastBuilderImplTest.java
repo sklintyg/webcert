@@ -71,7 +71,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateCopyUtkastBuilderImplTest {
+public class CreateRenewalCopyUtkastBuilderImplTest {
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
@@ -123,7 +123,7 @@ public class CreateCopyUtkastBuilderImplTest {
     private Patient patient;
 
     @InjectMocks
-    private CreateCopyUtkastBuilder copyBuilder = new CreateCopyUtkastBuilder();
+    private CreateRenewalCopyUtkastBuilder renewalBuilder = new CreateRenewalCopyUtkastBuilder();
 
     @Before
     public void setup() {
@@ -158,7 +158,7 @@ public class CreateCopyUtkastBuilderImplTest {
     }
 
     @Test
-    public void testPopulateCopyUtkastFromSignedIntyg() throws Exception {
+    public void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
@@ -167,12 +167,12 @@ public class CreateCopyUtkastBuilderImplTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
                 false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
@@ -184,7 +184,7 @@ public class CreateCopyUtkastBuilderImplTest {
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
 
         ArgumentCaptor<CreateDraftCopyHolder> requestCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
-        verify(mockModuleApi).createNewInternalFromTemplate(requestCaptor.capture(), anyString());
+        verify(mockModuleApi).createRenewalFromTemplate(requestCaptor.capture(), anyString());
 
         // verify full name is set
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
@@ -193,7 +193,7 @@ public class CreateCopyUtkastBuilderImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testPopulateCopyUtkastFromSignedIntygEnforceVardenhet() throws Exception {
+    public void testPopulateRenewalUtkastFromSignedIntygEnforceVardenhet() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, true)).thenReturn(ich);
@@ -202,17 +202,17 @@ public class CreateCopyUtkastBuilderImplTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        copyBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
+        renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
                 true, true);
     }
 
     @Test
-    public void testPopulateCopyUtkastFromOriginal() throws Exception {
+    public void testPopulateRenewalUtkastFromOriginal() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
@@ -221,12 +221,12 @@ public class CreateCopyUtkastBuilderImplTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false,
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false,
                 false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
@@ -239,7 +239,7 @@ public class CreateCopyUtkastBuilderImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testPopulateCopyUtkastFromOriginalEnforceVardenhet() throws Exception {
+    public void testPopulateRenewalUtkastFromOriginalEnforceVardenhet() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
         orgUtkast.setEnhetsId("OTHER_ID");
@@ -249,11 +249,11 @@ public class CreateCopyUtkastBuilderImplTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        copyBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false, true, true);
+        renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false, true, true);
     }
 
     @Test
-    public void testPopulateCopyUtkastFromOriginalWhenIntegratedAndWithUpdatedSSN() throws Exception {
+    public void testPopulateRenewalUtkastFromOriginalWhenIntegratedAndWithUpdatedSSN() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
@@ -262,12 +262,12 @@ public class CreateCopyUtkastBuilderImplTest {
         renewalRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
         renewalRequest.setDjupintegrerad(true);
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false, false);
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -279,19 +279,19 @@ public class CreateCopyUtkastBuilderImplTest {
     }
 
     @Test
-    public void testPopulateCopyUtkastFromSignedIntygWithNoPatientDetails() throws Exception {
+    public void testPopulateRenewalUtkastFromSignedIntygWithNoPatientDetails() throws Exception {
 
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false, false);
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -305,28 +305,28 @@ public class CreateCopyUtkastBuilderImplTest {
     @Test
     public void testExtractNamePartsFromFullName() {
 
-        String[] res = copyBuilder.extractNamePartsFromFullName(null);
+        String[] res = renewalBuilder.extractNamePartsFromFullName(null);
         assertNotNull(res);
 
-        res = copyBuilder.extractNamePartsFromFullName("");
+        res = renewalBuilder.extractNamePartsFromFullName("");
         assertNotNull(res);
 
-        res = copyBuilder.extractNamePartsFromFullName("  ");
+        res = renewalBuilder.extractNamePartsFromFullName("  ");
         assertNotNull(res);
         assertEquals("", res[0]);
         assertEquals("", res[1]);
 
-        res = copyBuilder.extractNamePartsFromFullName("Adam");
+        res = renewalBuilder.extractNamePartsFromFullName("Adam");
         assertNotNull(res);
         assertEquals("Adam", res[0]);
         assertEquals("", res[1]);
 
-        res = copyBuilder.extractNamePartsFromFullName("Adam Caesarsson");
+        res = renewalBuilder.extractNamePartsFromFullName("Adam Caesarsson");
         assertNotNull(res);
         assertEquals("Adam", res[0]);
         assertEquals("Caesarsson", res[1]);
 
-        res = copyBuilder.extractNamePartsFromFullName("Adam Bertil Caesarsson");
+        res = renewalBuilder.extractNamePartsFromFullName("Adam Bertil Caesarsson");
         assertNotNull(res);
         assertEquals("Adam Bertil", res[0]);
         assertEquals("Caesarsson", res[1]);

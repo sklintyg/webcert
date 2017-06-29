@@ -22,9 +22,9 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 
 /**
- * Extends the base CreateCopyRequest with coherentJournaling.
+ * Extends the base AbstractCreateCopyRequest with coherentJournaling.
  */
-public class CreateReplacementCopyRequest extends CreateCopyRequest {
+public class CreateReplacementCopyRequest extends AbstractCreateCopyRequest {
 
     private boolean coherentJournaling = false;
 

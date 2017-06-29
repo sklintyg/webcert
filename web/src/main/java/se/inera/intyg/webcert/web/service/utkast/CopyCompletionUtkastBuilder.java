@@ -34,7 +34,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest
 public class CopyCompletionUtkastBuilder extends AbstractUtkastBuilder<CreateCompletionCopyRequest> {
 
     @Autowired
-    ArendeService arendeService;
+    private ArendeService arendeService;
 
     @Override
     public Relation createRelation(CreateCompletionCopyRequest copyRequest) {

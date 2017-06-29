@@ -24,7 +24,7 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 
 @Component
-public class CreateCompletionCopyRequest extends CreateCopyRequest {
+public class CreateCompletionCopyRequest extends AbstractCreateCopyRequest {
 
     private String meddelandeId;
 

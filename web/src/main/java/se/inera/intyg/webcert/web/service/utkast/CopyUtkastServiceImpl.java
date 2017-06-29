@@ -50,10 +50,10 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
@@ -83,10 +83,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Qualifier("copyCompletionUtkastBuilder")
     private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
 
-//    @Autowired
-//    @Qualifier("createCopyUtkastBuilder")
-//    private CopyUtkastBuilder<CreateCopyRequest> createCopyUtkastBuilder;
-
     @Autowired
     @Qualifier("createRenewalUtkastBuilder")
     private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
@@ -109,52 +105,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private WebCertUserService userService;
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * se.inera.intyg.webcert.web.service.utkast.CopyUtkastService#createCopy(se.inera.intyg.webcert.web.service.utkast.
-     * dto.
-     * CreateNewDraftCopyRequest)
-     */
-//    @Override
-//    @Transactional("jpaTransactionManager")
-//    public CreateNewDraftCopyResponse createCopy(CreateNewDraftCopyRequest copyRequest) {
-//
-//        String originalIntygId = copyRequest.getOriginalIntygId();
-//
-//        LOG.debug("Creating copy of intyg '{}'", originalIntygId);
-//
-//        try {
-//
-//            if (intygService.isRevoked(originalIntygId, copyRequest.getTyp(), copyRequest.isCoherentJournaling())) {
-//                LOG.debug("Cannot create copy of certificate with id '{}', the certificate is revoked", originalIntygId);
-//                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
-//            }
-//
-//            verifyNotReplacedWithSigned(originalIntygId, "create copy");
-//            verifyNotComplementedWithSigned(originalIntygId, "create copy");
-//
-//            CopyUtkastBuilderResponse builderResponse;
-//
-//            builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId);
-//
-//            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
-//
-//            monitoringService.logIntygCopied(savedUtkast.getIntygsId(), originalIntygId);
-//
-//            if (copyRequest.isDjupintegrerad()) {
-//                checkIntegreradEnhet(builderResponse);
-//            }
-//
-//            return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
-//
-//        } catch (ModuleException | ModuleNotFoundException me) {
-//            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
-//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-//        }
-//    }
 
     /*
      * (non-Javadoc)
@@ -331,23 +281,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return saveAndNotify(originalIntygId, builderResponse, user);
     }
 
-//    private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId)
-//            throws ModuleNotFoundException, ModuleException {
-//
-//        Person patientDetails = updatePatientDetails(copyRequest);
-//
-//        CopyUtkastBuilderResponse builderResponse;
-//        if (utkastRepository.exists(originalIntygId)) {
-//            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false,
-//                    copyRequest.isCoherentJournaling(), false);
-//        } else {
-//            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
-//                    copyRequest.isCoherentJournaling(), false);
-//        }
-//
-//        return builderResponse;
-//    }
-
     private CopyUtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCompletionCopyRequest copyRequest, String originalIntygId,
             boolean addRelation) throws ModuleNotFoundException, ModuleException {
 
@@ -400,7 +333,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return builderResponse;
     }
 
-    private Person updatePatientDetails(CreateCopyRequest copyRequest) {
+    private Person updatePatientDetails(AbstractCreateCopyRequest copyRequest) {
         // I djupintegration version 1 (fk7263) kommer inte patientinformation med i copyrequest.
         // I djupintegration version 3 (nya fkintygen) är patientinformation i copyrequest obligatorisk.
         if (copyRequest.isDjupintegrerad()) {
@@ -420,7 +353,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 && !Strings.nullToEmpty(patient.getPostort()).trim().isEmpty();
     }
 
-    private Person copyPatientDetailsFromRequest(CreateCopyRequest copyRequest) {
+    private Person copyPatientDetailsFromRequest(AbstractCreateCopyRequest copyRequest) {
         if (!hasRequiredPatientDetails(copyRequest.getPatient())) {
             return null;
         }
@@ -436,7 +369,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 copyRequest.getPatient().getPostort());
     }
 
-    private Person refreshPatientDetailsFromPUService(CreateCopyRequest copyRequest) {
+    private Person refreshPatientDetailsFromPUService(AbstractCreateCopyRequest copyRequest) {
 
         Personnummer patientPersonnummer = copyRequest.getPatient().getPersonId();
 
