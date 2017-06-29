@@ -78,7 +78,10 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
     private void updateFeatures(Object details) {
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
-            user.setFeatures(webcertFeatureService.getActiveFeatures(user.getValdVardenhet().getId(), user.getValdVardgivare().getId()));
+            if (user.getValdVardenhet() != null && user.getValdVardgivare() != null) {
+                user.setFeatures(
+                        webcertFeatureService.getActiveFeatures(user.getValdVardenhet().getId(), user.getValdVardgivare().getId()));
+            }
         }
     }
 
