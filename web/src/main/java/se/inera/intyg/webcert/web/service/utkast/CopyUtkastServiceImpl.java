@@ -18,18 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.util.Arrays;
-import java.util.Optional;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -59,12 +54,13 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -87,9 +83,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Qualifier("copyCompletionUtkastBuilder")
     private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
 
-    @Autowired
-    @Qualifier("createCopyUtkastBuilder")
-    private CopyUtkastBuilder<CreateCopyRequest> createCopyUtkastBuilder;
+//    @Autowired
+//    @Qualifier("createCopyUtkastBuilder")
+//    private CopyUtkastBuilder<CreateCopyRequest> createCopyUtkastBuilder;
 
     @Autowired
     @Qualifier("createRenewalUtkastBuilder")
@@ -122,43 +118,43 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
      * dto.
      * CreateNewDraftCopyRequest)
      */
-    @Override
-    @Transactional("jpaTransactionManager")
-    public CreateNewDraftCopyResponse createCopy(CreateNewDraftCopyRequest copyRequest) {
-
-        String originalIntygId = copyRequest.getOriginalIntygId();
-
-        LOG.debug("Creating copy of intyg '{}'", originalIntygId);
-
-        try {
-
-            if (intygService.isRevoked(originalIntygId, copyRequest.getTyp(), copyRequest.isCoherentJournaling())) {
-                LOG.debug("Cannot create copy of certificate with id '{}', the certificate is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
-            }
-
-            verifyNotReplacedWithSigned(originalIntygId, "create copy");
-            verifyNotComplementedWithSigned(originalIntygId, "create copy");
-
-            CopyUtkastBuilderResponse builderResponse;
-
-            builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId);
-
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
-
-            monitoringService.logIntygCopied(savedUtkast.getIntygsId(), originalIntygId);
-
-            if (copyRequest.isDjupintegrerad()) {
-                checkIntegreradEnhet(builderResponse);
-            }
-
-            return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
-
-        } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
-    }
+//    @Override
+//    @Transactional("jpaTransactionManager")
+//    public CreateNewDraftCopyResponse createCopy(CreateNewDraftCopyRequest copyRequest) {
+//
+//        String originalIntygId = copyRequest.getOriginalIntygId();
+//
+//        LOG.debug("Creating copy of intyg '{}'", originalIntygId);
+//
+//        try {
+//
+//            if (intygService.isRevoked(originalIntygId, copyRequest.getTyp(), copyRequest.isCoherentJournaling())) {
+//                LOG.debug("Cannot create copy of certificate with id '{}', the certificate is revoked", originalIntygId);
+//                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+//            }
+//
+//            verifyNotReplacedWithSigned(originalIntygId, "create copy");
+//            verifyNotComplementedWithSigned(originalIntygId, "create copy");
+//
+//            CopyUtkastBuilderResponse builderResponse;
+//
+//            builderResponse = buildCopyUtkastBuilderResponse(copyRequest, originalIntygId);
+//
+//            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+//
+//            monitoringService.logIntygCopied(savedUtkast.getIntygsId(), originalIntygId);
+//
+//            if (copyRequest.isDjupintegrerad()) {
+//                checkIntegreradEnhet(builderResponse);
+//            }
+//
+//            return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
+//
+//        } catch (ModuleException | ModuleNotFoundException me) {
+//            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+//        }
+//    }
 
     /*
      * (non-Javadoc)
@@ -335,22 +331,22 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return saveAndNotify(originalIntygId, builderResponse, user);
     }
 
-    private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId)
-            throws ModuleNotFoundException, ModuleException {
-
-        Person patientDetails = updatePatientDetails(copyRequest);
-
-        CopyUtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false,
-                    copyRequest.isCoherentJournaling(), false);
-        } else {
-            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
-                    copyRequest.isCoherentJournaling(), false);
-        }
-
-        return builderResponse;
-    }
+//    private CopyUtkastBuilderResponse buildCopyUtkastBuilderResponse(CreateNewDraftCopyRequest copyRequest, String originalIntygId)
+//            throws ModuleNotFoundException, ModuleException {
+//
+//        Person patientDetails = updatePatientDetails(copyRequest);
+//
+//        CopyUtkastBuilderResponse builderResponse;
+//        if (utkastRepository.exists(originalIntygId)) {
+//            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false,
+//                    copyRequest.isCoherentJournaling(), false);
+//        } else {
+//            builderResponse = createCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
+//                    copyRequest.isCoherentJournaling(), false);
+//        }
+//
+//        return builderResponse;
+//    }
 
     private CopyUtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCompletionCopyRequest copyRequest, String originalIntygId,
             boolean addRelation) throws ModuleNotFoundException, ModuleException {

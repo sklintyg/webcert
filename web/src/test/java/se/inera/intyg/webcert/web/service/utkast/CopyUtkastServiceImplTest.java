@@ -18,30 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.security.WebCertUserOriginType.DJUPINTEGRATION;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -73,12 +55,27 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.security.WebCertUserOriginType.DJUPINTEGRATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -118,8 +115,8 @@ public class CopyUtkastServiceImplTest {
     @Mock
     private PUService mockPUService;
 
-    @Mock(name = "createCopyUtkastBuilder")
-    private CreateCopyUtkastBuilder mockUtkastBuilder;
+//    @Mock(name = "createCopyUtkastBuilder")
+//    private CreateCopyUtkastBuilder mockUtkastBuilder;
 
     @Mock(name = "copyCompletionUtkastBuilder")
     private CopyCompletionUtkastBuilder copyCompletionUtkastBuilder;
@@ -196,45 +193,45 @@ public class CopyUtkastServiceImplTest {
                 .thenReturn(Optional.empty());
     }
 
-    @Test
-    public void testCreateCopy() throws Exception {
-
-        final String reference = "ref";
-        WebCertUser user = new WebCertUser();
-        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
-        when(userService.getUser()).thenReturn(user);
-
-        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
-
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
-
-        when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
-                .thenReturn(Optional.empty());
-
-        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
-
-        CreateNewDraftCopyResponse copyResp = copyService.createCopy(copyReq);
-
-        assertNotNull(copyResp);
-        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
-        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
-
-        verify(mockPUService).getPerson(PATIENT_SSN);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class), eq(false));
-        verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
-        verify(userService).getUser();
-        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
-
-        // Assert pdl log
-        verify(logService).logCreateIntyg(any(LogRequest.class));
-    }
+//    @Test
+//    public void testCreateCopy() throws Exception {
+//
+//        final String reference = "ref";
+//        WebCertUser user = new WebCertUser();
+//        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+//        when(userService.getUser()).thenReturn(user);
+//
+//        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
+//
+//        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+//        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
+//                any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
+//
+//        when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
+//                .thenReturn(Optional.empty());
+//
+//        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+//
+//        CreateNewDraftCopyResponse copyResp = copyService.createCopy(copyReq);
+//
+//        assertNotNull(copyResp);
+//        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
+//        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
+//
+//        verify(mockPUService).getPerson(PATIENT_SSN);
+//        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
+//                any(boolean.class), any(boolean.class), eq(false));
+//        verify(mockUtkastRepository).save(any(Utkast.class));
+//        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+//        verify(userService).getUser();
+//        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
+//
+//        // Assert pdl log
+//        verify(logService).logCreateIntyg(any(LogRequest.class));
+//    }
 
     @Test(expected = WebCertServiceException.class)
-    public void testCreateCopyFailIfSignedReplacementExists() throws Exception {
+    public void testRenewalCopyFailIfSignedReplacementExists() throws Exception {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
@@ -242,7 +239,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
+        when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
@@ -250,10 +247,10 @@ public class CopyUtkastServiceImplTest {
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
                 .thenReturn(Optional.of(ersattRelation));
 
-        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+        CreateRenewalCopyRequest renewalCopyRequest = buildRenewalRequest();
 
         try {
-            CreateNewDraftCopyResponse copyResp = copyService.createCopy(copyReq);
+            CreateRenewalCopyResponse copyResp = copyService.createRenewalCopy(renewalCopyRequest);
             fail("An exception should have been thrown.");
         } catch (Exception e) {
             verifyZeroInteractions(mockUtkastRepository);
@@ -470,7 +467,7 @@ public class CopyUtkastServiceImplTest {
     }
 
     @Test
-    public void testCreateCopyWhenIntegrated() throws Exception {
+    public void testCreateRenewalWhenIntegrated() throws Exception {
 
         final String reference = "ref";
         WebCertUser user = new WebCertUser();
@@ -480,20 +477,20 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
+        when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
-        copyReq.setDjupintegrerad(true);
+        CreateRenewalCopyRequest renewRequest = buildRenewalRequest();
+        renewRequest.setDjupintegrerad(true);
 
-        CreateNewDraftCopyResponse copyResp = copyService.createCopy(copyReq);
+        CreateRenewalCopyResponse renewalCopyResponse = copyService.createRenewalCopy(renewRequest);
 
-        assertNotNull(copyResp);
-        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
-        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
+        assertNotNull(renewalCopyResponse);
+        assertEquals(INTYG_COPY_ID, renewalCopyResponse.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, renewalCopyResponse.getNewDraftIntygType());
 
         verifyZeroInteractions(mockPUService);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
+        verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
@@ -517,21 +514,21 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(mockUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
+        when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
 
-        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+        CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
         copyReq.setDjupintegrerad(true);
 
-        CreateNewDraftCopyResponse copyResp = copyService.createCopy(copyReq);
+        CreateRenewalCopyResponse renewalCopyResponse = copyService.createRenewalCopy(copyReq);
 
-        assertNotNull(copyResp);
-        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
-        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
+        assertNotNull(renewalCopyResponse);
+        assertEquals(INTYG_COPY_ID, renewalCopyResponse.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, renewalCopyResponse.getNewDraftIntygType());
 
         verifyZeroInteractions(mockPUService);
-        verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class),
+        verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
@@ -546,11 +543,11 @@ public class CopyUtkastServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testCopyThrowsExceptionWhenOriginalCertificateIsRevoked() throws ModuleException, ModuleNotFoundException {
+    public void testRenewThrowsExceptionWhenOriginalCertificateIsRevoked() throws ModuleException, ModuleNotFoundException {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
-        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
-        copyService.createCopy(copyReq);
+        CreateRenewalCopyRequest copyReq = buildRenewalRequest();
+        copyService.createRenewalCopy(copyReq);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -601,9 +598,9 @@ public class CopyUtkastServiceImplTest {
         return utkast;
     }
 
-    private CreateNewDraftCopyRequest buildCopyRequest() {
-        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
-    }
+//    private CreateNewDraftCopyRequest buildCopyRequest() {
+//        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
+//    }
 
     private CreateCompletionCopyRequest buildCompletionRequest() {
         return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, patient, hoSPerson);

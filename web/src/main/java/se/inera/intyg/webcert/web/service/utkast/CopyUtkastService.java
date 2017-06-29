@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.web.service.utkast;
 
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
@@ -30,18 +28,10 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 public interface CopyUtkastService {
 
     /**
-     * Create a copy of a signed Intyg or an unsigned Utkast.
-     *
-     * @param copyRequest
-     * @return {@link CreateNewDraftCopyResponse}
-     */
-    CreateNewDraftCopyResponse createCopy(CreateNewDraftCopyRequest copyRequest);
-
-    /**
      * Create a completion, which is essentially a copy with a relation to the Intyg on which the copy is based.
      *
      * @param copyRequest
-     * @return {@link CreateNewDraftCopyResponse}
+     * @return {@link CreateCompletionCopyResponse}
      */
     CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest);
 

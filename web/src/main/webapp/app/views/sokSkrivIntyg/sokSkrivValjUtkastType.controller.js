@@ -231,5 +231,5 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.resolveTooltipText = function(intyg) {
                 return messageService.getProperty(intyg.intygType + '.fornya.tooltip');
-            }
+            };
         }]);

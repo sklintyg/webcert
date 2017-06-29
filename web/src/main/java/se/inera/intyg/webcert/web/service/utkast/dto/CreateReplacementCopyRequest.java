@@ -22,13 +22,19 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 
 /**
- * This is just a placeholder class since a replacement request is for all purposes indentical to a
- * CreateNewDraftCopyRequest.
+ * Extends the base CreateCopyRequest with coherentJournaling.
  */
-public class CreateReplacementCopyRequest extends CreateNewDraftCopyRequest {
+public class CreateReplacementCopyRequest extends CreateCopyRequest {
+
+    private boolean coherentJournaling = false;
 
     public CreateReplacementCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson,
             boolean coherentJournaling) {
-        super(orginalIntygsId, intygsTyp, patient, hosPerson, coherentJournaling);
+        super(orginalIntygsId, intygsTyp, patient, hosPerson);
+        this.coherentJournaling = coherentJournaling;
+    }
+
+    public boolean isCoherentJournaling() {
+        return coherentJournaling;
     }
 }

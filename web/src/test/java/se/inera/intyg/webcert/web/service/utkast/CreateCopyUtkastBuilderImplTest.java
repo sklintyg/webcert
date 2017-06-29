@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
@@ -163,7 +163,7 @@ public class CreateCopyUtkastBuilderImplTest {
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
@@ -172,7 +172,7 @@ public class CreateCopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
                 false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
@@ -198,7 +198,7 @@ public class CreateCopyUtkastBuilderImplTest {
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, true)).thenReturn(ich);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
@@ -207,7 +207,7 @@ public class CreateCopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
+        copyBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
                 true, true);
     }
 
@@ -217,7 +217,7 @@ public class CreateCopyUtkastBuilderImplTest {
         Utkast orgUtkast = createOriginalUtkast();
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
@@ -226,7 +226,7 @@ public class CreateCopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false,
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false,
                 false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
@@ -245,11 +245,11 @@ public class CreateCopyUtkastBuilderImplTest {
         orgUtkast.setEnhetsId("OTHER_ID");
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false, true, true);
+        copyBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false, true, true);
     }
 
     @Test
@@ -258,16 +258,16 @@ public class CreateCopyUtkastBuilderImplTest {
         Utkast orgUtkast = createOriginalUtkast();
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
-        copyRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
-        copyRequest.setDjupintegrerad(true);
+        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
+        renewalRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
+        renewalRequest.setDjupintegrerad(true);
 
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, null, false, false, false);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -284,14 +284,14 @@ public class CreateCopyUtkastBuilderImplTest {
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
 
-        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
 
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, null, false, false, false);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -332,8 +332,8 @@ public class CreateCopyUtkastBuilderImplTest {
         assertEquals("Caesarsson", res[1]);
     }
 
-    private CreateNewDraftCopyRequest buildCopyRequest() {
-        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
+    private CreateRenewalCopyRequest buildRenewalRequest() {
+        return new CreateRenewalCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson);
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {

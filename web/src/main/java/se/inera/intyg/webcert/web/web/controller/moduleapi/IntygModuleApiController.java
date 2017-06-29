@@ -42,8 +42,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
@@ -311,11 +309,6 @@ public class IntygModuleApiController extends AbstractApiController {
             LOG.error("Request to create renewal of '{}' is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
-
-
-
-        boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
-
         CreateRenewalCopyRequest serviceRequest = createRenewalCopyRequest(orgIntygsId, intygsTyp, request);
         CreateRenewalCopyResponse serviceResponse = copyUtkastService.createRenewalCopy(serviceRequest);
 
@@ -419,26 +412,26 @@ public class IntygModuleApiController extends AbstractApiController {
         return req;
     }
 
-    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest,
-            boolean coherentJournaling) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(copyRequest);
-
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson, coherentJournaling);
-
-        IntegrationParameters parameters = userService.getUser().getParameters();
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
-
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
-
-        return req;
-    }
+//    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest,
+//            boolean coherentJournaling) {
+//        HoSPersonal hosPerson = createHoSPersonFromUser();
+//        Patient patient = createPatientFromCopyIntygRequest(copyRequest);
+//
+//        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patient, hosPerson, coherentJournaling);
+//
+//        IntegrationParameters parameters = userService.getUser().getParameters();
+//        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
+//            LOG.debug("Adding new personnummer to request");
+//            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
+//        }
+//
+//        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
+//            LOG.debug("Setting djupintegrerad flag on request to true");
+//            req.setDjupintegrerad(true);
+//        }
+//
+//        return req;
+//    }
 
     private Patient createPatientFromCopyIntygRequest(CopyIntygRequest copyRequest) {
         WebCertUser user = getWebCertUserService().getUser();
@@ -466,15 +459,15 @@ public class IntygModuleApiController extends AbstractApiController {
         return intygService.revokeIntyg(intygsId, intygsTyp, param.getMessage(), param.getReason());
     }
 
-    private CopyIntygResponse copyIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId, boolean coherentJournaling) {
-        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request, coherentJournaling);
-        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
-
-        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", orgIntygsId, serviceResponse.getNewDraftIntygId(),
-                serviceResponse.getNewDraftIntygType());
-
-        return new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
-    }
+//    private CopyIntygResponse copyIntyg(CopyIntygRequest request, String intygsTyp, String orgIntygsId, boolean coherentJournaling) {
+//        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request, coherentJournaling);
+//        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
+//
+//        LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", orgIntygsId, serviceResponse.getNewDraftIntygId(),
+//                serviceResponse.getNewDraftIntygType());
+//
+//        return new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+//    }
 
     private void validateRevokeAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
