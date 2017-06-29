@@ -29,7 +29,7 @@ var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Luse diagnos tests', function() {
+xdescribe('Luse diagnos tests', function() {
 
     var intygsId;
 

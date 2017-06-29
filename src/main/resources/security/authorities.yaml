@@ -127,7 +127,12 @@ privileges:
   - &p030
     name: *kp030
     desc: Kopiera intyg
-    intygstyper: # Implicit alla
+    intygstyper: # EJ ts-intyg
+      - *ki010 # fk7263
+      - *ki040 # lisjp
+      - *ki050 # luse
+      - *ki060 # luae_na
+      - *ki070 # luae_fs
     requestOrigins:
       - *ro010 # NORMAL
       - *ro020 # DJUPINTEGRATION

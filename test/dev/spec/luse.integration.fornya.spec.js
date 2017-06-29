@@ -28,7 +28,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Djupintegration on luse intyg', function() {
 
-    var intygId = 'luse-integration-copy-1';
+    var intygId = 'luse-integration-renew-1';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -66,9 +66,9 @@ describe('Djupintegration on luse intyg', function() {
         expect(LuseIntygPage.statusNameAndAddressChanged.isDisplayed()).toBeTruthy();
     });
 
-    it('should copy intyg and view resulting utkast', function() {
-        LuseIntygPage.copy.button.click();
-        LuseIntygPage.copy.dialogConfirmButton.click();
+    it('should fornya intyg and view resulting utkast', function() {
+        LuseIntygPage.fornya.button.click();
+        LuseIntygPage.fornya.dialogConfirmButton.click();
         expect(LuseUtkastPage.isAt()).toBeTruthy();
         expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Nytt förnamn Nytt mellannamn Nytt efternamn - 19121212-1212');
     });

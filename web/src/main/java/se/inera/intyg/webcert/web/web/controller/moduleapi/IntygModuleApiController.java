@@ -18,22 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import com.google.common.base.Strings;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
@@ -64,6 +53,15 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Controller exposing services to be used by modules.
@@ -216,36 +214,36 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Create a copy of a certificate.
      */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/kopiera")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
-            @PathParam("intygsId") String orgIntygsId) {
-
-        validateCopyAuthority(intygsTyp);
-
-        WebCertUser user = userService.getUser();
-
-        boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
-        if (!copyOkParam) {
-            LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
-            final String message = "Authorization failed due to false kopieraOK-parameter";
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
-        }
-
-        boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
-        LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, orgIntygsId,
-                coherentJournaling);
-
-        if (!request.isValid()) {
-            LOG.error("Request to create copy of '{}' is not valid", orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
-        }
-
-        CopyIntygResponse result = copyIntyg(request, intygsTyp, orgIntygsId, coherentJournaling);
-        return Response.ok().entity(result).build();
-    }
+//    @POST
+//    @Path("/{intygsTyp}/{intygsId}/kopiera")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+//    public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
+//            @PathParam("intygsId") String orgIntygsId) {
+//
+//        validateCopyAuthority(intygsTyp);
+//
+//        WebCertUser user = userService.getUser();
+//
+//        boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
+//        if (!copyOkParam) {
+//            LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
+//            final String message = "Authorization failed due to false kopieraOK-parameter";
+//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
+//        }
+//
+//        boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
+//        LOG.debug("Attempting to create a draft copy of {} with id '{}', coherent journaling: {}", intygsTyp, orgIntygsId,
+//                coherentJournaling);
+//
+//        if (!request.isValid()) {
+//            LOG.error("Request to create copy of '{}' is not valid", orgIntygsId);
+//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+//        }
+//
+//        CopyIntygResponse result = copyIntyg(request, intygsTyp, orgIntygsId, coherentJournaling);
+//        return Response.ok().entity(result).build();
+//    }
 
     /**
      * Create a copy that completes an existing certificate.
@@ -300,10 +298,23 @@ public class IntygModuleApiController extends AbstractApiController {
 
         LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);
 
+        WebCertUser user = userService.getUser();
+
+        boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
+        if (!copyOkParam) {
+            LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
+            final String message = "Authorization failed due to false kopieraOK-parameter";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
+        }
+
         if (!request.isValid()) {
             LOG.error("Request to create renewal of '{}' is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
+
+
+
+        boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
 
         CreateRenewalCopyRequest serviceRequest = createRenewalCopyRequest(orgIntygsId, intygsTyp, request);
         CreateRenewalCopyResponse serviceResponse = copyUtkastService.createRenewalCopy(serviceRequest);

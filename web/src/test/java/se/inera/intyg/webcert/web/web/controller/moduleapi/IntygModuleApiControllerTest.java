@@ -18,39 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.ws.rs.core.Response;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -72,8 +46,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
@@ -82,6 +54,29 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -212,7 +207,7 @@ public class IntygModuleApiControllerTest {
     }
 
     @Test
-    public void testCreateNewCopyWithCopyOkParamFalse() {
+    public void testCreateNewRenewWithCopyOkParamFalse() {
         //Given
         final boolean copyOk = false;
         final String intygsTyp = "fk7263";
@@ -220,7 +215,7 @@ public class IntygModuleApiControllerTest {
 
         //When
         try {
-            moduleApiController.createNewCopy(new CopyIntygRequest(), intygsTyp, "");
+            moduleApiController.createRenewal(new CopyIntygRequest(), intygsTyp, "");
         } catch (WebCertServiceException wcse) {
             //Then an exception is thrown
             assertEquals(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, wcse.getErrorCode());
@@ -280,40 +275,40 @@ public class IntygModuleApiControllerTest {
         moduleApiController.revokeSignedIntyg("intygType", CERTIFICATE_ID, null);
     }
 
+//    @Test
+//    public void testCreateNewCopy() {
+//        final String personnummer = "191212121212";
+//        final String newIntygId = "newIntygId";
+//
+//        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+//        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+//
+//        WebCertUser user = new WebCertUser();
+//        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+//        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+//        user.setOrigin("NORMAL");
+//
+//        ArgumentCaptor<CreateNewDraftCopyRequest> captor = ArgumentCaptor.forClass(CreateNewDraftCopyRequest.class);
+//        when(copyUtkastService.createCopy(captor.capture())).thenReturn(new CreateNewDraftCopyResponse(CERTIFICATE_TYPE, newIntygId));
+//        when(webcertUserService.getUser()).thenReturn(user);
+//
+//        Response response = moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+//
+//        verify(copyUtkastService).createCopy(any());
+//        verifyNoMoreInteractions(copyUtkastService);
+//        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
+//        assertEquals(personnummer, captor.getValue().getPatient().getPersonId().getPersonnummer());
+//        assertNull(captor.getValue().getPatient().getFornamn());
+//        assertNull(captor.getValue().getPatient().getEfternamn());
+//        assertNull(captor.getValue().getPatient().getMellannamn());
+//        assertNull(captor.getValue().getPatient().getPostadress());
+//        assertNull(captor.getValue().getPatient().getPostnummer());
+//        assertNull(captor.getValue().getPatient().getPostort());
+//        assertNull(captor.getValue().getNyttPatientPersonnummer());
+//    }
+
     @Test
-    public void testCreateNewCopy() {
-        final String personnummer = "191212121212";
-        final String newIntygId = "newIntygId";
-
-        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
-
-        WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
-        user.setOrigin("NORMAL");
-
-        ArgumentCaptor<CreateNewDraftCopyRequest> captor = ArgumentCaptor.forClass(CreateNewDraftCopyRequest.class);
-        when(copyUtkastService.createCopy(captor.capture())).thenReturn(new CreateNewDraftCopyResponse(CERTIFICATE_TYPE, newIntygId));
-        when(webcertUserService.getUser()).thenReturn(user);
-
-        Response response = moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
-
-        verify(copyUtkastService).createCopy(any());
-        verifyNoMoreInteractions(copyUtkastService);
-        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
-        assertEquals(personnummer, captor.getValue().getPatient().getPersonId().getPersonnummer());
-        assertNull(captor.getValue().getPatient().getFornamn());
-        assertNull(captor.getValue().getPatient().getEfternamn());
-        assertNull(captor.getValue().getPatient().getMellannamn());
-        assertNull(captor.getValue().getPatient().getPostadress());
-        assertNull(captor.getValue().getPatient().getPostnummer());
-        assertNull(captor.getValue().getPatient().getPostort());
-        assertNull(captor.getValue().getNyttPatientPersonnummer());
-    }
-
-    @Test
-    public void testCreateNewCopyWithNewPatientInfo() {
+    public void testCreateRenewalWithNewPatientInfo() {
         final String personnummer = "191212121212";
         final String newIntygId = "newIntygId";
         final String efternamn = "efternamn";
@@ -334,13 +329,13 @@ public class IntygModuleApiControllerTest {
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
         user.setOrigin("NORMAL");
 
-        ArgumentCaptor<CreateNewDraftCopyRequest> captor = ArgumentCaptor.forClass(CreateNewDraftCopyRequest.class);
-        when(copyUtkastService.createCopy(captor.capture())).thenReturn(new CreateNewDraftCopyResponse(CERTIFICATE_TYPE, newIntygId));
+        ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
+        when(copyUtkastService.createRenewalCopy(captor.capture())).thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
-        Response response = moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+        Response response = moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
 
-        verify(copyUtkastService).createCopy(any());
+        verify(copyUtkastService).createRenewalCopy(any());
         verifyNoMoreInteractions(copyUtkastService);
         assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
         assertEquals(personnummer, captor.getValue().getPatient().getPersonId().getPersonnummer());
@@ -358,7 +353,7 @@ public class IntygModuleApiControllerTest {
      * will not be applied to the new utkast.
      */
     @Test
-    public void testCreateNewCopyWithNewPatientReservnummerDefaultsToPreviousPersonnummer() {
+    public void testCreateRenewalCopyWithNewPatientReservnummerDefaultsToPreviousPersonnummer() {
         final String personnummer = "191212121212";
         final String newIntygId = "newIntygId";
         final String efternamn = "efternamn";
@@ -379,13 +374,13 @@ public class IntygModuleApiControllerTest {
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
         user.setOrigin("NORMAL");
 
-        ArgumentCaptor<CreateNewDraftCopyRequest> captor = ArgumentCaptor.forClass(CreateNewDraftCopyRequest.class);
-        when(copyUtkastService.createCopy(captor.capture())).thenReturn(new CreateNewDraftCopyResponse(CERTIFICATE_TYPE, newIntygId));
+        ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
+        when(copyUtkastService.createRenewalCopy(captor.capture())).thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
-        Response response = moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+        Response response = moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
 
-        verify(copyUtkastService).createCopy(any());
+        verify(copyUtkastService).createRenewalCopy(any());
         verifyNoMoreInteractions(copyUtkastService);
         assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
         assertEquals(personnummer, captor.getValue().getPatient().getPersonId().getPersonnummer());
@@ -399,7 +394,7 @@ public class IntygModuleApiControllerTest {
     }
 
     @Test(expected = AuthoritiesException.class)
-    public void testCreateNewCopyMissingFeature() {
+    public void testCreateRenewalCopyMissingFeature() {
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
 
         WebCertUser user = new WebCertUser();
@@ -408,14 +403,14 @@ public class IntygModuleApiControllerTest {
         when(webcertUserService.getUser()).thenReturn(user);
 
         try {
-            moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+            moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
         } finally {
             verifyZeroInteractions(copyUtkastService);
         }
     }
 
     @Test(expected = AuthoritiesException.class)
-    public void testCreateNewCopyMissingPrivilege() {
+    public void testCreateRenewalCopyMissingPrivilege() {
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
 
         WebCertUser user = new WebCertUser();
@@ -424,14 +419,14 @@ public class IntygModuleApiControllerTest {
         when(webcertUserService.getUser()).thenReturn(user);
 
         try {
-            moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+            moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
         } finally {
             verifyZeroInteractions(copyUtkastService);
         }
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testCreateNewCopyInvalidRequest() {
+    public void testCreateRenewalCopyInvalidRequest() {
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
 
         WebCertUser user = new WebCertUser();
@@ -442,7 +437,7 @@ public class IntygModuleApiControllerTest {
         when(webcertUserService.getUser()).thenReturn(user);
 
         try {
-            moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
+            moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
         } finally {
             verifyZeroInteractions(copyUtkastService);
         }

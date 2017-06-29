@@ -82,11 +82,10 @@ describe('Verify replace intyg ', function() {
             it('should still show send/copy/renew/replace buttons, since the replacing utkast has not been signed', function() {
                 FkIntygPage.get(intygId);
                 expect(FkIntygPage.isAt()).toBeTruthy();
-                expect(FkIntygPage.copy.button.isPresent()).toBe(true);
                 expect(FkIntygPage.skicka.knapp.isPresent()).toBe(true);
                 expect(FkIntygPage.replaceBtn().isPresent()).toBe(true);
 
-                //fornya exists for fk7263
+                //fornya exists for fk7263 (and SMI)
                 expect(FkIntygPage.fornya.button.isPresent()).toBe(true);
             });
 
@@ -100,13 +99,6 @@ describe('Verify replace intyg ', function() {
                  FkIntygPage.fornya.dialogConfirmButton.click();
                  expect(FkUtkastPage.isAt()).toBeTruthy();
                  FkIntygPage.get(intygId);
-            });
-
-            it('should copy without error, since the replacing utkast has not been signed', function() {
-                FkIntygPage.copy.button.click();
-                FkIntygPage.copy.dialogConfirmButton.click();
-                expect(FkUtkastPage.isAt()).toBeTruthy();
-                FkIntygPage.get(intygId);
             });
         });
 

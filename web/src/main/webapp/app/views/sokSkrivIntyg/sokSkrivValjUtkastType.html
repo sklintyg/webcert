@@ -142,23 +142,24 @@
                         {{messageService.getProperty('common.show')}}
                       </button>
                     </td>
-                    <td ng-switch on="intyg.intygType" ng-if="!patientModel.avliden">
+                    <td ng-if="!patientModel.avliden">
                       <button type="button"
                               wc-authority="KOPIERA_INTYG"
                               feature="kopieraIntyg"
                               intygstyp="{{intyg.intygType}}"
                               id="fornyaBtn-{{intyg.intygId}}"
                               class="btn btn-info"
-                              ng-switch-when="fk7263"
                               ng-if="isCopyAllowed(intyg)"
                               ng-click="fornyaIntyg(intyg)"
-                              uib-popover="{{messageService.getProperty('common.fornya.tooltip')}}"
+                              uib-popover="{{ resolveTooltipText(intyg) }}"
                               popover-trigger="mouseenter"
                               popover-popup-delay="300"
                               popover-append-to-body="true"
                               popover-placement="auto top">
                         {{messageService.getProperty('common.fornya')}}
                       </button>
+                       <!-- messageService.getProperty('{{intyg.intygType}}.fornya.tooltip') }} -->
+                      <!--
                       <button type="button"
                               wc-authority="KOPIERA_INTYG"
                               feature="kopieraIntyg"
@@ -175,6 +176,7 @@
                               popover-placement="auto top">
                         {{messageService.getProperty('common.copy')}}
                       </button>
+                      -->
                     </td>
                     <td>{{getTypeName(intyg.intygType)}}</td>
                     <td class="unbreakable"><span message key="intyg.status.{{intyg.status}}"></span></td>

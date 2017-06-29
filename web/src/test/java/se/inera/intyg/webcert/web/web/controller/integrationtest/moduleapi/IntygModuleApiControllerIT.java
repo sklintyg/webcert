@@ -232,7 +232,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void testCreateNewUtkastCopyBasedOnExistingUtkast() {
+    public void testCreateRenewalBasedOnExistingUtkast() {
         final String personnummer = "19121212-1212";
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
@@ -249,7 +249,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(200)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
                 .then()
                 .body("intygsUtkastId", not(isEmptyString()))
                 .body("intygsUtkastId", not(equalTo(utkastId)))
@@ -257,7 +257,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void testCreateNewUtkastCopyBasedOnExistingUtkastFailsForMissingPriveliges() {
+    public void testCreateRenewalBasedOnExistingUtkastFailsForMissingPriveliges() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -278,7 +278,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(500)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
                 .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
                 .body("message", not(isEmptyString()));
 
@@ -288,7 +288,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
      * Check that trying to copy utkast with bad input gives error response.
      */
     @Test
-    public void testCreateNewUtkastCopyBasedOnExistingUtkastWithInvalidPatientpersonNummer() {
+    public void testCreateRenewalBasedOnExistingUtkastWithInvalidPatientpersonNummer() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -304,14 +304,14 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(500)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
                 .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name()))
                 .body("message", not(isEmptyString()));
 
     }
 
     @Test
-    public void testCreateNewUtkastCopyBasedOnIntygFromDifferentCareUnitWithCoherentJournalingSuccess() throws IOException {
+    public void testCreateRenewalBasedOnIntygFromDifferentCareUnitWithCoherentJournalingSuccess() throws IOException {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
@@ -338,7 +338,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String newIntygsId = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(HttpServletResponse.SC_OK)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
                 .then()
                 .body("intygsUtkastId", not(isEmptyString()))
                 .body("intygsUtkastId", not(equalTo(intygsId)))
@@ -357,7 +357,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void testCreateNewUtkastCopyBasedOnIntygFromDifferentCareUnitWithCoherentJournalingFail() throws IOException {
+    public void testCreateRenewalBasedOnIntygFromDifferentCareUnitWithCoherentJournalingFail() throws IOException {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
@@ -383,7 +383,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
                 .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/kopiera")
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
                 .then()
                 .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
                 .body("message", not(isEmptyString()));
