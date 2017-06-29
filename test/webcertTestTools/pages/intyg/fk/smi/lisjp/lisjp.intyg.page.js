@@ -22,6 +22,7 @@
 'use strict';
 
 var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
+var testdataHelper = require('common-testtools').testdataHelper;
 
 var LisjpIntyg = BaseSmiIntygPage._extend({
     init: function init() {
@@ -29,10 +30,87 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
         this.intygType = 'lisjp';
         this.funktionsnedsattning = element(by.id('funktionsnedsattning'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
+
+        this.sjukskrivningar = {
+            grad: function(index) {
+                return element(by.id('sjukskrivningar-' + index + '-grad'));
+            },
+            from: function(index) {
+                return element(by.id('sjukskrivningar-' + index + '-from'));
+            },
+            to: function(index) {
+                return element(by.id('sjukskrivningar-' + index + '-tom'));
+            }
+        };
     },
 
     get: function get(intygId) {
         get._super.call(this, intygId);
+    },
+
+    verify: function(data) {
+
+        if (data.diagnos.diagnoser) {
+            for (var j = 0; j < data.diagnos.diagnoser.length; j++) {
+                expect(this.diagnoser.getDiagnos(j).kod.getText()).toBe(data.diagnos.diagnoser[j].kod);
+            }
+        }
+
+        expect(this.ovrigt.getText()).toBe(data.ovrigt);
+
+        this.verifyArbetsformaga(data.arbetsformaga);
+
+        if (!data.smittskydd) {
+            expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(testdataHelper.dateToText(data.baseratPa.minUndersokningAvPatienten));
+            expect(this.baseratPa.journaluppgifter.getText()).toBe(testdataHelper.dateToText(data.baseratPa.journaluppgifter));
+            expect(this.baseratPa.telefonkontakt.getText()).toBe(testdataHelper.dateToText(data.baseratPa.telefonkontakt));
+            expect(this.baseratPa.annat.getText()).toBe(testdataHelper.dateToText(data.baseratPa.annat));
+            expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
+
+            expect(this.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
+            expect(this.aktivitetsbegransning.getText()).toBe(data.aktivitetsbegransning);
+
+            expect(this.behandling.pagaende.getText()).toBe(data.medicinskbehandling.pagaende);
+            expect(this.behandling.planerad.getText()).toBe(data.medicinskbehandling.planerad);
+
+            if (data.kontaktMedFk) {
+                expect(this.kontaktFK.ja.isDisplayed()).toBeTruthy();
+            } else {
+                expect(this.kontaktFK.nej.isDisplayed()).toBeTruthy();
+            }
+
+            if (data.tillaggsfragor) {
+                for (var i = 0; i < data.tillaggsfragor.length; i++) {
+                    expect(this.tillaggsfragor.getFraga(i).getText()).toBe(data.tillaggsfragor[i].svar);
+                }
+            }
+        }
+    },
+
+    verifyArbetsformaga: function(arbetsformaga) {
+
+        var formagor = [];
+
+        if (arbetsformaga.nedsattMed100) {
+            formagor.push(arbetsformaga.nedsattMed100);
+        }
+
+        if (arbetsformaga.nedsattMed75) {
+            formagor.push(arbetsformaga.nedsattMed75);
+        }
+
+        if (arbetsformaga.nedsattMed50) {
+            formagor.push(arbetsformaga.nedsattMed50);
+        }
+
+        if (arbetsformaga.nedsattMed25) {
+            formagor.push(arbetsformaga.nedsattMed25);
+        }
+
+        for (var i = 0; i < formagor.length; i++) {
+            expect(this.sjukskrivningar.from(i).getText()).toBe(formagor[i].from);
+            expect(this.sjukskrivningar.to(i).getText()).toBe(formagor[i].tom);
+        }
     }
 });
 module.exports = new LisjpIntyg();

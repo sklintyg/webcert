@@ -217,7 +217,9 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         }
         if (baseratPa.journaluppgifter) {
             promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.journaluppgifter.datum, baseratPa.journaluppgifter));
-
+        }
+        if (baseratPa.telefonkontakt) {
+            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.telefonkontakt.datum, baseratPa.telefonkontakt));
         }
         if (baseratPa.anhorigsBeskrivning) {
             promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning));

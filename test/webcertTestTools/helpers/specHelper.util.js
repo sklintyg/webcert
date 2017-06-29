@@ -110,6 +110,9 @@ module.exports = {
         if (intygType === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
             utkastPage = pages.intyg.luaeNA.utkast;
         }
+        if (intygType === 'Läkarintyg för sjukpenning') {
+            utkastPage = pages.intyg.lisjp.utkast;
+        }
 
         expect(utkastPage.isAt()).toBe(true);
     },

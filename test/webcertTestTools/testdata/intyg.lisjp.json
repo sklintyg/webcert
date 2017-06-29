@@ -1,0 +1,122 @@
+{
+  "typ": "lisjp",
+  "id": "-",
+  "grundData": {
+    "patient": {
+      "personId": "19121212-1212",
+      "fullstandigtNamn": "Tolvan Tolvansson",
+      "fornamn": "Tolvan",
+      "efternamn": "Tolvansson",
+      "postadress": "Svensson, Storgatan 1, PL 1234",
+      "postnummer": "12345",
+      "postort": "Småmåla",
+      "samordningsNummer": false
+    },
+    "skapadAv": {
+      "personId": "TSTNMT2321000156-103F",
+      "fullstandigtNamn": "Leonie Koehl",
+      "forskrivarKod": "0000000",
+      "befattningar": [
+        "203090"
+      ],
+      "specialiteter": [],
+      "vardenhet": {
+        "enhetsid": "TSTNMT2321000156-1039",
+        "enhetsnamn": "NMT vg1 ve2",
+        "postadress": "NMT gata 2",
+        "postnummer": "12345",
+        "postort": "Testhult",
+        "telefonnummer": "0101112131415",
+        "epost": "enhet2@webcert.invalid.se",
+        "vardgivare": {
+          "vardgivarid": "TSTNMT2321000156-1002",
+          "vardgivarnamn": "NMT vg1"
+        },
+        "arbetsplatsKod": "1234567890"
+      }
+    },
+    "signeringsdatum":"2017-06-29T14:54:07.491",
+    "relation": {}
+  },
+  "textVersion":"1.0",
+  "avstangningSmittskydd":false,
+  "undersokningAvPatienten":"2016-05-10",
+  "telefonkontaktMedPatienten":"2016-05-10",
+  "journaluppgifter":"2016-05-10",
+  "annatGrundForMU":"2016-05-10",
+  "annatGrundForMUBeskrivning":"Annat underlag",
+  "sysselsattning":[
+    {
+      "typ":"NUVARANDE_ARBETE"
+    }
+  ],
+  "nuvarandeArbete":"defenestrist",
+  "diagnoser":[
+    {
+      "diagnosKod":"Z60",
+      "diagnosKodSystem":"ICD_10_SE",
+      "diagnosBeskrivning":"Problem som har samband med social miljö",
+      "diagnosDisplayName":"Problem som har samband med social miljö"
+    }
+  ],
+  "funktionsnedsattning":"funktionsnedsättning",
+  "aktivitetsbegransning":"aktivitetsbegränsning",
+  "pagaendeBehandling":"Pågående",
+  "planeradBehandling":"Planerad",
+  "sjukskrivningar":[
+    {
+      "sjukskrivningsgrad":"HELT_NEDSATT",
+      "period":{
+        "from":"2016-05-23",
+        "tom":"2016-05-29"
+      }
+    },
+    {
+      "sjukskrivningsgrad":"TRE_FJARDEDEL",
+      "period":{
+        "from":"2016-05-16",
+        "tom":"2016-05-22"
+      }
+    },
+    {
+      "sjukskrivningsgrad":"HALFTEN",
+      "period":{
+        "from":"2016-05-09",
+        "tom":"2016-05-15"
+      }
+    },
+    {
+      "sjukskrivningsgrad":"EN_FJARDEDEL",
+      "period":{
+        "from":"2016-05-01",
+        "tom":"2016-05-08"
+      }
+    }
+  ],
+  "arbetstidsforlaggning":true,
+  "arbetstidsforlaggningMotivering":"Nattetid är bäst",
+  "arbetsresor":true,
+  "prognos":{
+    "typ":"ATER_X_ANTAL_DGR",
+    "dagarTillArbete":"TRETTIO_DGR"
+  },
+  "arbetslivsinriktadeAtgarder":[
+    {
+      "typ":"BESOK_ARBETSPLATS"
+    }
+  ],
+  "arbetslivsinriktadeAtgarderBeskrivning":"Det är alltid bra",
+  "ovrigt":"Övrigt står här",
+  "kontaktMedFk":true,
+  "anledningTillKontakt":"Egentligen inte",
+  "tillaggsfragor":[
+    {
+      "id":"9001",
+      "svar":"42"
+    },
+    {
+      "id":"9002",
+      "svar":"50"
+    }
+  ]
+}
