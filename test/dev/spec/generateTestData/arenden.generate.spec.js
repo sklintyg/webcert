@@ -47,7 +47,7 @@ describe('webcert intyg', function() {
             restTestdataHelper.createWebcertIntyg(intygData).then(function(response){
 
                 function createArende(arendeOptions) {
-                    console.log('Creating arende:' + arendeOptions.amne);
+                    debug('Creating arende:' + arendeOptions.amne);
 
                     arendeOptions.meddelandeId = 'arende-test-' + arendeOptions.amne.toLowerCase() + arendeIndex++;
                     arendeOptions.intygType = intygType;
@@ -55,7 +55,7 @@ describe('webcert intyg', function() {
 
                     var arende = arendeFromJsonFactory.get(arendeOptions);
                     restTestdataHelper.createArende(arende).then(function(response){
-                        console.log('Response code:' + response.statusCode);
+                        debug('Response code:' + response.statusCode);
                     });
 
                     return arendeOptions.meddelandeId;
