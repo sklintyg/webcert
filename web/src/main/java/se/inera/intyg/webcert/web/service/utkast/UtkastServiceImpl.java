@@ -18,27 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.persistence.OptimisticLockException;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -56,10 +41,10 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -80,6 +65,18 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -145,7 +142,7 @@ public class UtkastServiceImpl implements UtkastService {
                 savedUtkast.getIntygsTyp(), savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId());
 
         // Notify stakeholders when a draft has been created
-        sendNotification(savedUtkast, Event.CREATED);
+        sendNotification(savedUtkast, Event.CREATED, getUserReference());
 
         // Create a PDL log for this action
         Vardenhet vardenhet = request.getHosPerson().getVardenhet();
@@ -181,7 +178,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast utkast = getIntygAsDraft(intygsId, intygType);
         if (utkast.getKlartForSigneringDatum() == null) {
-            notificationService.sendNotificationForDraftReadyToSign(utkast);
+            notificationService.sendNotificationForDraftReadyToSign(utkast, getUserReference());
             utkast.setKlartForSigneringDatum(LocalDateTime.now());
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
             saveDraft(utkast);
@@ -236,7 +233,7 @@ public class UtkastServiceImpl implements UtkastService {
         monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
 
         // Notify stakeholders when a draft is deleted
-        sendNotification(utkast, Event.DELETED);
+        sendNotification(utkast, Event.DELETED, getUserReference());
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
@@ -368,7 +365,7 @@ public class UtkastServiceImpl implements UtkastService {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             if (moduleApi.shouldNotify(persistedJson, draftAsJson)) {
                 LOG.debug("*** Detected changes in model, sending notification! ***");
-                sendNotification(utkast, Event.CHANGED);
+                sendNotification(utkast, Event.CHANGED, getUserReference());
             }
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
@@ -426,7 +423,7 @@ public class UtkastServiceImpl implements UtkastService {
                 updateUtkastModel(utkast, updatedModel);
                 saveDraft(utkast);
                 monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
-                sendNotification(utkast, Event.CHANGED);
+                sendNotification(utkast, Event.CHANGED, getUserReference());
             } catch (ModuleException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                         "Patient details on Utkast " + draftId + " could not be updated", e);
@@ -643,17 +640,17 @@ public class UtkastServiceImpl implements UtkastService {
         return savedUtkast;
     }
 
-    private void sendNotification(Utkast utkast, Event event) {
+    private void sendNotification(Utkast utkast, Event event, String reference) {
 
         switch (event) {
         case CHANGED:
-            notificationService.sendNotificationForDraftChanged(utkast);
+            notificationService.sendNotificationForDraftChanged(utkast, reference);
             break;
         case CREATED:
-            notificationService.sendNotificationForDraftCreated(utkast, null);
+            notificationService.sendNotificationForDraftCreated(utkast, reference);
             break;
         case DELETED:
-            notificationService.sendNotificationForDraftDeleted(utkast);
+            notificationService.sendNotificationForDraftDeleted(utkast, reference);
             break;
         default:
             LOG.debug(
@@ -713,6 +710,15 @@ public class UtkastServiceImpl implements UtkastService {
         if (utkast.getPatientEfternamn() != null && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
             utkast.setPatientEfternamn(patient.getEfternamn());
         }
+    }
+
+    private String getUserReference() {
+        if (!webCertUserService.hasAuthenticationContext()) {
+            return null;
+        }
+
+        WebCertUser user = webCertUserService.getUser();
+        return user != null && user.getParameters() != null ? user.getParameters().getReference() : null;
     }
 
     public enum Event {

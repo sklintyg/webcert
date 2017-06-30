@@ -59,6 +59,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     private static final String INTYG_ID = "123";
 
+    private static final String USER_REFERENCE = "some-ref";
+
     private Utkast signedUtkast;
     private Utkast revokedUtkast;
 
@@ -92,7 +94,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         // verify that services were called
         verify(arendeService).closeAllNonClosed(INTYG_ID);
-        verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
+        verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID, USER_REFERENCE);
         verify(logService).logRevokeIntyg(any(LogRequest.class));
         verify(intygRepository).save(any(Utkast.class));
         verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK));
@@ -150,7 +152,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
-        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true));
+        user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
         user.setNamn(person.getFullstandigtNamn());
         user.setHsaId(person.getPersonId());

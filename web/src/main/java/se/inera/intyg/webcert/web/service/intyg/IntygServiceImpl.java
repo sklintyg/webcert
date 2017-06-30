@@ -18,27 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.xml.ws.WebServiceException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -98,6 +85,16 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -521,7 +518,7 @@ public class IntygServiceImpl implements IntygService {
                     objectMapper.writeValueAsString(skickatAv), recipient);
 
             // Notify stakeholders when a certificate is sent
-            notificationService.sendNotificationForIntygSent(intygsId);
+            notificationService.sendNotificationForIntygSent(intygsId, getUserReference());
 
             return IntygServiceResult.OK;
 
@@ -648,7 +645,7 @@ public class IntygServiceImpl implements IntygService {
         monitoringService.logIntygRevoked(intygsId, hsaId, reason);
 
         // First: send a notification informing stakeholders that this certificate has been revoked
-        notificationService.sendNotificationForIntygRevoked(intygsId);
+        notificationService.sendNotificationForIntygRevoked(intygsId, getUserReference());
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.
@@ -699,4 +696,8 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
+    private String getUserReference() {
+        WebCertUser user = webCertUserService.getUser();
+        return user.getParameters() != null ? user.getParameters().getReference() : null;
+    }
 }

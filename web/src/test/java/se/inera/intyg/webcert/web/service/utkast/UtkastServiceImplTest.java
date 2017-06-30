@@ -46,9 +46,9 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
@@ -58,6 +58,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
@@ -96,6 +97,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private static final long UTKAST_VERSION = 1;
     private static final long INTYG_VERSION = 2;
     private static final String UTKAST_ENHETS_ID = "hsa123";
+
+    private static final String USER_REFERENCE = "some-ref";
 
     @Mock
     private UtkastRepository mockUtkastRepository;
@@ -185,7 +188,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).delete(utkast);
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
+        verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class), anyString());
 
         // Assert pdl log
         verify(logService).logDeleteIntyg(any(LogRequest.class));
@@ -262,7 +265,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
 
         // Assert pdl log
         verify(logService).logUpdateIntyg(any(LogRequest.class));
@@ -298,7 +301,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
 
         // Assert that no logs are called
         verifyZeroInteractions(logService);
@@ -447,7 +450,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
 
     }
@@ -539,6 +542,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSetKlarForSigneraStatusMessageSent() {
+        WebCertUser user = createUser();
+        when(userService.hasAuthenticationContext()).thenReturn(true);
+        when(userService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOneByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(utkast);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
@@ -546,7 +552,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
         
-        verify(notificationService).sendNotificationForDraftReadyToSign(utkast);
+        verify(notificationService).sendNotificationForDraftReadyToSign(utkast, USER_REFERENCE);
         verify(mockMonitoringService).logUtkastMarkedAsReadyToSignNotificationSent(INTYG_ID, "luae_fs");
         verify(mockUtkastRepository).save(utkast);
     }
@@ -613,6 +619,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         vardgivare.setVardenheter(Arrays.asList(vardenhet));
         user.setVardgivare(Arrays.asList(vardgivare));
+
+        user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
+        
         return user;
     }
 

@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import java.util.List;
-
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+
+import java.util.List;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -40,32 +40,32 @@ public interface NotificationService {
     /**
      * Utkast signed (HAN2).
      */
-    void sendNotificationForDraftSigned(Utkast utkast);
+    void sendNotificationForDraftSigned(Utkast utkast, String reference);
 
     /**
      * Utkast changed (HAN11).
      */
-    void sendNotificationForDraftChanged(Utkast utkast);
+    void sendNotificationForDraftChanged(Utkast utkast, String reference);
 
     /**
      * Utkast deleted (HAN4).
      */
-    void sendNotificationForDraftDeleted(Utkast utkast);
+    void sendNotificationForDraftDeleted(Utkast utkast, String reference);
 
     /**
      * Utkast marked as ready to sign.
      */
-    void sendNotificationForDraftReadyToSign(Utkast utkast);
+    void sendNotificationForDraftReadyToSign(Utkast utkast, String reference);
 
     /**
      * Signed intyg sent to recipient (HAN3).
      */
-    void sendNotificationForIntygSent(String intygsId);
+    void sendNotificationForIntygSent(String intygsId, String reference);
 
     /**
      * Signed intyg revoked (HAN5).
      */
-    void sendNotificationForIntygRevoked(String intygsId);
+    void sendNotificationForIntygRevoked(String intygsId, String reference);
 
     /**
      * New question received from FK (HAN6).

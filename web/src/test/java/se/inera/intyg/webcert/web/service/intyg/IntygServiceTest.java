@@ -18,39 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.helpers.FileUtils;
@@ -63,9 +31,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -116,6 +81,38 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 /**
  * @author andreaskaltenbach
  */
@@ -127,6 +124,8 @@ public class IntygServiceTest {
     private static final String CERTIFICATE_ID = "123";
     private static final String CERTIFICATE_TYPE = "fk7263";
     private static final String LOGICAL_ADDRESS = "<logicalAddress>";
+
+    private static final String USER_REFERENCE = "some-ref";
 
     private ListCertificatesForCareResponseType listResponse;
     private VardpersonReferens vardpersonReferens;
@@ -233,6 +232,7 @@ public class IntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webcertUser);
         when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.NORMAL.name());
+        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
     }
@@ -750,7 +750,7 @@ public class IntygServiceTest {
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
-        verify(notificationService).sendNotificationForIntygSent(intygId);
+        verify(notificationService).sendNotificationForIntygSent(intygId, USER_REFERENCE);
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
         verify(intygRepository).save(utkastCaptor.capture());
         assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());

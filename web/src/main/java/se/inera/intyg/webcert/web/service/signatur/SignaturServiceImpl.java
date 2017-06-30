@@ -159,7 +159,6 @@ public class SignaturServiceImpl implements SignaturService {
         return finalizeClientSignature(ticketId, rawSignatur, user);
     }
 
-
     private void validateSigningIdentity(WebCertUser user, String rawSignatur) {
 
         try {
@@ -257,7 +256,8 @@ public class SignaturServiceImpl implements SignaturService {
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
 
         // Notify stakeholders when certificate has been signed
-        notificationService.sendNotificationForDraftSigned(utkast);
+        notificationService.sendNotificationForDraftSigned(utkast,
+                user.getParameters() != null ? user.getParameters().getReference() : null);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         // Note that we explictly supplies the WebCertUser here. The BankID finalization is not executed in a HTTP
@@ -319,7 +319,8 @@ public class SignaturServiceImpl implements SignaturService {
                 utkast.getRelationKod());
 
         // Notify stakeholders when a draft has been signed
-        notificationService.sendNotificationForDraftSigned(utkast);
+        notificationService.sendNotificationForDraftSigned(utkast,
+                user.getParameters() != null ? user.getParameters().getReference() : null);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logSignIntyg(logRequest);

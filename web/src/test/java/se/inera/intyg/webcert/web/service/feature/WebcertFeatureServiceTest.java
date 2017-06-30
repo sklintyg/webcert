@@ -18,6 +18,26 @@
  */
 package se.inera.intyg.webcert.web.service.feature;
 
+import com.google.common.base.Joiner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.env.Environment;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.infra.security.common.service.PilotService;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,28 +49,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.core.env.Environment;
-
-import com.google.common.base.Joiner;
-
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.infra.security.common.service.PilotService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebcertFeatureServiceTest {
@@ -109,7 +107,7 @@ public class WebcertFeatureServiceTest {
         featureService.initModuleFeatures(featuresMap);
 
         assertFalse(featuresMap.isEmpty());
-        assertEquals(18, featuresMap.size());
+        assertEquals(16, featuresMap.size());
 
         assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1)));
         assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2)));
@@ -161,7 +159,7 @@ public class WebcertFeatureServiceTest {
         featureService.setFeatures(featureProps);
         featureService.initFeaturesMap();
 
-        assertEquals(29, featureService.getFeaturesMap().size());
+        assertEquals(27, featureService.getFeaturesMap().size());
 
         assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
         assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST));

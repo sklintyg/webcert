@@ -26,7 +26,19 @@ import java.util.List;
 
 public interface WebCertUserService {
 
-     WebCertUser getUser();
+    /**
+     * Checks wether the currently executing thread has a user Principal, e.g. through
+     * {@link org.springframework.security.core.context.SecurityContextHolder#getContext}.
+     *
+     * Typically, all requests from the frontend for a protected resource will have a Principal while
+     * unsecured and threads invoked by a service will not, such as CreateDraftCertificate.
+     *
+     * @return
+     *      true if there is an available user Principal, false if not.
+     */
+    boolean hasAuthenticationContext();
+
+    WebCertUser getUser();
 
     /**
      * Stores (creates or updates) the given key-value pair for current user. Stores in DB and updates the session.
