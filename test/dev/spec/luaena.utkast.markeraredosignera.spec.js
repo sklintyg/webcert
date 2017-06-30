@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeNA.utkast;
 var restUtil = wcTestTools.restUtil;
 
-fdescribe('Create partially complete luae_na utkast and mark as ready to sign', function() {
+describe('Create partially complete luae_na utkast and mark as ready to sign', function() {
 
     var utkastId = null,
         data = null;
