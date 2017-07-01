@@ -68,8 +68,6 @@ public class NotificationWSClient {
             break;
         case OK:
             break;
-        default:
-            throw new PermanentException("Unhandled result code type: " + result.getResultCode());
         }
 
     }
