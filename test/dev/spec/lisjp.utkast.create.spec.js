@@ -151,7 +151,13 @@ describe('Create and Sign lisjp utkast', function() {
             });
             it('angeTillaggsfragor', function() {
                 UtkastPage.angeTillaggsfragor(data.tillaggsfragor)
-            })
+            });
+            it('angeSmittskydd', function() {
+                UtkastPage.angeSmittskydd(true);
+            });
+            it('ta bort Smittskydd', function() {
+                UtkastPage.angeSmittskydd(true);
+            });
         });
 
         it('Signera intyget', function() {

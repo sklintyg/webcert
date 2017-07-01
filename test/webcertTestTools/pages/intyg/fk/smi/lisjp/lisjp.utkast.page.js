@@ -257,15 +257,13 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         var atgarderEL = this.atgarder;
         var beskrivningEL = this.arbetslivsinriktadeAtgarderBeskrivning;
         var fillInAtgardBeskrivningar = function(atgarder) {
-            var promisesArr = [];
+            var beskrivning = '';
             for (var i = 0; i < atgarder.length; i++) {
                 if (atgarder[i].beskrivning) {
-                    promisesArr.push(
-                        beskrivningEL.sendKeys(atgarder[i].beskrivning + '\n')
-                    );
+                    beskrivning += atgarder[i].beskrivning + '\n';
                 }
             }
-            return Promise.all(promisesArr);
+            return beskrivningEL.sendKeys(beskrivning);
         };
 
         var atgarderNamn = atgarder.map(function(obj) {
