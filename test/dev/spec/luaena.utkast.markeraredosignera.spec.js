@@ -58,8 +58,10 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                 browser.ignoreSynchronization = true;
                 specHelper.setUserRole("VARDADMINISTRATOR").then(function() {
                     specHelper.setUserOrigin("DJUPINTEGRATION").then(function() {
-                        browser.ignoreSynchronization = false;
-                        UtkastPage.get(utkastId);
+                        specHelper.setUserRef("some-reference").then(function() {
+                            browser.ignoreSynchronization = false;
+                            UtkastPage.get(utkastId);
+                        });
                     });
                 });
             });
@@ -82,7 +84,7 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
             });
 
             it('Gör REST-anrop till notification-stubben, tillse att vår post finns med KFSIGN', function() {
-                console.log("sleeping a while to allow changes to have taken effect in backend before checking notification statuses");
+                debug("sleeping a while to allow changes to have taken effect in backend before checking notification statuses");
                 browser.sleep(2000).then(
                         function() {
                             restUtil.queryNotificationStub().then(
@@ -98,6 +100,20 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                                         }
                                         fail('No matching status message was found, failing test!!');
                                     });
+
+                            restUtil.queryNotificationStub().then(
+                                function(data) {
+
+                                    // Detta borde kunna göras snyggare med jsonPath...
+                                    for (var a = 0; a < data.body.length; a++) {
+                                        var statusUppdatering = data.body[a];
+                                        if (statusUppdatering.intyg['intygs-id'].extension === utkastId &&
+                                            statusUppdatering.ref === 'some-reference') {
+                                            return true;
+                                        }
+                                    }
+                                    fail('No matching status message was found, failing test!!');
+                                });
                         });
 
             });

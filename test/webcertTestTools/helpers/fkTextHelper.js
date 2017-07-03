@@ -41,7 +41,7 @@ module.exports = {
         var parser = new xml2js.Parser();
         //cwd is expected to be webcert/test
         var fullPath = path.join(process.cwd(), '../src/main/resources/texts/' + textXmlFile);
-        console.log('About to load fk xml text file:' + fullPath);
+        debug('About to load fk xml text file:' + fullPath);
         fs.readFile(fullPath, function(err, data) {
 
             if (err) {
@@ -76,7 +76,7 @@ module.exports = {
                     });
                 }
 
-                console.log('Successfully parsed ' + Object.keys(textArray).length + ' texts from file ' + textXmlFile);
+                debug('Successfully parsed ' + Object.keys(textArray).length + ' texts from file ' + textXmlFile);
                 deferred.fulfill(textArray);
             });
         });

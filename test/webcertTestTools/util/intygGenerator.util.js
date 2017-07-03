@@ -234,9 +234,9 @@ function overridetsBasDefaults(intyg, intygOptions) {
 
     intyg = addBaserasPaDates(intyg, intygOptions.issued);
 
-    console.log('Inside intygOptions.intygType === ' + intygOptions.intygType);
-    console.log('höger öga utan korrekt: ' + intygOptions.intygAvser.syn.hogerOga.utanKorrektion);
-    console.log('PatientId: ' + intygOptions.grundData.patient.personId);
+    debug('Inside intygOptions.intygType === ' + intygOptions.intygType);
+    debug('höger öga utan korrekt: ' + intygOptions.intygAvser.syn.hogerOga.utanKorrektion);
+    debug('PatientId: ' + intygOptions.grundData.patient.personId);
 
 }
 

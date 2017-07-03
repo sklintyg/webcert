@@ -106,6 +106,14 @@ exports.config = {
             console.log(text);
         };
 
+        var debug = false;
+
+        global.debug = function(text){
+            if (debug) {
+                console.log(text);
+            }
+        };
+
         var reporters = require('jasmine-reporters');
         jasmine.getEnv().addReporter(
             new reporters.JUnitXmlReporter({

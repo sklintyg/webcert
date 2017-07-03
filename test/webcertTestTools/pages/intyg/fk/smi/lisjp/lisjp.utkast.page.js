@@ -23,9 +23,11 @@
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
 var pageHelpers = require('../../../../pageHelper.util.js');
 
-var LisuUtkast = BaseSmiUtkast._extend({
+var LisjpUtkast = BaseSmiUtkast._extend({
     init: function init() {
         init._super.call(this);
+
+        this.smittskydd = element(by.id('form_avstangningSmittskydd')).element(by.css('input[type=checkbox]'));
 
         this.baseratPa = {
             minUndersokningAvPatienten: {
@@ -59,6 +61,10 @@ var LisuUtkast = BaseSmiUtkast._extend({
         this.konsekvenser = {
             funktionsnedsattning: element(by.id('funktionsnedsattning')),
             aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
+        };
+        this.medicinskbehandling = {
+            pagaende: element(by.id('pagaendeBehandling')),
+            planerad: element(by.id('planeradBehandling'))
         };
         this.sjukskrivning = {
             100: {
@@ -138,38 +144,23 @@ var LisuUtkast = BaseSmiUtkast._extend({
         this.arendeQuestion.topic.element(by.cssContainingText('option', amne)).click();
     },
     get: function get(intygId) {
-        get._super.call(this, 'lisu', intygId);
+        get._super.call(this, 'lisjp', intygId);
     },
     isAt: function isAt() {
         return isAt._super.call(this);
     },
-    getTillaggsfraga: function(i) {
-        return element(by.id('form_tillaggsfragor_' + i + '__svar'));
+    angeAktivitetsbegransning: function(text) {
+        return this.konsekvenser.aktivitetsbegransning.sendKeys(text);
     },
-    getTillaggsfragaText: function(i) {
-        return element(by.css('#form_tillaggsfragor_' + i + '__svar label')).getText();
+    angeFunktionsnedsattning: function(text) {
+        return this.konsekvenser.funktionsnedsattning.sendKeys(text);
     },
-    getTillaggsfragaSvar: function(i) {
-        return element(by.css('#form_tillaggsfragor_' + i + '__svar textarea')).getAttribute('value');
-    },
-    angeBaserasPa: function(intygetBaserasPa) {
-        var promisesArr = [];
-        if (intygetBaserasPa.undersokning) {
-            promisesArr.push(this.baseratPa.minUndersokningAvPatienten.datum.sendKeys(intygetBaserasPa.undersokning));
-        }
-        if (intygetBaserasPa.telefonkontakt) {
-            promisesArr.push(this.baseratPa.telefonkontakt.datum.sendKeys(intygetBaserasPa.telefonkontakt));
-        }
-        if (intygetBaserasPa.journaluppgifter) {
-            promisesArr.push(this.baseratPa.journaluppgifter.datum.sendKeys(intygetBaserasPa.journaluppgifter));
-        }
-        if (intygetBaserasPa.annat) {
-            var annatEl = this.baseratPa.annat;
-            promisesArr.push(annatEl.datum.sendKeys(intygetBaserasPa.annat).then(function() {
-                return annatEl.beskrivning.sendKeys(intygetBaserasPa.annatBeskrivning);
-            }));
-        }
-        return Promise.all(promisesArr);
+    angeMedicinskBehandling: function(behandling) {
+        var fn = this.medicinskbehandling;
+        return Promise.all([
+            fn.pagaende.sendKeys(behandling.pagaende),
+            fn.planerad.sendKeys(behandling.planerad)
+        ]);
     },
     angeArbetsformaga: function(arbetsformaga) {
         var el25 = this.sjukskrivning['25'];
@@ -178,6 +169,39 @@ var LisuUtkast = BaseSmiUtkast._extend({
         var el100 = this.sjukskrivning['100'];
 
 
+        var promisesArr = [];
+
+        if (arbetsformaga.nedsattMed25) {
+            promisesArr.push(el25.fran.sendKeys(arbetsformaga.nedsattMed25.from)
+                .then(function() {
+                    return el25.till.sendKeys(arbetsformaga.nedsattMed25.tom);
+
+                })
+            );
+        }
+        if (arbetsformaga.nedsattMed50) {
+            promisesArr.push(el50.fran.sendKeys(arbetsformaga.nedsattMed50.from)
+                .then(function() {
+                    return el50.till.sendKeys(arbetsformaga.nedsattMed50.tom);
+                })
+            );
+        }
+        if (arbetsformaga.nedsattMed75) {
+            promisesArr.push(el75.fran.sendKeys(arbetsformaga.nedsattMed75.from)
+                .then(function() {
+                    return el75.till.sendKeys(arbetsformaga.nedsattMed75.tom);
+                }));
+        }
+        if (arbetsformaga.nedsattMed100) {
+            promisesArr.push(el100.fran.sendKeys(arbetsformaga.nedsattMed100.from)
+                .then(function() {
+                    return el100.till.sendKeys(arbetsformaga.nedsattMed100.tom);
+                })
+            );
+        }
+        return Promise.all(promisesArr);
+
+        /*
         return Promise.all([
             el25.fran.clear(),
             el50.fran.clear(),
@@ -188,42 +212,21 @@ var LisuUtkast = BaseSmiUtkast._extend({
             el75.till.clear(),
             el100.till.clear()
         ]).then(function() {
-            var promisesArr = [];
 
-            if (arbetsformaga.nedsattMed25) {
-                promisesArr.push(el25.fran.sendKeys(arbetsformaga.nedsattMed25.from)
-                    .then(function() {
-                        return el25.till.sendKeys(arbetsformaga.nedsattMed25.tom);
 
-                    })
-                );
-            }
-            if (arbetsformaga.nedsattMed50) {
-                promisesArr.push(el50.fran.sendKeys(arbetsformaga.nedsattMed50.from)
-                    .then(function() {
-                        return el50.till.sendKeys(arbetsformaga.nedsattMed50.tom);
-                    })
-                );
-            }
-            if (arbetsformaga.nedsattMed75) {
-                promisesArr.push(el75.fran.sendKeys(arbetsformaga.nedsattMed75.from)
-                    .then(function() {
-                        return el75.till.sendKeys(arbetsformaga.nedsattMed75.tom);
-                    }));
-            }
-            if (arbetsformaga.nedsattMed100) {
-                promisesArr.push(el100.fran.sendKeys(arbetsformaga.nedsattMed100.from)
-                    .then(function() {
-                        return el100.till.sendKeys(arbetsformaga.nedsattMed100.tom);
-                    })
-                );
-            }
-            return Promise.all(promisesArr);
-        });
+
+        });*/
     },
     angeResorTillArbete: function(resor) {
         if (resor) {
             return this.sjukskrivning.arbetsresor.sendKeys(protractor.Key.SPACE);
+        } else {
+            return Promise.resolve();
+        }
+    },
+    angeSmittskydd: function(value) {
+        if (value) {
+            return this.smittskydd.sendKeys(protractor.Key.SPACE);
         } else {
             return Promise.resolve();
         }
@@ -254,15 +257,13 @@ var LisuUtkast = BaseSmiUtkast._extend({
         var atgarderEL = this.atgarder;
         var beskrivningEL = this.arbetslivsinriktadeAtgarderBeskrivning;
         var fillInAtgardBeskrivningar = function(atgarder) {
-            var promisesArr = [];
+            var beskrivning = '';
             for (var i = 0; i < atgarder.length; i++) {
                 if (atgarder[i].beskrivning) {
-                    promisesArr.push(
-                        beskrivningEL.sendKeys(atgarder[i].beskrivning + '\n')
-                    );
+                    beskrivning += atgarder[i].beskrivning + '\n';
                 }
             }
-            return Promise.all(promisesArr);
+            return beskrivningEL.sendKeys(beskrivning);
         };
 
         var atgarderNamn = atgarder.map(function(obj) {
@@ -303,4 +304,4 @@ var LisuUtkast = BaseSmiUtkast._extend({
 
 });
 
-module.exports = new LisuUtkast();
+module.exports = new LisjpUtkast();

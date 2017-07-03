@@ -34,7 +34,7 @@ xdescribe('Generate fk intyg', function() {
             'lakare': true,
             'forskrivarKod': '2481632'
         }).then(function(data) {
-            console.log('Login OK');
+            debug('Login OK');
         });
 
         var intygOptions = {

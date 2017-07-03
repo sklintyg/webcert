@@ -50,6 +50,11 @@ module.exports = {
         return browser.get('authtestability/user/origin/' + origin);
     },
 
+    // For DJUPINTEGRERAD, allows us to specify a reference through testability  API.
+    setUserRef: function(ref) {
+        return browser.get('authtestability/user/parameters/ref/' + ref);
+    },
+
     waitForAngularTestability: function() {
         var clientScript =
             'var asyncCallback = arguments[2];\n' +
@@ -104,6 +109,9 @@ module.exports = {
         }
         if (intygType === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
             utkastPage = pages.intyg.luaeNA.utkast;
+        }
+        if (intygType === 'Läkarintyg för sjukpenning') {
+            utkastPage = pages.intyg.lisjp.utkast;
         }
 
         expect(utkastPage.isAt()).toBe(true);

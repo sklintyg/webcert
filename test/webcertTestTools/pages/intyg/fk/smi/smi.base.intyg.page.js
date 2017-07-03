@@ -49,6 +49,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         this.baseratPa = {
             minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),
+            telefonkontakt: element(by.id('telefonkontaktMedPatienten')),
             anhorigsBeskrivning: element(by.id('anhorigsBeskrivningAvPatienten')),
             annat: element(by.id('annatGrundForMU')),
             annatBeskrivning: element(by.id('annatGrundForMUBeskrivning')),

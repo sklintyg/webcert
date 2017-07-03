@@ -110,8 +110,6 @@ var LuaefsUtkast = FkBaseUtkast._extend({
                 checkbox: element(by.id('formly_1_date_kannedomOmPatient_8'))
             }
         };
-        this.kontaktMedFK = element(by.id('form_kontaktMedFk')).element(by.css('input'));
-        this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
     },
     angeBaseratPa: function(baseratPa) {
         var promiseArr = [];

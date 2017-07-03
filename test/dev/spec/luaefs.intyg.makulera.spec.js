@@ -58,7 +58,7 @@ describe('Validera makulering av luae_fs Intyg', function() {
         });
 
         it('check intyg is makulerat', function() {
-            console.log("sleeping a while to allow changes to have taken effect in backend before checking revoked status");
+            debug("sleeping a while to allow changes to have taken effect in backend before checking revoked status");
             browser.sleep(2000).then(function() {
                 expect(isIntygRevoked(intygsId)).toBeTruthy();
                 expect(IntygPage.makulera.btn.isPresent()).toBeFalsy();

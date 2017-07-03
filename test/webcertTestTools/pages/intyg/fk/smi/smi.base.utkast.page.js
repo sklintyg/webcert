@@ -70,7 +70,7 @@ function checkAndSendTextToForm(checkboxEL, textEL, text) {
         return browser.sleep(1000).then(function() {
             return textEL.sendKeys(text)
                 .then(function() {
-                    console.log('OK - Angav: ' + text);
+                    debug('OK - Angav: ' + text);
                 }, function(reason) {
                     throw ('FEL - Angav: ' + text + ' ' + reason);
                 });
@@ -81,7 +81,7 @@ function checkAndSendTextToForm(checkboxEL, textEL, text) {
 function sendTextToForm(textEL, text) {
     return textEL.sendKeys(text)
         .then(function() {
-            console.log('OK - Angav: ' + text);
+            debug('OK - Angav: ' + text);
         }, function(reason) {
             throw ('FEL - Angav: ' + text + ' ' + reason);
         });
@@ -217,7 +217,9 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         }
         if (baseratPa.journaluppgifter) {
             promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.journaluppgifter.datum, baseratPa.journaluppgifter));
-
+        }
+        if (baseratPa.telefonkontakt) {
+            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.telefonkontakt.datum, baseratPa.telefonkontakt));
         }
         if (baseratPa.anhorigsBeskrivning) {
             promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning));
