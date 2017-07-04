@@ -18,28 +18,28 @@
  */
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
-import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 /**
  * Created by marced on 2016-11-30.
  */
 public class UpdatePatientOnDraftRequest {
-    private Patient newPatientDetails;
+    private Personnummer personnummer;
     private String draftId;
     private long version;
 
-    public UpdatePatientOnDraftRequest(Patient newPatientDetails, String draftId, long version) {
-        this.newPatientDetails = newPatientDetails;
+    public UpdatePatientOnDraftRequest(Personnummer personnummer, String draftId, long version) {
+        this.personnummer = personnummer;
         this.draftId = draftId;
         this.version = version;
     }
 
-    public Patient getNewPatientDetails() {
-        return newPatientDetails;
+    public Personnummer getPersonnummer() {
+        return personnummer;
     }
 
-    public void setNewPatientDetails(Patient newPatientDetails) {
-        this.newPatientDetails = newPatientDetails;
+    public void setPersonnummer(Personnummer personnummer) {
+        this.personnummer = personnummer;
     }
 
     public String getDraftId() {

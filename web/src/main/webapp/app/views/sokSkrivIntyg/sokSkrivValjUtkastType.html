@@ -26,7 +26,7 @@
                   </div>
                   <div class="col-md-8" ng-if="patientModel.avliden">
                     <span class="mark-webcert-red">OBS! Patienten har avlidit.</span><br>
-                    <span class="italic">Du kan inte skapa ett nytt intyg för en avliden patient.</span>
+                    <span class="italic">Du kan enbart skapa Dödsbevis och Dödsorsaksintyg för en avliden patient. (FIXA DENNA TEXT)</span>
                   </div>
                 </div>
 
@@ -37,9 +37,10 @@
               <div class="bottom-padding-medium">
                 <div class="form-group">
                   <label for="intygType" class="control-label">Skriv nytt intyg</label>
-                  <div ng-show="!patientModel.sekretessmarkering">
+                  <!-- <div ng-show="!patientModel.sekretessmarkering">  -->
+                  <div>
                     <select id="intygType" class="form-control" name="intygType" ng-model="intygTypeModel.intygType"
-                            ng-options="type.id as type.label for type in intygTypeModel.intygTypes"
+                            ng-options="type.id as type.label for type in intygTypeModel.userIntygTypes"
                             wc-focus-me="viewState.focusFirstInput"
                             ng-disabled="patientModel.avliden"></select>
                     <span id="fortsattBtn">
@@ -48,6 +49,7 @@
                       </button>
                     </span>
                   </div>
+                <!--  </div>  -->
                 </div>
                 <div ng-if="patientModel.sekretessmarkering" class="form-group">
                   <div class="alert alert-warning col-lg-7" id="sekretessmarkering">

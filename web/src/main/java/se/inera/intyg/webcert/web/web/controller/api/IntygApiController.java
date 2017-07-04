@@ -37,6 +37,8 @@ import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -89,6 +91,9 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
@@ -103,6 +108,15 @@ public class IntygApiController extends AbstractApiController {
     public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummerIn) {
         Personnummer personNummer = new Personnummer(personNummerIn);
         LOG.debug("Retrieving intyg for person {}", personNummer.getPnrHash());
+
+
+        // INTYG-4086 (epic) - make sure only users with HANTERA_SEKRETESSMARKERAD_PATIENT can list intyg for patient
+        // with sekretessmarkering.
+        SekretessStatus patientSekretess = patientDetailsResolver.getSekretessStatus(personNummer);
+        authoritiesValidator.given(getWebCertUserService().getUser()).privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                patientSekretess == SekretessStatus.TRUE)
+                .orThrow();
+
 
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
 

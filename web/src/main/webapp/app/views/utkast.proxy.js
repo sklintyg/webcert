@@ -104,6 +104,40 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             }
 
             /**
+             * Load list of all certificates types
+             */
+            function _getUtkastTypesForPatient(patientId, onSuccess) {
+                var restPath = '/api/modules/map/' + patientId;
+                $http.get(restPath).success(function(data) {
+                    $log.debug('got data:', data);
+                    var sortValue = 0;
+                    var types = [
+                        { sortValue: sortValue++, id: 'default', label: messageService.getProperty('label.default-intyg-type') }
+                    ];
+                    for (var i = 0; i < data.length; i++) {
+                        var m = data[i];
+
+                        var options = {
+                            feature: featureService.features.HANTERA_INTYGSUTKAST,
+                            authority: UserModel.privileges.SKRIVA_INTYG,
+                            requestOrigin: UserModel.user.origin,
+                            intygstyp: m.id};
+
+                        // Only add type if feature is active and user has global intygTyp access through their role.
+                        if (authorityService.isAuthorityActive(options)) {
+                            types.push({sortValue: sortValue++, id: m.id, label: m.label, detailedDescription: m.detailedDescription, fragaSvarAvailable: m.fragaSvarAvailable});
+                        }
+                    }
+                    onSuccess(types);
+                }).error(function(data, status) {
+                    $log.error('error ' + status);
+                    // if (onError) {
+                    //     onError();
+                    // }
+                });
+            }
+
+            /**
              * Get intyg type data cached
              */
             function _getUtkastType(intygType, onSuccess) {
@@ -171,6 +205,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             return {
                 createUtkast: _createUtkast,
                 getUtkastTypesCachedUnfiltered: _getUtkastTypesCachedUnfiltered,
+                getUtkastTypesForPatient: _getUtkastTypesForPatient,
                 getUtkastTypes: _getUtkastTypes,
                 getUtkastType: _getUtkastType,
                 getUtkastList: _getUtkastList,

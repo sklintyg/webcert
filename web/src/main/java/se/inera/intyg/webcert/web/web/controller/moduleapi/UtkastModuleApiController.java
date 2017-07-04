@@ -24,12 +24,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
@@ -96,6 +98,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private WebCertUserService userService;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -109,14 +114,25 @@ public class UtkastModuleApiController extends AbstractApiController {
     public Response getDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @Context HttpServletRequest request) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
-
         LOG.debug("Retrieving Intyg with id {} and type {}", intygsId, intygsTyp);
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+        // INTYG-4086, overwrite patient name details
+        Patient resolvedPatient = patientDetailsResolver
+                .resolvePatient(utkast
+                        .getPatientPersonnummer(),
+                        intygsTyp);
+
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, resolvedPatient.isSekretessmarkering())
+                .orThrow();
+
+        // INTYG-4086, is this correct?
+        utkast.setPatientFornamn(resolvedPatient.getFornamn());
+        utkast.setPatientEfternamn(resolvedPatient.getEfternamn());
+        utkast.setPatientMellannamn(resolvedPatient.getMellannamn());
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -132,6 +148,9 @@ public class UtkastModuleApiController extends AbstractApiController {
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
         draftHolder.setRelations(relations1);
         draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
+
+        draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
+        draftHolder.setAvliden(resolvedPatient.isAvliden());
 
         return Response.ok(draftHolder).build();
     }

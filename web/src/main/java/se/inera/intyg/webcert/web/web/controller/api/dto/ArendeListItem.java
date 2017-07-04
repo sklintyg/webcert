@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import java.time.LocalDateTime;
-
 import se.inera.intyg.webcert.persistence.model.Status;
+
+import java.time.LocalDateTime;
 
 public class ArendeListItem {
 
@@ -37,6 +37,8 @@ public class ArendeListItem {
     private String amne;
     private String enhetsnamn;
     private String vardgivarnamn;
+    private boolean sekretessmarkering;
+    private boolean avliden;
 
     public String getMeddelandeId() {
         return meddelandeId;
@@ -142,4 +144,19 @@ public class ArendeListItem {
         this.paminnelse = paminnelse;
     }
 
+    public boolean isSekretessmarkering() {
+        return sekretessmarkering;
+    }
+
+    public void setSekretessmarkering(boolean sekretessmarkering) {
+        this.sekretessmarkering = sekretessmarkering;
+    }
+
+    public boolean isAvliden() {
+        return avliden;
+    }
+
+    public void setAvliden(boolean avliden) {
+        this.avliden = avliden;
+    }
 }

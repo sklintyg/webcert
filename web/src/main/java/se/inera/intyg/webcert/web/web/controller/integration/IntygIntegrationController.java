@@ -18,9 +18,27 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.base.Strings;
+import io.swagger.annotations.Api;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -33,31 +51,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -199,9 +195,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         if (isUtkast) {
             // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
-            ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn, fornamn, mellannamn, efternamn,
-                    postadress, postnummer,
-                    postort);
+            ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn);
         }
 
         user.setParameters(new IntegrationParameters(StringUtils.trimToNull(reference), responsibleHospName, alternatePatientSSn, fornamn,
@@ -236,46 +230,18 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * @param draftId
      * @param draftVersion
      * @param alternatePatientSSn
-     * @param fornamn
-     * @param mellannamn
-     * @param efternamn
-     * @param postadress
-     * @param postnummer
-     * @param postort
      */
-    private void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, String alternatePatientSSn,
-            String fornamn, String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
+    private void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, String alternatePatientSSn) {
 
         // To be allowed to update utkast, we need to have the same authority as when saving a draft..
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsType)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
-
-        // 1. Create patient info based on what the journal system supplied
-        Patient patient = new Patient();
-        patient.setPersonId(new Personnummer(alternatePatientSSn));
-
-        // INTYG-3329: All but Legacy Fk7263 drafts should update all patient properties
-        if (!Fk7263EntryPoint.MODULE_ID.equals(intygsType)) {
-            patient.setFornamn(fornamn);
-            patient.setMellannamn(mellannamn);
-            patient.setEfternamn(efternamn);
-
-            if (Strings.nullToEmpty(patient.getMellannamn()).trim().isEmpty()) {
-                patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getEfternamn());
-            } else {
-                patient.setFullstandigtNamn(patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn());
-            }
-
-            patient.setPostadress(postadress);
-            patient.setPostnummer(postnummer);
-            patient.setPostort(postort);
-        }
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(patient, draftId, draftVersion);
+        
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(new Personnummer(alternatePatientSSn), draftId, draftVersion);
 
         utkastService.updatePatientOnDraft(request);
-
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, boolean isUtkast) {

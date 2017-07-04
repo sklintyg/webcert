@@ -18,30 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
@@ -49,6 +33,7 @@ import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -76,12 +61,27 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
+
+import javax.xml.bind.JAXBException;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -134,6 +134,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Autowired
     private ArendeDraftService arendeDraftService;
+
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
 
     @Override
     public Arende processIncomingMessage(Arende arende) {
@@ -353,18 +356,51 @@ public class ArendeServiceImpl implements ArendeService {
         int totalResultsCount = arendeRepository.filterArendeCount(filter) + fsResults.getTotalCount();
 
         results.addAll(fsResults.getResults());
+
+        results = results.stream()
+                .map(ali -> addSekretessMarkering(ali))
+                .collect(Collectors.toList());
+
+        // TODO TODO TODO INTYG-4086/INTYG-4231 and friends:  The counts are incorrect for NON-lakare. The sekretessmarkade that's
+        // been filtered out doesn't add up correctly in the totalResults etc.
+        int numberHavingSekretessMarkering = new Long(results.stream().filter(ali -> ali.isSekretessmarkering()).count()).intValue();
+
+        if (!user.isLakare()) {
+            results = results.stream()
+                    .filter(ali -> !ali.isSekretessmarkering())
+                    .collect(Collectors.toList());
+        }
+
         results.sort(Comparator.comparing(ArendeListItem::getReceivedDate).reversed());
 
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
+        if (user.isLakare()) {
+            response.setTotalCount(totalResultsCount);
+        } else {
+            response.setTotalCount(totalResultsCount - numberHavingSekretessMarkering);
+        }
+
+        
         if (originalStartFrom >= results.size()) {
             response.setResults(new ArrayList<>());
         } else {
             response.setResults(results.subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size())));
         }
-        response.setTotalCount(totalResultsCount);
 
         return response;
     }
+
+    private ArendeListItem addSekretessMarkering(ArendeListItem ali) {
+        Personnummer patientPersonnummer = new Personnummer(ali.getPatientId());
+        if (patientDetailsResolver.getSekretessStatus(patientPersonnummer) == SekretessStatus.TRUE) {
+            ali.setSekretessmarkering(true);
+        }
+        return ali;
+    }
+
+//    private boolean sekretessMarkeringAllowed(ArendeListItem ali, WebCertUser user) {
+//        return user.isLakare() || !ali.getSekretessStatus();
+//    }
 
     @Override
     @Transactional

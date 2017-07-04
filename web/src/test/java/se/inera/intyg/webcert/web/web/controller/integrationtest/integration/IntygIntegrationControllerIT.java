@@ -18,25 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.core.IsEqual.equalTo;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.imageio.metadata.IIOMetadataController;
-import javax.servlet.http.HttpServletResponse;
-
+import com.jayway.restassured.RestAssured;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
-
-import com.jayway.restassured.RestAssured;
-
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * Created by marced on 16/12/15.
@@ -208,7 +205,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
                 .body("content.grundData.patient.fornamn", equalTo(queryParams.get("fornamn")))
                 .body("content.grundData.patient.efternamn", equalTo(queryParams.get("efternamn")))
-                .body("content.grundData.patient.fullstandigtNamn", equalTo("nyaförnamnet nyamellannamnet nyaefternamnet"))
+                .body("content.grundData.patient.fullstandigtNamn", isEmptyOrNullString()) // INTYG-4086
                 .body("content.grundData.patient.postadress", equalTo(queryParams.get("postadress")))
                 .body("content.grundData.patient.postnummer", equalTo(queryParams.get("postnummer")))
                 .body("content.grundData.patient.postort", equalTo(queryParams.get("postort")));
@@ -277,7 +274,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
                 .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
                 .body("content.grundData.patient.fullstandigtNamn",
-                        equalTo(DEFAULT_UTKAST_PATIENT_FORNAMN + " " + DEFAULT_UTKAST_PATIENT_EFTERNAMN));
+                        isEmptyOrNullString());    // INTYG-4086, ta bort namn.
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)

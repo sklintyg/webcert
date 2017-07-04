@@ -30,7 +30,6 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.common.support.model.converter.util.WebcertModelFactoryUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -39,8 +38,10 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -113,6 +114,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
 
+
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
     public int countFilterIntyg(UtkastFilter filter) {
@@ -134,6 +136,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         CreateNewDraftHolder draftRequest = createModuleRequest(request);
 
+        // TODO INTYG-4086: Use PatientDetailsResolver to update patient.
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
@@ -413,13 +416,16 @@ public class UtkastServiceImpl implements UtkastService {
 
         final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp());
 
+        // INTYG-4086
+        Personnummer personId = request.getPersonnummer();
         Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
-        Patient newPatient = WebcertModelFactoryUtil.buildNewEffectivePatient(draftPatient, request.getNewPatientDetails());
+        if (personId != null
+                && (Personnummer.createValidatedPersonnummerWithDash(personId).isPresent() || SamordningsnummerValidator.isSamordningsNummer(personId))
+                && !personId.getPnrHash().equals(draftPatient.getPersonId().getPnrHash())) {
 
-        if (!draftPatient.equals(newPatient)) {
-            LOG.debug("Updated patient detected - about to update draft {}", draftId);
+            draftPatient.setPersonId(personId);
             try {
-                String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), newPatient);
+                String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), draftPatient);
                 updateUtkastModel(utkast, updatedModel);
                 saveDraft(utkast);
                 monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
@@ -428,10 +434,36 @@ public class UtkastServiceImpl implements UtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                         "Patient details on Utkast " + draftId + " could not be updated", e);
             }
-
         } else {
             LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
         }
+
+//
+//
+//
+//        if(personId == null || (!Personnummer.createValidatedPersonnummerWithDash(personId).isPresent() && !SamordningsnummerValidator.isSamordningsNummer(personId))) {
+//            // Do nothing
+//        } else {
+//            draftPatient.setPersonId(personId);
+//        }
+//        //Patient newPatient = WebcertModelFactoryUtil.buildNewEffectivePatient(draftPatient, request.getNewPatientDetails());
+//
+//        if (!draftPatient.equals(newPatient)) {
+//            LOG.debug("Updated patient detected - about to update draft {}", draftId);
+//            try {
+//                String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), newPatient);
+//                updateUtkastModel(utkast, updatedModel);
+//                saveDraft(utkast);
+//                monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
+//                sendNotification(utkast, Event.CHANGED, getUserReference());
+//            } catch (ModuleException e) {
+//                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+//                        "Patient details on Utkast " + draftId + " could not be updated", e);
+//            }
+//
+//        } else {
+//            LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
+//        }
 
     }
 
@@ -549,7 +581,7 @@ public class UtkastServiceImpl implements UtkastService {
             LOG.warn("Utkast '{}' of type {} was not found", intygsId, intygType);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Utkast could not be found");
         }
-
+        
         return utkast;
     }
 

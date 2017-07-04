@@ -24,11 +24,18 @@ import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -53,6 +60,14 @@ public class ModuleApiController extends AbstractApiController {
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+
     /**
      * Serving module configuration for Angular bootstrapping.
      *
@@ -72,6 +87,32 @@ public class ModuleApiController extends AbstractApiController {
         });
         return Response.ok(moduleRegistry.listAllModules()).build();
     }
+
+    /**
+     * Serving module configuration populating selectors based on user.
+     *
+     * @return a JSON object
+     */
+    @GET
+    @Path("/map/{patientId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getModulesMap(@PathParam("patientId") String patientId) {
+        SekretessStatus sekretessmarkering = patientDetailsResolver.getSekretessStatus(new Personnummer(patientId));
+        List<IntygModule> intygModules = moduleRegistry.listAllModules();
+        if (sekretessmarkering == SekretessStatus.TRUE) {
+
+            //List<String> intygsTyper = commonAuthoritiesResolver.getSekretessmarkeringAllowed();
+            intygModules = intygModules.stream()
+                    .filter(module -> authoritiesValidator.given(getWebCertUserService().getUser(), module.getId())
+                                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                                .isVerified())
+                    .collect(Collectors.toList());
+        }
+
+        //intygsTyper.contains(module.getId().toLowerCase())).collect(Collectors.toList());
+        return Response.ok(intygModules).build();
+    }
+
 
     @GET
     @Path("/active")

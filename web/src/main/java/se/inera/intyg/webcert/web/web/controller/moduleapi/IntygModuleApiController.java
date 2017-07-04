@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -83,6 +84,9 @@ public class IntygModuleApiController extends AbstractApiController {
     @Autowired
     private WebCertUserService userService;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     /**
      * Retrieves a signed intyg from intygstjänst.
      *
@@ -105,6 +109,18 @@ public class IntygModuleApiController extends AbstractApiController {
         LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
+
+        // Check if the patient is sekretessmarkerad. If so, only users having the requisite privilege for the current intygsTyp
+        // may see this utkast. INTYG-4086
+        boolean sekr = patientDetailsResolver
+                .isSekretessmarkering(intygAsExternal
+                        .getUtlatande()
+                        .getGrundData()
+                        .getPatient()
+                        .getPersonId());
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, sekr)
+                .orThrow();
 
         return Response.ok().entity(intygAsExternal).build();
     }

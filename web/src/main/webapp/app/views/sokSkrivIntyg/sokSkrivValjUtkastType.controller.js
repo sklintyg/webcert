@@ -91,6 +91,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             function loadUtkastTypesAndIntyg() {
                 // Load intyg types user can choose from
+                UtkastProxy.getUtkastTypesForPatient(PatientModel.personnummer, function(types) {
+                    IntygTypeSelectorModel.userIntygTypes = types;
+                });
+
+                // Also load global set of modules
                 UtkastProxy.getUtkastTypes(function(types) {
                     IntygTypeSelectorModel.intygTypes = types;
                 });

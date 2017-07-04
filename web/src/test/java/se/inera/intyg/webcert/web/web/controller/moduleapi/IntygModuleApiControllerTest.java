@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -40,6 +43,8 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -91,6 +96,9 @@ public class IntygModuleApiControllerTest {
     private static final String PDF_NAME = "the-file.pdf";
 
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
+    private static final String PERSON_ID = "19121212-1212";
+
+    private static Fk7263Utlatande utlatande = null;
 
     @Mock
     private IntygService intygService;
@@ -101,18 +109,32 @@ public class IntygModuleApiControllerTest {
     @Mock
     private WebCertUserService webcertUserService;
 
+    @Mock
+    private PatientDetailsResolver patientDetailsResolver;
+
     @InjectMocks
     private IntygModuleApiController moduleApiController = new IntygModuleApiController();
 
     @BeforeClass
     public static void setupCertificateData() throws IOException {
-        Fk7263Utlatande utlatande = new Fk7263Utlatande();
+        utlatande = new Fk7263Utlatande();
         utlatande.setId(CERTIFICATE_ID);
         utlatande.setTyp(CERTIFICATE_TYPE);
+        GrundData grundData = new GrundData();
+        Patient patient = new Patient();
+        patient.setPersonId(new Personnummer(PERSON_ID));
+        grundData.setPatient(patient);
+        utlatande.setGrundData(grundData);
 
         List<Status> status = new ArrayList<>();
         status.add(new Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
+    }
+
+    @Before
+    public void setup() {
+        when(patientDetailsResolver.isSekretessmarkering(any(Personnummer.class))).thenReturn(false);
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
     }
 
     @Test
@@ -171,8 +193,10 @@ public class IntygModuleApiControllerTest {
 
         setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygsTyp, false, true);
 
+
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
+        when(content.getUtlatande()).thenReturn(utlatande);
         when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(false))).thenReturn(content);
 
         Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);
@@ -191,6 +215,7 @@ public class IntygModuleApiControllerTest {
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
+        when(content.getUtlatande()).thenReturn(utlatande);
         when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(true))).thenReturn(content);
 
         Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);

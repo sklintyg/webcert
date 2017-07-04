@@ -59,7 +59,7 @@ public class AuthoritiesConfigurationLoaderTest {
     private static final String authoritiesConfigurationOutputFile = "AuthoritiesConfigurationLoaderTest/authorities-output.txt";
 
     @InjectMocks
-    AuthoritiesConfigurationLoader loader = new AuthoritiesConfigurationLoader(authoritiesConfigurationFile);
+    private AuthoritiesConfigurationLoader loader = new AuthoritiesConfigurationLoader(authoritiesConfigurationFile);
 
     @Before
     public void setupAuthoritiesConfiguration() {

@@ -18,32 +18,44 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.*;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -66,6 +78,9 @@ public class UtkastApiController extends AbstractApiController {
     @Autowired
     private UtkastService intygDraftService;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     /**
      * Create a new draft.
      */
@@ -75,10 +90,20 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
 
+        boolean sekr = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer()) == SekretessStatus.TRUE;
+
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
             .features(WebcertFeature.HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, sekr)
             .orThrow();
+
+        // INTYG-4086: If the patient is sekretessmarkerad, we need an additional check.
+        if (patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer()) == SekretessStatus.TRUE) {
+            authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                    .orThrow();
+        }
 
         if (!request.isValid()) {
             LOG.error("Request is invalid: " + request.toString());
@@ -145,15 +170,23 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private CreateNewDraftRequest createServiceRequest(CreateUtkastRequest req) {
-        Patient pat = new Patient();
-        pat.setPersonId(req.getPatientPersonnummer());
-        pat.setFornamn(req.getPatientFornamn());
-        pat.setMellannamn(req.getPatientMellannamn());
-        pat.setEfternamn(req.getPatientEfternamn());
-        pat.setFullstandigtNamn(IntygConverterUtil.concatPatientName(pat.getFornamn(), pat.getMellannamn(), pat.getEfternamn()));
-        pat.setPostadress(req.getPatientPostadress());
-        pat.setPostnummer(req.getPatientPostnummer());
-        pat.setPostort(req.getPatientPostort());
+        Patient pat = patientDetailsResolver.resolvePatient(req.getPatientPersonnummer(), req.getIntygType());
+
+        // Ugly, but null (for now) means that the PU service was not available or that the standardized logic in the
+        // resolver asks the calling code to fall-back to "manual entry". In this case, the stuff from the CreateUtkastRequest
+        // is the manual entry.
+        if (pat == null) {
+            // TODO intygsTyp sensitive address stuff...
+            pat = new Patient();
+            pat.setPersonId(req.getPatientPersonnummer());
+            pat.setFornamn(req.getPatientFornamn());
+            pat.setMellannamn(req.getPatientMellannamn());
+            pat.setEfternamn(req.getPatientEfternamn());
+            pat.setFullstandigtNamn(IntygConverterUtil.concatPatientName(pat.getFornamn(), pat.getMellannamn(), pat.getEfternamn()));
+            pat.setPostadress(req.getPatientPostadress());
+            pat.setPostnummer(req.getPatientPostnummer());
+            pat.setPostort(req.getPatientPostort());
+        }
 
         return new CreateNewDraftRequest(null, req.getIntygType(), null, createHoSPersonFromUser(), pat);
     }
@@ -190,11 +223,27 @@ public class UtkastApiController extends AbstractApiController {
 
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(intygList);
 
-        int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
+        // INTYG-4086: Mark all ListIntygEntry having a patient with sekretessmarkering
+        listIntygEntries.stream().forEach(this::markSekretessMarkering);
+
+        // INTYG-4086: If not Lakare, remove all intyg/utkast for patients having sekretessmarkering.
+        if (!getWebCertUserService().getUser().isLakare()) {
+            listIntygEntries = listIntygEntries.stream().filter(lie -> !lie.isSekretessmarkering()).collect(Collectors.toList());
+        }
+
+        // TODO Figure out if we need to filter counts by sekretessmarkering as well.
+        //int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
+        int totalCountOfFilteredIntyg = listIntygEntries.size();
 
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
+    }
+
+    private void markSekretessMarkering(ListIntygEntry lie) {
+        if (patientDetailsResolver.getSekretessStatus(lie.getPatientId()) == SekretessStatus.TRUE) {
+            lie.setSekretessmarkering(true);
+        }
     }
 
 }

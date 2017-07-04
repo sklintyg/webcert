@@ -26,17 +26,21 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
@@ -59,6 +63,8 @@ import java.util.stream.Stream;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -80,6 +86,8 @@ public class UtkastModuleApiControllerTest {
 
     private static final String UTKAST_MODEL = "<Model>";
 
+    private static final String UTKAST_PERSONNUMMER = "19121212-1212";
+
     private HttpServletRequest request;
     private HttpSession session;
 
@@ -98,6 +106,9 @@ public class UtkastModuleApiControllerTest {
     @Mock
     private MonitoringLogService monitoringLogService;
 
+    @Mock
+    private PatientDetailsResolver patientDetailsResolver;
+
     @InjectMocks
     private UtkastModuleApiController moduleApiController = new UtkastModuleApiController();
 
@@ -107,7 +118,11 @@ public class UtkastModuleApiControllerTest {
         request = mock(HttpServletRequest.class);
         Mockito.doNothing().when(session).removeAttribute("lastSavedDraft");
         when(request.getSession(true)).thenReturn(session);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
     }
+
+
 
     @Test
     public void testGetDraft() {
@@ -127,6 +142,7 @@ public class UtkastModuleApiControllerTest {
     public void getDraftWithoutPrivilegeSkrivaIntygFails() {
         String intygType = "fk7263";
         setupUser("", intygType, false, WebcertFeature.HANTERA_INTYGSUTKAST);
+        when(utkastService.getDraft(CERTIFICATE_ID, intygType)).thenReturn(buildUtkast(intygType, CERTIFICATE_ID));
         moduleApiController.getDraft(intygType, CERTIFICATE_ID, request);
     }
 
@@ -266,7 +282,15 @@ public class UtkastModuleApiControllerTest {
         utkast.setModel(UTKAST_MODEL);
         utkast.setIntygsTyp(intygType);
         utkast.setIntygsId(intygId);
+        utkast.setPatientPersonnummer(new Personnummer(UTKAST_PERSONNUMMER));
         return utkast;
+    }
+
+    private Patient buildPatient() {
+        Patient patient = new Patient();
+        patient.setFornamn("Tolvan");
+        patient.setEfternamn("Tolvansson");
+        return patient;
     }
 
     private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, WebcertFeature... features) {

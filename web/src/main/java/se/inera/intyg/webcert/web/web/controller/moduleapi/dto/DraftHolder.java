@@ -49,6 +49,9 @@ public class DraftHolder {
     private Relations relations = new Relations();
     private LocalDateTime klartForSigneringDatum;
 
+    private boolean sekretessmarkering = false;
+    private boolean avliden = false;
+
     public long getVersion() {
         return version;
     }
@@ -119,5 +122,21 @@ public class DraftHolder {
 
     public void setKlartForSigneringDatum(LocalDateTime klartForSigneringDatum) {
         this.klartForSigneringDatum = klartForSigneringDatum;
+    }
+
+    public boolean isSekretessmarkering() {
+        return sekretessmarkering;
+    }
+
+    public void setSekretessmarkering(boolean sekretessmarkering) {
+        this.sekretessmarkering = sekretessmarkering;
+    }
+
+    public boolean isAvliden() {
+        return avliden;
+    }
+
+    public void setAvliden(boolean avliden) {
+        this.avliden = avliden;
     }
 }

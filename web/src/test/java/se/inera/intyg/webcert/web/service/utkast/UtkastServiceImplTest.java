@@ -425,7 +425,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         Patient newPatient = getUpdatedPatient();
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient, utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -460,7 +460,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setEnhetsId("<unknownenhet>");
         Patient newPatient = getUpdatedPatient();
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient, utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);

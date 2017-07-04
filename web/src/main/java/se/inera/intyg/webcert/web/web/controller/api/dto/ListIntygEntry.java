@@ -44,6 +44,9 @@ public class ListIntygEntry {
 
     private Relations relations = new Relations();
 
+    private boolean sekretessmarkering = false;
+    private boolean avliden = false;
+
     public String getIntygId() {
         return intygId;
     }
@@ -122,6 +125,22 @@ public class ListIntygEntry {
 
     public void setRelations(Relations relations) {
         this.relations = relations;
+    }
+
+    public boolean isSekretessmarkering() {
+        return sekretessmarkering;
+    }
+
+    public void setSekretessmarkering(boolean sekretessmarkering) {
+        this.sekretessmarkering = sekretessmarkering;
+    }
+
+    public boolean isAvliden() {
+        return avliden;
+    }
+
+    public void setAvliden(boolean avliden) {
+        this.avliden = avliden;
     }
 
     @Override
