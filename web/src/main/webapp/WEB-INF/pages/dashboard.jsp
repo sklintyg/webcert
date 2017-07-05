@@ -37,7 +37,7 @@
 <link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
 <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
 <!-- endbower -->
-<link rel="stylesheet" href="/web/webjars/common/webcert/inera-webcert.css?<spring:message code="buildNumber" />"
+<link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css?<spring:message code="buildNumber" />"
       media="screen">
 <link rel="stylesheet" href="/web/webjars/common/css/animate.min.css?<spring:message code="buildNumber" />"
       media="screen">
