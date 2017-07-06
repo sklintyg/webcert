@@ -69,8 +69,8 @@ module.exports = function(grunt) {
             module.angularModule = moduleName;
         }
         module.src =
-            '/../../' + module.base + '/src/main/resources/META-INF/resources/webjars/' + moduleName + '/webcert';
-        module.dest = '/../../' + module.base + '/build/resources/main/META-INF/resources/webjars/' + moduleName + '/webcert';
+            '/../../' + module.base + '/src/main/resources/META-INF/resources/webjars/' + moduleName;
+        module.dest = '/../../' + module.base + '/build/resources/main/META-INF/resources/webjars/' + moduleName;
     });
 
     var CSS_COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
@@ -108,10 +108,10 @@ module.exports = function(grunt) {
         Object.keys(modules).forEach(function(moduleName) {
             var module = modules[moduleName];
             var files = grunt.file.expand({cwd: __dirname + module.src},
-                ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/module.js']).sort();
-            grunt.file.write(__dirname + module.dest + '/module-deps.json', JSON.stringify(files.
+                ['app-shared/**/*.js', 'webcert/**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/module.js']).sort();
+            grunt.file.write(__dirname + module.dest + '/webcert/module-deps.json', JSON.stringify(files.
                 map(function(file) {
-                    return '/web/webjars/' + module.name + '/webcert/' + file;
+                    return '/web/webjars/' + module.name + '/' + file;
                 }).
                 concat('/web/webjars/' + module.name + '/webcert/templates.js'), null, 4));
         });
