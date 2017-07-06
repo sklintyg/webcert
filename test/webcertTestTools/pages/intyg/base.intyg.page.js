@@ -49,10 +49,6 @@ var BaseIntyg = JClass._extend({
             statusSendInprogress: element(by.id('certificate-is-on-sendqueue-to-it-message-text')),
             statusSent: element(by.id('certificate-is-sent-to-recipient-message-text'))
         };
-        // this.copy = {
-        //     button: element(by.id('copyBtn')),
-        //     dialogConfirmButton: element(by.id('button1copy-dialog'))
-        // };
         this.fornya = {
             button: element(by.id('fornyaBtn')),
             dialogConfirmButton: element(by.id('button1fornya-dialog'))
@@ -62,7 +58,6 @@ var BaseIntyg = JClass._extend({
             dialogConfirmButton: element(by.id('button1ersatt-dialog')),
             dialogContinueButton: element(by.id('button2ersatt-dialog'))
         };
-        // this.copyBtn = element(by.css('.btn.btn-info'));
         this.backBtn = element(by.id('tillbakaButton'));
 
         // Ärende
@@ -165,12 +160,6 @@ var BaseIntyg = JClass._extend({
     replaceDialogContinueBtn: function() {
         return this.replace.dialogContinueButton;
     },
-    // copyBtn: function() {
-    //     return this.copy.button;
-    // },
-    // copyDialogConfirmBtn: function() {
-    //     return this.copy.dialogConfirmButton;
-    // },
     fornyaDialogConfirmBtn: function() {
         return this.fornya.dialogConfirmButton;
     },
