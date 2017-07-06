@@ -20,5 +20,8 @@
         "webcert-testtools": "file:./webcertTestTools",
         "xml2js": "^0.4.4"
     },
-    "engine": "node >= 6.9.1"
+    "engine": "node >= 6.9.1",
+    "scripts": {
+        "install": "node node_modules/protractor/bin/webdriver-manager update"
+    }
 }

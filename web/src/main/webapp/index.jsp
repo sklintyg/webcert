@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
 <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
 <!-- endbower -->
-<link rel="stylesheet" href="/web/webjars/common/webcert/css/inera-webcert.css">
+<link rel="stylesheet" href="/web/webjars/common/webcert/css/wc-common.css">
 <link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css">
 
 <c:choose>
