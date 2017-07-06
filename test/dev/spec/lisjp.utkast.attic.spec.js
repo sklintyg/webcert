@@ -94,7 +94,7 @@ describe('Lisjp attic tests', function() {
     });
 
     describe('smittskydd', function() {
-        it('should still be valid if smittskydd is set to yes', function() {
+        it('Tillaggsfraga should be hidden if smittskydd is set to yes', function() {
             LisjpUtkastPage.smittskydd.sendKeys(protractor.Key.SPACE);
 
             expect(LisjpUtkastPage.konsekvenser.funktionsnedsattning.isPresent()).toBeFalsy();
@@ -104,7 +104,7 @@ describe('Lisjp attic tests', function() {
             expect(LisjpUtkastPage.getTillaggsfraga(9002).isPresent()).toBeFalsy();
         });
 
-        it('should still be valid if smittskydd is set to yes', function() {
+        it('Tillaggsfraga should be back when smittskydd is set to no again', function() {
             LisjpUtkastPage.enableAutosave();
             LisjpUtkastPage.smittskydd.sendKeys(protractor.Key.SPACE);
 
