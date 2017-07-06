@@ -42,6 +42,12 @@
           },
           "relations": {
             "type": "object"
+          },
+          "avliden": {
+            "type": "boolean"
+          },
+          "sekretessmarkering": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false,
@@ -52,7 +58,9 @@
           "intygType",
           "status",
           "vidarebefordrad",
-          "version"
+          "version",
+          "avliden",
+          "sekretessmarkering"
         ]
       }
     }

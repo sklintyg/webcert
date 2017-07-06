@@ -29,10 +29,13 @@ import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -43,6 +46,7 @@ import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
@@ -100,6 +104,15 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     @Mock
     protected IntygRelationHelper intygRelationHelper;
 
+    @Mock
+    protected PatientDetailsResolver patientDetailsResolver;
+
+    @Mock
+    protected ModuleApi moduleApi;
+
+    @Mock
+    protected IntygModuleRegistry moduleRegistry;
+
     @Spy
     protected ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -121,6 +134,10 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class))).thenReturn(Optional.empty());
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
         doNothing().when(intygRelationHelper).decorateIntygListWithRelations(anyList());
+
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
+        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
         //when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(), any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
     }
 
@@ -130,6 +147,19 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
         metaData.getStatus().add(statusSigned);
         return metaData;
+    }
+
+    protected Patient buildPatient(boolean sekretessMarkering, boolean avliden) {
+        Patient patient = new Patient();
+        patient.setPersonId(new Personnummer("19121212-1212"));
+        patient.setFornamn("fornamn");
+        patient.setMellannamn("mellannamn");
+        patient.setEfternamn("efternamn");
+        patient.setSekretessmarkering(sekretessMarkering);
+        patient.setAvliden(avliden);
+
+        return patient;
+
     }
 
     @Before

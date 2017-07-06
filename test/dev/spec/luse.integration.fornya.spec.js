@@ -63,6 +63,9 @@ describe('Djupintegration on luse intyg', function() {
             enhet:'TSTNMT2321000156-1039'
         });
         expect(LuseIntygPage.isAt()).toBeTruthy();
+
+        // INTYG-4086: The supplied name/address should be irrelevant as long as the PU-service is available.
+        // Only a changed personnummer should be taken into account?
         expect(LuseIntygPage.statusNameAndAddressChanged.isDisplayed()).toBeTruthy();
     });
 
@@ -70,7 +73,9 @@ describe('Djupintegration on luse intyg', function() {
         LuseIntygPage.fornya.button.click();
         LuseIntygPage.fornya.dialogConfirmButton.click();
         expect(LuseUtkastPage.isAt()).toBeTruthy();
-        expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Nytt förnamn Nytt mellannamn Nytt efternamn - 19121212-1212');
+        // INTYG-4086: Integration parameters are ignored if PU-service is available.
+        expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Tolvan Tolvansson - 19121212-1212');
+        // expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Nytt förnamn Nytt mellannamn Nytt efternamn - 19121212-1212');
     });
 
 });

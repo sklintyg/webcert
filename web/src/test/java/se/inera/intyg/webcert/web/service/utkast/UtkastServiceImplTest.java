@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -116,6 +117,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private MonitoringLogService mockMonitoringService;
     @Mock
     private AuthoritiesHelper authoritiesHelper;
+    @Mock
+    private PatientDetailsResolver patientDetailsResolver;
     
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -173,6 +176,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+
+        when(patientDetailsResolver.updatePatientForSaving(any(Patient.class), anyString())).thenReturn(defaultPatient);
     }
 
     @Test

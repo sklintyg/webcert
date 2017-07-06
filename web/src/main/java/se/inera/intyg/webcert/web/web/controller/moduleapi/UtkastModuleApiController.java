@@ -25,6 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -101,6 +104,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -129,7 +135,7 @@ public class UtkastModuleApiController extends AbstractApiController {
                 .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, resolvedPatient.isSekretessmarkering())
                 .orThrow();
 
-        // INTYG-4086, is this correct?
+        // INTYG-4086, is this correct? Probably unnecessary.
         utkast.setPatientFornamn(resolvedPatient.getFornamn());
         utkast.setPatientEfternamn(resolvedPatient.getEfternamn());
         utkast.setPatientMellannamn(resolvedPatient.getMellannamn());
@@ -142,7 +148,9 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setStatus(utkast.getStatus());
         draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
         draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
-        draftHolder.setContent(utkast.getModel());
+
+        // INTYG-4086 add the resolved patient to the model.
+
         draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
 
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
@@ -152,7 +160,15 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
         draftHolder.setAvliden(resolvedPatient.isAvliden());
 
-        return Response.ok(draftHolder).build();
+        try {
+            // Update the internal model with the resolved patient.
+            String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
+            draftHolder.setContent(updatedModel);
+
+            return Response.ok(draftHolder).build();
+        } catch (ModuleException | ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
+        }
     }
 
     /**

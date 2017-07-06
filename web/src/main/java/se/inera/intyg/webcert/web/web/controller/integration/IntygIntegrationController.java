@@ -238,7 +238,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
-        
+
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(new Personnummer(alternatePatientSSn), draftId, draftVersion);
 
         utkastService.updatePatientOnDraft(request);

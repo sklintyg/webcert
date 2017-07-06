@@ -93,10 +93,10 @@ public class UtkastApiController extends AbstractApiController {
         boolean sekr = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer()) == SekretessStatus.TRUE;
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-            .features(WebcertFeature.HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, sekr)
-            .orThrow();
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, sekr)
+                .orThrow();
 
         // INTYG-4086: If the patient is sekretessmarkerad, we need an additional check.
         if (patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer()) == SekretessStatus.TRUE) {
@@ -173,7 +173,8 @@ public class UtkastApiController extends AbstractApiController {
         Patient pat = patientDetailsResolver.resolvePatient(req.getPatientPersonnummer(), req.getIntygType());
 
         // Ugly, but null (for now) means that the PU service was not available or that the standardized logic in the
-        // resolver asks the calling code to fall-back to "manual entry". In this case, the stuff from the CreateUtkastRequest
+        // resolver asks the calling code to fall-back to "manual entry". In this case, the stuff from the
+        // CreateUtkastRequest
         // is the manual entry.
         if (pat == null) {
             // TODO intygsTyp sensitive address stuff...
@@ -226,14 +227,25 @@ public class UtkastApiController extends AbstractApiController {
         // INTYG-4086: Mark all ListIntygEntry having a patient with sekretessmarkering
         listIntygEntries.stream().forEach(this::markSekretessMarkering);
 
-        // INTYG-4086: If not Lakare, remove all intyg/utkast for patients having sekretessmarkering.
-        if (!getWebCertUserService().getUser().isLakare()) {
+        // Räkna hur många av intygen som hör till sekretessmarkerad patient.
+        int antalSekretessmarkerade = Long.valueOf(listIntygEntries.stream()
+                .filter(ListIntygEntry::isSekretessmarkering)
+                .count())
+                .intValue();
+
+        // INTYG-4086: If not allowed to handle sekretess patients, remove all intyg/utkast for patients having
+        // sekretessmarkering.
+        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(getWebCertUserService().getUser())
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
+        if (!mayHandleSekretessmarkeradePatienter) {
             listIntygEntries = listIntygEntries.stream().filter(lie -> !lie.isSekretessmarkering()).collect(Collectors.toList());
         }
 
-        // TODO Figure out if we need to filter counts by sekretessmarkering as well.
-        //int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
-        int totalCountOfFilteredIntyg = listIntygEntries.size();
+        // TODO Figure out how to filter counts by sekretessmarkering as well.
+        // int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
+        int totalCountOfFilteredIntyg = mayHandleSekretessmarkeradePatienter ? listIntygEntries.size()
+                : listIntygEntries.size() - antalSekretessmarkerade;
 
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);

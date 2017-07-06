@@ -138,6 +138,8 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+
     @Override
     public Arende processIncomingMessage(Arende arende) {
         if (arendeRepository.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
@@ -212,7 +214,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         // Implement Business Rule FS-005, FS-006
         WebCertUser user = webcertUserService.getUser();
-        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())
                 && !authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Arende with id "
@@ -361,11 +362,17 @@ public class ArendeServiceImpl implements ArendeService {
                 .map(ali -> addSekretessMarkering(ali))
                 .collect(Collectors.toList());
 
-        // TODO TODO TODO INTYG-4086/INTYG-4231 and friends:  The counts are incorrect for NON-lakare. The sekretessmarkade that's
+        // INTYG-4086/INTYG-4231 and friends: The counts are incorrect for NON-lakare. The
+        // sekretessmarkade that's
         // been filtered out doesn't add up correctly in the totalResults etc.
-        int numberHavingSekretessMarkering = new Long(results.stream().filter(ali -> ali.isSekretessmarkering()).count()).intValue();
+        int numberHavingSekretessMarkering = Long.valueOf(results.stream().filter(ali -> ali.isSekretessmarkering()).count()).intValue();
 
-        if (!user.isLakare()) {
+        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
+
+        // Filter out any QA
+        if (!mayHandleSekretessmarkeradePatienter) {
             results = results.stream()
                     .filter(ali -> !ali.isSekretessmarkering())
                     .collect(Collectors.toList());
@@ -374,13 +381,12 @@ public class ArendeServiceImpl implements ArendeService {
         results.sort(Comparator.comparing(ArendeListItem::getReceivedDate).reversed());
 
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
-        if (user.isLakare()) {
+        if (mayHandleSekretessmarkeradePatienter) {
             response.setTotalCount(totalResultsCount);
         } else {
             response.setTotalCount(totalResultsCount - numberHavingSekretessMarkering);
         }
 
-        
         if (originalStartFrom >= results.size()) {
             response.setResults(new ArrayList<>());
         } else {
@@ -398,9 +404,9 @@ public class ArendeServiceImpl implements ArendeService {
         return ali;
     }
 
-//    private boolean sekretessMarkeringAllowed(ArendeListItem ali, WebCertUser user) {
-//        return user.isLakare() || !ali.getSekretessStatus();
-//    }
+    // private boolean sekretessMarkeringAllowed(ArendeListItem ali, WebCertUser user) {
+    // return user.isLakare() || !ali.getSekretessStatus();
+    // }
 
     @Override
     @Transactional

@@ -60,6 +60,12 @@
           }
         }
       }
+    },
+    "avliden": {
+      "type": "boolean"
+    },
+    "sekretessmarkering": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false,
@@ -70,6 +76,8 @@
     "enhetsNamn",
     "vardgivareNamn",
     "relations",
-    "content"
+    "content",
+    "avliden",
+     "sekretessmarkering"
   ]
 }

@@ -76,6 +76,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -99,6 +100,7 @@ public class IntygModuleApiControllerTest {
     private static final String PERSON_ID = "19121212-1212";
 
     private static Fk7263Utlatande utlatande = null;
+    private static Patient patient;
 
     @Mock
     private IntygService intygService;
@@ -121,8 +123,10 @@ public class IntygModuleApiControllerTest {
         utlatande.setId(CERTIFICATE_ID);
         utlatande.setTyp(CERTIFICATE_TYPE);
         GrundData grundData = new GrundData();
-        Patient patient = new Patient();
+        patient = new Patient();
         patient.setPersonId(new Personnummer(PERSON_ID));
+        patient.setFornamn("Fornamn");
+        patient.setEfternamn("Efternamn");
         grundData.setPatient(patient);
         utlatande.setGrundData(grundData);
 
@@ -135,6 +139,7 @@ public class IntygModuleApiControllerTest {
     public void setup() {
         when(patientDetailsResolver.isSekretessmarkering(any(Personnummer.class))).thenReturn(false);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patient);
     }
 
     @Test

@@ -123,7 +123,7 @@ public class PatientDetailsResolver {
              * I: Adress från PU-tjänsten
              * F: Manuell inmatning av namn & adress
              */
-             return toPatientFromParametersNameOnly(personnummer, user.getParameters());
+            return toPatientFromParametersNameOnly(personnummer, user.getParameters());
         }
         return null;
     }
@@ -143,7 +143,7 @@ public class PatientDetailsResolver {
         patient.setPostadress(parameters.getPostadress());
         patient.setPostnummer(parameters.getPostnummer());
         patient.setPostort(parameters.getPostort());
-        
+
         return patient;
     }
 
@@ -194,5 +194,59 @@ public class PatientDetailsResolver {
         return patient;
     }
 
+    public boolean isAvliden(Personnummer personnummer) {
+        PersonSvar personSvar = puService.getPerson(personnummer);
+        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
+            return personSvar.getPerson().isAvliden();
+        } else {
+            return false;
+        }
+    }
 
+    /**
+     * Implements business rules where the intygsTyp determines which patient information that's saved to the backend.
+     *
+     * @param patient
+     * @param intygsTyp
+     * @return
+     *      An updated patient DTO with the non-relevant fields nulled out.
+     */
+    public Patient updatePatientForSaving(Patient patient, String intygsTyp) {
+
+        Patient retPatient = new Patient();
+        // Always transfer
+        retPatient.setSekretessmarkering(patient.isSekretessmarkering());
+        retPatient.setAvliden(patient.isAvliden());
+
+        switch (intygsTyp) {
+        case "fk7263":
+        case "luse":
+        case "lisjp":
+        case "luae_na":
+        case "luae_fs":
+            // For FK intyg, never save anything other than personnummer.
+
+            retPatient.setPersonId(patient.getPersonId());
+            break;
+
+        case "ts-bas":
+        case "ts-diabetes":
+            // For TS-intyg, return the patient "as-is"
+            return patient;
+
+        case "db":
+        case "doi":
+            // For DB/DOI, return only personnummer and name, no address.
+
+            retPatient.setPersonId(patient.getPersonId());
+            retPatient.setFornamn(patient.getFornamn());
+            retPatient.setMellannamn(patient.getMellannamn());
+            retPatient.setEfternamn(patient.getEfternamn());
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp);
+        }
+
+        return retPatient;
+    }
 }

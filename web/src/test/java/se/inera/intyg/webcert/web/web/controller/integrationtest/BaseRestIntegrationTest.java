@@ -18,14 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static java.util.Arrays.asList;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.filter.session.SessionFilter;
@@ -56,6 +48,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static java.util.Arrays.asList;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
  *
@@ -63,8 +63,9 @@ import java.util.UUID;
  */
 public abstract class BaseRestIntegrationTest {
 
-    protected static final String DEFAULT_UTKAST_PATIENT_FORNAMN = "Api";
-    protected static final String DEFAULT_UTKAST_PATIENT_EFTERNAMN = "Restman";
+    // INTYG-4086 changes these to be the actual values stored for 190101010101 in the PU stub.
+    protected static final String DEFAULT_UTKAST_PATIENT_FORNAMN = "Nollett";
+    protected static final String DEFAULT_UTKAST_PATIENT_EFTERNAMN = "Nollettsson";
     protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
     protected static final String DEFAULT_INTYGSTYP = "fk7263";
 

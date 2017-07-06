@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.fkstub.validation;
 
-import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 
 import java.util.List;
@@ -48,18 +47,20 @@ public class LakarutlatandeEnkelTypeValidator {
             if (lakarutlatandeEnkelType.getSigneringsTidpunkt() == null) {
                 validationErrors.add("No signeringstidpunkt found!");
             }
-            validateAndCorrectPatient();
+            // validateAndCorrectPatient();
         }
     }
 
-    private void validateAndCorrectPatient() {
-        PatientType patient = lakarutlatandeEnkelType.getPatient();
-        if (PatientValidator.validateAndCorrect(lakarutlatandeEnkelType.getLakarutlatandeId(), patient, validationErrors)) {
-            // Get namn for patient - mandatory
-            if (patient.getFullstandigtNamn() == null || patient.getFullstandigtNamn().isEmpty()) {
-                validationErrors.add("No Patient fullstandigtNamn elements found or set!");
-            }
-        }
-    }
+    // INTYG-4086
+//    private void validateAndCorrectPatient() {
+//        PatientType patient = lakarutlatandeEnkelType.getPatient();
+//        if (PatientValidator.validateAndCorrect(lakarutlatandeEnkelType.getLakarutlatandeId(), patient, validationErrors)) {
+//            // Get namn for patient - mandatory
+//            // As per INTYG-4086, name is intentionally left out.
+////            if (patient.getFullstandigtNamn() == null || patient.getFullstandigtNamn().isEmpty()) {
+////                validationErrors.add("No Patient fullstandigtNamn elements found or set!");
+////            }
+//        }
+//    }
 
 }

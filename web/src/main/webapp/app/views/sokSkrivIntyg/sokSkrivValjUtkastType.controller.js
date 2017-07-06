@@ -173,7 +173,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
                 var createDraftRequestPayload = {
                     intygType: IntygTypeSelectorModel.intygType,
-                    patientPersonnummer: PatientModel.personnummer,
+                    patientPersonnummer: PatientModel.personnummer
                 };
                 createDraftRequestPayload.patientFornamn = PatientModel.fornamn;
                 createDraftRequestPayload.patientMellannamn = PatientModel.mellannamn;

@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
@@ -114,6 +115,8 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -420,7 +423,8 @@ public class UtkastServiceImpl implements UtkastService {
         Personnummer personId = request.getPersonnummer();
         Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
         if (personId != null
-                && (Personnummer.createValidatedPersonnummerWithDash(personId).isPresent() || SamordningsnummerValidator.isSamordningsNummer(personId))
+                && (Personnummer.createValidatedPersonnummerWithDash(personId).isPresent()
+                        || SamordningsnummerValidator.isSamordningsNummer(personId))
                 && !personId.getPnrHash().equals(draftPatient.getPersonId().getPnrHash())) {
 
             draftPatient.setPersonId(personId);
@@ -438,32 +442,34 @@ public class UtkastServiceImpl implements UtkastService {
             LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
         }
 
-//
-//
-//
-//        if(personId == null || (!Personnummer.createValidatedPersonnummerWithDash(personId).isPresent() && !SamordningsnummerValidator.isSamordningsNummer(personId))) {
-//            // Do nothing
-//        } else {
-//            draftPatient.setPersonId(personId);
-//        }
-//        //Patient newPatient = WebcertModelFactoryUtil.buildNewEffectivePatient(draftPatient, request.getNewPatientDetails());
-//
-//        if (!draftPatient.equals(newPatient)) {
-//            LOG.debug("Updated patient detected - about to update draft {}", draftId);
-//            try {
-//                String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), newPatient);
-//                updateUtkastModel(utkast, updatedModel);
-//                saveDraft(utkast);
-//                monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
-//                sendNotification(utkast, Event.CHANGED, getUserReference());
-//            } catch (ModuleException e) {
-//                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-//                        "Patient details on Utkast " + draftId + " could not be updated", e);
-//            }
-//
-//        } else {
-//            LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
-//        }
+        //
+        //
+        //
+        // if(personId == null || (!Personnummer.createValidatedPersonnummerWithDash(personId).isPresent() &&
+        // !SamordningsnummerValidator.isSamordningsNummer(personId))) {
+        // // Do nothing
+        // } else {
+        // draftPatient.setPersonId(personId);
+        // }
+        // //Patient newPatient = WebcertModelFactoryUtil.buildNewEffectivePatient(draftPatient,
+        // request.getNewPatientDetails());
+        //
+        // if (!draftPatient.equals(newPatient)) {
+        // LOG.debug("Updated patient detected - about to update draft {}", draftId);
+        // try {
+        // String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), newPatient);
+        // updateUtkastModel(utkast, updatedModel);
+        // saveDraft(utkast);
+        // monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
+        // sendNotification(utkast, Event.CHANGED, getUserReference());
+        // } catch (ModuleException e) {
+        // throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+        // "Patient details on Utkast " + draftId + " could not be updated", e);
+        // }
+        //
+        // } else {
+        // LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
+        // }
 
     }
 
@@ -581,7 +587,7 @@ public class UtkastServiceImpl implements UtkastService {
             LOG.warn("Utkast '{}' of type {} was not found", intygsId, intygType);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Utkast could not be found");
         }
-        
+
         return utkast;
     }
 
@@ -684,12 +690,6 @@ public class UtkastServiceImpl implements UtkastService {
         case DELETED:
             notificationService.sendNotificationForDraftDeleted(utkast, reference);
             break;
-        default:
-            LOG.debug(
-                    "IntygDraftServiceImpl.sendNotification(Intyg, Handelse) was called but with an unhandled event. "
-                            + "No notification was sent.",
-                    utkast.getIntygsId());
-            break;
         }
     }
 
@@ -698,13 +698,19 @@ public class UtkastServiceImpl implements UtkastService {
 
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+
             GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson).getGrundData();
+
+            // INTYG-4086: Make sure we never save unwanted patient information to the backend.
+            Patient updatedPatientForSaving = patientDetailsResolver.updatePatientForSaving(grundData.getPatient(), utkast.getIntygsTyp());
+
             Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
             HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
             utkast.setPatientPersonnummer(grundData.getPatient().getPersonId());
             String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
-            utkast.setModel(updatedInternal);
+            String updatedInternalWithResolvedPatient = moduleApi.updateBeforeSave(updatedInternal, updatedPatientForSaving);
+            utkast.setModel(updatedInternalWithResolvedPatient);
 
             updatePatientNameFromModel(utkast, grundData.getPatient());
 

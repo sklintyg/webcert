@@ -25,7 +25,6 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
@@ -66,8 +65,6 @@ public class ModuleApiController extends AbstractApiController {
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
-    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-
     /**
      * Serving module configuration for Angular bootstrapping.
      *
@@ -101,18 +98,15 @@ public class ModuleApiController extends AbstractApiController {
         List<IntygModule> intygModules = moduleRegistry.listAllModules();
         if (sekretessmarkering == SekretessStatus.TRUE) {
 
-            //List<String> intygsTyper = commonAuthoritiesResolver.getSekretessmarkeringAllowed();
+            // INTYG-4086
             intygModules = intygModules.stream()
                     .filter(module -> authoritiesValidator.given(getWebCertUserService().getUser(), module.getId())
-                                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                                .isVerified())
+                            .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                            .isVerified())
                     .collect(Collectors.toList());
         }
-
-        //intygsTyper.contains(module.getId().toLowerCase())).collect(Collectors.toList());
         return Response.ok(intygModules).build();
     }
-
 
     @GET
     @Path("/active")

@@ -110,17 +110,24 @@ public class IntygModuleApiController extends AbstractApiController {
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
 
+        Patient patient = patientDetailsResolver.resolvePatient(intygAsExternal
+                .getUtlatande()
+                .getGrundData()
+                .getPatient()
+                .getPersonId(), intygAsExternal.getUtlatande().getTyp());
+
         // Check if the patient is sekretessmarkerad. If so, only users having the requisite privilege for the current intygsTyp
         // may see this utkast. INTYG-4086
-        boolean sekr = patientDetailsResolver
-                .isSekretessmarkering(intygAsExternal
-                        .getUtlatande()
-                        .getGrundData()
-                        .getPatient()
-                        .getPersonId());
+
         authoritiesValidator.given(getWebCertUserService().getUser())
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, sekr)
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, patient.isSekretessmarkering())
                 .orThrow();
+
+        // Update the model with the resolved patient info.
+        // TODO we must filter out the address for all with sekr?
+
+        // This is getting ugly. We need to replace the patient within the "contents" serialized thing. The Utlatande
+        // is @JsonIgnored in the IntygContentHolder class.
 
         return Response.ok().entity(intygAsExternal).build();
     }

@@ -18,24 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
+import org.junit.Assert;
+import org.junit.Test;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
-
-import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Created by marced on 17/11/15.
@@ -46,17 +44,26 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
     @Test
     public void testGetFk7263Utkast() {
-        testGetUtkast("fk7263");
+        JsonPath model = testCreateUtkast("fk7263");
+        // INTYG-4086 - do NOT store name or address for FK intyg in DB
+        assertEquals(null, model.getString("grundData.patient.fornamn"));
+        assertEquals(null, model.getString("grundData.patient.efternamn"));
     }
 
     @Test
     public void testGetTsBasUtkast() {
-        testGetUtkast("ts-bas");
+        JsonPath model = testCreateUtkast("ts-bas");
+        // INTYG-4086 - do NOT store name or address for FK intyg in DB
+        assertEquals(DEFAULT_UTKAST_PATIENT_FORNAMN, model.getString("grundData.patient.fornamn"));
+        assertEquals(DEFAULT_UTKAST_PATIENT_EFTERNAMN, model.getString("grundData.patient.efternamn"));
     }
 
     @Test
     public void testGetTsDiabetesUtkast() {
-        testGetUtkast("ts-diabetes");
+        JsonPath model = testCreateUtkast("ts-diabetes");
+        // INTYG-4086 - do NOT store name or address for FK intyg in DB
+        assertEquals(DEFAULT_UTKAST_PATIENT_FORNAMN, model.getString("grundData.patient.fornamn"));
+        assertEquals(DEFAULT_UTKAST_PATIENT_EFTERNAMN, model.getString("grundData.patient.efternamn"));
     }
 
     /**
@@ -65,7 +72,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
      * @param utkastType
      *            The type of utkast to create
      */
-    private void testGetUtkast(String utkastType) {
+    private JsonPath testCreateUtkast(String utkastType) {
 
         // Set up auth precondition
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
@@ -77,9 +84,14 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(200)
                 .when().post("api/utkast/fk7263")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
-                .body("intygsTyp", equalTo(utkastRequest.getIntygType())).body("skapadAv.hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("enhetsId", equalTo(DEFAULT_LAKARE.getEnhetId())).body("version", equalTo(0))
-                .body("skapadAv.namn", equalTo(DEFAULT_LAKARE_NAME)).extract().response();
+                .body("intygsTyp", equalTo(utkastRequest.getIntygType()))
+                .body("skapadAv.hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
+                .body("enhetsId", equalTo(DEFAULT_LAKARE.getEnhetId()))
+                .body("version", equalTo(0))
+                .body("skapadAv.namn", equalTo(DEFAULT_LAKARE_NAME))
+                .body("patientFornamn", equalTo(utkastRequest.getPatientFornamn()))
+                .body("patientEfternamn", equalTo(utkastRequest.getPatientEfternamn()))
+                .extract().response();
 
         // The type-specific model is a serialized json "within" the model property, need to extract that first and then
         // we can assert some basic things.
@@ -89,8 +101,11 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         assertTrue(model.getString("id").length() > 0);
 
         assertEquals(utkastRequest.getPatientPersonnummer().getPersonnummer(), model.getString("grundData.patient.personId"));
-        assertEquals(utkastRequest.getPatientFornamn(), model.getString("grundData.patient.fornamn"));
-        assertEquals(utkastRequest.getPatientEfternamn(), model.getString("grundData.patient.efternamn"));
+
+        return model;
+        
+
+        
     }
 
     /**

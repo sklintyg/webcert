@@ -126,8 +126,6 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                                 + "has the user started their BankID or Mobilt BankID application?",
                                 resp.getProgressStatus());
                         break;
-                    default:
-                        throw new RuntimeException("Unhandled progress status type: " + resp.getProgressStatus());
                     }
 
                 } catch (GrpFault grpFault) {

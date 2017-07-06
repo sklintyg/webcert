@@ -203,12 +203,12 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("moduleapi/utkast/luse/" + utkastId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
                 .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
-                .body("content.grundData.patient.fornamn", equalTo(queryParams.get("fornamn")))
-                .body("content.grundData.patient.efternamn", equalTo(queryParams.get("efternamn")))
+                .body("content.grundData.patient.fornamn", isEmptyOrNullString()) //equalTo(queryParams.get("fornamn")))
+                .body("content.grundData.patient.efternamn", isEmptyOrNullString()) //equalTo(queryParams.get("efternamn")))
                 .body("content.grundData.patient.fullstandigtNamn", isEmptyOrNullString()) // INTYG-4086
-                .body("content.grundData.patient.postadress", equalTo(queryParams.get("postadress")))
-                .body("content.grundData.patient.postnummer", equalTo(queryParams.get("postnummer")))
-                .body("content.grundData.patient.postort", equalTo(queryParams.get("postort")));
+                .body("content.grundData.patient.postadress", isEmptyOrNullString()) //equalTo(queryParams.get("postadress")))
+                .body("content.grundData.patient.postnummer", isEmptyOrNullString()) //equalTo(queryParams.get("postnummer")))
+                .body("content.grundData.patient.postort", isEmptyOrNullString()); //equalTo(queryParams.get("postort")));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)

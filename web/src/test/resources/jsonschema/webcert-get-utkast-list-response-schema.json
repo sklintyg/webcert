@@ -37,6 +37,12 @@
       },
       "relations": {
         "type": "object"
+      },
+      "avliden": {
+        "type": "boolean"
+      },
+      "sekretessmarkering": {
+        "type": "boolean"
       }
     },
     "additionalProperties": false,
@@ -49,7 +55,9 @@
       "lastUpdatedSigned",
       "updatedSignedBy",
       "vidarebefordrad",
-      "version"
+      "version",
+      "avliden",
+      "sekretessmarkering"
     ]
   }
 }

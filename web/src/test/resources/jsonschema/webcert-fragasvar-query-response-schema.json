@@ -68,12 +68,20 @@
           },
           "receivedDate": {
             "type": "string"
+          },
+          "avliden": {
+            "type": "boolean"
+          },
+          "sekretessmarkering": {
+            "type": "boolean"
           }
         },
         "required": [
             "meddelandeId",
             "intygId",
-            "intygTyp"
+            "intygTyp",
+            "avliden",
+            "sekretessmarkering"
         ]
       }
     }

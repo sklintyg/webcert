@@ -27,8 +27,12 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -109,17 +113,26 @@ public class UtkastModuleApiControllerTest {
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private ModuleApi moduleApi;
+
     @InjectMocks
     private UtkastModuleApiController moduleApiController = new UtkastModuleApiController();
 
     @Before
-    public void setup() {
+    public void setup() throws ModuleNotFoundException, ModuleException {
         session = mock(HttpSession.class);
         request = mock(HttpServletRequest.class);
         Mockito.doNothing().when(session).removeAttribute("lastSavedDraft");
         when(request.getSession(true)).thenReturn(session);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+
+        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
     }
 
 

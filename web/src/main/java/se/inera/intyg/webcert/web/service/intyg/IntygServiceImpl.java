@@ -31,6 +31,7 @@ import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
@@ -42,8 +43,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -76,6 +75,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -159,7 +159,7 @@ public class IntygServiceImpl implements IntygService {
     private AuthoritiesHelper authoritiesHelper;
 
     @Autowired
-    private PUService puService;
+    private PatientDetailsResolver patientDetailsResolver;
 
     @Override
     public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling) {
@@ -571,16 +571,23 @@ public class IntygServiceImpl implements IntygService {
         try {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
+
+            // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
+            Patient patient = patientDetailsResolver.resolvePatient(certificate.getUtlatande().getGrundData().getPatient().getPersonId(),
+                    typ);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
+            String updatedModel = moduleApi.updateBeforeSave(internalIntygJsonModel, patient);
+
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             Relations certificateRelations = intygRelationHelper.getRelationsForIntyg(intygId);
 
             return IntygContentHolder.builder()
-                    .setContents(internalIntygJsonModel)
+                    .setContents(updatedModel)
                     .setUtlatande(certificate.getUtlatande())
                     .setStatuses(certificate.getMetaData().getStatus())
                     .setRevoked(certificate.isRevoked())
                     .setRelations(certificateRelations)
-                    .setDeceased(isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
+                    .setDeceased(patient.isAvliden())
                     .build();
 
         } catch (IntygModuleFacadeException me) {
@@ -600,6 +607,8 @@ public class IntygServiceImpl implements IntygService {
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
             return buildIntygContentHolder(utkast, relations);
+        } catch (ModuleNotFoundException | ModuleException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
 
@@ -614,18 +623,29 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
-        Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
-        Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
 
-        return IntygContentHolder.builder()
-                .setContents(utkast.getModel())
-                .setUtlatande(utlatande)
-                .setStatuses(statuses)
-                .setRevoked(utkast.getAterkalladDatum() != null)
-                .setRelations(certificateRelations)
-                .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
-                .build();
+        try {
+            // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
+            Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
+            String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(), patient);
+
+            Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
+            List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
+            Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
+
+            return IntygContentHolder.builder()
+                    .setContents(updatedModel)
+                    .setUtlatande(utlatande)
+                    .setStatuses(statuses)
+                    .setRevoked(utkast.getAterkalladDatum() != null)
+                    .setRelations(certificateRelations)
+                    .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
+                    .build();
+
+        } catch (ModuleException | ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+        }
+
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
@@ -687,12 +707,7 @@ public class IntygServiceImpl implements IntygService {
                 return false;
             }
         } else {
-            PersonSvar personSvar = puService.getPerson(personnummer);
-            if (personSvar != null && personSvar.getPerson() != null) {
-                return personSvar.getPerson().isAvliden();
-            } else {
-                return false;
-            }
+            return patientDetailsResolver.isAvliden(personnummer);
         }
     }
 

@@ -99,7 +99,8 @@ public class IntygApiController extends AbstractApiController {
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
      * types of Intyg are converted and merged into one sorted list.
      *
-     * @param personNummerIn personnummer
+     * @param personNummerIn
+     *            personnummer
      * @return a Response carrying a list containing all Intyg for a person.
      */
     @GET
@@ -109,14 +110,13 @@ public class IntygApiController extends AbstractApiController {
         Personnummer personNummer = new Personnummer(personNummerIn);
         LOG.debug("Retrieving intyg for person {}", personNummer.getPnrHash());
 
-
         // INTYG-4086 (epic) - make sure only users with HANTERA_SEKRETESSMARKERAD_PATIENT can list intyg for patient
         // with sekretessmarkering.
         SekretessStatus patientSekretess = patientDetailsResolver.getSekretessStatus(personNummer);
-        authoritiesValidator.given(getWebCertUserService().getUser()).privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                patientSekretess == SekretessStatus.TRUE)
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                        patientSekretess == SekretessStatus.TRUE)
                 .orThrow();
-
 
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
 
@@ -158,8 +158,10 @@ public class IntygApiController extends AbstractApiController {
     /**
      * Sets the notified flag on an Intyg.
      *
-     * @param intygsId      Id of the Intyg
-     * @param notifiedState True or False
+     * @param intygsId
+     *            Id of the Intyg
+     * @param notifiedState
+     *            True or False
      * @return Response
      */
     @PUT
@@ -167,7 +169,7 @@ public class IntygApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-                                       @PathParam("version") long version, NotifiedState notifiedState) {
+            @PathParam("version") long version, NotifiedState notifiedState) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
@@ -182,20 +184,19 @@ public class IntygApiController extends AbstractApiController {
         }
 
         LOG.debug("Set forward to {} on intyg {} with id '{}'",
-                new Object[]{updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId()});
+                new Object[] { updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId() });
 
         ListIntygEntry intygEntry = IntygDraftsConverter.convertUtkastToListIntygEntry(updatedIntyg);
 
         return Response.ok(intygEntry).build();
     }
 
-
     @PUT
     @Path("/{intygsTyp}/{intygsId}/{version}/redoattsignera")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setKlarForSigneraAndSendStatusMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-                                                          @PathParam("version") long version) {
+            @PathParam("version") long version) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST)
