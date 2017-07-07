@@ -193,9 +193,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.openIntyg = function(intyg) {
                 if (intyg.status === 'DRAFT_INCOMPLETE' || intyg.status === 'DRAFT_COMPLETE') {
-                    $location.path('/' + intyg.intygType + '/edit/' + intyg.intygId);
+                    $location.path('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
                 } else {
-                    $location.path('/intyg/' + intyg.intygType + '/' + intyg.intygId);
+                    $location.path('/intyg/' + intyg.intygType + '/' + intyg.intygId + '/');
                 }
             };
 
