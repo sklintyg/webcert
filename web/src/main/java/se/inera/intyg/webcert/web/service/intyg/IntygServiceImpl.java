@@ -592,7 +592,8 @@ public class IntygServiceImpl implements IntygService {
                     .setRevoked(certificate.isRevoked())
                     .setRelations(certificateRelations)
                     .setDeceased(isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
-                    .setSekretessmarkering(patientDetailsResolver.isSekretessmarkering(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
+                    .setSekretessmarkering(patientDetailsResolver
+                            .isSekretessmarkering(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
                     .build();
 
         } catch (IntygModuleFacadeException me) {
@@ -630,27 +631,29 @@ public class IntygServiceImpl implements IntygService {
     private IntygContentHolder buildIntygContentHolderForUtkast(Utkast utkast, boolean relations) {
 
         // try {
-            // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
-           // Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
-           // String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(), patient);
+        // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
+        // Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(),
+        // utkast.getIntygsTyp());
+        // String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
+        // patient);
 
-            Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-            List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
-            Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
+        Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+        List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
+        Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
 
-            return IntygContentHolder.builder()
-                    .setContents(utkast.getModel())
-                    .setUtlatande(utlatande)
-                    .setStatuses(statuses)
-                    .setRevoked(utkast.getAterkalladDatum() != null)
-                    .setRelations(certificateRelations)
-                    .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
-                    .setSekretessmarkering(patientDetailsResolver.isSekretessmarkering(utkast.getPatientPersonnummer()))
-                    .build();
+        return IntygContentHolder.builder()
+                .setContents(utkast.getModel())
+                .setUtlatande(utlatande)
+                .setStatuses(statuses)
+                .setRevoked(utkast.getAterkalladDatum() != null)
+                .setRelations(certificateRelations)
+                .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
+                .setSekretessmarkering(patientDetailsResolver.isSekretessmarkering(utkast.getPatientPersonnummer()))
+                .build();
 
-//        } catch (ModuleException | ModuleNotFoundException e) {
-//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-//        }
+        // } catch (ModuleException | ModuleNotFoundException e) {
+        // throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+        // }
 
     }
 

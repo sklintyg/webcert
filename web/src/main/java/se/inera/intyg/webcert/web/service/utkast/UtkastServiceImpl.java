@@ -427,7 +427,8 @@ public class UtkastServiceImpl implements UtkastService {
                         || SamordningsnummerValidator.isSamordningsNummer(personId))
                 && !personId.getPnrHash().equals(draftPatient.getPersonId().getPnrHash())) {
 
-            // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar personnumret -
+            // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar
+            // personnumret -
             // vilka regler gäller då för namn och adress? Samma regler som i PatientDetailsResolver?
             draftPatient.setPersonId(personId);
             try {
@@ -704,14 +705,16 @@ public class UtkastServiceImpl implements UtkastService {
             GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson).getGrundData();
 
             // INTYG-4086: Make sure we never save unwanted patient information to the backend.
-            //Patient updatedPatientForSaving = patientDetailsResolver.updatePatientForSaving(grundData.getPatient(), utkast.getIntygsTyp());
+            // Patient updatedPatientForSaving = patientDetailsResolver.updatePatientForSaving(grundData.getPatient(),
+            // utkast.getIntygsTyp());
 
             Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
             HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
             utkast.setPatientPersonnummer(grundData.getPatient().getPersonId());
             String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
-            //String updatedInternalWithResolvedPatient = moduleApi.updateBeforeSave(updatedInternal, updatedPatientForSaving);
+            // String updatedInternalWithResolvedPatient = moduleApi.updateBeforeSave(updatedInternal,
+            // updatedPatientForSaving);
             utkast.setModel(updatedInternal);
 
             updatePatientNameFromModel(utkast, grundData.getPatient());
