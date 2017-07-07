@@ -251,12 +251,12 @@ module.exports = function(grunt) {
         ngtemplates: grunt.util._.extend(buildObjectForAllModules(function(module) {
             return {
                 cwd: __dirname + module.src,
-                src: ['**/*.html'],
-                dest: __dirname + module.dest + '/templates.js',
+                src: ['{webcert,app-shared}/**/*.html'],
+                dest: __dirname + module.dest + '/webcert/templates.js',
                 options: {
                     module: module.angularModule,
                     url: function(url) {
-                        return '/web/webjars/' + module.name + '/webcert/' + url;
+                        return '/web/webjars/' + module.name + '/' + url;
                     }
                 }
             };
@@ -307,22 +307,27 @@ module.exports = function(grunt) {
                             middlewares.push(
                                 connect().use(
                                         '/web/webjars/' + module.name + '/webcert',
-                                    serveStatic(__dirname + module.src) //jshint ignore:line
+                                    serveStatic(__dirname + module.src + '/webcert') //jshint ignore:line
+                                ));
+                            middlewares.push(
+                                connect().use(
+                                    '/web/webjars/' + module.name + '/app-shared',
+                                    serveStatic(__dirname + module.src + '/app-shared') //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
                                         '/web/webjars/' + module.name + '/webcert/templates.js',
-                                    serveStatic(__dirname + module.dest + '/templates.js') //jshint ignore:line
+                                    serveStatic(__dirname + module.dest + '/webcert/templates.js') //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
                                         '/web/webjars/' + module.name + '/webcert/module-deps.json',
-                                    serveStatic(__dirname + module.dest + '/module-deps.json') //jshint ignore:line
+                                    serveStatic(__dirname + module.dest + '/webcert/module-deps.json') //jshint ignore:line
                                 ));
                             middlewares.push(
                                 connect().use(
                                         '/web/webjars/' + module.name + '/webcert/css',
-                                    serveStatic(__dirname + module.dest + '/css')//jshint ignore:line
+                                    serveStatic(__dirname + module.dest + '/webcert/css')//jshint ignore:line
                                 ));
                         });
                         middlewares.push(proxy);
