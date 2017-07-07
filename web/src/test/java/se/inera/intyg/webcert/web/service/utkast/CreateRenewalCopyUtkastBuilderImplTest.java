@@ -349,6 +349,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest {
                 .setRevoked(false)
                 .setRelations(new Relations())
                 .setDeceased(false)
+                .setSekretessmarkering(false)
                 .build();
     }
 

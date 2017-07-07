@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
@@ -27,7 +28,14 @@ public class PatientDetailsResolver {
 
     public Patient resolvePatient(Personnummer personnummer, String intygsTyp) {
 
-        WebCertUser user = webCertUserService.getUser();
+        WebCertUser user = null;
+        if (webCertUserService.hasAuthenticationContext()) {
+            user = webCertUserService.getUser();
+        } else {
+            // If this code is called in a non-user context, use a dummy user for now.
+            user = new WebCertUser(new IntygUser(""));
+            user.setOrigin(WebCertUserOriginType.NORMAL.name());
+        }
 
         switch (intygsTyp) {
         case "fk7263":

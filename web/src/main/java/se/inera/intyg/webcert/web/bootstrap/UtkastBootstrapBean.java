@@ -18,27 +18,16 @@
  */
 package se.inera.intyg.webcert.web.bootstrap;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import javax.annotation.PostConstruct;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-
+import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -63,7 +52,22 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
+
+import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXB;
+import java.io.IOException;
+import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class UtkastBootstrapBean {
 
@@ -76,6 +80,7 @@ public class UtkastBootstrapBean {
     private FragaSvarRepository fragaRepo;
     @Autowired
     private ArendeRepository arendeRepo;
+
     private CustomObjectMapper mapper = new CustomObjectMapper();
     private List<Amne> fsAmnen = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE, Amne.KONTAKT, Amne.OVRIGT);
     private List<ArendeAmne> arendeAmnen = Arrays.asList(ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT);
@@ -83,12 +88,14 @@ public class UtkastBootstrapBean {
 
     @PostConstruct
     public void init() throws IOException {
+
         for (Resource resource : getResourceListing("classpath*:module-bootstrap-certificate/*.xml")) {
             try {
                 String moduleName = resource.getFilename().split("__")[0];
                 LOG.info("Bootstrapping certificate '{}' from module ", resource.getFilename(), moduleName);
-                Utlatande utlatande = registry.getModuleApi(moduleName)
-                        .getUtlatandeFromXml(Resources.toString(resource.getURL(), Charsets.UTF_8));
+
+                Utlatande utlatande = buildUtlatande(resource, moduleName);
+
                 if (utkastRepo.findOne(utlatande.getId()) == null) {
                     utkastRepo.save(createUtkast(utlatande));
                     switch (utlatande.getTyp()) {
@@ -113,6 +120,43 @@ public class UtkastBootstrapBean {
                 LOG.error("Could not bootstrap {}", resource.getFilename(), e);
             }
         }
+    }
+
+    // INTYG-4086: An incredibly ugly hack to mitigate the fact that we're populating test-data using the XML format
+    // and also directly to WC instead of storing in IT where these actually belong...
+    private Utlatande buildUtlatande(Resource resource, String moduleName) throws ModuleException, ModuleNotFoundException, IOException {
+
+        String xml = Resources.toString(resource.getURL(), Charsets.UTF_8);
+        Utlatande utlatande = registry.getModuleApi(moduleName)
+                .getUtlatandeFromXml(xml);
+
+        switch (moduleName) {
+        case "luse":
+        case "luae_fs":
+        case "luae_na":
+        case "lisjp":
+            RegisterCertificateType jaxbObject = JAXB.unmarshal(new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)),
+                    RegisterCertificateType.class);
+            Patient patient = jaxbObject.getIntyg().getPatient();
+            utlatande.getGrundData().getPatient().setFornamn(patient.getFornamn());
+            utlatande.getGrundData().getPatient().setMellannamn(patient.getMellannamn());
+            utlatande.getGrundData().getPatient().setEfternamn(patient.getEfternamn());
+            utlatande.getGrundData().getPatient().setFullstandigtNamn(
+                    IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
+            break;
+        case "fk7263":
+            RegisterMedicalCertificateType jaxbObject2 = JAXB.unmarshal(
+                    new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)), RegisterMedicalCertificateType.class);
+            PatientType patient2 = jaxbObject2.getLakarutlatande().getPatient();
+            utlatande.getGrundData().getPatient().setEfternamn(patient2.getFullstandigtNamn());
+            utlatande.getGrundData().getPatient().setFullstandigtNamn(patient2.getFullstandigtNamn());
+            break;
+        case "ts-bas":
+        case "ts-diabetes":
+            break;
+        }
+
+        return utlatande;
     }
 
     private void setupArende(Utlatande utlatande, boolean komplettering, boolean paminnelse, FrageStallare fragestallare) {

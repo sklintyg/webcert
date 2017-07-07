@@ -583,6 +583,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
               //  .setReplacedByRelation(null)
               //  .setComplementedByRelation(null)
                 .setDeceased(false)
+                .setSekretessmarkering(false)
                 .build();
     }
 
@@ -598,6 +599,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
               //  .setReplacedByRelation(null)
               //  .setComplementedByRelation(null)
                 .setDeceased(false)
+                .setSekretessmarkering(false)
                 .build();
     }
 
@@ -615,6 +617,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
                 //.setReplacedByRelation(null)
                 //.setComplementedByRelation(null)
                 .setDeceased(false)
+                .setSekretessmarkering(false)
                 .build();
     }
 

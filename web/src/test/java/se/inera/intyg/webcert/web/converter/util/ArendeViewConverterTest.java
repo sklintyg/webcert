@@ -129,6 +129,7 @@ public class ArendeViewConverterTest {
                                // .setReplacedByRelation(null)
                                // .setComplementedByRelation(null)
                                 .setDeceased(false)
+                                .setSekretessmarkering(false)
                                 .build());
     }
 

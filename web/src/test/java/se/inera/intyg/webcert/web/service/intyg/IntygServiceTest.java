@@ -281,7 +281,7 @@ public class IntygServiceTest {
         // ensure that correctcall is made to intygstjanst
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
         //verify(puService).getPerson(any(Personnummer.class));
-        verify(patientDetailsResolver).resolvePatient(any(Personnummer.class), anyString());
+        verify(patientDetailsResolver).isAvliden(any(Personnummer.class));
 
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
@@ -925,7 +925,7 @@ public class IntygServiceTest {
 
     @Test
     public void testDeceasedIsSetForDeadPatientNormal() {
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, true));
+        when(patientDetailsResolver.isAvliden(any(Personnummer.class))).thenReturn(true);
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertTrue(intygData.isDeceased());
     }
@@ -999,7 +999,7 @@ public class IntygServiceTest {
         patient.setAvliden(avliden);
 
         return patient;
-      
+
     }
 
     private PersonSvar getPersonSvar(boolean deceased) {

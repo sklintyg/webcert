@@ -110,17 +110,22 @@ public class IntygModuleApiController extends AbstractApiController {
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
 
-        Patient patient = patientDetailsResolver.resolvePatient(intygAsExternal
-                .getUtlatande()
-                .getGrundData()
-                .getPatient()
-                .getPersonId(), intygAsExternal.getUtlatande().getTyp());
+//        Patient patient = patientDetailsResolver.resolvePatient(intygAsExternal
+//                .getUtlatande()
+//                .getGrundData()
+//                .getPatient()
+//                .getPersonId(), intygAsExternal.getUtlatande().getTyp());
 
         // Check if the patient is sekretessmarkerad. If so, only users having the requisite privilege for the current intygsTyp
         // may see this utkast. INTYG-4086
+        boolean isSekretessmarkerad = patientDetailsResolver.isSekretessmarkering(intygAsExternal
+                .getUtlatande()
+                .getGrundData()
+                .getPatient()
+                .getPersonId());
 
         authoritiesValidator.given(getWebCertUserService().getUser())
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, patient.isSekretessmarkering())
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, isSekretessmarkerad)
                 .orThrow();
 
         // Update the model with the resolved patient info.

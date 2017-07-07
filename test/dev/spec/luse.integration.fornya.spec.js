@@ -26,7 +26,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Djupintegration on luse intyg', function() {
+fdescribe('Djupintegration on luse intyg', function() {
 
     var intygId = 'luse-integration-renew-1';
 
@@ -64,7 +64,7 @@ describe('Djupintegration on luse intyg', function() {
         });
         expect(LuseIntygPage.isAt()).toBeTruthy();
 
-        // INTYG-4086: The supplied name/address should be irrelevant as long as the PU-service is available.
+        // INTYG-4086:
         // Only a changed personnummer should be taken into account?
         expect(LuseIntygPage.statusNameAndAddressChanged.isDisplayed()).toBeTruthy();
     });

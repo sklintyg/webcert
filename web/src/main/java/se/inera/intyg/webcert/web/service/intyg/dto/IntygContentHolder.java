@@ -50,6 +50,8 @@ public abstract class IntygContentHolder {
 
     public abstract boolean isDeceased();
 
+    public abstract boolean isSekretessmarkering();
+
     public static Builder builder() {
         return new AutoValue_IntygContentHolder.Builder()
                 .setRelations(new Relations());
@@ -71,6 +73,8 @@ public abstract class IntygContentHolder {
         public abstract Builder setRelations(Relations relations);
 
         public abstract Builder setDeceased(boolean deceased);
+
+        public abstract Builder setSekretessmarkering(boolean sekretessmarkering);
     }
 
 }

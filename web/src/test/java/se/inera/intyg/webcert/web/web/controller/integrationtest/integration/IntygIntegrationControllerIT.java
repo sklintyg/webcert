@@ -164,7 +164,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
      * redirect process.
      */
     @Test
-    public void testPatientDetailsUpdatedFromJournalSystemUtkastLuse() {
+    public void testPatientDetailsUpdatedFromJournalSystemUtkastLuseAndPUServiceIsUnavailable() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -273,8 +273,10 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
                 .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")))
-                .body("content.grundData.patient.fullstandigtNamn",
-                        isEmptyOrNullString());    // INTYG-4086, ta bort namn.
+
+                // INTYG-4086: Vi vet ännu inte huruvida man skall kunna uppdatera patientens namn via parametrar...
+                .body("content.grundData.patient.fullstandigtNamn", isEmptyOrNullString());
+
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)

@@ -314,6 +314,7 @@ public class CopyCompletionUtkastBuilderTest {
               //  .setReplacedByRelation(null)
               //  .setComplementedByRelation(null)
                 .setDeceased(false)
+                .setSekretessmarkering(false)
                 .build();
     }
 

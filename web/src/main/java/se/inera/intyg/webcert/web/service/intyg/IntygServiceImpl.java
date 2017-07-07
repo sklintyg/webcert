@@ -573,8 +573,12 @@ public class IntygServiceImpl implements IntygService {
             String internalIntygJsonModel = certificate.getInternalModel();
 
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
+            // Since an FK-intyg never will have anything other than personId, try to fetch all using ruleset
             Patient patient = patientDetailsResolver.resolvePatient(certificate.getUtlatande().getGrundData().getPatient().getPersonId(),
                     typ);
+            // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
+            // Patient object. NOTE! It's possible we should remove all usage of grundData.patient in the GUI, instead
+            // we could rely on something new on the IntygContentHolder more transient in nature.
             ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
             String updatedModel = moduleApi.updateBeforeSave(internalIntygJsonModel, patient);
 
@@ -587,7 +591,8 @@ public class IntygServiceImpl implements IntygService {
                     .setStatuses(certificate.getMetaData().getStatus())
                     .setRevoked(certificate.isRevoked())
                     .setRelations(certificateRelations)
-                    .setDeceased(patient.isAvliden())
+                    .setDeceased(isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
+                    .setSekretessmarkering(patientDetailsResolver.isSekretessmarkering(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
                     .build();
 
         } catch (IntygModuleFacadeException me) {
@@ -597,7 +602,7 @@ public class IntygServiceImpl implements IntygService {
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
-            return buildIntygContentHolder(utkast, relations);
+            return buildIntygContentHolderForUtkast(utkast, relations);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygId, typ);
@@ -606,7 +611,7 @@ public class IntygServiceImpl implements IntygService {
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
-            return buildIntygContentHolder(utkast, relations);
+            return buildIntygContentHolderForUtkast(utkast, relations);
         } catch (ModuleNotFoundException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
@@ -619,32 +624,33 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        return (utkast != null) ? buildIntygContentHolder(utkast, false) : getIntygData(intygId, intygTyp, false);
+        return (utkast != null) ? buildIntygContentHolderForUtkast(utkast, false) : getIntygData(intygId, intygTyp, false);
     }
 
-    private IntygContentHolder buildIntygContentHolder(Utkast utkast, boolean relations) {
+    private IntygContentHolder buildIntygContentHolderForUtkast(Utkast utkast, boolean relations) {
 
-        try {
+        // try {
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
-            Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
-            String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(), patient);
+           // Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
+           // String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(), patient);
 
-            Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
+            Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
             Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
 
             return IntygContentHolder.builder()
-                    .setContents(updatedModel)
+                    .setContents(utkast.getModel())
                     .setUtlatande(utlatande)
                     .setStatuses(statuses)
                     .setRevoked(utkast.getAterkalladDatum() != null)
                     .setRelations(certificateRelations)
                     .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
+                    .setSekretessmarkering(patientDetailsResolver.isSekretessmarkering(utkast.getPatientPersonnummer()))
                     .build();
 
-        } catch (ModuleException | ModuleNotFoundException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-        }
+//        } catch (ModuleException | ModuleNotFoundException e) {
+//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+//        }
 
     }
 
