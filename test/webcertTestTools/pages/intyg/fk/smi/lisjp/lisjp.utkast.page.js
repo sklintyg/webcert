@@ -263,7 +263,12 @@ var LisjpUtkast = BaseSmiUtkast._extend({
                     beskrivning += atgarder[i].beskrivning + '\n';
                 }
             }
-            return beskrivningEL.sendKeys(beskrivning);
+
+            if (beskrivning) {
+                return beskrivningEL.sendKeys(beskrivning);
+            } else {
+                return Promise.resolve();
+            }
         };
 
         var atgarderNamn = atgarder.map(function(obj) {

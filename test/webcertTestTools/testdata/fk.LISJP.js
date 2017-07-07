@@ -104,7 +104,7 @@ function getRandomAtgarder() {
         beskrivning: 'Övrigt-beskrivning',
         key: 'OVRIGA_ATGARDER'
     }];
-    var randomLength = Math.floor(Math.random() * atgarder.length) + 1;
+    var randomLength = Math.floor(Math.random() * 3) + 1;
 
     // 33% chans för inte aktuellt
     return shuffle([
