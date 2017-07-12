@@ -75,6 +75,7 @@ module.exports = function(grunt) {
 
     var CSS_COMMON_SRC_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/css';
     var CSS_COMMON_DEST_DIR = '/../../common/web/build/resources/main/META-INF/resources/webjars/common/css';
+    var CSS_COMMON_WC_DEST_DIR = '/../../common/web/build/resources/main/META-INF/resources/webjars/common/webcert';
 
     function buildListForAllModules(callback) {
         var list = [];
@@ -227,9 +228,9 @@ module.exports = function(grunt) {
                 files: buildListForAllModules(function(module) {
                     return {
                         expand: true,
-                        cwd: __dirname + module.src + '/css/',
+                        cwd: __dirname + module.src + '/webcert',
                         src: ['*.scss'],
-                        dest: __dirname + module.dest + '/css',
+                        dest: __dirname + module.dest + '/webcert',
                         ext: '.css'
                     };
                 }).concat([
@@ -330,6 +331,11 @@ module.exports = function(grunt) {
                                     serveStatic(__dirname + module.dest + '/webcert/css')//jshint ignore:line
                                 ));
                         });
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/common/webcert/wc-common.css',
+                                serveStatic(__dirname + CSS_COMMON_WC_DEST_DIR + '/wc-common.css')//jshint ignore:line
+                            ));
                         middlewares.push(proxy);
                         return middlewares;
                     }
