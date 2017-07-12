@@ -144,19 +144,19 @@ describe('ChooseCertTypeCtrl', function() {
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_COMPLETE';
             $scope.openIntyg(intyg);
-            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId);
+            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_INCOMPLETE';
             $scope.openIntyg(intyg);
-            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId);
+            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set signed path', function() {
             intyg.status = 'RECEIVED';
             $scope.openIntyg(intyg);
-            expect($location.path()).toBe('/intyg/' + intyg.intygType + '/' + intyg.intygId);
+            expect($location.path()).toBe('/intyg/' + intyg.intygType + '/' + intyg.intygId + '/');
         });
     });
 });
