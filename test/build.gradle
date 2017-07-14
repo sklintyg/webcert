@@ -22,8 +22,6 @@ task protractorTests(type: NodeTask, dependsOn: npmInstall) {
     args = ["default:${environment}"]
 }
 
-protractorTests.dependsOn npm_update
-
 dependencies {
     runtime project(':webcert-web')
 }
