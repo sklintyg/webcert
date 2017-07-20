@@ -58,42 +58,42 @@ var LuaefsIntyg = FkBaseIntygPage._extend({
         // Knappar etc. ärvs i första hand från BaseIntygPage
 
         // Svarstexter
-        this.undersokningAvPatienten = element(by.css('span #undersokningAvPatienten'));
-        this.journaluppgifter = element(by.css('span #journaluppgifter'));
-        this.anhorigsBeskrivningAvPatienten = element(by.css('span #anhorigsBeskrivningAvPatienten'));
-        this.annatGrundForMU = element(by.css('span #annatGrundForMU'));
-        this.annatGrundForMUBeskrivning = element(by.css('div #annatGrundForMUBeskrivning'));
-        this.kannedomOmPatient = element(by.css('span #kannedomOmPatient'));
+        this.undersokningAvPatienten = element(by.css('#undersokningAvPatienten'));
+        this.journaluppgifter = element(by.css('#journaluppgifter'));
+        this.anhorigsBeskrivningAvPatienten = element(by.css('#anhorigsBeskrivningAvPatienten'));
+        this.annatGrundForMU = element(by.css('#annatGrundForMU'));
+        this.annatGrundForMUBeskrivning = element(by.css('#annatGrundForMUBeskrivning'));
+        this.kannedomOmPatient = element(by.css('#kannedomOmPatient'));
 
-        this.underlagFinnsJa = element(by.id('underlagFinns-Ja'));
+        this.underlagFinns = element(by.id('underlagFinns'));
 
-        this.underlag0Typ = element(by.id('underlag-0-typ'));
-        this.underlag0Datum = element(by.id('underlag-0-datum'));
-        this.underlag0HamtasFran = element(by.id('underlag-0-hamtasFran'));
+        this.underlag0Typ = element(by.id('underlag-row0-col0'));
+        this.underlag0Datum = element(by.id('underlag-row0-col1'));
+        this.underlag0HamtasFran = element(by.id('underlag-row0-col2'));
 
-        this.underlag1Typ = element(by.id('underlag-1-typ'));
-        this.underlag1Datum = element(by.id('underlag-1-datum'));
-        this.underlag1HamtasFran = element(by.id('underlag-1-hamtasFran'));
+        this.underlag1Typ = element(by.id('underlag-row1-col0'));
+        this.underlag1Datum = element(by.id('underlag-row1-col1'));
+        this.underlag1HamtasFran = element(by.id('underlag-row1-col2'));
 
-        this.diagnos0Kod = element(by.id('diagnoser-0-kod'));
-        this.diagnos0Beskrivning = element(by.id('diagnoser-0-beskrivning'));
+        this.diagnos0Kod = element(by.id('diagnoser-row0-col0'));
+        this.diagnos0Beskrivning = element(by.id('diagnoser-row0-col1'));
 
-        this.diagnos1Kod = element(by.id('diagnoser-1-kod'));
-        this.diagnos1Beskrivning = element(by.id('diagnoser-1-beskrivning'));
+        this.diagnos1Kod = element(by.id('diagnoser-row1-col0'));
+        this.diagnos1Beskrivning = element(by.id('diagnoser-row1-col1'));
 
-        this.diagnos2Kod = element(by.id('diagnoser-2-kod'));
-        this.diagnos2Beskrivning = element(by.id('diagnoser-2-beskrivning'));
+        this.diagnos2Kod = element(by.id('diagnoser-row2-col0'));
+        this.diagnos2Beskrivning = element(by.id('diagnoser-row2-col1'));
 
         this.funktionsnedsattningDebut = element(by.id('funktionsnedsattningDebut'));
         this.funktionsnedsattningPaverkan = element(by.id('funktionsnedsattningPaverkan'));
 
         this.ovrigt = element(by.id('ovrigt'));
 
-        this.kontaktMedFkJa = element(by.id('kontaktMedFk-Ja'));
+        this.kontaktMedFk = element(by.id('kontaktMedFk'));
         this.anledningTillKontakt = element(by.id('anledningTillKontakt'));
 
-        this.tillagsFraga1 = element(by.css('#tillaggsfraga-9001 div'));
-        this.tillagsFraga2 = element(by.css('#tillaggsfraga-9002 div'));
+        this.tillagsFraga1 = element(by.css('#tillaggsfragor-9001'));
+        this.tillagsFraga2 = element(by.css('#tillaggsfragor-9002'));
 
         this.baseratPa = {
             minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
@@ -105,13 +105,6 @@ var LuaefsIntyg = FkBaseIntygPage._extend({
         };
 
         this.ovrigaUpplysningar = element(by.id('ovrigt'));
-
-        this.kontaktFK = {
-            onskas: element(by.id('form_kontaktMedFk')),
-            ja: element(by.id('kontaktMedFk-Ja')),
-            nej: element(by.id('kontaktMedFk-Nej')),
-            anledning: element(by.id('anledningTillKontakt'))
-        };
     },
 
     get: function get(intygId) {

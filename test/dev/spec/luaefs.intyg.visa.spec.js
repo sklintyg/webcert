@@ -53,23 +53,23 @@ describe('Validera visning av Intyg', function() {
         });
 
         it('Verifiera Grund för medicinskt underlag', function() {
-            expect(IntygPage.undersokningAvPatienten.getText()).toBe('9 september 2015');
-            expect(IntygPage.journaluppgifter.getText()).toBe('10 september 2015');
-            expect(IntygPage.anhorigsBeskrivningAvPatienten.getText()).toBe('11 september 2015');
-            expect(IntygPage.annatGrundForMU.getText()).toBe('12 september 2015');
+            expect(IntygPage.undersokningAvPatienten.getText()).toBe('2015-09-09');
+            expect(IntygPage.journaluppgifter.getText()).toBe('2015-09-10');
+            expect(IntygPage.anhorigsBeskrivningAvPatienten.getText()).toBe('2015-09-11');
+            expect(IntygPage.annatGrundForMU.getText()).toBe('2015-09-12');
             expect(IntygPage.annatGrundForMUBeskrivning.getText()).toBe(luaefsTemplate.annatGrundForMUBeskrivning);
-            expect(IntygPage.kannedomOmPatient.getText()).toBe('7 januari 2015');
+            expect(IntygPage.kannedomOmPatient.getText()).toBe('2015-01-07');
         });
 
         it('Verifiera underlag', function() {
-            expect(IntygPage.underlagFinnsJa.getText()).toBe('Ja');
+            expect(IntygPage.underlagFinns.getText()).toBe('Ja');
 
             expect(IntygPage.underlag0Typ.getText()).toBe('Underlag från psykolog');
-            expect(IntygPage.underlag0Datum.getText()).toBe('3 september 2015');
+            expect(IntygPage.underlag0Datum.getText()).toBe('2015-09-03');
             expect(IntygPage.underlag0HamtasFran.getText()).toBe('Skickas med posten');
 
             expect(IntygPage.underlag1Typ.getText()).toBe('Underlag från habiliteringen');
-            expect(IntygPage.underlag1Datum.getText()).toBe('4 september 2015');
+            expect(IntygPage.underlag1Datum.getText()).toBe('2015-09-04');
             expect(IntygPage.underlag1HamtasFran.getText()).toBe('Arkivet');
         });
 
@@ -87,7 +87,7 @@ describe('Validera visning av Intyg', function() {
 
         it('Verifiera övrigt, kontakt och tilläggsfrågor', function() {
             expect(IntygPage.ovrigt.getText()).toBe('Detta skulle kunna innebära sämre möjlighet att få ställa upp i danstävlingar');
-            expect(IntygPage.kontaktMedFkJa.getText()).toBe('Ja');
+            expect(IntygPage.kontaktMedFk.getText()).toBe('Ja');
             expect(IntygPage.anledningTillKontakt.getText()).toBe('Vill stämma av ersättningen');
             expect(IntygPage.tillagsFraga1.getText()).toBe('Tämligen');
             expect(IntygPage.tillagsFraga2.getText()).toBe('Minst 3 fot');

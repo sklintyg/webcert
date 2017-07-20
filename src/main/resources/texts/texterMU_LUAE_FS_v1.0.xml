@@ -49,4 +49,19 @@ Om du inte känner patienten ska hen styrka sin identitet genom legitimation med
 <text id="KV_FKMU_0005.SKOLHALSOVARD.RBK">Underlag från skolhälsovård</text>
 <text id="KV_FKMU_0005.SPECIALISTKLINIK.RBK">Utredning av annan specialistklinik</text>
 <text id="KV_FKMU_0005.VARD_UTOMLANDS.RBK">Utredning från vårdinrättning utomlands</text>
+
+  <!-- Manuellt tillagda tilläggsfrågor så att vi kan testa den funktionaliteten -->
+  <text id="KAT_9999.RBK">Tilläggsfrågor</text>
+  <text id="KAT_9999.HLP">TBD</text>
+
+  <tillagg>
+    <tillaggsfraga id="9001">
+      <text id="DFR_9001.1.RBK">Är patienten väldigt skoltrött?</text>
+      <text id="DFR_9001.1.HLP">Ange varför.</text>
+    </tillaggsfraga>
+    <tillaggsfraga id="9002">
+      <text id="DFR_9002.1.RBK">Hur långt är ett snöre?</text>
+      <text id="DFR_9002.1.HLP">Ange längd i centimeter (cm).</text>
+    </tillaggsfraga>
+  </tillagg>
 </texter>
