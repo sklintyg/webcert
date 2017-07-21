@@ -33,13 +33,13 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
 
         this.sjukskrivningar = {
             grad: function(index) {
-                return element(by.id('sjukskrivningar-' + index + '-grad'));
+                return element(by.id('sjukskrivningar-row' + index + '-col0'));
             },
             from: function(index) {
-                return element(by.id('sjukskrivningar-' + index + '-from'));
+                return element(by.id('sjukskrivningar-row' + index + '-col1'));
             },
             to: function(index) {
-                return element(by.id('sjukskrivningar-' + index + '-tom'));
+                return element(by.id('sjukskrivningar-row' + index + '-col2'));
             }
         };
     },
@@ -61,10 +61,10 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
         this.verifyArbetsformaga(data.arbetsformaga);
 
         if (!data.smittskydd) {
-            expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(testdataHelper.dateToText(data.baseratPa.minUndersokningAvPatienten));
-            expect(this.baseratPa.journaluppgifter.getText()).toBe(testdataHelper.dateToText(data.baseratPa.journaluppgifter));
-            expect(this.baseratPa.telefonkontakt.getText()).toBe(testdataHelper.dateToText(data.baseratPa.telefonkontakt));
-            expect(this.baseratPa.annat.getText()).toBe(testdataHelper.dateToText(data.baseratPa.annat));
+            expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(data.baseratPa.minUndersokningAvPatienten);
+            expect(this.baseratPa.journaluppgifter.getText()).toBe(data.baseratPa.journaluppgifter);
+            expect(this.baseratPa.telefonkontakt.getText()).toBe(data.baseratPa.telefonkontakt);
+            expect(this.baseratPa.annat.getText()).toBe(data.baseratPa.annat);
             expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
 
             expect(this.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
@@ -73,15 +73,12 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
             expect(this.behandling.pagaende.getText()).toBe(data.medicinskbehandling.pagaende);
             expect(this.behandling.planerad.getText()).toBe(data.medicinskbehandling.planerad);
 
-            if (data.kontaktMedFk) {
-                expect(this.kontaktFK.ja.isDisplayed()).toBeTruthy();
-            } else {
-                expect(this.kontaktFK.nej.isDisplayed()).toBeTruthy();
-            }
+            this.kontaktFK.verify(data);
 
             if (data.tillaggsfragor) {
                 for (var i = 0; i < data.tillaggsfragor.length; i++) {
-                    expect(this.tillaggsfragor.getFraga(i).getText()).toBe(data.tillaggsfragor[i].svar);
+                    var fraga = data.tillaggsfragor[i];
+                    expect(this.tillaggsfragor.getFraga(fraga.id).getText()).toBe(fraga.svar);
                 }
             }
         }

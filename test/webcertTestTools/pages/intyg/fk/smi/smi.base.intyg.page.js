@@ -30,15 +30,13 @@ var FkBaseIntyg = require('../fk.base.intyg.page.js');
 var BaseSmiIntygPage = FkBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
+        var that = this;
 
         this.certficate = element(by.id('certificate'));
         this.notSentMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
 
-        this.diagnoseCode = element(by.id('diagnoseCode'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.ovrigt = element(by.id('ovrigt'));
-        this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
-        this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
         this.patientAdress = {
             postadress: element(by.id('patient_postadress')),
@@ -67,8 +65,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
                 };
             },
             grund: element(by.id('diagnosgrund')),
-            nyBedomningDiagnosgrundValue: element(by.id('nyBedomningDiagnosgrund')),
-            nyBedomningDiagnosgrund: element(by.id('form_nyBedomningDiagnosgrund')),
+            nyBedomningDiagnosgrund: element(by.id('nyBedomningDiagnosgrund')),
             diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))
         };
 
@@ -112,17 +109,21 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         this.kontaktFK = {
             value: element(by.id('kontaktMedFk')),
             onskas: element(by.id('form_kontaktMedFk')),
-            ja: element(by.id('kontaktMedFk-Ja')),
-            nej: element(by.id('kontaktMedFk-Nej')),
-            anledning: element(by.id('anledningTillKontakt'))
+            anledning: element(by.id('anledningTillKontakt')),
+            verify: function(data) {
+                if (data.kontaktMedFk) {
+                    expect(that.kontaktFK.value.getText()).toBe('Ja');
+                } else {
+                    expect(that.kontaktFK.value.getText()).toBe('Nej');
+                }
+            }
         };
 
         this.qaPanels = element.all(by.css('.arende-panel'));
 
         this.tillaggsfragor = {
-            getFraga: function(index) {
-                index = index + 1 || 1;
-                return element(by.id('tillaggsfraga-900' + index));
+            getFraga: function(id) {
+                return element(by.id('tillaggsfragor-' + id));
             }
         };
         this.komplettera = {

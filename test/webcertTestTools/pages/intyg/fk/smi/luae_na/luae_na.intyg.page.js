@@ -59,10 +59,10 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
 
         expect(this.diagnoser.grund.getText()).toBe(data.diagnos.narOchVarStalldesDiagnoserna);
         if (data.diagnos.nyBedomning) {
-            expect(this.diagnoser.nyBedomningDiagnosgrundValue.getText()).toBe('Ja');
+            expect(this.diagnoser.nyBedomningDiagnosgrund.getText()).toBe('Ja');
             expect(this.diagnoser.diagnosForNyBedomning.getText()).toBe(data.diagnos.diagnosForNyBedomning);
         } else {
-            expect(this.diagnoser.nyBedomningDiagnosgrundValue.getText()).toBe('Nej');
+            expect(this.diagnoser.nyBedomningDiagnosgrund.getText()).toBe('Nej');
             expect(this.diagnoser.diagnosForNyBedomning.getText()).toBe('Ej angivet');
         }
         if (data.diagnos.diagnoser) {
@@ -94,11 +94,7 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
 
         expect(this.ovrigt.getText()).toBe(data.ovrigt);
 
-        if (data.kontaktMedFk) {
-            expect(this.kontaktFK.value.getText()).toBe('Ja');
-        } else {
-            expect(this.kontaktFK.value.getText()).toBe('Nej');
-        }
+        this.kontaktFK.verify(data);
     }
 });
 module.exports = new LuaeNaIntyg();
