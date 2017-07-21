@@ -25,9 +25,10 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
-xdescribe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
+describe('Create and Sign luae_fs utkast', function() {
 
     var utkastId = null;
+    var data = null;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -36,94 +37,47 @@ xdescribe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång');
     });
 
-    describe('Fyll i luae_fs intyg', function() {
+    describe('Fyll i intyget', function() {
 
         it('Spara undan intygsId från URL', function() {
+            UtkastPage.disableAutosave();
 
             // Save id so it can be removed in cleanup stage.
             browser.getCurrentUrl().then(function(url) {
                 utkastId = url.split('/').pop();
             });
+            data = wcTestTools.testdata.fk.LUAE_FS.getRandom(utkastId);
         });
 
         it('tomt utkast skall visa lista med fel efter klick på Signera', function() {
-
-            UtkastPage.disableAutosave();
-
             UtkastPage.signeraButtonClick();
 
             expect(UtkastPage.getMissingInfoMessagesCount()).toBe(3);
-
         });
 
-        it('Grund - baserat på', function() {
-
-            var promiseArr = [];
-
-            promiseArr.push(UtkastPage.angeIntygetBaserasPa({
-                minUndersokningAvPatienten: {
-                    datum: '2016-04-22'
-                }
-            }));
-
-            promiseArr.push(UtkastPage.angeIntygetBaserasPa({
-                kannedomOmPatient: {
-                    datum: '2016-04-21'
-                }
-            }));
-
-            promiseArr.push(UtkastPage.angeIntygetBaserasPa({
-                annat: {
-                    datum: '2016-04-23',
-                    beskrivning: 'Utlåtande från skolledningen'
-                }
-            }));
-
-            Promise.all(promiseArr);
-
-            expect(UtkastPage.baseratPa.minUndersokningAvPatienten.datum.getAttribute('value')).toBe('2016-04-22');
-            expect(UtkastPage.baseratPa.kannedomOmPatient.datum.getAttribute('value')).toBe('2016-04-21');
-            expect(UtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-04-23');
-            expect(UtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe(
-                'Utlåtande från skolledningen');
+        it('angeBaseratPa', function() {
+            UtkastPage.angeBaseratPa(data.baseratPa);
         });
 
-        it('Andra medicinska utredningar eller underlag', function() {
-            var utredningar = [{
-                underlag: 'Neuropsykiatriskt utlåtande',
-                datum: '2016-04-16',
-                infoOmUtredningen: 'Hämtas hos posten'
-            }];
-            UtkastPage.angeAndraMedicinskaUtredningar(utredningar);
+        it('angeAndraMedicinskaUtredningar', function() {
+            UtkastPage.angeAndraMedicinskaUtredningar(data.andraMedicinskaUtredningar);
         });
 
-        it('Ange diagnoser', function() {
-            var diagnosObj = {
-                diagnoser: [{
-                    'kod': 'J21'
-                }, {
-                    'kod': 'J22'
-                }, {
-                    'kod': 'A21'
-                }]
-            };
-            UtkastPage.angeDiagnos(diagnosObj);
+        it('angeDiagnos', function() {
+            UtkastPage.angeDiagnos(data.diagnos);
         });
 
-        it('Ange funktionsnedsättningar', function() {
-            UtkastPage.funktionsnedsattning.debut.sendKeys('Komplex tango på skoldansen, knäfraktur.');
-            UtkastPage.funktionsnedsattning.paverkan.sendKeys(
-                'Dansen funkar inte längre, svårt att fullfölja baletten.');
+        it('angeFunktionsnedsattning', function() {
+            UtkastPage.angeFunktionsnedsattning(data.funktionsnedsattning);
         });
 
-        it('Ange övrigt', function() {
-            UtkastPage.ovrigt.sendKeys('Behöver nog ett par år extra för att komma ikapp efter skadan.');
+        it('angeOvrigaUpplysningar', function() {
+            UtkastPage.enableAutosave();
+            UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
         });
 
-        it('Ange kontakt önskas', function() {
-            UtkastPage.kontaktMedFkNo.sendKeys(protractor.Key.SPACE).then(function(){
-                UtkastPage.anledningTillKontakt.sendKeys('Patienten känner att en avstämning vore bra.');
-            });
+        it('angeKontaktMedFK', function() {
+            UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
         });
 /* no tilläggsfrågor atm. activate if we get such in the future
         it('Ange tilläggsfrågor', function() {
@@ -134,17 +88,27 @@ xdescribe('luaefs.utkast.create - Create and Sign luae_fs utkast', function() {
         });
 */
         it('Signera intyget', function() {
-            UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                UtkastPage.signeraButtonClick();
-                expect(IntygPage.isAt()).toBeTruthy();
-            });
+            UtkastPage.whenSigneraButtonIsEnabled();
+
+            browser.sleep(1000);
+
+            UtkastPage.signeraButtonClick();
+
+            browser.sleep(1000);
+
+            expect(IntygPage.isAt()).toBeTruthy();
+        });
+
+        it('Verifiera intyg', function() {
+            IntygPage.whenCertificateLoaded();
+
+            IntygPage.verify(data);
         });
     });
 
     afterAll(function() {
         testdataHelper.deleteIntyg(utkastId);
         testdataHelper.deleteUtkast(utkastId);
-        specHelper.logout();
     });
 
 });

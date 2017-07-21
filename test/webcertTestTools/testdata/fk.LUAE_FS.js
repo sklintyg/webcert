@@ -48,7 +48,7 @@ module.exports = {
                 diagnoser: [{
                     kod: shuffle(fkValues.ICD10)[0],
                     bakgrund: testdataHelper.randomTextString()
-                }],
+                }]
             },
             funktionsnedsattning: {
                 //funktionsnedsattningar
@@ -56,7 +56,7 @@ module.exports = {
                 paverkan: testdataHelper.randomTextString()
             },
             ovrigt: testdataHelper.randomTextString(),
-            kontaktMedFk: testdataHelper.randomTrueFalse(),
+            kontaktMedFk: testdataHelper.randomTrueFalse()
         };
     }
 };
