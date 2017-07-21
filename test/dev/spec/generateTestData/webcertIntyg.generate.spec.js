@@ -53,6 +53,6 @@ describe('generate', function() {
         createIntyg('luse');
         createIntyg('luae_na');
         createIntyg('luae_fs');
-        createIntyg('lisu');
+        createIntyg('lisjp');
     });
 });
