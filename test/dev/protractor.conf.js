@@ -41,12 +41,12 @@ exports.config = {
     seleniumAddress: require('./../webcertTestTools/environment.js').envConfig.SELENIUM_ADDRESS,
     baseUrl: require('./../webcertTestTools/environment.js').envConfig.WEBCERT_URL,
 
-    specs: ['./spec/*.spec.js'],
+    specs: ['./spec/*.spec.js', './spec/intyg/**/*.spec.js'],
 
     suites: {
         testdata: './spec/generateTestData/**/*.spec.js',
         clean: './spec/cleanTestData/**/*.spec.js',
-        app: ['./spec/*.spec.js']
+        app: ['./spec/*.spec.js', './spec/intyg/**/*.spec.js']
     },
 
     // If chromeOnly is true, we dont need to start the selenium server. (seems we don't need to anyway? can this be removed?)
