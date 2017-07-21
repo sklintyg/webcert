@@ -113,6 +113,9 @@ module.exports = {
         if (intygType === 'Läkarintyg för sjukpenning') {
             utkastPage = pages.intyg.lisjp.utkast;
         }
+        if (intygType === 'Läkarutlåtande för sjukersättning') {
+            utkastPage = pages.intyg.luse.utkast;
+        }
 
         expect(utkastPage.isAt()).toBe(true);
     },

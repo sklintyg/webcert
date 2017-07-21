@@ -68,7 +68,7 @@ describe('Validera visning av Intyg', function() {
         },
         ovrigt: 'Detta skulle kunna innebära sämre möjlighet att få ställa upp i danstävlingar',
         kontaktMedFk: true,
-
+        kontaktAnledning: 'Vill stämma av ersättningen',
         tillaggsfragor: [{
             id: 9001,
             svar: 'Tämligen'
@@ -98,11 +98,6 @@ describe('Validera visning av Intyg', function() {
         it('Verifiera intyget', function() {
            IntygPage.verify(data);
         });
-
-        it('Verifiera kontakt', function() {
-            expect(IntygPage.kontaktFK.anledning.getText()).toBe('Vill stämma av ersättningen');
-        });
-
     });
 
     afterAll(function() {

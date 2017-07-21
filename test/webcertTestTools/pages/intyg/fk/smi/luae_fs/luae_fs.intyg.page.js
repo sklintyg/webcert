@@ -39,50 +39,20 @@ var LuaefsIntyg = BaseSmiIntygPage._extend({
 
     verify: function(data) {
 
-        expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(data.baseratPa.minUndersokningAvPatienten);
-        expect(this.baseratPa.journaluppgifter.getText()).toBe(data.baseratPa.journaluppgifter);
-        expect(this.baseratPa.annat.getText()).toBe(data.baseratPa.annat);
-        expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
-        expect(this.baseratPa.personligKannedom.getText()).toBe(data.baseratPa.personligKannedom);
-        expect(this.baseratPa.anhorigsBeskrivning.getText()).toBe(data.baseratPa.anhorigsBeskrivning);
+        this.verifieraBaseratPa(data);
 
-        if (data.diagnos.diagnoser) {
-            for (var j = 0; j < data.diagnos.diagnoser.length; j++) {
-                expect(this.diagnoser.getDiagnos(j).kod.getText()).toBe(data.diagnos.diagnoser[j].kod);
+        this.verifieraDiagnos(data);
 
-                if (data.diagnos.diagnoser[j].beskrivning) {
-                    expect(this.diagnoser.getDiagnos(j).beskrivning.getText()).toBe(data.diagnos.diagnoser[j].beskrivning);
-                }
-            }
-        }
-
-        if (data.andraMedicinskaUtredningar) {
-            expect(this.andraMedicinskaUtredningar.value.getText()).toBe('Ja');
-
-            for (var i = 0; i < data.andraMedicinskaUtredningar.length; i++) {
-                var utredningEL = this.andraMedicinskaUtredningar.getUtredning(i);
-                var utredningDatum = data.andraMedicinskaUtredningar[i].datum;
-                expect(utredningEL.typ.getText()).toBe(data.andraMedicinskaUtredningar[i].underlag);
-                expect(utredningEL.datum.getText()).toBe(utredningDatum);
-                expect(utredningEL.info.getText()).toBe(data.andraMedicinskaUtredningar[i].infoOmUtredningen);
-            }
-        } else {
-            expect(this.andraMedicinskaUtredningar.value.getText()).toBe('Nej');
-        }
+        this.verifieraAndraMedicinskaUtredningar(data);
 
         expect(this.funktionsnedsattning.debut.getText()).toBe(data.funktionsnedsattning.debut);
         expect(this.funktionsnedsattning.paverkan.getText()).toBe(data.funktionsnedsattning.paverkan);
 
-        expect(this.ovrigt.getText()).toBe(data.ovrigt);
+        this.verifieraOvrigt(data);
 
-        this.kontaktFK.verify(data);
+        this.verifieraKontaktFK(data);
 
-        if (data.tillaggsfragor) {
-            for (var i = 0; i < data.tillaggsfragor.length; i++) {
-                var fraga = data.tillaggsfragor[i];
-                expect(this.tillaggsfragor.getFraga(fraga.id).getText()).toBe(fraga.svar);
-            }
-        }
+        this.verifieraTillaggsfragor(data);
     }
 });
 module.exports = new LuaefsIntyg();
