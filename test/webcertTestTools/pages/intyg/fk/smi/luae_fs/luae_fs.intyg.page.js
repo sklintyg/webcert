@@ -49,10 +49,16 @@ var LuaefsIntyg = BaseSmiIntygPage._extend({
         if (data.diagnos.diagnoser) {
             for (var j = 0; j < data.diagnos.diagnoser.length; j++) {
                 expect(this.diagnoser.getDiagnos(j).kod.getText()).toBe(data.diagnos.diagnoser[j].kod);
+
+                if (data.diagnos.diagnoser[j].beskrivning) {
+                    expect(this.diagnoser.getDiagnos(j).beskrivning.getText()).toBe(data.diagnos.diagnoser[j].beskrivning);
+                }
             }
         }
 
         if (data.andraMedicinskaUtredningar) {
+            expect(this.andraMedicinskaUtredningar.value.getText()).toBe('Ja');
+
             for (var i = 0; i < data.andraMedicinskaUtredningar.length; i++) {
                 var utredningEL = this.andraMedicinskaUtredningar.getUtredning(i);
                 var utredningDatum = data.andraMedicinskaUtredningar[i].datum;
@@ -60,6 +66,8 @@ var LuaefsIntyg = BaseSmiIntygPage._extend({
                 expect(utredningEL.datum.getText()).toBe(utredningDatum);
                 expect(utredningEL.info.getText()).toBe(data.andraMedicinskaUtredningar[i].infoOmUtredningen);
             }
+        } else {
+            expect(this.andraMedicinskaUtredningar.value.getText()).toBe('Nej');
         }
 
         expect(this.funktionsnedsattning.debut.getText()).toBe(data.funktionsnedsattning.debut);
@@ -68,6 +76,13 @@ var LuaefsIntyg = BaseSmiIntygPage._extend({
         expect(this.ovrigt.getText()).toBe(data.ovrigt);
 
         this.kontaktFK.verify(data);
+
+        if (data.tillaggsfragor) {
+            for (var i = 0; i < data.tillaggsfragor.length; i++) {
+                var fraga = data.tillaggsfragor[i];
+                expect(this.tillaggsfragor.getFraga(fraga.id).getText()).toBe(fraga.svar);
+            }
+        }
     }
 });
 module.exports = new LuaefsIntyg();

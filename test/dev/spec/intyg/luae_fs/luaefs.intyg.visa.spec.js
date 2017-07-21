@@ -35,6 +35,49 @@ describe('Validera visning av Intyg', function() {
 
     var intygsId;
 
+    var data = {
+        baseratPa: {
+            minUndersokningAvPatienten: '2015-09-09',
+            journaluppgifter: '2015-09-10',
+            anhorigsBeskrivning: '2015-09-11',
+            annat: '2015-09-12',
+            annatBeskrivning: luaefsTemplate.annatGrundForMUBeskrivning,
+            personligKannedom: '2015-01-07'
+        },
+        andraMedicinskaUtredningar: [{
+            datum: '2015-09-03',
+            underlag: 'Underlag från psykolog',
+            infoOmUtredningen: 'Skickas med posten'
+        }, {
+            datum: '2015-09-04',
+            underlag: 'Underlag från habiliteringen',
+            infoOmUtredningen: 'Arkivet'
+        }],
+        funktionsnedsattning: {
+            debut: 'Skoldansen',
+            paverkan: 'Haltar när han dansar'
+        },
+        diagnos: {
+            diagnoser: [{
+                kod: 'S47',
+                beskrivning: 'Klämskada skuldra'
+            },{
+                kod: 'J22',
+                beskrivning: 'Icke specificerad akut infektion i nedre luftvägarna'
+            }]
+        },
+        ovrigt: 'Detta skulle kunna innebära sämre möjlighet att få ställa upp i danstävlingar',
+        kontaktMedFk: true,
+
+        tillaggsfragor: [{
+            id: 9001,
+            svar: 'Tämligen'
+        }, {
+            id: 9002,
+            svar: 'Minst 3 fot'
+        }]
+    };
+
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
@@ -52,45 +95,12 @@ describe('Validera visning av Intyg', function() {
             expect(IntygPage.isAt()).toBeTruthy();
         });
 
-        it('Verifiera Grund för medicinskt underlag', function() {
-            expect(IntygPage.undersokningAvPatienten.getText()).toBe('2015-09-09');
-            expect(IntygPage.journaluppgifter.getText()).toBe('2015-09-10');
-            expect(IntygPage.anhorigsBeskrivningAvPatienten.getText()).toBe('2015-09-11');
-            expect(IntygPage.annatGrundForMU.getText()).toBe('2015-09-12');
-            expect(IntygPage.annatGrundForMUBeskrivning.getText()).toBe(luaefsTemplate.annatGrundForMUBeskrivning);
-            expect(IntygPage.kannedomOmPatient.getText()).toBe('2015-01-07');
+        it('Verifiera intyget', function() {
+           IntygPage.verify(data);
         });
 
-        it('Verifiera underlag', function() {
-            expect(IntygPage.underlagFinns.getText()).toBe('Ja');
-
-            expect(IntygPage.underlag0Typ.getText()).toBe('Underlag från psykolog');
-            expect(IntygPage.underlag0Datum.getText()).toBe('2015-09-03');
-            expect(IntygPage.underlag0HamtasFran.getText()).toBe('Skickas med posten');
-
-            expect(IntygPage.underlag1Typ.getText()).toBe('Underlag från habiliteringen');
-            expect(IntygPage.underlag1Datum.getText()).toBe('2015-09-04');
-            expect(IntygPage.underlag1HamtasFran.getText()).toBe('Arkivet');
-        });
-
-        it('Verifiera diagnos', function() {
-            expect(IntygPage.diagnos0Kod.getText()).toBe('S47');
-            expect(IntygPage.diagnos0Beskrivning.getText()).toBe('Klämskada skuldra');
-            expect(IntygPage.diagnos1Kod.getText()).toBe('J22');
-            expect(IntygPage.diagnos1Beskrivning.getText()).toBe('Icke specificerad akut infektion i nedre luftvägarna');
-        });
-
-        it('Verifiera funktionsnedsättning', function() {
-            expect(IntygPage.funktionsnedsattningDebut.getText()).toBe('Skoldansen');
-            expect(IntygPage.funktionsnedsattningPaverkan.getText()).toBe('Haltar när han dansar');
-        });
-
-        it('Verifiera övrigt, kontakt och tilläggsfrågor', function() {
-            expect(IntygPage.ovrigt.getText()).toBe('Detta skulle kunna innebära sämre möjlighet att få ställa upp i danstävlingar');
-            expect(IntygPage.kontaktMedFk.getText()).toBe('Ja');
-            expect(IntygPage.anledningTillKontakt.getText()).toBe('Vill stämma av ersättningen');
-            expect(IntygPage.tillagsFraga1.getText()).toBe('Tämligen');
-            expect(IntygPage.tillagsFraga2.getText()).toBe('Minst 3 fot');
+        it('Verifiera kontakt', function() {
+            expect(IntygPage.kontaktFK.anledning.getText()).toBe('Vill stämma av ersättningen');
         });
 
     });
@@ -98,7 +108,6 @@ describe('Validera visning av Intyg', function() {
     afterAll(function() {
         testdataHelper.deleteIntyg(intygsId);
         specHelper.logout();
-        browser.ignoreSynchronization = false;
     });
 
 });

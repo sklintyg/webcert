@@ -94,6 +94,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         };
 
         this.andraMedicinskaUtredningar = {
+            value: element(by.id('underlagFinns')),
             field: element(by.id('form_underlagFinns')),
             getUtredning: function(index) {
                 return {
