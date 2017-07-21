@@ -20,10 +20,17 @@
 'use strict';
 
 var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
-var testdataHelper = require('common-testtools').testdataHelper;
-var LuaeNaIntyg = BaseSmiIntygPage._extend({
+
+var LuaefsIntyg = BaseSmiIntygPage._extend({
     init: function init() {
         init._super.call(this);
+
+        this.intygType = 'luae_fs';
+
+        this.funktionsnedsattning = {
+            debut: element(by.id('funktionsnedsattningDebut')),
+            paverkan: element(by.id('funktionsnedsattningPaverkan'))
+        };
     },
 
     get: function get(intygId) {
@@ -34,24 +41,18 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
 
         this.verifieraBaseratPa(data);
 
+        this.verifieraDiagnos(data);
+
         this.verifieraAndraMedicinskaUtredningar(data);
 
-        this.verifieraDiagnos(data);
-        this.verifieraDiagnosBedomning(data);
-
-        this.verifieraSjukdomsforlopp(data);
-
-        this.verifieraFunktionsnedsattning(data);
-
-        this.verifieraAktivitetsbegransning(data);
-
-        this.verifieraMedicinskbehandling(data);
-
-        this.verifieraMedicinskaForutsattningar(data);
+        expect(this.funktionsnedsattning.debut.getText()).toBe(data.funktionsnedsattning.debut);
+        expect(this.funktionsnedsattning.paverkan.getText()).toBe(data.funktionsnedsattning.paverkan);
 
         this.verifieraOvrigt(data);
 
         this.verifieraKontaktFK(data);
+
+        this.verifieraTillaggsfragor(data);
     }
 });
-module.exports = new LuaeNaIntyg();
+module.exports = new LuaefsIntyg();

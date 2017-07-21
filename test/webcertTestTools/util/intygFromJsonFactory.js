@@ -10,7 +10,7 @@ var templateJsonObjFK7263 = require('webcert-testtools/testdata/intyg.fk7263.jso
 var templateJsonObjLuaefs = require('webcert-testtools/testdata/intyg.luae_fs.minimal.json');
 var templateJsonObjLuaena = require('webcert-testtools/testdata/intyg.luae_na.json');
 var templateJsonObjLuse = require('webcert-testtools/testdata/intyg.luse.json');
-var templateJsonObjLisu = require('webcert-testtools/testdata/intyg.lisu.json');
+var templateJsonObjLisjp = require('webcert-testtools/testdata/intyg.lisjp.json');
 
 // These are pushed to webcert using restDataHelper.createWebcertIntyg
 var templateJsonObjWCLuse = require('webcert-testtools/testdata/webcertIntyg.luse.json');
@@ -72,21 +72,21 @@ module.exports = {
             revoked: false
         };
     },
-    defaultLisu: function() {
+    defaultLisjp: function() {
 
-        templateJsonObjLisu.id = guid();
+        templateJsonObjLisjp.id = guid();
 
         return {
-            id: templateJsonObjLisu.id,
-            document: JSON.stringify(templateJsonObjLisu),
+            id: templateJsonObjLisjp.id,
+            document: JSON.stringify(templateJsonObjLisjp),
             originalCertificate: '',
-            type: templateJsonObjLisu.typ,
-            signingDoctorName: templateJsonObjLisu.grundData.skapadAv.fullstandigtNamn,
-            careUnitId: templateJsonObjLisu.grundData.skapadAv.vardenhet.enhetsid,
-            careUnitName: templateJsonObjLisu.grundData.skapadAv.vardenhet.enhetsnamn,
-            careGiverId: templateJsonObjLisu.grundData.skapadAv.vardenhet.vardgivare.vardgivarid,
-            civicRegistrationNumber: templateJsonObjLisu.grundData.patient.personId,
-            signedDate: templateJsonObjLisu.grundData.signeringsdatum,
+            type: templateJsonObjLisjp.typ,
+            signingDoctorName: templateJsonObjLisjp.grundData.skapadAv.fullstandigtNamn,
+            careUnitId: templateJsonObjLisjp.grundData.skapadAv.vardenhet.enhetsid,
+            careUnitName: templateJsonObjLisjp.grundData.skapadAv.vardenhet.enhetsnamn,
+            careGiverId: templateJsonObjLisjp.grundData.skapadAv.vardenhet.vardgivare.vardgivarid,
+            civicRegistrationNumber: templateJsonObjLisjp.grundData.patient.personId,
+            signedDate: templateJsonObjLisjp.grundData.signeringsdatum,
             validFromDate: null,
             validToDate: null,
             additionalInfo: '',

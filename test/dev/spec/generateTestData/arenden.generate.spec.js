@@ -103,7 +103,7 @@ describe('webcert intyg', function() {
         createIntygWithArenden('luse');
         createIntygWithArenden('luae_na');
         createIntygWithArenden('luae_fs');
-        createIntygWithArenden('lisu');
+        createIntygWithArenden('lisjp');
     });
 
     // xit this test to keep testdata for manual testing
@@ -111,6 +111,6 @@ describe('webcert intyg', function() {
         restTestdataHelper.deleteUtkast('luae_na-arende-test');
         restTestdataHelper.deleteUtkast('luae_fs-arende-test');
         restTestdataHelper.deleteUtkast('luse-arende-test');
-        restTestdataHelper.deleteUtkast('lisu-arende-test');
+        restTestdataHelper.deleteUtkast('lisjp-arende-test');
     });
 });

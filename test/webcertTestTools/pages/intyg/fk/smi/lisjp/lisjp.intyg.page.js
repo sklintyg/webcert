@@ -50,37 +50,23 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
 
     verify: function(data) {
 
-        if (data.diagnos.diagnoser) {
-            for (var j = 0; j < data.diagnos.diagnoser.length; j++) {
-                expect(this.diagnoser.getDiagnos(j).kod.getText()).toBe(data.diagnos.diagnoser[j].kod);
-            }
-        }
+        this.verifieraDiagnos(data);
 
-        expect(this.ovrigt.getText()).toBe(data.ovrigt);
+        this.verifieraOvrigt(data);
 
         this.verifyArbetsformaga(data.arbetsformaga);
 
         if (!data.smittskydd) {
-            expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(data.baseratPa.minUndersokningAvPatienten);
-            expect(this.baseratPa.journaluppgifter.getText()).toBe(data.baseratPa.journaluppgifter);
-            expect(this.baseratPa.telefonkontakt.getText()).toBe(data.baseratPa.telefonkontakt);
-            expect(this.baseratPa.annat.getText()).toBe(data.baseratPa.annat);
-            expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
+            this.verifieraBaseratPa(data);
 
             expect(this.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
-            expect(this.aktivitetsbegransning.getText()).toBe(data.aktivitetsbegransning);
+            this.verifieraAktivitetsbegransning(data);
 
-            expect(this.behandling.pagaende.getText()).toBe(data.medicinskbehandling.pagaende);
-            expect(this.behandling.planerad.getText()).toBe(data.medicinskbehandling.planerad);
+            this.verifieraMedicinskbehandling(data);
 
-            this.kontaktFK.verify(data);
+            this.verifieraKontaktFK(data);
 
-            if (data.tillaggsfragor) {
-                for (var i = 0; i < data.tillaggsfragor.length; i++) {
-                    var fraga = data.tillaggsfragor[i];
-                    expect(this.tillaggsfragor.getFraga(fraga.id).getText()).toBe(fraga.svar);
-                }
-            }
+            this.verifieraTillaggsfragor(data);
         }
     },
 

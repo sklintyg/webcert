@@ -17,8 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 'use strict';
 
 var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
@@ -31,6 +29,29 @@ var LuseIntyg = BaseSmiIntygPage._extend({
 
     get: function get(intygId) {
         get._super.call(this, intygId);
+    },
+
+    verify: function(data) {
+        this.verifieraBaseratPa(data);
+
+        this.verifieraAndraMedicinskaUtredningar(data);
+
+        this.verifieraDiagnos(data);
+        this.verifieraDiagnosBedomning(data);
+
+        this.verifieraSjukdomsforlopp(data);
+
+        this.verifieraFunktionsnedsattning(data);
+
+        this.verifieraAktivitetsbegransning(data);
+
+        this.verifieraMedicinskbehandling(data);
+
+        this.verifieraMedicinskaForutsattningar(data);
+
+        this.verifieraOvrigt(data);
+
+        this.verifieraKontaktFK(data);
     }
 });
 module.exports = new LuseIntyg();
