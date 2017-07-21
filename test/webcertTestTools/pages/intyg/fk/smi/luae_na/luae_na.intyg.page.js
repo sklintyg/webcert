@@ -40,17 +40,17 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
 
     verify: function(data) {
 
-        expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(testdataHelper.dateToText(data.baseratPa.minUndersokningAvPatienten));
-        expect(this.baseratPa.journaluppgifter.getText()).toBe(testdataHelper.dateToText(data.baseratPa.journaluppgifter));
-        expect(this.baseratPa.anhorigsBeskrivning.getText()).toBe(testdataHelper.dateToText(data.baseratPa.anhorigsBeskrivning));
-        expect(this.baseratPa.annat.getText()).toBe(testdataHelper.dateToText(data.baseratPa.annat));
+        expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(data.baseratPa.minUndersokningAvPatienten);
+        expect(this.baseratPa.journaluppgifter.getText()).toBe(data.baseratPa.journaluppgifter);
+        expect(this.baseratPa.anhorigsBeskrivning.getText()).toBe(data.baseratPa.anhorigsBeskrivning);
+        expect(this.baseratPa.annat.getText()).toBe(data.baseratPa.annat);
         expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
-        expect(this.baseratPa.personligKannedom.getText()).toBe(testdataHelper.dateToText(data.baseratPa.personligKannedom));
+        expect(this.baseratPa.personligKannedom.getText()).toBe(data.baseratPa.personligKannedom);
 
         if (data.andraMedicinskaUtredningar) {
             for (var i = 0; i < data.andraMedicinskaUtredningar.length; i++) {
                 var utredningEL = this.andraMedicinskaUtredningar.getUtredning(i);
-                var utredningDatum = testdataHelper.dateToText(data.andraMedicinskaUtredningar[i].datum);
+                var utredningDatum = data.andraMedicinskaUtredningar[i].datum;
                 expect(utredningEL.typ.getText()).toBe(data.andraMedicinskaUtredningar[i].underlag);
                 expect(utredningEL.datum.getText()).toBe(utredningDatum);
                 expect(utredningEL.info.getText()).toBe(data.andraMedicinskaUtredningar[i].infoOmUtredningen);
@@ -59,10 +59,10 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
 
         expect(this.diagnoser.grund.getText()).toBe(data.diagnos.narOchVarStalldesDiagnoserna);
         if (data.diagnos.nyBedomning) {
-            expect(this.diagnoser.nyBedomningDiagnosgrundJa.isDisplayed()).toBeTruthy();
+            expect(this.diagnoser.nyBedomningDiagnosgrundValue.getText()).toBe('Ja');
             expect(this.diagnoser.diagnosForNyBedomning.getText()).toBe(data.diagnos.diagnosForNyBedomning);
         } else {
-            expect(this.diagnoser.nyBedomningDiagnosgrundNej.isDisplayed()).toBeTruthy();
+            expect(this.diagnoser.nyBedomningDiagnosgrundValue.getText()).toBe('Nej');
             expect(this.diagnoser.diagnosForNyBedomning.getText()).toBe('Ej angivet');
         }
         if (data.diagnos.diagnoser) {
@@ -95,9 +95,9 @@ var LuaeNaIntyg = BaseSmiIntygPage._extend({
         expect(this.ovrigt.getText()).toBe(data.ovrigt);
 
         if (data.kontaktMedFk) {
-            expect(this.kontaktFK.ja.isDisplayed()).toBeTruthy();
+            expect(this.kontaktFK.value.getText()).toBe('Ja');
         } else {
-            expect(this.kontaktFK.nej.isDisplayed()).toBeTruthy();
+            expect(this.kontaktFK.value.getText()).toBe('Nej');
         }
     }
 });

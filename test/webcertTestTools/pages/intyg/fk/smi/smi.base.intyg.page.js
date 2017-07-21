@@ -62,13 +62,12 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             getDiagnos: function(index) {
                 index = index || 0;
                 return {
-                    kod: element(by.id('diagnoser-' + index + '-kod')),
-                    beskrivning: element(by.id('diagnoser-' + index + '-beskrivning'))
+                    kod: element(by.id('diagnoser-row' + index + '-col0')),
+                    beskrivning: element(by.id('diagnoser-row' + index + '-col1'))
                 };
             },
             grund: element(by.id('diagnosgrund')),
-            nyBedomningDiagnosgrundJa: element(by.id('nyBedomningDiagnosgrund-Ja')),
-            nyBedomningDiagnosgrundNej: element(by.id('nyBedomningDiagnosgrund-Nej')),
+            nyBedomningDiagnosgrundValue: element(by.id('nyBedomningDiagnosgrund')),
             nyBedomningDiagnosgrund: element(by.id('form_nyBedomningDiagnosgrund')),
             diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))
         };
@@ -101,9 +100,9 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             field: element(by.id('form_underlagFinns')),
             getUtredning: function(index) {
                 return {
-                    typ: element(by.id('underlag-' + index + '-typ')),
-                    datum: element(by.id('underlag-' + index + '-datum')),
-                    info: element(by.id('underlag-' + index + '-hamtasFran'))
+                    typ: element(by.id('underlag-row' + index + '-col0')),
+                    datum: element(by.id('underlag-row' + index + '-col1')),
+                    info: element(by.id('underlag-row' + index + '-col2'))
                 };
             }
         };
@@ -111,6 +110,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         this.ovrigaUpplysningar = element(by.id('ovrigt'));
 
         this.kontaktFK = {
+            value: element(by.id('kontaktMedFk')),
             onskas: element(by.id('form_kontaktMedFk')),
             ja: element(by.id('kontaktMedFk-Ja')),
             nej: element(by.id('kontaktMedFk-Nej')),
