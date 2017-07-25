@@ -214,7 +214,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         // e)
         if (hypoglykemierObj.e) {
             if (hypoglykemierObj.e === 'Ja') {
-                debug('e');
+                console.log('e');
                 promisesArr.push(hypoglykemierEl.e.yes.sendKeys(protractor.Key.SPACE).then(function() {
                     // e) antal episoder
                     return hypoglykemierEl.e.antalEpisoder.sendKeys(hypoglykemierObj.eAntalEpisoder);

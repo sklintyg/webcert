@@ -93,9 +93,12 @@ exports.config = {
             ]
         });
 		
-		//Log debug messages, previous console.log
-		//See 2e2eb001e313eec547daf46c14576a3e220b108b
-		global.debug = global.logger;
+        //toggle console.log
+        var debug = true;
+
+        if(!debug){
+            global.console.log = function() {}
+        };
 
         //Set window size
         browser.manage().window().setSize(1600, 1000);

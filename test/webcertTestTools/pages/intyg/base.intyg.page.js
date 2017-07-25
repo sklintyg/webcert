@@ -111,12 +111,12 @@ var BaseIntyg = JClass._extend({
         });
 
         return getMojligaOrsaker.then(function(orsaker) {
-            debug(orsaker);
+            console.log(orsaker);
             var reason = shuffle(orsaker)[0];
             if (optionalOrsak) {
                 reason = optionalOrsak;
             }
-            debug('Väljer orsak: ' + reason);
+            console.log('Väljer orsak: ' + reason);
             return element(by.cssContainingText('label', reason)).sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     return browser.sleep(1500);

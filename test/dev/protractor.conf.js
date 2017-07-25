@@ -115,10 +115,8 @@ exports.config = {
 
         var debug = false;
 
-        global.debug = function(text){
-            if (debug) {
-                console.log(text);
-            }
+        if(!debug){
+            global.console.log = function() {}
         };
 
         var reporters = require('jasmine-reporters');
