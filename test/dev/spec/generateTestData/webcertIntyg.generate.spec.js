@@ -43,7 +43,7 @@ describe('generate', function() {
                 ]
             };
             restTestdataHelper.createWebcertIntyg(intygData).then(function(response) {
-                debug('Tried to create intyg ' + intygId);
+                console.log('Tried to create intyg ' + intygId);
             }, function(error) {
                 console.log('Failed to create intyg ' + intygId);
             });

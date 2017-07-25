@@ -66,7 +66,7 @@ describe('verify a fk7263\'s print buttons', function() {
     });
 
     it('verify the normal print button is not displayed', function() {
-        debug('element(by.id(\'downloadprint\')' + element(by.id('downloadprint')));
+        console.log('element(by.id(\'downloadprint\')' + element(by.id('downloadprint')));
         expect(element(by.id('downloadprint')).isPresent()).toBeFalsy();
     });
 
