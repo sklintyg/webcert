@@ -117,7 +117,7 @@ exports.config = {
 
         if(!debug){
             global.console.log = function() {}
-        };
+        }
 
         var reporters = require('jasmine-reporters');
         jasmine.getEnv().addReporter(

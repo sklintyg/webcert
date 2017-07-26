@@ -24,70 +24,157 @@ var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var IntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
+var ValjIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 describe('Create and Sign FK utkast', function() {
 
-    var utkastId = null;
+    var utkastId = null,
+        data = null;
 
-    describe('Login through the welcome page', function() {
-        it('with user', function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
+    browser.ignoreSynchronization = true;
+
+    beforeAll(function() {
+        browser.ignoreSynchronization = false;
+        specHelper.login();
+    });
+
+    describe('Smittskydd', function() {
+        beforeAll(function() {
             specHelper.createUtkastForPatient('191212121212', 'Läkarintyg FK 7263');
         });
-    });
 
+        describe('Fyll i intyget', function() {
 
-    describe('interact with utkast', function() {
+            it('Spara undan intygsId från URL', function() {
+                UtkastPage.disableAutosave();
 
-        it('check that smittskydd is displayed', function() {
-
-            // Save id so it can be removed in cleanup stage.
-            browser.getCurrentUrl().then(function(url) {
-                utkastId = url.split('/').pop();
-            });
-
-            UtkastPage.whenSmittskyddIsDisplayed().then(function() {
-                expect(UtkastPage.getSmittskyddLabelText()).toContain(
-                    'Avstängning enligt smittskyddslagen på grund av smitta');
-            });
-
-        });
-
-        describe('fill in fk intyg', function() {
-
-            // speeds up utkast filling by not waiting for angular events, promises etc.
-            browser.ignoreSynchronization = true;
-
-            it('nedsatt form8b', function() {
-                UtkastPage.smittskyddCheckboxClick();
-                UtkastPage.nedsattMed25CheckboxClick();
-            });
-
-            it('resor form 6a', function() {
-                UtkastPage.travelRadioButtonJaClick();
-                var val = UtkastPage.getCheckedTravelRadioButtonValue();
-                expect(val).toBe('JA');
-            });
-
-            it('can sign', function() {
-
-                // reset
-                browser.ignoreSynchronization = false;
-
-                UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                    UtkastPage.signeraButtonClick();
-                    expect(IntygPage.isAt()).toBeTruthy();
+                browser.getCurrentUrl().then(function(url) {
+                    utkastId = url.split('/').pop();
                 });
+                data = wcTestTools.testdata.fk['7263'].getRandom(utkastId, true);
+            });
+
+            it('angeSmittskydd', function() {
+                UtkastPage.angeSmittskydd(data.smittskydd);
+            });
+            it('angeArbetsformaga', function() {
+                UtkastPage.angeArbetsformaga(data.arbetsformaga);
+            });
+            it('angeArbetsformagaFMB', function() {
+                UtkastPage.angeArbetsformagaFMB(data.arbetsformagaFMB);
+            });
+            it('angePrognos', function() {
+                UtkastPage.angePrognos(data.prognos);
+            });
+            it('angeKontaktOnskasMedFK', function() {
+                UtkastPage.enableAutosave();
+                UtkastPage.angeKontaktOnskasMedFK(data.kontaktOnskasMedFK);
+            });
+            it('angeOvrigaUpplysningar', function() {
+                UtkastPage.angeOvrigaUpplysningar(data.ovrigaUpplysningar);
             });
         });
-    });
 
-    describe('remove test intyg', function() {
-        it('should clean up all utkast after the test', function() {
+        it('Signera intyget', function() {
+            UtkastPage.whenSigneraButtonIsEnabled();
+
+            browser.sleep(1000);
+
+            UtkastPage.signeraButtonClick();
+
+            browser.sleep(1000);
+
+            expect(IntygPage.isAt()).toBeTruthy();
+        });
+
+        it('Verifiera intyg', function() {
+            IntygPage.verify(data);
+        });
+
+        afterAll(function() {
             testdataHelper.deleteIntyg(utkastId);
             testdataHelper.deleteUtkast(utkastId);
         });
     });
 
+    describe('Vanligt', function() {
+        beforeAll(function() {
+            ValjIntygPage.get();
+            specHelper.createUtkastForPatient('191212121212', 'Läkarintyg FK 7263');
+        });
+
+        describe('Fyll i intyget', function() {
+
+            it('Spara undan intygsId från URL', function() {
+                UtkastPage.disableAutosave();
+
+                browser.getCurrentUrl().then(function(url) {
+                    utkastId = url.split('/').pop();
+                });
+                data = wcTestTools.testdata.fk['7263'].getRandom(utkastId, false);
+            });
+
+            it('angeIntygetBaserasPa', function() {
+                UtkastPage.angeIntygetBaserasPa(data.baserasPa);
+            });
+            it('angeDiagnos', function() {
+                UtkastPage.angeDiagnoser(data.diagnos);
+            });
+            it('angeAktuelltSjukdomsForlopp', function() {
+                UtkastPage.angeAktuelltSjukdomsForlopp(data.aktuelltSjukdomsforlopp);
+            });
+            it('angeFunktionsnedsattning', function() {
+                UtkastPage.angeFunktionsnedsattning(data.funktionsnedsattning);
+            });
+            it('angeAktivitetsBegransning', function() {
+                UtkastPage.angeAktivitetsBegransning(data.aktivitetsBegransning);
+            });
+            it('angeArbete', function() {
+                UtkastPage.angeArbete(data.arbete);
+            });
+            it('angeArbetsformaga', function() {
+                UtkastPage.angeArbetsformaga(data.arbetsformaga);
+            });
+            it('angeArbetsformagaFMB', function() {
+                UtkastPage.angeArbetsformagaFMB(data.arbetsformagaFMB);
+            });
+            it('angePrognos', function() {
+                UtkastPage.angePrognos(data.prognos);
+            });
+            it('angeAtgarder', function() {
+                UtkastPage.angeAtgarder(data.atgarder);
+            });
+            it('angeRekommendationer', function() {
+                UtkastPage.angeRekommendationer(data.rekommendationer);
+            });
+            it('angeKontaktOnskasMedFK', function() {
+                UtkastPage.enableAutosave();
+                UtkastPage.angeKontaktOnskasMedFK(data.kontaktOnskasMedFK);
+            });
+            it('angeOvrigaUpplysningar', function() {
+                UtkastPage.angeOvrigaUpplysningar(data.ovrigaUpplysningar);
+            });
+        });
+
+        it('Signera intyget', function() {
+            UtkastPage.whenSigneraButtonIsEnabled();
+
+            browser.sleep(1000);
+
+            UtkastPage.signeraButtonClick();
+
+            browser.sleep(1000);
+
+            expect(IntygPage.isAt()).toBeTruthy();
+        });
+
+        it('Verifiera intyg', function() {
+            IntygPage.verify(data);
+        });
+
+        afterAll(function() {
+            testdataHelper.deleteIntyg(utkastId);
+            testdataHelper.deleteUtkast(utkastId);
+        });
+    });
 });
