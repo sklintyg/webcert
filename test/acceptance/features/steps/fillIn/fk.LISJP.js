@@ -28,10 +28,10 @@
          var promiseArr = [];
 
          //Baserat på
-         promiseArr.push(lisjpUtkastPage.angeBaserasPa(intyg.baseratPa).then(function() {
-             logger.info('OK - angeBaserasPa');
+         promiseArr.push(lisjpUtkastPage.angeBaseratPa(intyg.baseratPa).then(function() {
+             logger.info('OK - angeBaseratPa');
          }, function(reason) {
-             throw ('FEL, angeBaserasPa,' + reason);
+             throw ('FEL, angeBaseratPa,' + reason);
          }));
 
          // Sysselsättning
