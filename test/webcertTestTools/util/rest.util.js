@@ -140,7 +140,7 @@ module.exports = {
             method: 'POST',
             body: createJson
         };
-        //logger.info("================================================CREATEJSON");
+        //logger.debug("================================================CREATEJSON");
         return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
     },
     deleteAllIntyg: function() {

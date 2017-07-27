@@ -43,7 +43,7 @@ describe('verify a fk7263\'s print buttons', function() {
             var intyg = JSON.parse(response.request.body);
             expect(intyg.id).not.toBeNull();
         }, function(error) {
-            console.log('Error calling createIntyg');
+            logger.error('Error calling createIntyg');
         });
     });
 
@@ -66,7 +66,7 @@ describe('verify a fk7263\'s print buttons', function() {
     });
 
     it('verify the normal print button is not displayed', function() {
-        console.log('element(by.id(\'downloadprint\')' + element(by.id('downloadprint')));
+        logger.debug('element(by.id(\'downloadprint\')' + element(by.id('downloadprint')));
         expect(element(by.id('downloadprint')).isPresent()).toBeFalsy();
     });
 

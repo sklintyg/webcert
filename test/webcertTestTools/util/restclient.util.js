@@ -35,21 +35,21 @@ function post(options, baseUrl) {
         baseUrl = browser.baseUrl;
     }
     options.url = baseUrl + options.url;
-    logger.info('== NEW REQUEST - ', 'URL: ' + options.url);
-    logger.info('HEADERS:' + JSON.stringify(options));
-    logger.info('== END REQUEST ==');
+    logger.debug('== NEW REQUEST - ', 'URL: ' + options.url);
+    logger.debug('HEADERS:' + JSON.stringify(options));
+    logger.debug('== END REQUEST ==');
     request(options, function(error, message) {
         if (error || message.statusCode >= 400) {
             logger.warn('Request error:', error);
             if (message) {
-                console.error('Error message:', message.statusCode, message.statusMessage /*, body*/ );
+                logger.error('Error message:', message.statusCode, message.statusMessage /*, body*/ );
             }
             defer.fulfill({
                 error: error,
                 message: message
             });
         } else {
-            logger.info('Request success!', message.statusCode, message.statusMessage);
+            logger.debug('Request success!', message.statusCode, message.statusMessage);
             defer.fulfill(message);
         }
     });

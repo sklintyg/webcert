@@ -142,7 +142,7 @@ exports.config = {
 		// Winston Logger level. Logging levels are prioritized from 0 to 5 (highest to lowest):
 		// error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5
 		
-		logger.transports.console.level = 'debug';
+		logger.transports.console.level = 'info';
 		//logger.transports.console.level = 'error';
 
         var reporters = require('jasmine-reporters');
@@ -156,7 +156,6 @@ exports.config = {
 
         var disableNgAnimate = function() {
             angular.module('disableNgAnimate', []).run(['$animate', function($animate) {
-                console.log('Animations are disabled');
                 $animate.enabled(false);
             }]);
         };
@@ -182,3 +181,15 @@ exports.config = {
         browser.addMockModule('disableCssAnimate', disableCssAnimate);
     }
 };
+
+function formatLocalDate() {
+    var now = new Date(),
+        tzo = -now.getTimezoneOffset(),
+        dif = tzo >= 0 ? '+' : '-',
+        pad = function(num) {
+            var norm = Math.abs(Math.floor(num));
+            return (norm < 10 ? '0' : '') + norm;
+        };
+    return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()) + dif + pad(tzo / 60) +
+        ':' + pad(tzo % 60);
+}

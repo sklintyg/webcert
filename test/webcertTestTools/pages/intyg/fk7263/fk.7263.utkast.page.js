@@ -329,7 +329,7 @@ var FkUtkast = BaseUtkast._extend({
         return this.arbetsformagaFMB.clear().sendKeys(txt);
     },
     angePrognos: function(prognos) {
-        logger.info(prognos);
+        logger.debug(prognos);
         var prognosFortydligande = this.prognos.fortydligande;
 
         if (prognos.val === 'Ja') {

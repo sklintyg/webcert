@@ -84,7 +84,7 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
             });
 
             it('Gör REST-anrop till notification-stubben, tillse att vår post finns med KFSIGN', function() {
-                console.log("sleeping a while to allow changes to have taken effect in backend before checking notification statuses");
+                logger.debug("sleeping a while to allow changes to have taken effect in backend before checking notification statuses");
                 browser.sleep(2000).then(
                         function() {
                             restUtil.queryNotificationStub().then(

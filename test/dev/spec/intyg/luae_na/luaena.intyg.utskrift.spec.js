@@ -44,7 +44,7 @@ describe('verify luaena\'s print buttons', function() {
             var intyg = JSON.parse(response.request.body);
             expect(intyg.id).not.toBeNull();
         }, function(error) {
-            console.log('Error calling createIntyg');
+            logger.error('Error calling createIntyg');
         });
 
     });

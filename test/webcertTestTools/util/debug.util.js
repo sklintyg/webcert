@@ -38,7 +38,7 @@ module.exports = {
 
         // Check our custom property if addExpectationResult has already been overridden
         if (jasmine.Spec.prototype.itrOriginalAddExpectationResult) {
-            logger.info('takeScreenshots already activated!');
+            logger.debug('takeScreenshots already activated!');
             return;
         }
 

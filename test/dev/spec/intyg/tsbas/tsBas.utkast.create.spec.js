@@ -40,7 +40,7 @@ xdescribe('Create and Sign ts-bas utkast', function() {
                 utkast = response.body;
                 expect(utkast.intygsId).not.toBeNull();
             }, function(error) {
-                console.log('Error calling createIntyg');
+                logger.error('Error calling createIntyg');
             });
         });
     });

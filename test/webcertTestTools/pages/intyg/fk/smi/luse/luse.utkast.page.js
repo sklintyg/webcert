@@ -27,7 +27,7 @@ function checkAndSendTextToForm(checkboxEL, textEL, text) {
         return browser.sleep(1000).then(function() {
             return textEL.sendKeys(text)
                 .then(function() {
-                    logger.info('OK - Angav: ' + text);
+                    logger.debug('OK - Angav: ' + text);
                 }, function(reason) {
                     throw ('FEL - Angav: ' + text + ' ' + reason);
                 });
