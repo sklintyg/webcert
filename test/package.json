@@ -15,7 +15,8 @@
         "jclass": "^1.1.9",
         "protractor-jasmine2-screenshot-reporter": "^0.1.7",
         "webcert-testtools": "file:./webcertTestTools",
-        "xml2js": "^0.4.4"
+        "xml2js": "^0.4.4",
+    	"winston": "^2.2.0" 
     },
     "engine": "node >= 6.9.1",
     "scripts": {
