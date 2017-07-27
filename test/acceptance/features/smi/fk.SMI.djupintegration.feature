@@ -23,7 +23,7 @@ Scenario: Informera om patienten har bytt adress och använd address på nya int
     Och jag går in på intygsutkastet via djupintegrationslänk med annan adress
     Så ska ett info-meddelande visa "Observera att patientens adress har ändrats sedan det här intyget utfärdades."
 
-    När jag kopierar intyget
+    När jag förnyar intyget
     Och jag signerar intyget
     Så ska intyget visa den nya addressen
 
@@ -36,7 +36,7 @@ Scenario: Patienten har fått ett nytt personnummer
     Och jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer
     Så ska ett varning-meddelande visa "Patienten har ett nytt personnummer"
 
-    När jag kopierar intyget
+    När jag förnyar intyget
     Och jag signerar intyget
     Så ska intyget visa det nya person-id:numret
 
@@ -49,7 +49,7 @@ Scenario: Patienten har fått ett reservnummer
     Och jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer
     Så ska ett varning-meddelande visa "Patienten har samordningsnummer kopplat till reservnummer"
 
-    När jag kopierar intyget
+    När jag förnyar intyget
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
@@ -64,23 +64,21 @@ Scenario: Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenhe
     Och jag signerar intyget
 
     När jag går in på intyget via djupintegrationslänk och har parametern "kopieringOK" satt till "false"
-    Så ska det inte finnas knappar för "kopiera,förnya"
+    Så ska det inte finnas knappar för "förnya"
 
     När jag går in på intyget via djupintegrationslänk och har parametern "inaktivEnhet" satt till "true"
-    Så ska det inte finnas knappar för "kopiera,förnya"
+    Så ska det inte finnas knappar för "förnya"
 
     När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
     Så ska jag varnas om att "Patienten har avlidit"
-    Så ska det inte finnas knappar för "kopiera,ersätta,förnya"
+    Så ska det inte finnas knappar för "ersätta,förnya"
 
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
     När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
-    Så ska det finnas knappar för "kopiera"
-    Och ska det finnas knappar för "förnya" om intygstyp är "Läkarintyg för sjukpenning"
+    Så ska det finnas knappar för "förnya"
     Och ska det inte finnas knappar för "ersätta,makulera"
 	
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-107P"
 	När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "false"
 	Så ska det inte finnas knappar för "ersätta,makulera,fråga/svar"
-	Så ska det finnas knappar för "kopiera"
-	Och ska det finnas knappar för "förnya" om intygstyp är "Läkarintyg för sjukpenning"
+	Så ska det finnas knappar för "förnya" om intygstyp är "Läkarintyg för sjukpenning"

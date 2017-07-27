@@ -18,25 +18,25 @@ Scenario: Kan signera intyg
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
 
-Scenario: Kan inte kopiera intyg Läkarintyg FK 7263
+Scenario: Kan inte förnya intyg Läkarintyg FK 7263
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
-   Så är kopieraknappen inte tillgänglig
+   Så ska det inte finnas en knapp för att förnya intyget
 
-@kopiera @ts @bas
-Scenario: Kan inte kopiera Transportstyrelsens läkarintyg
+@fornya @ts @bas
+Scenario: Kan inte förnya Transportstyrelsens läkarintyg
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
-   Så är kopieraknappen inte tillgänglig
+   Så ska det inte finnas en knapp för att förnya intyget
 
-@kopiera @ts @diabetes
-Scenario: Kan inte kopiera Transportstyrelsens läkarintyg, diabetes intyg
+@fornya @ts @diabetes
+Scenario: Kan inte förnya Transportstyrelsens läkarintyg, diabetes intyg
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
-   Så är kopieraknappen inte tillgänglig
+   Så ska det inte finnas en knapp för att förnya intyget
 
 @makulera @fk7263
 Scenario: Kan inte makulera intyg
@@ -67,7 +67,7 @@ Scenario: Ska få varning vid svar med nytt intyg
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska inte kunna komplettera med nytt intyg från webcert
-   Och ska kompletteringsdialogen innehålla texten "Kopiera/förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
+   Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
 
 @komplettering
 Scenario: Ska kunna besvara komplettering med textmeddelande

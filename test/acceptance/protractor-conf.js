@@ -28,7 +28,7 @@ exports.config = {
     baseUrl: process.env.WEBCERT_URL,
     allScriptsTimeout: 100000,
     getPageTimeout: 20000,
-    seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
+    //seleniumAddress: 'http://selenium1.nordicmedtest.se:4444/wd/hub',
     framework: 'custom',
 
     // path relative to the current config file
@@ -112,7 +112,7 @@ exports.config = {
 		// Winston Logger level. Logging levels are prioritized from 0 to 5 (highest to lowest):
 		// error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5
 		
-		logger.transports.console.level = 'debug';
+		logger.transports.console.level = 'silly';
 		
 
         //Set window size

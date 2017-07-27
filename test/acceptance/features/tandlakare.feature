@@ -20,7 +20,7 @@ Scenario: Ska endast kunna hantera FK7263
 	När jag går till ej signerade utkast
 	Så ska jag inte se utkast av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
 
-@fk7263 @signera @skicka @makulera @kopiera
+@fk7263 @signera @skicka @makulera @fornya
 Scenario: Skapa, Skicka och Makulera FK7263
 	Givet att jag är inloggad som tandläkare
 	När jag går in på en patient
@@ -33,7 +33,7 @@ Scenario: Skapa, Skicka och Makulera FK7263
 	När jag skickar intyget till Försäkringskassan
 	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system."
 
-	Så är kopieraknappen tillgänglig
+	Så ska det finnas en knapp för att förnya intyget
 
 	När jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"

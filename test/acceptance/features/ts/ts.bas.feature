@@ -41,12 +41,12 @@ Scenario: Validera uteblivna fält i intyget
     Och ska jag se en lista med vad som saknas
       
 
-@kopiera @signera
-Scenario: Kopiera ett signerat intyg
+@fornya @signera
+Scenario: Förnya ett signerat intyg
     När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
-    Och jag kopierar intyget
+    Och jag förnyar intyget
     Och jag signerar intyget
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget

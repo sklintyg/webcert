@@ -32,12 +32,12 @@ Scenario: Makulera ett skickat intyg
 	När jag går till Mina intyg för patienten
     Så ska intyget inte finnas i Mina intyg
 
-@kopiera
-Scenario: Kopiera ett signerat intyg
+@fornya
+Scenario: Förnya ett signerat intyg
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
-	Och jag kopierar intyget
+	Och jag förnyar intyget
 	Och jag signerar intyget
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
@@ -77,14 +77,14 @@ Scenario: Samtida användare ska generera felmeddelande om man förnyar efter ma
 		Och jag makulerar intyget
 		Så ska varningen "Kunde inte förnya intyget" visas om man försöker förnya intyget i andra webbläsarinstansen
 
-@samtidaanvandare @makulera-kopiera
-Scenario: Samtida användare ska generera felmeddelande om man kopiera efter makulering (FK7263)
+@samtidaanvandare @makulera-förnya
+Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag klickar på signera-knappen
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Och jag makulerar intyget
-	Så ska varningen "Kunde inte kopiera intyget" visas om man försöker kopiera intyget i andra webbläsarinstansen
+	Så ska varningen "Kunde inte förnya intyget" visas om man försöker förnya intyget i andra webbläsarinstansen
 
 # @makulera @ersatt
 # Scenario: Makulera ett signerat intyg och ersätt det

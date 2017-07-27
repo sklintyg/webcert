@@ -1,26 +1,26 @@
 # language: sv
 
-@kopiera-knapp
-Egenskap: Makulerat intyg ska kunna kopieras
+@fornya-knapp
+Egenskap: Makulerat intyg ska kunna förnyas
 
 Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare
    När jag går in på en patient
 
-@FK7263-kopiera-knapp
-Scenario: Det ska inte gå att kopiera ett makulerat FK7263 intyg
+@FK7263-förnya-knapp
+Scenario: Det ska inte gå att förnya ett makulerat FK7263 intyg
   När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
   Och jag skickar intyget till Försäkringskassan
   Och jag makulerar intyget
-  Så ska det inte finnas en knapp med texten "Kopiera"
+  Så ska det inte finnas en knapp med texten "Förnya"
 
-@SMI-kopiera-knapp
-Scenario: Det ska gå att kopiera slumpat och makulerat SMI-intyg
+@SMI-förnya-knapp
+Scenario: Det ska gå att förnya slumpat och makulerat SMI-intyg
    När jag går in på ett slumpat SMI-intyg med status "Signerat"
    Och jag skickar intyget till Försäkringskassan
    Och jag makulerar intyget
    Så ska intyget visa varningen "Intyget är makulerat"
-   Så ska det inte finnas en knapp med texten "Kopiera"
+   Så ska det inte finnas en knapp med texten "Förnya"
 
 
    Scenariomall: Utkast för <intygKod> ska inte kunna makuleras

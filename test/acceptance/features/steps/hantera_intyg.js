@@ -119,7 +119,7 @@ module.exports = function() {
             });
     });
 
-    this.Given(/^jag kopierar intyget$/, function() {
+    /*this.Given(/^jag kopierar intyget$/, function() {
         //global.intyg.isKopia = true;
         helpers.updateEnhetAdressForNewIntyg();
         return fkIntygPage.copy.button.sendKeys(protractor.Key.SPACE).then(function() {
@@ -135,7 +135,7 @@ module.exports = function() {
                         });
                 });
         });
-    });
+    });*/
 
     this.Given(/^jag raderar utkastet$/, function(callback) {
         fkUtkastPage.radera.knapp.sendKeys(protractor.Key.SPACE);

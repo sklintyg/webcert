@@ -92,9 +92,9 @@ module.exports = function() {
                 case 'skicka':
                     promiseArr.push(checkIfButtonIsUsable('sendBtn', shouldBePresent));
                     break;
-                case 'kopiera':
-                    promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
-                    break;
+                    /*case 'kopiera':
+                        promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
+                        break;*/
                 case 'ersätta':
                     promiseArr.push(checkIfButtonIsUsable('ersattBtn', shouldBePresent));
                     break;
