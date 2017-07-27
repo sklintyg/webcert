@@ -11,7 +11,8 @@
         "common-testtools": "^0.1.3",
         "jclass": "^1.2.1",
         "request": "^2.79.0",
-        "xml2js": "^0.4.17"
+        "xml2js": "^0.4.17",
+		"winston": "^2.2.0" 
     },
     "publishConfig": {
         "registry": "https://build-inera.nordicmedtest.se/nexus/repository/npm-internal/"

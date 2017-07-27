@@ -70,7 +70,7 @@ function checkAndSendTextToForm(checkboxEL, textEL, text) {
         return browser.sleep(1000).then(function() {
             return textEL.sendKeys(text)
                 .then(function() {
-                    console.log('OK - Angav: ' + text);
+                    logger.info('OK - Angav: ' + text);
                 }, function(reason) {
                     throw ('FEL - Angav: ' + text + ' ' + reason);
                 });
@@ -81,7 +81,7 @@ function checkAndSendTextToForm(checkboxEL, textEL, text) {
 function sendTextToForm(textEL, text) {
     return textEL.sendKeys(text)
         .then(function() {
-            console.log('OK - Angav: ' + text);
+            logger.info('OK - Angav: ' + text);
         }, function(reason) {
             throw ('FEL - Angav: ' + text + ' ' + reason);
         });

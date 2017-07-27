@@ -37,7 +37,7 @@ function findArrayElementsInArray(targetArray, compareArray) {
 
 function arrayContains(array, compareArray) {
     var found = findArrayElementsInArray(array, compareArray);
-    //console.log('found:' + JSON.stringify(found));
+    //logger.info('found:' + JSON.stringify(found));
     return found.length > 0;
 }
 

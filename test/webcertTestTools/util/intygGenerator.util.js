@@ -60,12 +60,12 @@ function _getIntygJson(intygOptions) {
 
 function _buildIntyg(intygOptions) {
 
-    //    console.log("======================================================INTYG");
-    //    console.log(fkIntyg);
+    //    logger.info("======================================================INTYG");
+    //    logger.info(fkIntyg);
     var intygTemplate = require('./../testdata/intyg.' + intygOptions.intygType + '.json');
     var jsonDocument = buildDocumentFromIntygTemplate(intygTemplate, intygOptions);
-    //    console.log("======================================================JSONDOCUMENT");
-    //    console.log(jsonDocument);
+    //    logger.info("======================================================JSONDOCUMENT");
+    //    logger.info(jsonDocument);
 
     var stateList = [{
         state: 'RECEIVED',
@@ -108,8 +108,8 @@ function _buildIntyg(intygOptions) {
             deletedByCareGiver = false
         }
       */
-    //    console.log("======================================================INTYGOPTIONS-2");
-    //    console.log(intygOptions);
+    //    logger.info("======================================================INTYGOPTIONS-2");
+    //    logger.info(intygOptions);
 
     var resultIntyg = {
         id: intygOptions.intygId, // id, issued??
@@ -128,8 +128,8 @@ function _buildIntyg(intygOptions) {
         document: jsonDocument
     };
 
-    //    console.log("======================================================RESULTINTYG");
-    //    console.log(resultIntyg);
+    //    logger.info("======================================================RESULTINTYG");
+    //    logger.info(resultIntyg);
     return resultIntyg;
 }
 
@@ -234,9 +234,9 @@ function overridetsBasDefaults(intyg, intygOptions) {
 
     intyg = addBaserasPaDates(intyg, intygOptions.issued);
 
-    console.log('Inside intygOptions.intygType === ' + intygOptions.intygType);
-    console.log('höger öga utan korrekt: ' + intygOptions.intygAvser.syn.hogerOga.utanKorrektion);
-    console.log('PatientId: ' + intygOptions.grundData.patient.personId);
+    logger.info('Inside intygOptions.intygType === ' + intygOptions.intygType);
+    logger.info('höger öga utan korrekt: ' + intygOptions.intygAvser.syn.hogerOga.utanKorrektion);
+    logger.info('PatientId: ' + intygOptions.grundData.patient.personId);
 
 }
 

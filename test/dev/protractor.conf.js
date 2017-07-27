@@ -28,6 +28,7 @@
  *
  **/
  'use strict';
+var winston = require('winston');
 var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
 
 var screenshotReporter = new HtmlScreenshotReporter({
@@ -109,15 +110,40 @@ exports.config = {
          */
         browser.ignoreSynchronization = false;
 
-        global.logg = function(text){
-            console.log(text);
-        };
-
-        var debug = false;
-
-        if(!debug){
-            global.console.log = function() {}
-        }
+		/* Winston Logger Usage 
+		
+        logger.info("");
+        logger.warn("");
+        logger.error("");
+        
+		logger.log('silly', "");
+        logger.log('debug', "");
+        logger.log('verbose', "");
+        logger.log('info', "");
+        logger.log('warn', "");
+        logger.log('error', "");
+		
+		*/
+		
+        global.logger = new(winston.Logger)({
+            transports: [
+                new(winston.transports.Console)({
+                    colorize: true,
+                    timestamp: formatLocalDate,
+                    formatter: function(options) {
+                        // Return string will be passed to logger.
+                        return options.timestamp() + ' ' + options.level.toUpperCase() + ' ' + (undefined !== options.message ? options.message : '') +
+                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta) : '');
+                    }
+                })
+            ]
+        });
+		
+		// Winston Logger level. Logging levels are prioritized from 0 to 5 (highest to lowest):
+		// error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5
+		
+		logger.transports.console.level = 'debug';
+		//logger.transports.console.level = 'error';
 
         var reporters = require('jasmine-reporters');
         jasmine.getEnv().addReporter(

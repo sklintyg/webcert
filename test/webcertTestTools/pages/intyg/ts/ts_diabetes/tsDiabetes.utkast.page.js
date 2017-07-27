@@ -170,7 +170,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
 
     },
     fillInHypoglykemier: function(hypoglykemierObj) {
-        //console.log('Anger hypoglykemier:' + hypoglykemierObj.toString());
+        //logger.info('Anger hypoglykemier:' + hypoglykemierObj.toString());
         var promisesArr = [];
         var hypoglykemierEl = this.hypoglykemier;
 
@@ -214,7 +214,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         // e)
         if (hypoglykemierObj.e) {
             if (hypoglykemierObj.e === 'Ja') {
-                console.log('e');
+                logger.info('e');
                 promisesArr.push(hypoglykemierEl.e.yes.sendKeys(protractor.Key.SPACE).then(function() {
                     // e) antal episoder
                     return hypoglykemierEl.e.antalEpisoder.sendKeys(hypoglykemierObj.eAntalEpisoder);
