@@ -145,7 +145,7 @@ var tsValues = {
         }
 
         if (hypoObj.g === 'Ja') {
-            hypoObj.gDatum = '2016-07-04';
+            hypoObj.gDatum = '2017-07-04';
         }
 
         if (hypoObj.b === 'Ja') {
