@@ -116,6 +116,9 @@ module.exports = {
         if (intygType === 'Läkarutlåtande för sjukersättning') {
             utkastPage = pages.intyg.luse.utkast;
         }
+        if (intygType === 'Transportstyrelsens läkarintyg') {
+            utkastPage = pages.intyg.ts.bas.utkast;
+        }
 
         expect(utkastPage.isAt()).toBe(true);
     },
