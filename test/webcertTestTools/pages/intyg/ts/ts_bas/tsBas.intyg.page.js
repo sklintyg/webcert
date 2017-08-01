@@ -22,17 +22,14 @@
  */
 'use strict';
 
-var BaseIntyg = require('../../base.intyg.page.js');
+var TsBaseIntyg = require('../ts.base.intyg.page');
 var testValues = require('../../../../testdata/testvalues.ts');
 var _ = require('lodash');
 
-var TsBasIntyg = BaseIntyg._extend({
+var TsBasIntyg = TsBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'ts-bas';
-
-        this.korkortstyp = element(by.id('intygAvser-korkortstyp'));
-        this.idkontroll = element(by.id('vardkontakt-idkontroll'));
 
         this.hogerOgautanKorrektion = element(by.id('syn-row0-col1'));
         this.hogerOgamedKorrektion = element(by.id('syn-row0-col2'));
@@ -102,51 +99,23 @@ var TsBasIntyg = BaseIntyg._extend({
         this.stadigvarandeMedicinering = element(by.id('medicinering-stadigvarandeMedicinering'));
         this.medicineringbeskrivning = element(by.id('medicinering-beskrivning'));
         this.intygetAvser = element(by.id('intygAvser'));
-        this.idStarktGenom = element(by.id('identitet'));
 
         this.printBtn = element(by.id('downloadprint'));
-        this.falt1 = {
-            bedomningKanInteTaStallning: element(by.id('bedomningKanInteTaStallning')),
-            bedomning: element(by.id('bedomning-korkortstyp'))
-
-        };
         this.comment = element(by.id('kommentar'));
     },
     get: function get(intygId) {
         get._super.call(this, intygId);
     },
-    verifieraIntygetAvser: function(korkortstyper) {
-
-        var sorted = _.sortBy(korkortstyper, function(x) {
-            return _.indexOf(testValues.korkortstyperHogreBehorighet, x);
-        });
-
-        var text = _.join(sorted, ', ');
-
-        expect(this.korkortstyp.getText()).toBe(text);
-    },
-    verifieraIdKontroll: function(identitetStyrktGenom) {
-
-        if (identitetStyrktGenom === 'Försäkran enligt 18 kap. 4§') {
-            identitetStyrktGenom = 'Försäkran enligt 18 kap 4 §';
-        }
-
-        if (identitetStyrktGenom === 'Företagskort eller tjänstekort') {
-            identitetStyrktGenom = 'Företagskort eller tjänstekort.';
-        }
-
-        expect(this.idkontroll.getText()).toBe(identitetStyrktGenom);
-    },
     verifieraHorsel: function(horsel) {
         expect(this.horselBalansbalansrubbningar.getText()).toBe(horsel.yrsel);
-        expect(this.horselSamtal.getText()).toBe(horsel.samtal);
+        expect(this.horselSamtal.getText()).toBe(horsel.samtal ? horsel.samtal : 'Nej');
     },
     verifieraRorelseorganensFunktioner: function(rorelseorganensFunktioner) {
         expect(this.funktionsnedsattning.getText()).toBe(rorelseorganensFunktioner.nedsattning);
         if (rorelseorganensFunktioner.nedsattning === 'Ja') {
             expect(this.funktionsnedsattningbeskrivning.getText()).toBe(rorelseorganensFunktioner.nedsattningBeskrivning);
         }
-        expect(this.funktionsnedsRorelseformaga.getText()).toBe(rorelseorganensFunktioner.inUtUrFordon);
+        expect(this.funktionsnedsRorelseformaga.getText()).toBe(rorelseorganensFunktioner.inUtUrFordon ? rorelseorganensFunktioner.inUtUrFordon : 'Nej');
     },
     verifieraHjartOchKarlsjukdomar: function(data) {
         expect(this.hjartKarlSjukdom.getText()).toBe(data.hjartHjarna);
@@ -203,20 +172,7 @@ var TsBasIntyg = BaseIntyg._extend({
             expect(this.medicineringbeskrivning.getText()).toBe(data.ovrigMedicinBeskrivning);
         }
     },
-    verifieraBedomning: function(bedomning) {
 
-        if (bedomning.stallningstagande === 'Kan inte ta ställning') {
-            expect(this.falt1.bedomning.getText()).toBe(bedomning.stallningstagande);
-        } else {
-            var sorted = _.sortBy(bedomning.behorigheter, function(x) {
-                return _.indexOf(testValues.korkortstyperHogreBehorighet, x);
-            });
-
-            var text = _.join(sorted, ', ');
-
-            expect(this.falt1.bedomning.getText()).toBe(text);
-        }
-    },
     verifieraSynfunktioner: function(data) {
 
         expect(this.synfaltsdefekter.getText()).toBe(data.synDonder);
@@ -236,12 +192,26 @@ var TsBasIntyg = BaseIntyg._extend({
         expect(this.binokulartutanKorrektion.getText()).toBe(this.dotToComma(data.styrkor.buk));
         expect(this.binokulartmedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.bmk));
     },
+    verifieraBedomning: function(bedomning) {
+
+        if (bedomning.stallningstagande === 'Kan inte ta ställning') {
+            expect(this.falt1.bedomning.getText()).toBe(bedomning.stallningstagande);
+        } else {
+            var sorted = _.sortBy(bedomning.behorigheter, function(x) {
+                return _.indexOf(testValues.korkortstyperHogreBehorighet, x);
+            });
+
+            var text = _.join(sorted, ', ');
+
+            expect(this.falt1.bedomning.getText()).toBe(text);
+        }
+    },
     dotToComma: function(value) {
         return value.replace('.', ',');
     },
     verify: function(data) {
 
-        this.verifieraIntygetAvser(data.korkortstyper);
+        this.verifieraIntygetAvser(data.korkortstyper, testValues.korkortstyperHogreBehorighet);
         this.verifieraIdKontroll(data.identitetStyrktGenom);
         this.verifieraSynfunktioner(data);
         this.verifieraHorsel(data.horsel);
@@ -260,7 +230,7 @@ var TsBasIntyg = BaseIntyg._extend({
         this.verifieraSjukvard(data);
         this.verifieraOvrigMedicin(data);
         expect(this.comment.getText()).toBe(data.kommentar);
-        this.verifieraBedomning(data.bedomning);
+        this.verifieraBedomning(data.bedomning, testValues.korkortstyperHogreBehorighet);
     }
 });
 

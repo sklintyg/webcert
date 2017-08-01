@@ -26,97 +26,75 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
-var tsdIntygPage = wcTestTools.pages.intyg.ts.diabetes.intyg;
+var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
+var IntygPage = wcTestTools.pages.intyg.ts.diabetes.intyg;
 
-xdescribe('Create and Sign ts-diabetes utkast', function() {
+describe('Create and Sign ts-diabetes utkast', function() {
 
-    var utkast = null;
+    var utkastId = null,
+        data = null;
 
-    describe('prepare test with intyg', function() {
-        it('should generate ts-diabetes min intyg', function() {
-            testdataHelper.createUtkast('ts-diabetes').then(function(response) {
-                utkast = response.body;
-                expect(utkast.intygsId).not.toBeNull();
-            }, function(error) {
-                logger.error('Error calling createIntyg');
-            });
+    beforeAll(function() {
+        browser.ignoreSynchronization = false;
+        specHelper.login();
+        specHelper.createUtkastForPatient('191212121212', 'Transportstyrelsens läkarintyg, diabetes');
+    });
+
+    it('Spara undan intygsId från URL', function() {
+        UtkastPage.disableAutosave();
+
+        browser.getCurrentUrl().then(function(url) {
+            utkastId = url.split('/').pop();
+        });
+        data = wcTestTools.testdata.ts.diabetes.getRandom(utkastId, true);
+    });
+
+    describe('Fyll i intyget', function() {
+        it('fillInKorkortstyper', function() {
+            UtkastPage.fillInKorkortstyper(data.korkortstyper);
+        });
+        it('fillInIdentitetStyrktGenom', function() {
+            UtkastPage.fillInIdentitetStyrktGenom(data.identitetStyrktGenom);
+        });
+        it('fillInAllmant', function() {
+            UtkastPage.fillInAllmant(data.allmant);
+        });
+        it('fillInHypoglykemier', function() {
+            UtkastPage.fillInHypoglykemier(data.hypoglykemier);
+        });
+        it('fillInSynintyg', function() {
+            UtkastPage.fillInSynintyg(data.synintyg);
+        });
+        it('fillInBedomning', function() {
+            UtkastPage.fillInBedomning(data.bedomning);
+        });
+        it('fillInOvrigKommentar', function() {
+            UtkastPage.enableAutosave();
+            UtkastPage.fillInOvrigKommentar(data);
+        });
+        it('fillInSpecialist', function() {
+            UtkastPage.fillInSpecialist(data.specialist);
         });
     });
 
-    describe('User', function() {
-        it('should login and open utkast', function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
-            tsdUtkastPage.get(utkast.intygsId);
-        });
+    it('Signera intyget', function() {
+        UtkastPage.whenSigneraButtonIsEnabled();
+
+        browser.sleep(1000);
+
+        UtkastPage.signeraButtonClick();
+
+        browser.sleep(1000);
+
+        expect(IntygPage.isAt()).toBeTruthy();
     });
 
-    describe('fill utkast', function() {
+    it('Verifiera intyg', function() {
+        IntygPage.verify(data);
+    });
 
-        it('should be able to sign utkast', function() {
-
-            browser.ignoreSynchronization = true;
-
-            // Intyget avser
-            tsdUtkastPage.fillInKorkortstyper(['D']);
-
-            // Identiteten är styrkt genom
-            tsdUtkastPage.fillInIdentitetStyrktGenom(wcTestTools.utkastTextmap.ts.identitetStyrktGenom.pass);
-        });
-
-        it('allmant', function() {
-
-            var allmant = {
-                year: '2015',
-                typ: wcTestTools.utkastTextmap.ts.diabetes.typ.typ1,
-                behandling: {
-                    typer: [wcTestTools.utkastTextmap.ts.diabetes.behandling.endastkost,
-                        wcTestTools.utkastTextmap.ts.diabetes.behandling.insulin],
-                    insulinYear: '2000'
-                }
-            };
-
-            // Allmänt
-            tsdUtkastPage.fillInAllmant(allmant);
-        });
-
-        it('hypo', function() {
-
-            // Hypoglykemier
-            tsdUtkastPage.fillInHypoglykemier({
-                a: 'Ja',
-                b: 'Nej',
-                f: 'Ja',
-                g: 'Nej'
-            });
-
-            //Synintyg
-            tsdUtkastPage.fillInSynintyg({ a: 'Ja' });
-
-            //Bedömning
-            var bedomning = {
-                stallningstagande: 'behorighet_bedomning',
-                behorigheter: ['D'],
-                lamplighet: 'Ja'
-            };
-
-            tsdUtkastPage.fillInBedomning(bedomning);
-        });
-
-        it('should be able to sign utkast', function() {
-            browser.ignoreSynchronization = false;
-            tsdUtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                tsdUtkastPage.signeraButtonClick();
-                expect(tsdIntygPage.isAt()).toBeTruthy();
-            });
-        });
-
-        describe('remove test intyg', function() {
-            it('should clean up all utkast after the test', function() {
-                testdataHelper.deleteUtkast(utkast.intygsId);
-                testdataHelper.deleteIntyg(utkast.intygsId);
-            });
-        });
+    afterAll(function() {
+        testdataHelper.deleteIntyg(utkastId);
+        testdataHelper.deleteUtkast(utkastId);
     });
 });

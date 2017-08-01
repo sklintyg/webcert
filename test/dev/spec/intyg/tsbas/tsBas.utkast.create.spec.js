@@ -112,6 +112,9 @@ describe('Create and Sign ts-bas utkast', function() {
         it('fillInBedomning', function() {
             UtkastPage.fillInBedomning(data.bedomning);
         });
+        it('fillInSpecialist', function() {
+            UtkastPage.fillInSpecialist(data.specialist);
+        });
     });
 
     it('Signera intyget', function() {
