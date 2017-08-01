@@ -29,6 +29,7 @@ var ValjIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 describe('Create and Sign FK utkast', function() {
 
     var utkastId = null,
+        utkastIdSmittSkydd = null,
         data = null;
 
     browser.ignoreSynchronization = true;
@@ -49,9 +50,9 @@ describe('Create and Sign FK utkast', function() {
                 UtkastPage.disableAutosave();
 
                 browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').pop();
+                    utkastIdSmittSkydd = url.split('/').pop();
                 });
-                data = wcTestTools.testdata.fk['7263'].getRandom(utkastId, true);
+                data = wcTestTools.testdata.fk['7263'].getRandom(utkastIdSmittSkydd, true);
             });
 
             it('angeSmittskydd', function() {
@@ -90,15 +91,11 @@ describe('Create and Sign FK utkast', function() {
         it('Verifiera intyg', function() {
             IntygPage.verify(data);
         });
-
-        afterAll(function() {
-            testdataHelper.deleteIntyg(utkastId);
-            testdataHelper.deleteUtkast(utkastId);
-        });
     });
 
     describe('Vanligt', function() {
         beforeAll(function() {
+            browser.ignoreSynchronization = false;
             ValjIntygPage.get();
             specHelper.createUtkastForPatient('191212121212', 'Läkarintyg FK 7263');
         });
@@ -169,12 +166,17 @@ describe('Create and Sign FK utkast', function() {
         });
 
         it('Verifiera intyg', function() {
+            IntygPage.whenCertificateLoaded();
+
             IntygPage.verify(data);
         });
+    });
 
-        afterAll(function() {
-            testdataHelper.deleteIntyg(utkastId);
-            testdataHelper.deleteUtkast(utkastId);
-        });
+    afterAll(function() {
+        browser.sleep(1000);
+        testdataHelper.deleteIntyg(utkastIdSmittSkydd);
+        testdataHelper.deleteUtkast(utkastIdSmittSkydd);
+        testdataHelper.deleteIntyg(utkastId);
+        testdataHelper.deleteUtkast(utkastId);
     });
 });

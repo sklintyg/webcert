@@ -31,6 +31,7 @@ var Fk7263Intyg = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'fk7263';
+        this.certficate = element(by.id('certificate'));
 
         this.field1 = {
             title: element(by.css('div[field-number="1"]')).element(by.css('.title')),
@@ -246,7 +247,7 @@ var Fk7263Intyg = BaseIntyg._extend({
             text += '4b: ' + data.baserasPa.annat.text + '. ';
         }
 
-        if (data.prognos.fortydligande) {
+        if (data.prognos.val === 'Går inte att bedöma' && data.prognos.fortydligande) {
             text += '10: ' + data.prognos.fortydligande + '. ';
         }
 
@@ -342,6 +343,10 @@ var Fk7263Intyg = BaseIntyg._extend({
 
         expect(this.kontaktMedFk.getText()).toBe(data.kontaktOnskasMedFK ? 'Ja' : 'Nej');
         this.verifierOvrig(data);
+    },
+
+    whenCertificateLoaded: function() {
+        return browser.wait(this.certficate.isDisplayed());
     }
 });
 
