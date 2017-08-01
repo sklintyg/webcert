@@ -97,7 +97,8 @@ module.exports = {
             ovrigMedicin: shuffle(testValues.ovrigMedicin)[0],
             ovrigMedicinBeskrivning: testdataHelper.randomTextString(),
             kommentar: testValues.comment,
-            styrkor: testValues.getRandomStyrka()
+            styrkor: testValues.getRandomStyrka(),
+            specialist: testdataHelper.randomTextString()
         };
     }
 };

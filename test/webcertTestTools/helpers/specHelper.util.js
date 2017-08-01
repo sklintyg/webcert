@@ -119,6 +119,9 @@ module.exports = {
         if (intygType === 'Transportstyrelsens läkarintyg') {
             utkastPage = pages.intyg.ts.bas.utkast;
         }
+        if (intygType === 'Transportstyrelsens läkarintyg, diabetes') {
+            utkastPage = pages.intyg.ts.diabetes.utkast;
+        }
 
         expect(utkastPage.isAt()).toBe(true);
     },

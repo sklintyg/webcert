@@ -110,7 +110,7 @@ var tsValues = {
 
     getRandomKorkortstyper: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
-        return shuffle(tsValues.korkortstyper).slice(0, Math.floor(Math.random() * tsValues.korkortstyper.length) + 1);
+        return shuffle(tsValues.korkortstyper.slice(0)).slice(0, Math.floor(Math.random() * tsValues.korkortstyper.length) + 1);
     },
 
     getRandomKorkortstyperHogre: function() {
