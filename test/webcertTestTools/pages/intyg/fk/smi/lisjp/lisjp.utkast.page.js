@@ -89,7 +89,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
                 ja: element(by.id('arbetstidsforlaggningYes')),
                 beskrivning: element(by.id('arbetstidsforlaggningMotivering'))
             },
-            arbetsresor: element(by.id('formly_1_checkbox-inline_arbetsresor_4')),
+            arbetsresor: element(by.id('form_arbetsresor')).element(by.css('input[type=checkbox]')),
             formagaTrotsBegransningBeskrivning: element(by.id('formagaTrotsBegransning')),
             // prognos: {
             //     typ: {
