@@ -24,6 +24,7 @@ Scenario: Informera om patienten har bytt adress och använd address på nya int
     Så ska ett info-meddelande visa "Observera att patientens adress har ändrats sedan det här intyget utfärdades."
 
     När jag förnyar intyget
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
     Och jag signerar intyget
     Så ska intyget visa den nya addressen
 
@@ -37,6 +38,7 @@ Scenario: Patienten har fått ett nytt personnummer
     Så ska ett varning-meddelande visa "Patienten har ett nytt personnummer"
 
     När jag förnyar intyget
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
     Och jag signerar intyget
     Så ska intyget visa det nya person-id:numret
 
@@ -50,6 +52,7 @@ Scenario: Patienten har fått ett reservnummer
     Så ska ett varning-meddelande visa "Patienten har samordningsnummer kopplat till reservnummer"
 
     När jag förnyar intyget
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
