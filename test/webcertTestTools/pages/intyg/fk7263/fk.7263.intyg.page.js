@@ -37,16 +37,23 @@ var Fk7263Intyg = BaseIntyg._extend({
             title: element(by.css('div[field-number="1"]')).element(by.css('.title')),
             text: element(by.id('avstangningSmittskydd'))
         };
-
+		
+		//Fält 2 | Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga
+		//Fält 2 | Diagnoskod enligt ICD-10 (huvuddiagnos)
         this.field2 = {
             diagnoskod: element(by.id('diagnosKod')),
             diagnosBeskrivning: element(by.id('diagnosBeskrivning')),
             block: element(by.id('field2'))
         };
+		
+		//Fält 3 | Aktuellt sjukdomsförlopp
         this.field3 = {
             sjukdomsforlopp: element(by.id('sjukdomsforlopp')),
             block: element(by.css('[field-number="3"]'))
         };
+		
+		//Fält 4 | Funktionsnedsättningar – observationer, undersökningsfynd och utredningsresultat
+		//Fält 4 | Jag baserar uppgifterna på
         this.field4 = {
             funktionsnedsattning: element(by.id('funktionsnedsattning')),
             block: element(by.css('[field-number="4"]'))
@@ -61,30 +68,39 @@ var Fk7263Intyg = BaseIntyg._extend({
 
 
         };
+		
+		//Fält 5 | Aktivitetsbegränsning relaterat till diagnos (fält 2) och funktionsnedsättning (fält 4)
         this.field5 = {
             aktivitetsbegransning: element(by.id('aktivitetsbegransning')),
             block: element(by.css('[field-number="5"]'))
         };
-
+		
+		//Fält 6a | Rekommendationer 
         this.field6a = {
             kontaktArbetsformedlingen: element(by.id('rekommendationKontaktArbetsformedlingen')),
             kontaktForetagshalsovarden: element(by.id('rekommendationKontaktForetagshalsovarden')),
             ovrigt: element(by.id('rekommendationOvrigt')),
             rekommendationOvrigtBeskrivning: element(by.id('rekommendationOvrigt'))
         };
-
+		
+		//Fält 6b | Planerad eller pågående behandling eller åtgärd 
+		
+		// Fält 7 | Är arbetslivsinriktad rehabilitering aktuell?
         this.field7 = {
-            text: element(by.id('field7')).element(by.css('.intyg-block__content')),
-            block: element(by.id('resaTillArbetet'))
+            //text: element(by.id('field7')).element(by.css('.intyg-block__content')),
+            text: element(by.id('rehabilitering')).element(by.binding('resultValue')),
+			block: element(by.id('rehabilitering'))
         };
 
+		//Fält 8a | Patientens arbetsförmåga bedöms i förhållande till
         this.field8a = {
             nuvarandeArbete: element(by.id('nuvarandeArbetsuppgifter')),
             nuvarandeArbeteText: element(by.id('nuvarandeArbetsuppgifter-text')),
             arbetsloshet: element(by.id('arbetsloshet')),
             foraldrarledighet: element(by.id('foraldrarledighet'))
         };
-
+		
+		//Fält 8b | Jag bedömer att patientens arbetsförmåga är
         this.field8b = {
             nedsat25: {
                 from: element(by.id('nedsattMed25-row-col1')),
@@ -105,23 +121,29 @@ var Fk7263Intyg = BaseIntyg._extend({
             block: element(by.css('[field-number="8a"]'))
         };
 
+		//Fält 9 | Patientens arbetsförmåga bedöms nedsatt längre tid än den som det försäkringsmedicinska beslutsstödet anger, därför att
+		
+		//Fält 10 | Prognos – kommer patienten att få tillbaka sin arbetsförmåga i nuvarande arbete? (Gäller inte arbetslösa)
         this.field10 = {
             title: element(by.css('div[field-number="10"]')).element(by.css('.title')),
             text: element(by.id('prognosBedomning')),
             block: element(by.css('[field-number="10"]'))
         };
 
+		//Fält 11 | Kan resor till och från arbetet med annat färdsätt än normalt göra det möjligt för patienten att återgå i arbete?
         this.field11 = {
             title: element(by.css('div[field-number="11"]')).element(by.css('.title')),
-            text: element(by.id('rehabilitering')),
-            block: element(by.css('[field-number="11"]'))
+            text: element(by.id('resaTillArbetet')),
+            block: element(by.id('resaTillArbetet'))
         };
 
+		//Fält 12 | Kontakt önskas med Försäkringskassan
         this.field12 = {
             title: element(by.id('field12')).element(by.css('.title')),
-            text: element(by.id('field12')).element(by.css('.intyg-block__content'))
+            text: element(by.id('kontaktMedFk'))
         };
-
+	
+		//Fält 13 | Övriga upplysningar och förtydliganden
         this.field13 = {
             kommentar: element(by.id('kommentar'))
         };
@@ -331,8 +353,8 @@ var Fk7263Intyg = BaseIntyg._extend({
 
             this.verifieraRekommendationer(data.rekommendationer);
 
-            expect(this.field11.text.getText()).toBe(data.rekommendationer.arbetslivsinriktadRehab);
-            expect(this.field7.block.getText()).toBe(data.rekommendationer.resor ? 'Ja' : 'Nej');
+            expect(this.field7.text.getText()).toBe(data.rekommendationer.arbetslivsinriktadRehab);
+            expect(this.field11.text.getText()).toBe(data.rekommendationer.resor ? 'Ja' : 'Nej');
         }
 
         this.verifieraArbetsformaga(data.arbetsformaga);

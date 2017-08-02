@@ -47,14 +47,6 @@ module.exports = function() {
         }
     });
 
-    //Baserat på
-    /*     promiseArr.push(pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa).then(function() {
-             logger.info('OK - angeBaseratPa');
-         }, function(reason) {
-             throw ('FEL, angeBaseratPa,' + reason);
-         }));
-    */
-
     this.Given(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
         return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);
     });

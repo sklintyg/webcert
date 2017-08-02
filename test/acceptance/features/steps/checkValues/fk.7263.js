@@ -57,7 +57,7 @@ function checkDiagnos(diagnos) {
         ));
 
     } else {
-        promiseArr.push(expect(field2.block.getText()).to.eventually.contain('Ej angivet').then(function(value) {
+        promiseArr.push(expect(field2.diagnosBeskrivning.getText()).to.eventually.contain('Ej angivet').then(function(value) {
                 logger.info('OK - Diagnoskod = ' + value);
                 return Promise.resolve();
             },
@@ -74,7 +74,7 @@ function checkBaserasPa(baserasPa) {
     if (baserasPa) {
         var promiseArr = [];
         if (baserasPa.minUndersokning) {
-            promiseArr.push(expect(intygPage.field4b.undersokningAvPatienten.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minUndersokning.datum)).then(function(value) {
+            promiseArr.push(expect(intygPage.field4b.undersokningAvPatienten.getText()).to.eventually.equal(baserasPa.minUndersokning.datum).then(function(value) {
                     logger.info('OK - Undersokning av patienten baseras på min Undersokning = ' + value);
                 },
                 function(reason) {
@@ -83,7 +83,7 @@ function checkBaserasPa(baserasPa) {
             ));
         }
         if (baserasPa.minTelefonkontakt) {
-            promiseArr.push(expect(intygPage.field4b.telefonKontakt.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.minTelefonkontakt.datum)).then(function(value) {
+            promiseArr.push(expect(intygPage.field4b.telefonKontakt.getText()).to.eventually.equal(baserasPa.minTelefonkontakt.datum).then(function(value) {
                     logger.info('OK - Undersokning av patienten baseras på min Telefonkontakt = ' + value);
                 },
                 function(reason) {
@@ -92,7 +92,7 @@ function checkBaserasPa(baserasPa) {
             ));
         }
         if (baserasPa.journaluppgifter) {
-            promiseArr.push(expect(intygPage.field4b.journaluppgifter.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.journaluppgifter.datum)).then(function(value) {
+            promiseArr.push(expect(intygPage.field4b.journaluppgifter.getText()).to.eventually.equal(baserasPa.journaluppgifter.datum).then(function(value) {
                     logger.info('OK - Undersokning av patienten baseras på journaluppgifter = ' + value);
                 },
                 function(reason) {
@@ -101,7 +101,7 @@ function checkBaserasPa(baserasPa) {
             ));
         }
         if (baserasPa.annat) {
-            promiseArr.push(expect(intygPage.field4b.annat.getText()).to.eventually.equal(helpers.getDateForAssertion(baserasPa.annat.datum)).then(function(value) {
+            promiseArr.push(expect(intygPage.field4b.annat.getText()).to.eventually.equal(baserasPa.annat.datum).then(function(value) {
                     logger.info('OK - Undersokning av patienten baseras på annat = ' + value);
                 },
                 function(reason) {
@@ -120,7 +120,7 @@ function checkBaserasPa(baserasPa) {
         }
         return Promise.all(promiseArr);
     } else {
-        return expect(intygPage.field4b.block.getText()).to.eventually.contain('Ej angivet').then(function(value) {
+        return expect(intygPage.field4b.annat.getText()).to.eventually.contain('Ej angivet').then(function(value) {
                 logger.info('OK - Baseras på = ' + value);
             },
             function(reason) {
@@ -144,7 +144,7 @@ function checkArbetsformaga(arbetsformaga) {
     var promiseArr = [];
     if (arbetsformaga.nedsattMed25) {
         promiseArr.push(
-            expect(intygPage.field8b.nedsat25.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed25.from)).then(function(value) {
+            expect(intygPage.field8b.nedsat25.from.getText()).to.eventually.equal(arbetsformaga.nedsattMed25.from).then(function(value) {
                     logger.info('OK - Nedsatt med 20% from = ' + value);
                 },
                 function(reason) {
@@ -152,7 +152,7 @@ function checkArbetsformaga(arbetsformaga) {
                 })
         );
         promiseArr.push(
-            expect(intygPage.field8b.nedsat25.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed25.tom)).then(function(value) {
+            expect(intygPage.field8b.nedsat25.tom.getText()).to.eventually.equal(arbetsformaga.nedsattMed25.tom).then(function(value) {
                     logger.info('OK - Nedsatt med 20% tom = ' + value);
                 },
                 function(reason) {
@@ -162,7 +162,7 @@ function checkArbetsformaga(arbetsformaga) {
     }
     if (arbetsformaga.nedsattMed50) {
         promiseArr.push(
-            expect(intygPage.field8b.nedsat50.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed50.from)).then(function(value) {
+            expect(intygPage.field8b.nedsat50.from.getText()).to.eventually.equal(arbetsformaga.nedsattMed50.from).then(function(value) {
                     logger.info('OK - Nedsatt med 50% from = ' + value);
                 },
                 function(reason) {
@@ -171,7 +171,7 @@ function checkArbetsformaga(arbetsformaga) {
         );
 
         promiseArr.push(
-            expect(intygPage.field8b.nedsat50.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed50.tom)).then(function(value) {
+            expect(intygPage.field8b.nedsat50.tom.getText()).to.eventually.equal(arbetsformaga.nedsattMed50.tom).then(function(value) {
                     logger.info('OK - Nedsatt med 50% tom = ' + value);
                 },
                 function(reason) {
@@ -180,13 +180,13 @@ function checkArbetsformaga(arbetsformaga) {
         );
     }
     if (arbetsformaga.nedsattMed75) {
-        promiseArr.push(expect(intygPage.field8b.nedsat75.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed75.from)).then(function(value) {
+        promiseArr.push(expect(intygPage.field8b.nedsat75.from.getText()).to.eventually.equal(arbetsformaga.nedsattMed75.from).then(function(value) {
                 logger.info('OK - Nedsatt med 75% from = ' + value);
             },
             function(reason) {
                 throw ('FEL, Nedsatt med 75% from,' + reason);
             }));
-        promiseArr.push(expect(intygPage.field8b.nedsat75.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed75.tom)).then(function(value) {
+        promiseArr.push(expect(intygPage.field8b.nedsat75.tom.getText()).to.eventually.equal(arbetsformaga.nedsattMed75.tom).then(function(value) {
                 logger.info('OK - Nedsatt med 75% tom = ' + value);
             },
             function(reason) {
@@ -195,14 +195,14 @@ function checkArbetsformaga(arbetsformaga) {
     }
     if (arbetsformaga.nedsattMed100) {
         promiseArr.push(
-            expect(intygPage.field8b.nedsat100.from.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed100.from)).then(function(value) {
+            expect(intygPage.field8b.nedsat100.from.getText()).to.eventually.equal(arbetsformaga.nedsattMed100.from).then(function(value) {
                     logger.info('OK - Nedsatt med 100% from = ' + value);
                 },
                 function(reason) {
                     throw ('FEL, Nedsatt med 100% from,' + reason);
                 })
         );
-        promiseArr.push(expect(intygPage.field8b.nedsat100.tom.getText()).to.eventually.equal(helpers.getDateForAssertion(arbetsformaga.nedsattMed100.tom)).then(function(value) {
+        promiseArr.push(expect(intygPage.field8b.nedsat100.tom.getText()).to.eventually.equal(arbetsformaga.nedsattMed100.tom).then(function(value) {
                 logger.info('OK - Nedsatt med 100% tom = ' + value);
             },
             function(reason) {
@@ -228,7 +228,7 @@ function checkOvrigtRekommendation(rek) {
 
 function checkArbetesinriktadRehab(rek) {
     if (rek) {
-        return expect(intygPage.field7.text.getText()).to.eventually.equal(rek).then(function(value) {
+        return expect(intygPage.field7.block.getText()).to.eventually.equal(rek).then(function(value) {
                 logger.info('OK - Rehabilitering aktuell = ' + value);
             },
             function(reason) {
@@ -274,7 +274,7 @@ function checkSjukdomsforlopp(forlopp) {
             }
         );
     } else {
-        return expect(intygPage.field3.block.getText()).to.eventually.contain('Ej angivet').then(function(value) {
+        return expect(intygPage.field3.sjukdomsforlopp.getText()).to.eventually.contain('Ej angivet').then(function(value) {
                 logger.info('OK - Sjukdomsförlopp = ' + value);
             },
             function(reason) {
@@ -294,7 +294,7 @@ function checkFunktionsnedsattning(nedsattning) {
             }
         );
     } else {
-        return expect(intygPage.field4.block.getText()).to.eventually.contain('Ej angivet').then(function(value) {
+        return expect(intygPage.field4.funktionsnedsattning.getText()).to.eventually.contain('Ej angivet').then(function(value) {
                 logger.info('OK - Funktionsnedsättning = ' + value);
             },
             function(reason) {
@@ -315,7 +315,7 @@ function checkAktivitetsbegransning(begr) {
             }
         );
     } else {
-        return expect(field5.block.getText()).to.eventually.contain('Ej angivet').then(function(value) {
+        return expect(field5.aktivitetsbegransning.getText()).to.eventually.contain('Ej angivet').then(function(value) {
                 logger.info('OK - Aktivitetsbegränsning = ' + value);
             },
             function(reason) {
@@ -355,7 +355,7 @@ module.exports = {
 
             //Kontrollera FÄLT 6a : Rekommendationer
             //Kontakt med AF
-            expect(field6a.kontaktArbetsformedlingen.isDisplayed()).to.become(intyg.rekommendationer.kontaktMedArbetsformedlingen).then(function(value) {
+            expect(field6a.kontaktArbetsformedlingen.getText()).to.eventually.equal(helpers.boolTillJaNej(intyg.rekommendationer.kontaktMedArbetsformedlingen)).then(function(value) {
                     logger.info('OK - Kontakt med AF = ' + value);
                 },
                 function(reason) {
@@ -364,7 +364,7 @@ module.exports = {
             ),
 
             //Kontakt med Företagshälsovården
-            expect(field6a.kontaktForetagshalsovarden.isDisplayed()).to.become(intyg.rekommendationer.kontaktMedForetagshalsovard).then(function(value) {
+            expect(field6a.kontaktForetagshalsovarden.getText()).to.eventually.equal(helpers.boolTillJaNej(intyg.rekommendationer.kontaktMedForetagshalsovard)).then(function(value) {
                     logger.info('OK - Kontakt med Företagshälsovård = ' + value);
                 },
                 function(reason) {
@@ -397,7 +397,7 @@ module.exports = {
 
 
             // Kontrollera FÄLT 11 : Resa till arbete med annat färdsätt
-            expect(intygPage.field11.text.getText()).to.eventually.contain(helpers.boolTillJaNej(intyg.rekommendationer.resor)).then(function(value) {
+            expect(intygPage.field11.block.getText()).to.eventually.contain(helpers.boolTillJaNej(intyg.rekommendationer.resor)).then(function(value) {
                 logger.info('OK - Resor till arbete med annat färdsätt = ' + value);
             }, function(reason) {
                 throw ('FEL, Resor till arbete med annat färdsätt,' + reason);
