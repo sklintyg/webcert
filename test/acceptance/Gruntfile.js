@@ -179,16 +179,12 @@ module.exports = function(grunt) {
         var tagsArray = ['~@notReady', '~@waitingForFix'];
         if (grunt.option('tags')) {
             tagsArray = grunt.option('tags').split(',');
-            tagsArray.forEach(function(tag, index) {
-                tagsArray[index] = tagsArray[index].replace(' ', ',');
-            });
-
 
             // Filtrera bort de feature-filer som inte har några scenarios med valda taggar om parallella tester 
             // ska koras (dvs. selenium-grid). 
             if (grunt.option('gridnodeinstances')) {
 
-                var files = grunt.file.expand('acceptance/features/*.feature');
+                var files = grunt.file.expand('features/**/*.feature');
                 var featureFiles = [];
 
                 files.forEach(function(filePath) {
@@ -210,6 +206,12 @@ module.exports = function(grunt) {
             }
 
         }
+
+        tagsArray.forEach(function(tag, index) {
+            tagsArray[index] = tagsArray[index].replace(/ /g, ',');
+        });
+
+
         grunt.log.subhead('Taggar:' + tagsArray);
         grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
 
