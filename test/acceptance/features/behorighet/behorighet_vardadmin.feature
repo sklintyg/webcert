@@ -8,19 +8,19 @@ Bakgrund: Logga in och gå in på en patient
 	Och går in på Sök/skriv intyg
 	Och jag går in på en patient
 @fornya
-Scenario: Kan förnya Läkarintyg FK 7263
+Scenario: Kan inte förnya Läkarintyg FK 7263
    När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så ska det finnas en knapp för att förnya intyget
 
 @fornya @ts
-Scenario: Kan förnya Transportstyrelsens läkarintyg 
+Scenario: Kan inte förnya Transportstyrelsens läkarintyg 
    När jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
-   Så ska det finnas en knapp för att förnya intyget
+   Så ska det inte finnas en knapp för att förnya intyget
 
 @diabetes @fornya @ts
 Scenario: Kan förnya Transportstyrelsens läkarintyg, diabetes intyg
    När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
-   Så ska det finnas en knapp för att förnya intyget
+   Så ska det inte finnas en knapp för att förnya intyget
 
 Scenario: Kan inte signera Läkarintyg FK 7263
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
