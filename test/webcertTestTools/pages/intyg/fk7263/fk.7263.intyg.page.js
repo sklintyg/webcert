@@ -34,7 +34,6 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.certficate = element(by.id('certificate'));
 
         this.field1 = {
-            title: element(by.css('div[field-number="1"]')).element(by.css('.title')),
             text: element(by.id('avstangningSmittskydd'))
         };
 		
@@ -42,37 +41,32 @@ var Fk7263Intyg = BaseIntyg._extend({
 		//Fält 2 | Diagnoskod enligt ICD-10 (huvuddiagnos)
         this.field2 = {
             diagnoskod: element(by.id('diagnosKod')),
-            diagnosBeskrivning: element(by.id('diagnosBeskrivning')),
-            block: element(by.id('field2'))
+            diagnosBeskrivning: element(by.id('diagnosBeskrivning'))
         };
 		
 		//Fält 3 | Aktuellt sjukdomsförlopp
         this.field3 = {
-            sjukdomsforlopp: element(by.id('sjukdomsforlopp')),
-            block: element(by.css('[field-number="3"]'))
+            sjukdomsforlopp: element(by.id('sjukdomsforlopp'))
         };
 		
 		//Fält 4 | Funktionsnedsättningar – observationer, undersökningsfynd och utredningsresultat
 		//Fält 4 | Jag baserar uppgifterna på
         this.field4 = {
-            funktionsnedsattning: element(by.id('funktionsnedsattning')),
-            block: element(by.css('[field-number="4"]'))
+            funktionsnedsattning: element(by.id('funktionsnedsattning'))
         };
         this.field4b = {
             undersokningAvPatienten: element(by.id('undersokningAvPatienten')),
             telefonKontakt: element(by.id('telefonkontaktMedPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),
             annat: element(by.id('annanReferens')),
-            annanReferensBeskrivning: element(by.id('annanReferensBeskrivning')),
-            block: element(by.css('[field-number="4b"]'))
+            annanReferensBeskrivning: element(by.id('annanReferensBeskrivning'))
 
 
         };
 		
 		//Fält 5 | Aktivitetsbegränsning relaterat till diagnos (fält 2) och funktionsnedsättning (fält 4)
         this.field5 = {
-            aktivitetsbegransning: element(by.id('aktivitetsbegransning')),
-            block: element(by.css('[field-number="5"]'))
+            aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
         };
 		
 		//Fält 6a | Rekommendationer 
@@ -87,7 +81,6 @@ var Fk7263Intyg = BaseIntyg._extend({
 		
 		// Fält 7 | Är arbetslivsinriktad rehabilitering aktuell?
         this.field7 = {
-            //text: element(by.id('field7')).element(by.css('.intyg-block__content')),
             text: element(by.id('rehabilitering')).element(by.binding('resultValue')),
 			block: element(by.id('rehabilitering'))
         };
@@ -117,29 +110,24 @@ var Fk7263Intyg = BaseIntyg._extend({
             nedsat100: {
                 from: element(by.id('nedsattMed100-row-col1')),
                 tom: element(by.id('nedsattMed100-row-col2'))
-            },
-            block: element(by.css('[field-number="8a"]'))
+            }
         };
 
 		//Fält 9 | Patientens arbetsförmåga bedöms nedsatt längre tid än den som det försäkringsmedicinska beslutsstödet anger, därför att
 		
 		//Fält 10 | Prognos – kommer patienten att få tillbaka sin arbetsförmåga i nuvarande arbete? (Gäller inte arbetslösa)
         this.field10 = {
-            title: element(by.css('div[field-number="10"]')).element(by.css('.title')),
-            text: element(by.id('prognosBedomning')),
-            block: element(by.css('[field-number="10"]'))
+            text: element(by.id('prognosBedomning'))
         };
 
 		//Fält 11 | Kan resor till och från arbetet med annat färdsätt än normalt göra det möjligt för patienten att återgå i arbete?
         this.field11 = {
-            title: element(by.css('div[field-number="11"]')).element(by.css('.title')),
             text: element(by.id('resaTillArbetet')),
             block: element(by.id('resaTillArbetet'))
         };
 
 		//Fält 12 | Kontakt önskas med Försäkringskassan
         this.field12 = {
-            title: element(by.id('field12')).element(by.css('.title')),
             text: element(by.id('kontaktMedFk'))
         };
 	
