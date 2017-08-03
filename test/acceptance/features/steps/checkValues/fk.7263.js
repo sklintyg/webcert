@@ -250,7 +250,7 @@ function checkArbetesinriktadRehab(rek) {
 
 function checkAktuellaArbetsuppgifter(arb) {
     if (arb) {
-        return helpers.genericAssert(arb.nuvarandeArbete.aktuellaArbetsuppgifter, 'nuvarandeArbetsuppgifter');
+        return helpers.genericAssert(arb.nuvarandeArbete.aktuellaArbetsuppgifter, 'nuvarandeArbetsuppgifter-text');
     } else {
         return Promise.resolve();
     }
