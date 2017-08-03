@@ -81,7 +81,7 @@ var Fk7263Intyg = BaseIntyg._extend({
 		
 		// Fält 7 | Är arbetslivsinriktad rehabilitering aktuell?
         this.field7 = {
-            text: element(by.id('rehabilitering')).element(by.binding('resultValue')),
+            text: element(by.id('rehabilitering')),
 			block: element(by.id('rehabilitering'))
         };
 
