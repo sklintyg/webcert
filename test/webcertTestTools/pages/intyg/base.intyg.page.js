@@ -84,10 +84,10 @@ var BaseIntyg = JClass._extend({
         };
 
         this.enhetsAdress = {
-            postAdress: element(by.id('vardenhet_postadress')),
-            postNummer: element(by.id('vardenhet_postnummer')),
-            postOrt: element(by.id('vardenhet_postort')),
-            enhetsTelefon: element(by.id('vardenhet_telefonnummer'))
+            postAdress: element(by.id('vardperson_postadress')),
+            postNummer: element(by.id('vardperson_postnummer')),
+            postOrt: element(by.id('vardperson_postort')),
+            enhetsTelefon: element(by.id('vardperson_telefonnummer'))
         };
 
         this.selectUtskriftButton = element(by.id('intyg-header-dropdown-select-pdf-type'));

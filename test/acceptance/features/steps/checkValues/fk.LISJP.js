@@ -25,9 +25,9 @@ var testdataHelper = wcTestTools.helpers.testdata;
 var lisjpPage = pages.intyg.lisjp.intyg;
 
 function checkBaseratPa(baseratPa) {
-    var minUndersokningText = testdataHelper.dateToText((baseratPa.undersokning));
-    var journaluppgifterText = testdataHelper.dateToText((baseratPa.journaluppgifter));
-    var annatText = testdataHelper.dateToText((baseratPa.annat));
+    var minUndersokningText = testdataHelper.ejAngivetIfNull(baseratPa.minUndersokningAvPatienten);
+    var journaluppgifterText = testdataHelper.ejAngivetIfNull(baseratPa.journaluppgifter);
+    var annatText = testdataHelper.ejAngivetIfNull(baseratPa.annat);
     var annatBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.annatBeskrivning);
 
     return Promise.all([
