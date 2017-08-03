@@ -9,7 +9,7 @@ Scenario: Varningmeddelanden när man går in på patient
    Så ska en varningsruta innehålla texten "Patienten har en sekretessmarkering."
    Och ska en varningsruta innehålla texten "På grund av sekretessmarkeringen går det inte att förnya intyg."
 
-@fornya
+@fornya @waitingforfix
 Scenario: Kan inte förnya ett intyg på en sekretessmarkerad patient
 	Givet att jag är inloggad som läkare
    	Och jag går in på en patient med sekretessmarkering

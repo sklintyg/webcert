@@ -32,16 +32,6 @@ Scenario: Makulera ett skickat intyg
 	När jag går till Mina intyg för patienten
     Så ska intyget inte finnas i Mina intyg
 
-@fornya
-Scenario: Förnya ett signerat intyg
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
-	Och jag fyller i alla nödvändiga fält för intyget
-	Och jag signerar intyget
-	Och jag förnyar intyget
-	Och jag signerar intyget
-    Så ska intygets status vara "Intyget är signerat"
-    Och jag ska se den data jag angett för intyget
-
 @samtidaanvandare
 Scenario: Samtida användare ska generera felmeddelande (FK7263)
 	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg

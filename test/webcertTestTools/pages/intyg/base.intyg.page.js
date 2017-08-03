@@ -78,9 +78,9 @@ var BaseIntyg = JClass._extend({
         this.statusNameAndAddressChanged = element(by.id('intyg-djupintegration-name-and-address-changed'));
 
         this.patientAdress = {
-            postadress: element(by.id('patientpostadress')),
-            postnummer: element(by.id('patientpostnummer')),
-            postort: element(by.id('patientpostort'))
+            postadress: element(by.id('patient_postadress')),
+            postnummer: element(by.id('patient_postnummer')),
+            postort: element(by.id('patient_postort'))
         };
 
         this.enhetsAdress = {
