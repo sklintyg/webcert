@@ -1,5 +1,5 @@
 # language: sv
-@komplettering @smi @INTYG-2642 @INTYG-3778 @waitingforfix
+@komplettering @smi @INTYG-2642 @INTYG-3778 @waitingForFix
  # kompletteringsfråga saknas på utkast-sida
 Egenskap: Komplettering av SMI-intyg
 
