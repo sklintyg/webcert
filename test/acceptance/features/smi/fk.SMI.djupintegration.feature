@@ -14,7 +14,7 @@ Scenario: Informera om patienten har bytt namn
     Och jag går in på intygsutkastet via djupintegrationslänk med annat namn
     Så ska ett info-meddelande visa "Observera att patientens namn har ändrats sedan det här intyget utfärdades."
 
-@adressbyte @nyttIntyg
+@adressbyte @nyttIntyg @fornya
 Scenario: Informera om patienten har bytt adress och använd address på nya intyg
     När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
 	Och jag går in på intygsutkastet via djupintegrationslänk
@@ -30,7 +30,7 @@ Scenario: Informera om patienten har bytt adress och använd address på nya int
 
 @nytt-personnummer
 Scenario: Patienten har fått ett nytt personnummer
-	När att vårdsystemet skapat ett intygsutkast för slumpat intyg med samordningsnummer eller personnummer
+	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg med samordningsnummer eller personnummer
 	Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -44,7 +44,7 @@ Scenario: Patienten har fått ett nytt personnummer
 
 @reservnummer
 Scenario: Patienten har fått ett reservnummer
-	När att vårdsystemet skapat ett intygsutkast för slumpat intyg med samordningsnummer eller personnummer
+	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg med samordningsnummer eller personnummer
 	Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget

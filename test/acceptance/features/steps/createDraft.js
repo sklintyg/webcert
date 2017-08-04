@@ -101,47 +101,40 @@ module.exports = function() {
     });
 
     //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat intyg( med samordningsnummer eller personnummer)?$/, function(samEllerPersonNummer, callback) {
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/, function(smi, ts, samEllerPersonNummer, callback) {
         global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
         if (samEllerPersonNummer) {
             var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
             global.person = testdataHelpers.shuffle(shuffladPID)[0];
         }
 
-        var randomIntygType = testdataHelpers.shuffle([
-            'Läkarintyg för sjukpenning',
-            'Läkarutlåtande för sjukersättning',
-            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-            'Läkarintyg FK 7263',
-            'Transportstyrelsens läkarintyg',
-            'Transportstyrelsens läkarintyg, diabetes'
+        console.log('SMI: ' + smi);
+        console.log('TS: ' + ts);
 
-        ])[0];
-        logger.info('Intyg typ: ' + randomIntygType + '\n');
-        createBody(randomIntygType, callback);
-    });
+        var intygtyper = [];
 
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat SMI\-intyg$/, function(callback) {
-        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-        var randomIntygType = testdataHelpers.shuffle([
-            'Läkarintyg för sjukpenning',
-            'Läkarutlåtande för sjukersättning',
-            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+        if (smi) {
+            intygtyper.push('Läkarintyg för sjukpenning',
+                'Läkarutlåtande för sjukersättning',
+                'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+                'Läkarintyg FK 7263');
+        } else if (ts) {
+            intygtyper.push('Transportstyrelsens läkarintyg',
+                'Transportstyrelsens läkarintyg, diabetes');
+        } else {
+            intygtyper.push(
+                'Läkarintyg för sjukpenning',
+                'Läkarutlåtande för sjukersättning',
+                'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+                'Läkarintyg FK 7263',
+                'Transportstyrelsens läkarintyg',
+                'Transportstyrelsens läkarintyg, diabetes'
+            );
+        }
 
-        ])[0];
-        logger.info('Intyg typ: ' + randomIntygType + '\n');
-        createBody(randomIntygType, callback);
-    });
-
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat TS\-intyg$/, function(callback) {
-        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-        var randomIntygType = testdataHelpers.shuffle([
-            'Transportstyrelsens läkarintyg',
-            'Transportstyrelsens läkarintyg, diabetes'
-
-        ])[0];
+        var randomIntygType = testdataHelpers.shuffle(intygtyper)[0];
         logger.info('Intyg typ: ' + randomIntygType + '\n');
         createBody(randomIntygType, callback);
     });

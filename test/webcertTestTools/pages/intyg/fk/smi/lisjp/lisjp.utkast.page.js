@@ -206,7 +206,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
                 })
             );
         }
-		console.log(promisesArr);
+		
         return Promise.all(promisesArr);
 
 
