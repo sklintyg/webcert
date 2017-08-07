@@ -83,7 +83,7 @@ function checkOvrigaUpplysningar(ovriga) {
 }
 
 function checkKontaktMedFk(kontakt) {
-    return expect(luaefsPage.kontaktFK.onskas.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(kontakt));
+    return expect(luaefsPage.kontaktFK.value.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(kontakt));
 }
 
 module.exports = {
