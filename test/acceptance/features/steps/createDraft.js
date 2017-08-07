@@ -117,8 +117,8 @@ module.exports = function() {
             intygtyper.push('Läkarintyg för sjukpenning',
                 'Läkarutlåtande för sjukersättning',
                 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-                'Läkarintyg FK 7263');
+                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+            );
         } else if (ts) {
             intygtyper.push('Transportstyrelsens läkarintyg',
                 'Transportstyrelsens läkarintyg, diabetes');

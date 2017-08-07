@@ -25,6 +25,7 @@ Scenario: Informera om patienten har bytt adress och använd address på nya int
 
     När jag förnyar intyget
 	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg FK 7263")
     Och jag signerar intyget
     Så ska intyget visa den nya addressen
 
@@ -39,6 +40,7 @@ Scenario: Patienten har fått ett nytt personnummer
 
     När jag förnyar intyget
 	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg FK 7263")
     Och jag signerar intyget
     Så ska intyget visa det nya person-id:numret
 
@@ -53,6 +55,7 @@ Scenario: Patienten har fått ett reservnummer
 
     När jag förnyar intyget
 	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg FK 7263")
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
