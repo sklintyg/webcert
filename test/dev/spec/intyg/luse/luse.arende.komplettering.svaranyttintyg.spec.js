@@ -75,6 +75,15 @@ describe('arende on luse intyg', function() {
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
+        it('should display message that intyg has komplettering', function() {
+            expect(LuseIntygPage.getIntygHasKompletteringMessage().isDisplayed()).toBeTruthy();
+        });
+
+        it('should display kompletteringbegaran text below relevant field', function() {
+            expect(LuseIntygPage.getIntygKompletteringFrageText('FRG_1.RBK', 0).isDisplayed()).toBeTruthy();
+            expect(LuseIntygPage.getIntygKompletteringFrageText('FRG_1.RBK', 0).getText()).toContain('Fixa.');
+        });
+
         it('click svara pa komplettering', function() {
             LuseIntygPage.getSvaraPaKompletteringButton(meddelandeId).click();
             expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();

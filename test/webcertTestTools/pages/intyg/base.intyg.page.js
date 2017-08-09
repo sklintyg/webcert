@@ -196,6 +196,12 @@ var BaseIntyg = JClass._extend({
         }
         return element(by.id('arende-' + subgroup + '-' + id));
     },
+    getIntygHasKompletteringMessage: function() {
+        return element(by.id('intyg-has-komplettering-message'));
+    },
+    getIntygKompletteringFrageText: function(frageId, index) {
+        return element(by.id('inline-komplettering-' + frageId + '-' + index));
+    },
     getAnswerBox: function(id) {
         return element(by.id('answerText-' + id));
     },
