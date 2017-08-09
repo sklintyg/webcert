@@ -59,7 +59,7 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
 
         this.specKomp = element(by.id('bedomning-lakareSpecialKompetens'));
 
-        this.intygetAvser = element(by.id('intygAvser'));
+        this.intygetAvser = element(by.id('intygAvser-korkortstyp'));
     },
     get: function get(intygId) {
         get._super.call(this, intygId);

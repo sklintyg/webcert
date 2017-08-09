@@ -160,7 +160,7 @@ module.exports = function() {
             'Transportstyrelsens läkarintyg',
             'Transportstyrelsens läkarintyg, diabetes'
         ])[0];
-
+        console.log('intyg.typ: ' + intyg.typ);
         gotoIntygUtkast(intyg.typ, callback);
 
     });
@@ -172,6 +172,7 @@ module.exports = function() {
             'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
         ])[0];
+        console.log('intyg.typ: ' + intyg.typ);
         Promise.all([
             sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
             sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
