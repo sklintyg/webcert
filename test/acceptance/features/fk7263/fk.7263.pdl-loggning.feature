@@ -56,6 +56,10 @@ Scenario: Makulera intyg
 @fornya
 Scenario: förnya intyg
 	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
-	Och jag förnyar intyget
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
+	Och jag förnyar intyget
+	Och jag anger datum för Baserat på
+	Och jag anger datum för arbetsförmåga
+	Och jag anger kontakt med FK
+	Och jag signerar intyget
 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten

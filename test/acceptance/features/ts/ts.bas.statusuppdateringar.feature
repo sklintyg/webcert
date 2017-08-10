@@ -34,7 +34,7 @@ Scenario: Statusuppdateringar då intyg raderas
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
 
-@vardkontakt-skickas-med
+@vardkontakt-skickas-med @waitingForFix
 Scenario: Vårdkontakt skickas med statusuppdateringar
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref"
 

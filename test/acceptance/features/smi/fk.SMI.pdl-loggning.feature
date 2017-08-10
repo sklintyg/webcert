@@ -58,5 +58,7 @@ Scenario: Makulera SMI intyg
 Scenario: Förnya SMI intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Och jag förnyar intyget
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+    Och jag signerar intyget
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten

@@ -98,7 +98,7 @@ var TsBasIntyg = TsBaseIntyg._extend({
 
         this.stadigvarandeMedicinering = element(by.id('medicinering-stadigvarandeMedicinering'));
         this.medicineringbeskrivning = element(by.id('medicinering-beskrivning'));
-        this.intygetAvser = element(by.id('intygAvser'));
+        this.intygetAvser = element(by.id('intygAvser-korkortstyp'));
 
         this.printBtn = element(by.id('downloadprint'));
         this.comment = element(by.id('kommentar'));

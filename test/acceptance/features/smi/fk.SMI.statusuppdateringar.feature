@@ -109,7 +109,7 @@ Scenario: Statusuppdateringar vid ändring av utkast
     När jag ändrar i slumpat fält
     Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
 
-@referens-skickas-med
+@referens-skickas-med @waitingForFix
 Scenario: Referens skickas med statusuppdateringar
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref-X"
 
