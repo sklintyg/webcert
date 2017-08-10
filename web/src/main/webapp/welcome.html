@@ -60,6 +60,7 @@
   angular.module('WcWelcomeApp.controllers', []).controller('welcomeController',
     ['$scope', '$http', '$log', function($scope, $http, $log) {
 
+      $scope.jsonModel = '';
       function _filterLoginIdentity(allowedApps, appName) {
           if (!_isArray(allowedApps)) {
               return false;
@@ -231,7 +232,8 @@
           postnummer: '555 66',
           postort: 'Nyberga',
           sjf: true,
-          kopieringOk: true
+          kopieringOk: true,
+          red: ''
       };
 
       $scope.environment = {
@@ -249,8 +251,7 @@
 
       $scope.djupintegrationsInloggning = function(evt) {
         evt.preventDefault();
-        var jsonEl = angular.element(document.querySelector('#userJsonDisplay'));
-        $http.post('/fake', "userJsonDisplay=" +jsonEl.text(), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
+        $http.post('/fake', "userJsonDisplay=" + $scope.jsonModel, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
           var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
           q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
           q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
@@ -268,8 +269,6 @@
             return;
         }
 
-        var jsonEl = angular.element(document.querySelector('#userJson'));
-        var jsonElView = angular.element(document.querySelector('#userJsonDisplay'));
         var selector = angular.element(document.querySelector('#jsonSelect'));
 
         // Catch user login option
@@ -283,8 +282,7 @@
         _updateObject(hsaPerson, 'origin', $scope.environment.origin);
 
         var loginJson = _stringify(hsaPerson);
-        jsonElView.text(loginJson);
-        jsonEl.text(escape(loginJson));
+        $scope.jsonModel = loginJson;
       };
 
       $scope.whichEnv = function(env) {
@@ -345,9 +343,8 @@
           <div class="form-group col-xs-4">
             <div style="padding-top: 0.6em;">
               <h4>Inloggningsprofil</h4>
-              <input type="hidden" id="userJson" name="userjson" />
               <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
-                        style="height: 200px; width: 100%;">
+                        style="height: 200px; width: 100%;" ng-model="jsonModel">
                         </textarea>
             </div>
 
@@ -394,9 +391,6 @@
         </div>
       </div>
     </div>
-
-
   </form>
-
 </body>
 </html>
