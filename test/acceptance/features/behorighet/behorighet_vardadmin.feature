@@ -8,7 +8,7 @@ Bakgrund: Logga in och gå in på en patient
 	Och går in på Sök/skriv intyg
 	Och jag går in på en patient
 @fornya
-Scenario: Kan inte förnya Läkarintyg FK 7263
+Scenario: Kan förnya Läkarintyg FK 7263
    När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
    Så ska det finnas en knapp för att förnya intyget
 
