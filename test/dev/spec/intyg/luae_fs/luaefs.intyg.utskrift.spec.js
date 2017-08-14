@@ -26,31 +26,29 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
-var IntygPage = wcTestTools.pages.intyg.luaeNA.intyg;
-var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
-var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
+var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
-describe('verify luaena\'s print buttons', function() {
+describe('verify luaefs\' print buttons', function() {
 
-    var intygsId;
+    var intygId;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
 
-        var intyg = intygFromJsonFactory.defaultLuaena();
-        intygsId = intyg.id;
+        var intyg = intygFromJsonFactory.defaultLuaefs();
+        intygId = intyg.id;
 
+        restUtil.deleteAllIntyg();
         restUtil.createIntyg(intyg).then(function(response) {
             var intyg = JSON.parse(response.request.body);
             expect(intyg.id).not.toBeNull();
         }, function(error) {
-            console.log('Error calling createIntyg');
+            logger.error('Error calling createIntyg');
         });
-
     });
 
     afterAll(function() {
-        restUtil.deleteIntyg(intygsId);
+        restUtil.deleteIntyg(intygId);
         specHelper.logout();
     });
 
@@ -58,9 +56,8 @@ describe('verify luaena\'s print buttons', function() {
         specHelper.login();
     });
 
-    it('view luaena intyg', function() {
-        SokSkrivIntygPage.selectPersonnummer('19121212-1212');
-        SokSkrivValjIntyg.selectIntygById(intygsId);
+    it('view luaefs intyg', function() {
+        IntygPage.get(intygId);
         expect(IntygPage.isAt()).toBeTruthy();
     });
 

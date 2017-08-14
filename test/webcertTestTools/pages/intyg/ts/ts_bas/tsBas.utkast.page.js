@@ -192,18 +192,15 @@ var TsBasUtkast = BaseTsUtkast._extend({
                     return horselBalansEl.bNo.sendKeys(protractor.Key.SPACE);
                 }
             });
-
-
-
     },
 
-    fillInRorelseNedsattning: function(nedsattning) {
+    fillInRorelseNedsattning: function(nedsattning, beskrivning) {
         var nedsattningEl = this.funktionsnedsattning;
 
         if (nedsattning === 'Ja') {
             return nedsattningEl.aYes.sendKeys(protractor.Key.SPACE)
                 .then(function() {
-                    return nedsattningEl.aText.sendKeys('Nedsattning text');
+                    return nedsattningEl.aText.sendKeys(beskrivning ? beskrivning : 'Nedsattning text');
                 });
 
         } else if (nedsattning === 'Nej') {
@@ -214,7 +211,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
         var nedsattningEl = this.funktionsnedsattning;
         var inUtUrFordon = rorelseorganensFunktionerObj.inUtUrFordon;
 
-        return this.fillInRorelseNedsattning(rorelseorganensFunktionerObj.nedsattning)
+        return this.fillInRorelseNedsattning(rorelseorganensFunktionerObj.nedsattning, rorelseorganensFunktionerObj.nedsattningBeskrivning)
             .then(function() {
                 if (inUtUrFordon === 'Ja') {
                     return nedsattningEl.bYes.sendKeys(protractor.Key.SPACE);
@@ -244,7 +241,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
                     return browser.sleep(1000); // Testar att vänta på animering eller nästa tick
                 })
                 .then(function() {
-                    return hjartKarlCEl.cText.sendKeys('TIA och förmaksflimmer.');
+                    return hjartKarlCEl.cText.sendKeys(utkast.hjartRiskBeskrivning);
                 }));
         } else {
             promiseArr.push(hjartKarlCEl.cNo.sendKeys(protractor.Key.SPACE));
@@ -283,41 +280,35 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
     },
     fillInNeurologiskaSjukdomar: function(utkast) {
-        var promiseArr = [];
         if (utkast.neurologiska === 'Ja') {
-            promiseArr.push(this.neurologiska.aYes.sendKeys(protractor.Key.SPACE));
+            return this.neurologiska.aYes.sendKeys(protractor.Key.SPACE);
         } else {
-            promiseArr.push(this.neurologiska.aNo.sendKeys(protractor.Key.SPACE));
+            return this.neurologiska.aNo.sendKeys(protractor.Key.SPACE);
         }
-        return Promise.all(promiseArr);
     },
     fillInEpilepsi: function(utkast) {
         var promiseArr = [];
         if (utkast.epilepsi === 'Ja') {
             promiseArr.push(this.epilepsi.aYes.sendKeys(protractor.Key.SPACE));
-            promiseArr.push(this.epilepsi.aText.sendKeys('Blackout. Midsommarafton.'));
+            promiseArr.push(this.epilepsi.aText.sendKeys(utkast.epilepsiBeskrivning));
         } else {
             promiseArr.push(this.epilepsi.aNo.sendKeys(protractor.Key.SPACE));
         }
         return Promise.all(promiseArr);
     },
     fillInNjursjukdomar: function(utkast) {
-        var promiseArr = [];
         if (utkast.njursjukdom === 'Ja') {
-            promiseArr.push(this.njursjukdom.aYes.sendKeys(protractor.Key.SPACE));
+            return this.njursjukdom.aYes.sendKeys(protractor.Key.SPACE);
         } else {
-            promiseArr.push(this.njursjukdom.aNo.sendKeys(protractor.Key.SPACE));
+            return this.njursjukdom.aNo.sendKeys(protractor.Key.SPACE);
         }
-        return Promise.all(promiseArr);
     },
     fillInDemens: function(utkast) {
-        var promiseArr = [];
         if (utkast.demens === 'Ja') {
-            promiseArr.push(this.kognitivt.aYes.sendKeys(protractor.Key.SPACE));
+            return this.kognitivt.aYes.sendKeys(protractor.Key.SPACE);
         } else {
-            promiseArr.push(this.kognitivt.aNo.sendKeys(protractor.Key.SPACE));
+            return this.kognitivt.aNo.sendKeys(protractor.Key.SPACE);
         }
-        return Promise.all(promiseArr);
     },
     fillInSomnOchVakenhet: function(utkast) {
         if (utkast.somnVakenhet === 'Ja') {
@@ -348,7 +339,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             if (utkast.alkoholLakemedel === 'Ja') {
                 return Promise.all([
                     elm[0].sendKeys(protractor.Key.SPACE),
-                    element(by.id('beskrivningNarkotikalakemedel')).sendKeys('2 liter metadon.')
+                    element(by.id('beskrivningNarkotikalakemedel')).sendKeys(utkast.alkoholLakemedelBeskrivning)
                 ]);
             } else {
                 return elm[1].sendKeys(protractor.Key.SPACE);
@@ -379,21 +370,26 @@ var TsBasUtkast = BaseTsUtkast._extend({
     },
     fillInAdhd: function(utkast) {
         var promiseArr = [];
-        promiseArr.push(element.all(by.css('[name="utvecklingsstorninga"]')).then(function(elm) {
+
+        var a = element.all(by.css('[name="utvecklingsstorninga"]')).then(function(elm) {
             if (utkast.adhdPsykisk === 'Ja') {
                 return elm[0].sendKeys(protractor.Key.SPACE);
             } else {
                 return elm[1].sendKeys(protractor.Key.SPACE);
             }
-        }));
+        });
 
-        Promise.all(element.all(by.css('[name="utvecklingsstorningb"]')).then(function(elm) {
+        promiseArr.push(a);
+
+        var b = element.all(by.css('[name="utvecklingsstorningb"]')).then(function(elm) {
             if (utkast.adhdSyndrom === 'Ja') {
                 return elm[0].sendKeys(protractor.Key.SPACE);
             } else {
                 return elm[1].sendKeys(protractor.Key.SPACE);
             }
-        }));
+        });
+
+        promiseArr.push(b);
 
         return Promise.all(promiseArr);
     },
@@ -402,9 +398,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
             if (utkast.sjukhusvard === 'Ja') {
                 var promiseArr = [];
                 promiseArr.push(elm[0].sendKeys(protractor.Key.SPACE));
-                promiseArr.push(element(by.id('tidpunkt')).sendKeys('2015-12-13'));
-                promiseArr.push(element(by.id('vardinrattning')).sendKeys('Östra sjukhuset.'));
-                promiseArr.push(element(by.id('anledning')).sendKeys('Allmän ysterhet.'));
+                promiseArr.push(element(by.id('tidpunkt')).sendKeys(utkast.sjukhusvardTidPunkt));
+                promiseArr.push(element(by.id('vardinrattning')).sendKeys(utkast.sjukhusvardInrattning));
+                promiseArr.push(element(by.id('anledning')).sendKeys(utkast.sjukhusvardAnledning));
                 return Promise.all(promiseArr);
             } else {
                 return elm[1].sendKeys(protractor.Key.SPACE);
@@ -416,7 +412,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
             if (utkast.ovrigMedicin === 'Ja') {
                 return Promise.all([
                     elm[0].sendKeys(protractor.Key.SPACE),
-                    element(by.id('beskrivningMedicinering')).sendKeys('beskrivning övrig medicinering')
+                    element(by.id('beskrivningMedicinering')).sendKeys(utkast.ovrigMedicinBeskrivning)
                 ]);
             } else {
                 return elm[1].sendKeys(protractor.Key.SPACE);

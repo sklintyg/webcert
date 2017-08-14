@@ -24,31 +24,31 @@
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
+var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
-var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
+var FkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 
-describe('verify luaefs\' print buttons', function() {
+describe('verify a fk7263\'s print buttons', function() {
 
     var intygId;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
 
-        var intyg = intygFromJsonFactory.defaultLuaefs();
+        var intyg = intygFromJsonFactory.defaultFK7263();
         intygId = intyg.id;
 
-        restUtil.deleteAllIntyg();
         restUtil.createIntyg(intyg).then(function(response) {
             var intyg = JSON.parse(response.request.body);
             expect(intyg.id).not.toBeNull();
         }, function(error) {
-            console.log('Error calling createIntyg');
+            logger.error('Error calling createIntyg');
         });
     });
 
     afterAll(function() {
-        restUtil.deleteIntyg(intygId);
+        restTestdataHelper.deleteIntyg(intygId);
         specHelper.logout();
     });
 
@@ -56,17 +56,18 @@ describe('verify luaefs\' print buttons', function() {
         specHelper.login();
     });
 
-    it('view luaefs intyg', function() {
-        IntygPage.get(intygId);
-        expect(IntygPage.isAt()).toBeTruthy();
+    it('view fk intyg', function() {
+        FkIntygPage.get(intygId);
+        expect(FkIntygPage.isAt()).toBeTruthy();
     });
 
-    it('verify the employer print button is not displayed', function() {
-        expect(element(by.id('intyg-header-dropdown-select-pdf-type')).isPresent()).toBeFalsy();
+    it('verify the employer print button is displayed', function() {
+        expect(element(by.id('intyg-header-dropdown-select-pdf-type')).isDisplayed()).toBeTruthy();
     });
 
     it('verify the normal print button is not displayed', function() {
-        expect(element(by.id('downloadprint')).isDisplayed()).toBeTruthy();
+        logger.debug('element(by.id(\'downloadprint\')' + element(by.id('downloadprint')));
+        expect(element(by.id('downloadprint')).isPresent()).toBeFalsy();
     });
 
 });

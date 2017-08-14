@@ -305,38 +305,6 @@ public class IntygModuleApiControllerTest {
         moduleApiController.revokeSignedIntyg("intygType", CERTIFICATE_ID, null);
     }
 
-//    @Test
-//    public void testCreateNewCopy() {
-//        final String personnummer = "191212121212";
-//        final String newIntygId = "newIntygId";
-//
-//        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-//        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
-//
-//        WebCertUser user = new WebCertUser();
-//        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
-//        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
-//        user.setOrigin("NORMAL");
-//
-//        ArgumentCaptor<CreateNewDraftCopyRequest> captor = ArgumentCaptor.forClass(CreateNewDraftCopyRequest.class);
-//        when(copyUtkastService.createCopy(captor.capture())).thenReturn(new CreateNewDraftCopyResponse(CERTIFICATE_TYPE, newIntygId));
-//        when(webcertUserService.getUser()).thenReturn(user);
-//
-//        Response response = moduleApiController.createNewCopy(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
-//
-//        verify(copyUtkastService).createCopy(any());
-//        verifyNoMoreInteractions(copyUtkastService);
-//        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
-//        assertEquals(personnummer, captor.getValue().getPatient().getPersonId().getPersonnummer());
-//        assertNull(captor.getValue().getPatient().getFornamn());
-//        assertNull(captor.getValue().getPatient().getEfternamn());
-//        assertNull(captor.getValue().getPatient().getMellannamn());
-//        assertNull(captor.getValue().getPatient().getPostadress());
-//        assertNull(captor.getValue().getPatient().getPostnummer());
-//        assertNull(captor.getValue().getPatient().getPostort());
-//        assertNull(captor.getValue().getNyttPatientPersonnummer());
-//    }
-
     @Test
     public void testCreateRenewalWithNewPatientInfo() {
         final String personnummer = "191212121212";

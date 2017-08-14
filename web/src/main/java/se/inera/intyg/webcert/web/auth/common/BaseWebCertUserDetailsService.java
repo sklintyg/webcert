@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +44,6 @@ public abstract class BaseWebCertUserDetailsService {
 
     private WebcertFeatureService webcertFeatureService;
 
-
     // - - - - - Public scope - - - - -
 
     public CommonAuthoritiesResolver getAuthoritiesResolver() {
@@ -62,7 +59,6 @@ public abstract class BaseWebCertUserDetailsService {
     public void setWebcertFeatureService(WebcertFeatureService webcertFeatureService) {
         this.webcertFeatureService = webcertFeatureService;
     }
-
 
     // - - - - - Protected scope - - - - -
 
@@ -81,8 +77,12 @@ public abstract class BaseWebCertUserDetailsService {
     }
 
     protected void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
-        Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
-        webcertUser.setFeatures(availableFeatures);
+        if (webcertUser.getValdVardenhet() != null && webcertUser.getValdVardgivare() != null) {
+            webcertUser.setFeatures(webcertFeatureService.getActiveFeatures(webcertUser.getValdVardenhet().getId(),
+                    webcertUser.getValdVardgivare().getId()));
+        } else {
+            webcertUser.setFeatures(webcertFeatureService.getActiveFeatures());
+        }
     }
 
     protected HttpServletRequest getCurrentRequest() {

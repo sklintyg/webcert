@@ -54,9 +54,11 @@ Scenario: Makulera SMI intyg
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
-@kopiera @notReady
-Scenario: Kopiera SMI intyg
+@fornya @notReady
+Scenario: Förnya SMI intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
-	Och jag kopierar intyget
+	Och jag förnyar intyget
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+    Och jag signerar intyget
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten

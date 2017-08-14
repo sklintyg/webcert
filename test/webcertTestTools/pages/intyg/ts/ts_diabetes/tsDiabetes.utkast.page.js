@@ -24,15 +24,12 @@
 'use strict';
 
 var BaseTsUtkast = require('../ts.base.utkast.page.js');
-var pageHelpers = require('../../../pageHelper.util.js');
 
 var TsDiabetesUtkast = BaseTsUtkast._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'ts-diabetes';
         this.at = element(by.id('edit-ts-diabetes'));
-
-        this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
 
         this.identitetForm = element(by.id('identitetForm'));
 
@@ -84,8 +81,6 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
 
         };
 
-        this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
-
         this.syn = {
             a: {
                 yes: element(by.id('synay')),
@@ -111,23 +106,6 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             postNummer: element(by.id('patientPostnummer')),
             postOrt: element(by.id('patientPostort'))
         };
-    },
-    fillInKorkortstyper: function(typer) {
-
-        // this.korkortsTyperChecks.filter(function(elem) {
-        //     return elem.getText().then(function(text) {
-        //         return (typer.indexOf(text) >= 0);
-        //     });
-        // }).then(function(filteredElements) {
-        //     for (var i = 0; i < filteredElements.length; i++) {
-        //         filteredElements[i].sendKeys(protractor.Key.SPACE);
-        //     }
-        // });
-
-        return pageHelpers.clickAll(this.korkortsTyperChecks, typer);
-    },
-    fillInIdentitetStyrktGenom: function(idtyp) {
-        return this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
     },
 
     /**
@@ -170,7 +148,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
 
     },
     fillInHypoglykemier: function(hypoglykemierObj) {
-        //console.log('Anger hypoglykemier:' + hypoglykemierObj.toString());
+        //logger.info('Anger hypoglykemier:' + hypoglykemierObj.toString());
         var promisesArr = [];
         var hypoglykemierEl = this.hypoglykemier;
 
@@ -214,7 +192,6 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         // e)
         if (hypoglykemierObj.e) {
             if (hypoglykemierObj.e === 'Ja') {
-                debug('e');
                 promisesArr.push(hypoglykemierEl.e.yes.sendKeys(protractor.Key.SPACE).then(function() {
                     // e) antal episoder
                     return hypoglykemierEl.e.antalEpisoder.sendKeys(hypoglykemierObj.eAntalEpisoder);

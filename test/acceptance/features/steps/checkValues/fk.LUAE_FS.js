@@ -26,12 +26,12 @@ var testdataHelper = wcTestTools.helpers.testdata;
 
 
 function checkBaseratPa(baseratPa) {
-    var minUndersokningText = testdataHelper.dateToText((baseratPa.minUndersokningAvPatienten));
-    var journaluppgifterText = testdataHelper.dateToText((baseratPa.journaluppgifter));
-    var anhorigBeskrivningText = testdataHelper.dateToText((baseratPa.anhorigsBeskrivning));
-    var annatText = testdataHelper.dateToText((baseratPa.annat));
+    var minUndersokningText = testdataHelper.ejAngivetIfNull(baseratPa.minUndersokningAvPatienten);
+    var journaluppgifterText = testdataHelper.ejAngivetIfNull(baseratPa.journaluppgifter);
+    var anhorigBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.anhorigsBeskrivning);
+    var annatText = testdataHelper.ejAngivetIfNull(baseratPa.annat);
     var annatBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.annatBeskrivning);
-    var personligKannedomText = testdataHelper.dateToText((baseratPa.personligKannedom));
+    var personligKannedomText = testdataHelper.ejAngivetIfNull(baseratPa.personligKannedom);
 
     return Promise.all([
         expect(luaefsPage.baseratPa.minUndersokningAvPatienten.getText()).to.eventually.equal(minUndersokningText),
@@ -48,14 +48,14 @@ function checkAndraMedicinskaUtredningar(andraMedicinskaUtredningar) {
         var promiseArr = [];
         for (var i = 0; i < andraMedicinskaUtredningar.length; i++) {
             var utredningEL = luaefsPage.andraMedicinskaUtredningar.getUtredning(i);
-            var utredningDatum = testdataHelper.dateToText(andraMedicinskaUtredningar[i].datum);
+            var utredningDatum = testdataHelper.ejAngivetIfNull(andraMedicinskaUtredningar[i].datum);
             promiseArr.push(expect(utredningEL.typ.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].underlag));
             promiseArr.push(expect(utredningEL.datum.getText()).to.eventually.equal(utredningDatum));
             promiseArr.push(expect(utredningEL.info.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].infoOmUtredningen));
         }
         return Promise.all(promiseArr);
     } else if (!andraMedicinskaUtredningar) {
-        return expect(luaefsPage.andraMedicinskaUtredningar.field.getText()).to.eventually.contain('Nej');
+        return expect(luaefsPage.andraMedicinskaUtredningar.value.getText()).to.eventually.contain('Nej');
     }
 }
 
@@ -83,7 +83,7 @@ function checkOvrigaUpplysningar(ovriga) {
 }
 
 function checkKontaktMedFk(kontakt) {
-    return expect(luaefsPage.kontaktFK.onskas.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(kontakt));
+    return expect(luaefsPage.kontaktFK.value.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(kontakt));
 }
 
 module.exports = {

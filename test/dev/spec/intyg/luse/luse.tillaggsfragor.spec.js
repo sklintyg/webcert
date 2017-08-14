@@ -30,7 +30,7 @@ var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);
 
-var texts = require('../../webcertTestTools/testdata/luse_questions.json');
+var texts = require('../../../../webcertTestTools/testdata/luse_questions.json');
 
 // disabled until we get textfiles with tilläggsfrågor in them
 describe('Luse tillaggsfragor variants', function() {

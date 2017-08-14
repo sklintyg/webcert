@@ -24,31 +24,33 @@
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
-var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
-var FkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
+var IntygPage = wcTestTools.pages.intyg.luaeNA.intyg;
+var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
+var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-describe('verify a fk7263\'s print buttons', function() {
+describe('verify luaena\'s print buttons', function() {
 
-    var intygId;
+    var intygsId;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
 
-        var intyg = intygFromJsonFactory.defaultFK7263();
-        intygId = intyg.id;
+        var intyg = intygFromJsonFactory.defaultLuaena();
+        intygsId = intyg.id;
 
         restUtil.createIntyg(intyg).then(function(response) {
             var intyg = JSON.parse(response.request.body);
             expect(intyg.id).not.toBeNull();
         }, function(error) {
-            console.log('Error calling createIntyg');
+            logger.error('Error calling createIntyg');
         });
+
     });
 
     afterAll(function() {
-        restTestdataHelper.deleteIntyg(intygId);
+        restUtil.deleteIntyg(intygsId);
         specHelper.logout();
     });
 
@@ -56,18 +58,18 @@ describe('verify a fk7263\'s print buttons', function() {
         specHelper.login();
     });
 
-    it('view fk intyg', function() {
-        FkIntygPage.get(intygId);
-        expect(FkIntygPage.isAt()).toBeTruthy();
+    it('view luaena intyg', function() {
+        SokSkrivIntygPage.selectPersonnummer('19121212-1212');
+        SokSkrivValjIntyg.selectIntygById(intygsId);
+        expect(IntygPage.isAt()).toBeTruthy();
     });
 
-    it('verify the employer print button is displayed', function() {
-        expect(element(by.id('intyg-header-dropdown-select-pdf-type')).isDisplayed()).toBeTruthy();
+    it('verify the employer print button is not displayed', function() {
+        expect(element(by.id('intyg-header-dropdown-select-pdf-type')).isPresent()).toBeFalsy();
     });
 
     it('verify the normal print button is not displayed', function() {
-        debug('element(by.id(\'downloadprint\')' + element(by.id('downloadprint')));
-        expect(element(by.id('downloadprint')).isPresent()).toBeFalsy();
+        expect(element(by.id('downloadprint')).isDisplayed()).toBeTruthy();
     });
 
 });

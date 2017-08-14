@@ -38,18 +38,23 @@ module.exports = function() {
         return unsignedPage.flikar.notSigned.click();
     });
 
-    this.Given(/^är kopieraknappen tillgänglig$/, function(callback) {
-        expect(basePage.copyBtn.isPresent()).to.become(true).then(function() {
-            logger.info('OK - Kopiera knapp tillgänglig');
+    /*this.Given(/^är förnyaknappen tillgänglig$/, function(callback) {
+        logger.debug(basePage);
+        logger.debug(basePage.fornya);
+        logger.debug(basePage.fornya.button);
+        expect(basePage.fornya.button.isPresent()).to.become(true).then(function() {
+            logger.info('OK - Förnya knapp tillgänglig');
             callback();
-            // basePage.copyBtn.sendKeys(protractor.Key.SPACE).then(callback);
+            // basePage.fornyaBtn.sendKeys(protractor.Key.SPACE).then(callback);
         }, function(reason) {
+            logger.warn(reason);
             callback('FEL : ' + reason);
         });
-    });
+    });*/
 
     this.Given(/^ska det( inte)? finnas en knapp för att förnya intyget$/, function(inte) {
         var skaFinnas = typeof(inte) === 'undefined';
+        logger.debug('skaFinnas:' + skaFinnas);
 
         return expect(fkIntygPage.fornyaBtn.isPresent()).to.become(skaFinnas).then(function() {
             logger.info('OK - Förnya knapp synlig: ' + skaFinnas);
@@ -58,16 +63,6 @@ module.exports = function() {
         });
     });
 
-
-    this.Given(/^ska det( inte)? finnas en knapp för att kopiera intyget$/, function(inte) {
-        var skaFinnas = typeof(inte) === 'undefined';
-        return expect(basePage.copyBtn.isPresent()).to.become(skaFinnas).then(function() {
-                logger.info('OK - Kopiera knapp synlig:' + skaFinnas);
-            },
-            function(reason) {
-                throw ('FEL : ' + reason);
-            });
-    });
 
     this.Given(/^ska det finnas en knapp för att skriva ut utkastet$/, function() {
         return expect(fkUtkastPage.skrivUtBtn.isPresent()).to.become(true);
@@ -81,13 +76,16 @@ module.exports = function() {
         }
     });
 
-    this.Given(/^är kopieraknappen inte tillgänglig$/, function() {
-        return expect(basePage.copyBtn.isPresent()).to.become(false).then(function() {
-            logger.info('OK - Kopiera knappen syns inte');
+    /*this.Given(/^är förnyaknappen inte tillgänglig$/, function() {
+        logger.debug(basePage);
+        logger.debug(basePage.fornya);
+        logger.debug(basePage.fornya.button);
+        return expect(basePage.fornya.button.isPresent()).to.become(false).then(function() {
+            logger.info('OK - Förnya knappen syns inte');
         }, function(reason) {
             throw ('FEL : ' + reason);
         });
-    });
+    });*/
 
     this.Given(/^visas Vidarebefodra knappen$/, function() {
         return expect(fkIntygPage.forwardBtn.isPresent()).to.become(true).then(function() {
@@ -161,10 +159,8 @@ module.exports = function() {
             var joinedTexts = rowTexts.join('\n');
             logger.info('Hittade utkast-rader: ' + joinedTexts);
             return Promise.all([
-                expect(joinedTexts).to.not.include('Förnya'),
-                expect(joinedTexts).to.not.include('Kopiera')
+                expect(joinedTexts).to.not.include('Förnya')
             ]);
-            // Även om inte steget explicit säger det så lägger jag med en check att inte kopiera knappen visas också. TODO: Snygga till
         });
     });
 

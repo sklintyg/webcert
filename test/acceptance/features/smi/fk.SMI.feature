@@ -80,7 +80,7 @@ Scenario: Samtida användare ska generera felmeddelande (SMI-intyg)
 	Så ska ett felmeddelande visas
 
 @samtidaanvandare @makulera  @smoke
-Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) om intyg kopieras efter makulera
+Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) efter att intyg blivit makulerat
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag klickar på signera-knappen

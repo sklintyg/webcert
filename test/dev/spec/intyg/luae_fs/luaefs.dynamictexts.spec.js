@@ -41,7 +41,7 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
             utkast = response.body;
             expect(utkast.intygsId).not.toBeNull();
         }, function(error) {
-            console.log('Error calling createUtkast' + error);
+            logger.error('Error calling createUtkast' + error);
         });
 
         //Load and cache expected dynamictext-values for this intygstype.

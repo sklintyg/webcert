@@ -38,7 +38,7 @@ module.exports = {
 
         // Check our custom property if addExpectationResult has already been overridden
         if (jasmine.Spec.prototype.itrOriginalAddExpectationResult) {
-            console.log('takeScreenshots already activated!');
+            logger.debug('takeScreenshots already activated!');
             return;
         }
 
@@ -48,9 +48,9 @@ module.exports = {
             if (!arguments[0]) {
                 // take screenshot
                 // this.description and arguments[1].message can be useful to constructing the filename.
-                console.log('ERROR! Taking screenshot!');
-                console.log(this.description);
-                console.log(arguments[1].message);
+                logger.warn('ERROR! Taking screenshot!');
+                logger.info(this.description);
+                logger.info(arguments[1].message);
                 browser.takeScreenshot().then(function(png) {
                     _writeScreenShot(png, 'exception.png');
                 });
@@ -60,7 +60,7 @@ module.exports = {
     },
     printClientLog: function _printClientLog() {
         browser.manage().logs().get('browser').then(function(browserLog) {
-            console.log('log: ' + require('util').inspect(browserLog));
+            logger.info('log: ' + require('util').inspect(browserLog));
         });
     }
 };

@@ -55,12 +55,12 @@ module.exports = {
 
 
 function checkBaseratPa(baseratPa) {
-    var minUndersokningText = testdataHelper.dateToText((baseratPa.minUndersokningAvPatienten));
-    var journaluppgifterText = testdataHelper.dateToText((baseratPa.journaluppgifter));
-    var anhorigBeskrivningText = testdataHelper.dateToText((baseratPa.anhorigsBeskrivning));
-    // var annatText = testdataHelper.dateToText((baseratPa.annat));
+    var minUndersokningText = testdataHelper.ejAngivetIfNull(baseratPa.minUndersokningAvPatienten);
+    var journaluppgifterText = testdataHelper.ejAngivetIfNull(baseratPa.journaluppgifter);
+    var anhorigBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.anhorigsBeskrivning);
+    // var annatText = testdataHelper.ejAngivetIfNull(baseratPa.annat));
     // var annatBeskrivningText = ejAngivetIfNull(baseratPa.annatBeskrivning);
-    var personligKannedomText = testdataHelper.dateToText((baseratPa.personligKannedom));
+    var personligKannedomText = testdataHelper.ejAngivetIfNull(baseratPa.personligKannedom);
 
     return Promise.all([
         expect(element(by.id('undersokningAvPatienten')).getText()).to.eventually.contain(minUndersokningText),
@@ -86,7 +86,7 @@ function checkMedicinskaUtredningar(andraMedicinskaUtredningar) {
             var datumEL = element(by.id('underlag_' + i + '_datum'));
             var infoEL = element(by.id('underlag_' + i + '_hamtasFran'));
 
-            var utredningDatum = testdataHelper.dateToText(andraMedicinskaUtredningar[i].datum);
+            var utredningDatum = testdataHelper.ejAngivetIfNull(andraMedicinskaUtredningar[i].datum);
             promiseArr.push(expect(typEL.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].underlag));
             promiseArr.push(expect(datumEL.getText()).to.eventually.equal(utredningDatum));
             promiseArr.push(expect(infoEL.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].infoOmUtredningen));

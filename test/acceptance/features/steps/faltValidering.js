@@ -253,7 +253,7 @@ module.exports = function() {
             return elm.getText();
         });
         return alertTexts.then(function(result) {
-            // console.log(result);
+            console.log(result);
             return expect(result.join('\n')).to.have.string(fel);
         });
     });

@@ -44,11 +44,14 @@ module.exports = {
                 annanbehandling: 'Hypnos behandling'
             },
 
-            // TODO: Gör dessa slumpade likt ovanstående
+
             hypoglykemier: testValues.getRandomHypoglykemier(randomKorkortstyper),
+            // TODO: Gör denna slumpade likt ovanstående
             synintyg: {
                 a: 'Ja'
             },
+            kommentar: testdataHelper.randomTextString(),
+            specialist: testdataHelper.randomTextString(),
             bedomning: testValues.getRandomBedomning(randomKorkortstyper)
         };
     }

@@ -64,11 +64,13 @@ module.exports = {
             },
             rorelseorganensFunktioner: {
                 nedsattning: shuffle(testValues.rorOrgNedsattning)[0],
+                nedsattningBeskrivning: testdataHelper.randomTextString(),
                 inUtUrFordon: testValues.getRandomInUtUrFordon(randomKorkortstyper)
             },
             hjartHjarna: shuffle(testValues.hjartHjarna)[0],
             hjartSkada: shuffle(testValues.hjartSkada)[0],
             hjartRisk: shuffle(testValues.hjartRisk)[0],
+            hjartRiskBeskrivning: 'TIA och förmaksflimmer.',
             diabetes: {
                 hasDiabetes: shuffle(testValues.diabetes)[0],
                 typ: shuffle(testValues.diabetestyp)[0],
@@ -76,6 +78,7 @@ module.exports = {
             },
             neurologiska: shuffle(testValues.neurologiska)[0],
             epilepsi: shuffle(testValues.epilepsi)[0],
+            epilepsiBeskrivning: testdataHelper.randomTextString(),
             njursjukdom: shuffle(testValues.njursjukdom)[0],
             demens: shuffle(testValues.demens)[0],
             somnVakenhet: shuffle(testValues.somnVakenhet)[0],
@@ -83,13 +86,19 @@ module.exports = {
             alkoholVard: shuffle(testValues.alkoholVard)[0],
             alkoholProvtagning: shuffle(testValues.alkoholProvtagning)[0],
             alkoholLakemedel: shuffle(testValues.alkoholLakemedel)[0],
+            alkoholLakemedelBeskrivning: '2 liter metadon.',
             psykiskSjukdom: shuffle(testValues.psykiskSjukdom)[0],
             adhdPsykisk: shuffle(testValues.adhdPsykisk)[0],
             adhdSyndrom: shuffle(testValues.adhdSyndrom)[0],
             sjukhusvard: shuffle(testValues.sjukhusvard)[0],
+            sjukhusvardTidPunkt: testdataHelper.randomTextString(),
+            sjukhusvardInrattning: testdataHelper.randomTextString(),
+            sjukhusvardAnledning: testdataHelper.randomTextString(),
             ovrigMedicin: shuffle(testValues.ovrigMedicin)[0],
+            ovrigMedicinBeskrivning: testdataHelper.randomTextString(),
             kommentar: testValues.comment,
-            styrkor: testValues.getRandomStyrka()
+            styrkor: testValues.getRandomStyrka(),
+            specialist: testdataHelper.randomTextString()
         };
     }
 };

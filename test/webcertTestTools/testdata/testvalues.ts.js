@@ -37,7 +37,7 @@ function findArrayElementsInArray(targetArray, compareArray) {
 
 function arrayContains(array, compareArray) {
     var found = findArrayElementsInArray(array, compareArray);
-    //console.log('found:' + JSON.stringify(found));
+    //logger.info('found:' + JSON.stringify(found));
     return found.length > 0;
 }
 
@@ -110,12 +110,12 @@ var tsValues = {
 
     getRandomKorkortstyper: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
-        return shuffle(tsValues.korkortstyper).slice(0, Math.floor(Math.random() * tsValues.korkortstyper.length) + 1);
+        return shuffle(tsValues.korkortstyper.slice(0)).slice(0, Math.floor(Math.random() * tsValues.korkortstyper.length) + 1);
     },
 
     getRandomKorkortstyperHogre: function() {
         // Shuffla korkortstyper och returnera slumpad längd på array
-        return shuffle(tsValues.korkortstyperHogreBehorighet).slice(0, Math.floor(Math.random() * tsValues.korkortstyperHogreBehorighet.length) + 1);
+        return shuffle(tsValues.korkortstyperHogreBehorighet.slice(0)).slice(0, Math.floor(Math.random() * tsValues.korkortstyperHogreBehorighet.length) + 1);
     },
     getRandomStyrka: function() {
         var styrkor = {
@@ -145,7 +145,7 @@ var tsValues = {
         }
 
         if (hypoObj.g === 'Ja') {
-            hypoObj.gDatum = '2016-07-04';
+            hypoObj.gDatum = '2017-07-04';
         }
 
         if (hypoObj.b === 'Ja') {
@@ -164,7 +164,7 @@ var tsValues = {
     },
     getRandomBehandling: function() {
         var behandlingObj = {
-            typer: shuffle(tsValues.diabetesbehandlingtyper).slice(0, Math.floor(Math.random() * tsValues.diabetesbehandlingtyper.length) + 1)
+            typer: shuffle(tsValues.diabetesbehandlingtyper.slice(0)).slice(0, Math.floor(Math.random() * tsValues.diabetesbehandlingtyper.length) + 1)
         };
 
         // Om Insulinbehanling så måste startår anges

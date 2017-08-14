@@ -33,13 +33,13 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
 
         this.sjukskrivningar = {
             grad: function(index) {
-                return element(by.id('sjukskrivningar-' + index + '-grad'));
+                return element(by.id('sjukskrivningar-row' + index + '-col0'));
             },
             from: function(index) {
-                return element(by.id('sjukskrivningar-' + index + '-from'));
+                return element(by.id('sjukskrivningar-row' + index + '-col1'));
             },
             to: function(index) {
-                return element(by.id('sjukskrivningar-' + index + '-tom'));
+                return element(by.id('sjukskrivningar-row' + index + '-col2'));
             }
         };
     },
@@ -50,40 +50,23 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
 
     verify: function(data) {
 
-        if (data.diagnos.diagnoser) {
-            for (var j = 0; j < data.diagnos.diagnoser.length; j++) {
-                expect(this.diagnoser.getDiagnos(j).kod.getText()).toBe(data.diagnos.diagnoser[j].kod);
-            }
-        }
+        this.verifieraDiagnos(data);
 
-        expect(this.ovrigt.getText()).toBe(data.ovrigt);
+        this.verifieraOvrigt(data);
 
         this.verifyArbetsformaga(data.arbetsformaga);
 
         if (!data.smittskydd) {
-            expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(testdataHelper.dateToText(data.baseratPa.minUndersokningAvPatienten));
-            expect(this.baseratPa.journaluppgifter.getText()).toBe(testdataHelper.dateToText(data.baseratPa.journaluppgifter));
-            expect(this.baseratPa.telefonkontakt.getText()).toBe(testdataHelper.dateToText(data.baseratPa.telefonkontakt));
-            expect(this.baseratPa.annat.getText()).toBe(testdataHelper.dateToText(data.baseratPa.annat));
-            expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
+            this.verifieraBaseratPa(data);
 
             expect(this.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
-            expect(this.aktivitetsbegransning.getText()).toBe(data.aktivitetsbegransning);
+            this.verifieraAktivitetsbegransning(data);
 
-            expect(this.behandling.pagaende.getText()).toBe(data.medicinskbehandling.pagaende);
-            expect(this.behandling.planerad.getText()).toBe(data.medicinskbehandling.planerad);
+            this.verifieraMedicinskbehandling(data);
 
-            if (data.kontaktMedFk) {
-                expect(this.kontaktFK.ja.isDisplayed()).toBeTruthy();
-            } else {
-                expect(this.kontaktFK.nej.isDisplayed()).toBeTruthy();
-            }
+            this.verifieraKontaktFK(data);
 
-            if (data.tillaggsfragor) {
-                for (var i = 0; i < data.tillaggsfragor.length; i++) {
-                    expect(this.tillaggsfragor.getFraga(i).getText()).toBe(data.tillaggsfragor[i].svar);
-                }
-            }
+            this.verifieraTillaggsfragor(data);
         }
     },
 

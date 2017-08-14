@@ -28,18 +28,26 @@
  *
  **/
  'use strict';
+var winston = require('winston');
 var HtmlScreenshotReporter = require('protractor-jasmine2-screenshot-reporter');
+
+var screenshotReporter = new HtmlScreenshotReporter({
+    dest: 'dev/report',
+    filename: 'index.html',
+    ignoreSkippedSpecs: true,
+    captureOnlyFailedSpecs: true
+});
 
 exports.config = {
     seleniumAddress: require('./../webcertTestTools/environment.js').envConfig.SELENIUM_ADDRESS,
     baseUrl: require('./../webcertTestTools/environment.js').envConfig.WEBCERT_URL,
 
-    specs: ['./spec/*.spec.js'],
+    specs: ['./spec/*.spec.js', './spec/intyg/**/*.spec.js'],
 
     suites: {
         testdata: './spec/generateTestData/**/*.spec.js',
         clean: './spec/cleanTestData/**/*.spec.js',
-        app: ['./spec/*.spec.js']
+        app: ['./spec/*.spec.js', './spec/intyg/**/*.spec.js']
     },
 
     // If chromeOnly is true, we dont need to start the selenium server. (seems we don't need to anyway? can this be removed?)
@@ -78,7 +86,7 @@ exports.config = {
         // If true, print colors to the terminal.
         showColors: true,
         // Default time to wait in ms before a test fails.
-        defaultTimeoutInterval: 30000
+        defaultTimeoutInterval: 60000
         // Function called to print jasmine results.
         //print: function() {},
         // If set, only execute specs whose names match the pattern, which is
@@ -102,17 +110,40 @@ exports.config = {
          */
         browser.ignoreSynchronization = false;
 
-        global.logg = function(text){
-            console.log(text);
-        };
-
-        var debug = false;
-
-        global.debug = function(text){
-            if (debug) {
-                console.log(text);
-            }
-        };
+		/* Winston Logger Usage 
+		
+        logger.info("");
+        logger.warn("");
+        logger.error("");
+        
+		logger.log('silly', "");
+        logger.log('debug', "");
+        logger.log('verbose', "");
+        logger.log('info', "");
+        logger.log('warn', "");
+        logger.log('error', "");
+		
+		*/
+		
+        global.logger = new(winston.Logger)({
+            transports: [
+                new(winston.transports.Console)({
+                    colorize: true,
+                    timestamp: formatLocalDate,
+                    formatter: function(options) {
+                        // Return string will be passed to logger.
+                        return options.timestamp() + ' ' + options.level.toUpperCase() + ' ' + (undefined !== options.message ? options.message : '') +
+                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta) : '');
+                    }
+                })
+            ]
+        });
+		
+		// Winston Logger level. Logging levels are prioritized from 0 to 5 (highest to lowest):
+		// error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5
+		
+		logger.transports.console.level = 'info';
+		//logger.transports.console.level = 'error';
 
         var reporters = require('jasmine-reporters');
         jasmine.getEnv().addReporter(
@@ -121,20 +152,44 @@ exports.config = {
                 filePrefix: 'junit',
                 consolidateAll:true}));
 
-        jasmine.getEnv().addReporter(
-            new HtmlScreenshotReporter({
-                dest: 'dev/report',
-                filename: 'index.html'
-            })
-        );
+        jasmine.getEnv().addReporter(screenshotReporter);
 
         var disableNgAnimate = function() {
             angular.module('disableNgAnimate', []).run(['$animate', function($animate) {
-                console.log('Animations are disabled');
                 $animate.enabled(false);
             }]);
         };
 
+        var disableCssAnimate = function() {
+            angular
+                .module('disableCssAnimate', [])
+                .run(function() {
+                    var style = document.createElement('style');
+                    style.type = 'text/css';
+                    style.innerHTML = '* {' +
+                        '-webkit-transition: none !important;' +
+                        '-moz-transition: none !important' +
+                        '-o-transition: none !important' +
+                        '-ms-transition: none !important' +
+                        'transition: none !important' +
+                        '}';
+                    document.getElementsByTagName('head')[0].appendChild(style);
+                });
+        };
+
         browser.addMockModule('disableNgAnimate', disableNgAnimate);
+        browser.addMockModule('disableCssAnimate', disableCssAnimate);
     }
 };
+
+function formatLocalDate() {
+    var now = new Date(),
+        tzo = -now.getTimezoneOffset(),
+        dif = tzo >= 0 ? '+' : '-',
+        pad = function(num) {
+            var norm = Math.abs(Math.floor(num));
+            return (norm < 10 ? '0' : '') + norm;
+        };
+    return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()) + dif + pad(tzo / 60) +
+        ':' + pad(tzo % 60);
+}

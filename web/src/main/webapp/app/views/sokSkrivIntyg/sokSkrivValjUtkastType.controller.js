@@ -115,7 +115,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             }
 
 
-            $scope.isCopyAllowed = function(intyg) {
+            $scope.isRenewalAllowed = function(intyg) {
                 return !(intyg.intygsTyp === 'ts-bas' || intyg.intygsTyp ==='ts-diabetes') &&
                     !$scope.patientModel.sekretessmarkering && intyg.status !== 'CANCELLED' &&
                     !(intyg.relations.latestChildRelations.replacedByIntyg ||
@@ -198,24 +198,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $location.path('/intyg/' + intyg.intygType + '/' + intyg.intygId);
                 }
             };
-
-            // $scope.copyIntyg = function(intyg) {
-            //     Viewstate.createErrorMessageKey = null;
-            //
-            //     // We don't have the required info about issuing unit in the supplied 'intyg' object, always set to true.
-            //     // It only affects a piece of text in the Kopiera-dialog anyway.
-            //     var isOtherCareUnit = true;
-            //
-            //     CommonIntygCopyActions.copy(Viewstate,
-            //         IntygCopyRequestModel.build({
-            //             intygId: intyg.intygId,
-            //             intygType: intyg.intygType,
-            //             patientPersonnummer: PatientModel.personnummer,
-            //             nyttPatientPersonnummer: null
-            //         }),
-            //         isOtherCareUnit
-            //     );
-            // };
 
             $scope.fornyaIntyg = function(intyg) {
                 Viewstate.createErrorMessageKey = null;

@@ -32,7 +32,7 @@ Scenario: Ska kunna besvara komplettering med textmeddelande
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska kunna svara med textmeddelande
 
-@fortsattUtkast @INTYG-2885
+@fortsattUtkast @INTYG-2885 @waitingForFix
 Scenario: Ska kunna fortsätta besvara kompletterande intyg 
    När jag går in på ett "Läkarintyg FK 7263" med status "Signerat" 
    Och jag skickar intyget till Försäkringskassan

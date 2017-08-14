@@ -32,14 +32,3 @@ Scenario: Makulera ett skickat intyg
 
     När jag går till Mina intyg för patienten
     Så ska intyget inte finnas i Mina intyg
-
-
-@kopiera @signera
-Scenario: Kopiera ett signerat intyg
-    När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
-    Och jag fyller i alla nödvändiga fält för intyget
-    Och jag signerar intyget
-    Och jag kopierar intyget
-    Och jag signerar intyget
-    Så ska intygets status vara "Intyget är signerat"
-    Och jag ska se den data jag angett för intyget

@@ -41,6 +41,7 @@ var BaseTsUtkast = BaseUtkast._extend({
         this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
 
         this.identitetForm = element(by.id('identitetForm'));
+        this.specialist = element(by.id('specialist'));
 
         this.bedomning = bedomning;
 
@@ -88,6 +89,9 @@ var BaseTsUtkast = BaseUtkast._extend({
     },
     fillInOvrigKommentar: function(utkast) {
         return this.kommentar.sendKeys(utkast.kommentar);
+    },
+    fillInSpecialist: function(specialist) {
+        return this.specialist.sendKeys(specialist);
     }
 });
 

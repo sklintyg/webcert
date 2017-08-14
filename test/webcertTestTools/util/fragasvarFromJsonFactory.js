@@ -101,7 +101,7 @@ module.exports = {
         if (fragaSvarOptions.kompletteringar.length > 0) {
             fragaSvar.kompletteringar.push(fragaSvarOptions.kompletteringar[0]);
         }
-        debug("FRAGA SVAR: " + JSON.stringify(fragaSvar) + " ir is: " + JSON.stringify(ir));
+        logger.debug("FRAGA SVAR: " + JSON.stringify(fragaSvar) + " ir is: " + JSON.stringify(ir));
         return fragaSvar;
     }
 };

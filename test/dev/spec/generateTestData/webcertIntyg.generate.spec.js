@@ -43,9 +43,9 @@ describe('generate', function() {
                 ]
             };
             restTestdataHelper.createWebcertIntyg(intygData).then(function(response) {
-                debug('Tried to create intyg ' + intygId);
+                logger.debug('Tried to create intyg ' + intygId);
             }, function(error) {
-                console.log('Failed to create intyg ' + intygId);
+                logger.error('Failed to create intyg ' + intygId);
             });
         }
 
@@ -53,6 +53,6 @@ describe('generate', function() {
         createIntyg('luse');
         createIntyg('luae_na');
         createIntyg('luae_fs');
-        createIntyg('lisu');
+        createIntyg('lisjp');
     });
 });

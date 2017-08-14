@@ -74,6 +74,7 @@ var FkUtkast = BaseUtkast._extend({
         this.faktiskTjanstgoring = element(by.id('capacityForWorkActualWorkingHoursPerWeek'));
         this.aktuelltSjukdomsForlopp = element(by.id('diseaseCause'));
         this.arbetsformagaFMB = element(by.id('capacityForWorkText'));
+        this.otherInformation = element(by.id('otherInformation'));
 
         this.prognos = {
             JA: element(by.id('capacityForWork1')),
@@ -154,6 +155,11 @@ var FkUtkast = BaseUtkast._extend({
             }
         };
 
+        this.atgarder = {
+            measuresCurrent: element(by.id('measuresCurrent')),
+            measuresOther: element(by.id('measuresOther'))
+        };
+
         this.diagnos = {
             beskrivning: element(by.id('diagnoseDescription')),
             fortydligande: element(by.id('diagnoseClarification')),
@@ -226,6 +232,9 @@ var FkUtkast = BaseUtkast._extend({
     },
     angeFaktiskTjanstgoring: function(txt) {
         return this.faktiskTjanstgoring.clear().sendKeys(txt);
+    },
+    angeOvrigaUpplysningar: function(txt) {
+        return this.otherInformation.clear().sendKeys(txt);
     },
     angeSmittskydd: function(isSmittskydd) {
         if (isSmittskydd) {
@@ -320,7 +329,7 @@ var FkUtkast = BaseUtkast._extend({
         return this.arbetsformagaFMB.clear().sendKeys(txt);
     },
     angePrognos: function(prognos) {
-        debug(prognos);
+        logger.debug(prognos);
         var prognosFortydligande = this.prognos.fortydligande;
 
         if (prognos.val === 'Ja') {
@@ -370,6 +379,11 @@ var FkUtkast = BaseUtkast._extend({
         }
 
         return Promise.all(promisesArr);
+    },
+    angeAtgarder: function(atgarder) {
+
+        this.atgarder.measuresCurrent.clear().sendKeys(atgarder.planerad);
+        this.atgarder.measuresOther.clear().sendKeys(atgarder.annan);
     },
     angeKontaktOnskasMedFK: function(kontaktOnskas) {
         if (kontaktOnskas) {

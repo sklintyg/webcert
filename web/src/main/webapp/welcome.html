@@ -60,6 +60,7 @@
   angular.module('WcWelcomeApp.controllers', []).controller('welcomeController',
     ['$scope', '$http', '$log', function($scope, $http, $log) {
 
+      $scope.jsonModel = '';
       function _filterLoginIdentity(allowedApps, appName) {
           if (!_isArray(allowedApps)) {
               return false;
@@ -231,7 +232,8 @@
           postnummer: '555 66',
           postort: 'Nyberga',
           sjf: true,
-          kopieringOk: true
+          kopieringOk: true,
+          red: ''
       };
 
       $scope.environment = {
@@ -249,13 +251,13 @@
 
       $scope.djupintegrationsInloggning = function(evt) {
         evt.preventDefault();
-        var jsonEl = angular.element(document.querySelector('#userJsonDisplay'));
-        $http.post('/fake', "userJsonDisplay=" +jsonEl.text(), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
+        $http.post('/fake', "userJsonDisplay=" + $scope.jsonModel, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
           var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
           q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
           q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
           q+='&kopieringOK=' + $scope.intlink.kopieringOk;
           q+='&avliden=' + $scope.intlink.avliden;
+          q+='&ref=' + $scope.intlink.ref;
           window.location.href=q;
         }, function fail(error) {
           alert("Fel vid djupintegrations-inloggningen!");
@@ -267,8 +269,6 @@
             return;
         }
 
-        var jsonEl = angular.element(document.querySelector('#userJson'));
-        var jsonElView = angular.element(document.querySelector('#userJsonDisplay'));
         var selector = angular.element(document.querySelector('#jsonSelect'));
 
         // Catch user login option
@@ -282,8 +282,7 @@
         _updateObject(hsaPerson, 'origin', $scope.environment.origin);
 
         var loginJson = _stringify(hsaPerson);
-        jsonElView.text(loginJson);
-        jsonEl.text(escape(loginJson));
+        $scope.jsonModel = loginJson;
       };
 
       $scope.whichEnv = function(env) {
@@ -344,9 +343,8 @@
           <div class="form-group col-xs-4">
             <div style="padding-top: 0.6em;">
               <h4>Inloggningsprofil</h4>
-              <input type="hidden" id="userJson" name="userjson" />
               <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
-                        style="height: 200px; width: 100%;">
+                        style="height: 200px; width: 100%;" ng-model="jsonModel">
                         </textarea>
             </div>
 
@@ -370,6 +368,7 @@
                   <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
                   <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.postadress" placeholder="Postadress"><br>
                   <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
+                  <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="intlink.ref" placeholder="Ref"><br>
                   <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
                   <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.kopieringOk"> <br>
                   <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.avliden"> <br>
@@ -392,9 +391,6 @@
         </div>
       </div>
     </div>
-
-
   </form>
-
 </body>
 </html>

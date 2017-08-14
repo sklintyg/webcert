@@ -22,47 +22,109 @@
  */
 'use strict';
 
-var BaseIntyg = require('../../base.intyg.page.js');
+var TsBaseIntyg = require('../ts.base.intyg.page');
+var testValues = require('../../../../testdata/testvalues.ts');
+var _ = require('lodash');
 
-var TsDiabetesIntyg = BaseIntyg._extend({
+var TsDiabetesIntyg = TsBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'ts-diabetes';
 
-        this.period = element(by.id('observationsperiod'));
-        this.insulPeriod = element(by.id('insulinBehandlingsperiod'));
-        this.dTyp = element(by.id('diabetestyp'));
+        this.period = element(by.id('diabetes-observationsperiod'));
+        this.insulPeriod = element(by.id('diabetes-insulinBehandlingsperiod'));
+        this.dTyp = element(by.id('diabetes-diabetestyp'));
 
-        this.kunskapOmAtgarder = element(by.id('kunskapOmAtgarder'));
-        this.teckenNedsattHjarnfunktion = element(by.id('teckenNedsattHjarnfunktion'));
-        this.saknarFormagaKannaVarningstecken = element(by.id('saknarFormagaKannaVarningstecken'));
-        this.allvarligForekomst = element(by.id('allvarligForekomst'));
-        this.allvarligForekomstBeskrivning = element(by.id('allvarligForekomstBeskrivning'));
-        this.allvarligForekomstTrafiken = element(by.id('allvarligForekomstTrafiken'));
-        this.allvarligForekomstTrafikenBeskrivning = element(by.id('allvarligForekomstTrafikBeskrivning'));
-        this.egenkontrollBlodsocker = element(by.id('egenkontrollBlodsocker'));
-        this.allvarligForekomstVakenTid = element(by.id('allvarligForekomstVakenTid'));
-        this.vakenTidObservationsTid = element(by.id('allvarligForekomstVakenTidObservationstid'));
+        this.kunskapOmAtgarder = element(by.id('hypoglykemier-kunskapOmAtgarder'));
+        this.teckenNedsattHjarnfunktion = element(by.id('hypoglykemier-teckenNedsattHjarnfunktion'));
+        this.saknarFormagaKannaVarningstecken = element(by.id('hypoglykemier-saknarFormagaKannaVarningstecken'));
+        this.allvarligForekomst = element(by.id('hypoglykemier-allvarligForekomst'));
+        this.allvarligForekomstBeskrivning = element(by.id('hypoglykemier-allvarligForekomstBeskrivning'));
+        this.allvarligForekomstTrafiken = element(by.id('hypoglykemier-allvarligForekomstTrafiken'));
+        this.allvarligForekomstTrafikenBeskrivning = element(by.id('hypoglykemier-allvarligForekomstTrafikBeskrivning'));
+        this.egenkontrollBlodsocker = element(by.id('hypoglykemier-egenkontrollBlodsocker'));
+        this.allvarligForekomstVakenTid = element(by.id('hypoglykemier-allvarligForekomstVakenTid'));
+        this.vakenTidObservationsTid = element(by.id('hypoglykemier-allvarligForekomstVakenTidObservationstid'));
 
-        this.synIntyg = element(by.id('separatOgonlakarintyg'));
+        this.synIntyg = element(by.id('syn-separatOgonlakarintyg'));
 
         this.falt1 = {
-            bedomningKanInteTaStallning: element(by.id('bedomningKanInteTaStallning')),
-            bedomning: element(by.id('bedomning')),
-            endastKost: element(by.id('endastKost')),
-            tabletter: element(by.id('tabletter')),
-            insulin: element(by.id('insulin')),
-            annanBehandling: element(by.id('annanBehandlingBeskrivning'))
+            bedomning: element(by.id('bedomning-korkortstyp')),
+            annanBehandling: element(by.id('diabetes-annanBehandlingBeskrivning'))
         };
 
-        this.kommentar = element(by.id('kommentar'));
-        this.specKomp = element(by.id('lakareSpecialKompetens'));
+        this.getBehandlingsTyp = function(index) {
+            return element(by.id('diabetes-endastKost-diabetes-tabletter-diabetes-insulin-' + index));
+        };
 
-        this.intygetAvser = element(by.id('intygAvser'));
-        this.idStarktGenom = element(by.id('identitet'));
+        this.specKomp = element(by.id('bedomning-lakareSpecialKompetens'));
+
+        this.intygetAvser = element(by.id('intygAvser-korkortstyp'));
     },
     get: function get(intygId) {
         get._super.call(this, intygId);
+    },
+    verifieraAllmant: function(allmant) {
+        var that = this;
+        expect(this.period.getText()).toBe(allmant.year + '');
+        expect(this.dTyp.getText()).toBe(allmant.typ);
+
+        var sorted = _.sortBy(allmant.behandling.typer, function(x) {
+            return _.indexOf(testValues.diabetesbehandlingtyper, x);
+        });
+
+        sorted.forEach(function(typ, index) {
+            expect(that.getBehandlingsTyp(index).getText()).toBe(typ);
+        });
+
+        if (allmant.behandling.typer.indexOf('Insulin') > -1) {
+            expect(this.insulPeriod.getText()).toBe(allmant.behandling.insulinYear + '');
+        }
+
+        expect(this.falt1.annanBehandling.getText()).toBe(allmant.annanbehandling);
+
+
+    },
+    verifieraHypoglykemier: function(hypoglykemier, korkortstyper) {
+        expect(this.kunskapOmAtgarder.getText()).toBe(hypoglykemier.a);
+        expect(this.teckenNedsattHjarnfunktion.getText()).toBe(hypoglykemier.b);
+
+        if (hypoglykemier.b === 'Ja') {
+            expect(this.saknarFormagaKannaVarningstecken.getText()).toBe(hypoglykemier.c);
+
+            expect(this.allvarligForekomst.getText()).toBe(hypoglykemier.d);
+            if (hypoglykemier.d === 'Ja') {
+                expect(this.allvarligForekomstBeskrivning.getText()).toBe(hypoglykemier.dAntalEpisoder);
+            }
+
+            expect(this.allvarligForekomstTrafiken.getText()).toBe(hypoglykemier.e);
+            if (hypoglykemier.e === 'Ja') {
+                expect(this.allvarligForekomstTrafikenBeskrivning.getText()).toBe(hypoglykemier.eAntalEpisoder);
+            }
+        }
+
+        if (hypoglykemier.g === 'Ja') {
+            expect(this.vakenTidObservationsTid.getText()).toBe(hypoglykemier.gDatum);
+        }
+
+        if (testValues.hasHogreKorkortsbehorigheter(korkortstyper)) {
+            expect(this.egenkontrollBlodsocker.getText()).toBe(hypoglykemier.f);
+            expect(this.allvarligForekomstVakenTid.getText()).toBe(hypoglykemier.g);
+        }
+
+    },
+    verifieraSynintyg : function(synintyg) {
+        expect(this.synIntyg.getText()).toBe(synintyg.a);
+    },
+    verify: function(data) {
+        this.verifieraIntygetAvser(data.korkortstyper, testValues.korkortstyper);
+        this.verifieraIdKontroll(data.identitetStyrktGenom);
+        this.verifieraAllmant(data.allmant);
+        this.verifieraHypoglykemier(data.hypoglykemier, data.korkortstyper);
+        this.verifieraSynintyg(data.synintyg);
+        this.verifieraBedomning(data.bedomning, testValues.korkortstyper);
+        expect(this.specKomp.getText()).toBe(data.specialist);
+        expect(this.kommentar.getText()).toBe(data.kommentar);
     }
 });
 

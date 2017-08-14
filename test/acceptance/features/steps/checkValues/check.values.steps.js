@@ -47,7 +47,7 @@ module.exports = function() {
 
     });
 
-    this.Given(/^ska adressen kopieras till det kopierade intyget$/, function() {
+    this.Given(/^ska adressen vara ifylld på det förnyade intyget$/, function() {
         var promiseArray = [];
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {

@@ -49,10 +49,6 @@ var BaseIntyg = JClass._extend({
             statusSendInprogress: element(by.id('certificate-is-on-sendqueue-to-it-message-text')),
             statusSent: element(by.id('certificate-is-sent-to-recipient-message-text'))
         };
-        // this.copy = {
-        //     button: element(by.id('copyBtn')),
-        //     dialogConfirmButton: element(by.id('button1copy-dialog'))
-        // };
         this.fornya = {
             button: element(by.id('fornyaBtn')),
             dialogConfirmButton: element(by.id('button1fornya-dialog'))
@@ -62,7 +58,6 @@ var BaseIntyg = JClass._extend({
             dialogConfirmButton: element(by.id('button1ersatt-dialog')),
             dialogContinueButton: element(by.id('button2ersatt-dialog'))
         };
-        // this.copyBtn = element(by.css('.btn.btn-info'));
         this.backBtn = element(by.id('tillbakaButton'));
 
         // Ärende
@@ -83,16 +78,16 @@ var BaseIntyg = JClass._extend({
         this.statusNameAndAddressChanged = element(by.id('intyg-djupintegration-name-and-address-changed'));
 
         this.patientAdress = {
-            postadress: element(by.id('patientpostadress')),
-            postnummer: element(by.id('patientpostnummer')),
-            postort: element(by.id('patientpostort'))
+            postadress: element(by.id('patient_postadress')),
+            postnummer: element(by.id('patient_postnummer')),
+            postort: element(by.id('patient_postort'))
         };
 
         this.enhetsAdress = {
-            postAdress: element(by.id('vardenhet_postadress')),
-            postNummer: element(by.id('vardenhet_postnummer')),
-            postOrt: element(by.id('vardenhet_postort')),
-            enhetsTelefon: element(by.id('vardenhet_telefonnummer'))
+            postAdress: element(by.id('vardperson_postadress')),
+            postNummer: element(by.id('vardperson_postnummer')),
+            postOrt: element(by.id('vardperson_postort')),
+            enhetsTelefon: element(by.id('vardperson_telefonnummer'))
         };
 
         this.selectUtskriftButton = element(by.id('intyg-header-dropdown-select-pdf-type'));
@@ -116,12 +111,12 @@ var BaseIntyg = JClass._extend({
         });
 
         return getMojligaOrsaker.then(function(orsaker) {
-            debug(orsaker);
+            logger.debug(orsaker);
             var reason = shuffle(orsaker)[0];
             if (optionalOrsak) {
                 reason = optionalOrsak;
             }
-            debug('Väljer orsak: ' + reason);
+            logger.debug('Väljer orsak: ' + reason);
             return element(by.cssContainingText('label', reason)).sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     return browser.sleep(1500);
@@ -165,12 +160,6 @@ var BaseIntyg = JClass._extend({
     replaceDialogContinueBtn: function() {
         return this.replace.dialogContinueButton;
     },
-    // copyBtn: function() {
-    //     return this.copy.button;
-    // },
-    // copyDialogConfirmBtn: function() {
-    //     return this.copy.dialogConfirmButton;
-    // },
     fornyaDialogConfirmBtn: function() {
         return this.fornya.dialogConfirmButton;
     },
@@ -206,6 +195,12 @@ var BaseIntyg = JClass._extend({
             subgroup = 'handled';
         }
         return element(by.id('arende-' + subgroup + '-' + id));
+    },
+    getIntygHasKompletteringMessage: function() {
+        return element(by.id('intyg-has-komplettering-message'));
+    },
+    getIntygKompletteringFrageText: function(frageId, index) {
+        return element(by.id('inline-komplettering-' + frageId + '-' + index));
     },
     getAnswerBox: function(id) {
         return element(by.id('answerText-' + id));

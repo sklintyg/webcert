@@ -98,13 +98,13 @@ module.exports = {
             arende.svarPa = svarPa;
         }
 
-        debug('arende to be created: ' + JSON.stringify(arende));
+        logger.debug('arende to be created: ' + JSON.stringify(arende));
         createArende(arende).then(function(response) {
-            debug('response code:' + response.statusCode);
+            logger.debug('response code:' + response.statusCode);
         });
     },
     deleteAllArenden: function() {
-        debug('deleting all arenden');
+        logger.debug('deleting all arenden');
         restUtil.login();
         return restUtil.deleteAllArenden();
     },
@@ -148,10 +148,10 @@ module.exports = {
         });
 
 
-        debug('fragasvar to be created: ' + JSON.stringify(fraga));
+        logger.debug('fragasvar to be created: ' + JSON.stringify(fraga));
         createFragasvar(fraga).then(function(response) {
-            debug('response code:' + response.statusCode);
-            debug('response output: ' + response.body.internReferens);
+            logger.debug('response code:' + response.statusCode);
+            logger.debug('response output: ' + response.body.internReferens);
             callback(response.body.internReferens);
         });
     }

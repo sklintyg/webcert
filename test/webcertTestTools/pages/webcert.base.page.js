@@ -36,7 +36,6 @@ var WebcertBasePage = JClass._extend({
             sokSkrivIntyg: element(by.id('menu-skrivintyg')),
             notSigned: element(by.id('menu-unsigned'))
         };
-        // this.copyBtn = element(by.id('copyBtn'));
 
         this.changeUnit = element(by.id('wc-care-unit-clinic-selector-link'));
         this.careUnit = element(by.css('.clearfix'));

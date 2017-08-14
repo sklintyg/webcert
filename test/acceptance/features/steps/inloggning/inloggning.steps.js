@@ -160,7 +160,7 @@ module.exports = function() {
             'Transportstyrelsens läkarintyg',
             'Transportstyrelsens läkarintyg, diabetes'
         ])[0];
-
+        console.log('intyg.typ: ' + intyg.typ);
         gotoIntygUtkast(intyg.typ, callback);
 
     });
@@ -172,6 +172,7 @@ module.exports = function() {
             'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
         ])[0];
+        console.log('intyg.typ: ' + intyg.typ);
         Promise.all([
             sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
             sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
@@ -265,7 +266,7 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska varningen "([^"]*)" visas om man försöker (skicka|förnya|kopiera|makulera) intyget i andra webbläsarinstansen$/, function(msg, action, callback) {
+    this.Given(/^ska varningen "([^"]*)" visas om man försöker (skicka|förnya|makulera) intyget i andra webbläsarinstansen$/, function(msg, action, callback) {
         var elemntIds;
         if ('förnya' === action) {
             elemntIds = {
@@ -279,12 +280,12 @@ module.exports = function() {
                 btnDialog: 'button1send-dialog',
                 alertDanger: '.alert-danger'
             };
-        } else if ('kopiera' === action) {
-            elemntIds = {
-                firstBtn: 'copyBtn',
-                btnDialog: 'button1copy-dialog',
-                alertDanger: '.alert-danger'
-            };
+            /*} else if ('kopiera' === action) {
+                elemntIds = {
+                    firstBtn: 'copyBtn',
+                    btnDialog: 'button1copy-dialog',
+                    alertDanger: '.alert-danger'
+                };*/
         } else if ('makulera' === action) {
             elemntIds = {
                 firstBtn: 'makuleraBtn',

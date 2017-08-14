@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, intyg, browser, logger, Promise */
+/* globals protractor, intyg, browser, logger, Promise, pages */
 
 'use strict';
 
@@ -25,6 +25,27 @@ var helpers = require('./helpers');
 var intygURL = helpers.intygURL;
 
 module.exports = function() {
+
+    this.When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
+
+        if (intygstyp !== intyg.typ) {
+            console.log('Intygstyp är inte ' + intygstyp);
+            return Promise.resolve();
+        } else {
+            console.log('Intygstyp är: ' + intyg.typ);
+            return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa).then(function() {
+                pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
+                    console.log('Intygstyp är: ' + intyg.typ);
+                    logger.info('OK - angeArbetsformaga');
+                }, function(reason) {
+                    throw ('FEL, angeArbetsformaga,' + reason);
+                });
+                logger.info('OK - angeBaseratPa');
+            }, function(reason) {
+                throw ('FEL, angeBaseratPa,' + reason);
+            });
+        }
+    });
 
     this.Given(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
         return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);
@@ -92,9 +113,9 @@ module.exports = function() {
                 case 'skicka':
                     promiseArr.push(checkIfButtonIsUsable('sendBtn', shouldBePresent));
                     break;
-                case 'kopiera':
-                    promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
-                    break;
+                    /*case 'kopiera':
+                        promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
+                        break;*/
                 case 'ersätta':
                     promiseArr.push(checkIfButtonIsUsable('ersattBtn', shouldBePresent));
                     break;

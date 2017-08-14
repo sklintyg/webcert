@@ -34,6 +34,7 @@ describe('Create a FK7263 draft and verify behaviour of diagnosis fields', funct
             browser.ignoreSynchronization = false;
             specHelper.login();
             specHelper.createUtkastForPatient('191212121212', 'Läkarintyg FK 7263');
+            UtkastPage.disableAutosave();
         });
 
     });
@@ -52,9 +53,6 @@ describe('Create a FK7263 draft and verify behaviour of diagnosis fields', funct
         });
 
         describe('populate FK7263 diagnosis fields', function() {
-
-            // speeds up utkast filling by not waiting for angular events, promises etc.
-            browser.ignoreSynchronization = true;
 
             it('add first diagnosis field', function() {
                 UtkastPage.angeDiagnosKod('F220', UtkastPage.diagnosKod);
@@ -108,9 +106,6 @@ describe('Create a FK7263 draft and verify behaviour of diagnosis fields', funct
 
         describe('populate FK7263 diagnosis fields with long descriptions', function() {
 
-            // speeds up utkast filling by not waiting for angular events, promises etc.
-            browser.ignoreSynchronization = true;
-
             it('add first and second diagnosis fields', function() {
                 UtkastPage.angeDiagnosKod('F220', UtkastPage.diagnosKod);
                 UtkastPage.angeDiagnosKod('Y1100', UtkastPage.diagnosKod2);
@@ -122,6 +117,7 @@ describe('Create a FK7263 draft and verify behaviour of diagnosis fields', funct
             });
 
             it('verify that clarification field is enabled but input is disallowed', function() {
+                UtkastPage.enableAutosave();
                 expect(UtkastPage.diagnos.fortydligande.isEnabled()).toBe(true);
                 UtkastPage.angeDiagnosFortydligande('Lägg till förtydligande');
                 expect(UtkastPage.diagnos.fortydligande.getText()).toBe('');

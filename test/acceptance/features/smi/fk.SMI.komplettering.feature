@@ -1,5 +1,5 @@
 # language: sv
-@komplettering @smi @INTYG-2642
+@komplettering @smi @INTYG-2642 @INTYG-3778
  # kompletteringsfråga saknas på utkast-sida
 Egenskap: Komplettering av SMI-intyg
 
@@ -22,7 +22,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag signerar intyget
    Så jag ska se den data jag angett för intyget
 
-@fortsätt @komplettering @utkast
+@komplettering @utkast @fortsattUtkast @waitingForFix
 Scenario: Ska kunna fortsätta besvara kompletterande intyg 
    När jag går in på ett slumpat SMI-intyg med status "Signerat" 
    Och jag skickar intyget till Försäkringskassan

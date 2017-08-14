@@ -34,7 +34,7 @@ xdescribe('Generate fk intyg', function() {
             'lakare': true,
             'forskrivarKod': '2481632'
         }).then(function(data) {
-            debug('Login OK');
+            logger.debug('Login OK');
         });
 
         var intygOptions = {
@@ -69,7 +69,7 @@ xdescribe('Generate fk intyg', function() {
             intygsId = JSON.parse(response.request.body).id;
             expect(intygsId).not.toBe(null);
         }, function(error) {
-            console.log('Error calling createIntyg');
+            logger.error('Error calling createIntyg');
         });
     });
 });

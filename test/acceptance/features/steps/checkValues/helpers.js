@@ -39,14 +39,14 @@ module.exports = {
     },
 
     genericAssert: function(_val, _element) {
-        logger.info('genericAssert-function is deprecated, does not fail on error');
         var ele = element(by.id(_element));
         if (_val !== null) {
             // logger.info('Kontrollerar '+_element+' : '+ _val);
             return expect(ele.getText()).to.eventually.equal(_val).then(function(value) {
                 logger.info('OK - ' + _element + ' = ' + value);
             }, function(reason) {
-                logger.info('FEL, ' + _element + ', ' + reason);
+                logger.info('FEL,' + _element + ', ' + ele + '!==' + _val + ', ' + reason);
+                throw ('FEL,' + _element + ', ' + ele + '!==' + _val + ', ' + reason);
             });
         }
     },

@@ -47,7 +47,7 @@ describe('Generate fk intyg', function() {
                 intyg = JSON.parse(response.request.body);
                 expect(intyg.id).not.toBeNull();
             }, function(error) {
-                console.log('Error calling createIntyg');
+                logger.error('Error calling createIntyg');
             });
         });
     });
@@ -87,7 +87,7 @@ describe('Generate fk intyg', function() {
                 expect(FkUtkastPage.baserasPa.minUndersokning.datum.getAttribute('value'))
                     .toEqual('2015-01-01');
             }, function() {
-                console.log('error calling FkUtkastPage.angeIntygetBaserasPa');
+                logger.error('error calling FkUtkastPage.angeIntygetBaserasPa');
             });
         });
 

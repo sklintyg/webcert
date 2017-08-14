@@ -31,91 +31,109 @@ var Fk7263Intyg = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'fk7263';
+        this.certficate = element(by.id('certificate'));
 
         this.field1 = {
-            title: element(by.css('div[field-number="1"]')).element(by.css('.title')),
-            text: element(by.css('div[field-number="1"]')).element(by.css('.intyg-block__content'))
+            text: element(by.id('avstangningSmittskydd'))
         };
-
+		
+		//Fält 2 | Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga
+		//Fält 2 | Diagnoskod enligt ICD-10 (huvuddiagnos)
         this.field2 = {
             diagnoskod: element(by.id('diagnosKod')),
-            diagnosBeskrivning: element(by.id('diagnosBeskrivning')),
-            block: element(by.id('field2'))
+            diagnosBeskrivning: element(by.id('diagnosBeskrivning'))
         };
+		
+		//Fält 3 | Aktuellt sjukdomsförlopp
         this.field3 = {
-            sjukdomsforlopp: element(by.id('sjukdomsforlopp')),
-            block: element(by.css('[field-number="3"]'))
+            sjukdomsforlopp: element(by.id('sjukdomsforlopp'))
         };
+		
+		//Fält 4 | Funktionsnedsättningar – observationer, undersökningsfynd och utredningsresultat
+		//Fält 4 | Jag baserar uppgifterna på
         this.field4 = {
-            funktionsnedsattning: element(by.id('funktionsnedsattning')),
-            block: element(by.css('[field-number="4"]'))
+            funktionsnedsattning: element(by.id('funktionsnedsattning'))
         };
         this.field4b = {
             undersokningAvPatienten: element(by.id('undersokningAvPatienten')),
             telefonKontakt: element(by.id('telefonkontaktMedPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),
             annat: element(by.id('annanReferens')),
-            annanReferensBeskrivning: element(by.id('annanReferensBeskrivning')),
-            block: element(by.css('[field-number="4b"]'))
+            annanReferensBeskrivning: element(by.id('annanReferensBeskrivning'))
 
 
         };
+		
+		//Fält 5 | Aktivitetsbegränsning relaterat till diagnos (fält 2) och funktionsnedsättning (fält 4)
         this.field5 = {
-            aktivitetsbegransning: element(by.id('aktivitetsbegransning')),
-            block: element(by.css('[field-number="5"]'))
+            aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
         };
-
+		
+		//Fält 6a | Rekommendationer 
         this.field6a = {
             kontaktArbetsformedlingen: element(by.id('rekommendationKontaktArbetsformedlingen')),
             kontaktForetagshalsovarden: element(by.id('rekommendationKontaktForetagshalsovarden')),
             ovrigt: element(by.id('rekommendationOvrigt')),
-            rekommendationOvrigtBeskrivning: element(by.id('rekommendationOvrigtBeskrivning'))
+            rekommendationOvrigtBeskrivning: element(by.id('rekommendationOvrigt'))
         };
-
+		
+		//Fält 6b | Planerad eller pågående behandling eller åtgärd 
+		
+		// Fält 7 | Är arbetslivsinriktad rehabilitering aktuell?
         this.field7 = {
-            text: element(by.id('field7')).element(by.css('.intyg-block__content')),
-            block: element(by.css('[field-number="7"]'))
+            text: element(by.id('rehabilitering')),
+			block: element(by.id('rehabilitering'))
         };
 
+		//Fält 8a | Patientens arbetsförmåga bedöms i förhållande till
+        this.field8a = {
+            nuvarandeArbete: element(by.id('nuvarandeArbetsuppgifter')),
+            nuvarandeArbeteText: element(by.id('nuvarandeArbetsuppgifter-text')),
+            arbetsloshet: element(by.id('arbetsloshet')),
+            foraldrarledighet: element(by.id('foraldrarledighet'))
+        };
+		
+		//Fält 8b | Jag bedömer att patientens arbetsförmåga är
         this.field8b = {
             nedsat25: {
-                from: element(by.id('nedsattMed25from')),
-                tom: element(by.id('nedsattMed25tom'))
+                from: element(by.id('nedsattMed25-row-col1')),
+                tom: element(by.id('nedsattMed25-row-col2'))
             },
             nedsat50: {
-                from: element(by.id('nedsattMed50from')),
-                tom: element(by.id('nedsattMed50tom'))
+                from: element(by.id('nedsattMed50-row-col1')),
+                tom: element(by.id('nedsattMed50-row-col2'))
             },
             nedsat75: {
-                from: element(by.id('nedsattMed75from')),
-                tom: element(by.id('nedsattMed75tom'))
+                from: element(by.id('nedsattMed75-row-col1')),
+                tom: element(by.id('nedsattMed75-row-col2'))
             },
             nedsat100: {
-                from: element(by.id('nedsattMed100from')),
-                tom: element(by.id('nedsattMed100tom'))
-            },
-            block: element(by.css('[field-number="8a"]'))
+                from: element(by.id('nedsattMed100-row-col1')),
+                tom: element(by.id('nedsattMed100-row-col2'))
+            }
         };
 
+		//Fält 9 | Patientens arbetsförmåga bedöms nedsatt längre tid än den som det försäkringsmedicinska beslutsstödet anger, därför att
+		
+		//Fält 10 | Prognos – kommer patienten att få tillbaka sin arbetsförmåga i nuvarande arbete? (Gäller inte arbetslösa)
         this.field10 = {
-            title: element(by.css('div[field-number="10"]')).element(by.css('.title')),
-            text: element(by.css('div[field-number="10"]')).element(by.css('.intyg-block__content')),
-            block: element(by.css('[field-number="10"]'))
+            text: element(by.id('prognosBedomning'))
         };
 
+		//Fält 11 | Kan resor till och från arbetet med annat färdsätt än normalt göra det möjligt för patienten att återgå i arbete?
         this.field11 = {
-            title: element(by.css('div[field-number="11"]')).element(by.css('.title')),
-            text: element(by.css('div[field-number="11"]')).element(by.css('.intyg-block__content')),
-            block: element(by.css('[field-number="11"]'))
+            text: element(by.id('resaTillArbetet')),
+            block: element(by.id('resaTillArbetet'))
         };
 
+		//Fält 12 | Kontakt önskas med Försäkringskassan
         this.field12 = {
-            title: element(by.id('field12')).element(by.css('.title')),
-            text: element(by.id('field12')).element(by.css('.intyg-block__content'))
+            text: element(by.id('kontaktMedFk'))
         };
-
+	
+		//Fält 13 | Övriga upplysningar och förtydliganden
         this.field13 = {
-            kommentar: element(by.id('field13')).element(by.id('kommentar'))
+            kommentar: element(by.id('kommentar'))
         };
 
         var panel = element(by.css('.qa-panel'));
@@ -127,7 +145,6 @@ var Fk7263Intyg = BaseIntyg._extend({
 
         this.prognosGarEJ = element(by.id('arbetsformataPrognosGarInteAttBedoma'));
 
-        // this.copyBtn = element(by.id('copyBtn'));
         this.fornyaBtn = element(by.id('fornyaBtn'));
         this.fornyaDialog = {
             btn: element(by.id('button1fornya-dialog'))
@@ -139,6 +156,13 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.prognosJ = element(by.id('arbetsformataPrognosJa'));
         this.prognosFortyd = element(by.id('arbetsformagaPrognosGarInteAttBedomaBeskrivning'));
         this.forsKod = element(by.id('forskrivarkodOchArbetsplatskod'));
+
+        this.atgarder = {
+            sjukvard: element(by.id('atgardInomSjukvarden')),
+            annan: element(by.id('annanAtgard'))
+        };
+
+        this.kontaktMedFk = element(by.id('kontaktMedFk'));
         this.answer = {
             text: panel.element(by.css('textarea')),
             sendButton: panel.element(by.css('.btn-success'))
@@ -210,6 +234,129 @@ var Fk7263Intyg = BaseIntyg._extend({
     },
     getKompletteringsDialog: function() {
         return this.komplettera.dialog;
+    },
+    veriferaBaseratPa: function(baserasPa) {
+        if (baserasPa.journaluppgifter) {
+            expect(this.field4b.journaluppgifter.getText()).toBe(baserasPa.journaluppgifter.datum);
+        }
+        if (baserasPa.minUndersokning) {
+            expect(this.field4b.undersokningAvPatienten.getText()).toBe(baserasPa.minUndersokning.datum);
+        }
+        if (baserasPa.minTelefonkontakt) {
+            expect(this.field4b.telefonKontakt.getText()).toBe(baserasPa.minTelefonkontakt.datum);
+        }
+        if (baserasPa.annat) {
+            expect(this.field4b.annat.getText()).toBe(baserasPa.annat.datum);
+        }
+    },
+    verifierOvrig: function(data) {
+
+        var text = '';
+
+        if (data.baserasPa && data.baserasPa.annat.text) {
+            text += '4b: ' + data.baserasPa.annat.text + '. ';
+        }
+
+        if (data.prognos.val === 'Går inte att bedöma' && data.prognos.fortydligande) {
+            text += '10: ' + data.prognos.fortydligande + '. ';
+        }
+
+        text += data.ovrigaUpplysningar;
+
+        expect(this.field13.kommentar.getText()).toBe(text);
+    },
+
+    verifieraRekommendationer: function(rekommendationer) {
+        expect(this.field6a.kontaktArbetsformedlingen.getText()).toBe(rekommendationer.kontaktMedArbetsformedlingen ? 'Ja' : 'Nej');
+        expect(this.field6a.kontaktForetagshalsovarden.getText()).toBe(rekommendationer.kontaktForetagshalsovarden ? 'Ja' : 'Nej');
+
+        if (rekommendationer.ovrigt) {
+            expect(this.field6a.rekommendationOvrigtBeskrivning.getText()).toBe(rekommendationer.ovrigt);
+        }
+    },
+    verifieraDiagnos: function(diagnos) {
+        expect(this.field2.diagnoskod.getText()).toBe(diagnos.diagnoser[0].ICD10);
+
+        var beskrivning = '';
+
+        beskrivning += diagnos.diagnoser[0].diagnosText + '. ';
+
+        if (diagnos.samsjuklighetForeligger) {
+            beskrivning += 'Samsjuklighet föreligger. ';
+        }
+
+        beskrivning += diagnos.fortydligande;
+
+        expect(this.field2.diagnosBeskrivning.getText()).toBe(beskrivning);
+    },
+    verifieraArbete: function(arbete) {
+
+        if (arbete.nuvarandeArbete) {
+            expect(this.field8a.nuvarandeArbete.isDisplayed()).toBeTruthy();
+            expect(this.field8a.nuvarandeArbeteText.getText()).toBe(arbete.nuvarandeArbete.aktuellaArbetsuppgifter);
+        }
+        if (arbete.arbetsloshet) {
+            expect(this.field8a.arbetsloshet.isDisplayed()).toBeTruthy();
+        }
+        if (arbete.foraldrarledighet) {
+            expect(this.field8a.foraldrarledighet.isDisplayed()).toBeTruthy();
+        }
+    },
+    verifieraArbetsformaga: function(arbetsformaga) {
+
+        if (arbetsformaga.nedsattMed25) {
+            expect(this.field8b.nedsat25.from.getText()).toBe(arbetsformaga.nedsattMed25.from);
+            expect(this.field8b.nedsat25.tom.getText()).toBe(arbetsformaga.nedsattMed25.tom);
+        }
+        if (arbetsformaga.nedsattMed50) {
+            expect(this.field8b.nedsat50.from.getText()).toBe(arbetsformaga.nedsattMed50.from);
+            expect(this.field8b.nedsat50.tom.getText()).toBe(arbetsformaga.nedsattMed50.tom);
+        }
+        if (arbetsformaga.nedsattMed75) {
+            expect(this.field8b.nedsat75.from.getText()).toBe(arbetsformaga.nedsattMed75.from);
+            expect(this.field8b.nedsat75.tom.getText()).toBe(arbetsformaga.nedsattMed75.tom);
+        }
+        if (arbetsformaga.nedsattMed100) {
+            expect(this.field8b.nedsat100.from.getText()).toBe(arbetsformaga.nedsattMed100.from);
+            expect(this.field8b.nedsat100.tom.getText()).toBe(arbetsformaga.nedsattMed100.tom);
+        }
+    },
+    verify: function(data) {
+
+        expect(this.field1.text.getText()).toBe(data.smittskydd ? 'Ja' : 'Nej');
+
+        if (!data.smittskydd) {
+            this.veriferaBaseratPa(data.baserasPa);
+
+            this.verifieraDiagnos(data.diagnos);
+
+            expect(this.field3.sjukdomsforlopp.getText()).toBe(data.aktuelltSjukdomsforlopp);
+            expect(this.field4.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
+            expect(this.field5.aktivitetsbegransning.getText()).toBe(data.aktivitetsBegransning);
+
+            this.verifieraArbete(data.arbete);
+
+            expect(this.atgarder.sjukvard.getText()).toBe(data.atgarder.planerad);
+            expect(this.atgarder.annan.getText()).toBe(data.atgarder.annan);
+
+            this.verifieraRekommendationer(data.rekommendationer);
+
+            expect(this.field7.text.getText()).toBe(data.rekommendationer.arbetslivsinriktadRehab);
+            expect(this.field11.text.getText()).toBe(data.rekommendationer.resor ? 'Ja' : 'Nej');
+        }
+
+        this.verifieraArbetsformaga(data.arbetsformaga);
+
+        expect(this.FMBprognos.getText()).toBe(data.arbetsformagaFMB);
+
+        expect(this.field10.text.getText()).toBe(data.prognos.val);
+
+        expect(this.kontaktMedFk.getText()).toBe(data.kontaktOnskasMedFK ? 'Ja' : 'Nej');
+        this.verifierOvrig(data);
+    },
+
+    whenCertificateLoaded: function() {
+        return browser.wait(this.certficate.isDisplayed());
     }
 });
 

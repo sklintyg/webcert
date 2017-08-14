@@ -30,15 +30,13 @@ var FkBaseIntyg = require('../fk.base.intyg.page.js');
 var BaseSmiIntygPage = FkBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
+        var that = this;
 
         this.certficate = element(by.id('certificate'));
         this.notSentMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
 
-        this.diagnoseCode = element(by.id('diagnoseCode'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.ovrigt = element(by.id('ovrigt'));
-        this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
-        this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
         this.patientAdress = {
             postadress: element(by.id('patient_postadress')),
@@ -62,14 +60,12 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             getDiagnos: function(index) {
                 index = index || 0;
                 return {
-                    kod: element(by.id('diagnoser-' + index + '-kod')),
-                    beskrivning: element(by.id('diagnoser-' + index + '-beskrivning'))
+                    kod: element(by.id('diagnoser-row' + index + '-col0')),
+                    beskrivning: element(by.id('diagnoser-row' + index + '-col1'))
                 };
             },
             grund: element(by.id('diagnosgrund')),
-            nyBedomningDiagnosgrundJa: element(by.id('nyBedomningDiagnosgrund-Ja')),
-            nyBedomningDiagnosgrundNej: element(by.id('nyBedomningDiagnosgrund-Nej')),
-            nyBedomningDiagnosgrund: element(by.id('form_nyBedomningDiagnosgrund')),
+            nyBedomningDiagnosgrund: element(by.id('nyBedomningDiagnosgrund')),
             diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))
         };
 
@@ -94,16 +90,20 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
 
         this.medicinskaForutsattningar = {
             kanUtvecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
-            kanGoraTrotsBegransning: element(by.id('formagaTrotsBegransning'))
+            kanGoraTrotsBegransning: element(by.id('formagaTrotsBegransning')),
+            utecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
+            trotsBegransningar: element(by.id('formagaTrotsBegransning')),
+            forslagTillAtgard: element(by.id('forslagTillAtgard'))
         };
 
         this.andraMedicinskaUtredningar = {
+            value: element(by.id('underlagFinns')),
             field: element(by.id('form_underlagFinns')),
             getUtredning: function(index) {
                 return {
-                    typ: element(by.id('underlag-' + index + '-typ')),
-                    datum: element(by.id('underlag-' + index + '-datum')),
-                    info: element(by.id('underlag-' + index + '-hamtasFran'))
+                    typ: element(by.id('underlag-row' + index + '-col0')),
+                    datum: element(by.id('underlag-row' + index + '-col1')),
+                    info: element(by.id('underlag-row' + index + '-col2'))
                 };
             }
         };
@@ -111,18 +111,16 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         this.ovrigaUpplysningar = element(by.id('ovrigt'));
 
         this.kontaktFK = {
+            value: element(by.id('kontaktMedFk')),
             onskas: element(by.id('form_kontaktMedFk')),
-            ja: element(by.id('kontaktMedFk-Ja')),
-            nej: element(by.id('kontaktMedFk-Nej')),
             anledning: element(by.id('anledningTillKontakt'))
         };
 
         this.qaPanels = element.all(by.css('.arende-panel'));
 
         this.tillaggsfragor = {
-            getFraga: function(index) {
-                index = index + 1 || 1;
-                return element(by.id('tillaggsfraga-900' + index));
+            getFraga: function(id) {
+                return element(by.id('tillaggsfragor-' + id));
             }
         };
         this.komplettera = {
@@ -136,6 +134,149 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         this.kompletteraMedFortsattPaIntygsutkastButton = element(by.id('komplettering-modal-dialog-goToUtkast-button'));
         this.kompletteraMedMeddelandeButton = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
 
+    },
+
+    verifieraBaseratPa: function(data) {
+        if (data.baseratPa.minUndersokningAvPatienten) {
+            expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(data.baseratPa.minUndersokningAvPatienten);
+        }
+
+        if (data.baseratPa.journaluppgifter) {
+            expect(this.baseratPa.journaluppgifter.getText()).toBe(data.baseratPa.journaluppgifter);
+        }
+
+        if (data.baseratPa.telefonkontakt) {
+            expect(this.baseratPa.telefonkontakt.getText()).toBe(data.baseratPa.telefonkontakt);
+        }
+
+        if (data.baseratPa.annat) {
+            expect(this.baseratPa.annat.getText()).toBe(data.baseratPa.annat);
+        }
+
+        if (data.baseratPa.annatBeskrivning) {
+            expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
+        }
+
+        if (data.baseratPa.personligKannedom) {
+            expect(this.baseratPa.personligKannedom.getText()).toBe(data.baseratPa.personligKannedom);
+        }
+
+        if (data.baseratPa.anhorigsBeskrivning) {
+            expect(this.baseratPa.anhorigsBeskrivning.getText()).toBe(data.baseratPa.anhorigsBeskrivning);
+        }
+    },
+
+    verifieraDiagnos: function(data) {
+
+        if (data.diagnos.narOchVarStalldesDiagnoserna) {
+            expect(this.diagnoser.grund.getText()).toBe(data.diagnos.narOchVarStalldesDiagnoserna);
+        }
+
+        if (data.diagnos.diagnoser) {
+            for (var j = 0; j < data.diagnos.diagnoser.length; j++) {
+                expect(this.diagnoser.getDiagnos(j).kod.getText()).toBe(data.diagnos.diagnoser[j].kod);
+
+                if (data.diagnos.diagnoser[j].beskrivning) {
+                    expect(this.diagnoser.getDiagnos(j).beskrivning.getText()).toBe(data.diagnos.diagnoser[j].beskrivning);
+                }
+            }
+        }
+    },
+
+    verifieraDiagnosBedomning: function(data) {
+        if (data.diagnos.nyBedomning) {
+            expect(this.diagnoser.nyBedomningDiagnosgrund.getText()).toBe('Ja');
+            expect(this.diagnoser.diagnosForNyBedomning.getText()).toBe(data.diagnos.diagnosForNyBedomning);
+        } else {
+            expect(this.diagnoser.nyBedomningDiagnosgrund.getText()).toBe('Nej');
+            expect(this.diagnoser.diagnosForNyBedomning.getText()).toBe('Ej angivet');
+        }
+    },
+
+    verifieraAndraMedicinskaUtredningar: function(data) {
+        if (data.andraMedicinskaUtredningar) {
+            expect(this.andraMedicinskaUtredningar.value.getText()).toBe('Ja');
+
+            for (var i = 0; i < data.andraMedicinskaUtredningar.length; i++) {
+                var utredningEL = this.andraMedicinskaUtredningar.getUtredning(i);
+                var utredningDatum = data.andraMedicinskaUtredningar[i].datum;
+                expect(utredningEL.typ.getText()).toBe(data.andraMedicinskaUtredningar[i].underlag);
+                expect(utredningEL.datum.getText()).toBe(utredningDatum);
+                expect(utredningEL.info.getText()).toBe(data.andraMedicinskaUtredningar[i].infoOmUtredningen);
+            }
+        } else {
+            expect(this.andraMedicinskaUtredningar.value.getText()).toBe('Nej');
+        }
+    },
+
+    verifieraSjukdomsforlopp: function(data) {
+        expect(this.sjukdomsforlopp.getText()).toBe(data.sjukdomsForlopp);
+    },
+
+    verifieraFunktionsnedsattning: function(data) {
+        expect(this.funktionsnedsattning.intellektuell.getText()).toBe(data.funktionsnedsattning.intellektuell);
+        expect(this.funktionsnedsattning.kommunikation.getText()).toBe(data.funktionsnedsattning.kommunikation);
+        expect(this.funktionsnedsattning.uppmarksamhet.getText()).toBe(data.funktionsnedsattning.koncentration);
+        expect(this.funktionsnedsattning.annanPsykiskFunktion.getText()).toBe(data.funktionsnedsattning.psykisk);
+        expect(this.funktionsnedsattning.synHorselTal.getText()).toBe(data.funktionsnedsattning.synHorselTal);
+        expect(this.funktionsnedsattning.balans.getText()).toBe(data.funktionsnedsattning.balansKoordination);
+        expect(this.funktionsnedsattning.annanKropsligFunktion.getText()).toBe(data.funktionsnedsattning.annan);
+    },
+
+    verifieraAktivitetsbegransning: function(data) {
+        expect(this.aktivitetsbegransning.getText()).toBe(data.aktivitetsbegransning);
+    },
+
+    verifieraMedicinskbehandling: function(data) {
+        if (data.medicinskbehandling.avslutad) {
+            expect(this.behandling.avslutad.getText()).toBe(data.medicinskbehandling.avslutad);
+        }
+
+        if (data.medicinskbehandling.pagaende) {
+            expect(this.behandling.pagaende.getText()).toBe(data.medicinskbehandling.pagaende);
+        }
+
+        if (data.medicinskbehandling.planerad) {
+            expect(this.behandling.planerad.getText()).toBe(data.medicinskbehandling.planerad);
+        }
+
+        if (data.medicinskbehandling.substansintag) {
+            expect(this.behandling.substansintag.getText()).toBe(data.medicinskbehandling.substansintag);
+        }
+    },
+
+    verifieraMedicinskaForutsattningar: function(data) {
+        expect(this.medicinskaForutsattningar.utecklasOverTid.getText()).toBe(data.medicinskaForutsattningar.utecklasOverTid);
+        expect(this.medicinskaForutsattningar.trotsBegransningar.getText()).toBe(data.medicinskaForutsattningar.trotsBegransningar);
+
+        if (data.medicinskaForutsattningar.forslagTillAtgard) {
+            expect(this.medicinskaForutsattningar.forslagTillAtgard.getText()).toBe(data.medicinskaForutsattningar.forslagTillAtgard);
+        }
+    },
+
+    verifieraKontaktFK: function(data) {
+        if (data.kontaktMedFk) {
+            expect(this.kontaktFK.value.getText()).toBe('Ja');
+        } else {
+            expect(this.kontaktFK.value.getText()).toBe('Nej');
+        }
+
+        if (data.kontaktAnledning) {
+            expect(this.kontaktFK.anledning.getText()).toBe(data.kontaktAnledning);
+        }
+    },
+
+    verifieraTillaggsfragor: function(data) {
+        if (data.tillaggsfragor) {
+            for (var i = 0; i < data.tillaggsfragor.length; i++) {
+                var fraga = data.tillaggsfragor[i];
+                expect(this.tillaggsfragor.getFraga(fraga.id).getText()).toBe(fraga.svar);
+            }
+        }
+    },
+
+    verifieraOvrigt: function(data) {
+        expect(this.ovrigt.getText()).toBe(data.ovrigt);
     },
 
     whenCertificateLoaded: function() {
