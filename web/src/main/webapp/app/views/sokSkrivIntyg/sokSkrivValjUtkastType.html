@@ -149,7 +149,7 @@
                               intygstyp="{{intyg.intygType}}"
                               id="fornyaBtn-{{intyg.intygId}}"
                               class="btn btn-info"
-                              ng-if="isCopyAllowed(intyg)"
+                              ng-if="isRenewalAllowed(intyg)"
                               ng-click="fornyaIntyg(intyg)"
                               uib-popover="{{ resolveTooltipText(intyg) }}"
                               popover-trigger="mouseenter"

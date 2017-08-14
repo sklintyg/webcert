@@ -110,7 +110,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             }
 
 
-            $scope.isCopyAllowed = function(intyg) {
+            $scope.isRenewalAllowed = function(intyg) {
                 return !(intyg.intygsTyp === 'ts-bas' || intyg.intygsTyp ==='ts-diabetes') &&
                     !$scope.patientModel.sekretessmarkering && intyg.status !== 'CANCELLED' &&
                     !(intyg.relations.latestChildRelations.replacedByIntyg ||
