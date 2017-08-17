@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<texter typ="DB" giltigFrom="2017-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <text id="KAT_1.RBK">Den avlidnes personuppgifter</text>
+    <text id="KAT_2.RBK">Dödsdatum och dödsplats</text>
+    <text id="FRG_2.RBK">Dödsdatum</text>
+    <text id="FRG_2.HLP">Om dödsdatum är säkert markeras "Säkert" och dödsdatum anges.
+
+Om dödsdatum inte kan fastställas markeras "Ej säkert". Både dödsdatum och datum när kroppen påträffades måste då anges. Om uppgifter saknas för dödsdatums månad eller dag, ersätt siffrorna med 00. År måste anges.</text>
+    <text id="DFR_2.1.SVA_1">Säkert</text>
+    <text id="DFR_2.1.SVA_2">Ej säkert</text>
+    <text id="DFR_2.2.RBK">Datum</text>
+    <text id="DFR_2.3.RBK">Anträffad död</text>
+    <text id="FRG_3.RBK">Dödsplats</text>
+    <text id="DFR_3.1.RBK">Kommun (om okänd dödsplats, kommunen där kroppen påträffades)</text>
+    <text id="DFR_3.2.RBK">Boende där kroppen påträffades</text>
+    <text id="DFR_3.2.HLP">Sjukhus: för somatisk eller psykiatrisk korttidsvård
+
+Särskilt boende: t.ex. äldrebostäder och institutioner
+
+Ordinärt boende: utesluter sådant boende som ingår i föregående kategori
+
+Annan/okänd: övrigt</text>
+    <text id="KAT_3.RBK">Barn som avlidit senast 28 dygn efter födelsen</text>
+    <text id="DFR_4.1.RBK">Avlidet inom 28 dygn efter födelsen</text>
+    <text id="KAT_4.RBK">Explosivt implantat</text>
+    <text id="KAT_4.HLP">Exempel på explosiva implantat är hjärtstimulatorer, defibrillatorer, insulin- och infusionspumpar.</text>
+    <text id="DFR_5.1.RBK">Har den avlidne haft ett implantat som kan explodera vid kremering?</text>
+    <text id="DFR_5.2.RBK">Har implantatet avlägsnats?</text>
+    <text id="KAT_5.RBK">Yttre undersökning</text>
+    <text id="DFR_6.1.RBK">Har yttre undersökning av kroppen genomförts?</text>
+    <text id="DFR_6.1.SVA_1">Ja</text>
+    <text id="DFR_6.1.SVA_2">Nej, rättsmedicinsk undersökning ska göras</text>
+    <text id="DFR_6.1.SVA_3">Nej, den avlidne undersökt kort före döden</text>
+    <text id="DFR_6.3.RBK">Undersökningsdatum</text>
+    <text id="KAT_6.RBK">Polisanmälan</text>
+    <text id="KAT_6.HLP">Polisanmälan skall göras snarast möjligt om förhållandena vid dödsfallet är sådana att det kan finnas skäl för en rättsmedicinsk undersökning. Dödsbeviset skall då istället utan dröjsmål lämnas till polismyndigheten (4 kap. 4 § begravningslagen).
+
+Polisanmälan skall göras:
+
+När dödsfallet har eller kan ha orsakats av yttre påverkan (skada eller förgiftning) och alltså inte enbart av sjukdom, dvs. av någon annan person, olycksfall eller självmord.
+När det är svårt att avgöra om dödsfallet har orsakats av yttre påverkan. Detta gäller
+när någon annträffas död och tidigare sjukdomsbild inte kan förklara dödsfallet, dvs. vid helt oväntade dödsfall hos både barn - bl.a. vid plötslig spädbarnsdöd - och vuxna när det finns anledning till tveksamhet om dödsfallet har naturliga orsaker,
+när en misstrukare anträffas död,
+vid framskriden föruttnelse.
+När dödsfallet kan misstänkas ha samband med fel eller försummelse inom hälso- och sjukvården.
+När den döde inte har kunnat identifieras.
+
+(SOSFS 1996:29, avsnitt 5)</text>
+    <text id="DFR_7.1.RBK">Finns skäl för polisanmälan?</text>
+    <text id="DFR_7.1.SVA_1">Ja, om dödsfallet har eller kan ha orsakats av yttre påverkan (skada/förgiftning) eller fel/försummelse i vården eller den dödes identitet är okänd, ska polisanmälan göras och dödsbeviset lämnas till Polismyndigheten</text>
+    <text id="DFR_7.1.SVA_2">Nej</text>
+    <text id="KAT_7.RBK">Läkarens utlåtande om dödsorsaken</text>
+    <text id="KAT_7.1.RBK">Sjukdoms- eller skadeförlopp som ledde till den terminala dödsorsaken</text>
+</texter>

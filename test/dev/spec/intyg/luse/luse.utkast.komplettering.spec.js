@@ -101,7 +101,6 @@ describe('Luse kompletteringsbegäran tests', function() {
                 // Kompletteringsbegäran should be displayed under form_undersokningAvPatienten
                 expect(element(by.css('div[data-komplettering-section="undersokningAvPatienten"]')).isDisplayed()).toBeTruthy();
                 expect(element(by.css('div[data-komplettering-section="undersokningAvPatienten"]')).getText()).toEqual('Kompletteringsbegäran');
-                expect(element(by.css('.fieldkomplettering #form_undersokningAvPatienten')).isPresent()).toBeTruthy();
             });
         });
     });

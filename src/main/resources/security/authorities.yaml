@@ -56,8 +56,8 @@ knownIntygstyper:
   - &ki050 luse
   - &ki060 luae_na
   - &ki070 luae_fs
-  - &ki080 db
-  - &ki090 doi
+  - &ki080 DB
+  - &ki090 DOI
 
 # De rättigheter som systemet har
 knownPrivileges:
@@ -100,7 +100,7 @@ sekretessmarkeringAllowed:
   - *ki070
   - *ki080
   - *ki090
-  
+
 # Ingångar
 requestOrigins:
   - &ro010
@@ -245,6 +245,8 @@ privileges:
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
+      - *ki080 # DB
+      - *ki090 # DOI
     requestOrigins:
       - *ro010 # NORMAL
       - *ro020 # DJUPINTEGRATION
