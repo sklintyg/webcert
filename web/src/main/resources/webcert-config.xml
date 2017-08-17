@@ -171,12 +171,12 @@
 
     <!-- JSON mappers and providers -->
     <bean id="objectMapper"
-      class="se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper" />
+      class="se.inera.intyg.common.util.integration.json.CustomObjectMapper" />
 
     <bean id="jacksonJsonProvider"
       class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
       <property name="mapper">
-        <bean class="se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper" />
+        <bean class="se.inera.intyg.common.util.integration.json.CustomObjectMapper" />
       </property>
     </bean>
 
