@@ -23,7 +23,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.intyg.webcert.common.common.Constants;
+import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 public class CertificateRouteBuilder extends SpringRouteBuilder {

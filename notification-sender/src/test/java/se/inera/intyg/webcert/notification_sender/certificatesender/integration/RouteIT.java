@@ -43,7 +43,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 
 import com.google.common.base.Throwables;
 
-import se.inera.intyg.webcert.common.common.Constants;
+import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)

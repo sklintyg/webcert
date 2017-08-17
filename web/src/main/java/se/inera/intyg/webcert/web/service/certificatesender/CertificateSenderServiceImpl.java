@@ -30,7 +30,7 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.common.Constants;
+import se.inera.intyg.webcert.common.Constants;
 
 /**
  * Created by eriklupander on 2015-05-20.

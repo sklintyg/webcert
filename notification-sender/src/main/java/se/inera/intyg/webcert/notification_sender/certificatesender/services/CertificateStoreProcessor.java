@@ -29,7 +29,7 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.common.common.Constants;
+import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 

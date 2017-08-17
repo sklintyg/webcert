@@ -46,7 +46,7 @@ import org.springframework.jms.support.destination.DestinationResolutionExceptio
 import org.springframework.test.util.ReflectionTestUtils;
 
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.common.Constants;
+import se.inera.intyg.webcert.common.Constants;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateSenderServiceImplTest {
