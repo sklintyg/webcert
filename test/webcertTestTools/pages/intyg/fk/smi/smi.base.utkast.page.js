@@ -149,19 +149,15 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         this.medicinskBehandling = {
             avslutad: {
-                checkbox: getCheckbox(avslutadForm),
                 text: getTextarea(avslutadForm)
             },
             pagaende: {
-                checkbox: getCheckbox(pagaendeForm),
                 text: getTextarea(pagaendeForm)
             },
             planerad: {
-                checkbox: getCheckbox(planeradForm),
                 text: getTextarea(planeradForm)
             },
             substansintag: {
-                checkbox: getCheckbox(substansintagForm),
                 text: getTextarea(substansintagForm)
             }
         };
@@ -355,10 +351,10 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
         return Promise.all([
-            checkAndSendTextToForm(mb.avslutad.checkbox, mb.avslutad.text, behandling.avslutad),
-            checkAndSendTextToForm(mb.pagaende.checkbox, mb.pagaende.text, behandling.pagaende),
-            checkAndSendTextToForm(mb.planerad.checkbox, mb.planerad.text, behandling.planerad),
-            checkAndSendTextToForm(mb.substansintag.checkbox, mb.substansintag.text, behandling.substansintag)
+            sendTextToForm(mb.avslutad.text, behandling.avslutad),
+            sendTextToForm(mb.pagaende.text, behandling.pagaende),
+            sendTextToForm(mb.planerad.text, behandling.planerad),
+            sendTextToForm(mb.substansintag.text, behandling.substansintag)
         ]);
     },
     getTillaggsfraga: function(i) {
