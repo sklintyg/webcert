@@ -119,7 +119,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private AuthoritiesHelper authoritiesHelper;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
-    
+
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
         @Override
@@ -177,7 +177,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
 
-        when(patientDetailsResolver.updatePatientForSaving(any(Patient.class), anyString())).thenReturn(defaultPatient);
+       // when(patientDetailsResolver.updatePatientForSaving(any(Patient.class), anyString())).thenReturn(defaultPatient);
     }
 
     @Test
@@ -556,7 +556,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
                 .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
 
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
-        
+
         verify(notificationService).sendNotificationForDraftReadyToSign(utkast, USER_REFERENCE);
         verify(mockMonitoringService).logUtkastMarkedAsReadyToSignNotificationSent(INTYG_ID, "luae_fs");
         verify(mockUtkastRepository).save(utkast);
@@ -626,7 +626,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user.setVardgivare(Arrays.asList(vardgivare));
 
         user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
-        
+
         return user;
     }
 

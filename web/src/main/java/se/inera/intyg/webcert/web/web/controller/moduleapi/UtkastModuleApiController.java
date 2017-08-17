@@ -25,6 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -101,6 +104,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -117,22 +123,28 @@ public class UtkastModuleApiController extends AbstractApiController {
         LOG.debug("Retrieving Intyg with id {} and type {}", intygsId, intygsTyp);
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+
         // INTYG-4086, overwrite patient name details
-        Patient resolvedPatient = patientDetailsResolver
-                .resolvePatient(utkast
-                        .getPatientPersonnummer(),
-                        intygsTyp);
+        Patient resolvedPatient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp);
+        boolean patientResolved = resolvedPatient != null;
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, resolvedPatient.isSekretessmarkering())
                 .orThrow();
 
-        // INTYG-4086, is this correct? Probably unnecessary.
-//        utkast.setPatientFornamn(resolvedPatient.getFornamn());
-//        utkast.setPatientEfternamn(resolvedPatient.getEfternamn());
-//        utkast.setPatientMellannamn(resolvedPatient.getMellannamn());
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                        resolvedPatient == null || resolvedPatient.isSekretessmarkering())
+                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
+
+        // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,
+        // create an "empty" Patient with personnummer only.
+        if (!patientResolved) {
+            resolvedPatient = new Patient();
+            resolvedPatient.setPersonId(utkast.getPatientPersonnummer());
+        }
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -141,28 +153,27 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
         draftHolder.setStatus(utkast.getStatus());
         draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
-        draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
-
-        // INTYG-4086 add the resolved patient to the model.
-
-        draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
+        draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
 
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
         draftHolder.setRelations(relations1);
         draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
-
         draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
         draftHolder.setAvliden(resolvedPatient.isAvliden());
 
-       // try {
-            // Update the internal model with the resolved patient.
-            //String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
-        draftHolder.setContent(utkast.getModel());
+        try {
+            // Update the internal model with the resolved patient if applicable. This means the draft may be updated
+            // with new patient info on the next auto-save!
+            if (patientResolved) {
+                String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
+                utkast.setModel(updatedModel);
+            }
+            draftHolder.setContent(utkast.getModel());
 
-        return Response.ok(draftHolder).build();
-//        } catch (ModuleException | ModuleNotFoundException e) {
-//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
-//        }
+            return Response.ok(draftHolder).build();
+        } catch (ModuleException | ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
+        }
     }
 
     /**

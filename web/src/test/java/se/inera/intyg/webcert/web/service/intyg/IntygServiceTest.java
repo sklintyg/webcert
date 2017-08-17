@@ -261,7 +261,7 @@ public class IntygServiceTest {
 
     @Before
     public void setupPUService() {
-        //when(puService.getPerson(any(Personnummer.class))).thenReturn(getPersonSvar(false));       +
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(getPersonSvar(false, PersonSvar.Status.FOUND));
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
     }
 
@@ -1002,10 +1002,10 @@ public class IntygServiceTest {
 
     }
 
-    private PersonSvar getPersonSvar(boolean deceased) {
+    private PersonSvar getPersonSvar(boolean deceased, PersonSvar.Status status) {
         return new PersonSvar(
                 new Person(new Personnummer("19121212-1212"), false, deceased, "fornamn", "mellannamn", "efternamn", "postadress",
                         "postnummer", "postort"),
-                null);
+                status);
     }
 }

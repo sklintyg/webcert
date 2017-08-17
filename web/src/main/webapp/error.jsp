@@ -152,6 +152,12 @@
                 <spring:message code="error.auth-exception.text" />
               </div>
             </c:when>
+            <c:when test="${param.reason eq 'auth-exception-sekretessmarkering'}">
+              <h1><spring:message code="error.auth-exception-sekretessmarkering.title" /></h1>
+              <div id="notFound" class="alert alert-danger">
+                <spring:message code="error.auth-exception-sekretessmarkering.text" />
+              </div>
+            </c:when>
             <c:when test="${param.reason eq 'enhet.auth.exception'}">
               <h1><spring:message code="error.enhet.auth.exception.title" /></h1>
               <div id="notFound" class="alert alert-danger">

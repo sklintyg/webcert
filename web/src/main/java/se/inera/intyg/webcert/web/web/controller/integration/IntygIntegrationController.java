@@ -35,6 +35,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -102,6 +104,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @Autowired
     private UtkastService utkastService;
+
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
 
     /**
      * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
@@ -171,6 +176,16 @@ public class IntygIntegrationController extends BaseIntegrationController {
         if (utkast != null && !utkast.getStatus().equals(UtkastStatus.SIGNED)) {
             isUtkast = true;
         }
+
+        SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
+
+        // INTYG-4086:
+        authoritiesValidator.given(getWebCertUserService().getUser(), utkast.getIntygsTyp())
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                        sekretessStatus == SekretessStatus.TRUE)
+                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
+
 
         // If intygstyp can't be established, default to FK7263 to be backwards compatible
         String intygsTyp = typParam;

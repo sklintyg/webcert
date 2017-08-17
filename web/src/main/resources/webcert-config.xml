@@ -142,7 +142,7 @@
     <bean id="createRenewalUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateRenewalCopyUtkastBuilder"/>
     <bean id="createReplacementUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateReplacementUtkastBuilder"/>
 
-    <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver"/>
+    <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
 
     <!-- Exposes healthCheckService for use in health-check.jsp -->
     <bean

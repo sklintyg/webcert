@@ -96,7 +96,9 @@ public class ModuleApiController extends AbstractApiController {
     public Response getModulesMap(@PathParam("patientId") String patientId) {
         SekretessStatus sekretessmarkering = patientDetailsResolver.getSekretessStatus(new Personnummer(patientId));
         List<IntygModule> intygModules = moduleRegistry.listAllModules();
-        if (sekretessmarkering == SekretessStatus.TRUE) {
+
+        // If patient has sekretessmarkering or PU-service didn't respond, filter out ts-intyg using privilege.
+        if (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED) {
 
             // INTYG-4086
             intygModules = intygModules.stream()

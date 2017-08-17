@@ -43,6 +43,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -272,6 +273,10 @@ public class IntygServiceImpl implements IntygService {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
             IntygContentHolder intyg = getIntygDataPreferWebcert(intygsId, intygsTyp);
+
+            //
+            verifyPuServiceAvailable(intyg);
+
             boolean coherentJournaling = userIsDjupintegreradWithSjf();
             if (!coherentJournaling) {
                 verifyEnhetsAuth(intyg.getUtlatande(), true);
@@ -287,6 +292,17 @@ public class IntygServiceImpl implements IntygService {
 
         } catch (IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+        }
+    }
+
+    private void verifyPuServiceAvailable(IntygContentHolder intyg) {
+        // INTYG-4086: All PDF-printing must pass through here. GE-002 explicitly states that if the PU-service is
+        // unavailable, we must not let anyone print!
+        PersonSvar personFromPUService = patientDetailsResolver.getPersonFromPUService(intyg.getUtlatande().getGrundData().getPatient().getPersonId());
+        if (personFromPUService == null || personFromPUService.getStatus() != PersonSvar.Status.FOUND) {
+
+            // TODO requirements states that the error dialog has different texts depending on intygstyp. This needs to be fixed, of course...
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "PU-service unreachable, PDF printing is not allowed.");
         }
     }
 
@@ -576,17 +592,22 @@ public class IntygServiceImpl implements IntygService {
             // Since an FK-intyg never will have anything other than personId, try to fetch all using ruleset
             Patient patient = patientDetailsResolver.resolvePatient(certificate.getUtlatande().getGrundData().getPatient().getPersonId(),
                     typ);
+
             // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
-            // Patient object. NOTE! It's possible we should remove all usage of grundData.patient in the GUI, instead
-            // we could rely on something new on the IntygContentHolder more transient in nature.
+            // Patient object.
             ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
-            String updatedModel = moduleApi.updateBeforeSave(internalIntygJsonModel, patient);
+
+            // If a Patient were resolved, update the model. If the patient were null, PU-service is probably down and
+            // no integration parameters were available.
+            if (patient != null) {
+                internalIntygJsonModel= moduleApi.updateBeforeSave(internalIntygJsonModel, patient);
+            }
 
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             Relations certificateRelations = intygRelationHelper.getRelationsForIntyg(intygId);
 
             return IntygContentHolder.builder()
-                    .setContents(updatedModel)
+                    .setContents(internalIntygJsonModel)
                     .setUtlatande(certificate.getUtlatande())
                     .setStatuses(certificate.getMetaData().getStatus())
                     .setRevoked(certificate.isRevoked())
@@ -632,8 +653,7 @@ public class IntygServiceImpl implements IntygService {
 
         // try {
         // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
-        // Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(),
-        // utkast.getIntygsTyp());
+        Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
         // String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
         // patient);
 

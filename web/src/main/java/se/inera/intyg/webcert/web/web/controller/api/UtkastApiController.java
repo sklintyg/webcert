@@ -18,13 +18,32 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
@@ -41,21 +60,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -90,19 +94,19 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
 
-        boolean sekr = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer()) == SekretessStatus.TRUE;
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, sekr)
                 .orThrow();
 
         // INTYG-4086: If the patient is sekretessmarkerad, we need an additional check.
-        if (patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer()) == SekretessStatus.TRUE) {
+        boolean sekr = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer()) == SekretessStatus.TRUE;
+        if (sekr) {
             authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                     .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .orThrow();
+                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                            "User missing required privilege or cannot handle sekretessmarkerad patient"));
         }
 
         if (!request.isValid()) {
@@ -174,8 +178,7 @@ public class UtkastApiController extends AbstractApiController {
 
         // Ugly, but null (for now) means that the PU service was not available or that the standardized logic in the
         // resolver asks the calling code to fall-back to "manual entry". In this case, the stuff from the
-        // CreateUtkastRequest
-        // is the manual entry.
+        // CreateUtkastRequest is the manual entry.
         if (pat == null) {
             // TODO intygsTyp sensitive address stuff...
             pat = new Patient();

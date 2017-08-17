@@ -31,6 +31,8 @@ public enum WebCertServiceErrorCodeEnum {
     INVALID_STATE_COMPLEMENT,        // Due to existance of complement intyg, operation is not allowed.
 
     AUTHORIZATION_PROBLEM,           // User is not authorized for the operation
+    AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+    AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
     INDETERMINATE_IDENTITY,          // Operation not allowed due to identity being indeterminate-
     EXTERNAL_SYSTEM_PROBLEM,         // Other system in unavailable, gave technical error response
     MODULE_PROBLEM,                  // Problem that occured inside a module
@@ -39,7 +41,8 @@ public enum WebCertServiceErrorCodeEnum {
     CERTIFICATE_REVOKED,
     CONCURRENT_MODIFICATION,
     GRP_PROBLEM,
-    MISSING_PARAMETER
+    MISSING_PARAMETER,
+    CERTIFICATE_TYPE_SEKRETESSMARKERING_UNSUPPORTED
 
     // @formatter:on
 }

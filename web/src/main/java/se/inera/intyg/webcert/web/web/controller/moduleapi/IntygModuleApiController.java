@@ -104,35 +104,25 @@ public class IntygModuleApiController extends AbstractApiController {
                 .orThrow();
 
         WebCertUser user = userService.getUser();
-        boolean coherentJournaling = user.getParameters() != null ? user.getParameters().isSjf() : false;
+        boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
 
         LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
 
-//        Patient patient = patientDetailsResolver.resolvePatient(intygAsExternal
+        // Check if the patient is sekretessmarkerad. If so, only users having the requisite privilege for the current intygsTyp
+        // may see this intyg. INTYG-4086
+
+        // I.e. if not explicitly FALSE, set flag to true.
+//        boolean isSekretessmarkerad = !patientDetailsResolver.getSekretessStatus(intygAsExternal
 //                .getUtlatande()
 //                .getGrundData()
 //                .getPatient()
-//                .getPersonId(), intygAsExternal.getUtlatande().getTyp());
-
-        // Check if the patient is sekretessmarkerad. If so, only users having the requisite privilege for the current intygsTyp
-        // may see this utkast. INTYG-4086
-        boolean isSekretessmarkerad = patientDetailsResolver.isSekretessmarkering(intygAsExternal
-                .getUtlatande()
-                .getGrundData()
-                .getPatient()
-                .getPersonId());
-
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, isSekretessmarkerad)
-                .orThrow();
-
-        // Update the model with the resolved patient info.
-        // TODO we must filter out the address for all with sekr?
-
-        // This is getting ugly. We need to replace the patient within the "contents" serialized thing. The Utlatande
-        // is @JsonIgnored in the IntygContentHolder class.
+//                .getPersonId()).equals(SekretessStatus.FALSE);
+//
+//        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+//                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, isSekretessmarkerad)
+//                .orThrow();
 
         return Response.ok().entity(intygAsExternal).build();
     }

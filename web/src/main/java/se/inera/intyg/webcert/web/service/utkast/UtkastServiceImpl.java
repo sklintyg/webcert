@@ -139,7 +139,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         CreateNewDraftHolder draftRequest = createModuleRequest(request);
 
-        // TODO INTYG-4086: Use PatientDetailsResolver to update patient.
+        // TODO INTYG-4086: Use PatientDetailsResolverImpl to update patient.
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
@@ -429,7 +429,7 @@ public class UtkastServiceImpl implements UtkastService {
 
             // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar
             // personnumret -
-            // vilka regler gäller då för namn och adress? Samma regler som i PatientDetailsResolver?
+            // vilka regler gäller då för namn och adress? Samma regler som i PatientDetailsResolverImpl?
             draftPatient.setPersonId(personId);
             try {
                 String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), draftPatient);
