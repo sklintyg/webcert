@@ -42,6 +42,10 @@ exports.config = {
     seleniumAddress: require('./../webcertTestTools/environment.js').envConfig.SELENIUM_ADDRESS,
     baseUrl: require('./../webcertTestTools/environment.js').envConfig.WEBCERT_URL,
 
+    // Timeouts
+    getPageTimeout: 20000,
+    allScriptsTimeout: 25000,
+
     specs: ['./spec/*.spec.js', './spec/intyg/**/*.spec.js'],
 
     suites: {
@@ -56,6 +60,8 @@ exports.config = {
 
     // Capabilities to be passed to the webdriver instance. (ignored if multiCapabilities is used)
     capabilities: {
+
+        loggingPrefs: {'driver': 'ALL', 'server': 'ALL', 'browser': 'ALL'},
 
         // IE11
         /*browserName: 'internet explorer',
@@ -86,7 +92,7 @@ exports.config = {
         // If true, print colors to the terminal.
         showColors: true,
         // Default time to wait in ms before a test fails.
-        defaultTimeoutInterval: 60000
+        defaultTimeoutInterval: 120000
         // Function called to print jasmine results.
         //print: function() {},
         // If set, only execute specs whose names match the pattern, which is
