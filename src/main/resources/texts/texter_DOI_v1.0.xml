@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<texter typ="DB" giltigFrom="2017-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <text id="KAT_1.RBK">Den avlidnes personuppgifter</text>
+    <text id="DFR_1.1.RBK">Identiteten styrkt genom</text>
+    <text id="DFR_14.1.RBK">Land (om ej stadigvarande bosatt i Sverige)</text>
+    <text id="KAT_2.RBK">Dödsdatum och dödsplats</text>
+    <text id="FRG_2.RBK">Dödsdatum</text>
+    <text id="FRG_2.HLP">Om dödsdatum är säkert markeras "Säkert" och dödsdatum anges.
+
+Om dödsdatum inte kan fastställas markeras "Ej säkert". Både dödsdatum och datum när kroppen påträffades måste då anges. Om uppgifter saknas för dödsdatums månad eller dag, ersätt siffrorna med 00. År måste anges.</text>
+    <text id="DFR_2.1.SVA_1">Säkert</text>
+    <text id="DFR_2.1.SVA_2">Ej säkert</text>
+    <text id="DFR_2.2.RBK">Datum</text>
+    <text id="DFR_2.3.RBK">Anträffad död</text>
+    <text id="FRG_3.RBK">Dödsplats</text>
+    <text id="DFR_3.1.RBK">Kommun (om okänd dödsplats, kommunen där kroppen påträffades)</text>
+    <text id="DFR_3.2.RBK">Boende där kroppen påträffades</text>
+    <text id="DFR_3.2.HLP">Sjukhus: för somatisk eller psykiatrisk korttidsvård
+
+Särskilt boende: t.ex. äldrebostäder och institutioner
+
+Ordinärt boende: utesluter sådant boende som ingår i föregående kategori
+
+Annan/okänd: övrigt</text>
+    <text id="KAT_3.RBK">Barn som avlidit senast 28 dygn efter födelsen</text>
+    <text id="DFR_4.1.RBK">Avlidet inom 28 dygn efter födelsen</text>
+    <text id="KAT_7.RBK">Läkarens utlåtande om dödsorsaken</text>
+    <text id="KAT_7.1.RBK">Sjukdoms- eller skadeförlopp som ledde till den terminala dödsorsaken</text>
+    <text id="FRG_8.RBK">Den terminala dödsorsaken var</text>
+    <text id="DFR_8.1.RBK">Beskrivning</text>
+    <text id="DFR_8.1.HLP">Den diagnos eller det tillstånd som ledde till den terminala dödsorsaken</text>
+    <text id="DFR_8.2.RBK">Ungefärlig debut</text>
+    <text id="DFR_8.3.SVA_1"> Akut</text>
+    <text id="DFR_9.3.SVA_1"> Akut</text>
+    <text id="DFR_10.3.SVA_1">Akut</text>
+    <text id="DFR_8.3.SVA_2">Kronisk</text>
+    <text id="DFR_9.3.SVA_2">Kronisk</text>
+    <text id="DFR_10.3.SVA_2">Kronisk</text>
+    <text id="DFR_8.3.SVA_3">Uppgift saknas</text>
+    <text id="DFR_9.3.SVA_3">Uppgift saknas</text>
+    <text id="DFR_10.3.SVA_3">Uppgift saknas</text>
+    <text id="FRG_9.RBK">Som var en följd av</text>
+    <text id="DFR_9.1.RBK">Beskrivning</text>
+    <text id="DFR_9.2.RBK">Ungefärlig debut</text>
+    <text id="KAT_7.2.RBK">Andra sjukdomar eller skador som bidragit till dödsfallet</text>
+    <text id="KAT_7.2.HLP">Ange en diagnos eller skada per fält i rangordning efter den betydelse de haft för dödsfallet, den allvarligaste först.</text>
+    <text id="DFR_10.1.RBK">Beskrivning</text>
+    <text id="DFR_10.2.RBK">Ungefärlig debut</text>
+    <text id="KAT_8.RBK">Opererad inom fyra veckor före döden</text>
+    <text id="KAT_8.HLP">Som operation räknas åtgärder enligt Socialstyrelsens "Klassifikationer av kirurgiska åtgärder, KKÅ".</text>
+    <text id="DFR_11.1.RBK">Opererad inom 4 veckor före döden?</text>
+    <text id="DFR_11.1.SVA_1">Uppgift om operation saknas</text>
+    <text id="DFR_11.2.RBK">Operationsdatum</text>
+    <text id="DFR_11.3.RBK">Tillstånd som föranledde ingreppet</text>
+    <text id="KAT_9.RBK">Skada/förgiftning</text>
+    <text id="DFR_12.1.RBK">Dödsfall i samband med skada/förgiftning?</text>
+    <text id="DFR_12.2.RBK">Ange orsak och eventuell avsikt</text>
+    <text id="DFR_12.2.HLP">Välj det alternativ som är mest sannolikt. "Oklart om avsikt förelegat" väljs endast om man inte kan avgöra om olycksfall eller avsiktligt vållad skada är det mest sannolika uppkomstsättet.</text>
+    <text id="DFR_12.3.RBK">Datum för skada/förgiftning</text>
+    <text id="DFR_12.4.RBK">Kort beskrivning av hur skadan/förgiftningen uppkom (utan att röja eventuellt andra inblandades identiteter)</text>
+    <text id="DFR_12.4.HLP">Beskriv förloppet och omständigheterna som ledde till skadan. Ange för:
+
+trafikolycka: om den döde var t.ex. förare, passagerare eller fotgängare samt vilken typ av fordon som var inblandade
+förgiftning: vilken eller vilka substanser
+fall: t.ex. i trappa, från stege, halkat på mattkant
+drunkning: naturlig eller konstgjord vattensamling (t.ex. vattendrag, sjö, brunn, badkar), fall ned i vatten (t.ex. genom brunnslock) eller på annat sätt (t.ex. kramp vid simning)</text>
+    <text id="KAT_10.RBK">Dödsorsaksuppgifterna grundar sig på</text>
+    <text id="DFR_13.1.RBK">Ange vad dödsorsaksuppgifterna grundar sig på</text>
+</texter>
