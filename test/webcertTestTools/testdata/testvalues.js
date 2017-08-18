@@ -25,201 +25,203 @@ module.exports = {
     ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js'),
     patienter: [{
-        id: '190001199801' // Har adress i PU
+        id: '190001199801', // Har adress i PU
+		kon: 'kvinna'
     }, {
-        id: '190007179815' // Har adress i PU
+        id: '190007179815', // Har adress i PU
+		kon: 'man'
     }, {
         id: '190001289818',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199004242385',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+        kon: 'kvinna'
     }, {
         id: '199004242393',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199004252384',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199004252392',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199004262383',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199004262391',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199004272382',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199004272390',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199004282381',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199004282399',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199908102388',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199908112395',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199912252393',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199912142388',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199912152395',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199912162386',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199912172393',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199912182384',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199912192391',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199912202380',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199912212397',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }, {
         id: '199912222388',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'kvinna'
     }, {
         id: '199912232395',
         adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'
-
-        }
+        },
+		kon: 'man'
     }],
     patienterMedSamordningsnummer: [{
         id: '194401786530',
