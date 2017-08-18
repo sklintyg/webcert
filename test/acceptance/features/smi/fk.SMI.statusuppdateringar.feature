@@ -109,7 +109,7 @@ Scenario: Statusuppdateringar vid ändring av utkast
     När jag ändrar i slumpat fält
     Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
 
-@referens-skickas-med @waitingForFix
+@referens-skickas-med
 Scenario: Referens skickas med statusuppdateringar
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref-X"
 
@@ -117,6 +117,8 @@ Scenario: Referens skickas med statusuppdateringar
     Och jag signerar intyget
     Och jag förnyar intyget
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
+	Så ska statusuppdatering "SIGNAT" skickas till vårdsystemet. Totalt: "1"
+	#Viktigt att vi kör Signat innan nedan steg
     Och ska statusuppdateringen visa att parametern "ref" är mottagen med värdet "testref-X"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
