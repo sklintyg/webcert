@@ -78,14 +78,16 @@ public class IntygRelationHelperImplTest {
 
         Relations webcertRelations = new Relations();
         Relations.FrontendRelations fr = webcertRelations.getLatestChildRelations();
-        fr.setReplacedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1), UtkastStatus.SIGNED));
+        fr.setReplacedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
+                UtkastStatus.SIGNED));
         fr.setReplacedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
                 UtkastStatus.DRAFT_COMPLETE));
         fr.setComplementedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
                 UtkastStatus.SIGNED));
         fr.setComplementedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
                 UtkastStatus.DRAFT_INCOMPLETE));
-        webcertRelations.setParent(new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED));
+        webcertRelations.setParent(
+                new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED));
 
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(webcertRelations);
 
