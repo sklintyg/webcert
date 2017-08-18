@@ -166,37 +166,29 @@ module.exports = function(grunt) {
 
         process.env.environmentName = environment.toUpperCase();
 
-        if (grunt.option('gridnodeinstances')) {
-            if (grunt.option('gridnodeinstances') > 1) {
-                grunt.config.set('protractor.acc.options.args.capabilities.shardTestFiles', true);
-                grunt.config.set('protractor.acc.options.args.capabilities.maxInstances', grunt.option('gridnodeinstances'));
-            }
+        if (grunt.option('gridnodeinstances') > 1) {
+            grunt.config.set('protractor.acc.options.args.capabilities.shardTestFiles', true);
+            grunt.config.set('protractor.acc.options.args.capabilities.maxInstances', grunt.option('gridnodeinstances'));
         }
 
         // Ange taggar som grunt.option istället for argument till task. Flexiblare när det gäller att
         // kombinera OCH och ELLER operatorer.
         // https://github.com/cucumber/cucumber/wiki/Tags
-        var tagsArray = ['~@notReady', '~@waitingForFix'];
+        let tags = ['~@waitingForFix'];
         if (grunt.option('tags')) {
-            tagsArray = grunt.option('tags').split(',');
+            tags = grunt.option('tags').split(',');
 
-            // Filtrera bort de feature-filer som inte har några scenarios med valda taggar om parallella tester 
-            // ska koras (dvs. selenium-grid). 
+            // När man kör med parallella tester måste man av någon 
+            // anledning manuellt filtrera bort de feature-filer som inte 
+            // innehåller några av de aktuella taggarna för att det inte 
+            // ska ta väldigt lång tid.
             if (grunt.option('gridnodeinstances')) {
+                let tagList = grunt.option('tags').split(/ |,/);
+                let featureFiles = grunt.file.expand('features/**/*.feature');
 
-                var files = grunt.file.expand('features/**/*.feature');
-                var featureFiles = [];
+                let _hasAtLeastOneTag = (text, tags) => tags.some(tag => text.indexOf(tag) > -1);
 
-                files.forEach(function(filePath) {
-
-                    var fileText = grunt.file.read(filePath);
-
-                    tagsArray.forEach(function(currentTag) {
-                        if (fileText.indexOf(currentTag) > -1 && featureFiles.indexOf(filePath) === -1) {
-                            featureFiles.push(filePath);
-                        }
-                    });
-                });
+                featureFiles = featureFiles.filter(file => _hasAtLeastOneTag(grunt.file.read(file), tagList));
 
                 if (featureFiles.length === 0) {
                     grunt.fail.warn('Hittade inget scenario som hade någon av taggarna som specificerats');
@@ -204,16 +196,15 @@ module.exports = function(grunt) {
                     grunt.config.set('protractor.acc.options.args.specs', featureFiles);
                 }
             }
-
         }
+        
+        tags = tags.map(tag => tag.replace(/ /g, ','));
 
-        tagsArray.forEach(function(tag, index) {
-            tagsArray[index] = tagsArray[index].replace(/ /g, ',');
-        });
+        // Vi vill aldrig köra tester med notReady-taggen
+        tags.push('~@notReady');
 
-
-        grunt.log.subhead('Taggar:' + tagsArray);
-        grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tagsArray);
+        grunt.log.subhead('Taggar:' + tags);
+        grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tags);
 
         //Tasks
         var tasks = [];
