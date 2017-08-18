@@ -4,27 +4,12 @@ package se.inera.intyg.webcert.web.service.intyg.decorator;
  * Created by eriklupander on 2017-05-18.
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.IntygRelations;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponseType;
@@ -38,6 +23,20 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvRelation;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygRelationHelperImplTest {
@@ -70,6 +69,33 @@ public class IntygRelationHelperImplTest {
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
         assertNotNull(relationsForIntyg);
+    }
+
+    @Test
+    public void testGetRelationsForIntygNothingInITWithMergeFromWebcert() {
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(),
+                any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
+
+        Relations webcertRelations = new Relations();
+        Relations.FrontendRelations fr = webcertRelations.getLatestChildRelations();
+        fr.setReplacedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1), UtkastStatus.SIGNED));
+        fr.setReplacedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
+                UtkastStatus.DRAFT_COMPLETE));
+        fr.setComplementedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
+                UtkastStatus.SIGNED));
+        fr.setComplementedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
+                UtkastStatus.DRAFT_INCOMPLETE));
+        webcertRelations.setParent(new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED));
+
+        when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(webcertRelations);
+
+        Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
+        assertNotNull(relationsForIntyg);
+        assertFrontendRelations(relationsForIntyg.getLatestChildRelations(),
+                webcertRelations.getLatestChildRelations().getComplementedByIntyg(),
+                webcertRelations.getLatestChildRelations().getComplementedByUtkast(),
+                webcertRelations.getLatestChildRelations().getReplacedByIntyg(),
+                webcertRelations.getLatestChildRelations().getReplacedByUtkast());
     }
 
     @Test
