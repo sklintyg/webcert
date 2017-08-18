@@ -18,17 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
 import org.junit.Test;
@@ -36,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -58,6 +46,18 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationTransformerTest {
 
@@ -71,6 +71,9 @@ public class NotificationTransformerTest {
 
     @Mock
     private Fk7263InternalToNotification internalToNotification;
+
+    @Mock
+    private NotificationPatientEnricher notificationPatientEnricher;
 
     @InjectMocks
     private NotificationTransformer transformer;
@@ -100,6 +103,7 @@ public class NotificationTransformerTest {
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_1.name()));
         verify(internalToNotification, times(1)).createCertificateStatusUpdateForCareType(any());
+        verifyZeroInteractions(notificationPatientEnricher);
     }
 
     @Test
@@ -127,6 +131,7 @@ public class NotificationTransformerTest {
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_1.name()));
         verify(internalToNotification, times(1)).createCertificateStatusUpdateForCareType(any());
+        verifyZeroInteractions(notificationPatientEnricher);
     }
 
     @Test
@@ -168,6 +173,7 @@ public class NotificationTransformerTest {
         verify(moduleRegistry, times(1)).getModuleApi(eq(LUSE));
         verify(moduleApi, times(1)).getUtlatandeFromJson(any());
         verify(moduleApi, times(1)).getIntygFromUtlatande(any());
+        verify(notificationPatientEnricher, times(1)).enrichWithPatient(any());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -177,6 +183,7 @@ public class NotificationTransformerTest {
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);
         transformer.process(message);
+        verifyZeroInteractions(notificationPatientEnricher);
     }
 
     private void setupInternalToNotification() throws ModuleException {

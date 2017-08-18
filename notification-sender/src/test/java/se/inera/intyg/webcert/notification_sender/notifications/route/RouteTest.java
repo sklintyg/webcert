@@ -21,8 +21,10 @@ package se.inera.intyg.webcert.notification_sender.notifications.route;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.HashMap;
@@ -50,6 +52,7 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -57,9 +60,13 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateTypeFormatEnum;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
@@ -78,6 +85,10 @@ public class RouteTest {
     CamelContext camelContext;
     @Mock
     private ModuleApi moduleApi; // this is a mock from unit-test-notification-sender-config.xml
+
+    @Autowired
+    private PUService mockedPuService;
+
     @Autowired
     private IntygModuleRegistry moduleRegistry; // this is a mock from unit-test-notification-sender-config.xml
     @Autowired
@@ -103,22 +114,26 @@ public class RouteTest {
         MockitoAnnotations.initMocks(this);
         MockEndpoint.resetMocks(camelContext);
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
+        when(mockedPuService.getPerson(any())).thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(), PersonSvar.Status.FOUND));
     }
 
     @After
     public void cleanup() {
-        Mockito.reset(moduleRegistry, moduleApi, mockInternalToNotification);
+        Mockito.reset(moduleRegistry, moduleApi, mockInternalToNotification, mockedPuService);
     }
 
     @Test
-    public void testWiretappingOfSignedMessages() throws ModuleException, InterruptedException {
+    public void testWiretappingOfSignedMessages() throws ModuleException, InterruptedException, IOException {
         notificationAggregator.whenAnyExchangeReceived(exchange -> {
             Message msg = new DefaultMessage();
             exchange.setOut(msg);
         });
 
         // Given
-        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("luae_fs"));
+
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(0);
         notificationAggregator.expectedMessageCount(0);
@@ -144,7 +159,7 @@ public class RouteTest {
     @Test
     public void testRoutesDirectlyToNotificationQueueForFK7263Andrat() throws ModuleException, InterruptedException {
         // Given
-        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
         notificationWSClient.expectedMessageCount(1);
         notificationWSClientV3.expectedMessageCount(0);
         notificationAggregator.expectedMessageCount(0);
@@ -202,7 +217,7 @@ public class RouteTest {
     @Test
     public void testRoutesDirectlyToNotificationQueueForLuaeFsSkapad() throws InterruptedException, ModuleException {
         // Given
-        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("luae_fs"));
         notificationWSClientV3.expectedMessageCount(1);
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
@@ -289,7 +304,8 @@ public class RouteTest {
 
     @Test
     public void testNormalRouteNotificationVersion2() throws Exception {
-        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("lisjp"));
+
         // Given
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(1);
@@ -297,7 +313,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "fk7263"));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "lisjp"));
 
         // Then
         assertIsSatisfied(notificationWSClient);
@@ -395,7 +411,7 @@ public class RouteTest {
         notificationWSClientV3.whenAnyExchangeReceived(exchange -> {
             throw new TemporaryException("Testing application error, with exhausted retries");
         });
-        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
 
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(1);
@@ -440,7 +456,7 @@ public class RouteTest {
         notificationWSClientV3.whenAnyExchangeReceived(exchange -> {
             throw new PermanentException("Testing technical error");
         });
-        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
 
         notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(1);
@@ -501,19 +517,19 @@ public class RouteTest {
         return sb.toString();
     }
 
-    private Intyg createIntyg() {
-        Intyg intyg = new Intyg();
-        HosPersonal hosPersonal = new HosPersonal();
-        Enhet enhet = new Enhet();
-        enhet.setVardgivare(new Vardgivare());
-        enhet.setArbetsplatskod(new ArbetsplatsKod());
-        hosPersonal.setEnhet(enhet);
-        intyg.setSkapadAv(hosPersonal);
-        // DatePeriodType and PartialDateType must be allowed
-        intyg.getSvar().add(InternalConverterUtil.aSvar("")
-                .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
-                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999))).build());
-        return intyg;
-    }
+//    private Intyg createIntyg() {
+//        Intyg intyg = new Intyg();
+//        HosPersonal hosPersonal = new HosPersonal();
+//        Enhet enhet = new Enhet();
+//        enhet.setVardgivare(new Vardgivare());
+//        enhet.setArbetsplatskod(new ArbetsplatsKod());
+//        hosPersonal.setEnhet(enhet);
+//        intyg.setSkapadAv(hosPersonal);
+//        // DatePeriodType and PartialDateType must be allowed
+//        intyg.getSvar().add(InternalConverterUtil.aSvar("")
+//                .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
+//                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999))).build());
+//        return intyg;
+//    }
 
 }

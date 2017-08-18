@@ -18,17 +18,14 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import java.io.IOException;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.annotations.VisibleForTesting;
-
 import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -36,6 +33,9 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+
+import java.io.IOException;
 
 public class NotificationTransformer {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationTransformer.class);
@@ -45,6 +45,9 @@ public class NotificationTransformer {
 
     @Autowired
     private Fk7263InternalToNotification fk7263Transform;
+
+    @Autowired
+    private NotificationPatientEnricher notificationPatientEnricher;
 
     @VisibleForTesting
     void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
@@ -72,8 +75,12 @@ public class NotificationTransformer {
 
         if (SchemaVersion.VERSION_3.equals(notificationMessage.getVersion())) {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp());
+
+            Utlatande utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
+            Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
+            notificationPatientEnricher.enrichWithPatient(intyg);
             message.setBody(NotificationTypeConverter.convert(notificationMessage,
-                    moduleApi.getIntygFromUtlatande(moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast()))));
+                    intyg));
         } else if (Fk7263EntryPoint.MODULE_ID.equals(notificationMessage.getIntygsTyp())) {
             message.setBody(fk7263Transform.createCertificateStatusUpdateForCareType(notificationMessage));
         } else {

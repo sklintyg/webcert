@@ -26,9 +26,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -49,8 +47,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 
 import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -61,17 +59,11 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
 import se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub;
+import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateTypeFormatEnum;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
@@ -107,7 +99,8 @@ public class RouteIT {
 
     @Before
     public void init() throws Exception {
-        when(fk7263ModuleApi.getIntygFromUtlatande(any())).thenReturn(createIntyg());
+        when(fk7263ModuleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
+        when(fk7263ModuleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(mockIntygModuleRegistry.getModuleApi(anyString())).thenReturn(fk7263ModuleApi);
 
         certificateStatusUpdateForCareResponderStub.reset();
@@ -332,24 +325,5 @@ public class RouteIT {
                 throw Throwables.propagate(e);
             }
         });
-    }
-
-    private Intyg createIntyg() {
-        Intyg intyg = new Intyg();
-        IntygId intygId = new IntygId();
-        intygId.setExtension("intyg1");
-        intyg.setIntygsId(intygId);
-        HosPersonal hosPersonal = new HosPersonal();
-        Enhet enhet = new Enhet();
-        enhet.setVardgivare(new Vardgivare());
-        enhet.setArbetsplatskod(new ArbetsplatsKod());
-        hosPersonal.setEnhet(enhet);
-        intyg.setSkapadAv(hosPersonal);
-        // DatePeriodType and PartialDateType must be allowed
-        intyg.getSvar().add(InternalConverterUtil.aSvar("")
-                .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
-                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999)))
-                .build());
-        return intyg;
     }
 }

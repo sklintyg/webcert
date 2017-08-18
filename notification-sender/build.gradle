@@ -11,6 +11,7 @@ dependencies {
     compile project(':webcert-common')
 
     compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
+    compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
 
     compile "org.springframework:spring-jms:${springVersion}"
     compile "org.apache.camel:camel-spring:${camelVersion}"
@@ -20,6 +21,8 @@ dependencies {
     compile "org.apache.camel:camel-jackson:${camelVersion}"
     compile "org.apache.camel:camel-jaxb:${camelVersion}"
     compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
+
+    testCompile("se.inera.intyg.common:lisjp:${commonVersion}")
 
     testCompile "com.jayway.awaitility:awaitility:${awaitilityVersion}"
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
