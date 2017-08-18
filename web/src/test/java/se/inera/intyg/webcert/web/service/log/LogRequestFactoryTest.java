@@ -18,14 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.junit.Test;
-
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -36,29 +29,28 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class LogRequestFactoryTest {
+
+    private static final String intygsId = "intygsId";
+    private static final Personnummer patientPersonnummer = new Personnummer("personId");
+    private static final String patientFornamn = "fornamn";
+    private static final String patientMellannamn = "mellannamn";
+    private static final String patientEfternamn = "efternamn";
+    private static final String enhetsid = "enhetsid";
+    private static final String enhetsnamn = "enhetsnamn";
+    private static final String vardgivarid = "vardgivarid";
+    private static final String vardgivarnamn = "vardgivarnamn";
 
     @Test
     public void testCreateLogRequestFromUtkast() {
-        final String intygsId = "intygsId";
-        final Personnummer patientPersonnummer = new Personnummer("personId");
-        final String patientFornamn = "fornamn";
-        final String patientMellannamn = "mellannamn";
-        final String patientEfternamn = "efternamn";
-        final String enhetsid = "enhetsid";
-        final String enhetsnamn = "enhetsnamn";
-        final String vardgivarid = "vardgivarid";
-        final String vardgivarnamn = "vardgivarnamn";
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(intygsId);
-        utkast.setPatientPersonnummer(patientPersonnummer);
-        utkast.setPatientFornamn(patientFornamn);
-        utkast.setPatientMellannamn(patientMellannamn);
-        utkast.setPatientEfternamn(patientEfternamn);
-        utkast.setEnhetsId(enhetsid);
-        utkast.setEnhetsNamn(enhetsnamn);
-        utkast.setVardgivarId(vardgivarid);
-        utkast.setVardgivarNamn(vardgivarnamn);
+
+        Utkast utkast = buildUtkast(intygsId, "ts-bas", patientPersonnummer, patientFornamn, patientMellannamn, patientEfternamn, enhetsid, enhetsnamn, vardgivarid, vardgivarnamn);
 
         LogRequest res = LogRequestFactory.createLogRequestFromUtkast(utkast);
 
@@ -73,11 +65,14 @@ public class LogRequestFactoryTest {
         assertNull(res.getAdditionalInfo());
     }
 
+
+
     @Test
     public void testCreateLogRequestFromUtkastCoherentJournaling() {
         final String intygsId = "intygsId";
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygsId);
+        utkast.setIntygsTyp("ts-bas");
 
         LogRequest res = LogRequestFactory.createLogRequestFromUtkast(utkast, true);
 
@@ -109,6 +104,7 @@ public class LogRequestFactoryTest {
         grundData.getSkapadAv().getVardenhet().getVardgivare().setVardgivarnamn(vardgivarnamn);
 
         when(utlatande.getId()).thenReturn(intygsId);
+        when(utlatande.getTyp()).thenReturn("ts-bas");
         when(utlatande.getGrundData()).thenReturn(grundData);
 
         LogRequest res = LogRequestFactory.createLogRequestFromUtlatande(utlatande);
@@ -135,6 +131,7 @@ public class LogRequestFactoryTest {
         grundData.getSkapadAv().getVardenhet().setVardgivare(new Vardgivare());
 
         when(utlatande.getId()).thenReturn(intygsId);
+        when(utlatande.getTyp()).thenReturn("ts-bas");
         when(utlatande.getGrundData()).thenReturn(grundData);
 
         LogRequest res = LogRequestFactory.createLogRequestFromUtlatande(utlatande, true);
@@ -142,5 +139,35 @@ public class LogRequestFactoryTest {
         assertNotNull(res);
         assertEquals(intygsId, res.getIntygId());
         assertEquals("Läsning i enlighet med sammanhållen journalföring", res.getAdditionalInfo());
+    }
+
+    @Test
+    public void testPatientNameRemovedForFkIntyg() {
+
+        Utkast utkast = buildUtkast(intygsId, "luse", patientPersonnummer, patientFornamn, patientMellannamn, patientEfternamn, enhetsid, enhetsnamn, vardgivarid, vardgivarnamn);
+
+        LogRequest res = LogRequestFactory.createLogRequestFromUtkast(utkast);
+
+        assertNotNull(res);
+        assertEquals(intygsId, res.getIntygId());
+        assertEquals(patientPersonnummer, res.getPatientId());
+        assertEquals("", res.getPatientName());
+
+        assertNull(res.getAdditionalInfo());
+    }
+
+    private Utkast buildUtkast(String intygsId, String intygsTyp, Personnummer patientPersonnummer, String patientFornamn, String patientMellannamn, String patientEfternamn, String enhetsid, String enhetsnamn, String vardgivarid, String vardgivarnamn) {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygsId);
+        utkast.setIntygsTyp(intygsTyp);
+        utkast.setPatientPersonnummer(patientPersonnummer);
+        utkast.setPatientFornamn(patientFornamn);
+        utkast.setPatientMellannamn(patientMellannamn);
+        utkast.setPatientEfternamn(patientEfternamn);
+        utkast.setEnhetsId(enhetsid);
+        utkast.setEnhetsNamn(enhetsnamn);
+        utkast.setVardgivarId(vardgivarid);
+        utkast.setVardgivarNamn(vardgivarnamn);
+        return utkast;
     }
 }

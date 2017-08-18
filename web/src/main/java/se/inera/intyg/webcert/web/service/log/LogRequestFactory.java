@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
+import com.google.common.base.Joiner;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -38,7 +44,11 @@ public final class LogRequestFactory {
 
         logRequest.setIntygId(utkast.getIntygsId());
         logRequest.setPatientId(utkast.getPatientPersonnummer());
-        logRequest.setPatientName(utkast.getPatientFornamn(), utkast.getPatientMellannamn(), utkast.getPatientEfternamn());
+
+        String intygsTyp = utkast.getIntygsTyp();
+        addPatientNameIfNotFK(
+                Joiner.on(" ").skipNulls().join(utkast.getPatientFornamn(), utkast.getPatientMellannamn(), utkast.getPatientEfternamn()),
+                logRequest, intygsTyp);
 
         logRequest.setIntygCareUnitId(utkast.getEnhetsId());
         logRequest.setIntygCareUnitName(utkast.getEnhetsNamn());
@@ -62,7 +72,7 @@ public final class LogRequestFactory {
         logRequest.setIntygId(utlatande.getId());
 
         logRequest.setPatientId(utlatande.getGrundData().getPatient().getPersonId());
-        logRequest.setPatientName(utlatande.getGrundData().getPatient().getFullstandigtNamn());
+        addPatientNameIfNotFK(utlatande.getGrundData().getPatient().getFullstandigtNamn(), logRequest, utlatande.getTyp());
 
         logRequest.setIntygCareUnitId(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
         logRequest.setIntygCareUnitName(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
@@ -75,5 +85,22 @@ public final class LogRequestFactory {
         }
 
         return logRequest;
+    }
+
+    /**
+     * INTYG-4234: PDL-log statements for FK-intyg must _not_ include the patientName.
+     */
+    private static void addPatientNameIfNotFK(String patientName, LogRequest logRequest, String intygsTyp) {
+        if (isFkIntyg(intygsTyp)) {
+            logRequest.setPatientName("");
+        } else {
+            logRequest.setPatientName(patientName);
+        }
+    }
+
+    private static boolean isFkIntyg(String intygsTyp) {
+        return intygsTyp.toLowerCase().equals(Fk7263EntryPoint.MODULE_ID) || intygsTyp.toLowerCase().equals(LisjpEntryPoint.MODULE_ID)
+                || intygsTyp.toLowerCase().equals(LuseEntryPoint.MODULE_ID) || intygsTyp.toLowerCase().equals(LuaenaEntryPoint.MODULE_ID)
+                || intygsTyp.toLowerCase().equals(LuaefsEntryPoint.MODULE_ID);
     }
 }
