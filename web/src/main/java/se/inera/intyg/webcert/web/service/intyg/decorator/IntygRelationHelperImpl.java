@@ -166,7 +166,7 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
         if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByUtkast(),
                 startRelations.getLatestChildRelations().getComplementedByUtkast())) {
             startRelations.getLatestChildRelations()
-                    .setComplementedByUtkast(startRelations.getLatestChildRelations().getComplementedByUtkast());
+                    .setComplementedByUtkast(augmentWith.getLatestChildRelations().getComplementedByUtkast());
         }
     }
 }
