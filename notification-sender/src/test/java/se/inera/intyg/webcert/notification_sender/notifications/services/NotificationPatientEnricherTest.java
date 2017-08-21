@@ -9,7 +9,6 @@ import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
@@ -42,7 +41,7 @@ public class NotificationPatientEnricherTest {
     @Test(expected = IllegalStateException.class)
     public void testExceptionIsThrownWhenPuInvocationFails() {
         when(puService.getPerson(any(Personnummer.class)))
-                .thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(), PersonSvar.Status.ERROR));
+                .thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(false), PersonSvar.Status.ERROR));
         try {
             testee.enrichWithPatient(buildIntyg("lisjp"));
         } catch (Exception e) {
@@ -53,7 +52,7 @@ public class NotificationPatientEnricherTest {
 
     @Test
     public void testLuaeFsIsEnriched() {
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
         Intyg intyg = buildIntyg("luae_fs");
         testee.enrichWithPatient(intyg);
         verify(puService, times(1)).getPerson(any(Personnummer.class));
@@ -67,31 +66,35 @@ public class NotificationPatientEnricherTest {
         assertEquals("Tolvhult", p.getPostort());
     }
 
+    @Test
+    public void testSekretessmarkeradPatientIsNotUpdated() {
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
+        Intyg intyg = buildIntyg("luae_fs");
+        testee.enrichWithPatient(intyg);
+        verify(puService, times(1)).getPerson(any(Personnummer.class));
+
+        Patient p = intyg.getPatient();
+        assertEquals("191212121212", p.getPersonId().getExtension());
+        assertEquals("", p.getFornamn());
+        assertEquals("", p.getMellannamn());
+        assertEquals("", p.getEfternamn());
+        assertEquals("", p.getPostadress());
+        assertEquals("", p.getPostnummer());
+        assertEquals("", p.getPostort());
+    }
+
     private Intyg buildIntyg(String intygsTyp) {
         Intyg intyg = new Intyg();
         TypAvIntyg typAvIntyg = new TypAvIntyg();
         typAvIntyg.setCode(intygsTyp);
         intyg.setTyp(typAvIntyg);
-        intyg.setPatient(buildPatient());
+        intyg.setPatient(NotificationTestHelper.buildPatient());
         return intyg;
     }
 
-    private Patient buildPatient() {
-        Patient patient = new Patient();
-        PersonId personId = new PersonId();
-        personId.setExtension("191212121212");
-        patient.setPersonId(personId);
-        patient.setFornamn("Förnamn");
-        patient.setMellannamn("Mellannamn");
-        patient.setEfternamn("Efternamn");
-        patient.setPostadress("P-addr");
-        patient.setPostnummer("P-nr");
-        patient.setPostort("P-ort");
-        return patient;
-    }
 
-    private PersonSvar buildPersonSvar() {
-        return new PersonSvar(NotificationTestHelper.buildPerson(), PersonSvar.Status.FOUND);
+    private PersonSvar buildPersonSvar(boolean sekretessmarkering) {
+        return new PersonSvar(NotificationTestHelper.buildPerson(sekretessmarkering), PersonSvar.Status.FOUND);
     }
 
 }

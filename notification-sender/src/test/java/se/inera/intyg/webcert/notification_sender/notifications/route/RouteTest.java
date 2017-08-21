@@ -21,12 +21,9 @@ package se.inera.intyg.webcert.notification_sender.notifications.route;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.Year;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +51,6 @@ import org.springframework.test.context.ContextConfiguration;
 import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -66,13 +62,6 @@ import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateTypeFormatEnum;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
-import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
@@ -116,7 +105,7 @@ public class RouteTest {
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
-        when(mockedPuService.getPerson(any())).thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(), PersonSvar.Status.FOUND));
+        when(mockedPuService.getPerson(any())).thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(false), PersonSvar.Status.FOUND));
     }
 
     @After

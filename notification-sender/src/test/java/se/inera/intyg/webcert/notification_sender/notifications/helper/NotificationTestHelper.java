@@ -51,12 +51,12 @@ public class NotificationTestHelper {
         return intyg;
     }
 
-    public static Person buildPerson() {
+    public static Person buildPerson(boolean sekretessmarkering) {
         return new Person(Personnummer.createValidatedPersonnummerWithDash("191212121212").get(),
-                false, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult");
+                sekretessmarkering, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult");
     }
 
-    private static Patient buildPatient() {
+    public static Patient buildPatient() {
         Patient patient = new Patient();
         PersonId personId = new PersonId();
         personId.setExtension("191212121212");
