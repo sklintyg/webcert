@@ -79,7 +79,7 @@ public class NotificationPatientEnricher {
         personId
                 .setRoot(SamordningsnummerValidator.isSamordningsNummer(person.getPersonnummer()) ? Constants.SAMORDNING_ID_OID
                         : Constants.PERSON_ID_OID);
-        personId.setExtension(person.getPersonnummer().getPersonnummer());
+        personId.setExtension(person.getPersonnummer().getPersonnummerWithoutDash());
         patient.setPersonId(personId);
         patient.setFornamn(person.getFornamn());
         patient.setMellannamn(person.getMellannamn());
