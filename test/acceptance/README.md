@@ -56,3 +56,8 @@ DATABASE_PASSWORD=xxxxxxxx grunt acc:ip30 --gridnodeinstances=15
 ``` 
 För att få reda på maximalt antar browser-instanser i aktuellt konfiguration, gå till selenium-hubben i en browser (t.ex. http://selenium1.nordicmedtest.se:4444/grid/console för aktuell grid-uppsättning vid skrivtillfället) och inspektera respektive uppsatt nods konfiguration.
 
+### Köra lokal Selenium-server
+För att inte köra mot Selenium-hubben utan istället köra mot en lokal uppsättning, lägg till flaggan --local-selenium:
+```sh
+ grunt acc:ip30 --local-selenium
+```

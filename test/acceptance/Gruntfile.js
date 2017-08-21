@@ -171,6 +171,10 @@ module.exports = function(grunt) {
             grunt.config.set('protractor.acc.options.args.capabilities.maxInstances', grunt.option('gridnodeinstances'));
         }
 
+        if (!grunt.option('local-selenium')) {
+            grunt.config.set('protractor.acc.options.args.seleniumAddress', 'http://selenium1.nordicmedtest.se:4444/wd/hub');
+        }
+
         // Ange taggar som grunt.option istället for argument till task. Flexiblare när det gäller att
         // kombinera OCH och ELLER operatorer.
         // https://github.com/cucumber/cucumber/wiki/Tags
