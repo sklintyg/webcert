@@ -17,10 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, Promise,pages*/
+/* globals logger, Promise, pages, wcTestTools*/
 'use strict';
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 var helpers = require('./helpers.js');
+var testdataHelper = wcTestTools.helpers.testdata;
+
+
+
 
 function checkDiabetes(intyg) {
     var promiseArr = [];
@@ -33,21 +37,21 @@ function checkDiabetes(intyg) {
         }, function(reason) {
             throw ('FEL - Patient diabetes typ : ' + reason);
         }));
-        typer.forEach(function(_typ) {
+        typer.forEach(function(_typ, index) {
             if (_typ === 'Endast kost') {
-                promiseArr.push(expect(tsBasIntygPage.kost.getText()).to.eventually.equal('Kost').then(function(value) {
+                promiseArr.push(expect(tsBasIntygPage.getBehandlingsTyp(index).getText()).to.eventually.equal('Kost').then(function(value) {
                     logger.info('OK - Endast kost = ' + value);
                 }, function(reason) {
                     throw ('FEL - Endast kost : ' + reason);
                 }));
             } else if (_typ === 'Tabletter') {
-                promiseArr.push(expect(tsBasIntygPage.tabletter.getText()).to.eventually.equal('Tabletter').then(function(value) {
+                promiseArr.push(expect(tsBasIntygPage.getBehandlingsTyp(index).getText()).to.eventually.equal('Tabletter').then(function(value) {
                     logger.info('OK - Tabletter = ' + value);
                 }, function(reason) {
                     throw ('FEL - Tabletter : ' + reason);
                 }));
             } else if (_typ === 'Insulin') {
-                promiseArr.push(expect(tsBasIntygPage.insulin.getText()).to.eventually.equal('Insulin').then(function(value) {
+                promiseArr.push(expect(tsBasIntygPage.getBehandlingsTyp(index).getText()).to.eventually.equal('Insulin').then(function(value) {
                     logger.info('OK - Insulin = ' + value);
                 }, function(reason) {
                     throw ('FEL - Insulin: ' + reason);
@@ -55,20 +59,10 @@ function checkDiabetes(intyg) {
             }
         });
     } else if (intyg.diabetes.typ === 'Typ 1') {
-        promiseArr.push(expect(tsBasIntygPage.kost.getText()).to.eventually.equal('').then(function(value) {
-            logger.info('OK - Kost = \"TOMT\"');
+        promiseArr.push(expect(tsBasIntygPage.kostTabletterInsulin.getText()).to.eventually.equal('Ej angivet').then(function(value) {
+            logger.info('OK - Kost/Tabletter/Insulin = \"TOMT\" --> ' + value);
         }, function(reason) {
-            throw ('FEL - Kost: \"TOMT\"');
-        }));
-        promiseArr.push(expect(tsBasIntygPage.tabletter.getText()).to.eventually.equal('').then(function(value) {
-            logger.info('OK - Tabletter = \"TOMT\"');
-        }, function(reason) {
-            throw ('FEL - Tabletter: \"TOMT\"');
-        }));
-        promiseArr.push(expect(tsBasIntygPage.insulin.getText()).to.eventually.equal('').then(function(value) {
-            logger.info('OK - Insulin = \"TOMT\"');
-        }, function(reason) {
-            throw ('FEL - Insulin : \"TOMT\"');
+            throw ('FEL - Kost/Tabletter/Insulin: \"TOMT\" --> ' + reason);
         }));
     }
     return Promise.all(promiseArr);
@@ -175,20 +169,21 @@ module.exports = {
         }));
 
         if (intyg.rorelseorganensFunktioner.nedsattning === 'Ja') {
-            promiseArr.push(expect(tsBasIntygPage.funktionsnedsattningbeskrivning.getText()).to.eventually.equal('Nedsattning text').then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.funktionsnedsattningbeskrivning.getText()).to.eventually.equal(intyg.rorelseorganensFunktioner.nedsattningBeskrivning).then(function(value) {
                 logger.info('OK - Rörelsehinder kommentar = ' + value);
             }, function(reason) {
                 throw ('FEL - Rörelsehinder kommentar : ' + reason);
             }));
         } else {
-            promiseArr.push(expect(tsBasIntygPage.funktionsnedsattningbeskrivning.getText()).to.eventually.equal('').then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.funktionsnedsattningbeskrivning.getText()).to.eventually.equal('Ej angivet').then(function(value) {
                 logger.info('OK - Rörelsehinder kommentar är tom = ' + value);
             }, function(reason) {
                 throw ('FEL - Rörelsehinder kommentar är tom : ' + reason);
             }));
         }
 
-        promiseArr.push(expect(tsBasIntygPage.funktionsnedsRorelseformaga.getText()).to.eventually.equal(intyg.rorelseorganensFunktioner.inUtUrFordon).then(function(value) {
+        var rorelseFormaga = testdataHelper.ejAngivetIfNull(intyg.rorelseorganensFunktioner.inUtUrFordon);
+        promiseArr.push(expect(tsBasIntygPage.funktionsnedsRorelseformaga.getText()).to.eventually.equal(rorelseFormaga).then(function(value) {
             logger.info('OK - Rörelseförmågan = ' + value);
         }, function(reason) {
             throw ('FEL - Rörelseförmågan : ' + reason);
@@ -206,7 +201,7 @@ module.exports = {
             throw ('FEL - Hjärnskada efter trauma : ' + reason);
         }));
 
-        promiseArr.push(expect(tsBasIntygPage.riskfaktorerStroke.getText()).to.eventually.equal(intyg.hjartRisk).then(function(value) {
+        promiseArr.push(expect(tsBasIntygPage.riskfaktorerStroke.getText()).to.eventually.equal(testdataHelper.ejAngivetIfNull(intyg.hjartRisk)).then(function(value) {
             logger.info('OK - Riskfaktorer för stroke = ' + value);
         }, function(reason) {
             throw ('FEL - Riskfaktorer för stroke : ' + reason);
@@ -219,7 +214,7 @@ module.exports = {
                 throw ('FEL - Riskfaktorer för stroke (Kommentar) : ' + reason);
             }));
         } else {
-            promiseArr.push(expect(tsBasIntygPage.beskrivningRiskfaktorer.getText()).to.eventually.equal('').then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.beskrivningRiskfaktorer.getText()).to.eventually.equal(testdataHelper.ejAngivetIfNull('')).then(function(value) {
                 logger.info('OK - Riskfaktorer för stroke (Kommentar) = \"TOMT\"');
             }, function(reason) {
                 throw ('FEL - Riskfaktorer för stroke (Kommentar) : ' + reason);
@@ -247,10 +242,10 @@ module.exports = {
             throw ('FEL - Patienten har eller har patienten haft epilepsi: ' + reason);
         }));
         if (intyg.epilepsi === 'Ja') {
-            promiseArr.push(expect(tsBasIntygPage.medvetandestorningbeskrivning.getText()).to.eventually.equal('Blackout. Midsommarafton.').then(function(value) {
-                logger.info('OK - Kommentar: \"Blackout. Midsommarafton.\"');
+            promiseArr.push(expect(tsBasIntygPage.medvetandestorningbeskrivning.getText()).to.eventually.equal(testdataHelper.ejAngivetIfNull(intyg.epilepsiBeskrivning)).then(function(value) {
+                logger.info('OK - epilepsiBeskrivning Kommentar: ' + value);
             }, function(reason) {
-                throw ('FEL - Kommentar: \"Blackout. Midsommarafton.\" -> ' + reason);
+                throw ('FEL - epilepsiBeskrivning Kommentar: -> ' + reason);
             }));
         }
 
@@ -285,13 +280,13 @@ module.exports = {
         }));
 
         if (intyg.alkoholMissbruk === 'Ja' || intyg.alkoholVard === 'Ja') {
-            promiseArr.push(expect(tsBasIntygPage.provtagningBehovs.getText()).to.eventually.equal(intyg.alkoholProvtagning).then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.provtagningBehovs.getText()).to.eventually.equal(testdataHelper.ejAngivetIfNull(intyg.alkoholProvtagning)).then(function(value) {
                 logger.info('OK - Alkohol provtagning = ' + value);
             }, function(reason) {
                 throw ('FEL - Alkohol provtagning = ' + reason);
             }));
         } else {
-            promiseArr.push(expect(tsBasIntygPage.provtagningBehovs.getText()).to.eventually.equal('').then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.provtagningBehovs.getText()).to.eventually.equal(testdataHelper.ejAngivetIfNull('')).then(function(value) {
                 logger.info('OK - Alkohol provtagning = ' + value);
             }, function(reason) {
                 throw ('FEL - Alkohol provtagning = ' + reason);
@@ -330,19 +325,19 @@ module.exports = {
         }));
 
         if (intyg.sjukhusvard === 'Ja') {
-            promiseArr.push(expect(tsBasIntygPage.tidpunkt.getText()).to.eventually.equal('2015-12-13').then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.tidpunkt.getText()).to.eventually.equal(intyg.sjukhusvardTidPunkt).then(function(value) {
                 logger.info('OK - Tidpunkt = ' + value);
             }, function(reason) {
                 throw ('FEL - Tidpunkt: ' + reason);
             }));
 
-            promiseArr.push(expect(tsBasIntygPage.vardinrattning.getText()).to.eventually.equal('Östra sjukhuset.').then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.vardinrattning.getText()).to.eventually.equal(intyg.sjukhusvardInrattning).then(function(value) {
                 logger.info('OK - Vårdinrättning = ' + value);
             }, function(reason) {
                 throw ('FEL - Vårdinrättning: ' + reason);
             }));
 
-            promiseArr.push(expect(tsBasIntygPage.sjukhusvardanledning.getText()).to.eventually.equal('Allmän ysterhet.').then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.sjukhusvardanledning.getText()).to.eventually.equal(intyg.sjukhusvardAnledning).then(function(value) {
                 logger.info('OK - Sjukhusvårdanledning = ' + value);
             }, function(reason) {
                 throw ('FEL - Sjukhusvårdanledning: ' + reason);
@@ -362,7 +357,7 @@ module.exports = {
         }
 
         if (intyg.ovrigMedicin === 'Ja') {
-            promiseArr.push(expect(tsBasIntygPage.medicineringbeskrivning.getText()).to.eventually.equal('beskrivning övrig medicinering').then(function(value) {
+            promiseArr.push(expect(tsBasIntygPage.medicineringbeskrivning.getText()).to.eventually.equal(intyg.ovrigMedicinBeskrivning).then(function(value) {
                 logger.info('OK - Stadigvarande medicinering = ' + value);
             }, function(reason) {
                 throw ('FEL - Stadigvarande medicinering: ' + reason);
