@@ -20,20 +20,7 @@ package se.inera.intyg.webcert.web.service.fragasvar;
 
 // CHECKSTYLE:OFF LineLength
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.xml.ws.soap.SOAPFaultException;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +28,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
-
-import com.google.common.base.Strings;
-
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -75,6 +59,7 @@ import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
+import se.inera.intyg.webcert.web.converter.util.ArendeStatisticsUtil;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -92,6 +77,19 @@ import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComp
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
+
+import javax.xml.ws.soap.SOAPFaultException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -147,6 +145,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private ArendeDraftService arendeDraftService;
+
+    @Autowired
+    private ArendeStatisticsUtil arendeStatisticsUtil;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     public FragaSvar processIncomingQuestion(FragaSvar fragaSvar) {
@@ -561,15 +564,24 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             return resultsMap;
         }
 
-        List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
+        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(webCertUserService.getUser())
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
 
-        for (Object[] resArr : results) {
-            String id = (String) resArr[0];
-            Long nbr = (Long) resArr[1];
-            resultsMap.put(id, nbr);
+        // INTYG-4231: If the user is allowed to handle sekretessmarkerade patients, we use the efficient way of getting stats.
+        if (mayHandleSekretessmarkeradePatienter) {
+            List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
+            for (Object[] resArr : results) {
+                String id = (String) resArr[0];
+                Long nbr = (Long) resArr[1];
+                resultsMap.put(id, nbr);
+            }
+            return resultsMap;
+        } else {
+            // Otherwise, we must check each patient vs the PU-service.
+            List<Object[]> results = fragaSvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
+            return arendeStatisticsUtil.toSekretessFilteredMap(results);
         }
-
-        return resultsMap;
     }
 
     protected void verifyEnhetsAuth(String enhetsId) {

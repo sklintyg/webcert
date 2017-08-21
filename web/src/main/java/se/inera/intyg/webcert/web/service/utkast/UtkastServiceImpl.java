@@ -139,7 +139,6 @@ public class UtkastServiceImpl implements UtkastService {
 
         CreateNewDraftHolder draftRequest = createModuleRequest(request);
 
-        // TODO INTYG-4086: Use PatientDetailsResolverImpl to update patient.
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);

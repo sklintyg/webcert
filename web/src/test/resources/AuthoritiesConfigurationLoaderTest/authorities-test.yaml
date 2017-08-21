@@ -23,6 +23,7 @@ knownPrivileges:
   - &kp020 MAKULERA_INTYG
   - &kp030 KOPIERA_INTYG
   - &kp070 FILTRERA_PA_LAKARE
+  - &kp140 HANTERA_SEKRETESSMARKERAD_PATIENT
 
 # De roller som systemet har
 knownRoles:
@@ -87,6 +88,14 @@ privileges:
     intygstyper: # Implicit alla
     requestOrigins:
       - *ro010 # NORMAL
+  - &p140
+    name: *kp140
+    desc: Hantera patient med sekretessmarkering
+    intygstyper:
+      - *ki010 # fk7263
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
 
 # Roller
 roles:
@@ -94,6 +103,9 @@ roles:
     name: *kr010 # LAKARE
     desc: Läkare
     privileges:
+      - <<: *p140 # HANTERA_SEKRETESSMARKERAD_PATIENT
+        intygstyper:
+          - fk7263
       - *p000 # VISA_INTYG
       - *p010 # SIGNERA_INTYG
       - *p020 # MAKULERA_INTYG
@@ -121,6 +133,7 @@ roles:
       - <<: *p030 # KOPIERA_INTYG
         intygstyper:
           - ts-diabetes
+
 
 # Legitimerade yrkesroller
 titles:

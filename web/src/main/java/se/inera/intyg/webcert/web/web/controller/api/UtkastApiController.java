@@ -94,7 +94,6 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
 
-
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
@@ -180,7 +179,6 @@ public class UtkastApiController extends AbstractApiController {
         // resolver asks the calling code to fall-back to "manual entry". In this case, the stuff from the
         // CreateUtkastRequest is the manual entry.
         if (pat == null) {
-            // TODO intygsTyp sensitive address stuff...
             pat = new Patient();
             pat.setPersonId(req.getPatientPersonnummer());
             pat.setFornamn(req.getPatientFornamn());

@@ -11,7 +11,6 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
-import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -36,7 +35,7 @@ import java.util.List;
  */
 public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
-    private static final List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE,
+    private static final List<UtkastStatus> UTKAST_STATUSES = Arrays.asList(UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.SIGNED);
 
     @Autowired
@@ -67,10 +66,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         if (webCertUserService.hasAuthenticationContext()) {
             user = webCertUserService.getUser();
         } else {
-            // TODO If this code is called in a non-user context, e.g. on CreateDraftCertificate etc,
-            // use a dummy user for now.
-            user = new WebCertUser(new IntygUser(""));
-            user.setOrigin(WebCertUserOriginType.NORMAL.name());
+            throw new IllegalStateException("The PatientDetailsResolver cannot be used without a valid authentication context");
+            // If this code is called in a non-user context, e.g. on CreateDraftCertificate etc,
+            // use a dummy user for now. Or perhaps we should ALWAYS
+//            user = new WebCertUser(new IntygUser(""));
+//            user.setOrigin(WebCertUserOriginType.NORMAL.name());
         }
 
         switch (intygsTyp.toLowerCase()) {
@@ -213,7 +213,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 IntegrationParameters parameters = user.getParameters();
 
                 // All address fields needs to be present from Journalsystem, otherwise use PU instead.
-                if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer()) && isNotNullOrEmpty(parameters.getPostort())) {
+                if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
+                        && isNotNullOrEmpty(parameters.getPostort())) {
                     patient.setPostadress(parameters.getPostadress());
                     patient.setPostnummer(parameters.getPostnummer());
                     patient.setPostort(parameters.getPostort());
@@ -254,8 +255,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
                 Patient patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
                 IntegrationParameters parameters = user.getParameters();
-                if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostadress())
-                        && isNotNullOrEmpty(parameters.getPostadress())) {
+                if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
+                        && isNotNullOrEmpty(parameters.getPostort())) {
                     patient.setPostadress(parameters.getPostadress());
                     patient.setPostnummer(parameters.getPostnummer());
                     patient.setPostort(parameters.getPostort());
@@ -296,21 +297,20 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummer(),
                     user.getValdVardgivare().getId(),
-                    statuses, Sets.newHashSet("db")));
+                    UTKAST_STATUSES, Sets.newHashSet("db")));
         } else {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(),
-                    Arrays.asList(user.getValdVardenhet().getId()), statuses,
+                    Arrays.asList(user.getValdVardenhet().getId()), UTKAST_STATUSES,
                     Sets.newHashSet("db")));
         }
 
-
         // If any utkast were found, take the newest one and transfer name & address från DB intyg. (Use PU for s-markering and
         // deceased)
-        if (utkastList != null && utkastList.size() > 0) {
+        if (utkastList.size() > 0) {
             Utkast newest = utkastList.stream()
                     .sorted((u1, u2) -> u2.getSenastSparadDatum().compareTo(u1.getSenastSparadDatum()))
                     .findFirst()
-                    .get();
+                    .orElseThrow(() -> new IllegalStateException("List was > 0 but findFirst() returned no result."));
 
             try {
                 ModuleApi moduleApi = moduleRegistry.getModuleApi("db");
@@ -413,7 +413,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         patient.setFornamn(personSvar.getPerson().getFornamn());
         patient.setMellannamn(personSvar.getPerson().getMellannamn());
         patient.setEfternamn(personSvar.getPerson().getEfternamn());
-        patient.setFullstandigtNamn(Joiner.on(' ').skipNulls().join(personSvar.getPerson().getFornamn(), personSvar.getPerson().getMellannamn(),
+        patient.setFullstandigtNamn(
+                Joiner.on(' ').skipNulls().join(personSvar.getPerson().getFornamn(), personSvar.getPerson().getMellannamn(),
                         personSvar.getPerson().getEfternamn()));
 
         // Övrigt

@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
+import se.inera.intyg.webcert.web.converter.util.ArendeStatisticsUtil;
 import se.inera.intyg.webcert.web.integration.builder.SendMessageToRecipientTypeBuilder;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -137,6 +138,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private ArendeStatisticsUtil arendeStatisticsUtil;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -325,6 +329,9 @@ public class ArendeServiceImpl implements ArendeService {
 
         WebCertUser user = webcertUserService.getUser();
         Set<String> intygstyperForPrivilege = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
 
         Filter filter;
         if (!Strings.isNullOrEmpty(filterParameters.getEnhetId())) {
@@ -338,8 +345,12 @@ public class ArendeServiceImpl implements ArendeService {
         int originalPageSize = filter.getPageSize();
 
         // update page size and start from to be able to merge FragaSvar and Arende properly
-        filter.setStartFrom(Integer.valueOf(0));
-        filter.setPageSize(originalPageSize + originalStartFrom);
+        // INTYG-4086: Do NOT perform any paging. We must first load all applicable QA / ärenden, then apply
+        // sekretessmarkering filtering. THEN - we can do paging stuff in-memory. Very inefficient...
+        // filter.setStartFrom(Integer.valueOf(0));
+        // filter.setPageSize(originalPageSize + originalStartFrom);
+        filter.setStartFrom(null);
+        filter.setPageSize(null);
 
         List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
                 .map(ArendeListItemConverter::convert)
@@ -352,46 +363,52 @@ public class ArendeServiceImpl implements ArendeService {
                     return item;
                 })
                 .collect(Collectors.toList());
+
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
-
-        int totalResultsCount = arendeRepository.filterArendeCount(filter) + fsResults.getTotalCount();
-
         results.addAll(fsResults.getResults());
-
-        results = results.stream()
-                .map(ali -> addSekretessMarkering(ali))
-                .collect(Collectors.toList());
-
-        // INTYG-4086/INTYG-4231 and friends: The counts are incorrect for NON-lakare. The
-        // sekretessmarkade that's
-        // been filtered out doesn't add up correctly in the totalResults etc.
-        int numberHavingSekretessMarkering = Long.valueOf(results.stream().filter(ali -> ali.isSekretessmarkering()).count()).intValue();
-
-        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(user)
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                .isVerified();
-
-        // Filter out any QA
-        if (!mayHandleSekretessmarkeradePatienter) {
-            results = results.stream()
-                    .filter(ali -> !ali.isSekretessmarkering())
-                    .collect(Collectors.toList());
-        }
-
         results.sort(Comparator.comparing(ArendeListItem::getReceivedDate).reversed());
-
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
+
+        // Handling when user can see sekretessmarkering is straightforward.
         if (mayHandleSekretessmarkeradePatienter) {
-            response.setTotalCount(totalResultsCount);
+
+            response.setTotalCount(results.size());
+
+            if (originalStartFrom >= results.size()) {
+                response.setResults(new ArrayList<>());
+            } else {
+                response.setResults(results.subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size())));
+            }
         } else {
-            response.setTotalCount(totalResultsCount - numberHavingSekretessMarkering);
+            int arendeCountBeforeSekr = results.size();
+            int fragaSvarCountBeforeSekr = fsResults.getTotalCount();
+            // Filter out sekretessmarkerade
+            results = results.stream()
+                    .map(ali -> addSekretessMarkering(ali))
+                    .filter(ali -> !ali.isSekretessmarkering())    // TODO do this directly
+                    .collect(Collectors.toList());
+
+            response.setTotalCount(results.size());
+
+            if (originalStartFrom >= results.size()) {
+                response.setResults(new ArrayList<>());
+            } else {
+                response.setResults(results.subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size())));
+            }
         }
 
-        if (originalStartFrom >= results.size()) {
-            response.setResults(new ArrayList<>());
-        } else {
-            response.setResults(results.subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size())));
-        }
+//        QueryFragaSvarResponse response = new QueryFragaSvarResponse();
+//        if (mayHandleSekretessmarkeradePatienter) {
+//            response.setTotalCount(totalResultsCount);
+//        } else {
+//            response.setTotalCount(results.size());
+//        }
+//
+//        if (originalStartFrom >= results.size()) {
+//            response.setResults(new ArrayList<>());
+//        } else {
+//            response.setResults(results.subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size())));
+//        }
 
         return response;
     }
@@ -473,9 +490,21 @@ public class ArendeServiceImpl implements ArendeService {
             return new HashMap<>();
         }
 
-        return arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper)
-                .stream()
-                .collect(Collectors.toMap(a -> (String) a[0], a -> (Long) a[1]));
+        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(webcertUserService.getUser())
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
+
+        // INTYG-4231: If the user is allowed to handle sekretessmarkerade patients, we use the efficient way of getting stats.
+        if (mayHandleSekretessmarkeradePatienter) {
+            return arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper)
+                    .stream()
+                    .collect(Collectors.toMap(a -> (String) a[0], a -> (Long) a[1]));
+        } else {
+            List<Object[]> results = arendeRepository.getUnhandledByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
+            return arendeStatisticsUtil.toSekretessFilteredMap(results);
+        }
+
+
     }
 
     @VisibleForTesting

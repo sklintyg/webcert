@@ -76,7 +76,7 @@ public class AuthoritiesConfigurationLoaderTest {
         AuthoritiesConfiguration configuration = loader.getConfiguration();
 
         assertTrue(configuration.getRequestOrigins().size() == 3);
-        assertTrue(configuration.getPrivileges().size() == 6);
+        assertTrue(configuration.getPrivileges().size() == 7);
         assertTrue(configuration.getRoles().size() == 4);
         assertTrue(configuration.getTitles().size() == 2);
         assertTrue(configuration.getTitleCodes().size() == 4);

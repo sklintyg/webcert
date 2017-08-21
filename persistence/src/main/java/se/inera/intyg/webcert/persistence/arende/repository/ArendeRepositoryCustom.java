@@ -39,6 +39,10 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
     @Query("SELECT DISTINCT a.enhetId, count(a.enhetId) FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId = null AND a.intygTyp IN (:intygsTyper) GROUP BY a.enhetId")
     List<Object[]> countUnhandledGroupedByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
 
+
+    @Query("SELECT a.id, a.enhetId, a.patientPersonId FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId = null AND a.intygTyp IN (:intygsTyper)")
+    List<Object[]> getUnhandledByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
+
     /**
      * List all unique signing doctors for the supplied units.
      *

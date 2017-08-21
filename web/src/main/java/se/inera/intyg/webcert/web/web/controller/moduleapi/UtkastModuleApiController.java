@@ -153,7 +153,8 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
         draftHolder.setStatus(utkast.getStatus());
         draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
-        draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
+        draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
+        draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
 
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
         draftHolder.setRelations(relations1);

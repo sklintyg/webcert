@@ -67,6 +67,14 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
             @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
+     TODO WRITE THIS
+     */
+    @Query("SELECT fs.internReferens, fs.vardperson.enhetsId, fs.intygsReferens.patientId FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' AND fs.intygsReferens.intygsTyp IN (:intygsTyper)")
+    List<Object[]> getUnhandledWithEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
+                                                                 @Param("intygsTyper") Set<String> intygsTyper);
+
+
+    /**
      * Returns a list of all unique hsaId and name (of vardperson who signed the certificate the FragaSvar is linked to)
      * where matches the supplied id.
      *

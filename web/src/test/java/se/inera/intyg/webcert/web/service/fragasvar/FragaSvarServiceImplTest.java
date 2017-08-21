@@ -61,6 +61,7 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.converter.util.ArendeStatisticsUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
@@ -140,6 +141,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     private UtkastRepository utkastRepository;
     @Mock
     private ArendeDraftService arendeDraftService;
+    @Mock
+    private ArendeStatisticsUtil arendeStatisticsUtil;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -1147,6 +1150,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(fragasvarRepositoryMock.countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
                 Mockito.anySetOf(String.class)))
                         .thenReturn(queryResult);
+        when(webCertUserService.getUser()).thenReturn(createUser());
 
         Map<String, Long> res = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList("HSA1", "HSA2"),
                 Stream.of("fk7263").collect(Collectors.toSet()));
@@ -1252,6 +1256,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setOrigin("NORMAL");
         user.setHsaId("testuser");
         user.setNamn("test userman");
 
