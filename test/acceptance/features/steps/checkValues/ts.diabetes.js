@@ -173,7 +173,7 @@ module.exports = {
         intyg.allmant.behandling.typer.forEach(function(typ, index) {
             console.log('Behandling: ' + typ);
             if (typ === 'Endast kost') {
-                promiseArr.push(expect(tsDiabIntyg.getBehandlingsTyp(index).getText()).to.eventually.equal('Endast Kost').then(function(value) {
+                promiseArr.push(expect(tsDiabIntyg.getBehandlingsTyp(index).getText()).to.eventually.equal('Endast kost').then(function(value) {
                     logger.info('OK - ' + typ + ' = ' + value);
                 }, function(reason) {
                     throw ('FEL - ' + typ + ' : ' + reason);

@@ -22,7 +22,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag signerar intyget
    Så jag ska se den data jag angett för intyget
 
-@komplettering @utkast @fortsattUtkast @waitingForFix
+@komplettering @utkast @fortsattUtkast
 Scenario: Ska kunna fortsätta besvara kompletterande intyg 
    När jag går in på ett slumpat SMI-intyg med status "Signerat" 
    Och jag skickar intyget till Försäkringskassan

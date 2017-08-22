@@ -198,16 +198,7 @@ var tsValues = {
         }
 
         //För vissa körkortstyper krävs det svar lämplighet
-        if (
-            korkortstyper.indexOf('C1') > -1 ||
-            korkortstyper.indexOf('C1E') > -1 ||
-            korkortstyper.indexOf('C') > -1 ||
-            korkortstyper.indexOf('CE') > -1 ||
-            korkortstyper.indexOf('D1') > -1 ||
-            korkortstyper.indexOf('D1E') > -1 ||
-            korkortstyper.indexOf('D') > -1 ||
-            korkortstyper.indexOf('DE') > -1
-        ) {
+		if (isHogreKorkortstyper(korkortstyper)) {
             bedomningsObj.lamplighet = shuffle(['Ja', 'Nej'])[0];
         }
         return bedomningsObj;
