@@ -23,12 +23,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -36,6 +32,9 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
 public class IntygConverterUtilTest {
 

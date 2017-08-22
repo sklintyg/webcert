@@ -42,7 +42,7 @@
             {"type": "A", "selected": true},
             {"type": "B", "selected": true},
             {"type": "BE", "selected": true},
-            {"type": "TRAKTOR", "selected": true},
+            {"type": "Traktor", "selected": true},
             {"type": "C1", "selected": true},
             {"type": "C1E", "selected": true},
             {"type": "C", "selected": true},
@@ -51,7 +51,7 @@
             {"type": "D1E", "selected": true},
             {"type": "D", "selected": true},
             {"type": "DE", "selected": true},
-            {"type": "TAXI", "selected": true}
+            {"type": "Taxi", "selected": true}
         ]
     },
     "diabetes" : {
@@ -103,7 +103,7 @@
             {"type": "A", "selected": true},
             {"type": "B", "selected": true},
             {"type": "BE", "selected": true},
-            {"type": "TRAKTOR", "selected": true},
+            {"type": "Traktor", "selected": true},
             {"type": "C1", "selected": true},
             {"type": "C1E", "selected": true},
             {"type": "C", "selected": true},
@@ -112,7 +112,7 @@
             {"type": "D1E", "selected": true},
             {"type": "D", "selected": true},
             {"type": "DE", "selected": true},
-            {"type": "TAXI", "selected": true}
+            {"type": "Taxi", "selected": true}
         ],
         "lakareSpecialKompetens" : "Kronologisk bastuberedning",
         "lamplighetInnehaBehorighet" : "true"

@@ -140,11 +140,11 @@ module.exports = {
         var promiseArr = [];
 
         var selectedTypes = intyg.korkortstyper.sort(function(a, b) {
-            var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'TRAKTOR', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'TAXI'];
-            return allTypes.indexOf(a.toUpperCase()) - allTypes.indexOf(b.toUpperCase());
+            var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'];
+            return allTypes.indexOf(a) - allTypes.indexOf(b);
         });
 
-        selectedTypes = selectedTypes.join(', ').toUpperCase();
+        selectedTypes = selectedTypes.join(', ');
         promiseArr.push(checkAllmant(intyg.allmant));
         promiseArr.push(checkHypoglykemier(intyg.hypoglykemier));
 
@@ -170,21 +170,22 @@ module.exports = {
         }));
         // ==============
 
-        intyg.allmant.behandling.typer.forEach(function(typ) {
+        intyg.allmant.behandling.typer.forEach(function(typ, index) {
+            console.log('Behandling: ' + typ);
             if (typ === 'Endast kost') {
-                promiseArr.push(expect(tsDiabIntyg.falt1.endastKost.getText()).to.eventually.equal('Ja').then(function(value) {
+                promiseArr.push(expect(tsDiabIntyg.getBehandlingsTyp(index).getText()).to.eventually.equal('Endast Kost').then(function(value) {
                     logger.info('OK - ' + typ + ' = ' + value);
                 }, function(reason) {
                     throw ('FEL - ' + typ + ' : ' + reason);
                 }));
             } else if (typ === 'Tabletter') {
-                promiseArr.push(expect(tsDiabIntyg.falt1.tabletter.getText()).to.eventually.equal('Ja').then(function(value) {
+                promiseArr.push(expect(tsDiabIntyg.getBehandlingsTyp(index).getText()).to.eventually.equal('Tabletter').then(function(value) {
                     logger.info('OK - ' + typ + ' = ' + value);
                 }, function(reason) {
                     throw ('FEL - ' + typ + ' : ' + reason);
                 }));
             } else if (typ === 'Insulin') {
-                promiseArr.push(expect(tsDiabIntyg.falt1.insulin.getText()).to.eventually.equal('Ja').then(function(value) {
+                promiseArr.push(expect(tsDiabIntyg.getBehandlingsTyp(index).getText()).to.eventually.equal('Insulin').then(function(value) {
                     logger.info('OK - ' + typ + ' = ' + value);
                 }, function(reason) {
                     throw ('FEL - ' + typ + ' : ' + reason);

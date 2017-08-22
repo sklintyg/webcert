@@ -17,13 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg, browser, logger, protractor, wcTestTools */
+/* globals intyg, browser, logger, protractor, wcTestTools, Promise */
 'use strict';
 var db = require('./dbActions');
 var request = require('request');
 var loginHelperStatistik = require('./inloggning/login.helpers.statistik.js');
 var logInAsUserRoleStatistik = loginHelperStatistik.logInAsUserRoleStatistik;
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+var diagnosKategorier = wcTestTools.testdata.diagnosKategorier;
+var shuffle = wcTestTools.helpers.testdata.shuffle;
 
 var restAPIOptions = {
     url: 'https://statistik.ip30.nordicmedtest.sjunet.org/api/testsupport/processIntyg',
@@ -36,10 +38,30 @@ var restAPIOptions = {
 };
 
 global.statistik = {
-    diagnosKod: 'Z76',
-    nrOfSjukfall: 0,
+    diagnosKod: false,
+    nrOfSjukfall: {
+        totalt: 0,
+        kvinna: 0,
+        man: 0
+    },
     intygsId: ''
 };
+
+function slumpaDiagnosKod(diagnosKod) {
+
+    if (diagnosKod === 'slumpad') {
+        diagnosKod = shuffle(diagnosKategorier)[0].diagnosKod;
+        global.statistik.diagnosKod = diagnosKod;
+        logger.info('==== Slumpat fram diagnosKod ' + diagnosKod + '====');
+    } else if (diagnosKod === 'samma som ovan') {
+        diagnosKod = global.statistik.diagnosKod;
+        logger.info('==== Använder diagnosKod ' + diagnosKod + '====');
+    }
+    return diagnosKod;
+
+}
+
+
 
 module.exports = function() {
 
@@ -48,6 +70,8 @@ module.exports = function() {
     });
 
     this.Given(/^radera de intyg som har diagnoskod "([^"]*)" från wideline tabellen i statitikdatabasen$/, function(diagnosKod, callback) {
+        diagnosKod = slumpaDiagnosKod(diagnosKod);
+
         db.statistics.deleteSjukfall(diagnosKod, callback);
     });
 
@@ -76,7 +100,11 @@ module.exports = function() {
         return logInAsUserRoleStatistik(userObj, 'Läkare', true);
     });
 
-    this.Given(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnoskod) {
+    this.Given(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnosKod) {
+        diagnosKod = slumpaDiagnosKod(diagnosKod);
+
+
+
         element(by.id('smittskydd')).isSelected().then(function(isSelected) {
             if (isSelected) {
                 return element(by.id('smittskydd')).sendKeys(protractor.Key.SPACE).then(function() {
@@ -87,7 +115,7 @@ module.exports = function() {
                                     return element(by.id('activityLimitation')).sendKeys('activityLimitation').then(function() {
                                         return element(by.id('currentWork')).sendKeys('currentWork').then(function() {
                                             return fkUtkastPage.diagnosKod.clear().then(function() {
-                                                return fkUtkastPage.angeDiagnosKod(diagnoskod);
+                                                return fkUtkastPage.angeDiagnosKod(diagnosKod);
                                             });
                                         });
                                     });
@@ -97,79 +125,173 @@ module.exports = function() {
                     });
                 });
             } else {
-                logger.info('Inget smittaintyg, ändra enbart diagnoskod till %s', diagnoskod);
+                logger.info('Inget smittaintyg, ändra enbart diagnoskod till %s', diagnosKod);
                 return fkUtkastPage.diagnosKod.clear().then(function() {
-                    return fkUtkastPage.angeDiagnosKod(diagnoskod);
+                    return fkUtkastPage.angeDiagnosKod(diagnosKod);
                 });
             }
         });
     });
 
     this.Given(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagnosKod) {
+        diagnosKod = slumpaDiagnosKod(diagnosKod);
 
-        var url = process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/736870bed816a6a18a65b01c05dc3e44?vgid=TSTNMT2321000156-107M';
-        return browser.get(url).then(function() {
-            logger.info('Går till url för diagnoskod ' + diagnosKod + ': ' + url);
+
+        // Alla kategorier (för många kategorier)
+        //var url = process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/f07485ae393db737bacab5f416a43a2a?vgid=TSTNMT2321000156-107M';
+
+
+
+        var url = {
+            A: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/2d4fd1c2a5b880350fc1c606970cc51e?vgid=TSTNMT2321000156-107M',
+            B: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/73afd9510058d0b8f9a18e7e3a1b0b78?vgid=TSTNMT2321000156-107M',
+            C: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/493616c14076d5a2e7c7b3d34e357b2b?vgid=TSTNMT2321000156-107M',
+            D: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/d9999cb555e54f7e4bb4991e38c5eb3b?vgid=TSTNMT2321000156-107M',
+            E: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/583abd26f6fc34d556d8743c540c74ee?vgid=TSTNMT2321000156-107M',
+            F: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/768a292b2f9bd2827f155b28a8f9443d?vgid=TSTNMT2321000156-107M'
+        };
+
+        logger.silly('diagnosKod.charAt(0) - ' + diagnosKod.charAt(0));
+        logger.silly('url[diagnosKod.charAt(0)] - ' + url[diagnosKod.charAt(0)]);
+
+        return browser.get(url[diagnosKod.charAt(0)]).then(function() {
+            logger.info('Går till url för diagnoskod ' + diagnosKod + ': ' + url[diagnosKod.charAt(0)]);
         });
     });
 
     this.Given(/^jag kollar totala "([^"]*)" diagnoser som finns$/, function(diagnosKod) {
+        diagnosKod = slumpaDiagnosKod(diagnosKod);
 
-        return element.all(by.css('.table-condensed')).then(function(promiseArr) {
-            return promiseArr.forEach(function(entry) {
-                return entry.getText().then(function(txt) {
-                    if (txt.indexOf(diagnosKod) === -1) {
-                        if (typeof(parseInt(txt.split(' ')[0], 10)) === 'number') {
-                            global.statistik.nrOfSjukfall = txt.split(' ')[0];
-                            logger.info('global.statistik.nrOfSjukfall: ' + global.statistik.nrOfSjukfall);
+
+        return element.all(by.css('.table-condensed')).all(by.tagName('tr')).then(function(arr) {
+            //return
+            var statistik = [];
+            logger.silly('Statistik Tabell Längd (arr.length): ' + arr.length);
+
+            arr.forEach(function(entry, index) {
+
+                entry.getText().then(function(txt) {
+
+                    // Devide array in half and merge the data into statistik object based on index.
+                    var secondIndex = index - arr.length / 2;
+
+                    if (arr.length / 2 > index) {
+                        statistik.push({
+                            diagnosKod: txt
+                        });
+                    } else {
+                        statistik[secondIndex].totalt = parseInt(txt.split(' ')[0], 10);
+                        statistik[secondIndex].kvinna = parseInt(txt.split(' ')[1], 10);
+                        statistik[secondIndex].man = parseInt(txt.split(' ')[2], 10);
+
+                        logger.silly(statistik[secondIndex]);
+
+                        if (statistik[secondIndex].diagnosKod.split(' ')[0] === diagnosKod) {
+                            global.statistik.nrOfSjukfall = statistik[secondIndex];
+                            logger.info('global.statistik.nrOfSjukfall.totalt: ' + global.statistik.nrOfSjukfall.totalt);
                             return;
-                        } else {
-                            throw ('Kunde inte hitta aktuellt antal intyg' + parseInt(txt.split(' ')[0], 10));
                         }
                     }
                 });
+                if (index === arr.length) {
+                    throw ('Kunde inte hitta aktuellt antal intyg för ' + diagnosKod);
+                }
             });
-
         });
-
-
-
     });
 
 
-    this.Given(/^(?:ska|jag kollar att) totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntygs, modifer) {
+    this.Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntyg, modifer) {
+        diagnosKod = slumpaDiagnosKod(diagnosKod);
 
-        logger.info('global.statistik.nrOfSjukfall: ' + global.statistik.nrOfSjukfall);
-        if (diagnosKod && nrOfIntygs) {
+
+        logger.silly(global.person);
+
+        var gender = global.person.kon;
+
+        logger.info('====== Kollar statistik på kön: ' + gender + '==========');
+
+        if (!global.statistik.nrOfSjukfall) {
+            throw ('test steget förväntar sig att tidigare steg kollat aktuell statistik.');
+        }
+
+        var nuvarandeStatistik = global.statistik.nrOfSjukfall;
+
+        function raknaUtForvantatAntal(antal) {
             if (modifer === 'extra') {
-                nrOfIntygs = parseInt(global.statistik.nrOfSjukfall, 10) + parseInt(nrOfIntygs, 10);
+                return antal + parseInt(nrOfIntyg, 10);
             } else if (modifer === 'mindre') {
-                nrOfIntygs = parseInt(global.statistik.nrOfSjukfall, 10) - parseInt(nrOfIntygs, 10);
+                return antal - parseInt(nrOfIntyg, 10);
             } else {
                 throw ('test steget förväntar sig extra eller mindre variabel.');
             }
-            global.statistik.nrOfSjukfall = nrOfIntygs;
-
-        } else {
-            throw ('diagnosKod och nrOfIntygs får inte vara tomma.');
         }
 
-        //var nrOfIntygs = *;
-        return element.all(by.css('.table-condensed')).then(function(promiseArr) {
-            return promiseArr.forEach(function(entry) {
-                return entry.getText().then(function(txt) {
-                    //logger.info('txt: ' + txt);
-                    if (txt.indexOf(diagnosKod) === -1) {
-                        //logger.info('_txt: ' + txt);
-                        if (typeof(parseInt(txt.split(' ')[0], 10)) === 'number') {
-                            logger.info('Förväntar mig antalet intyg att vara: ' + nrOfIntygs);
+        if (!diagnosKod || !nrOfIntyg) {
+            throw ('diagnosKod och nrOfIntyg får inte vara tomma.');
+        } else {
+            logger.silly('nuvarandeStatistik.totalt: ' + nuvarandeStatistik.totalt);
+            nuvarandeStatistik.totalt = raknaUtForvantatAntal(nuvarandeStatistik.totalt);
+            logger.silly('nuvarandeStatistik.totalt: ' + nuvarandeStatistik.totalt);
 
-                            return expect(parseInt(txt.split(' ')[0], 10)).to.equal(nrOfIntygs);
-                        } else {
-                            throw ('Kunde inte hitta aktuellt antal intyg' + parseInt(txt.split(' ')[0], 10));
+            if (gender === 'man') {
+                nuvarandeStatistik.man = raknaUtForvantatAntal(nuvarandeStatistik.man);
+            } else if (gender === 'kvinna') {
+                nuvarandeStatistik.kvinna = raknaUtForvantatAntal(nuvarandeStatistik.kvinna);
+            } else {
+                throw ('Kunde inte fastställa kön på person: ' + global.person);
+            }
+        }
+        global.statistik.nrOfSjukfall = nuvarandeStatistik;
+        logger.silly('global.statistik.nrOfSjukfall.totalt: ' + global.statistik.nrOfSjukfall.totalt);
+
+        return element.all(by.css('.table-condensed')).all(by.tagName('tr')).then(function(arr) {
+            //return
+            var statistik = [];
+            logger.info('Antal rader i tabellen: ' + arr.length);
+
+            arr.forEach(function(entry, index) {
+
+                entry.getText().then(function(txt) {
+
+                    // Devide array in half and merge the data into statistik object based on index.
+                    var secondIndex = index - arr.length / 2;
+
+                    if (arr.length / 2 > index) {
+                        statistik.push({
+                            diagnosKod: txt
+                        });
+                    } else {
+                        statistik[secondIndex].totalt = parseInt(txt.split(' ')[0], 10);
+                        statistik[secondIndex].kvinna = parseInt(txt.split(' ')[1], 10);
+                        statistik[secondIndex].man = parseInt(txt.split(' ')[2], 10);
+
+                        logger.silly('Data på rad ' + secondIndex);
+                        logger.silly(statistik[secondIndex]);
+
+                        if (statistik[secondIndex].diagnosKod.split(' ')[0] === diagnosKod) {
+                            logger.info('global.statistik.nrOfSjukfall.totalt: ' + global.statistik.nrOfSjukfall.totalt);
+                            logger.silly('statistik[secondIndex].totalt: ' + statistik[secondIndex].totalt);
+
+                            logger.info('global.statistik.nrOfSjukfall.kvinna: ' + global.statistik.nrOfSjukfall.kvinna);
+                            logger.silly('statistik[secondIndex].kvinna: ' + statistik[secondIndex].kvinna);
+
+                            logger.info('global.statistik.nrOfSjukfall.man: ' + global.statistik.nrOfSjukfall.man);
+                            logger.silly('statistik[secondIndex].man: ' + statistik[secondIndex].man);
+
+                            var promiseArr = [];
+                            promiseArr.push(expect(global.statistik.nrOfSjukfall.totalt).to.equal(statistik[secondIndex].totalt));
+                            promiseArr.push(expect(global.statistik.nrOfSjukfall.kvinna).to.equal(statistik[secondIndex].kvinna));
+                            promiseArr.push(expect(global.statistik.nrOfSjukfall.man).to.equal(statistik[secondIndex].man));
+
+                            return Promise.all(promiseArr);
+
                         }
                     }
                 });
+                if (index === arr.length) {
+                    throw ('Kunde inte hitta aktuellt antal intyg för ' + diagnosKod);
+                }
             });
         });
     });

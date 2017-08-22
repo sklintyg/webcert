@@ -34,13 +34,15 @@ Scenario: Statusuppdateringar då intyg raderas
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
 
-@vardkontakt-skickas-med @waitingForFix
+@vardkontakt-skickas-med
 Scenario: Vårdkontakt skickas med statusuppdateringar
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref"
 
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
+	Så ska statusuppdatering "SIGNAT" skickas till vårdsystemet. Totalt: "1"
+	#Viktigt att vi kör Signat innan nedan steg
     Och ska statusuppdateringen visa att parametern "ref" är mottagen med värdet "testref"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0

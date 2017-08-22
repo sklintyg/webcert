@@ -37,10 +37,10 @@ module.exports = {
         var promiseArr = [];
 
         var selectedTypes = intyg.korkortstyper.sort(function(a, b) {
-            var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'TRAKTOR', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'TAXI'];
-            return allTypes.indexOf(a.toUpperCase()) - allTypes.indexOf(b.toUpperCase());
+            var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'];
+            return allTypes.indexOf(a) - allTypes.indexOf(b);
         });
-        selectedTypes = selectedTypes.join(', ').toUpperCase();
+        selectedTypes = selectedTypes.join(', ');
 
 
 
@@ -81,14 +81,14 @@ module.exports = {
         }));
 
         //Bedömning
-        if (intyg.bedomning.stallningstagande === 'Någon av följande behörighet') {
+        if (intyg.bedomning.stallningstagande !== 'Kan inte ta ställning') {
             promiseArr.push(expect(tsBasIntygPage.falt1.bedomning.getText()).to.eventually.contain(selectedTypes).then(function(value) {
                 logger.info('OK - Bedömningen avser körkortstyper = ' + value);
             }, function(reason) {
                 throw ('FEL - Bedömningen avser körkortstyper: ' + reason);
             }));
         } else {
-            promiseArr.push(expect(tsBasIntygPage.falt1.bedomningKanInteTaStallning.getText()).to.eventually.contain(intyg.bedomning.stallningstagande).then(function() {
+            promiseArr.push(expect(tsBasIntygPage.falt1.bedomning.getText()).to.eventually.contain(intyg.bedomning.stallningstagande).then(function() {
                 logger.info('OK bedömning -' + intyg.bedomning.stallningstagande);
             }, function(reason) {
                 throw ('FEL bedömning- ' + intyg.bedomning.stallningstagande + ' ' + reason);

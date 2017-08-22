@@ -32,5 +32,6 @@ module.exports = {
         diabetes: require('./ts.diabetes.js')
     },
     values: require('./testvalues.js'),
-    fmb: require('./diagnoskoderFMB.js')
+    fmb: require('./diagnoskoderFMB.js'),
+    diagnosKategorier: require('./diagnosKategorier_A-F.js')
 };

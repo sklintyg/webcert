@@ -89,7 +89,7 @@ module.exports = {
             '    }\n' +
             '  };\n' +
             '  check(attempts);';
-        browser.driver.executeAsyncScript(clientScript, 'body', 10).then(function(result) {
+        browser.driver.executeAsyncScript(clientScript, 'body', 30).then(function(result) {
             if (!result[0]) {
                 throw result[1];
             }

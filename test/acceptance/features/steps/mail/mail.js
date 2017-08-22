@@ -28,7 +28,7 @@ var MailParser = require('mailparser').MailParser;
 
 var imap = new Imap({
     user: 'intyg.test@gmail.com',
-    password: 'b4pelsin',
+    password: process.env.DATABASE_PASSWORD,
     host: 'imap.gmail.com',
     port: 993,
     tls: true

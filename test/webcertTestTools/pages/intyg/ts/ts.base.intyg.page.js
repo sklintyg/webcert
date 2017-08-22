@@ -34,7 +34,7 @@ var TsBaseIntyg = BaseIntyg._extend({
 
         this.idkontroll = element(by.id('vardkontakt-idkontroll'));
         this.korkortstyp = element(by.id('intygAvser-korkortstyp'));
-        this.idStarktGenom = element(by.id('identitet'));
+        this.idStarktGenom = element(by.id('vardkontakt-idkontroll'));
 
         this.falt1 = {
             bedomning: element(by.id('bedomning-korkortstyp'))

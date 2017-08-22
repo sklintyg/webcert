@@ -128,8 +128,20 @@ module.exports = function() {
 
     });
 
-    this.Given(/^jag går in på en patient$/, function() {
-        return gotoPatient(testdataHelpers.shuffle(testpatienter)[0]);
+    this.Given(/^jag går in på en( annan)? patient$/, function(annan) {
+        if (annan) {
+            var andraPatienter = testpatienter;
+            andraPatienter.splice(testpatienter.indexOf(global.person), 1);
+            logger.silly('testpatienter: ');
+            logger.silly(testpatienter);
+
+            logger.silly('andraPatienter: ');
+            logger.silly(andraPatienter);
+
+            return gotoPatient(testdataHelpers.shuffle(andraPatienter)[0]);
+        } else {
+            return gotoPatient(testdataHelpers.shuffle(testpatienter)[0]);
+        }
     });
 
     this.Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {

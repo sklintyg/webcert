@@ -35,7 +35,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 
 import com.google.common.collect.ImmutableMap;
 
-import se.inera.intyg.webcert.common.common.Constants;
+import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
