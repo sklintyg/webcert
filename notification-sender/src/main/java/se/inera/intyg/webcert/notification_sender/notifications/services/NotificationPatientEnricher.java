@@ -39,6 +39,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 public class NotificationPatientEnricher {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPatientEnricher.class);
+    private static final String SEKRETESSMARKERING = "Sekretessmarkering";
 
     @Autowired
     private PUService puService;
@@ -59,6 +60,14 @@ public class NotificationPatientEnricher {
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
                 if (!personSvar.getPerson().isSekretessmarkering()) {
                     intyg.setPatient(buildPatientFromPersonSvar(personSvar.getPerson()));
+                } else {
+                    intyg.getPatient().setEfternamn(SEKRETESSMARKERING);
+
+                    intyg.getPatient().setFornamn(null);
+                    intyg.getPatient().setMellannamn(null);
+                    intyg.getPatient().setPostadress(null);
+                    intyg.getPatient().setPostnummer(null);
+                    intyg.getPatient().setPostort(null);
                 }
             } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
                 throw new IllegalStateException("Could not query PU-service for enriching notification with patient data.");

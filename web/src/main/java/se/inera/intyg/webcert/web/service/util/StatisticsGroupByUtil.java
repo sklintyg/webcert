@@ -21,9 +21,9 @@ public class ArendeStatisticsUtil {
     private PUService puService;
 
     /**
-     * Takes a list of object[] where each object[] is one fraga/svar or arende represented as:
+     * Takes a list of object[] where each object[] is one utkast, fraga/svar or arende represented as:
      *
-     * [0] id
+     * [0] id (unique, this is what we want to count per enhetsId)
      * [1] enhetsId
      * [2] personnummer
      *
@@ -31,14 +31,14 @@ public class ArendeStatisticsUtil {
      * map: EnhetsId -> number of id for that unit.
      *
      * @param results
-     *      Each item is an array of: id, enhetsId, personnummer.
+     *            Each item is an array of: id, enhetsId, personnummer.
      * @return
-     *      Map with enhetsId -> count, with personummer being sekretessmarkerade has been removed.
+     *         Map with enhetsId -> count, with personummer being sekretessmarkerade has been removed.
      */
     public Map<String, Long> toSekretessFilteredMap(List<Object[]> results) {
         List<QAItem> tmpList = new ArrayList<>();
         for (Object[] resArr : results) {
-            tmpList.add(new QAItem(resArr[0], (String) resArr[1], (String) resArr[2]));
+            tmpList.add(new QAItem((String) resArr[1], (String) resArr[2]));
         }
         return tmpList.stream()
                 .filter(qaItem -> !isSekretessMarkerad(qaItem.personnummer))
@@ -58,13 +58,10 @@ public class ArendeStatisticsUtil {
     }
 
     private static final class QAItem {
-        public String id;
-        public String enhetsId;
-        public String personnummer;
-        public boolean sekretessmarkering;
+        private String enhetsId;
+        private String personnummer;
 
-        private QAItem(Object id, String enhetsId, String personnummer) {
-            this.id = id instanceof String ? (String) id : Long.toString((long) id);
+        private QAItem(String enhetsId, String personnummer) {
             this.enhetsId = enhetsId;
             this.personnummer = personnummer;
         }
