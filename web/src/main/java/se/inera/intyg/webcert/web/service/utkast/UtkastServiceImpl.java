@@ -40,6 +40,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
@@ -57,9 +58,9 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
@@ -116,7 +117,9 @@ public class UtkastServiceImpl implements UtkastService {
     private AuthoritiesHelper authoritiesHelper;
 
     @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
+    private StatisticsGroupByUtil statisticsGroupByUtil;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -302,17 +305,27 @@ public class UtkastServiceImpl implements UtkastService {
             return resultsMap;
         }
 
+        WebCertUser user = webCertUserService.getUser();
+
         // Get intygstyper from write privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
-                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
-        List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES,
-                intygsTyper);
-        for (Object[] resultArr : countResults) {
-            resultsMap.put((String) resultArr[0], (Long) resultArr[1]);
+        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(user)
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
+
+        // INTYG-4231, om användaren ej får hantera sekretessmarkerad person måste vi filtrera bort sådana poster ur räknarna.
+        if (mayHandleSekretessmarkeradePatienter) {
+            List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES,
+                    intygsTyper);
+            for (Object[] resultArr : countResults) {
+                resultsMap.put((String) resultArr[0], (Long) resultArr[1]);
+            }
+            return resultsMap;
+        } else {
+            List<Object[]> resultArr = utkastRepository.getIntygWithStatusesByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES, intygsTyper);
+            return statisticsGroupByUtil.toSekretessFilteredMap(resultArr);
         }
-
-        return resultsMap;
     }
 
     @Override

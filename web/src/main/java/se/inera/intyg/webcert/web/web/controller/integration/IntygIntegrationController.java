@@ -177,15 +177,17 @@ public class IntygIntegrationController extends BaseIntegrationController {
             isUtkast = true;
         }
 
-        SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
-
-        // INTYG-4086:
-        authoritiesValidator.given(getWebCertUserService().getUser(), utkast.getIntygsTyp())
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                        sekretessStatus == SekretessStatus.TRUE)
-                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
-
+        // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.
+        // If the intyg was authored elsewhere, the check has to be performed after the redirect when the actual intyg
+        // is loaded from Intygstjänsten.
+        if (utkast != null) {
+            SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
+            authoritiesValidator.given(user, utkast.getIntygsTyp())
+                    .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                            sekretessStatus == SekretessStatus.TRUE)
+                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                            "User missing required privilege or cannot handle sekretessmarkerad patient"));
+        }
 
         // If intygstyp can't be established, default to FK7263 to be backwards compatible
         String intygsTyp = typParam;

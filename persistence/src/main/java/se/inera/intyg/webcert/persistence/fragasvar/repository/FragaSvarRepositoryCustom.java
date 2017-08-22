@@ -67,12 +67,15 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
             @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
-     TODO WRITE THIS
+     * Should return a list that contains an array with with id, enhets id and personnummer given the supplied parameters.
+     *
+     * @param enhetsIds
+     *            List of hsa unit id's that should match the counted fraga svar entities.
+     * @return A list that contains an array with fragasvar represented by id, enhets id and personnummer.
      */
     @Query("SELECT fs.internReferens, fs.vardperson.enhetsId, fs.intygsReferens.patientId FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' AND fs.intygsReferens.intygsTyp IN (:intygsTyper)")
     List<Object[]> getUnhandledWithEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
-                                                                 @Param("intygsTyper") Set<String> intygsTyper);
-
+            @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who signed the certificate the FragaSvar is linked to)

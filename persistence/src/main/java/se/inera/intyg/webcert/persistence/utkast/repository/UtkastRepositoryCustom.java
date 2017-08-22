@@ -66,6 +66,14 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
             @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
+     * Should return a list of {@link Utkast} entities in the repository that has an enhetsId matching one of the
+     * supplied list of id's. Is also discards any entity with a {@link UtkastStatus} not in the list.
+     */
+    @Query("SELECT u.intygsId, u.enhetsId, u.patientPersonnummer FROM Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
+    List<Object[]> getIntygWithStatusesByEnhetsId(@Param("enhetsIds") List<String> enhetsIds,
+                                                           @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
+
+    /**
      * Returns all {@link Utkast} entities belonging to a certain patient and belonging to one of several careUnit and
      * having selected statuses.
      *

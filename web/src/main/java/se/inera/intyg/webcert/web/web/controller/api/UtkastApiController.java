@@ -243,8 +243,6 @@ public class UtkastApiController extends AbstractApiController {
             listIntygEntries = listIntygEntries.stream().filter(lie -> !lie.isSekretessmarkering()).collect(Collectors.toList());
         }
 
-        // TODO Figure out how to filter counts by sekretessmarkering as well.
-        // int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
         int totalCountOfFilteredIntyg = mayHandleSekretessmarkeradePatienter ? listIntygEntries.size()
                 : listIntygEntries.size() - antalSekretessmarkerade;
 

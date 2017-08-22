@@ -59,7 +59,7 @@ import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
-import se.inera.intyg.webcert.web.converter.util.ArendeStatisticsUtil;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -147,7 +147,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private ArendeDraftService arendeDraftService;
 
     @Autowired
-    private ArendeStatisticsUtil arendeStatisticsUtil;
+    private StatisticsGroupByUtil statisticsGroupByUtil;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -580,7 +580,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         } else {
             // Otherwise, we must check each patient vs the PU-service.
             List<Object[]> results = fragaSvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
-            return arendeStatisticsUtil.toSekretessFilteredMap(results);
+            return statisticsGroupByUtil.toSekretessFilteredMap(results);
         }
     }
 

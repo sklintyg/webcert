@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.converter.util;
+package se.inera.intyg.webcert.web.service.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,10 +12,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * Helper class for taking a list of arbitrary "id", "unitId", "personnummer", filter out any personnummer being
+ * sekretessmarkerad and returning the result as a map of unitId -> count(id).
+ *
+ * Used for getting counters of fråga/svar, ärenden and ej signerade utkast correct.
+ *
  * Created by eriklupander on 2017-08-21.
  */
 @Component
-public class ArendeStatisticsUtil {
+public class StatisticsGroupByUtil {
 
     @Autowired
     private PUService puService;

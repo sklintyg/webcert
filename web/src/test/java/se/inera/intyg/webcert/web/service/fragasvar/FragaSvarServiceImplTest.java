@@ -61,7 +61,7 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.converter.util.ArendeStatisticsUtil;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
@@ -142,7 +142,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     @Mock
     private ArendeDraftService arendeDraftService;
     @Mock
-    private ArendeStatisticsUtil arendeStatisticsUtil;
+    private StatisticsGroupByUtil statisticsGroupByUtil;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
