@@ -77,6 +77,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -87,9 +88,12 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
+import javax.annotation.PostConstruct;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,6 +111,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
+
+    @Value("${sekretessmarkering.prod.date}")
+    private String sekretessmarkeringProdDate;
 
     @Autowired
     private ListCertificatesForCareResponderInterface listCertificateService;
@@ -161,6 +168,13 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    private ChronoLocalDateTime sekretessmarkeringStartDatum;
+
+    @PostConstruct
+    public void init() {
+        sekretessmarkeringStartDatum = LocalDateTime.parse(sekretessmarkeringProdDate, DateTimeFormatter.ISO_DATE_TIME);
+    }
 
     @Override
     public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling) {
@@ -298,11 +312,11 @@ public class IntygServiceImpl implements IntygService {
     private void verifyPuServiceAvailable(IntygContentHolder intyg) {
         // INTYG-4086: All PDF-printing must pass through here. GE-002 explicitly states that if the PU-service is
         // unavailable, we must not let anyone print!
-        PersonSvar personFromPUService = patientDetailsResolver.getPersonFromPUService(intyg.getUtlatande().getGrundData().getPatient().getPersonId());
+        PersonSvar personFromPUService = patientDetailsResolver
+                .getPersonFromPUService(intyg.getUtlatande().getGrundData().getPatient().getPersonId());
         if (personFromPUService == null || personFromPUService.getStatus() != PersonSvar.Status.FOUND) {
-
-            // TODO requirements states that the error dialog has different texts depending on intygstyp. This needs to be fixed, of course...
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "PU-service unreachable, PDF printing is not allowed.");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+                    "PU-service unreachable, PDF printing is not allowed.");
         }
     }
 
@@ -372,6 +386,9 @@ public class IntygServiceImpl implements IntygService {
 
         verifyNotReplacedBySignedIntyg(intygsId, "send");
 
+        // WC-US-SM-001 - vi får ej skicka FK-intyg för sekretessmarkerad patient som innehåller personuppgifter.
+        verifyNoExposureOfSekretessmarkeradPatient(intygsId, typ, intyg);
+
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, webCertUserService.getUser());
 
         monitoringService.logIntygSent(intygsId, recipient);
@@ -384,6 +401,25 @@ public class IntygServiceImpl implements IntygService {
         markUtkastWithSendDateAndRecipient(intygsId, recipient);
 
         return sendIntygToCertificateSender(sendConfig, intyg);
+    }
+
+    // Kontrollera om det signerade intyget i intygstjänsten har namn- eller adressuppgifter. Om så är fallet,
+    // så får vi EJ skicka intyget.
+    private void verifyNoExposureOfSekretessmarkeradPatient(String intygsId, String typ, Utlatande intyg) {
+        if ("fk7263".equals(intyg.getTyp())) {
+            if (patientDetailsResolver.getSekretessStatus(intyg.getGrundData().getPatient().getPersonId()) == SekretessStatus.TRUE) {
+
+                try {
+                    CertificateResponse certificate = modelFacade.getCertificate(intygsId, typ);
+                    if (certificate.getMetaData().getSignDate().isBefore(sekretessmarkeringStartDatum)) {
+                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
+                                "Cannot send certificate for sekretessmarkerad patient having existing name or address.");
+                    }
+                } catch (IntygModuleFacadeException e) {
+                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+                }
+            }
+        }
     }
 
     private void verifyNotReplacedBySignedIntyg(String intygsId, String operation) {
@@ -600,7 +636,7 @@ public class IntygServiceImpl implements IntygService {
             // If a Patient were resolved, update the model. If the patient were null, PU-service is probably down and
             // no integration parameters were available.
             if (patient != null) {
-                internalIntygJsonModel= moduleApi.updateBeforeSave(internalIntygJsonModel, patient);
+                internalIntygJsonModel = moduleApi.updateBeforeSave(internalIntygJsonModel, patient);
             }
 
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
@@ -649,11 +685,14 @@ public class IntygServiceImpl implements IntygService {
         return (utkast != null) ? buildIntygContentHolderForUtkast(utkast, false) : getIntygData(intygId, intygTyp, false);
     }
 
+    // NOTE! INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally. The question is, should we
+    // replace the patient on the existing model with a freshly fetched one here or not? In case we're storing patient
+    // info entered manually for non FK-types here, we may end up overwriting a manually stored name etc...
     private IntygContentHolder buildIntygContentHolderForUtkast(Utkast utkast, boolean relations) {
 
         // try {
         // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
-        Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
+        // Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
         // String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
         // patient);
 
