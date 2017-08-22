@@ -44,7 +44,7 @@ import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;

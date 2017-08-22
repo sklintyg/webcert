@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Message;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.cache.metrics.CacheStatisticsService;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.cache.metrics.model.CacheStatistics;
 import se.inera.intyg.webcert.web.service.monitoring.HealthCheckService;
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;

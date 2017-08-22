@@ -30,18 +30,6 @@
 
   <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.notifications"/>
 
-  <!--
-  <cache:annotation-driven/>
-  <bean class="se.inera.intyg.infra.cache.core.BasicCacheConfiguration">
-    <property name="bindport" value="47603"/>
-    <property name="igniteIpAddresses" value="127.0.0.1:47603"/>
-    <property name="cacheExpirySeconds" value="5"/>
-  </bean>
-  <bean class="se.inera.intyg.infra.integration.pu.stub.PUBootstrapBean"/>
-  <bean class="se.inera.intyg.infra.integration.pu.stub.ResidentStore"/>
-
-  <bean class="se.inera.intyg.infra.integration.pu.services.PUServiceImpl"/>
-  -->
   <bean id="mockedPuService" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="se.inera.intyg.infra.integration.pu.services.PUService" />
   </bean>

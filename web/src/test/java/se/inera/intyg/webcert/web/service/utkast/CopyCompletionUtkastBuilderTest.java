@@ -41,7 +41,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHold
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;

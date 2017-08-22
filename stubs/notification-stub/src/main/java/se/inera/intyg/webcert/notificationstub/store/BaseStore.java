@@ -5,7 +5,7 @@ import net.openhft.chronicle.map.ChronicleMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.Collection;

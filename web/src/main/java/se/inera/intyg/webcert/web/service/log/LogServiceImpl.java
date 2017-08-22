@@ -29,7 +29,7 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.util.integration.integration.json.CustomObjectMapper;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
