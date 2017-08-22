@@ -22,23 +22,19 @@ angular.module('webcert').filter('TidigareIntygFilter',
         'use strict';
 
         function isErsatt(intyg) {
-            if (typeof intyg.relations !== 'undefined' && typeof intyg.relations.children !== 'undefined') {
-                for(var a = 0; a < intyg.relations.children.length; a++) {
-                    if (intyg.relations.children[a].relationKod === 'ERSATT') {
-                        return true;
-                    }
-                }
+            if (typeof intyg.relations !== 'undefined' &&
+                typeof intyg.relations.latestChildRelations !== 'undefined' &&
+                typeof intyg.relations.latestChildRelations.replacedByIntyg !== 'undefined') {
+                return true;
             }
             return false;
         }
 
         function isKompletterad(intyg) {
-            if (typeof intyg.relations !== 'undefined' && typeof intyg.relations.children !== 'undefined') {
-                for(var a = 0; a < intyg.relations.children.length; a++) {
-                    if (intyg.relations.children[a].relationKod === 'KOMPLT') {
-                        return true;
-                    }
-                }
+            if (typeof intyg.relations !== 'undefined' &&
+                typeof intyg.relations.latestChildRelations !== 'undefined' &&
+                typeof intyg.relations.latestChildRelations.complementedByIntyg !== 'undefined') {
+                return true;
             }
             return false;
         }

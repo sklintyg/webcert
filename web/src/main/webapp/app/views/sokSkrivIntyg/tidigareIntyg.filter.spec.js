@@ -6,18 +6,18 @@ describe('Filter: TidigareIntygFilter', function() {
     var ersatt = {
         status: 'SIGNED',
         relations: {
-            children: [ {
-                relationKod: 'ERSATT'
-            } ]
+            latestChildRelations: {
+                replacedByIntyg: 'intyg'
+            }
         }
     };
 
     var kompletterat = {
         status: 'SIGNED',
         relations: {
-            children: [ {
-                relationKod: 'KOMPLT'
-            } ]
+            latestChildRelations: {
+                complementedByIntyg: 'intyg'
+            }
         }
     };
 
