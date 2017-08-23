@@ -130,7 +130,8 @@ public class IntygModuleApiController extends AbstractApiController {
                     .orThrow();
 
             // INTYG-4231: Verifiera enhet / mottagning. Får ej visa utanför vald enhet (och dess underenheter)
-            if (!getWebCertUserService().userIsLoggedInOnEnhetOrUnderenhet(intygAsExternal.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid())) {
+            if (!getWebCertUserService().userIsLoggedInOnEnhetOrUnderenhet(
+                    intygAsExternal.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid())) {
                 LOG.debug("User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
                         "User not logged in on same unit as intyg unit for sekretessmarkerad patient.");

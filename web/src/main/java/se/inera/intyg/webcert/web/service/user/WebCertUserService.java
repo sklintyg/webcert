@@ -18,9 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
@@ -84,7 +83,7 @@ public interface WebCertUserService {
     void updateUserRole(String roleName);
 
     /**
-     * Since the WebCertUser#getValdVardenhet may either return a {@link Vardenhet} or a
+     * Since the WebCertUser#getValdVardenhet may either return a {@link se.inera.intyg.infra.integration.hsa.model.Vardenhet} or a
      * {@link se.inera.intyg.infra.integration.hsa.model.Mottagning}, this method can be used to determine if:
      *
      * <ul>
