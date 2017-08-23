@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -38,6 +39,10 @@ public interface WebCertUserService {
      */
     boolean hasAuthenticationContext();
 
+    /**
+     * Returns the user principal from the session.
+     * @return
+     */
     WebCertUser getUser();
 
     /**
@@ -77,4 +82,21 @@ public interface WebCertUserService {
     void updateOrigin(String origin);
 
     void updateUserRole(String roleName);
+
+    /**
+     * Since the WebCertUser#getValdVardenhet may either return a {@link Vardenhet} or a
+     * {@link se.inera.intyg.infra.integration.hsa.model.Mottagning}, this method can be used to determine if:
+     *
+     * <ul>
+     *     <li>If the selectedVardenhet is a Vardenhet: The supplied enhetsId is for the Vardenhet or one of its Mottagningar.</li>
+     *     <li>If the selcetedVardenhet is a Mottagning: The supplied enhetsId is the Mottagning,
+     *     its parent Vardenhet or one of the sibling Mottagningar.</li>
+     * </ul>
+     *
+     * @param enhetsId
+     *      HSA-id of a vardenhet or mottagning.
+     * @return
+     *      true if match is found.
+     */
+    boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetsId);
 }
