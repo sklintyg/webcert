@@ -25,18 +25,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.service.Feature;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -144,9 +150,33 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         updateUserRole(authoritiesResolver.getRole(roleName));
     }
 
-    public void updateUserRole(Role role) {
-        getUser().setRoles(AuthoritiesResolverUtil.toMap(role));
-        getUser().setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetsId) {
+        WebCertUser user = getUser();
+
+        SelectableVardenhet valdVardenhet = user.getValdVardenhet();
+        Set<String> allowedEnhetsId = new HashSet<>();
+        if (valdVardenhet instanceof Vardenhet) {
+            Vardenhet vardenhet = (Vardenhet) valdVardenhet;
+            allowedEnhetsId.add(vardenhet.getId());
+            vardenhet.getMottagningar().stream().forEach(m -> allowedEnhetsId.add(m.getId()));
+        } else if (valdVardenhet instanceof Mottagning) {
+            Mottagning mottagning = (Mottagning) valdVardenhet;
+
+            for (Vardgivare vg : user.getVardgivare()) {
+                for (Vardenhet ve : vg.getVardenheter()) {
+                    if (ve.getId().equals(mottagning.getParentHsaId())) {
+                        allowedEnhetsId.add(ve.getId());
+                        ve.getMottagningar().stream().forEach(m -> allowedEnhetsId.add(m.getId()));
+                    }
+                }
+            }
+        }
+
+        return allowedEnhetsId.contains(enhetsId);
     }
 
     // - - - - - Package scope - - - - -
@@ -193,5 +223,10 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             user.getFeatures().add(moduleFeatureStr);
             LOG.debug("Added module feature {} to user", moduleFeatureStr);
         }
+    }
+
+    private void updateUserRole(Role role) {
+        getUser().setRoles(AuthoritiesResolverUtil.toMap(role));
+        getUser().setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
     }
 }

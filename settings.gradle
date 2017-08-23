@@ -1,3 +1,10 @@
+pluginManagement {
+    repositories {
+        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'webcert'
 
 include ':webcert-common'

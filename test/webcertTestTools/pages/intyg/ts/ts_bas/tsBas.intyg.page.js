@@ -61,9 +61,7 @@ var TsBasIntyg = TsBaseIntyg._extend({
         this.progressivOgonsjukdom = element(by.id('syn-progressivOgonsjukdom'));
 
         this.harDiabetes = element(by.id('diabetes-harDiabetes'));
-        this.kost = element(by.id('kost'));
-        this.tabletter = element(by.id('tabletter'));
-        this.insulin = element(by.id('insulin'));
+		this.kostTabletterInsulin = element(by.id('["diabetes.kost","diabetes.tabletter","diabetes.insulin"]'));
         this.diabetesTyp = element(by.id('diabetes-diabetesTyp'));
         this.getBehandlingsTyp = function(index) {
             return element(by.id('diabetes-kost-diabetes-tabletter-diabetes-insulin-' + index));

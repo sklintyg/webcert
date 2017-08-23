@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
@@ -133,11 +134,7 @@ public class UtkastModuleApiController extends AbstractApiController {
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                        resolvedPatient == null || resolvedPatient.isSekretessmarkering())
-                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
+        verifySekretessmarkering(intygsTyp, utkast.getEnhetsId(), resolvedPatient);
 
         // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,
         // create an "empty" Patient with personnummer only.
@@ -174,6 +171,25 @@ public class UtkastModuleApiController extends AbstractApiController {
             return Response.ok(draftHolder).build();
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
+        }
+    }
+
+    private void verifySekretessmarkering(String intygsTyp, String enhetsId, Patient resolvedPatient) {
+        WebCertUser user = getWebCertUserService().getUser();
+
+        authoritiesValidator.given(user, intygsTyp)
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                        resolvedPatient == null || resolvedPatient.isSekretessmarkering())
+                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
+
+        // INTYG-4231: Om patienten är sekretessmarkerad så måste användaren vara inloggad på exakt samma vårdenhet
+        // som utkastet tillhör
+        if (resolvedPatient != null && resolvedPatient.isSekretessmarkering()
+                && !getWebCertUserService().userIsLoggedInOnEnhetOrUnderenhet(enhetsId)) {
+            LOG.debug("User not logged in on same unit as draft unit for sekretessmarkerad patient.");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
+                    "User not logged in on same unit as draft unit for sekretessmarkerad patient.");
         }
     }
 

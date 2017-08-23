@@ -524,7 +524,7 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
-    protected void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {
+    private void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {
         if (!webCertUserService.isAuthorizedForUnit(vardgivarHsaId, enhetsHsaId, false)) {
             LOG.debug("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,

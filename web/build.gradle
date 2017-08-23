@@ -49,9 +49,7 @@ war.dependsOn createVersionPropertyFile
 task unzipBuildTools(type: Copy) {
     into "$buildDir/build-tools/"
     from {
-        def intygJar = project.rootProject.buildscript.configurations.classpath.find {
-            it.name.contains("gradle-intyg")
-        }
+        def intygJar = project.rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") }
         zipTree(intygJar)
     }
 }
