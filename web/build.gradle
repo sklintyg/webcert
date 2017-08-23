@@ -142,8 +142,7 @@ dependencies {
     compile "se.inera.intyg.common:lisjp:${commonVersion}"
     compile "se.inera.intyg.common:luae_na:${commonVersion}"
     compile "se.inera.intyg.common:luae_fs:${commonVersion}"
-
-
+    compile "se.inera.intyg.common:doi:${commonVersion}"
 
     compile "commons-io:commons-io:${commonsIoVersion}"
     compile "org.springframework:spring-web:${springVersion}"
