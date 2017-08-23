@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.common.sos_db.model.internal.DbUtlatande;
+import se.inera.intyg.common.db.model.internal.DbUtlatande;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;

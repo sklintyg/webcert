@@ -169,8 +169,8 @@ dependencies {
     testCompile "com.jayway.restassured:json-schema-validator:${jsonSchemaValidatorVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
 
-    testCompile "se.inera.intyg.common:sos_db:${commonVersion}"
-    testCompile "se.inera.intyg.common:sos_doi:${commonVersion}"
+    testCompile "se.inera.intyg.common:db:${commonVersion}"
+    testCompile "se.inera.intyg.common:doi:${commonVersion}"
 
     testRuntime "com.h2database:h2:${h2Version}"
 
