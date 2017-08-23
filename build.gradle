@@ -1,3 +1,10 @@
+plugins {
+    id "se.inera.intyg.plugin.common" version "1.0.45" apply false
+    id "org.akhikhl.gretty" version "1.4.2" apply false
+    id "net.ltgt.apt" version "0.11" apply false
+    id "com.moowork.node" version "1.1.1" apply false
+}
+
 ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
     infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
@@ -6,15 +13,10 @@ ext {
     funktionstjansterGrpSchemasVersion = "1.0.3"
     insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
     intygClinicalprocessSchemasVersion = "1.0.7-beta3"
-    intygInsuranceprocessSchemasVersion = "1.0.4"
-    intygTransportstyrelsenSchemasVersion = "1.0.4"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
     rivtaClinicalprocessSchemasVersion = "3.1.0-RC1.1"
-    rivtaInsuranceprocessSchemasVersion = "3.1.0.4"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
-    rivtaItintegrationSchemasVersion = "1.0.0.4"
-    rivtaResidentMasterSchemasVersion = "1.1.3.5"
 
     activeMqVersion = "5.13.4"
     assertjVersion = "3.6.2"
@@ -23,26 +25,17 @@ ext {
     awaitilityVersion = "1.4.0"
     camelVersion = "2.16.0"
     dbUnitVersion = "2.4.9"
-    fitnesseVersion = "20150814"
-    gebCoreVersion = "0.10.0"
     geronimoJmsVersion = "1.1.1"
-    groovyVersion = "2.4.7"
     hamcrestVersion = "1.3"
-    httpBuilderVersion = "0.7.1"
     jadiraUserTypeVersion = "5.0.0.GA"
     javaxMailVersion = "1.4"
-    javaxWsRsApiVersion = "2.0.1"
     jaxrsVersion = "1.5.4"
-    jmsApiVersion = "1.1-rev-1"
-    jsonAssertVersion = "1.2.0"
     jsonSchemaValidatorVersion = "2.8.0"
     liquibaseVersion = "3.3.5"
     luceneAnalyzersCommonVersion = "4.10.2"
     openWsVersion = "1.4.2-1"
     opensamlVersion = "2.5.3"
     restassuredVersion = "2.8.0"
-    seleniumServerVersion = "2.52.0"
-    seleniumVersion = "2.52.0"
     servletApiVersion = "2.5"
     springDataVersion = "1.9.0.RELEASE"
     springSecurityVersion = "4.0.3.RELEASE"
@@ -57,33 +50,17 @@ ext {
     h2Version = "1.3.176"
 }
 
-buildscript {
-    repositories {
-        mavenLocal()
-        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-
-    dependencies {
-        classpath 'se.inera.intyg:gradle-intyg-plugin:1.0.+'
-        classpath 'se.inera.intyg:gradle-fitnesse-plugin:1.0.+'
-        classpath 'com.moowork.gradle:gradle-node-plugin:1.1.1'
-        classpath 'org.akhikhl.gretty:gretty:1.4.1'
-        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.10'
-    }
-}
-
 allprojects {
+    apply plugin: 'se.inera.intyg.plugin.common'
+    apply plugin: 'maven'
+    apply plugin: 'idea'
+    apply plugin: 'net.ltgt.apt'
+
     repositories {
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
-
-    apply plugin: 'inera-intyg'
-    apply plugin: 'maven'
-    apply plugin: 'idea'
-    apply plugin: 'net.ltgt.apt'
 
     dependencies {
         compile "com.google.code.findbugs:jsr305:3.0.0"
@@ -107,10 +84,10 @@ allprojects {
     }
 
     [install.repositories.mavenInstaller, uploadArchives.repositories.mavenDeployer]*.pom*.whenConfigured { pom ->
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.common'}.each {
+        pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.common' }.each {
             it.version = findResolvedVersion(project, 'se.inera.intyg.common')
         }
-        pom.dependencies.findAll {dep -> dep.groupId == 'se.inera.intyg.infra'}.each {
+        pom.dependencies.findAll { dep -> dep.groupId == 'se.inera.intyg.infra' }.each {
             it.version = findResolvedVersion(project, 'se.inera.intyg.infra')
         }
     }
