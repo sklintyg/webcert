@@ -155,7 +155,6 @@ module.exports = {
                                     if (err) {
                                         throw (err);
                                     }
-                                    console.log(rows);
                                     resolve(rows.length <= 0);
                                 });
 
@@ -163,7 +162,6 @@ module.exports = {
                     });
             })
             .then(function(filteredElements) {
-                console.log('connection.end()');
                 connection.end();
                 cb(filteredElements[0]);
             });
