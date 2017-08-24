@@ -33,7 +33,7 @@
     <td class="unbreakable">{{getTypeName(intyg.intygType)}}</td>
     <td><span message key="intyg.status.{{intyg.status}}"></span></td>
     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
-    <td class="unbreakable">{{intyg.patientId}} <span ng-if="intyg.sekretessmarkering">(x)</span></td>
+    <td class="unbreakable">{{intyg.patientId}} <span wc-sekretess-avliden sekretessmarkering="intyg.sekretessmarkering"></span></td>
     <td class="table-qa-last">{{intyg.updatedSignedBy}}</td>
   </tr>
 </table>
