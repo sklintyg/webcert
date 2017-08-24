@@ -30,7 +30,7 @@ Scenario: Signera ett ts-intyg
    Så ska det finnas en knapp för att skriva ut intyget
 
 
-
+@waitingForFix
 Scenario: Besvara kompletteringsfråga
    När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    Och Försäkringskassan ställer en "Kontakt" fråga om intyget
