@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata,intyg,logger,pages,Promise,browser,commonTools*/
+/*global testdata,intyg,logger,pages,Promise,browser,commonTools, person*/
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
@@ -57,9 +57,9 @@ module.exports = {
     },
     generateIntygByType: function(typ, id) {
         if (typ === 'Transportstyrelsens läkarintyg') {
-            return testdata.ts.bas.getRandom(id);
+            return testdata.ts.bas.getRandom(id, person);
         } else if (typ === 'Transportstyrelsens läkarintyg, diabetes') {
-            return testdata.ts.diabetes.getRandom(id);
+            return testdata.ts.diabetes.getRandom(id, person);
         } else if (typ === 'Läkarintyg FK 7263') {
             return testdata.fk['7263'].getRandom(id);
         } else if (typ === 'Läkarutlåtande för sjukersättning') {
