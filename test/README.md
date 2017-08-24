@@ -77,4 +77,9 @@ lösenordet för vnc är "*secret*"
  npm link webcert-testtools
 ```
 
+Om npm link strular kan man även köra detta som en en-radare om man vill vara säker på att använda den test-tools du nyss ändrat i..
+```sh
+webcert/test>rm -rf node_modules/webcert-testtools && npm install && grunt
+```
+
 Då ändringar har gjorts i dessa moduler så bör man ändra versionsnummer för paketet innan incheckning
