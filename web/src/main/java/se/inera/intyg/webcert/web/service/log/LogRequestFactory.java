@@ -25,8 +25,10 @@ import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public final class LogRequestFactory {
 
@@ -85,6 +87,24 @@ public final class LogRequestFactory {
         }
 
         return logRequest;
+    }
+
+    public static LogRequest createLogRequestFromUser(WebCertUser user, String patientId) {
+        LogRequest request = new LogRequest();
+
+        request.setPatientId(new Personnummer(patientId));
+        request.setPatientName("");
+
+        request.setIntygCareUnitId(user.getValdVardenhet().getId());
+        request.setIntygCareUnitName(user.getValdVardenhet().getNamn());
+
+        request.setIntygCareGiverId(user.getValdVardgivare().getId());
+        request.setIntygCareGiverName(user.getValdVardgivare().getNamn());
+
+        if (user.getParameters() != null && user.getParameters().isSjf()) {
+            request.setAdditionalInfo(COHERENT_JOURNALING_LOG_POST);
+        }
+        return request;
     }
 
     /**

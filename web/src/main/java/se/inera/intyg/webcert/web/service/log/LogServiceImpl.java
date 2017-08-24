@@ -34,6 +34,7 @@ import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygPredictionMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygPrintMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygReadMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygRevokeMessage;
@@ -63,6 +64,7 @@ public class LogServiceImpl implements LogService {
     private static final String PRINTED_AS_PDF = "Intyg utskrivet";
     private static final String PRINTED_AS_DRAFT = "Utkastet utskrivet";
     private static final String PRINTED_WHEN_REVOKED = "Makulerat intyg utskrivet";
+    private static final String SHOW_PREDICTION = "Prediktion från SRS av risk för lång sjukskrivning";
 
     @Autowired(required = false)
     @Qualifier("jmsPDLLogTemplate")
@@ -184,6 +186,17 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
+    public void logShowPrediction(String patientId) {
+        logShowPrediction(LogRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId),
+                getLogUser(webCertUserService.getUser()));
+    }
+
+    @Override
+    public void logShowPrediction(LogRequest logRequest, LogUser user) {
+        send(logMessagePopulator.populateLogMessage(logRequest, IntygPredictionMessage.build(SHOW_PREDICTION), user));
+    }
+
+    @Override
     public LogUser getLogUser(WebCertUser webCertUser) {
         SelectableVardenhet valdVardenhet = webCertUser.getValdVardenhet();
         SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
@@ -214,6 +227,11 @@ public class LogServiceImpl implements LogService {
         }
     }
 
+    @VisibleForTesting
+    void setLogMessagePopulator(LogMessagePopulator logMessagePopulator) {
+        this.logMessagePopulator = logMessagePopulator;
+    }
+
     private static final class MC implements MessageCreator {
         private final PdlLogMessage logMsg;
 
@@ -232,10 +250,5 @@ public class LogServiceImpl implements LogService {
                         + "' into JSON, message: " + e.getMessage());
             }
         }
-    }
-
-    @VisibleForTesting
-    void setLogMessagePopulator(LogMessagePopulator logMessagePopulator) {
-        this.logMessagePopulator = logMessagePopulator;
     }
 }

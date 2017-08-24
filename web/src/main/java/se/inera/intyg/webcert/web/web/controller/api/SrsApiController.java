@@ -30,9 +30,15 @@ import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -46,6 +52,9 @@ public class SrsApiController extends AbstractApiController {
 
     @Autowired
     private SrsService srsService;
+
+    @Autowired
+    private LogService logService;
 
     @GET
     @Path("/{personnummer}/{diagnosisCode}")
@@ -67,7 +76,9 @@ public class SrsApiController extends AbstractApiController {
         }
         try {
             Utdatafilter filter = buildUtdatafilter(isPrediktion, isAtgard, isFmbInfo, isStatistik);
-            return Response.ok(srsService.getSrs(new Personnummer(personnummer), diagnosisCode, filter)).build();
+            SrsResponse response = srsService.getSrs(new Personnummer(personnummer), diagnosisCode, filter);
+            logService.logShowPrediction(personnummer);
+            return Response.ok(response).build();
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Faulty personnummer").build();
         } catch (SrsException e) {
