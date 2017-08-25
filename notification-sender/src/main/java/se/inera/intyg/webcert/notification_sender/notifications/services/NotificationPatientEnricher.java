@@ -40,6 +40,7 @@ public class NotificationPatientEnricher {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPatientEnricher.class);
     private static final String SEKRETESSMARKERING = "Sekretessmarkering";
+    private static final String EMPTY_STRING = "";
 
     @Autowired
     private PUService puService;
@@ -63,11 +64,11 @@ public class NotificationPatientEnricher {
                 } else {
                     intyg.getPatient().setEfternamn(SEKRETESSMARKERING);
 
-                    intyg.getPatient().setFornamn(null);
-                    intyg.getPatient().setMellannamn(null);
-                    intyg.getPatient().setPostadress(null);
-                    intyg.getPatient().setPostnummer(null);
-                    intyg.getPatient().setPostort(null);
+                    intyg.getPatient().setFornamn(EMPTY_STRING);
+                    intyg.getPatient().setMellannamn(EMPTY_STRING);
+                    intyg.getPatient().setPostadress(EMPTY_STRING);
+                    intyg.getPatient().setPostnummer(EMPTY_STRING);
+                    intyg.getPatient().setPostort(EMPTY_STRING);
                 }
             } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
                 throw new IllegalStateException("Could not query PU-service for enriching notification with patient data.");

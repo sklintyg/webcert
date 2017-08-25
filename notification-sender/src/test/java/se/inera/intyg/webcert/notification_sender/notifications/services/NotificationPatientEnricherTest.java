@@ -14,7 +14,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,12 +75,12 @@ public class NotificationPatientEnricherTest {
 
         Patient p = intyg.getPatient();
         assertEquals("191212121212", p.getPersonId().getExtension());
-        assertNull(p.getFornamn());
-        assertNull(p.getMellannamn());
+        assertEquals("", p.getFornamn());
+        assertEquals("", p.getMellannamn());
         assertEquals("Sekretessmarkering", p.getEfternamn());
-        assertNull(p.getPostadress());
-        assertNull(p.getPostnummer());
-        assertNull(p.getPostort());
+        assertEquals("", p.getPostadress());
+        assertEquals("", p.getPostnummer());
+        assertEquals("", p.getPostort());
     }
 
     private Intyg buildIntyg(String intygsTyp) {

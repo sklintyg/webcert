@@ -61,6 +61,7 @@ module.exports = {
             },
 
             //Ange allmänt
+
             tsdUtkastPage.fillInAllmant(intyg.allmant).then(function() {
                 logger.info('OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
             }, function(reason) {

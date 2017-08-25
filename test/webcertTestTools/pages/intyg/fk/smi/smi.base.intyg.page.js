@@ -38,12 +38,6 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.ovrigt = element(by.id('ovrigt'));
 
-        this.patientAdress = {
-            postadress: element(by.id('patient_postadress')),
-            postnummer: element(by.id('patient_postnummer')),
-            postort: element(by.id('patient_postort'))
-        };
-
         this.baseratPa = {
             minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),

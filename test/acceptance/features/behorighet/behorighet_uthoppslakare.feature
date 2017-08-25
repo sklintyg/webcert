@@ -50,7 +50,7 @@ Scenario: Kan inte filtrera osignerade intyg på läkare
    Och väljer att visa sökfilter
    Så ska sökfiltret Sparat av inte vara tillgängligt
 
-@fråga-från-fk
+@fråga-från-fk @waitingForFix
 Scenario: Ska kunna svara på frågor från Försäkringskassan
    När går in på Sök/skriv intyg
    Och jag går in på en patient

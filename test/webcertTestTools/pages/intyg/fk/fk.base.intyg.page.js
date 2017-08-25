@@ -38,7 +38,6 @@ var FkBaseIntyg = BaseIntyg._extend({
             postOrt: element(by.id('vardperson_postort')),
             enhetsTelefon: element(by.id('vardperson_telefonnummer'))
         };
-
     },
 
     isAt: function isAt() {

@@ -229,7 +229,7 @@ module.exports = {
         efternamn: ''
     }],
     patienterMedSamordningsnummerEjPU: [{
-        id: '200810632398 ',
+        id: '194401831674',
         namn: '',
         efternamn: ''
     }],

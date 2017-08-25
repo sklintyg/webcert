@@ -128,6 +128,7 @@ dependencies {
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
+    compile "se.inera.intyg.infra:srs-integration:${infraVersion}"
     compile "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
     compile "se.inera.intyg.infra:security-siths:${infraVersion}"
     compile "se.inera.intyg.infra:common-cache-metrics:${infraVersion}"
@@ -140,6 +141,7 @@ dependencies {
     compile "se.inera.intyg.common:lisjp:${commonVersion}"
     compile "se.inera.intyg.common:luae_na:${commonVersion}"
     compile "se.inera.intyg.common:luae_fs:${commonVersion}"
+    compile "se.inera.intyg.common:db:${commonVersion}"
     compile "se.inera.intyg.common:doi:${commonVersion}"
 
     compile "commons-io:commons-io:${commonsIoVersion}"
@@ -168,8 +170,7 @@ dependencies {
     testCompile "com.jayway.restassured:json-schema-validator:${jsonSchemaValidatorVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
 
-    testCompile "se.inera.intyg.common:sos_db:${commonVersion}"
-    testCompile "se.inera.intyg.common:sos_doi:${commonVersion}"
+    testCompile "se.inera.intyg.common:doi:${commonVersion}"
 
     testRuntime "com.h2database:h2:${h2Version}"
 

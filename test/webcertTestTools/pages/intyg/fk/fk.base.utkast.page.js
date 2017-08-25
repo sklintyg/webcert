@@ -37,6 +37,11 @@ var FkBaseUtkast = BaseUtkast._extend({
         this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));
         this.markeraKlartForSigneringModalYesButton = element(by.id('buttonYes'));
         this.markeradKlartForSigneringText = element(by.id('draft-marked-ready-text'));
+
+        // Override, we do not handle patientAdress for FK-intyg.
+        this.patientAdress = {
+
+        };
     },
 
     isAt: function isAt() {

@@ -56,7 +56,7 @@ knownIntygstyper:
   - &ki050 luse
   - &ki060 luae_na
   - &ki070 luae_fs
-  - &ki080 DB
+  - &ki080 db
   - &ki090 DOI
 
 # De rättigheter som systemet har
@@ -245,7 +245,7 @@ privileges:
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
-      - *ki080 # DB
+      - *ki080 # db
       - *ki090 # DOI
     requestOrigins:
       - *ro010 # NORMAL
