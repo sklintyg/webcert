@@ -49,7 +49,7 @@ module.exports = function(grunt) {
             ],
             options: {
                 force: false,
-                jshintrc: '../../../gradle-intyg-plugin/src/main/resources/jshint/jshintrc'
+                jshintrc: '.jshintrc'
             }
         },
         jsbeautifier: {
