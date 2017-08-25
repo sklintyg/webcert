@@ -57,11 +57,11 @@ public class SrsApiController extends AbstractApiController {
             @ApiResponse(code = NO_CONTENT, message = "No prediction model found")
     })
     public Response getSrs(@ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
-                           @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
-                           @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("isPrediktion") @DefaultValue("false") boolean isPrediktion,
-                           @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("isAtgard") @DefaultValue("false") boolean isAtgard,
-                           @ApiParam(value = "Utdatafilter: FmbInformation") @QueryParam("isFmbInfo") @DefaultValue("false") boolean isFmbInfo,
-                           @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("isStatistik") @DefaultValue("false") boolean isStatistik) {
+            @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
+            @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("isPrediktion") @DefaultValue("false") boolean isPrediktion,
+            @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("isAtgard") @DefaultValue("false") boolean isAtgard,
+            @ApiParam(value = "Utdatafilter: FmbInformation") @QueryParam("isFmbInfo") @DefaultValue("false") boolean isFmbInfo,
+            @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("isStatistik") @DefaultValue("false") boolean isStatistik) {
         if (personnummer == null || personnummer.isEmpty() || diagnosisCode == null || diagnosisCode.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Bad request").build();
         }
@@ -71,7 +71,8 @@ public class SrsApiController extends AbstractApiController {
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Faulty personnummer").build();
         } catch (SrsException e) {
-            return Response.status(Response.Status.NO_CONTENT).entity("No prediction model found for diagnosis code " + diagnosisCode).build();
+            return Response.status(Response.Status.NO_CONTENT).entity("No prediction model found for diagnosis code " + diagnosisCode)
+                    .build();
         }
     }
 
