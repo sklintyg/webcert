@@ -79,10 +79,46 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
         // Finally, we need to take any relations present in Webcert (but not yet present in Intygstjänsten) into
         // account.
         for (ListIntygEntry lie : fullIntygItemList) {
-
             Relations relations = certificateRelationService.getRelations(lie.getIntygId());
             mergeRelations(lie.getRelations(), relations);
         }
+    }
+
+    /*
+     * In this context, all (draft) statuses are SIGNED.
+     */
+    private void applyRelation(String intygId, Relations certificateRelations, Relation r) {
+        if (r.getTillIntygsId().getExtension().equals(intygId)) {
+
+            Relations.FrontendRelations latest = certificateRelations.getLatestChildRelations();
+            WebcertCertificateRelation wcr = createWebcertCertificateRelation(r, true);
+
+            switch (wcr.getRelationKod()) {
+                case ERSATT:
+                    if (firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByIntyg())) {
+                        latest.setReplacedByIntyg(wcr);
+                    } else if (firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByUtkast())) {
+                        latest.setReplacedByUtkast(wcr);
+                    }
+                    break;
+                case KOMPLT:
+                    if (firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByIntyg())) {
+                        latest.setComplementedByIntyg(wcr);
+                    } else if (firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByUtkast())) {
+                        latest.setComplementedByUtkast(wcr);
+                    }
+                    break;
+                case FRLANG:
+                    break;
+            }
+        } else if (r.getFranIntygsId().getExtension().equals(intygId)) {
+            certificateRelations.setParent(createWebcertCertificateRelation(r, false));
+        }
+    }
+
+    private WebcertCertificateRelation createWebcertCertificateRelation(Relation r, boolean childRelation) {
+        String intygsId = childRelation ? r.getFranIntygsId().getExtension() : r.getTillIntygsId().getExtension();
+        return new WebcertCertificateRelation(intygsId, RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED);
     }
 
     private ListRelationsForCertificateResponseType getRelationsFromIntygstjanst(String intygId) {
@@ -96,37 +132,6 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
         ListRelationsForCertificateType request = new ListRelationsForCertificateType();
         request.getIntygsId().addAll(intygIds);
         return listRelationsForCertificateResponderInterface.listRelationsForCertificate(logicalAddress, request);
-    }
-
-    private void applyRelation(String intygId, Relations certificateRelations, Relation r) {
-        // In this context, all statuses are SIGNED.
-        if (r.getTillIntygsId().getExtension().equals(intygId)) {
-            Relations.FrontendRelations latest = certificateRelations.getLatestChildRelations();
-            WebcertCertificateRelation wcr = new WebcertCertificateRelation(r.getFranIntygsId().getExtension(),
-                    RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED);
-            switch (wcr.getRelationKod()) {
-            case ERSATT:
-                if (wcr.getStatus() == UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByIntyg())) {
-                    latest.setReplacedByIntyg(wcr);
-                } else if (wcr.getStatus() != UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByUtkast())) {
-                    latest.setReplacedByUtkast(wcr);
-                }
-                break;
-            case KOMPLT:
-                if (wcr.getStatus() == UtkastStatus.SIGNED && firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByIntyg())) {
-                    latest.setComplementedByIntyg(wcr);
-                } else if (wcr.getStatus() != UtkastStatus.SIGNED
-                        && firstSkapadLaterDateThanSecond(wcr, latest.getComplementedByUtkast())) {
-                    latest.setComplementedByUtkast(wcr);
-                }
-                break;
-            case FRLANG:
-                break;
-            }
-        } else if (r.getFranIntygsId().getExtension().equals(intygId)) {
-            certificateRelations.setParent(new WebcertCertificateRelation(r.getTillIntygsId().getExtension(),
-                    RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED));
-        }
     }
 
     private boolean firstSkapadLaterDateThanSecond(WebcertCertificateRelation first, WebcertCertificateRelation second) {
