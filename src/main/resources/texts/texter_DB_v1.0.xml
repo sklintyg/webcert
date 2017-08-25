@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <texter typ="DB" giltigFrom="2017-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <text id="KAT_1.RBK">Den avlidnes personuppgifter</text>
+    <text id="DFR_1.1.RBK">Identiteten styrkt genom</text>
     <text id="KAT_2.RBK">Dödsdatum och dödsplats</text>
     <text id="FRG_2.RBK">Dödsdatum</text>
     <text id="FRG_2.HLP">Om dödsdatum är säkert markeras "Säkert" och dödsdatum anges.
@@ -51,4 +52,29 @@ När den döde inte har kunnat identifieras.
     <text id="DFR_7.1.SVA_2">Nej</text>
     <text id="KAT_7.RBK">Läkarens utlåtande om dödsorsaken</text>
     <text id="KAT_7.1.RBK">Sjukdoms- eller skadeförlopp som ledde till den terminala dödsorsaken</text>
+
+    <text id="KV_DETALJER_UNDERSOKNING.JA.RBK">Ja</text>
+    <text id="KV_DETALJER_UNDERSOKNING.UNDERSOKNING_SKA_GORAS.RBK">Nej, rättsmedicinsk undersökning ska göras</text>
+    <text id="KV_DETALJER_UNDERSOKNING.UNDERSOKNING_GJORT_KORT_FORE_DODEN.RBK">Nej, den avlidne undersökt kort före döden</text>
+
+    <text id="KV_DODSPLATS_BOENDE.SJUKHUS.RBK">Sjukhus</text>
+    <text id="KV_DODSPLATS_BOENDE.ORDINART_BOENDE.RBK">Särskilt boende</text>
+    <text id="KV_DODSPLATS_BOENDE.SARSKILT_BOENDE.RBK">Ordinärt boende</text>
+    <text id="KV_DODSPLATS_BOENDE.ANNAN.RBK">Annan/okänd</text>
+
+    <text id="FRM_1.RBK">Bestämmelser om dödsbevis
+
+I begravningslagen (1990:1144), begravningsförordningen (1990:1147) och i Socialstyrelsens föreskrifter och allmänna råd (SOSFS 1996:29) Vissa åtgärder inom hälso- och sjukvården vid dödsfall finns bestämmelser om vilka åtgärder som skall vidtas vid dödsfall.
+
+Dödsbeviset skall utfärdas av den läkare som har konstaterat dödsfallet (15 § begravningsförordningen). Den läkare som utfärdar dödsbeviset får inte vara make, barn, förälder, syskon eller på något annat sätt närstående till den avlidne (4 kap. 2 § begravningslagen).
+
+Dödsbeviset skall sändas till Skatteverket senast första vardagen efter det att dödsfallet konstaterades (4 kap. 3 § begravningslagen och 15 § begravningsförordningen).
+
+Innan dödsbeviset utfärdas, skall en läkare göra en noggrann yttre undersökning av kroppen om det inte står klart att rättsmedicinsk undersökning skall göras. Den yttre undersökningen får också underlåtas om en läkare har undersökt den döde så kort tid före dödsfallet att det föreligger ett tillförlitligt underlag för att utesluta att det kan finnas skäl för en rättsmedicinsk undersökning (15 § begravningsförordningen).
+
+Den yttre undersökningen skall särskilt inriktas på frågan om det kan finnas skäl för polisanmälan. Om det kan ske, skall kroppens läge inspekteras. Vidare skall hela hudytan, ögonens bindehinnor, öron- och näsöppningarna samt munhålan undersökas. Vid undersökningen skall också, om detta inte är känt för läkaren, efterforskas om den avlidne bar något explosivt implantat (SOSFS 1996:29, avsnitt 8). Om implantatet inte är avlägsnat vid tidpunkten för utfärdande av dödsbeviset, skall läkaren underrätta skattekontoret så snart det har avlägsnats (SOSFS 1996:29, avsnitt 7).
+
+Den läkare som har utfärdat dödsbeviset skall även ansvara för att dödsorsaksintyget utfärdas. När den läkare som har utfärdat dödsbeviset begär det, är den läkare som har vårdat den avlidne för den sjukdom eller det tillstånd som ledde till dödsfallet skyldig att utfärda dödsorsaksintyget (16 § begravningsförordningen).
+    </text>
+
 </texter>

@@ -371,6 +371,11 @@ public class ArendeServiceImpl implements ArendeService {
             results = results.stream()
                     .filter(ali -> !isSekretessMarkering(ali))
                     .collect(Collectors.toList());
+        } else {
+            // We must mark all items having patient with sekretessmarkering
+            results.stream()
+                    .filter(ali -> isSekretessMarkering(ali))
+                    .forEach(ali -> ali.setSekretessmarkering(true));
         }
 
         response.setTotalCount(results.size());

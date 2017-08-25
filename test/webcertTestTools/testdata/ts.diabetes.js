@@ -25,20 +25,25 @@ var shuffle = testdataHelper.shuffle;
 var testValues = require('./testvalues.js').ts;
 
 module.exports = {
-    getRandom: function(intygsID) {
+    getRandom: function(intygsID, patient) {
         var randomKorkortstyper = testValues.getRandomKorkortstyper();
 
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
         }
-
+		
+		//Använd patientens födelseår för att ta fram allmant.year (vilket år ställdes diagnosen diabetes får inte vare tidigare än födelseår)
+		if (!patient) {
+			patient = {id: '1980'};
+		}
+		
         return {
             id: intygsID,
             typ: 'Transportstyrelsens läkarintyg, diabetes',
             korkortstyper: randomKorkortstyper,
             identitetStyrktGenom: testValues.getRandomIdentitetStyrktGenom(),
             allmant: {
-                year: Math.floor((Math.random() * 20) + 1980),
+                year: parseInt(patient.id.substring(0, 4)) + 1,
                 typ: shuffle(testValues.diabetestyp)[0],
                 behandling: testValues.getRandomBehandling(),
                 annanbehandling: 'Hypnos behandling'
