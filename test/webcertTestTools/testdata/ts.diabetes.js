@@ -33,7 +33,7 @@ module.exports = {
         }
 		
 		//Använd patientens födelseår för att ta fram allmant.year (vilket år ställdes diagnosen diabetes får inte vare tidigare än födelseår)
-		if (!patient) {
+		if (!patient || patient === true) {
 			patient = {id: '1980'};
 		}
 		
