@@ -60,7 +60,8 @@ module.exports = function(grunt) {
         'luse':        { base: 'common/fk/luse', angularModule:'luse' },
         'lisjp':       { base: 'common/fk/lisjp', angularModule:'lisjp' },
         'luae_na':     { base: 'common/fk/luae_na', angularModule:'luae_na' },
-        'luae_fs':     { base: 'common/fk/luae_fs', angularModule:'luae_fs' }
+        'luae_fs':     { base: 'common/fk/luae_fs', angularModule:'luae_fs' },
+        'db':          { base: 'common/sos/db', angularModule:'db' }
     };
     Object.keys(modules).forEach(function(moduleName) {
         var module = modules[moduleName];
