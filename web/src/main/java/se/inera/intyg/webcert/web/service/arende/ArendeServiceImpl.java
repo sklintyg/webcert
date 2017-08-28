@@ -310,10 +310,22 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
+        WebCertUser user = webcertUserService.getUser();
+        List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
 
-        List<String> hsaEnhetIds = webcertUserService.getUser().getIdsOfSelectedVardenhet();
+        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId);
+        if (arendeList.size() > 0) {
+            // Behörighetskontroll
+            Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(arendeList.get(0).getPatientPersonId())
+                    .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer when querying for arenden."));
 
-        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId).stream()
+            authoritiesValidator.given(user)
+                    .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                            patientDetailsResolver.isSekretessmarkering(personnummer))
+                    .orThrow();
+
+        }
+        arendeList = arendeList.stream()
                 .filter(a -> hsaEnhetIds.contains(a.getEnhetId()))
                 .collect(Collectors.toList());
 
@@ -470,7 +482,6 @@ public class ArendeServiceImpl implements ArendeService {
             List<Object[]> results = arendeRepository.getUnhandledByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
             return statisticsGroupByUtil.toSekretessFilteredMap(results);
         }
-
 
     }
 
