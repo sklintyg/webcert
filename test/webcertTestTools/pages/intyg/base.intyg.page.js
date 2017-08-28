@@ -39,8 +39,8 @@ var BaseIntyg = JClass._extend({
             dialogRadioAnnatAllvarligtFel: element(by.id('reason-ANNAT_ALLVARLIGT_FEL')),
             dialogRadioAnnatAllvarligtFelClarification: element(by.id('clarification-ANNAT_ALLVARLIGT_FEL')),
 
-            statusRevokeInprogress: element(by.id('certificate-revoked-it-message-text')),
-            statusRevoked: element(by.id('certificate-is-revoked-message-text'))
+            statusRevokeInprogress: element(by.id('certificate-is-revoked-message-text')),
+            statusRevoked: element(by.id('certificate-revoked-it-message-text'))
         };
         this.patientNamnOchPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.skicka = {
