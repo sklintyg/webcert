@@ -1,6 +1,6 @@
 #language: sv
 
-#@notReady
+@notReady
 @SRS
 Egenskap: Webcert visa information från SRS i form av prediktioner på sjukskrivningslängd
 
