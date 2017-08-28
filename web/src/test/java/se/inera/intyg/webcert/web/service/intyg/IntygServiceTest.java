@@ -280,7 +280,6 @@ public class IntygServiceTest {
 
         // ensure that correctcall is made to intygstjanst
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        //verify(puService).getPerson(any(Personnummer.class));
         verify(patientDetailsResolver).isAvliden(any(Personnummer.class));
 
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
