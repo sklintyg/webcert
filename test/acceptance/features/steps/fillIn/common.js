@@ -21,6 +21,7 @@
 
 'use strict';
 var utkastPage;
+var helpers = require('../helpers');
 module.exports = {
     fillInEnhetAdress: function() {
         return utkastPage.angeEnhetAdress(global.user.enhetsAdress)
@@ -31,9 +32,17 @@ module.exports = {
             });
     },
     setPatientAdressIfNotGiven: function() {
-        var isFk7263 = global.intyg.typ.indexOf('7263') >= 0;
+
+        var isFk = false;
+        //IF FK (Fk7263 or SMI)
+        if (global.intyg.typ.indexOf('7263') !== -1) {
+            isFk = true;
+        } else if (helpers.isSMIIntyg(global.intyg.typ)) {
+            isFk = true;
+        }
+
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        if (global.person.adress && global.person.adress.postadress && !isFk7263 && global.user.origin !== 'DJUPINTEGRATION') {
+        if (global.person.adress && global.person.adress.postadress && !isFk && global.user.origin !== 'DJUPINTEGRATION') {
             return utkastPage.angePatientAdress(global.person.adress).then(function() {
                 logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
             }, function(reason) {
@@ -41,7 +50,7 @@ module.exports = {
             });
         } else {
             logger.info('Ingen patientadress ändras');
-            if (!isFk7263 && global.user.origin !== 'DJUPINTEGRATION') {
+            if (!isFk && global.user.origin !== 'DJUPINTEGRATION') {
                 global.person.adress = {};
                 return Promise.all([
                     utkastPage.patientAdress.postAdress.getText().then(function(text) {
