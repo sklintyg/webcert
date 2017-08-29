@@ -68,7 +68,7 @@ var BaseUtkast = JClass._extend({
         };
     },
     get: function(intygType, intygId) {
-        browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId);
+        browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId + '/');
     },
     isAt: function() {
         return this.at.isDisplayed();

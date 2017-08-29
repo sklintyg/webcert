@@ -95,7 +95,7 @@ var BaseIntyg = JClass._extend({
 
     },
     get: function(intygId) {
-        browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
+        browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId + '/');
     },
     getReason: function(reasonBth) {
         for (var key in this.makulera) {
@@ -217,13 +217,12 @@ var BaseIntyg = JClass._extend({
     getOnlyLakareCanKompletteraSign: function(id) {
         return element(by.id('answerDisabledReasonPanel-' + id));
     },
-    getSvaraPaKompletteringButton: function(id) {
-        return element(by.id('answer-kompletteringsatgard-open-' + id));
+    getKompletteraIntygButton: function(id) {
+        return element(by.id('komplettera-intyg-' + id));
     },
-    getSvaraPaKompletteringFortsattPaIntygsutkastButton: function(id) {
-        return element(by.id('answer-kompletteringsatgard-open-utkast-' + id));
-    }
-
+    getKanInteKompletteraButton: function(id) {
+        return element(by.id('kan-inte-komplettera-' + id));
+    },
 });
 
 module.exports = BaseIntyg;

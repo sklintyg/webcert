@@ -75,13 +75,14 @@ describe('arende on fk7263 intyg', function() {
             expect(fragasvar.isDisplayed()).toBeTruthy();
         });
 
-        it('click svara pa komplettering', function() {
-            Fk7263IntygPage.svaraMedNyttIntyg(meddelandeId);
+        it('click kan inte komplettera', function() {
+            Fk7263IntygPage.clickKanInteKomplettera(meddelandeId);
             expect(Fk7263IntygPage.getKompletteringsDialog().modalDialogHeader.isDisplayed()).toBeTruthy();
+            Fk7263IntygPage.get(intygId); //Close modal by reloading utkast.
         });
 
-        it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
-            Fk7263IntygPage.getKompletteringsDialog().svaraMedNyttIntygKnapp.click(); //sendKeys(protractor.Key.SPACE);
+        it('should go to utkast page after komplettera intyg button is clicked', function() {
+            Fk7263IntygPage.clickKompletteraIntyg(meddelandeId);
             expect(Fk7263UtkastPage.isAt()).toBeTruthy();
 
             // Extract ID of new utkast so we can delete it when we're done.
@@ -95,7 +96,7 @@ describe('arende on fk7263 intyg', function() {
     describe('make sure "Fortsätt på intygsutkast" buttons exists', function() {
         it('Click the Fortsatt button in arende view', function() {
             Fk7263IntygPage.get(intygId);
-            Fk7263IntygPage.fortsattPaIntygsutkast(meddelandeId);
+            Fk7263IntygPage.clickFortsattPaUtkast(meddelandeId);
             expect(Fk7263UtkastPage.isAt()).toBeTruthy();
         });
     });
