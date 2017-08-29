@@ -191,5 +191,19 @@ module.exports = {
             method: 'DELETE'
         };
         return restClient.run(options, 'json');
+    },
+    setSekretessmarkering: function(patientId, isSekretessmarkerad) {
+        var options = {
+            url: '/services/pu-api/person/' + patientId + '/sekretessmarkerad?value=' + (isSekretessmarkerad ? 'true' : 'false'),
+            method: 'GET'
+        };
+        return restClient.run(options);
+    },
+    setPuServiceState: function(enabled) {
+        var options = {
+            url: '/services/pu-api/' + (enabled ? 'active' : 'inactive'),
+            method: 'GET'
+        };
+        return restClient.run(options);
     }
 };

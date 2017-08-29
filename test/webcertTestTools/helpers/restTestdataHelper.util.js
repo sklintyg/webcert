@@ -154,6 +154,14 @@ module.exports = {
             logger.debug('response output: ' + response.body.internReferens);
             callback(response.body.internReferens);
         });
+    },
+
+    setSekretessmarkering: function(personId, isSekretessmarkerad) {
+        if (personId.indexOf('-') > -1) {
+            personId = personId.replace('-', '');
+        }
+        restUtil.login();
+        return restUtil.setSekretessmarkering(personId, isSekretessmarkerad);
     }
 
 };

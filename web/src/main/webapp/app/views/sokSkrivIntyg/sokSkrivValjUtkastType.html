@@ -21,7 +21,7 @@
                 <div class="form-group row">
                   <div class="col-md-8">
                     <span id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span>
-                    <span wc-sekretess-avliden printlabel="true" avliden="patientModel.avliden" sekretessmarkering="patientModel.sekretessmarkering"></span><br>
+                    <span wc-sekretess-avliden uuid="patientModel.personnummer" printlabel="true" avliden="patientModel.avliden" sekretessmarkering="patientModel.sekretessmarkering"></span><br>
                     {{patientModel.personnummer | PersonIdFormatter}}
                   </div>
                 </div>
