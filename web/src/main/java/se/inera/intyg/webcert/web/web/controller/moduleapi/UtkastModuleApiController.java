@@ -179,7 +179,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         authoritiesValidator.given(user, intygsTyp)
                 .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                        resolvedPatient == null || resolvedPatient.isSekretessmarkering())
+                        resolvedPatient != null && resolvedPatient.isSekretessmarkering())
                 .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
                         "User missing required privilege or cannot handle sekretessmarkerad patient"));
 
