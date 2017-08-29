@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -25,7 +26,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Utdatafilter;
+import se.inera.intyg.infra.integration.srs.model.SjukskrivningsGrad;
 import se.inera.intyg.infra.integration.srs.model.SrsException;
+import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
+import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
@@ -35,13 +39,16 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
+//CHECKSTYLE:OFF ParameterNumber
 @Path("/srs")
 @Api(value = "srs", description = "REST API för Stöd för rätt sjukskrivning", produces = MediaType.APPLICATION_JSON)
 public class SrsApiController extends AbstractApiController {
@@ -56,8 +63,8 @@ public class SrsApiController extends AbstractApiController {
     @Autowired
     private LogService logService;
 
-    @GET
-    @Path("/{personnummer}/{diagnosisCode}")
+    @POST
+    @Path("/{intygId}/{personnummer}/{diagnosisCode}/{sjukskrivningsgrad}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get SRS data", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -65,18 +72,22 @@ public class SrsApiController extends AbstractApiController {
             @ApiResponse(code = BAD_REQUEST, message = "Bad request"),
             @ApiResponse(code = NO_CONTENT, message = "No prediction model found")
     })
-    public Response getSrs(@ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
+    public Response getSrs(@ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
+            @ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
             @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
-            @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("isPrediktion") @DefaultValue("false") boolean isPrediktion,
-            @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("isAtgard") @DefaultValue("false") boolean isAtgard,
-            @ApiParam(value = "Utdatafilter: FmbInformation") @QueryParam("isFmbInfo") @DefaultValue("false") boolean isFmbInfo,
-            @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("isStatistik") @DefaultValue("false") boolean isStatistik) {
-        if (personnummer == null || personnummer.isEmpty() || diagnosisCode == null || diagnosisCode.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Bad request").build();
+            @ApiParam(value = "Sjukskrivningsgrad", required = true) @PathParam("sjukskrivningsgrad") String sjukskrivningsgrad,
+            @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("isPrediktion") @DefaultValue("false") boolean prediktion,
+            @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("isAtgard") @DefaultValue("false") boolean atgard,
+            @ApiParam(value = "Utdatafilter: FmbInformation") @QueryParam("isFmbInfo") @DefaultValue("false") boolean fmbInfo,
+            @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("isStatistik") @DefaultValue("false") boolean statistik,
+            @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
+        if (Strings.isNullOrEmpty(personnummer) || Strings.isNullOrEmpty(diagnosisCode)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
         try {
-            Utdatafilter filter = buildUtdatafilter(isPrediktion, isAtgard, isFmbInfo, isStatistik);
-            SrsResponse response = srsService.getSrs(new Personnummer(personnummer), diagnosisCode, filter);
+            Utdatafilter filter = buildUtdatafilter(prediktion, atgard, fmbInfo, statistik);
+            SrsResponse response = srsService.getSrs(intygId, new Personnummer(personnummer), diagnosisCode, filter, questions,
+                    SjukskrivningsGrad.valueOf(sjukskrivningsgrad));
             logService.logShowPrediction(personnummer);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException e) {
@@ -87,12 +98,25 @@ public class SrsApiController extends AbstractApiController {
         }
     }
 
-    private Utdatafilter buildUtdatafilter(boolean isPrediktion, boolean isAtgard, boolean isFmbInfo, boolean isStatistik) {
+    @GET
+    @Path("/questions/{diagnosisCode}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get questions for diagnosis code", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    public Response getQuestions(@ApiParam(value = "Diagnosis code") @PathParam("diagnosisCode") String diagnosisCode) {
+        if (Strings.isNullOrEmpty(diagnosisCode)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        List<SrsQuestion> response = srsService.getQuestions(diagnosisCode);
+        return Response.ok(response).build();
+    }
+
+    private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean fmbInfo, boolean statistik) {
         Utdatafilter filter = new Utdatafilter();
-        filter.setPrediktion(isPrediktion);
-        filter.setAtgardsrekommendation(isAtgard);
-        filter.setFmbinformation(isFmbInfo);
-        filter.setStatistik(isStatistik);
+        filter.setPrediktion(prediktion);
+        filter.setAtgardsrekommendation(atgard);
+        filter.setFmbinformation(fmbInfo);
+        filter.setStatistik(statistik);
         return filter;
     }
 }
+//CHECKSTYLE:ON ParameterNumber
