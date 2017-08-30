@@ -78,12 +78,19 @@ describe('arende on luse intyg', function() {
         });
 
         it('click svara pa komplettering', function() {
-            LuseIntygPage.getSvaraPaKompletteringButton(meddelandeId).click();
+            expect(LuseIntygPage.getKompletteraIntygButton(meddelandeId).isPresent()).toBeFalsy();
+            expect(LuseIntygPage.getUthoppKompletteraSvaraButton(meddelandeId).isPresent()).toBeTruthy();
+            LuseIntygPage.getUthoppKompletteraSvaraButton(meddelandeId).click();
             expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
         });
 
         it('svara med nytt intyg should not be displayed', function() {
-            expect(LuseIntygPage.kompletteraMedNyttIntygButton.isPresent()).toBeFalsy();
+            expect(LuseIntygPage.getKompletteringsDialogLamnaOvrigaUpplysningar().isPresent()).toBeFalsy();
+        });
+
+        it('svara med meddelande should be displayed', function() {
+            LuseIntygPage.getKompletteringsDialogSvaraMedMeddelandeButton().click();
+            expect(LuseIntygPage.getAnswerButton(meddelandeId).isDisplayed()).toBeTruthy();
         });
     });
 

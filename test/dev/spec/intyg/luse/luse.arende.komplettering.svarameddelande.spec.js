@@ -26,6 +26,7 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
+var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var intygGenerator = wcTestTools.intygGenerator;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
@@ -85,12 +86,17 @@ describe('arende on luse intyg', function() {
         });
 
         it('click svara pa komplettering', function() {
-            LuseIntygPage.getSvaraPaKompletteringButton(meddelandeId).click();
-            expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+            LuseIntygPage.getKompletteraIntygButton(meddelandeId).click();
+            expect(LuseUtkastPage.isAt()).toBeTruthy();
+            LuseUtkastPage.radera.knapp.click();
+            LuseUtkastPage.radera.bekrafta.click();
+            expect(LuseIntygPage.isAt()).toBeTruthy();
         });
 
         it('click svara med meddelande', function() {
-            LuseIntygPage.kompletteraMedMeddelandeButton.click();
+            LuseIntygPage.getKanInteKompletteraButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+            LuseIntygPage.getKompletteringsDialogSvaraMedMeddelandeButton().click();
             expect(LuseIntygPage.getAnswerButton(meddelandeId).isDisplayed()).toBeTruthy();
         });
 
@@ -101,6 +107,7 @@ describe('arende on luse intyg', function() {
                 expect(arende.isDisplayed()).toBeTruthy();
             });
         });
+
     });
 
 });

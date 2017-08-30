@@ -220,9 +220,22 @@ var BaseIntyg = JClass._extend({
     getKompletteraIntygButton: function(id) {
         return element(by.id('komplettera-intyg-' + id));
     },
+    getUthoppKompletteraSvaraButton: function(id) {
+        return element(by.id('uthopp-svara-med-meddelande-'+id))
+    },
+    getKompletteraIntygFortsattPaIntygsutkastButton: function(id) {
+        return element(by.id('komplettera-open-utkast-' + id));
+    },
     getKanInteKompletteraButton: function(id) {
         return element(by.id('kan-inte-komplettera-' + id));
     },
+    getKompletteringsDialogLamnaOvrigaUpplysningar: function() {
+        return element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button'));
+    },
+    getKompletteringsDialogSvaraMedMeddelandeButton: function() {
+        return element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
+    }
 });
+
 
 module.exports = BaseIntyg;
