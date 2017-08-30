@@ -26,6 +26,7 @@ var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
+var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var UnsignedIntygPage = wcTestTools.pages.unsignedPage;
 var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 
@@ -33,6 +34,7 @@ fdescribe('Testa sekretessmarkering', function() {
 
     var intygsId;
     var utkastId;
+    var arendeId = 'luse-arende-avstmn-hantera';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -43,7 +45,7 @@ fdescribe('Testa sekretessmarkering', function() {
         restUtil.createIntyg(intyg).then(function(response) {
             var intyg = JSON.parse(response.request.body);
             expect(intyg.id).not.toBeNull();
-        }, function(error) {
+        }, function() {
             logger.error('Error calling createIntyg');
         });
 
@@ -102,7 +104,6 @@ fdescribe('Testa sekretessmarkering', function() {
     });
 
 
-
     describe('Avaktivera PU-tjänsten', function() {
 
         it('Avaktivera PU-tjänsten och ladda om intyget', function() {
@@ -158,8 +159,41 @@ fdescribe('Testa sekretessmarkering', function() {
         });
 
         it('Verifiera att utkastet finns i tabellen med sekretessmarkeringsikon', function() {
-            UnsignedIntygPage.get();
+            expect(element(by.id('wc-sekretessmarkering-icon-' + utkastId)).isPresent()).toBe(true);
         });
     });
 
+    describe('Skapa en fråga på det signerade intyget', function() {
+
+        it('Gå till intygssidan', function() {
+            LuseIntygPage.get(intygsId);
+            expect(LuseIntygPage.isAt()).toBeTruthy();
+        });
+
+        it('Skicka intyget', function() {
+            LuseIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
+            browser.wait(LuseIntygPage.skicka.dialogKnapp.isDisplayed())
+                .then(LuseIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
+
+
+            element.all(by.id('#sendBtn')).then(function(items) {
+                expect(items.length).toBe(0);
+            });
+        });
+
+        it('Skapa ärende på intyget', function() {
+            restHelper.createArendeFromTemplate('luse', intygsId, arendeId, 'Hur är det med arbetstiden?',
+                'AVSTMN', 'PENDING_INTERNAL_ACTION');
+        });
+
+        it('Klicka på tabben för Fråga/svar', function() {
+            element(by.css('a[ng-href="/web/dashboard#/unhandled-qa"]')).click();
+            expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('1');
+            expect(element.all(by.css('.table-qa tr td button')).first().getText()).toBe('Visa');
+        });
+
+        it('Verifiera s-markeringsikon bredvid frågan i listan', function() {
+            expect(element(by.css('.patient-alert')).isPresent()).toBe(true);
+        });
+    });
 });

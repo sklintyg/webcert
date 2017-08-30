@@ -33,7 +33,7 @@
     <td class="unbreakable">{{getTypeName(intyg.intygType)}}</td>
     <td><span message key="intyg.status.{{intyg.status}}"></span></td>
     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
-    <td class="unbreakable">{{intyg.patientId}} <span wc-sekretess-avliden sekretessmarkering="intyg.sekretessmarkering" uuid="intyg.patientId"></span></td>
+    <td class="unbreakable">{{intyg.patientId}} <span wc-sekretess-avliden uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering" uuid="intyg.patientId"></span></td>
     <td class="table-qa-last">{{intyg.updatedSignedBy}}</td>
   </tr>
 </table>
