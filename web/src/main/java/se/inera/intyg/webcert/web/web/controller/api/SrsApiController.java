@@ -27,6 +27,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Utdatafilter;
 import se.inera.intyg.infra.integration.srs.model.SjukskrivningsGrad;
+import se.inera.intyg.infra.integration.srs.model.SrsConsentResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsException;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
@@ -36,10 +37,13 @@ import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -66,7 +70,7 @@ public class SrsApiController extends AbstractApiController {
     @POST
     @Path("/{intygId}/{personnummer}/{diagnosisCode}/{sjukskrivningsgrad}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get SRS data", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get SRS data", httpMethod = "POST", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
             @ApiResponse(code = OK, message = "SRS data found", response = SrsResponse.class),
             @ApiResponse(code = BAD_REQUEST, message = "Bad request"),
@@ -108,6 +112,40 @@ public class SrsApiController extends AbstractApiController {
         }
         List<SrsQuestion> response = srsService.getQuestions(diagnosisCode);
         return Response.ok(response).build();
+    }
+
+    @GET
+    @Path("/consent/{personnummer}/{hsaId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get consent for patient and careunit", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    public Response getConsent(
+            @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
+            @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId) {
+        try {
+            Personnummer p = new Personnummer(personnummer);
+            SrsConsentResponse response = srsService.getConsent(hsaId, p);
+            return Response.ok(response).build();
+        } catch (InvalidPersonNummerException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Faulty personnummer").build();
+        }
+    }
+
+    @PUT
+    @Path("/consent/{personnummer}/{hsaId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Set consent for patient and careunit", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
+    public Response setConsent(
+            @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
+            @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId,
+            boolean consent) {
+        try {
+            Personnummer p = new Personnummer(personnummer);
+            ResultCodeEnum result = srsService.setConsent(hsaId, p, consent);
+            return Response.ok(result).build();
+        } catch (InvalidPersonNummerException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Faulty personnummer").build();
+        }
     }
 
     private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean fmbInfo, boolean statistik) {
