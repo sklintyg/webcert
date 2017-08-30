@@ -8,6 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
@@ -33,13 +34,13 @@ public class NotificationPatientEnricherTest {
     private NotificationPatientEnricher testee;
 
     @Test
-    public void testFk7263IsNotEnriched() {
+    public void testFk7263IsNotEnriched() throws TemporaryException {
         testee.enrichWithPatient(buildIntyg("fk7263"));
         verifyZeroInteractions(puService);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testExceptionIsThrownWhenPuInvocationFails() {
+    @Test(expected = TemporaryException.class)
+    public void testExceptionIsThrownWhenPuInvocationFails() throws TemporaryException {
         when(puService.getPerson(any(Personnummer.class)))
                 .thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(false), PersonSvar.Status.ERROR));
         try {
@@ -51,7 +52,7 @@ public class NotificationPatientEnricherTest {
     }
 
     @Test
-    public void testLuaeFsIsEnriched() {
+    public void testLuaeFsIsEnriched() throws TemporaryException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
         Intyg intyg = buildIntyg("luae_fs");
         testee.enrichWithPatient(intyg);
@@ -67,7 +68,7 @@ public class NotificationPatientEnricherTest {
     }
 
     @Test
-    public void testSekretessmarkeradPatientIsNotUpdated() {
+    public void testSekretessmarkeradPatientIsNotUpdated() throws TemporaryException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
         Intyg intyg = buildIntyg("luae_fs");
         testee.enrichWithPatient(intyg);

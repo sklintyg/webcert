@@ -18,10 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
-
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.PredicateBuilder;
@@ -31,7 +27,6 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
@@ -40,6 +35,10 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
@@ -105,6 +104,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         // 'receiveNotificationRequestEndpoint'
         // should have normal resend semantics etc. Reads from the notificationQueue.
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
+                .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
                 .unmarshal("notificationMessageDataFormat")

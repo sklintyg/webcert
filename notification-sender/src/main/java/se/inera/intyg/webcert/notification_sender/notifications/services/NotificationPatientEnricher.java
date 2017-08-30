@@ -30,6 +30,7 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
@@ -45,7 +46,7 @@ public class NotificationPatientEnricher {
     @Autowired
     private PUService puService;
 
-    public void enrichWithPatient(Intyg intyg) {
+    public void enrichWithPatient(Intyg intyg) throws TemporaryException {
         // INTYG-4190, hämta patientens uppgifter från PU-tjänsten och klistra in i utlåtandet.
         String intygsTyp = intyg.getTyp().getCode();
         switch (intygsTyp.toLowerCase()) {
@@ -71,7 +72,8 @@ public class NotificationPatientEnricher {
                     intyg.getPatient().setPostort(EMPTY_STRING);
                 }
             } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
-                throw new IllegalStateException("Could not query PU-service for enriching notification with patient data.");
+                throw new TemporaryException(
+                        new IllegalStateException("Could not query PU-service for enriching notification with patient data."));
             } else {
                 LOG.warn("PU-service returned NOT_FOUND for personnummer: {}, not enriching notification.",
                         personnummer.getPnrHash());
@@ -91,14 +93,25 @@ public class NotificationPatientEnricher {
                         : Constants.PERSON_ID_OID);
         personId.setExtension(person.getPersonnummer().getPersonnummerWithoutDash());
         patient.setPersonId(personId);
-        patient.setFornamn(person.getFornamn());
-        patient.setMellannamn(person.getMellannamn());
-        patient.setEfternamn(person.getEfternamn());
+        patient.setFornamn(nullSafe(person.getFornamn()));
+        if (person.getMellannamn() != null) {
+            patient.setMellannamn(person.getMellannamn());
+        }
 
-        patient.setPostadress(person.getPostadress());
-        patient.setPostnummer(person.getPostnummer());
-        patient.setPostort(person.getPostort());
+        patient.setEfternamn(nullSafe(person.getEfternamn()));
+
+        patient.setPostadress(nullSafe(person.getPostadress()));
+        patient.setPostnummer(nullSafe(person.getPostnummer()));
+        patient.setPostort(nullSafe(person.getPostort()));
         return patient;
+    }
+
+    private String nullSafe(String str) {
+        if (str == null) {
+            return EMPTY_STRING;
+        } else {
+            return str;
+        }
     }
 
     @VisibleForTesting

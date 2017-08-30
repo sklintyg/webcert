@@ -32,6 +32,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
@@ -54,7 +55,7 @@ public class NotificationTransformer {
         this.moduleRegistry = moduleRegistry;
     }
 
-    public void process(Message message) throws ModuleException, IOException, ModuleNotFoundException {
+    public void process(Message message) throws ModuleException, IOException, ModuleNotFoundException, TemporaryException {
         LOG.debug("Receiving message: {}", message.getMessageId());
 
         NotificationMessage notificationMessage = message.getBody(NotificationMessage.class);

@@ -211,9 +211,9 @@ public class RouteIT {
                 SchemaVersion.VERSION_3);
 
         // 3 messages
-        NotificationMessage fk1 = createNotificationMessage("intyg2", HandelsekodEnum.SKAPAT);
-        NotificationMessage fk2 = createNotificationMessage("intyg2", HandelsekodEnum.ANDRAT);
-        NotificationMessage fk3 = createNotificationMessage("intyg2", HandelsekodEnum.SIGNAT);
+        NotificationMessage fk1 = createNotificationMessage("intyg2", "fk7263", HandelsekodEnum.SKAPAT);
+        NotificationMessage fk2 = createNotificationMessage("intyg2", "fk7263", HandelsekodEnum.ANDRAT);
+        NotificationMessage fk3 = createNotificationMessage("intyg2", "fk7263", HandelsekodEnum.SIGNAT);
 
         // 2 messages
         NotificationMessage luaefs4 = createNotificationMessage("intyg3", LocalDateTime.now(), HandelsekodEnum.MAKULE, "luae_fs",
@@ -239,9 +239,9 @@ public class RouteIT {
 
     @Test
     public void ensureStubReceivedAllMessages() throws Exception {
-        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", HandelsekodEnum.SKAPAT);
-        NotificationMessage notificationMessage2 = createNotificationMessage("intyg2", HandelsekodEnum.ANDRAT);
-        NotificationMessage notificationMessage3 = createNotificationMessage("intyg3", HandelsekodEnum.SIGNAT);
+        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", "fk7263", HandelsekodEnum.SKAPAT);
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg2", "fk7263", HandelsekodEnum.ANDRAT);
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg3", "fk7263", HandelsekodEnum.SIGNAT);
 
         sendMessage(notificationMessage1);
         sendMessage(notificationMessage2);
@@ -257,8 +257,8 @@ public class RouteIT {
     public void ensureMessagesAreResentAndDoNotBlockEachOther() throws Exception {
         final String intygsId1 = FALLERAT_MEDDELANDE + "2";
         final String intygsId2 = "korrekt-meddelande-1";
-        NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, HandelsekodEnum.SKAPAT);
-        NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, HandelsekodEnum.ANDRAT);
+        NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, "fk7263", HandelsekodEnum.SKAPAT);
+        NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, "fk7263", HandelsekodEnum.ANDRAT);
 
         sendMessage(notificationMessage1);
         sendMessage(notificationMessage2);
@@ -276,8 +276,8 @@ public class RouteIT {
         });
     }
 
-    private NotificationMessage createNotificationMessage(String intygsId1, HandelsekodEnum handelseType) {
-        return createNotificationMessage(intygsId1, LocalDateTime.now(), handelseType, "fk7263", SchemaVersion.VERSION_1);
+    private NotificationMessage createNotificationMessage(String intygsId1, String intygsTyp, HandelsekodEnum handelseType) {
+        return createNotificationMessage(intygsId1, LocalDateTime.now(), handelseType, intygsTyp, SchemaVersion.VERSION_1);
     }
 
     private NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelsekodEnum handelseType,
