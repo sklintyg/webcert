@@ -30,7 +30,7 @@ var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var UnsignedIntygPage = wcTestTools.pages.unsignedPage;
 var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 
-fdescribe('Testa sekretessmarkering', function() {
+describe('Testa sekretessmarkering', function() {
 
     var intygsId;
     var utkastId;
