@@ -18,22 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +61,6 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
@@ -90,6 +73,7 @@ import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
@@ -101,12 +85,30 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -1141,7 +1143,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     }
 
     @Test
-    public void testGetNbrOfUnhandledFragaSvarForCareUnits() {
+    public void testGetNbrOfUnhandledFragaSvarForCareUnitsUserMayHandleSekretessmarkerade() {
 
         List<Object[]> queryResult = new ArrayList<>();
         queryResult.add(new Object[] { "HSA1", 2L });
@@ -1160,6 +1162,31 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
         assertNotNull(res);
         assertEquals(2, res.size());
+    }
+
+    @Test
+    public void testGetNbrOfUnhandledFragaSvarForCareUnitsUserMayNotHandleSekretessmarkerade() {
+
+        List<Object[]> queryResult = new ArrayList<>();
+        queryResult.add(new Object[] { "HSA1", 2L });
+        queryResult.add(new Object[] { "HSA2", 4L });
+
+        when(fragasvarRepositoryMock.getUnhandledWithEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
+                Mockito.anySetOf(String.class)))
+                .thenReturn(queryResult);
+        when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
+        Map<String, Long> map = new HashMap<>();
+        map.put("hsa-123", 1L);
+        when(statisticsGroupByUtil.toSekretessFilteredMap(anyList())).thenReturn(map);
+
+        Map<String, Long> res = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList("HSA1", "HSA2"),
+                Stream.of("fk7263").collect(Collectors.toSet()));
+
+        verify(fragasvarRepositoryMock, times(0))
+                .countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class), Mockito.anySetOf(String.class));
+
+        assertNotNull(res);
+        assertEquals(1, res.size());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -1253,6 +1280,10 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
+        return buildUserOfRole(role);
+    }
+
+    private WebCertUser buildUserOfRole(Role role) {
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
