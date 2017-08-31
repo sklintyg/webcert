@@ -26,7 +26,7 @@ var restUtil = wcTestTools.restUtil;
 var WelcomePage = wcTestTools.pages.welcome;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-xdescribe('Testa sekretessmarkering för vårdadmin', function() {
+describe('Testa sekretessmarkering för vårdadmin', function() {
 
     var utkastId;
 

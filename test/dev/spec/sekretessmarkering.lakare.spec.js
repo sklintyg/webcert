@@ -28,7 +28,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var UnsignedIntygPage = wcTestTools.pages.unsignedPage;
 
-xdescribe('Testa sekretessmarkering', function() {
+describe('Testa sekretessmarkering', function() {
 
     var intygsId;
     var utkastId;
@@ -137,7 +137,12 @@ xdescribe('Testa sekretessmarkering', function() {
             SokSkrivIntygPage.get();
             specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
             browser.getCurrentUrl().then(function(url) {
-                utkastId = url.split('/').pop();
+                if (url.endsWith('/')) {
+                    var parts = url.split('/');
+                    utkastId = parts[parts.length - 2];
+                } else {
+                    utkastId = url.split('/').pop();
+                }
             });
         });
 
