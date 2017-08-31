@@ -170,8 +170,6 @@ dependencies {
     testCompile "com.jayway.restassured:json-schema-validator:${jsonSchemaValidatorVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
 
-    testCompile "se.inera.intyg.common:doi:${commonVersion}"
-
     testRuntime "com.h2database:h2:${h2Version}"
 
     apt "com.google.auto.value:auto-value:${autovalueVersion}"
