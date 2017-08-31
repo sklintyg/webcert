@@ -25,9 +25,9 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Utdatafilter;
 import se.inera.intyg.infra.integration.srs.model.SjukskrivningsGrad;
-import se.inera.intyg.infra.integration.srs.model.SrsConsentResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsException;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
@@ -95,10 +95,9 @@ public class SrsApiController extends AbstractApiController {
             logService.logShowPrediction(personnummer);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Faulty personnummer").build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (SrsException e) {
-            return Response.status(Response.Status.NO_CONTENT).entity("No prediction model found for diagnosis code " + diagnosisCode)
-                    .build();
+            return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
 
@@ -123,10 +122,10 @@ public class SrsApiController extends AbstractApiController {
             @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId) {
         try {
             Personnummer p = new Personnummer(personnummer);
-            SrsConsentResponse response = srsService.getConsent(hsaId, p);
+            Samtyckesstatus response = srsService.getConsent(hsaId, p);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Faulty personnummer").build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
 
@@ -144,7 +143,7 @@ public class SrsApiController extends AbstractApiController {
             ResultCodeEnum result = srsService.setConsent(hsaId, p, consent);
             return Response.ok(result).build();
         } catch (InvalidPersonNummerException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Faulty personnummer").build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
 
