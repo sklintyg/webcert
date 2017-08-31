@@ -142,8 +142,7 @@ dependencies {
     compile "se.inera.intyg.common:luae_na:${commonVersion}"
     compile "se.inera.intyg.common:luae_fs:${commonVersion}"
     compile "se.inera.intyg.common:db:${commonVersion}"
-
-
+    compile "se.inera.intyg.common:doi:${commonVersion}"
 
     compile "commons-io:commons-io:${commonsIoVersion}"
     compile "org.springframework:spring-web:${springVersion}"
@@ -170,8 +169,6 @@ dependencies {
     testCompile "com.jayway.restassured:rest-assured:${restassuredVersion}"
     testCompile "com.jayway.restassured:json-schema-validator:${jsonSchemaValidatorVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
-
-    testCompile "se.inera.intyg.common:doi:${commonVersion}"
 
     testRuntime "com.h2database:h2:${h2Version}"
 
