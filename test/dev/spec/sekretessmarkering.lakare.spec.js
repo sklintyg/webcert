@@ -26,9 +26,7 @@ var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
-var SokSkrivValjIntyg = wcTestTools.pages.sokSkrivIntyg.visaIntyg;
 var UnsignedIntygPage = wcTestTools.pages.unsignedPage;
-var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 
 describe('Testa sekretessmarkering', function() {
 
