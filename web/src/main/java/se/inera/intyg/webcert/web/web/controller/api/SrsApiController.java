@@ -81,10 +81,10 @@ public class SrsApiController extends AbstractApiController {
             @ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
             @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
             @ApiParam(value = "Sjukskrivningsgrad", required = true) @PathParam("sjukskrivningsgrad") String sjukskrivningsgrad,
-            @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("isPrediktion") @DefaultValue("false") boolean prediktion,
-            @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("isAtgard") @DefaultValue("false") boolean atgard,
-            @ApiParam(value = "Utdatafilter: FmbInformation") @QueryParam("isFmbInfo") @DefaultValue("false") boolean fmbInfo,
-            @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("isStatistik") @DefaultValue("false") boolean statistik,
+            @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("prediktion") @DefaultValue("false") boolean prediktion,
+            @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("atgard") @DefaultValue("false") boolean atgard,
+            @ApiParam(value = "Utdatafilter: FmbInformation") @QueryParam("fmbInfo") @DefaultValue("false") boolean fmbInfo,
+            @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("statistik") @DefaultValue("false") boolean statistik,
             @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
         authoritiesValidator.given(getWebCertUserService().getUser())
                 .features(WebcertFeature.SRS)
