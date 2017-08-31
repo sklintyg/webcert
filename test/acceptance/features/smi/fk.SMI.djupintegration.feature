@@ -14,20 +14,6 @@ Scenario: Informera om patienten har bytt namn
     Och jag går in på intygsutkastet via djupintegrationslänk med annat namn
     Så ska ett info-meddelande visa "Observera att patientens namn har ändrats sedan det här intyget utfärdades."
 
-@adressbyte @nyttIntyg @fornya
-Scenario: Informera om patienten har bytt adress och använd address på nya intyg
-    När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
-	Och jag går in på intygsutkastet via djupintegrationslänk
-    Och jag fyller i alla nödvändiga fält för intyget
-    Och jag signerar intyget
-    Och jag går in på intygsutkastet via djupintegrationslänk med annan adress
-    Så ska ett info-meddelande visa "Observera att patientens adress har ändrats sedan det här intyget utfärdades."
-
-    När jag förnyar intyget
-	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
-    Och jag signerar intyget
-    Så ska intyget visa den nya addressen
-
 @nytt-personnummer
 Scenario: Patienten har fått ett nytt personnummer
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg med samordningsnummer eller personnummer
@@ -56,7 +42,7 @@ Scenario: Patienten har fått ett reservnummer
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
-@parametrar @intygsdelning-vårdenhet
+@parametrar @intygsdelning-vårdenhet @notReady @Kristina(step: Så ska jag varnas om att "Patienten har avlidit")
 Scenario: Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenheter
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk

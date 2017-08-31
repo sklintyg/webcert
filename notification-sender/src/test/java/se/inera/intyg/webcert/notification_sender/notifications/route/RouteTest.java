@@ -483,6 +483,7 @@ public class RouteTest {
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
+
     private String createNotificationMessage(SchemaVersion version) {
         return createNotificationMessage(version, "fk7263");
     }
@@ -505,20 +506,4 @@ public class RouteTest {
         }
         return sb.toString();
     }
-
-//    private Intyg createIntyg() {
-//        Intyg intyg = new Intyg();
-//        HosPersonal hosPersonal = new HosPersonal();
-//        Enhet enhet = new Enhet();
-//        enhet.setVardgivare(new Vardgivare());
-//        enhet.setArbetsplatskod(new ArbetsplatsKod());
-//        hosPersonal.setEnhet(enhet);
-//        intyg.setSkapadAv(hosPersonal);
-//        // DatePeriodType and PartialDateType must be allowed
-//        intyg.getSvar().add(InternalConverterUtil.aSvar("")
-//                .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
-//                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999))).build());
-//        return intyg;
-//    }
-
 }

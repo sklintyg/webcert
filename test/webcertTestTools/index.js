@@ -17,6 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var p = require('./package.json');
+console.log('Using webcert-testtools version', p.version);
+
 'use strict';
 var environment = require('./environment.js');
 var testdata = require('./testdata');

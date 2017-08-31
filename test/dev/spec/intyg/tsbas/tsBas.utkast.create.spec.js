@@ -47,7 +47,7 @@ describe('Create and Sign ts-bas utkast', function() {
         browser.getCurrentUrl().then(function(url) {
             utkastId = url.split('/').pop();
         });
-        data = wcTestTools.testdata.ts.bas.getRandom(utkastId, true);
+        data = wcTestTools.testdata.ts.bas.getRandom(utkastId);
     });
 
     describe('Fyll i intyget', function() {

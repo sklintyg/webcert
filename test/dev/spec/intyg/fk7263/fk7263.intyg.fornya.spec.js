@@ -78,7 +78,6 @@ describe('Generate fk intyg', function() {
                 utkastIds.push(url.split('/').pop());
             });
 
-            browser.ignoreSynchronization = true;
             FkUtkastPage.angeIntygetBaserasPa({
                 minUndersokning: {
                     datum:'2015-01-01'
@@ -92,21 +91,10 @@ describe('Generate fk intyg', function() {
         });
 
         it('should set capacity for work based on previous intyg last effective date', function () {
-            FkUtkastPage.nedsattMed25CheckboxClick()
-                .then(function () {
-                    expect(FkUtkastPage.nedsatt.med25.alert.isPresent()).toBe(true);
-                    return protractor.promise.all([
-                        FkUtkastPage.nedsatt.med25.alert.evaluate('lastEffectiveDate').then(),
-                        FkUtkastPage.nedsatt.med25.from.getAttribute('value').then()
-                    ]);
-                })
-                .then(function (dateStrings) {
-                    var lastEffectiveDate = new Date(dateStrings[0]);
-                    var med25FromDate = new Date(dateStrings[1]);
-                    expect(lastEffectiveDate.getTime() + 1000 * 60 * 60 * 24)
-                        .toEqual(med25FromDate.getTime());
-                });
-            browser.ignoreSynchronization = false;
+            expect(FkUtkastPage.nedsatt.lastEffectiveDateNoticeText.isPresent()).toBe(true);
+            expect(FkUtkastPage.nedsatt.lastEffectiveDateNoticeText.getText()).toContain('sjukskrivningsperioden 2017-05-31');
+            expect(FkUtkastPage.nedsatt.lastEffectiveDateNoticeText.getText()).toContain('sjukskrivningsgraden var 25%');
+            FkUtkastPage.nedsattMed25CheckboxClick();
         });
 
         it('should sign copy', function() {

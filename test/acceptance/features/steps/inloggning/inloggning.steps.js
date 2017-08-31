@@ -335,7 +335,7 @@ module.exports = function() {
     });
     this.Then(/^ska jag varnas om att "([^"]*)"$/, function(msg) {
 
-        return element.all(by.css('.mark-webcert-red')).map(function(data) {
+        return element.all(by.css('.patient-alert')).map(function(data) {
             return data.getText();
         }).then(function(theMsg) {
             return expect(theMsg.join('\n')).to.contain(msg);

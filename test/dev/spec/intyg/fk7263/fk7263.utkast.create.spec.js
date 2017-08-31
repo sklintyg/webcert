@@ -50,7 +50,7 @@ describe('Create and Sign FK utkast', function() {
                 UtkastPage.disableAutosave();
 
                 browser.getCurrentUrl().then(function(url) {
-                    utkastIdSmittSkydd = url.split('/').pop();
+                    utkastIdSmittSkydd = url.split('/').reverse()[1];
                 });
                 data = wcTestTools.testdata.fk['7263'].getRandom(utkastIdSmittSkydd, true);
             });

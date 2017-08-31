@@ -181,9 +181,8 @@ var Fk7263Intyg = BaseIntyg._extend({
             dialog: {
                 modal: element(by.id('komplettering-modal-dialog')),
                 modalDialogHeader: element(by.id('komplettering-modal-dialog')),
-                svaraMedNyttIntygKnapp: element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button')),
-                svaraMedTextKnapp: element(by.id('komplettering-modal-dialog-answerWithMessage-button')),
-                fortsattPaIntygsutkastKnapp: element(by.id('komplettering-modal-dialog-goToUtkast-button'))
+                lamnaOvrigaUpplysningarButton: element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button')),
+                svaraMedMeddelandeButton: element(by.id('komplettering-modal-dialog-answerWithMessage-button')),
             }
         };
         this.enhetsAdress = {
@@ -219,11 +218,14 @@ var Fk7263Intyg = BaseIntyg._extend({
     markMessageAsHandled: function(id) {
         return this.getMarkAsHandledButtonForID(id).sendKeys(protractor.Key.SPACE);
     },
-    svaraMedNyttIntyg: function(id) {
-        return element(by.id('answer-kompletteringsatgard-open-' + id)).sendKeys(protractor.Key.SPACE);
+    clickKompletteraIntyg: function(id) {
+        return element(by.id('komplettera-intyg-' + id)).sendKeys(protractor.Key.SPACE);
     },
-    fortsattPaIntygsutkast: function(id) {
-        return element(by.id('answer-kompletteringsatgard-open-utkast-' + id)).sendKeys(protractor.Key.SPACE);
+    clickKanInteKomplettera: function(id) {
+        return element(by.id('kan-inte-komplettera-' + id)).sendKeys(protractor.Key.SPACE);
+    },
+    clickFortsattPaUtkast: function(id) {
+        return element(by.id('komplettera-open-utkast-' + id)).sendKeys(protractor.Key.SPACE);
     },
     getQAById: function(handled, id) {
         var subgroup = 'unhandled';

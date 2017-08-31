@@ -106,14 +106,14 @@ var TsBasIntyg = TsBaseIntyg._extend({
     },
     verifieraHorsel: function(horsel) {
         expect(this.horselBalansbalansrubbningar.getText()).toBe(horsel.yrsel);
-        expect(this.horselSamtal.getText()).toBe(horsel.samtal ? horsel.samtal : 'Ej Angivet');
+        expect(this.horselSamtal.getText()).toBe(horsel.samtal ? horsel.samtal : 'Ej angivet');
     },
     verifieraRorelseorganensFunktioner: function(rorelseorganensFunktioner) {
         expect(this.funktionsnedsattning.getText()).toBe(rorelseorganensFunktioner.nedsattning);
         if (rorelseorganensFunktioner.nedsattning === 'Ja') {
             expect(this.funktionsnedsattningbeskrivning.getText()).toBe(rorelseorganensFunktioner.nedsattningBeskrivning);
         }
-        expect(this.funktionsnedsRorelseformaga.getText()).toBe(rorelseorganensFunktioner.inUtUrFordon ? rorelseorganensFunktioner.inUtUrFordon : 'Ej Angivet');
+        expect(this.funktionsnedsRorelseformaga.getText()).toBe(rorelseorganensFunktioner.inUtUrFordon ? rorelseorganensFunktioner.inUtUrFordon : 'Ej angivet');
     },
     verifieraHjartOchKarlsjukdomar: function(data) {
         expect(this.hjartKarlSjukdom.getText()).toBe(data.hjartHjarna);

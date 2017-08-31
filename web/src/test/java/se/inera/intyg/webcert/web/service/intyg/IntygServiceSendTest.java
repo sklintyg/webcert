@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.intyg;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +43,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -79,20 +80,13 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
     }
 
-//    @Before
-//    public void setupPatientResolver() throws ModuleNotFoundException, ModuleException {
-//        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
-//        when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
-//
-//    }
-
     @Test
     public void testSendIntyg() throws Exception {
         WebCertUser webCertUser = createUser();
 
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
-        // when(relationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
@@ -150,6 +144,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         WebCertUser webCertUser = createUser();
 
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
         Utlatande completionUtlatande = utlatande;
@@ -178,9 +173,9 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         WebCertUser webCertUser = createUser();
 
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
-        // when(certificateRelationService.getReplacedByRelation(anyString())).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
         assertEquals(IntygServiceResult.OK, res);
@@ -198,11 +193,46 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         try {
             intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
-            Assert.fail("RuntimeException expected");
+            fail("RuntimeException expected");
         } catch (RuntimeException e) {
             // Expected
         }
         verify(intygRepository, times(0)).save(any(Utkast.class));
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() throws IOException {
+        WebCertUser webCertUser = createUser();
+
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+
+        try {
+            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+        } catch (Exception e) {
+            verifyZeroInteractions(logService);
+            throw e;
+        }
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() throws Exception {
+        intygService.setSekretessmarkeringStartDatum(LocalDateTime.now().plusMonths(1L));
+
+        WebCertUser webCertUser = createUser();
+
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
+
+        try {
+            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+        } catch (Exception e) {
+            verifyZeroInteractions(logService);
+            throw e;
+        }
+
     }
 
     private WebCertUser createUser() {

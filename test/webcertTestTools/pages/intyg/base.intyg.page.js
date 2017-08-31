@@ -39,8 +39,8 @@ var BaseIntyg = JClass._extend({
             dialogRadioAnnatAllvarligtFel: element(by.id('reason-ANNAT_ALLVARLIGT_FEL')),
             dialogRadioAnnatAllvarligtFelClarification: element(by.id('clarification-ANNAT_ALLVARLIGT_FEL')),
 
-            statusRevokeInprogress: element(by.id('certificate-revoked-it-message-text')),
-            statusRevoked: element(by.id('certificate-is-revoked-message-text'))
+            statusRevokeInprogress: element(by.id('certificate-is-revoked-message-text')),
+            statusRevoked: element(by.id('certificate-revoked-it-message-text'))
         };
         this.patientNamnOchPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.skicka = {
@@ -95,7 +95,7 @@ var BaseIntyg = JClass._extend({
 
     },
     get: function(intygId) {
-        browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId);
+        browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId + '/');
     },
     getReason: function(reasonBth) {
         for (var key in this.makulera) {
@@ -217,13 +217,25 @@ var BaseIntyg = JClass._extend({
     getOnlyLakareCanKompletteraSign: function(id) {
         return element(by.id('answerDisabledReasonPanel-' + id));
     },
-    getSvaraPaKompletteringButton: function(id) {
-        return element(by.id('answer-kompletteringsatgard-open-' + id));
+    getKompletteraIntygButton: function(id) {
+        return element(by.id('komplettera-intyg-' + id));
     },
-    getSvaraPaKompletteringFortsattPaIntygsutkastButton: function(id) {
-        return element(by.id('answer-kompletteringsatgard-open-utkast-' + id));
+    getUthoppKompletteraSvaraButton: function(id) {
+        return element(by.id('uthopp-svara-med-meddelande-'+id))
+    },
+    getKompletteraIntygFortsattPaIntygsutkastButton: function(id) {
+        return element(by.id('komplettera-open-utkast-' + id));
+    },
+    getKanInteKompletteraButton: function(id) {
+        return element(by.id('kan-inte-komplettera-' + id));
+    },
+    getKompletteringsDialogLamnaOvrigaUpplysningar: function() {
+        return element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button'));
+    },
+    getKompletteringsDialogSvaraMedMeddelandeButton: function() {
+        return element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
     }
-
 });
+
 
 module.exports = BaseIntyg;

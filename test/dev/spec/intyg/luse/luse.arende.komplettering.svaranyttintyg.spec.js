@@ -85,18 +85,16 @@ describe('arende on luse intyg', function() {
         });
 
         it('click svara pa komplettering', function() {
-            LuseIntygPage.getSvaraPaKompletteringButton(meddelandeId).click();
-            expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+            LuseIntygPage.getKompletteraIntygButton(meddelandeId).click();
         });
 
         it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
-            LuseIntygPage.kompletteraMedNyttIntygButton.click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
 
             // Extract ID of new utkast so we can delete it when we're done.
             // Save id so it can be removed in cleanup stage.
             browser.getCurrentUrl().then(function(url) {
-                utkastId = url.split('/').pop();
+                utkastId = url.split('/').reverse()[1];
             });
         });
     });
@@ -104,8 +102,9 @@ describe('arende on luse intyg', function() {
     describe('make sure "Svara med nytt intyg" button have changed to "Fortsätt på intygsutkast"', function() {
         it('Is showing the Fortsatt button in arende view', function() {
             LuseIntygPage.get(intygId);
-            expect(LuseIntygPage.getSvaraPaKompletteringFortsattPaIntygsutkastButton(meddelandeId).isDisplayed()).toBeTruthy();
-            LuseIntygPage.getSvaraPaKompletteringFortsattPaIntygsutkastButton(meddelandeId).click();
+            expect(LuseIntygPage.isAt()).toBeTruthy();
+            expect(LuseIntygPage.getKompletteraIntygFortsattPaIntygsutkastButton(meddelandeId).isDisplayed()).toBeTruthy();
+            LuseIntygPage.getKompletteraIntygFortsattPaIntygsutkastButton(meddelandeId).click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
         });
     });

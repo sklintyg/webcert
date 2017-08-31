@@ -1,0 +1,55 @@
+{
+    "bitwise": true,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    "freeze": true,
+    "immed": true,
+    "indent": 4,
+    "latedef": "nofunc",
+    "newcap": true,
+    "noarg": true,
+    "noempty": true,
+    "nonew": true,
+    "nonbsp": true,
+    "quotmark": "single",
+    "unused": "vars",
+    "undef": true,
+    "strict": true,
+    "trailing": true,
+    "maxstatements": 150,
+    "maxcomplexity": 10,
+    "maxlen": 200,
+    "maxerr": 10000,
+    "browser": true,
+    "devel": true,
+    "jasmine": true,
+        "jquery": true,
+        "node": true,
+        "nonstandard": true,
+        "phantom": true,
+
+    "globals": {
+
+        "JSON": true,
+
+                // other libs
+        "angular": false,
+        "moment": false,
+                "require": false,
+
+                // missing jasmine globals from jshint 'jasmine' configuration
+                "xdescribe": false,
+
+                // actual custom globals
+        "element": false,
+                "inject": false,
+        "by": false,
+        "runs": false,
+        "iid_Invoke": false,
+                "__dirname": false,
+                "Class": false
+    },
+    "esversion": 6
+}

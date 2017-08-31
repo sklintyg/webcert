@@ -65,7 +65,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .pathParam("intygsId", utkastId).queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("/visa/intyg/{intygsId}")
-                .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId));
+                .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"));
     }
 
     /**
@@ -85,7 +85,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().pathParam("intygsId", intygsId)
                 .and().queryParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
-                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId));
+                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "/"));
     }
 
     /**
@@ -140,7 +140,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}")
                 .then()
-                .header(HttpHeaders.LOCATION, endsWith("/luse/edit/" + utkastId));
+                .header(HttpHeaders.LOCATION, endsWith("/luse/edit/" + utkastId + "/"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
@@ -195,7 +195,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}")
                 .then()
-                .header(HttpHeaders.LOCATION, endsWith("/luse/edit/" + utkastId));
+                .header(HttpHeaders.LOCATION, endsWith("/luse/edit/" + utkastId + "/"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
@@ -263,7 +263,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}")
                 .then()
-                .header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId));
+                .header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"));
 
         // ..after following the link - the draft should have updated patient id and fullstandigtNamn
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -320,7 +320,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .and().pathParam("intygsId", intygsId).and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}")
-                .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId));
+                .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId + "/"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)

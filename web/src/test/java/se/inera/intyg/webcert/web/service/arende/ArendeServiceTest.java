@@ -18,38 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
@@ -84,6 +51,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
+import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -98,8 +66,45 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -150,6 +155,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Mock
+    private StatisticsGroupByUtil statisticsGroupByUtil;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -1287,6 +1295,42 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(fragaSvarService).closeCompletionsAsHandled(intygId);
     }
 
+    @Test
+    public void testGetNbrOfUnhandledArendenForCareUnitsSekretessOk() {
+
+        List<Object[]> queryResult = new ArrayList<>();
+        queryResult.add(new Object[] { "HSA1", 2L });
+        queryResult.add(new Object[] { "HSA2", 4L });
+
+        when(webcertUserService.getUser()).thenReturn(createUser());
+        when(arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(anyList(), anySet())).thenReturn(queryResult);
+
+        Map<String, Long> result = service.getNbrOfUnhandledArendenForCareUnits(Arrays.asList("HSA1", "HSA2"),
+                Stream.of("fk7263").collect(Collectors.toSet()));
+
+        assertEquals(2, result.size());
+
+    }
+
+    @Test
+    public void testGetNbrOfUnhandledArendenForCareUnitsSekretessNotAllowed() {
+
+        List<Object[]> queryResult = new ArrayList<>();
+
+        when(webcertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
+        when(arendeRepository.getUnhandledByEnhetIdsAndIntygstyper(anyList(), anySet())).thenReturn(queryResult);
+        Map<String, Long> resultMap = new HashMap<>();
+        resultMap.put("abc-123", 2L);
+
+        when(statisticsGroupByUtil.toSekretessFilteredMap(queryResult)).thenReturn(resultMap);
+
+        Map<String, Long> result = service.getNbrOfUnhandledArendenForCareUnits(Arrays.asList("HSA1", "HSA2"),
+                Stream.of("fk7263").collect(Collectors.toSet()));
+
+        assertEquals(1, result.size());
+
+    }
+
     private Arende buildArende(String meddelandeId, String enhetId) {
         return buildArende(meddelandeId, INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), enhetId);
     }
@@ -1338,12 +1382,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         return utkast;
     }
 
-    private WebCertUser createUser() {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+    private WebCertUser buildUserOfRole(Role role) {
 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
         user.setHsaId("testuser");
         user.setNamn("test userman");
 
@@ -1356,6 +1400,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         user.setValdVardenhet(vardenhet);
 
         return user;
+    }
+
+    private WebCertUser createUser() {
+
+        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
+        return buildUserOfRole(role);
     }
 
 }

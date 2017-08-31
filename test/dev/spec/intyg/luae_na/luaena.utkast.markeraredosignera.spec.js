@@ -46,7 +46,7 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
             it('Spara undan intygsId från URL', function() {
 
                 browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').pop();
+                    utkastId = url.split('/').reverse()[1];
                 });
                 data = wcTestTools.testdata.fk.LUAE_NA.getRandom(utkastId);
             });

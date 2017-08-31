@@ -75,5 +75,11 @@
         "DATABASE_HOST": "mysql.sm.nordicmedtest.se",
         "DATABASE_USER": "intyg_autotest",
         "SELENIUM_ADDRESS": ""
+    }, "local": {
+        "WEBCERT_URL": "http://localhost:9088/",
+        "INTYGTJANST_URL": "http://localhost:8080",
+        "DATABASE_HOST": "localhost:9094",
+        "DATABASE_USER": "sa",
+        "SELENIUM_ADDRESS": ""
     }
 }

@@ -7,11 +7,13 @@ Egenskap: SRS ska kunna slås av och på för olika vårdenheter
 @SRS-US-004
 Scenario: SRS ska kunna vara avaktiverad för en vårdenhet
     Givet att jag är inloggad som läkare på en vårdenhet där SRS är aktiverat
-    När jag befinner mig på ett nyskapat FK7263 intyg
-    Så ska knappen för SRS inte finnas
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som finns i SRS
+    Så ska knappen för SRS inte vara synlig
 
 @SRS-US-004
 Scenario: SRS ska kunna vara aktiverad för en vårdenhet
     Givet att jag är inloggad som läkare på en vårdenhet där SRS inte är aktiverat
-    När jag går in på ett nyskapat FK7263 intyg
-    Så ska knappen för SRS finnas
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som finns i SRS
+    Så ska knappen för SRS vara synlig

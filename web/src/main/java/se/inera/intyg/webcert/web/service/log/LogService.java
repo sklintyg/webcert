@@ -180,6 +180,21 @@ public interface LogService {
     void logSendIntygToRecipient(LogRequest logRequest, LogUser user);
 
     /**
+     * Creates a log event when an user sends a signed intyg directly to a recipient.
+     *
+     * @param patientId the id of the patient
+     */
+    void logShowPrediction(String patientId);
+
+    /**
+     * Creates a log event when an user sends a signed intyg directly to a recipient.
+     *
+     * @param logRequest the logging details
+     * @param user the user who performs the action that is being logged
+     */
+    void logShowPrediction(LogRequest logRequest, LogUser user);
+
+    /**
      * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}
      *
      * Use when you can't access the WebCertUser in the current ThreadLocal, e.g. a background job spawned

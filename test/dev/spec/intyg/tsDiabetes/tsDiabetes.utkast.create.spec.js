@@ -46,7 +46,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
         browser.getCurrentUrl().then(function(url) {
             utkastId = url.split('/').pop();
         });
-        data = wcTestTools.testdata.ts.diabetes.getRandom(utkastId, true);
+        data = wcTestTools.testdata.ts.diabetes.getRandom(utkastId);
     });
 
     describe('Fyll i intyget', function() {
