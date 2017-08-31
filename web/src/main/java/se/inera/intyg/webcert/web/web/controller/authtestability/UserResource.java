@@ -134,4 +134,12 @@ public class UserResource {
                         new IntegrationParameters(refValue, null, null, null, null, null, null, null, null, true, false, false, true));
         return Response.ok().build();
     }
+
+    @GET
+    @Path("/features")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFeaturesForUser() {
+        Set features = webCertUserService.getUser().getFeatures();
+        return Response.ok(features).build();
+    }
 }

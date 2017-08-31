@@ -35,6 +35,7 @@ import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
@@ -85,6 +86,10 @@ public class SrsApiController extends AbstractApiController {
             @ApiParam(value = "Utdatafilter: FmbInformation") @QueryParam("isFmbInfo") @DefaultValue("false") boolean fmbInfo,
             @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("isStatistik") @DefaultValue("false") boolean statistik,
             @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .features(WebcertFeature.SRS)
+                .orThrow();
+
         if (Strings.isNullOrEmpty(personnummer) || Strings.isNullOrEmpty(diagnosisCode)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -106,6 +111,10 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get questions for diagnosis code", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     public Response getQuestions(@ApiParam(value = "Diagnosis code") @PathParam("diagnosisCode") String diagnosisCode) {
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .features(WebcertFeature.SRS)
+                .orThrow();
+
         if (Strings.isNullOrEmpty(diagnosisCode)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -120,6 +129,10 @@ public class SrsApiController extends AbstractApiController {
     public Response getConsent(
             @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
             @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId) {
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .features(WebcertFeature.SRS)
+                .orThrow();
+
         try {
             Personnummer p = new Personnummer(personnummer);
             Samtyckesstatus response = srsService.getConsent(hsaId, p);
@@ -138,6 +151,10 @@ public class SrsApiController extends AbstractApiController {
             @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
             @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId,
             boolean consent) {
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .features(WebcertFeature.SRS)
+                .orThrow();
+
         try {
             Personnummer p = new Personnummer(personnummer);
             ResultCodeEnum result = srsService.setConsent(hsaId, p, consent);

@@ -4,5 +4,11 @@ pilots:
       - x
     features:
       srs: true
-      fk7263.srs: true
-      lisjp.srs: true
+      srs.lisjp: true
+      srs.fk7263: true
+  - hsaIds:
+      - TSTNMT2321000156-1077
+    features:
+      srs: true
+      srs.fk7263: true
+      srs.lisjp: true

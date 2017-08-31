@@ -4,5 +4,5 @@ pilots:
       - x
     features:
       srs: true
-      fk7263.srs: true
-      lisjp.srs: true
+      srs.fk7263: true
+      srs.lisjp: true
