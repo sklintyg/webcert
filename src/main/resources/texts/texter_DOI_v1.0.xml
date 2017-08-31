@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<texter typ="DB" giltigFrom="2017-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<texter typ="DOI" giltigFrom="2017-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <text id="KAT_1.RBK">Den avlidnes personuppgifter</text>
     <text id="DFR_1.1.RBK">Identiteten styrkt genom</text>
     <text id="DFR_14.1.RBK">Land (om ej stadigvarande bosatt i Sverige)</text>
@@ -22,6 +22,11 @@ Särskilt boende: t.ex. äldrebostäder och institutioner
 Ordinärt boende: utesluter sådant boende som ingår i föregående kategori
 
 Annan/okänd: övrigt</text>
+    <text id="KV_DODSPLATS_BOENDE.SJUKHUS.RBK">Sjukhus</text>
+    <text id="KV_DODSPLATS_BOENDE.ORDINART_BOENDE.RBK">Ordinärt boende</text>
+    <text id="KV_DODSPLATS_BOENDE.SARSKILT_BOENDE.RBK">Särskilt boende</text>
+    <text id="KV_DODSPLATS_BOENDE.ANNAN.RBK">Annan/okänd</text>
+
     <text id="KAT_3.RBK">Barn som avlidit senast 28 dygn efter födelsen</text>
     <text id="DFR_4.1.RBK">Avlidet inom 28 dygn efter födelsen</text>
     <text id="KAT_7.RBK">Läkarens utlåtande om dödsorsaken</text>
@@ -30,15 +35,9 @@ Annan/okänd: övrigt</text>
     <text id="DFR_8.1.RBK">Beskrivning</text>
     <text id="DFR_8.1.HLP">Den diagnos eller det tillstånd som ledde till den terminala dödsorsaken</text>
     <text id="DFR_8.2.RBK">Ungefärlig debut</text>
-    <text id="DFR_8.3.SVA_1"> Akut</text>
-    <text id="DFR_9.3.SVA_1"> Akut</text>
-    <text id="DFR_10.3.SVA_1">Akut</text>
-    <text id="DFR_8.3.SVA_2">Kronisk</text>
-    <text id="DFR_9.3.SVA_2">Kronisk</text>
-    <text id="DFR_10.3.SVA_2">Kronisk</text>
-    <text id="DFR_8.3.SVA_3">Uppgift saknas</text>
-    <text id="DFR_9.3.SVA_3">Uppgift saknas</text>
-    <text id="DFR_10.3.SVA_3">Uppgift saknas</text>
+    <text id="KV_ORSAKSTYPER.PLOTSLIG.RBK">Akut</text>
+    <text id="KV_ORSAKSTYPER.KRONISK.RBK">Kronisk</text>
+    <text id="KV_ORSAKSTYPER.UPPGIFT_SAKNAS.RBK">Uppgift saknas</text>
     <text id="FRG_9.RBK">Som var en följd av</text>
     <text id="DFR_9.1.RBK">Beskrivning</text>
     <text id="DFR_9.2.RBK">Ungefärlig debut</text>
@@ -49,7 +48,9 @@ Annan/okänd: övrigt</text>
     <text id="KAT_8.RBK">Opererad inom fyra veckor före döden</text>
     <text id="KAT_8.HLP">Som operation räknas åtgärder enligt Socialstyrelsens "Klassifikationer av kirurgiska åtgärder, KKÅ".</text>
     <text id="DFR_11.1.RBK">Opererad inom 4 veckor före döden?</text>
-    <text id="DFR_11.1.SVA_1">Uppgift om operation saknas</text>
+    <text id="KV_OMOPERATION.JA.RBK">Ja</text>
+    <text id="KV_OMOPERATION.NEJ.RBK">Nej</text>
+    <text id="KV_OMOPERATION.UPPGIFT_SAKNAS.RBK">Uppgift om operation saknas</text>
     <text id="DFR_11.2.RBK">Operationsdatum</text>
     <text id="DFR_11.3.RBK">Tillstånd som föranledde ingreppet</text>
     <text id="KAT_9.RBK">Skada/förgiftning</text>
@@ -64,6 +65,19 @@ trafikolycka: om den döde var t.ex. förare, passagerare eller fotgängare samt
 förgiftning: vilken eller vilka substanser
 fall: t.ex. i trappa, från stege, halkat på mattkant
 drunkning: naturlig eller konstgjord vattensamling (t.ex. vattendrag, sjö, brunn, badkar), fall ned i vatten (t.ex. genom brunnslock) eller på annat sätt (t.ex. kramp vid simning)</text>
+
+    <text id="KV_ORSAK.OLYCKSFALL.RBK">Olycksfall</text>
+    <text id="KV_ORSAK.SJALVMORD.RBK">Självmord</text>
+    <text id="KV_ORSAK.AVSIKTLIGT_VALLAD.RBK">Avsiktligt vållad av annan</text>
+    <text id="KV_ORSAK.OKLART.RBK">Oklart om avsikt förelegat</text>
+
     <text id="KAT_10.RBK">Dödsorsaksuppgifterna grundar sig på</text>
     <text id="DFR_13.1.RBK">Ange vad dödsorsaksuppgifterna grundar sig på</text>
+
+    <text id="KV_DODSORSAKSUPPGIFTER.UNDERSOKNING_FORE_DODEN.RBK">Undersökning före döden</text>
+    <text id="KV_DODSORSAKSUPPGIFTER.UNDERSOKNING_EFTER_DODEN.RBK">Yttre undersökning efter döden</text>
+    <text id="KV_DODSORSAKSUPPGIFTER.KLINISK_OBDUKTION.RBK">Klinisk obduktion</text>
+    <text id="KV_DODSORSAKSUPPGIFTER.RATTSMEDICINSK_OBDUKTION.RBK">Rättsmedicinsk obduktion</text>
+    <text id="KV_DODSORSAKSUPPGIFTER.RATTSMEDICINSK_BESIKTNING.RBK">Rättsmedicinsk likbesiktning</text>
+
 </texter>
