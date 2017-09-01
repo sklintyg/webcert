@@ -164,6 +164,16 @@ public class SrsApiController extends AbstractApiController {
         }
     }
 
+    @GET
+    @Path("/codes")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getDiagnosisCodes() {
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .features(WebcertFeature.SRS)
+                .orThrow();
+        return Response.ok(srsService.getAllDiagnosisCodes()).build();
+    }
+
     private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean fmbInfo, boolean statistik) {
         Utdatafilter filter = new Utdatafilter();
         filter.setPrediktion(prediktion);
