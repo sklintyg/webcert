@@ -107,8 +107,39 @@ describe('ChooseCertTypeCtrl', function() {
             $controller('webcert.ChooseCertTypeCtrl', {$scope: $scope});
             intyg = {
                 intygType: 'fk7263',
-                intygId: 'abc123'
+                intygId: 'abc123',
+                status: 'SIGNED',
+                relations: {
+                    latestChildRelations: {
+                    }
+                }
             };
+
+            $scope.patientModel = {
+                sekretessmarkering: false
+            };
+        });
+
+        it('is förnya allowed', function() {
+
+            expect($scope.isRenewalAllowed(intyg)).toBeTruthy();
+
+            intyg.status = 'DRAFT_INCOMPLETE';
+            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+
+            intyg.status = 'CANCELLED';
+            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+
+            $scope.patientModel.sekretessmarkering = true;
+            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+
+            $scope.patientModel.sekretessmarkering = false;
+            intyg.relations.latestChildRelations.replacedByIntyg = true;
+            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+
+            intyg.relations.latestChildRelations.replacedByIntyg = false;
+            intyg.relations.latestChildRelations.complementedByIntyg = true;
+            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
         });
 
         it('should förnya intyg', function() {
