@@ -221,6 +221,16 @@ public class UtkastApiController extends AbstractApiController {
 
     private QueryIntygResponse performUtkastFilterQuery(UtkastFilter filter) {
 
+        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(getWebCertUserService().getUser())
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
+
+        // INTYG-4409: We can not get a totalCount with pageSize set if mayHandleSekretessmarkeradePatienter=false,
+        // since we need to lookup each entry from puService.
+        Integer pageSize = filter.getPageSize();
+        if (!mayHandleSekretessmarkeradePatienter) {
+            filter.setPageSize(null);
+        }
         List<Utkast> intygList = intygDraftService.filterIntyg(filter);
 
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(intygList);
@@ -228,27 +238,37 @@ public class UtkastApiController extends AbstractApiController {
         // INTYG-4086: Mark all ListIntygEntry having a patient with sekretessmarkering
         listIntygEntries.stream().forEach(this::markSekretessMarkering);
 
-        // Räkna hur många av intygen som hör till sekretessmarkerad patient.
-        int antalSekretessmarkerade = Long.valueOf(listIntygEntries.stream()
-                .filter(ListIntygEntry::isSekretessmarkering)
-                .count())
-                .intValue();
-
         // INTYG-4086: If not allowed to handle sekretess patients, remove all intyg/utkast for patients having
         // sekretessmarkering.
-        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(getWebCertUserService().getUser())
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                .isVerified();
         if (!mayHandleSekretessmarkeradePatienter) {
             listIntygEntries = listIntygEntries.stream().filter(lie -> !lie.isSekretessmarkering()).collect(Collectors.toList());
+            int totalCountOfFilteredIntyg = listIntygEntries.size();
+
+            // Get paginated list
+            if (filter.getStartFrom() < listIntygEntries.size()) {
+                int toIndex = filter.getStartFrom() + pageSize;
+                if (toIndex > listIntygEntries.size()) {
+                    toIndex = listIntygEntries.size();
+                }
+                listIntygEntries = listIntygEntries.subList(filter.getStartFrom(), toIndex);
+            }
+            else {
+                // Index out of range
+                listIntygEntries.clear();
+            }
+
+            QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
+            response.setTotalCount(totalCountOfFilteredIntyg);
+            return response;
         }
+        else {
+            // We can get total count from the database since we don't have to filter out sekretess patients
+            int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
 
-        int totalCountOfFilteredIntyg = mayHandleSekretessmarkeradePatienter ? listIntygEntries.size()
-                : listIntygEntries.size() - antalSekretessmarkerade;
-
-        QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
-        response.setTotalCount(totalCountOfFilteredIntyg);
-        return response;
+            QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
+            response.setTotalCount(totalCountOfFilteredIntyg);
+            return response;
+        }
     }
 
     private void markSekretessMarkering(ListIntygEntry lie) {

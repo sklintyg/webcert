@@ -26,8 +26,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -148,6 +152,115 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         Assert.assertEquals("fk7263", queryResponse.getResults().get(0).getIntygType());
         Assert.assertEquals(DEFAULT_PATIENT_PERSONNUMMER, queryResponse.getResults().get(0).getPatientId().getPersonnummer());
     }
+
+    @Test
+    public void testFilterDraftsForUnitPagination() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        ArrayList<String> utkastIds = new ArrayList(), utkastPersonIds = new ArrayList();
+        for(int i = 0; i < 2; i++) {
+            for (int j = 0; j < 8; j++) {
+                utkastIds.add(createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER));
+                utkastPersonIds.add(DEFAULT_PATIENT_PERSONNUMMER);
+            }
+            utkastIds.add(createUtkast("fk7263", "195401232540")); // Sekretessmarkering på patient
+            utkastPersonIds.add("19540123-2540");
+        }
+
+        // The newest utkast will be returned first, reverse the expected list
+        Collections.reverse(utkastIds);
+        Collections.reverse(utkastPersonIds);
+
+        QueryIntygResponse queryResponse = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
+                .param("pageSize", 4)
+                .expect().statusCode(200).when().get("api/utkast")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+                .body("totalCount", equalTo(18)).extract().response().as(QueryIntygResponse.class);
+
+        Assert.assertEquals(4, queryResponse.getResults().size());
+        for(int i = 0; i < 4; i++) {
+            ListIntygEntry entry = queryResponse.getResults().get(i);
+            Assert.assertEquals(utkastIds.get(i), entry.getIntygId());
+            Assert.assertEquals("fk7263", entry.getIntygType());
+            Assert.assertEquals(utkastPersonIds.get(i), entry.getPatientId().getPersonnummer());
+        }
+
+        QueryIntygResponse queryResponse2 = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
+                .param("pageSize", 4).param("startFrom", 16)
+                .expect().statusCode(200).when().get("api/utkast")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+                .body("totalCount", equalTo(18)).extract().response().as(QueryIntygResponse.class);
+
+        Assert.assertEquals(2, queryResponse2.getResults().size());
+        for(int i = 0; i < 2; i++) {
+            ListIntygEntry entry = queryResponse2.getResults().get(i);
+            Assert.assertEquals(utkastIds.get(i + 16), entry.getIntygId());
+            Assert.assertEquals("fk7263", entry.getIntygType());
+            Assert.assertEquals(utkastPersonIds.get(i + 16), entry.getPatientId().getPersonnummer());
+        }
+    }
+
+    @Test
+    public void testFilterDraftsForUnitVardAdminPagination() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        ArrayList<String> utkastIds = new ArrayList(), utkastPersonIds = new ArrayList();
+        for(int i = 0; i < 2; i++) {
+            utkastIds.add(createUtkast("fk7263", "195401232540")); // Sekretessmarkering på patient
+            utkastPersonIds.add("19540123-2540");
+            for (int j = 0; j < 8; j++) {
+                utkastIds.add(createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER));
+                utkastPersonIds.add(DEFAULT_PATIENT_PERSONNUMMER);
+            }
+        }
+
+        // The newest utkast will be returned first, reverse the expected list
+        Collections.reverse(utkastIds);
+        Collections.reverse(utkastPersonIds);
+
+        changeRoleTo("VARDADMINISTRATOR");
+
+        // Should only get totalCount=16 since we added 2 patients with sekretessmarkering
+        QueryIntygResponse queryResponse = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
+                .param("pageSize", 4)
+                .expect().statusCode(200).when().get("api/utkast")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+                .body("totalCount", equalTo(16)).extract().response().as(QueryIntygResponse.class);
+
+        Assert.assertEquals(4, queryResponse.getResults().size());
+        for(int i = 0; i < 4; i++) {
+            ListIntygEntry entry = queryResponse.getResults().get(i);
+            Assert.assertEquals(utkastIds.get(i), entry.getIntygId());
+            Assert.assertEquals("fk7263", entry.getIntygType());
+            Assert.assertEquals(utkastPersonIds.get(i), entry.getPatientId().getPersonnummer());
+        }
+
+        QueryIntygResponse queryResponse2 = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
+                .param("pageSize", 4).param("startFrom", 14)
+                .expect().statusCode(200).when().get("api/utkast")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
+                .body("totalCount", equalTo(16)).extract().response().as(QueryIntygResponse.class);
+
+        Assert.assertEquals(2, queryResponse2.getResults().size());
+
+        // With pagesize=4 and startFrom=14 we will get the last 2 entries.
+        // Without sekretess markering the 2 entries would have matched 16 and 17.
+        // Since 17 is sekretess and filtered out we will get 15 and 16
+        ListIntygEntry entry = queryResponse2.getResults().get(0);
+        Assert.assertEquals(utkastIds.get(15), entry.getIntygId());
+        Assert.assertEquals("fk7263", entry.getIntygType());
+        Assert.assertEquals(utkastPersonIds.get(15), entry.getPatientId().getPersonnummer());
+
+        entry = queryResponse2.getResults().get(1);
+        Assert.assertEquals(utkastIds.get(16), entry.getIntygId());
+        Assert.assertEquals("fk7263", entry.getIntygType());
+        Assert.assertEquals(utkastPersonIds.get(16), entry.getPatientId().getPersonnummer());
+    }
+
 
     @Test
     public void testGetQuestion() {
