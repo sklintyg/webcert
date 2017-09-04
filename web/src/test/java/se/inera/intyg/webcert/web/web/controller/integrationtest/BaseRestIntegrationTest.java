@@ -84,10 +84,6 @@ public abstract class BaseRestIntegrationTest {
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
             "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(LAKARE).build();
 
-    protected static FakeCredentials DEFAULT_VARDADMIN = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104N",
-            "IFV1239877878-1045").legitimeradeYrkesgrupper(LAKARE).build();
-
-
     /**
      * Has multiple vardenheter.
      */

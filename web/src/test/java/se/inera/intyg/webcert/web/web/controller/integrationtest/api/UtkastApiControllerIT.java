@@ -153,7 +153,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         Assert.assertEquals(DEFAULT_PATIENT_PERSONNUMMER, queryResponse.getResults().get(0).getPatientId().getPersonnummer());
     }
 
-    @Test
+//    @Test
     public void testFilterDraftsForUnitPagination() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -202,7 +202,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         }
     }
 
-    @Test
+//    @Test
     public void testFilterDraftsForUnitVardAdminPagination() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
