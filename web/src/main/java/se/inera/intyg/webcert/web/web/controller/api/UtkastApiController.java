@@ -251,8 +251,7 @@ public class UtkastApiController extends AbstractApiController {
                     toIndex = listIntygEntries.size();
                 }
                 listIntygEntries = listIntygEntries.subList(filter.getStartFrom(), toIndex);
-            }
-            else {
+            } else {
                 // Index out of range
                 listIntygEntries.clear();
             }
@@ -260,8 +259,7 @@ public class UtkastApiController extends AbstractApiController {
             QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
             response.setTotalCount(totalCountOfFilteredIntyg);
             return response;
-        }
-        else {
+        } else {
             // We can get total count from the database since we don't have to filter out sekretess patients
             int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
 
