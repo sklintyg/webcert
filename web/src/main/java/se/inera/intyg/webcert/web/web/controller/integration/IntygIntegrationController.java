@@ -173,46 +173,44 @@ public class IntygIntegrationController extends BaseIntegrationController {
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
 
-        if (utkast != null && !utkast.getStatus().equals(UtkastStatus.SIGNED)) {
-            isUtkast = true;
-        }
-
-        // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.
-        // If the intyg was authored elsewhere, the check has to be performed after the redirect when the actual intyg
-        // is loaded from Intygstjänsten.
-        if (utkast != null) {
-            SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
-            authoritiesValidator.given(user, utkast.getIntygsTyp())
-                    .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                            sekretessStatus == SekretessStatus.TRUE)
-                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                            "User missing required privilege or cannot handle sekretessmarkerad patient"));
-        }
-
         // If intygstyp can't be established, default to FK7263 to be backwards compatible
         String intygsTyp = typParam;
         if (typParam == null) {
             intygsTyp = utkast != null ? utkast.getIntygsTyp() : Fk7263EntryPoint.MODULE_ID;
         }
 
-        // Monitoring log the usage of coherentJournaling
-        if (coherentJournaling) {
-            if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
-                monitoringLog.logIntegratedOtherCaregiver(intygId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
-            } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
-                monitoringLog.logIntegratedOtherUnit(intygId, intygsTyp, utkast.getEnhetsId());
+        if (utkast != null) {
+            // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.
+            // If the intyg was authored elsewhere, the check has to be performed after the redirect when the actual intyg
+            // is loaded from Intygstjänsten.
+            SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
+            authoritiesValidator.given(user, utkast.getIntygsTyp())
+                    .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                            sekretessStatus == SekretessStatus.TRUE)
+                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                            "User missing required privilege or cannot handle sekretessmarkerad patient"));
+
+            if (!utkast.getStatus().equals(UtkastStatus.SIGNED)) {
+                isUtkast = true;
+                // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
+                // integrating journaling system
+                ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn);
+            }
+
+            // Monitoring log the usage of coherentJournaling
+            if (coherentJournaling) {
+                if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
+                    monitoringLog.logIntegratedOtherCaregiver(intygId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
+                } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
+                    monitoringLog.logIntegratedOtherUnit(intygId, intygsTyp, utkast.getEnhetsId());
+                }
             }
         }
+
 
         // If the type doesn't equals to FK7263 then verify the required query-parameters
         if (!intygsTyp.equals(Fk7263EntryPoint.MODULE_ID)) {
             verifyQueryStrings(fornamn, efternamn, postadress, postnummer, postort);
-        }
-
-        if (isUtkast) {
-            // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
-            // integrating journaling system
-            ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn);
         }
 
         user.setParameters(new IntegrationParameters(StringUtils.trimToNull(reference), responsibleHospName, alternatePatientSSn, fornamn,

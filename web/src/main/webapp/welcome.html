@@ -201,6 +201,7 @@
       function _stringify(hsaPerson) {
         var validProperties = [
             'hsaId',
+            'intygTyp',
             'forNamn',
             'efterNamn',
             'enhetId',
@@ -224,6 +225,7 @@
 
       $scope.intlink = {
           id: '',
+          intygTyp: '',
           alternatePatientSSn: '',
           fornamn: 'Nils',
           mellannamn: 'Nisse',
@@ -252,7 +254,11 @@
       $scope.djupintegrationsInloggning = function(evt) {
         evt.preventDefault();
         $http.post('/fake', "userJsonDisplay=" + $scope.jsonModel, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
-          var q = 'visa/intyg/' + $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
+          var q = 'visa/intyg/'
+          if ($scope.intlink.intygTyp !== '') {
+            q+= $scope.intlink.intygTyp + '/'
+          }
+          q+= $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
           q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
           q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
           q+='&kopieringOK=' + $scope.intlink.kopieringOk;
@@ -362,6 +368,7 @@
                   <p>Djupintegrationslänk-genväg: Välj journalsystem-parametrar och tryck på länkinloggning.</p>
 
                   <label for="intlink-id" class="control-label">utkast/intygsid:</label> <input type="text" class="form-control" size="40" id="intlink-id" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
+                  <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="intlink.intygTyp" placeholder="Intygstyp"><br>
                   <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
                   <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
                   <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
