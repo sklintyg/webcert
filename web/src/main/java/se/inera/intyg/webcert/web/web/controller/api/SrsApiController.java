@@ -37,6 +37,7 @@ import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
@@ -68,6 +69,9 @@ public class SrsApiController extends AbstractApiController {
     @Autowired
     private LogService logService;
 
+    @Autowired
+    private WebCertUserService userService;
+
     @POST
     @Path("/{intygId}/{personnummer}/{diagnosisCode}/{sjukskrivningsgrad}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -95,11 +99,12 @@ public class SrsApiController extends AbstractApiController {
         }
         try {
             Utdatafilter filter = buildUtdatafilter(prediktion, atgard, fmbInfo, statistik);
-            SrsResponse response = srsService.getSrs(intygId, new Personnummer(personnummer), diagnosisCode, filter, questions,
-                    SjukskrivningsGrad.valueOf(sjukskrivningsgrad));
+            SrsResponse response = srsService
+                    .getSrs(userService.getUser(), intygId, new Personnummer(personnummer), diagnosisCode, filter, questions,
+                            SjukskrivningsGrad.valueOf(sjukskrivningsgrad));
             logService.logShowPrediction(personnummer);
             return Response.ok(response).build();
-        } catch (InvalidPersonNummerException e) {
+        } catch (InvalidPersonNummerException | IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (SrsException e) {
             return Response.status(Response.Status.NO_CONTENT).build();
@@ -162,16 +167,6 @@ public class SrsApiController extends AbstractApiController {
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-    }
-
-    @GET
-    @Path("/codes")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getDiagnosisCodes() {
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .features(WebcertFeature.SRS)
-                .orThrow();
-        return Response.ok(srsService.getAllDiagnosisCodes()).build();
     }
 
     private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean fmbInfo, boolean statistik) {
