@@ -156,6 +156,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
         draftHolder.setRelations(relations1);
         draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
+        draftHolder.setPatientResolved(patientResolved);
         draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
         draftHolder.setAvliden(resolvedPatient.isAvliden());
 

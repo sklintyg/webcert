@@ -49,6 +49,7 @@ public class DraftHolder {
     private Relations relations = new Relations();
     private LocalDateTime klartForSigneringDatum;
 
+    private boolean patientResolved = false;
     private boolean sekretessmarkering = false;
     private boolean avliden = false;
 
@@ -122,6 +123,14 @@ public class DraftHolder {
 
     public void setKlartForSigneringDatum(LocalDateTime klartForSigneringDatum) {
         this.klartForSigneringDatum = klartForSigneringDatum;
+    }
+
+    public boolean isPatientResolved() {
+        return patientResolved;
+    }
+
+    public void setPatientResolved(boolean patientResolved) {
+        this.patientResolved = patientResolved;
     }
 
     public boolean isSekretessmarkering() {
