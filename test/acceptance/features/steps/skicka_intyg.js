@@ -42,9 +42,12 @@ module.exports = function() {
 
     this.Given(/^jag skickar intyget till Försäkringskassan$/, function() {
 
+
+
         browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
+            intyg.id = text.split('/').slice(-2)[0];
             intyg.id = intyg.id.split('?')[0];
+            logger.info('Följande intygs id skickas till Försäkringskassan: ' + intyg.id);
         });
 
         return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function() {

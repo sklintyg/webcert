@@ -48,7 +48,7 @@ function getIER(intygstyp, status, callback) {
     getIntygElementRow(intygstyp, status, function(el) {
         gotoIntyg(intygstyp, status, el, function(err) {
             browser.getCurrentUrl().then(function(text) {
-                intyg.id = text.split('/').slice(-1)[0];
+                intyg.id = text.split('/').slice(-2)[0];
                 intyg.id = intyg.id.split('?')[0];
                 logger.info('intyg.id:' + intyg.id);
                 if (err) {
