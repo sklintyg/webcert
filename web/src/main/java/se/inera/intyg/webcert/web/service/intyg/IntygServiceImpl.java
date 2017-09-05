@@ -704,6 +704,15 @@ public class IntygServiceImpl implements IntygService {
         try {
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
             Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
+
+            // Copied from getDraft in UtkastModuleApiController
+            // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,
+            // create an "empty" Patient with personnummer only.
+            if (patient == null) {
+                patient = new Patient();
+                patient.setPersonId(utkast.getPatientPersonnummer());
+            }
+
             String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
                     patient);
 
