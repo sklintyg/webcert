@@ -76,10 +76,12 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -438,6 +440,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         GrundData grunddata = new GrundData();
         grunddata.setPatient(defaultPatient);
         grunddata.setSkapadAv(new HoSPersonal());
+        String expectedPatientId = defaultPatient.getPersonId().getPersonnummer();
 
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
@@ -457,7 +460,75 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
+        assertEquals(expectedPatientId, user.getParameters().getBeforeAlternateSsn());
+    }
 
+    @Test
+    public void testUpdatePatientOnDraftEmptyPatientId() throws Exception {
+        utkast.setEnhetsId(UTKAST_ENHETS_ID);
+
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(null, utkast.getIntygsId(), utkast.getVersion());
+
+        WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+
+        GrundData grunddata = new GrundData();
+        grunddata.setPatient(defaultPatient);
+        grunddata.setSkapadAv(new HoSPersonal());
+
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+
+        // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
+        utkast = spy(utkast);
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(userService.getUser()).thenReturn(user);
+        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+
+        draftService.updatePatientOnDraft(request);
+
+        verify(mockUtkastRepository, never()).save(any(Utkast.class));
+        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
+        assertNull(user.getParameters().getBeforeAlternateSsn());
+    }
+
+    @Test
+    public void testUpdatePatientOnDraftSamePatientId() throws Exception {
+        utkast.setEnhetsId(UTKAST_ENHETS_ID);
+
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(defaultPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
+
+        WebCertUser user = createUser();
+        Utlatande utlatande = mock(Utlatande.class);
+
+        GrundData grunddata = new GrundData();
+        grunddata.setPatient(defaultPatient);
+        grunddata.setSkapadAv(new HoSPersonal());
+
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+
+        // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
+        utkast = spy(utkast);
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(userService.getUser()).thenReturn(user);
+        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+
+        draftService.updatePatientOnDraft(request);
+
+        verify(mockUtkastRepository, never()).save(any(Utkast.class));
+        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
+        assertNull(user.getParameters().getBeforeAlternateSsn());
     }
 
     @Test(expected = WebCertServiceException.class)

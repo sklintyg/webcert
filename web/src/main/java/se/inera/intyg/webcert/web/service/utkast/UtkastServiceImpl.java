@@ -439,6 +439,8 @@ public class UtkastServiceImpl implements UtkastService {
                         || SamordningsnummerValidator.isSamordningsNummer(personId))
                 && !personId.getPnrHash().equals(draftPatient.getPersonId().getPnrHash())) {
 
+            String oldPersonId = draftPatient.getPersonId().getPersonnummer();
+
             // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar
             // personnumret -
             // vilka regler gäller då för namn och adress? Samma regler som i PatientDetailsResolverImpl?
@@ -449,6 +451,9 @@ public class UtkastServiceImpl implements UtkastService {
                 saveDraft(utkast);
                 monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
                 sendNotification(utkast, Event.CHANGED, getUserReference());
+
+                // Spara undan det gamla personnummret temporärt
+                webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
             } catch (ModuleException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                         "Patient details on Utkast " + draftId + " could not be updated", e);

@@ -170,6 +170,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
                     "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
         }
 
+        user.setParameters(new IntegrationParameters(StringUtils.trimToNull(reference), responsibleHospName, alternatePatientSSn, fornamn,
+                mellannamn, efternamn, postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk));
+
         Boolean isUtkast = false;
         Utkast utkast = utkastRepository.findOne(intygId);
 
@@ -212,9 +215,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         if (!intygsTyp.equals(Fk7263EntryPoint.MODULE_ID)) {
             verifyQueryStrings(fornamn, efternamn, postadress, postnummer, postort);
         }
-
-        user.setParameters(new IntegrationParameters(StringUtils.trimToNull(reference), responsibleHospName, alternatePatientSSn, fornamn,
-                mellannamn, efternamn, postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk));
 
         LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, intygsTyp, coherentJournaling);
         return buildRedirectResponse(uriInfo, intygsTyp, intygId, isUtkast);
