@@ -66,6 +66,9 @@
     },
     "sekretessmarkering": {
       "type": "boolean"
+    },
+    "patientResolved": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false,
