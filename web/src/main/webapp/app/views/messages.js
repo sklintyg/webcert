@@ -39,7 +39,7 @@ angular.module('webcert').constant('webcert.messages', {
         'label.signselectedintyg': 'Signera valda intyg',
 
         'label.createutkast.sekretessmarkering': '<p>Patienten har en sekretessmarkering. Det innebär att patientens folkbokföringsuppgifter är skyddade. Var vänlig hantera dem varsamt.</p>På grund av sekretessmarkeringen går det inte att skriva nya elektroniska intyg.',
-        'label.copyutkast.sekretessmarkering': 'På grund av sekretessmarkeringen går det inte att kopiera intyg.',
+        'label.copyutkast.sekretessmarkering': 'På grund av sekretessmarkeringen går det inte att förnya intyget.',
 
         'label.confirmaddress': 'Återanvänd uppgifter',
         'label.confirmsign': 'Signera intyget',
