@@ -27,7 +27,6 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Utdatafilter;
-import se.inera.intyg.infra.integration.srs.model.SjukskrivningsGrad;
 import se.inera.intyg.infra.integration.srs.model.SrsException;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
@@ -87,7 +86,6 @@ public class SrsApiController extends AbstractApiController {
             @ApiParam(value = "Sjukskrivningsgrad", required = true) @PathParam("sjukskrivningsgrad") String sjukskrivningsgrad,
             @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("prediktion") @DefaultValue("false") boolean prediktion,
             @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("atgard") @DefaultValue("false") boolean atgard,
-            @ApiParam(value = "Utdatafilter: FmbInformation") @QueryParam("fmbInfo") @DefaultValue("false") boolean fmbInfo,
             @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("statistik") @DefaultValue("false") boolean statistik,
             @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
         authoritiesValidator.given(getWebCertUserService().getUser())
@@ -98,10 +96,9 @@ public class SrsApiController extends AbstractApiController {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         try {
-            Utdatafilter filter = buildUtdatafilter(prediktion, atgard, fmbInfo, statistik);
+            Utdatafilter filter = buildUtdatafilter(prediktion, atgard, statistik);
             SrsResponse response = srsService
-                    .getSrs(userService.getUser(), intygId, new Personnummer(personnummer), diagnosisCode, filter, questions,
-                            SjukskrivningsGrad.valueOf(sjukskrivningsgrad));
+                    .getSrs(userService.getUser(), intygId, new Personnummer(personnummer), diagnosisCode, filter, questions);
             logService.logShowPrediction(personnummer);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException | IllegalArgumentException e) {
@@ -179,11 +176,10 @@ public class SrsApiController extends AbstractApiController {
         return Response.ok(srsService.getAllDiagnosisCodes()).build();
     }
 
-    private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean fmbInfo, boolean statistik) {
+    private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean statistik) {
         Utdatafilter filter = new Utdatafilter();
         filter.setPrediktion(prediktion);
         filter.setAtgardsrekommendation(atgard);
-        filter.setFmbinformation(fmbInfo);
         filter.setStatistik(statistik);
         return filter;
     }
