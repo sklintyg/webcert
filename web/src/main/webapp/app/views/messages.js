@@ -69,6 +69,7 @@ angular.module('webcert').constant('webcert.messages', {
         'info.nounsigned.intyg.for.unit': '<strong>Inga ej signerade intyg hittades på enheten.</strong>',
         'info.nounansweredintygfound': '<strong>Inga intyg med ohanterade frågor hittades.</strong>',
         'info.noreadytosignintygfound': '<strong>Inga klarmarkerade intyg hittades.</strong>',
+        'info.loadingintyg': '<strong>Laddar intyg...</strong>',
         'info.loadingdata': '<strong>Uppdaterar lista...</strong>',
         'info.nounanswered.qa.for.unit': '<strong>Samtliga frågor och svar är hanterade. Det finns inget att åtgärda.</strong>',
         'info.nointygfound': '<strong>Inga intyg hittades.</strong>',
