@@ -72,7 +72,7 @@ public class SrsApiController extends AbstractApiController {
     private WebCertUserService userService;
 
     @POST
-    @Path("/{intygId}/{personnummer}/{diagnosisCode}/{sjukskrivningsgrad}")
+    @Path("/{intygId}/{personnummer}/{diagnosisCode}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get SRS data", httpMethod = "POST", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -83,7 +83,6 @@ public class SrsApiController extends AbstractApiController {
     public Response getSrs(@ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
             @ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
             @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
-            @ApiParam(value = "Sjukskrivningsgrad", required = true) @PathParam("sjukskrivningsgrad") String sjukskrivningsgrad,
             @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("prediktion") @DefaultValue("false") boolean prediktion,
             @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("atgard") @DefaultValue("false") boolean atgard,
             @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("statistik") @DefaultValue("false") boolean statistik,
