@@ -80,7 +80,6 @@ module.exports = function() {
     });
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
         helpers.updateEnhetAdressForNewIntyg();
-        var fragaText = global.intyg.guidcheck;
         var page = fkIntygPage;
         var utkast = fkUtkastPage;
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
@@ -92,37 +91,20 @@ module.exports = function() {
 
         if (!intyg.messages || intyg.messages.length <= 0) {
             throw ('Inga frågor hittades');
+        } else if (intyg.messages.length > 1) {
+            throw ('Fler än en fråga hittades, Granska teststegen!');
         } else {
 
             return browser.getCurrentUrl().then(function(url) {
 
                 global.behoverKompletterasLink = url;
 
-                var svaraBtn = page.getQAElementByText(fragaText).panel.element(by.cssContainingText('.btn-success', 'Svara'));
-                return svaraBtn.sendKeys(protractor.Key.SPACE)
+                return page.clickKompletteraIntyg(intyg.messages[0].id)
                     .then(function() {
                         //Fulhack för att inte global ska innehålla en referens
                         global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
-                        return page.komplettera.dialog.svaraMedNyttIntygKnapp.sendKeys(protractor.Key.SPACE)
-                            .then(function() {
-
-                                    if (isSMIIntyg) {
-                                        if (!person.adress) {
-                                            person.adress = {
-                                                postadress: 'Norra storgatan 30',
-                                                postort: 'Katthult',
-                                                postnummer: '10000'
-
-                                            };
-                                        }
-                                        // Ange patientens address om den inte är ifylld i utkastet
-                                        // Den angivna addressen sparas endast för aktuellt intyg och följer inte med vid komplettering (PA-003)
-                                        // Fältet måste därför fyllas i igen, speciellt om patienten inte har adress i PU.
-                                        return require('./fillIn/common.js').setPatientAdressIfNotGiven();
-                                    }
-                                }
-
-                            );
+                        return;
+                    
                     });
 
             });
@@ -165,6 +147,7 @@ module.exports = function() {
         return expect(page.getQAElementByText(fragaText).panel.isPresent()).to.become(true);
     });
 
+    //TODO funktionen svaraMedNyttIntyg finns inte längre
     this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
         return fkIntygPage.svaraMedNyttIntyg(global.intyg.messages[0].id).then(function() {
             browser.sleep(3000).then(function() {

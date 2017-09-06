@@ -55,6 +55,9 @@ var FkBaseIntyg = BaseIntyg._extend({
             text: panel.element(by.css('textarea')),
             sendButton: panel.element(by.css('.btn-success'))
         };
+    },
+	clickKompletteraIntyg: function(id) {
+        return element(by.id('komplettera-intyg-' + id)).sendKeys(protractor.Key.SPACE);
     }
 });
 
