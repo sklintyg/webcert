@@ -69,11 +69,6 @@ module.exports = function() {
         db.statistics.lookUp(1, intyg.id, callback);
     });
 
-    this.Given(/^radera de intyg som har diagnoskod "([^"]*)" från wideline tabellen i statitikdatabasen$/, function(diagnosKod, callback) {
-        diagnosKod = slumpaDiagnosKod(diagnosKod);
-
-        db.statistics.deleteSjukfall(diagnosKod, callback);
-    });
 
     this.Given(/^jag går in på Statistiktjänsten$/, function() {
         global.statistik.intygsId = intyg.id;

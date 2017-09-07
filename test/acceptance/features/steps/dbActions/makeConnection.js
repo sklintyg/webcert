@@ -24,6 +24,7 @@ module.exports = function() {
     if (!process.env.DATABASE_PASSWORD) {
         throw 'Miljövariabel DATABASE_PASSWORD saknas';
     }
+    console.log('#### Skapar ny MySQL anslutning till HOST ' + process.env.DATABASE_HOST + ', använd Pooler istället! ####');
     return mysql.createConnection({
         host: process.env.DATABASE_HOST,
         user: process.env.DATABASE_USER,

@@ -20,11 +20,11 @@
 /* globals Promise,JSON,logger */
 
 'use strict';
-var connection;
+var statsPool = require('./statisticsPool');
 
-function getIntygEntries(intygsID) {
-    var bdName = process.env.STAT_DATABASE_NAME;
-    var dbTable = bdName + '.intyghandelse';
+function getIntygEntries(intygsID, connection) {
+    var dbName = process.env.STAT_DATABASE_NAME;
+    var dbTable = dbName + '.intyghandelse';
     var column = 'correlationId';
     var query = 'SELECT ' + column + ' FROM ' + dbTable + ' WHERE ' + column + ' = "' + intygsID + '"';
 
@@ -41,91 +41,36 @@ function getIntygEntries(intygsID) {
     return p1;
 }
 
-/*function deleteEntries(diagnosKod) {
-    var bdName = process.env.STAT_DATABASE_NAME;
-    var dbTable = bdName + '.wideline';
-    var column = 'diagnoskategori';
-    var query = 'DELETE FROM ' + dbTable + ' WHERE ' + column + ' = "' + diagnosKod + '"';
-
-    console.log('query: ' + query);
-    var p1 = new Promise(function(resolve, reject) {
-        connection.query(query,
-            function(err, rows, fields) {
-                if (err) {
-                    reject(err);
-                }
-                resolve(rows);
-            });
-    });
-    return p1;
-}*/
-
 function lookUp(count, intygsID, cb) {
-    handleDisconnect();
 
-    var intervall = 5000;
 
-    getIntygEntries(intygsID).then(function(result) {
-        if (result.length >= count) {
-            logger.info('Hittade rader: ' + JSON.stringify(result));
-            connection.end();
-            cb();
-        } else {
-            logger.info('Hittade färre än ' + count + 'rader i databasen');
-            console.log('Ny kontroll sker efter ' + intervall + 'ms');
-            setTimeout(function() {
-                lookUp(count, intygsID, cb);
-            }, intervall);
-        }
+    statsPool.getConnection().then(function(connection) {
 
-    }, function(err) {
-        connection.end();
-        cb(err);
+        var intervall = 5000;
 
-    });
-}
+        getIntygEntries(intygsID, connection).then(function(result) {
+            if (result.length >= count) {
+                logger.info('Hittade rader: ' + JSON.stringify(result));
+                connection.release();
+                cb();
+            } else {
+                logger.info('Hittade färre än ' + count + 'rader i databasen');
+                console.log('Ny kontroll sker efter ' + intervall + 'ms');
+                setTimeout(function() {
+                    lookUp(count, intygsID, cb);
+                }, intervall);
+            }
 
-function deleteSjukfall(diagnosKod, cb) {
-    handleDisconnect();
+        }, function(err) {
+            connection.release();
+            cb(err);
 
-    var intervall = 5000;
-
-    getIntygEntries(diagnosKod).then(function(result) {
-        if (result.length >= 0) {
-            logger.info(result.length + 'rader togs bort: ' + JSON.stringify(result));
-            connection.end();
-            cb();
-        } else {
-            logger.info('Hittade färre än 1 rader i databasen');
-            console.log('Ny kontroll sker efter ' + intervall + 'ms');
-            setTimeout(function() {
-                lookUp(diagnosKod, cb);
-            }, intervall);
-        }
-
-    }, function(err) {
-        connection.end();
-        cb(err);
-
-    });
-}
-
-function handleDisconnect() {
-    connection = require('./makeConnectionStatistics')();
-
-    connection.connect(function(err) {
-        if (err) {
-            logger.warn('Fel i anslutning till databasen:', err);
-        }
-    });
-    connection.on('error', function(err) {
-        logger.warn('Anslutningsproblem i databaskoppling' + JSON.stringify(err));
+        });
     });
 }
 
 
 
 module.exports = {
-    lookUp: lookUp,
-    deleteSjukfall: deleteSjukfall
+    lookUp: lookUp
 };

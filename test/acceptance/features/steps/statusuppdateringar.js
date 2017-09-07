@@ -56,22 +56,27 @@ function getNotificationEntries(intygsId, value, numEvents) {
 
     console.log('query: ' + query);
 
-    var conn = db.makeConnection();
-    conn.connect();
+
     var promise = new Promise(function(resolve, reject) {
-        conn.query(query,
-            function(err, rows, fields) {
-                conn.end();
-                if (err) {
-                    reject(err);
-                    // } else if (rows.length !== numEvents) {
-                    //     // console.log('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
-                    //     resolve();
-                } else {
-                    console.log('Antal händelser i db ' + rows.length + '(' + numEvents + ')');
-                    resolve(rows);
-                }
-            });
+
+        db.dbPool.getConnection().then(function(connection) {
+            connection.query(query,
+                function(err, rows, fields) {
+                    connection.release();
+                    logger.info('MySQL Connection is released back into the pool');
+                    if (err) {
+                        reject(err);
+                        // } else if (rows.length !== numEvents) {
+                        //     // console.log('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
+                        //     resolve();
+                    } else {
+                        console.log('Antal händelser i db ' + rows.length + '(' + numEvents + ')');
+                        resolve(rows);
+                    }
+                });
+        });
+
+
     });
     return promise;
 }

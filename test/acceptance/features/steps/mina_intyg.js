@@ -58,12 +58,15 @@ module.exports = function() {
         element(by.id('consentTerms')).isPresent().then(function(result) {
             if (result) {
                 logger.info('Lämnar samtycke..');
-                element(by.id('giveConsentButton')).sendKeys(protractor.Key.SPACE)
+                element(by.id('giveConsentCheckbox')).sendKeys(protractor.Key.SPACE)
                     .then(function() {
                         browser.ignoreSynchronization = false;
                         return browser.sleep(3000);
-                    })
-                    .then(callback);
+                    }).then(function() {
+                        element(by.id('giveConsentButton')).sendKeys(protractor.Key.SPACE);
+                        browser.ignoreSynchronization = false;
+                        return browser.sleep(3000);
+                    }).then(callback);
             } else {
                 browser.ignoreSynchronization = false;
                 callback();

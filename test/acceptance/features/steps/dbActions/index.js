@@ -19,7 +19,9 @@
 'use strict';
 
 module.exports = {
-    makeConnection: require('./makeConnection'),
+    //makeConnection: require('./makeConnection'),
     storeLog: require('./storeLog'),
-    statistics: require('./statistics')
+    statistics: require('./statistics'),
+    dbPool: require('./pool'),
+    statsPool: require('./statisticsPool')
 };

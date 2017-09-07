@@ -21,7 +21,8 @@
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
-var connection;
+var dbPool = require('./pool');
+
 
 function formatDate(date) {
     var time = ((date.getHours() < 10) ? '0' : '') +
@@ -45,7 +46,7 @@ function formatDate(date) {
 //     // return p1;
 // }
 
-function getLogEntries(activity, intygsID, userHSA) {
+function getLogEntries(activity, intygsID, userHSA, connection) {
     var dbTable = 'webcert_requests.storelog__mock_requests';
     var now = new Date();
     var oneMinuteSinceNow = new Date(now.getTime() + (-1) * 60000);
@@ -59,6 +60,9 @@ function getLogEntries(activity, intygsID, userHSA) {
 
     console.log('query: ' + query);
     var p1 = new Promise(function(resolve, reject) {
+
+
+
         connection.query(query,
             function(err, rows, fields) {
                 if (err) {
@@ -66,55 +70,44 @@ function getLogEntries(activity, intygsID, userHSA) {
                 }
                 resolve(rows);
             });
+
+
+
     });
     return p1;
 }
 
 function waitForCount(activity, count, intygsID, userHSA, cb) {
-    handleDisconnect();
 
-    var intervall = 5000;
+    dbPool.getConnection().then(function(connection) {
 
-    getLogEntries(activity, intygsID, userHSA).then(function(result) {
-        if (result.length >= count) {
-            logger.info('Hittade rader: ' + JSON.stringify(result));
-            connection.end();
-            cb();
-        } else {
-            logger.info('Hittade färre än ' + count + 'rader i databasen');
-            console.log('Ny kontroll sker efter ' + intervall + 'ms');
-            setTimeout(function() {
-                waitForCount(activity, count, intygsID, userHSA, cb);
-            }, intervall);
-        }
+        var intervall = 5000;
+        getLogEntries(activity, intygsID, userHSA, connection).then(function(result) {
+            if (result.length >= count) {
+                logger.info('Hittade rader: ' + JSON.stringify(result));
+                connection.release();
+                cb();
+            } else {
+                logger.info('Hittade färre än ' + count + 'rader i databasen');
+                console.log('Ny kontroll sker efter ' + intervall + 'ms');
+                setTimeout(function() {
+                    waitForCount(activity, count, intygsID, userHSA, cb);
+                }, intervall);
+            }
 
-    }, function(err) {
-        connection.end();
-        cb(err);
+        }, function(err) {
+            connection.release();
+            cb(err);
+
+        });
 
     });
+
+
+
+
 }
 
-
-// från http://stackoverflow.com/questions/19357539/node-js-server-closed-the-connection
-function handleDisconnect() {
-    connection = require('./makeConnection')();
-
-    connection.connect(function(err) {
-        if (err) {
-            logger.warn('Fel i anslutning till databasen:', err);
-            //setTimeout(handleDisconnect, 2000);
-        }
-    });
-    connection.on('error', function(err) {
-        logger.warn('Anslutningsproblem i databaskoppling' + JSON.stringify(err));
-        // if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-        //     //logger.info('Skapar ny db-anslutning');
-        //     //handleDisconnect(); // lost due to either server restart, or a
-        // } else { // connnection idle timeout
-        // }
-    });
-}
 
 
 
