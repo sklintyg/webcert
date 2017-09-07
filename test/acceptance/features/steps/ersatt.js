@@ -81,7 +81,7 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^ska jag se en texten "([^"]*)" som innehåller en länk till det ersatta intyget$/, function(replacedMessage) {
+    this.Given(/^ska jag se texten "([^"]*)" som innehåller en länk till det ersatta intyget$/, function(replacedMessage) {
         var replaceMsg = element(by.id('wc-intyg-replaced-message'));
         return replaceMsg.isPresent().then(function(isPresent) {
             if (isPresent) {

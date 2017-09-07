@@ -104,7 +104,7 @@ module.exports = function() {
                         //Fulhack för att inte global ska innehålla en referens
                         global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
                         return;
-                    
+
                     });
 
             });

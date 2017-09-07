@@ -271,20 +271,23 @@ module.exports = {
     },
 
     intygURL: function(typAvIntyg, intygsId) {
+        var url = '';
         if (typAvIntyg === 'Läkarutlåtande för sjukersättning') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarintyg för sjukpenning') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarintyg FK 7263') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + intygsId + '/';
         } else if (typAvIntyg === 'Transportstyrelsens läkarintyg, diabetes') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-diabetes/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-diabetes/' + intygsId + '/';
         } else if (typAvIntyg === 'Transportstyrelsens läkarintyg') {
-            return process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + intygsId + '/';
         }
+        logger.info('intygURL: ' + url);
+        return url;
     }
 };

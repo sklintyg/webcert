@@ -27,12 +27,16 @@ module.exports = function() {
 
     this.Given(/^jag skickar intyget till Transportstyrelsen/, function() {
 
-        //Fånga intygets id
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
-            logger.info('Intygsid: ' + intyg.id);
-            intyg.id = intyg.id.split('?')[0];
-        });
+        if (!intyg.id) {
+            //Fånga intygets id
+            browser.getCurrentUrl().then(function(text) {
+                intyg.id = text.split('/').slice(-2)[0];
+                logger.info('Intygsid: ' + intyg.id);
+                intyg.id = intyg.id.split('?')[0];
+            });
+        } else {
+            logger.info('Följande intygs id skickas till Transportstyrelsen: ' + intyg.id);
+        }
 
         Promise.all([
             fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE),
@@ -43,12 +47,17 @@ module.exports = function() {
     this.Given(/^jag skickar intyget till Försäkringskassan$/, function() {
 
 
-
-        browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-2)[0];
-            intyg.id = intyg.id.split('?')[0];
+        if (!intyg.id) {
+            browser.getCurrentUrl().then(function(text) {
+                intyg.id = text.split('/').slice(-2)[0];
+                intyg.id = intyg.id.split('?')[0];
+                logger.info('Följande intygs id skickas till Försäkringskassan: ' + intyg.id);
+            });
+        } else {
             logger.info('Följande intygs id skickas till Försäkringskassan: ' + intyg.id);
-        });
+        }
+
+
 
         return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function() {
             return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
