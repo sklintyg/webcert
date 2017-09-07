@@ -73,7 +73,7 @@ function gotoIntygUtkast(intygtyp, cb) {
     ]).then(function() {
         // Spara intygsid för kommande steg
         browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-1)[0];
+            intyg.id = text.split('/').slice(-2)[0];
             logger.info('intyg.id: ' + intyg.id, function() {
                 cb();
             });
@@ -191,7 +191,7 @@ module.exports = function() {
         ]).then(function() {
             // Spara intygsid för kommande steg
             browser.getCurrentUrl().then(function(text) {
-                intyg.id = text.split('/').slice(-1)[0];
+                intyg.id = text.split('/').slice(-2)[0];
                 logger.info('intyg.id: ' + intyg.id, function() {
                     callback();
                 });
@@ -212,7 +212,7 @@ module.exports = function() {
 
         //     // Browser & URL
         //     forkedBrowser = browser.forkNewDriverInstance(true);
-        //     intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
+        //     intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id + '/';
 
         //     parallell.login({
         //         userObj: userObj,
@@ -237,7 +237,7 @@ module.exports = function() {
 
         // Browser & URL
         forkedBrowser = browser.forkNewDriverInstance(true);
-        intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id;
+        intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id + '/';
 
         parallell.login({
             userObj: userObj,

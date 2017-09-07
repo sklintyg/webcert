@@ -57,7 +57,7 @@ function writeNewIntyg(typ, status) {
                 })
                 .then(function() { // Spara intygsid för kommande steg
                     return browser.getCurrentUrl().then(function(text) {
-                        intyg.id = text.split('/').slice(-1)[0];
+                        intyg.id = text.split('/').slice(-2)[0];
                         return logger.info('intyg.id: ' + intyg.id);
                     });
 
