@@ -38,7 +38,7 @@ Scenario: Filtrera frågor på läkare
    När jag väljer att filtrera på läkare "Karin Persson"
    Så ska jag bara se frågor på intyg signerade av "Karin Persson"
 
-@befintlig-fråga
+@befintlig-fråga @waitingForFix
 Scenario: Skicka fråga till Försäkringskassan genom att gå in på en befintlig fråga
       När Försäkringskassan ställer en "Kontakt" fråga om intyget
       Och jag går till sidan Frågor och svar

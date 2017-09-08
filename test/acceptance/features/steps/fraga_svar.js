@@ -147,13 +147,11 @@ module.exports = function() {
         return expect(page.getQAElementByText(fragaText).panel.isPresent()).to.become(true);
     });
 
-    //TODO funktionen svaraMedNyttIntyg finns inte längre
+
     this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
-        return fkIntygPage.svaraMedNyttIntyg(global.intyg.messages[0].id).then(function() {
-            browser.sleep(3000).then(function() {
-                return expect(element(by.cssContainingText('.btn', 'Svara med nytt intyg')).isPresent()).to.become(false);
-            });
-        });
+        var komplettera = element(by.id('komplettera-intyg-' + global.intyg.messages[0].id));
+
+        return expect(komplettera.isPresent()).to.become(false);
 
     });
 
@@ -161,6 +159,12 @@ module.exports = function() {
         return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(text);
     });
 
+    this.Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() {
+        return element(by.id('uthopp-svara-med-meddelande-' + global.intyg.messages[0].id)).sendKeys(protractor.Key.SPACE)
+            .then(function() {
+                return browser.sleep(3000);
+            });
+    });
 
 
     this.Given(/^jag ska kunna svara med textmeddelande/, function() {

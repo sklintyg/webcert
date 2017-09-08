@@ -67,6 +67,7 @@ Scenario: Ska få varning vid svar med nytt intyg
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan
    Och jag ska inte kunna komplettera med nytt intyg från webcert
+   När jag klickar på svara knappen, fortfarande i uthoppsläge
    Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
 
 @komplettering

@@ -41,7 +41,7 @@ module.exports = function() {
 
     this.Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, function(arg1) {
         var intygShortcode = helpers.getAbbrev(intyg.typ).toLowerCase();
-        var link = '/web/dashboard#/' + intygShortcode + '/edit/' + intyg.id;
+        var link = '/web/dashboard#/' + intygShortcode + '/edit/' + intyg.id + '/';
         logger.info('Går till ' + link);
         return browser.get(link);
     });
