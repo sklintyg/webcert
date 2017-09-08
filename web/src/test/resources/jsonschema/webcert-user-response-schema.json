@@ -806,6 +806,9 @@
         "alternateSsn": {
           "type": "string"
         },
+        "beforeAlternateSsn": {
+          "type": "string"
+        },
         "fornamn": {
           "type": "string"
         },
