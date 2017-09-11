@@ -1,14 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "definitions": {},
   "properties": {
     "atgarderObs": {
       "items": {
+        "type": "string"
       },
       "type": "array"
     },
     "atgarderRek": {
       "items": {
+        "type": "string"
       },
       "type": "array"
     },

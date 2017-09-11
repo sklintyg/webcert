@@ -1,14 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "definitions": {},
   "items": {
     "properties": {
       "answerOptions": {
         "items": {
           "properties": {
-            "defaultValue": {
-              "type": "boolean"
-            },
             "id": {
               "type": "string"
             },
@@ -22,6 +18,7 @@
               "type": "boolean"
             }
           },
+          "required": ["id", "priority", "text", "defaultValue"],
           "additionalProperties": false,
           "type": "object"
         },
@@ -40,6 +37,7 @@
         "type": "string"
       }
     },
+    "required": ["answerOptions", "priority", "questionId", "text"],
     "additionalProperties": false,
     "type": "object"
   },

@@ -1,9 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "definitions": {},
   "enum": [
     "JA",
-    "NEJ",
     "INGET"
   ],
   "id": "http://example.com/example.json",

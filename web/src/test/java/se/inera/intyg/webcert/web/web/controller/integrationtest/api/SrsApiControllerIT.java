@@ -1,15 +1,11 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
 import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
@@ -36,7 +32,6 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String personnummer = "19121212-1212";
         String utkastId = createUtkast("luse", personnummer);
-
 
         List<SrsQuestionResponse> body = Arrays.asList(
                 SrsQuestionResponse.create("questionId123123", "answerId321321"));
@@ -87,7 +82,7 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void getSrsShouldRejectIfIntygDoesntExist() {
+    public void getSrsShouldRejectIfDiagnoseDoesntExist() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         List<SrsQuestionResponse> body = Arrays.asList(
@@ -95,11 +90,13 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .pathParam("intygId", "asdfasdf")
-                .pathParam("personnummer", "asdfasdf")
+                .pathParam("personnummer", "19121212-1212")
                 .pathParam("diagnosisCode", "asdfasdf")
+                .queryParam("prediktion", "true")
+                .queryParam("atgard", "true")
+                .queryParam("statistik", "true")
                 .with().contentType(ContentType.JSON).and().body(body)
-                // Semantically incorrect, should be changed to 404, NOT_FOUND.
-                .expect().statusCode(BAD_REQUEST)
+                .expect().statusCode(INTERNAL_SERVER_ERROR)
                 .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}");
     }
 
@@ -142,7 +139,7 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void getDiagnosisCodesSimpleTest(){
+    public void getDiagnosisCodesSimpleTest() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
