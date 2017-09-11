@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {},
+  "items": {
+    "properties": {
+      "answerOptions": {
+        "items": {
+          "properties": {
+            "defaultValue": {
+              "type": "boolean"
+            },
+            "id": {
+              "type": "string"
+            },
+            "priority": {
+              "type": "integer"
+            },
+            "text": {
+              "type": "string"
+            },
+            "defaultValue": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "helpText": {
+        "type": "string"
+      },
+      "priority": {
+        "type": "integer"
+      },
+      "questionId": {
+        "type": "string"
+      },
+      "text": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": false,
+    "type": "object"
+  },
+  "type": "array"
+}

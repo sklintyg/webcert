@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {},
+  "properties": {
+    "atgarderObs": {
+      "items": {
+      },
+      "type": "array"
+    },
+    "atgarderRek": {
+      "items": {
+      },
+      "type": "array"
+    },
+    "predictionDescription": {
+      "type": "string"
+    },
+    "predictionLevel": {
+      "type": "integer"
+    },
+    "statistikBild": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object"
+}
