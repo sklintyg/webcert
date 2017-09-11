@@ -22,9 +22,6 @@
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
-var luseUtkastPage = pages.intyg.luse.utkast;
-var fkUtkastPage = pages.intyg.fk['7263'].utkast;
-// var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 var helpers = require('./helpers');
 var soap = require('soap');
@@ -81,11 +78,11 @@ module.exports = function() {
     this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
         helpers.updateEnhetAdressForNewIntyg();
         var page = fkIntygPage;
-        var utkast = fkUtkastPage;
+        //var utkast = fkUtkastPage;
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         if (isSMIIntyg) {
             page = fkLusePage;
-            utkast = luseUtkastPage;
+            //utkast = luseUtkastPage;
         }
 
 
@@ -102,6 +99,7 @@ module.exports = function() {
                 return page.clickKompletteraIntyg(intyg.messages[0].id)
                     .then(function() {
                         //Fulhack för att inte global ska innehålla en referens
+                        logger.info('OK clickKompletteraIntyg(' + intyg.messages[0].id + ');');
                         global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
                         return;
 

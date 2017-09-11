@@ -25,7 +25,7 @@ Scenario: Validerar alla fält i TS diabetes intyget
 	Så ska alla utökade valideringsfel för "Transportstyrelsens läkarintyg, diabetes" visas
 
 	När jag fyller i text i "diabetes-årtal" fältet
-	Så ska valideringsfelet "År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än år 1900." visas "2" gånger
+	Så ska valideringsfelet "År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än år 1900." visas "1" gånger
 
 	När jag fyller i text i "alla synfält" fältet
 	Och jag byter fokus från fält

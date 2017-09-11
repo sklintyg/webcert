@@ -33,17 +33,26 @@ module.exports = function() {
             return Promise.resolve();
         } else {
             console.log('Intygstyp är: ' + intyg.typ);
-            return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa).then(function() {
-                pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
-                    console.log('Intygstyp är: ' + intyg.typ);
-                    logger.info('OK - angeArbetsformaga');
+            return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
+                .then(function() {
+                    logger.info('OK - angeBaseratPa');
                 }, function(reason) {
-                    throw ('FEL, angeArbetsformaga,' + reason);
+                    throw ('FEL, angeBaseratPa,' + reason);
+                })
+                .then(function() {
+                    browser.sleep(1000);
+                })
+                .then(function() {
+                    pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
+                        console.log('Intygstyp är: ' + intyg.typ);
+                        logger.info('OK - angeArbetsformaga');
+                    }, function(reason) {
+                        throw ('FEL, angeArbetsformaga,' + reason);
+                    });
+                })
+                .then(function() {
+                    browser.sleep(1000);
                 });
-                logger.info('OK - angeBaseratPa');
-            }, function(reason) {
-                throw ('FEL, angeBaseratPa,' + reason);
-            });
         }
     });
 
