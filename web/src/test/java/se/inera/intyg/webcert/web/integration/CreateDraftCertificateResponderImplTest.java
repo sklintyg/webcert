@@ -18,33 +18,20 @@
  */
 package se.inera.intyg.webcert.web.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -66,6 +53,19 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.infrastructure.directory.v1.CommissionType;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateResponderImplTest {
@@ -101,6 +101,11 @@ public class CreateDraftCertificateResponderImplTest {
 
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
+
+    @Before
+    public void setup() {
+        when(mockValidator.validateApplicationErrors(any(Utlatande.class))).thenReturn(ResultValidator.newInstance());
+    }
 
     /**
      * When a new certificate draft is being created the caller
@@ -162,6 +167,27 @@ public class CreateDraftCertificateResponderImplTest {
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
         assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+        assertEquals(validationError, response.getResult().getResultText());
+    }
+
+    @Test
+    public void testCreateDraftCertificateApplicationError() throws HsaServiceCallException {
+        final String validationError = "error";
+        ResultValidator resultsValidator = new ResultValidator();
+        resultsValidator.addError(validationError);
+        CreateDraftCertificateType certificateType = createCertificateType();
+
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(new ResultValidator());
+        when(mockValidator.validateApplicationErrors(any(Utlatande.class))).thenReturn(resultsValidator);
+        CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+
+        verifyZeroInteractions(mockUtkastService);
+        verifyZeroInteractions(mockIntegreradeEnheterService);
+        verifyZeroInteractions(mockHsaPersonService);
+
+        assertNotNull(response);
+        assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
+        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
         assertEquals(validationError, response.getResult().getResultText());
     }
 

@@ -62,16 +62,21 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         validateTypAvUtlatande(utlatande.getTypAvUtlatande(), errors);
         validatePatient(utlatande.getPatient(), errors);
         validateSkapadAv(utlatande.getSkapadAv(), errors);
-        validateSekretessmarkeringOchIntygsTyp(utlatande.getTypAvUtlatande(), utlatande.getPatient().getPersonId(), errors);
 
         return errors;
     }
 
+    @Override
+    public ResultValidator validateApplicationErrors(Utlatande utlatande) {
+        ResultValidator errors = ResultValidator.newInstance();
+        validateSekretessmarkeringOchIntygsTyp(utlatande.getTypAvUtlatande(), utlatande.getPatient().getPersonId(), errors);
+        return errors;
+    }
 
     private void validateSekretessmarkeringOchIntygsTyp(TypAvUtlatande typAvUtlatande, PersonId personId, ResultValidator errors) {
 
         // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the PU-service.
-        String intygsTyp = typAvUtlatande.getCode();
+        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
         if (!commonAuthoritiesResolver.getSekretessmarkeringAllowed().contains(intygsTyp)) {
 
             Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);

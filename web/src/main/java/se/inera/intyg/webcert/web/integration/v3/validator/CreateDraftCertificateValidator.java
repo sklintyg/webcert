@@ -24,5 +24,5 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 public interface CreateDraftCertificateValidator {
 
     ResultValidator validate(Intyg intyg);
-
+    ResultValidator validateApplicationErrors(Intyg intyg);
 }

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.integration.validator.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
@@ -60,8 +61,14 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         validateTypAvIntyg(intyg.getTypAvIntyg(), errors);
         validatePatient(intyg.getPatient(), errors);
         validateSkapadAv(intyg.getSkapadAv(), errors);
-        validateSekretessmarkeringOchIntygsTyp(intyg.getTypAvIntyg(), intyg.getPatient().getPersonId(), errors);
 
+        return errors;
+    }
+
+    @Override
+    public ResultValidator validateApplicationErrors(Intyg intyg) {
+        ResultValidator errors = ResultValidator.newInstance();
+        validateSekretessmarkeringOchIntygsTyp(intyg.getTypAvIntyg(), intyg.getPatient().getPersonId(), errors);
         return errors;
     }
 
@@ -109,14 +116,14 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     private void validateSekretessmarkeringOchIntygsTyp(TypAvIntyg typAvUtlatande, PersonId personId, ResultValidator errors) {
 
         // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the PU-service.
-        String intygsTyp = typAvUtlatande.getCode();
+        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
         if (!commonAuthoritiesResolver.getSekretessmarkeringAllowed().contains(intygsTyp)) {
 
             Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);
 
             // Note that we explicitly allow certificates to be issued if the PU-service returns ERROR.
             if (pnr != null && patientDetailsResolver.getSekretessStatus(pnr).equals(SekretessStatus.TRUE)) {
-                errors.addError("Cannot issue intyg type {0} for patient having sekretessmarkering.", intygsTyp);
+                errors.addError("Cannot issue intyg type {0} for patient having sekretessmarkering.", typAvUtlatande.getCode());
             }
         }
     }

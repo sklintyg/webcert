@@ -52,6 +52,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
 
     private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
     private static final String CREATE_DRAFT_CERTIFICATE_V3_0 = "services/create-draft-certificate/v3.0";
+    private static final String SEKRETESS_TESTABILITY_API = "services/pu-api/person/";
 
     private static final String DEFAULT_LAKARE_HSAID = "IFV1239877878-1049";
     private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";
@@ -238,6 +239,31 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
                 .rootPath(BASE)
                 .body("result.resultCode", is(ResultCodeType.ERROR.value()))
                 .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+    }
+
+    @Test
+    public void testCreateTsBasDraftForSekretessmarkeradPatient() throws IOException {
+
+        given().cookie("ROUTEID", ".1")
+                .get(SEKRETESS_TESTABILITY_API + "191212121212/sekretessmarkerad?value=true")
+                .then()
+                .statusCode(200);
+
+        given().cookie("ROUTEID", ".1")
+                .body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
+                .when()
+                .post(CREATE_DRAFT_CERTIFICATE_V3_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+                .body("result.errorId", is("APPLICATION_ERROR"));
+
+
+        given().cookie("ROUTEID", ".1")
+                .get(SEKRETESS_TESTABILITY_API + "191212121212/sekretessmarkerad?value=false")
+                .then()
+                .statusCode(200);
     }
 
     // String Template Data object

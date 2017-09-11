@@ -18,13 +18,10 @@
  */
 package se.inera.intyg.webcert.web.integration.v3;
 
-import java.util.List;
-
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -47,6 +44,8 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 import se.riv.infrastructure.directory.v1.CommissionType;
+
+import java.util.List;
 
 @SchemaValidation
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
@@ -81,6 +80,12 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         if (resultsValidator.hasErrors()) {
             return createValidationErrorResponse(resultsValidator);
         }
+
+        ResultValidator appErrorsValidator = validator.validateApplicationErrors(utkastsParams);
+        if (appErrorsValidator.hasErrors()) {
+            return createApplicationErrorResponse(appErrorsValidator);
+        }
+
 
         String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
@@ -174,6 +179,15 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         String errMsgs = resultsValidator.getErrorMessagesAsString();
         LOG.warn("Intyg did not validate correctly: {}", errMsgs);
         return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
+    }
+
+    /**
+     * Builds a specific application error response.
+     */
+    private CreateDraftCertificateResponseType createApplicationErrorResponse(ResultValidator resultsValidator) {
+        String errMsgs = resultsValidator.getErrorMessagesAsString();
+        LOG.warn("Intyg did not pass APPLICATION_ERROR check correctly: {}", errMsgs);
+        return createErrorResponse(errMsgs, ErrorIdType.APPLICATION_ERROR);
     }
 
     /**
