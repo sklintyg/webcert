@@ -259,6 +259,22 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.UTKAST_READY_NOTIFICATION_SENT, intygsId, intygsTyp);
     }
 
+    @Override
+    public void logSetSrsConsent(Personnummer personnummer, boolean consent) {
+        logEvent(MonitoringEvent.SRS_CONSENT_SET, personnummer.getPnrHash(), consent);
+
+    }
+
+    @Override
+    public void logListSrsQuestions(String diagnosisCode) {
+        logEvent(MonitoringEvent.SRS_QUESTIONS_LISTED, diagnosisCode);
+    }
+
+    @Override
+    public void logSrsInformationRetreived(String diagnosisCode, String intygId) {
+        logEvent(MonitoringEvent.SRS_INFORMATION_RETREIVED, intygId, diagnosisCode);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -316,7 +332,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         LOGIN_OTHER_CAREGIVER("Viewed intyg '{}' of type '{}' on other caregiver '{}' unit '{}'"),
         REVOKED_PRINT("Revoked intyg '{}' of type '{}' printed"),
         DIAGNOSKODVERK_CHANGED("Diagnoskodverk changed for utkast '{}' of type '{}'"),
-        SCREEN_RESOLUTION("Width '{}', height '{}'");
+        SCREEN_RESOLUTION("Width '{}', height '{}'"),
+        SRS_CONSENT_SET("Consent set for '{}' to '{}'"),
+        SRS_QUESTIONS_LISTED("Questions listed for diagnosis code '{}'"),
+        SRS_INFORMATION_RETREIVED("SRS information retreived for certifiacte '{}' for diagnosis code '{}'");
 
         private final String msg;
 

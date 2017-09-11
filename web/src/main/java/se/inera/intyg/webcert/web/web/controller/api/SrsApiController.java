@@ -36,6 +36,7 @@ import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
@@ -71,6 +72,9 @@ public class SrsApiController extends AbstractApiController {
     @Autowired
     private WebCertUserService userService;
 
+    @Autowired
+    private MonitoringLogService monitoringLog;
+
     @POST
     @Path("/{intygId}/{personnummer}/{diagnosisCode}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -99,6 +103,7 @@ public class SrsApiController extends AbstractApiController {
             SrsResponse response = srsService
                     .getSrs(userService.getUser(), intygId, new Personnummer(personnummer), diagnosisCode, filter, questions);
             logService.logShowPrediction(personnummer);
+            monitoringLog.logSrsInformationRetreived(diagnosisCode, intygId);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException | IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -120,6 +125,7 @@ public class SrsApiController extends AbstractApiController {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         List<SrsQuestion> response = srsService.getQuestions(diagnosisCode);
+        monitoringLog.logListSrsQuestions(diagnosisCode);
         return Response.ok(response).build();
     }
 
@@ -159,6 +165,7 @@ public class SrsApiController extends AbstractApiController {
         try {
             Personnummer p = new Personnummer(personnummer);
             ResultCodeEnum result = srsService.setConsent(hsaId, p, consent);
+            monitoringLog.logSetSrsConsent(p, consent);
             return Response.ok(result).build();
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();

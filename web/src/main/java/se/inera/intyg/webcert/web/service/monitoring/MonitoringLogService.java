@@ -104,4 +104,10 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logUtkastPatientDetailsUpdated(String intygsId, String intygsTyp);
 
     void logUtkastMarkedAsReadyToSignNotificationSent(String intygsId, String intygsTyp);
+
+    void logSetSrsConsent(Personnummer personnummer, boolean consent);
+
+    void logListSrsQuestions(String diagnosisCode);
+
+    void logSrsInformationRetreived(String diagnosisCode, String intygId);
 }

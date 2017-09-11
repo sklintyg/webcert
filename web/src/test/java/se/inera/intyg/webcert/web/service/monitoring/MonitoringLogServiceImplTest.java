@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-
-import java.util.Arrays;
-
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,17 +32,17 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.Appender;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MonitoringLogServiceImplTest {
@@ -229,7 +228,8 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogArendeReceived() {
         logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, false);
-        verifyLog(Level.INFO, "ARENDE_RECEIVED_QUESTION Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+        verifyLog(Level.INFO,
+                "ARENDE_RECEIVED_QUESTION Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
@@ -241,25 +241,29 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogArendeReceivedCompletion() {
         logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KOMPLT, Arrays.asList("1", "2"), false);
-        verifyLog(Level.INFO, "MEDICINSKT_ARENDE_RECEIVED Received medicinskt arende for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET' on questions '[1, 2]'");
+        verifyLog(Level.INFO,
+                "MEDICINSKT_ARENDE_RECEIVED Received medicinskt arende for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET' on questions '[1, 2]'");
     }
 
     @Test
     public void shouldLogArendeReceivedAnswer() {
         logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, true);
-        verifyLog(Level.INFO, "ARENDE_RECEIVED_ANSWER Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+        verifyLog(Level.INFO,
+                "ARENDE_RECEIVED_ANSWER Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     public void shouldLogArendeReceivedAnswerAmneMissing() {
         logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, null, null, true);
-        verifyLog(Level.INFO, "ARENDE_RECEIVED_ANSWER Received arende with amne 'NO AMNE' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+        verifyLog(Level.INFO,
+                "ARENDE_RECEIVED_ANSWER Received arende with amne 'NO AMNE' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     public void shouldLogArendeCreated() {
         logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, false);
-        verifyLog(Level.INFO, "ARENDE_CREATED_QUESTION Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+        verifyLog(Level.INFO,
+                "ARENDE_CREATED_QUESTION Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
@@ -271,7 +275,8 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogArendeCreatedAnswer() {
         logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, true);
-        verifyLog(Level.INFO, "ARENDE_CREATED_ANSWER Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+        verifyLog(Level.INFO,
+                "ARENDE_CREATED_ANSWER Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
@@ -318,7 +323,8 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogQuestionReceivedCompletionWrongSubject() {
-        logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE, Arrays.asList("KOMP1", "KOMP2"));
+        logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE,
+                Arrays.asList("KOMP1", "KOMP2"));
         verifyLog(Level.INFO,
                 "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
@@ -358,7 +364,8 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogUtkastConcurrentlyEdited() {
         logService.logUtkastConcurrentlyEdited(INTYGS_ID, INTYGS_TYP);
-        verifyLog(Level.INFO, "UTKAST_CONCURRENTLY_EDITED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was concurrently edited by multiple users");
+        verifyLog(Level.INFO,
+                "UTKAST_CONCURRENTLY_EDITED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was concurrently edited by multiple users");
     }
 
     @Test
@@ -400,7 +407,8 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogIntegratedOtherCaregiver() {
         logService.logIntegratedOtherCaregiver(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET);
-        verifyLog(Level.INFO, "LOGIN_OTHER_CAREGIVER Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other caregiver 'VARDGIVARE' unit 'ENHET'");
+        verifyLog(Level.INFO,
+                "LOGIN_OTHER_CAREGIVER Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other caregiver 'VARDGIVARE' unit 'ENHET'");
     }
 
     @Test
@@ -421,10 +429,27 @@ public class MonitoringLogServiceImplTest {
         verifyLog(Level.INFO, "UTKAST_PATIENT_UPDATED Patient details for utkast 'INTYGS_ID' of type 'INTYGS_TYP' updated");
     }
 
-
     @Test
     public void shouldLogDiagnoskodverkChanged() {
         logService.logDiagnoskodverkChanged(INTYGS_ID, INTYGS_TYP);
         verifyLog(Level.INFO, "DIAGNOSKODVERK_CHANGED Diagnoskodverk changed for utkast 'INTYGS_ID' of type 'INTYGS_TYP'");
+    }
+
+    @Test
+    public void shouldLogConsentSet() {
+        logService.logSetSrsConsent(new Personnummer(PERSON_ID), true);
+        verifyLog(Level.INFO, "SRS_CONSENT_SET Consent set for 'ad060a2437cb0e66f41f3305bc8ba6e69b9db04805d6c7fddd720079ef673921' to 'true'");
+    }
+
+    @Test
+    public void shouldLogQuestionsListed() {
+        logService.logListSrsQuestions("J20");
+        verifyLog(Level.INFO, "SRS_QUESTIONS_LISTED Questions listed for diagnosis code 'J20'");
+    }
+
+    @Test
+    public void shouldLogSrsInformationRetreived() {
+        logService.logSrsInformationRetreived("J20", "INTYGS_ID");
+        verifyLog(Level.INFO, "SRS_INFORMATION_RETREIVED SRS information retreived for certifiacte 'INTYGS_ID' for diagnosis code 'J20'");
     }
 }
