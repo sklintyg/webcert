@@ -33,83 +33,55 @@ function formatDate(date) {
     return testdataHelper.dateFormat(date) + 'T' + time;
 }
 
-// function checkLogEntries(activity, intygsID, userHSA) {
-//     // var p1 = new Promise(function(resolve, reject) {
-//     return getLogEntries(activity, intygsID, userHSA);
-//     // .then(function(result) {
-//     //     resolve(result);
-//     // }, function(reason) {
-//     //     reject(reason);
-//     // });
-//     // });
-
-//     // return p1;
-// }
-
 function getLogEntries(activity, intygsID, userHSA, connection) {
     var dbTable = 'webcert_requests.storelog__mock_requests';
     var now = new Date();
     var oneMinuteSinceNow = new Date(now.getTime() + (-1) * 60000);
     oneMinuteSinceNow = formatDate(oneMinuteSinceNow);
 
-    var query = 'SELECT * FROM ' + dbTable + ' where ' +
-        ' activityLevel = "' + intygsID + '"' +
-        ' AND activitytype = "' + activity + '"' +
-        ' AND userid = "' + userHSA + '"' +
-        ' AND logtime>="' + oneMinuteSinceNow + '"';
+    var query = `SELECT * FROM ${dbTable} WHERE
+        activityLevel = "${intygsID}"
+        AND activitytype = "${activity}"
+        AND userid = "${userHSA}"
+        AND logtime>="${oneMinuteSinceNow}"`;
 
     console.log('query: ' + query);
     var p1 = new Promise(function(resolve, reject) {
 
-
-
         connection.query(query,
             function(err, rows, fields) {
                 if (err) {
-                    reject(err);
+                    reject(err, connection);
                 }
-                resolve(rows);
+                resolve(rows, connection);
             });
-
-
 
     });
     return p1;
 }
 
 function waitForCount(activity, count, intygsID, userHSA, cb) {
-
-    dbPool.getConnection().then(function(connection) {
-
-        var intervall = 5000;
-        getLogEntries(activity, intygsID, userHSA, connection).then(function(result) {
-            if (result.length >= count) {
-                logger.info('Hittade rader: ' + JSON.stringify(result));
+    dbPool.getConnection()
+        .then(connection => getLogEntries(activity, intygsID, userHSA, connection)
+            .then(result => {
+                var interval = 5000;
+                if (result.length >= count) {
+                    logger.info('Hittade rader: ' + JSON.stringify(result));
+                    connection.release();
+                    cb();
+                } else {
+                    logger.info(`Hittade färre än ${count} rader i databasen`);
+                    console.log(`Ny kontroll sker efter ${interval} ms`);
+                    setTimeout(() => waitForCount(activity, count, intygsID, userHSA, cb), interval);
+                    connection.release();
+                }
+            })
+            .catch(err => {
                 connection.release();
-                cb();
-            } else {
-                logger.info('Hittade färre än ' + count + 'rader i databasen');
-                console.log('Ny kontroll sker efter ' + intervall + 'ms');
-                setTimeout(function() {
-                    waitForCount(activity, count, intygsID, userHSA, cb);
-                }, intervall);
-            }
-
-        }, function(err) {
-            connection.release();
-            cb(err);
-
-        });
-
-    });
-
-
-
-
+                cb(err);
+            })
+        );
 }
-
-
-
 
 module.exports = {
     waitForCount: waitForCount
