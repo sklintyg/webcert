@@ -15,6 +15,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.integration.validator.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
@@ -66,14 +67,14 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         if (webCertUserService.hasAuthenticationContext()) {
             user = webCertUserService.getUser();
         } else {
-            throw new IllegalStateException("The PatientDetailsResolver cannot be used without a valid authentication context");
-            // If this code is called in a non-user context, e.g. on CreateDraftCertificate etc,
-            // use a dummy user for now. Or perhaps we should ALWAYS
-//            user = new WebCertUser(new IntygUser(""));
-//            user.setOrigin(WebCertUserOriginType.NORMAL.name());
+            throw new IllegalStateException("The PatientDetailsResolver#resolvePatient method cannot be used without a "
+                    + "valid authentication context");
         }
 
-        switch (intygsTyp.toLowerCase()) {
+        // Make sure any external intygstyp representations (such as TSTRK1007) are mapped to our internal types.
+        String internalIntygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(intygsTyp);
+
+        switch (internalIntygsTyp.toLowerCase()) {
         case "fk7263":
         case "luse":
         case "lisjp":
@@ -146,7 +147,10 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         retPatient.setSekretessmarkering(patient.isSekretessmarkering());
         retPatient.setAvliden(patient.isAvliden());
 
-        switch (intygsTyp) {
+        // Make sure any external intygstyp representations (such as TSTRK1007) are mapped to our internal types.
+        String internalIntygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(intygsTyp);
+
+        switch (internalIntygsTyp.toLowerCase()) {
         case "fk7263":
         case "luse":
         case "lisjp":
