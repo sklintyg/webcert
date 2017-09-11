@@ -24,11 +24,15 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 
 
@@ -37,6 +41,12 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
 
     /*
      * (non-Javadoc)
@@ -52,11 +62,28 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         validateTypAvUtlatande(utlatande.getTypAvUtlatande(), errors);
         validatePatient(utlatande.getPatient(), errors);
         validateSkapadAv(utlatande.getSkapadAv(), errors);
+        validateSekretessmarkeringOchIntygsTyp(utlatande.getTypAvUtlatande(), utlatande.getPatient().getPersonId(), errors);
 
         return errors;
     }
 
-    public void validateTypAvUtlatande(TypAvUtlatande typAvUtlatandeType, ResultValidator errors) {
+
+    private void validateSekretessmarkeringOchIntygsTyp(TypAvUtlatande typAvUtlatande, PersonId personId, ResultValidator errors) {
+
+        // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the PU-service.
+        String intygsTyp = typAvUtlatande.getCode();
+        if (!commonAuthoritiesResolver.getSekretessmarkeringAllowed().contains(intygsTyp)) {
+
+            Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);
+
+            // Note that we explicitly allow certificates to be issued if the PU-service returns ERROR.
+            if (pnr != null && patientDetailsResolver.getSekretessStatus(pnr).equals(SekretessStatus.TRUE)) {
+                errors.addError("Cannot issue intyg type {0} for patient having sekretessmarkering.", intygsTyp);
+            }
+        }
+    }
+
+    private void validateTypAvUtlatande(TypAvUtlatande typAvUtlatandeType, ResultValidator errors) {
         String intygsTyp = typAvUtlatandeType.getCode();
 
         if (!moduleRegistry.moduleExists(intygsTyp)) {

@@ -18,23 +18,25 @@
  */
 package se.inera.intyg.webcert.web.integration.v3.validator;
 
-import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.HANTERA_INTYGSUTKAST;
-
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
+
+import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.HANTERA_INTYGSUTKAST;
 
 @Component(value = "createDraftCertificateValidatorImplV2")
 public class CreateDraftCertificateValidatorImpl implements CreateDraftCertificateValidator {
@@ -45,6 +47,12 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     @Autowired
     private WebcertFeatureService featureService;
 
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     @Override
     public ResultValidator validate(Intyg intyg) {
         ResultValidator errors = ResultValidator.newInstance();
@@ -52,6 +60,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         validateTypAvIntyg(intyg.getTypAvIntyg(), errors);
         validatePatient(intyg.getPatient(), errors);
         validateSkapadAv(intyg.getSkapadAv(), errors);
+        validateSekretessmarkeringOchIntygsTyp(intyg.getTypAvIntyg(), intyg.getPatient().getPersonId(), errors);
 
         return errors;
     }
@@ -94,6 +103,21 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
             errors.addError("Enhet is missing");
         } else if (Strings.nullToEmpty(enhet.getEnhetsnamn()).trim().isEmpty()) {
             errors.addError("enhetsnamn is required");
+        }
+    }
+
+    private void validateSekretessmarkeringOchIntygsTyp(TypAvIntyg typAvUtlatande, PersonId personId, ResultValidator errors) {
+
+        // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the PU-service.
+        String intygsTyp = typAvUtlatande.getCode();
+        if (!commonAuthoritiesResolver.getSekretessmarkeringAllowed().contains(intygsTyp)) {
+
+            Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);
+
+            // Note that we explicitly allow certificates to be issued if the PU-service returns ERROR.
+            if (pnr != null && patientDetailsResolver.getSekretessStatus(pnr).equals(SekretessStatus.TRUE)) {
+                errors.addError("Cannot issue intyg type {0} for patient having sekretessmarkering.", intygsTyp);
+            }
         }
     }
 }
