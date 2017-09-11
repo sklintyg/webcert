@@ -33,7 +33,9 @@ describe('Create a FK7263 draft and verify behaviour of diagnosis fields', funct
         it('with user', function() {
             browser.ignoreSynchronization = false;
             specHelper.login();
-            specHelper.createUtkastForPatient('191212121212', 'Läkarintyg FK 7263');
+            testdataHelper.createUtkast('fk7263').then(function(response) {
+                UtkastPage.get(response.body.intygsId);
+            });
             UtkastPage.disableAutosave();
         });
 

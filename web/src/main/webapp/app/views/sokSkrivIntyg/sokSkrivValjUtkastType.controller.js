@@ -39,6 +39,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.messageService = messageService;
             $scope.viewState = Viewstate.build();
 
+            $scope.intygReplacement = {
+                'fk7263':'lisjp'
+            };
+
             // In case callers do not know the patientId they can use 'default' in which case the controller
             // will use what's currently in PatientModel, or, if that's not available, redirect user to enter a
             // new id on the choose patient screen.
@@ -222,4 +226,15 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.resolveTooltipText = function(intyg) {
                 return messageService.getProperty(intyg.intygType + '.fornya.tooltip');
             };
+
+            $scope.resolveIntygReplacedText = function(selectedIntygType) {
+                var selectedIntyg = IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
+                    return (intygType.id === selectedIntygType);
+                })[0];
+                var replacedIntygsType = $scope.intygReplacement[selectedIntygType];
+                var replacedIntyg = IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
+                    return (intygType.id === replacedIntygsType);
+                })[0];
+                return messageService.getProperty('info.intygstyp.replaced', {old_intygstyp: selectedIntyg.label, new_intygstyp: replacedIntyg.label });
+            }
         }]);

@@ -41,7 +41,7 @@
                             ng-disabled="patientModel.avliden"></select>
                     <span id="fortsattBtn">
                       <button id="intygTypeFortsatt" class="btn btn-success continue-btn" type="submit"
-                              ng-disabled="intygTypeModel.intygType == 'default' || patientModel.avliden">Skapa intyg
+                              ng-disabled="intygTypeModel.intygType == 'default' || patientModel.avliden || intygReplacement[intygTypeModel.intygType]">Skapa intyg
                       </button>
                     </span>
                   </div>
@@ -60,6 +60,10 @@
                 <!-- error message -->
                 <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
                   <span message key="{{viewState.createErrorMessageKey}}"></span>
+                </div>
+
+                <div id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType]" class="alert alert-warning col-lg-7">
+                  {{resolveIntygReplacedText(intygTypeModel.intygType)}}
                 </div>
 
                 <div class="alert alert-info col-lg-7"

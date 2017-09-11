@@ -41,7 +41,9 @@ describe('Create and Sign FK utkast', function() {
 
     describe('Smittskydd', function() {
         beforeAll(function() {
-            specHelper.createUtkastForPatient('191212121212', 'Läkarintyg FK 7263');
+            testdataHelper.createUtkast('fk7263').then(function(response) {
+                UtkastPage.get(response.body.intygsId);
+            });
         });
 
         describe('Fyll i intyget', function() {
@@ -97,7 +99,9 @@ describe('Create and Sign FK utkast', function() {
         beforeAll(function() {
             browser.ignoreSynchronization = false;
             ValjIntygPage.get();
-            specHelper.createUtkastForPatient('191212121212', 'Läkarintyg FK 7263');
+            testdataHelper.createUtkast('fk7263').then(function(response) {
+                UtkastPage.get(response.body.intygsId);
+            });
         });
 
         describe('Fyll i intyget', function() {
