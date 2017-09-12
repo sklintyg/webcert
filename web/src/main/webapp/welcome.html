@@ -60,6 +60,60 @@
   angular.module('WcWelcomeApp.controllers', []).controller('welcomeController',
     ['$scope', '$http', '$log', function($scope, $http, $log) {
 
+
+      // PU stub operations ============================================
+        $scope.PU = {
+            latestResult: 'Inget',
+            patientId:''
+        };
+        $scope.performPUOperation = function(evt, type, enable) {
+            evt.preventDefault();
+            $http({
+                url: '/services/pu-api/person/' + $scope.PU.patientId + '/' + type + '?value=' + enable,
+                method: 'GET',
+                transformResponse: undefined
+            }).then(
+                function success(response) {
+                    $scope.PU.latestEvent = type + ': ' + response.data;
+                }, function error(response) {
+                    $scope.PU.latestEvent = 'Fel vid ändring av ' + type + ': ' + response.data;
+                });
+
+        };
+
+        $scope.togglePU = function(evt, enable) {
+            evt.preventDefault();
+            $http({
+                url: '/services/pu-api/' + (enable ? 'active':'inactive'),
+                method: 'GET',
+                transformResponse: undefined
+            }).then(
+                function success(response) {
+                    $scope.PU.latestEvent = 'PU-Stub är nu: ' + (enable ? 'active':'inactive');
+                }, function error(response) {
+                    $scope.PU.latestEvent = 'Kunde inte ändra state för PU-stubbe: ' + response.data;
+                });
+
+
+        };
+        $scope.clearPUCache = function(evt) {
+            evt.preventDefault();
+            $http({
+                url: '/services/pu-api/cache',
+                method: 'DELETE',
+                transformResponse: undefined
+            }).then(
+                function success(response) {
+                    $scope.PU.latestEvent = 'PU-cache tömd!';
+                }, function error(response) {
+                    $scope.PU.latestEvent = 'Fel vid tömning av cache' + response.data;
+                });
+
+        };
+        // End PU stub operations ============================================
+
+
+
       $scope.jsonModel = '';
       function _filterLoginIdentity(allowedApps, appName) {
           if (!_isArray(allowedApps)) {
@@ -388,6 +442,56 @@
         </div>
         <div class="content row">
           <hr style="padding-top:16px;" />
+        </div>
+
+        <div class="content row">
+
+          <div class="panel panel-body panel-default">
+            <h4>PU-Stub Management</h4>
+            <input type="text" name="patientId" ng-model="PU.patientId" size="18" placeholder="personnnr (utan -)"
+                   required>
+            <div class="btn-group btn-group-sm" role="group">
+
+              <button type="button" class="btn btn-small btn-primary"
+                      ng-click="performPUOperation($event, 'sekretessmarkerad', true)"
+                      ng-disabled="!PU.patientId">
+                Ja
+              </button>
+
+
+              <button type="button" class="btn btn-small btn-primary"
+                      ng-click="performPUOperation($event, 'sekretessmarkerad', false)"
+                      ng-disabled="!PU.patientId">
+                Nej
+              </button>
+              <button type="button" class="btn btn-small btn-primary"
+                      ng-click="performPUOperation($event, 'avliden', true)" ng-disabled="!PU.patientId">
+                Avliden
+              </button>
+              <button type="button" class="btn btn-small btn-primary"
+                      ng-click="performPUOperation($event, 'avliden', false)" ng-disabled="!PU.patientId">
+                Levande
+              </button>
+
+            </div>
+              <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-small btn-primary" ng-click="clearPUCache($event)">
+                  Töm cache
+                </button>
+
+              <button type="button" class="btn btn-small btn-success" ng-click="togglePU($event, true)">
+                Aktivera PU
+              </button>
+                <button type="button" class="btn btn-small btn-danger" ng-click="togglePU($event, false)">
+                  Inaktivera PU
+                </button>
+              </div>
+            <div id="latestEvent">Senaste PU operation: <pre>{{PU.latestEvent}}</pre> </div>
+            </div>
+
+
+          </div>
+
         </div>
         <div class="content row">
           <h1>Hjälplänkar</h1>
