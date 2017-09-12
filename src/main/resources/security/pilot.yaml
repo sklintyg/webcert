@@ -5,10 +5,8 @@ pilots:
     features:
       srs: true
       srs.fk7263: true
-      srs.lisjp: true
   - hsaIds:
       - IFV1239877878-1042
     features:
       srs: true
-      srs.lisjp: true
       srs.fk7263: true
