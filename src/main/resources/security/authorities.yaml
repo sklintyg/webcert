@@ -600,6 +600,11 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro030 # UTHOPP
+      - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -616,6 +621,10 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro030 # UTHOPP
+      - <<: *p120 # SVARA_MED_NYTT_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
       - <<: *p130 # NOTIFIERING_UTKAST
         requestOrigins:
           - <<: *ro020 # DJUPINTEGRATION
