@@ -85,7 +85,7 @@ public class JsLogApiController extends AbstractApiController {
     @Consumes(APPLICATION_JSON)
     public Response srsShown(@RequestBody SrsFrontendEvent event) {
         if (event == null) {
-            status(BAD_REQUEST).build();
+            return status(BAD_REQUEST).build();
         }
         switch (event) {
         case SRS_SHOWN:
