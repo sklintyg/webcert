@@ -84,6 +84,9 @@ public class JsLogApiController extends AbstractApiController {
     @Path("/srs")
     @Consumes(APPLICATION_JSON)
     public Response srsShown(@RequestBody SrsFrontendEvent event) {
+        if (event == null) {
+            status(BAD_REQUEST).build();
+        }
         switch (event) {
         case SRS_SHOWN:
             monitoringService.logSrsShown();
