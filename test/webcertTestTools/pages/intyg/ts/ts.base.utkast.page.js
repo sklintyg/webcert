@@ -55,6 +55,10 @@ var BaseTsUtkast = BaseUtkast._extend({
 
         };
 
+        this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));
+        this.markeraKlartForSigneringModalYesButton = element(by.id('buttonYes'));
+        this.markeradKlartForSigneringText = element(by.id('draft-marked-ready-text'));
+
     },
     get: function get(intygId) {
         get._super.call(this, this.intygType, intygId);
@@ -92,6 +96,12 @@ var BaseTsUtkast = BaseUtkast._extend({
     },
     fillInSpecialist: function(specialist) {
         return this.specialist.sendKeys(specialist);
+    },
+    isMarkeraSomKlartAttSigneraButtonDisplayed: function() {
+        return this.markeraKlartForSigneringButton.isDisplayed();
+    },
+    markeraSomKlartAttSigneraButtonClick: function() {
+        this.markeraKlartForSigneringButton.sendKeys(protractor.Key.SPACE);
     }
 });
 
