@@ -235,6 +235,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 var replacedIntyg = IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
                     return (intygType.id === replacedIntygsType);
                 })[0];
-                return messageService.getProperty('info.intygstyp.replaced', {old_intygstyp: selectedIntyg.label, new_intygstyp: replacedIntyg.label });
-            }
+                return messageService.getProperty('info.intygstyp.replaced', {oldIntygstyp: selectedIntyg.label, newIntygstyp: replacedIntyg.label });
+            };
         }]);

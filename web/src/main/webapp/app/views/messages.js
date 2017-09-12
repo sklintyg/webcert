@@ -78,7 +78,7 @@ angular.module('webcert').constant('webcert.messages', {
         'info.intygload.error': '<strong>Kunde inte hämta intyg.</strong>',
         'info.intygload.offline': '<strong>Intygstjänsten ej tillgänglig, endast Intyg utfärdade av Webcert visas.</strong>',
         'info.running.query': '<strong>Söker...</strong>',
-        'info.intygstyp.replaced': '${old_intygstyp} är ersatt av ${new_intygstyp}. För att gå vidare, välj det nya intyget i listan istället.',
+        'info.intygstyp.replaced': '${oldIntygstyp} är ersatt av ${newIntygstyp}. För att gå vidare, välj det nya intyget i listan istället.',
 
         //error messages
         'error.unsignedintyg.couldnotbeloaded': '<strong>Kunde inte hämta ej signerade intyg.</strong>',
