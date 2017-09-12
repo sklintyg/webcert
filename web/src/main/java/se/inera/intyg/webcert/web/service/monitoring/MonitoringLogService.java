@@ -110,4 +110,12 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logListSrsQuestions(String diagnosisCode);
 
     void logSrsInformationRetreived(String diagnosisCode, String intygId);
+
+    void logSrsShown();
+
+    void logSrsAtgardClicked();
+
+    void logSrsStatistikClicked();
+
+    void logSrsClicked();
 }

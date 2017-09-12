@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
@@ -77,5 +78,33 @@ public class JsLogApiController extends AbstractApiController {
             break;
         }
         return ok().build();
+    }
+
+    @POST
+    @Path("/srs")
+    @Consumes(APPLICATION_JSON)
+    public Response srsShown(@RequestBody SrsFrontendEvent event) {
+        switch (event) {
+        case SRS_SHOWN:
+            monitoringService.logSrsShown();
+            break;
+        case SRS_CLICKED:
+            monitoringService.logSrsClicked();
+            break;
+        case SRS_ATGARD_CLICKED:
+            monitoringService.logSrsAtgardClicked();
+            break;
+        case SRS_STATISTIK_CLICKED:
+            monitoringService.logSrsStatistikClicked();
+            break;
+        }
+        return ok().build();
+    }
+
+    public enum SrsFrontendEvent {
+        SRS_SHOWN,
+        SRS_CLICKED,
+        SRS_ATGARD_CLICKED,
+        SRS_STATISTIK_CLICKED
     }
 }

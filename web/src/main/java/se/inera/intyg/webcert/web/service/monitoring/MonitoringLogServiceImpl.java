@@ -262,7 +262,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logSetSrsConsent(Personnummer personnummer, boolean consent) {
         logEvent(MonitoringEvent.SRS_CONSENT_SET, personnummer.getPnrHash(), consent);
-
     }
 
     @Override
@@ -273,6 +272,26 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logSrsInformationRetreived(String diagnosisCode, String intygId) {
         logEvent(MonitoringEvent.SRS_INFORMATION_RETREIVED, intygId, diagnosisCode);
+    }
+
+    @Override
+    public void logSrsShown() {
+        logEvent(MonitoringEvent.SRS_SHOWN);
+    }
+
+    @Override
+    public void logSrsAtgardClicked() {
+        logEvent(MonitoringEvent.SRS_ATGARD_CLICKED);
+    }
+
+    @Override
+    public void logSrsStatistikClicked() {
+        logEvent(MonitoringEvent.SRS_STATISTIK_CLICKED);
+    }
+
+    @Override
+    public void logSrsClicked() {
+        logEvent(MonitoringEvent.SRS_CLICKED);
     }
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
@@ -335,7 +354,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         SCREEN_RESOLUTION("Width '{}', height '{}'"),
         SRS_CONSENT_SET("Consent set for '{}' to '{}'"),
         SRS_QUESTIONS_LISTED("Questions listed for diagnosis code '{}'"),
-        SRS_INFORMATION_RETREIVED("SRS information retreived for certifiacte '{}' for diagnosis code '{}'");
+        SRS_INFORMATION_RETREIVED("SRS information retreived for certifiacte '{}' for diagnosis code '{}'"),
+        SRS_SHOWN("SRS shown"),
+        SRS_ATGARD_CLICKED("SRS atgard clicked"),
+        SRS_STATISTIK_CLICKED("SRS statistik clicked"),
+        SRS_CLICKED("SRS clicked");
 
         private final String msg;
 

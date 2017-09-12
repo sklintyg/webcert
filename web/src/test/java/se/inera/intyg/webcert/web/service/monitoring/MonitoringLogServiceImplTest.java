@@ -438,7 +438,8 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogConsentSet() {
         logService.logSetSrsConsent(new Personnummer(PERSON_ID), true);
-        verifyLog(Level.INFO, "SRS_CONSENT_SET Consent set for 'ad060a2437cb0e66f41f3305bc8ba6e69b9db04805d6c7fddd720079ef673921' to 'true'");
+        verifyLog(Level.INFO,
+                "SRS_CONSENT_SET Consent set for 'ad060a2437cb0e66f41f3305bc8ba6e69b9db04805d6c7fddd720079ef673921' to 'true'");
     }
 
     @Test
@@ -451,5 +452,29 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogSrsInformationRetreived() {
         logService.logSrsInformationRetreived("J20", "INTYGS_ID");
         verifyLog(Level.INFO, "SRS_INFORMATION_RETREIVED SRS information retreived for certifiacte 'INTYGS_ID' for diagnosis code 'J20'");
+    }
+
+    @Test
+    public void shouldLogSrsShown() {
+        logService.logSrsShown();
+        verifyLog(Level.INFO, "SRS_SHOWN SRS shown");
+    }
+
+    @Test
+    public void shouldLogSrsClicked() {
+        logService.logSrsClicked();
+        verifyLog(Level.INFO, "SRS_CLICKED SRS clicked");
+    }
+
+    @Test
+    public void shouldLogSrsAtgardClicked() {
+        logService.logSrsAtgardClicked();
+        verifyLog(Level.INFO, "SRS_ATGARD_CLICKED SRS atgard clicked");
+    }
+
+    @Test
+    public void shouldLogSrsStatistikClicked() {
+        logService.logSrsStatistikClicked();
+        verifyLog(Level.INFO, "SRS_STATISTIK_CLICKED SRS statistik clicked");
     }
 }
