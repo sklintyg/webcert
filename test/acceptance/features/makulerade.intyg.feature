@@ -9,7 +9,11 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @FK7263-förnya-knapp
 Scenario: Det ska inte gå att förnya ett makulerat FK7263 intyg
-  När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+  Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+  Och jag går in på utkastet
+  Och jag fyller i alla nödvändiga fält för intyget
+  Och jag signerar intyget
+  #När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
   Och jag skickar intyget till Försäkringskassan
   Och jag makulerar intyget
   Så ska det inte finnas en knapp med texten "Förnya"

@@ -8,7 +8,8 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @minaintyg @keepIntyg @signera @smoke
 Scenario: Skapa och signera ett intyg
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+    Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget
@@ -18,7 +19,11 @@ Scenario: Skapa och signera ett intyg
 
 @minaintyg @keepIntyg @intygTillFK @skicka
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
-	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Och jag går in på utkastet
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	#När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan
 	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system"
 	När jag går till Mina intyg för patienten
@@ -26,7 +31,12 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 
 @smoke
 Scenario: Makulera ett skickat intyg
-	När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+	#När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+	Och att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Och jag går in på utkastet
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan 
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
 	När jag går till Mina intyg för patienten
@@ -34,13 +44,15 @@ Scenario: Makulera ett skickat intyg
 
 @samtidaanvandare
 Scenario: Samtida användare ska generera felmeddelande (FK7263)
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+    Och jag går in på utkastet
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
 
 @samtidaanvandare @skicka-makulera
 Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (FK7263)
-		När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+		Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+		Och jag går in på utkastet
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
 		Och sedan öppnar intyget i två webbläsarinstanser
@@ -51,7 +63,8 @@ Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas e
 
 @samtidaanvandare @makulera-skicka
 Scenario: Samtida användare ska generera felmeddelande om man skickar efter makulering (FK7263)
-		När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+		Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+		Och jag går in på utkastet
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
 		Och sedan öppnar intyget i två webbläsarinstanser
@@ -60,7 +73,8 @@ Scenario: Samtida användare ska generera felmeddelande om man skickar efter mak
 
 @samtidaanvandare @fornya
 Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
-		När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+		Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+		Och jag går in på utkastet
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
 		Och sedan öppnar intyget i två webbläsarinstanser
@@ -69,7 +83,8 @@ Scenario: Samtida användare ska generera felmeddelande om man förnyar efter ma
 
 @samtidaanvandare @makulera-förnya
 Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag klickar på signera-knappen
 	Och sedan öppnar intyget i två webbläsarinstanser

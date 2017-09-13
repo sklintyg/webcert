@@ -51,6 +51,7 @@ function getIER(intygstyp, status, callback) {
                 intyg.id = text.split('/').slice(-2)[0];
                 intyg.id = intyg.id.split('?')[0];
                 logger.info('intyg.id:' + intyg.id);
+                logger.info('Status: ' + status);
                 if (err) {
                     callback(JSON.stringify(err));
                 } else {

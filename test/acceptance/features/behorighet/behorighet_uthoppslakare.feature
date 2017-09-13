@@ -9,19 +9,19 @@ Scenario: Inloggad som uthoppsläkare
    Så ska jag ha rollen "LAKARE"
    Och jag ska ha origin "UTHOPP"
 
-@fk7263 @signera
+@lisjp @signera
 Scenario: Kan signera intyg
    När jag går in på en patient
-   Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+   Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
    Och jag fyller i alla nödvändiga fält för intyget
    Så är signeraknappen tillgänglig
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
 
-Scenario: Kan inte förnya intyg Läkarintyg FK 7263
+Scenario: Kan inte förnya intyg Läkarintyg för sjukpenning
    När går in på Sök/skriv intyg
    Och jag går in på en patient
-   Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+   Och jag går in på ett "Läkarintyg för sjukpenning" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
 
 @fornya @ts @bas
@@ -38,10 +38,10 @@ Scenario: Kan inte förnya Transportstyrelsens läkarintyg, diabetes intyg
    Och jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
 
-@makulera @fk7263
+@makulera @lisjp
 Scenario: Kan inte makulera intyg
    När jag går in på en patient
-   Och jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   Och jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    Så ska makuleraknappen inte vara tillgänglig
 
 @filtrera @osignerade-intyg
@@ -54,7 +54,7 @@ Scenario: Kan inte filtrera osignerade intyg på läkare
 Scenario: Ska kunna svara på frågor från Försäkringskassan
    När går in på Sök/skriv intyg
    Och jag går in på en patient
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
@@ -62,7 +62,7 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
 @nyttIntyg
 Scenario: Ska få varning vid svar med nytt intyg
    När jag går in på en patient
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan
@@ -73,7 +73,7 @@ Scenario: Ska få varning vid svar med nytt intyg
 @komplettering @waitingForFix
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på en patient
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan

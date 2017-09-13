@@ -24,7 +24,8 @@ Scenario: Ska endast kunna hantera FK7263
 Scenario: Skapa, Skicka och Makulera FK7263
 	Givet att jag är inloggad som tandläkare
 	När jag går in på en patient
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget
@@ -42,7 +43,11 @@ Scenario: Skapa, Skicka och Makulera FK7263
 Scenario: Svara och skicka fråga till Försäkringskassan
    Givet att jag är inloggad som tandläkare
    När jag går in på en patient
-   Och jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   Och att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Och jag går in på utkastet
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan 
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Så ska jag ha möjlighet att vidarebefordra frågan
 

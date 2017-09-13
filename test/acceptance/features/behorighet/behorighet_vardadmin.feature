@@ -8,8 +8,8 @@ Bakgrund: Logga in och gå in på en patient
 	Och går in på Sök/skriv intyg
 	Och jag går in på en patient
 @fornya
-Scenario: Kan förnya Läkarintyg FK 7263
-   När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+Scenario: Kan förnya Läkarintyg för sjukpenning
+   När jag går in på ett "Läkarintyg för sjukpenning" med status "Signerat"
    Så ska det finnas en knapp för att förnya intyget
 
 @fornya @ts
@@ -23,7 +23,8 @@ Scenario: Kan förnya Transportstyrelsens läkarintyg, diabetes intyg
    Så ska det inte finnas en knapp för att förnya intyget
 
 Scenario: Kan inte signera Läkarintyg FK 7263
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+    Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 	Och ska ett info-meddelande visa "Endast läkare får signera intyget."

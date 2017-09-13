@@ -8,7 +8,9 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 
 Scenariomall: Validera felaktigt <typAvFält> i <intygsTyp>
-	När jag går in på att skapa ett <intygsTyp> intyg
+	#När jag går in på att skapa ett <intygsTyp> intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Och jag går in på utkastet	
 	Och jag fyller i text i <typAvFält> fältet
    	Så ska valideringsfelet <feltext> visas
 	Och ska jag se en rubrik med texten "Utkastet saknar uppgifter i följande avsnitt"
@@ -23,7 +25,8 @@ Exempel:
     |"Läkarintyg FK 7263"	|	"UndersökningsDatum"	| "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"			| "Intyget baseras på" |  "Utkastet är sparat, men obligatoriska uppgifter saknas." |
 
 Scenario: Meddelanden visas när obligatoriska fält inte är ifyllda
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+    Och jag går in på utkastet
 	Och jag klickar på signera-knappen
 	Så ska jag se en rubrik med texten "Utkastet saknar uppgifter i följande avsnitt"
 	Och ska jag se en lista med vad som saknas
@@ -56,7 +59,8 @@ Scenario: Meddelanden visas när obligatoriska fält inte är ifyllda
 	Så ska intygets status vara "Intyget är signerat"
 
 Scenario: Intyget kan inte signeras utan fält 4b Text för Annat
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+    Och jag går in på utkastet
 	Och jag fyller i ett intyg som inte är smitta
 	När jag raderar fältet "Annat Intyget Baseras på" fältet
 	Och jag klickar på signera-knappen
@@ -64,7 +68,8 @@ Scenario: Intyget kan inte signeras utan fält 4b Text för Annat
 	Så ska valideringsfelet "Fältet får inte vara tomt" visas
 
 Scenario: Intyget kan inte signeras utan förtydligande om Går ej att bedöma är ifyllt
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+    Och jag går in på utkastet
 	Och jag fyller i ett intyg som inte är smitta
 	Och jag kryssar i Prognos Går ej att bedöma utan beskrivning	
 	Och jag klickar på signera-knappen
@@ -73,7 +78,8 @@ Scenario: Intyget kan inte signeras utan förtydligande om Går ej att bedöma �
 
 @INTYG-3760
 Scenario: Intyget kan inte signeras om slut är före startdatum
-	När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+    Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och anger ett slutdatum som är tidigare än startdatum
 	Och jag klickar på signera-knappen

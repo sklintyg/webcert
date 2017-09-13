@@ -101,41 +101,45 @@ module.exports = function() {
     });
 
     //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/, function(smi, ts, samEllerPersonNummer, callback) {
-        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-        if (samEllerPersonNummer) {
-            var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
-            global.person = testdataHelpers.shuffle(shuffladPID)[0];
-        }
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat (SMI\-)?(TS\-)?(FK7263\-)?intyg( med samordningsnummer eller personnummer)?$/,
+        function(smi, ts, fk7263, samEllerPersonNummer, callback) {
+            global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+            if (samEllerPersonNummer) {
+                var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
+                global.person = testdataHelpers.shuffle(shuffladPID)[0];
+            }
 
-        console.log('SMI: ' + smi);
-        console.log('TS: ' + ts);
+            logger.debug('SMI: ' + (smi));
+            logger.debug('TS: ' + (ts));
+            logger.debug('fk7263: ' + (fk7263));
 
-        var intygtyper = [];
+            var intygtyper = [];
 
-        if (smi) {
-            intygtyper.push('Läkarintyg för sjukpenning',
-                'Läkarutlåtande för sjukersättning',
-                'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
-            );
-        } else if (ts) {
-            intygtyper.push('Transportstyrelsens läkarintyg',
-                'Transportstyrelsens läkarintyg, diabetes');
-        } else {
-            intygtyper.push(
-                'Läkarintyg för sjukpenning',
-                'Läkarutlåtande för sjukersättning',
-                'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-                'Läkarintyg FK 7263',
-                'Transportstyrelsens läkarintyg',
-                'Transportstyrelsens läkarintyg, diabetes'
-            );
-        }
+            if (smi) {
+                intygtyper.push('Läkarintyg för sjukpenning',
+                    'Läkarutlåtande för sjukersättning',
+                    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+                    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+                );
+            } else if (ts) {
+                intygtyper.push('Transportstyrelsens läkarintyg',
+                    'Transportstyrelsens läkarintyg, diabetes');
+            } else if (fk7263) {
+                intygtyper.push('Läkarintyg FK 7263');
+            } else {
+                intygtyper.push(
+                    'Läkarintyg för sjukpenning',
+                    'Läkarutlåtande för sjukersättning',
+                    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+                    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+                    'Läkarintyg FK 7263',
+                    'Transportstyrelsens läkarintyg',
+                    'Transportstyrelsens läkarintyg, diabetes'
+                );
+            }
 
-        var randomIntygType = testdataHelpers.shuffle(intygtyper)[0];
-        logger.info('Intyg typ: ' + randomIntygType + '\n');
-        createBody(randomIntygType, callback);
-    });
+            var randomIntygType = testdataHelpers.shuffle(intygtyper)[0];
+            logger.info('Intyg typ: ' + randomIntygType + '\n');
+            createBody(randomIntygType, callback);
+        });
 };

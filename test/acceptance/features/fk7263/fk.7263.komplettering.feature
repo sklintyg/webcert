@@ -9,7 +9,8 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @nyttIntyg
 Scenario: Ska kunna besvara komplettering med nytt intyg
-   När jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+   Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
    Och jag ska se den data jag angett för intyget
@@ -26,7 +27,11 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
 
 @textsvar @waitingForFix
 Scenario: Ska kunna besvara komplettering med textmeddelande
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   Och att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Och jag går in på utkastet
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan 
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget
    Så ska jag se kompletteringsfrågan på intygs-sidan
@@ -34,7 +39,11 @@ Scenario: Ska kunna besvara komplettering med textmeddelande
 
 @fortsattUtkast
 Scenario: Ska kunna fortsätta besvara kompletterande intyg 
-   När jag går in på ett "Läkarintyg FK 7263" med status "Signerat" 
+   Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Och jag går in på utkastet
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   #När jag går in på ett "Läkarintyg FK 7263" med status "Signerat" 
    Och jag skickar intyget till Försäkringskassan
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget
