@@ -70,7 +70,7 @@ Scenario: Ska få varning vid svar med nytt intyg
    När jag klickar på svara knappen, fortfarande i uthoppsläge
    Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
 
-@komplettering
+@komplettering @waitingForFix
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på en patient
    När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"

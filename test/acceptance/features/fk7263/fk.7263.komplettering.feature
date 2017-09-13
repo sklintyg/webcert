@@ -24,7 +24,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    När jag signerar intyget
    Så jag ska se den data jag angett för intyget
 
-@textsvar 
+@textsvar @waitingForFix
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget

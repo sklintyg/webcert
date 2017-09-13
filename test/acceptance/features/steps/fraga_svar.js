@@ -170,9 +170,12 @@ module.exports = function() {
         var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
         var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
-        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-success', 'Svara')).sendKeys(protractor.Key.SPACE)
+        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-default', 'Kan inte komplettera')).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return fkIntygPage.komplettera.dialog.svaraMedTextKnapp.sendKeys(protractor.Key.SPACE);
+                return browser.sleep(2000); // Sleep pga animation
+            })
+            .then(function() {
+                return fkIntygPage.komplettera.dialog.svaraMedMeddelandeButton.sendKeys(protractor.Key.SPACE);
             })
             .then(function() {
                 return browser.sleep(2000); // Sleep pga animation

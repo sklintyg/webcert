@@ -17,4 +17,3 @@ Scenariomall: Enhetens adress ska följa med när jag förnyar ett <intygKod>-in
 Exempel:
   |intygKod | 	intyg 								| 
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
-  |FK7263	| 	"Läkarintyg FK 7263"				| 
