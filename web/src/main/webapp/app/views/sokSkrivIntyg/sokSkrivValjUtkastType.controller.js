@@ -123,7 +123,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 var statusAllowed = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';
 
                 return !(intyg.intygsTyp === 'ts-bas' || intyg.intygsTyp ==='ts-diabetes') &&
-                    !$scope.patientModel.sekretessmarkering && statusAllowed &&
+                    statusAllowed &&
                     !(intyg.relations.latestChildRelations.replacedByIntyg ||
                     intyg.relations.latestChildRelations.complementedByIntyg);
             };

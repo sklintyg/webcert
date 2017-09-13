@@ -48,15 +48,6 @@
 
                 </div>
 
-                <!-- Utgår enl. WC-US-SM-001
-                <div ng-if="patientModel.sekretessmarkering" class="form-group">
-                  <div class="alert alert-warning col-lg-7" id="sekretessmarkering">
-                    <span message key='label.createutkast.sekretessmarkering'></span>
-                  </div>
-                  <div class="clearfix"></div>
-                </div>
-                -->
-
                 <!-- error message -->
                 <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
                   <span message key="{{viewState.createErrorMessageKey}}"></span>
@@ -81,12 +72,6 @@
         <!-- Tidigare intyg table -->
         <div class="webcert-col-section">
           <h2 class="col-head">Tidigare intyg för {{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</h2>
-          <div class="form-group" ng-if="patientModel.sekretessmarkering">
-            <div class="alert alert-warning col-lg-7">
-              <span message key='label.copyutkast.sekretessmarkering'></span>
-            </div>
-            <div class="clearfix"></div>
-          </div>
           <div class="form-group">
             <label class="radio-inline">
               <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
