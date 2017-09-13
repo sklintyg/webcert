@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').controller('webcert.AboutWebcertCtrl',
-    ['$rootScope', '$scope', '$log', 'common.fragaSvarCommonService', 'webcert.UtkastProxy',
-        function($rootScope, $scope, $log, fragaSvarCommonService, UtkastProxy) {
+    ['$rootScope', '$scope', '$log', 'common.fragaSvarCommonService', 'webcert.UtkastProxy', 'moduleConfig',
+        function($rootScope, $scope, $log, fragaSvarCommonService, UtkastProxy, moduleConfig) {
             'use strict';
 
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
@@ -34,6 +34,8 @@ angular.module('webcert').controller('webcert.AboutWebcertCtrl',
                 });
             }
             loadIntygTypes();
+
+            $scope.version = moduleConfig.VERSION;
 
             $scope.getDetailedDescription = function(intygsType) {
                 return intygsType.detailedDescription;
