@@ -3,6 +3,9 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "VERSION": {
+      "type": "string"
+    },
     "BUILD_NUMBER": {
       "type": "string"
     },
@@ -14,6 +17,7 @@
     }
   },
   "required": [
+    "VERSION",
     "BUILD_NUMBER",
     "PP_HOST",
     "DASHBOARD_URL"
