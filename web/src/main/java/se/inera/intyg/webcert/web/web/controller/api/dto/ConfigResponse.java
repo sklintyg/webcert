@@ -27,6 +27,9 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "The global configuration of Webcert")
 public class ConfigResponse {
 
+    @ApiModelProperty(name = "VERSION", dataType = "String")
+    private String version;
+
     @ApiModelProperty(name = "BUILD_NUMBER", dataType = "String")
     private String buildNumber;
 
@@ -36,10 +39,16 @@ public class ConfigResponse {
     @ApiModelProperty(name = "DASHBOARD_URL", dataType = "String")
     private String dashboardUrl;
 
-    public ConfigResponse(String buildNumber, String ppHost, String dashboardUrl) {
+    public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl) {
+        this.version = version;
         this.buildNumber = buildNumber;
         this.ppHost = ppHost;
         this.dashboardUrl = dashboardUrl;
+    }
+
+    @JsonProperty("VERSION")
+    public String getVersion() {
+        return version;
     }
 
     @JsonProperty("BUILD_NUMBER")

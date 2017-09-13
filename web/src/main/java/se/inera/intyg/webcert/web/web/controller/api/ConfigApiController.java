@@ -40,6 +40,9 @@ import java.util.Map;
 @Api(value = "config", description = "REST API för konfigurationsparametrar", produces = MediaType.APPLICATION_JSON)
 public class ConfigApiController extends AbstractApiController {
 
+    @Value("${project.version}")
+    private String version;
+
     @Value("${buildNumber}")
     private String build;
 
@@ -57,7 +60,7 @@ public class ConfigApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get module configuration for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     public Response getConfig() {
-        return Response.ok(new ConfigResponse(build, ppHost, dashboardUrl)).build();
+        return Response.ok(new ConfigResponse(version, build, ppHost, dashboardUrl)).build();
     }
 
     @GET
