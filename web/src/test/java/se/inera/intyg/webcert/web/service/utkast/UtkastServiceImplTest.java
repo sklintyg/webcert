@@ -76,7 +76,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -494,7 +493,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository, never()).save(any(Utkast.class));
         verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class), anyString());
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
-        assertNull(user.getParameters().getBeforeAlternateSsn());
+        assertEquals("", user.getParameters().getBeforeAlternateSsn());
     }
 
     @Test
@@ -528,7 +527,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository, never()).save(any(Utkast.class));
         verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class), anyString());
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
-        assertNull(user.getParameters().getBeforeAlternateSsn());
+        assertEquals("", user.getParameters().getBeforeAlternateSsn());
     }
 
     @Test(expected = WebCertServiceException.class)
