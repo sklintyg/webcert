@@ -9,7 +9,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @FK7263-förnya-knapp
 Scenario: Det ska inte gå att förnya ett makulerat FK7263 intyg
-  Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+  Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
   Och jag går in på utkastet
   Och jag fyller i alla nödvändiga fält för intyget
   Och jag signerar intyget

@@ -8,7 +8,8 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @fk7263
 Scenario: Det ska inte gå att signera ofullständigt  Läkarintyg FK 7263   
-  Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+  Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
   Och jag fyller i alla obligatoriska  fält för intyget
   Och jag raderar ett  slumpat obligatoriskt fält
   Och jag klickar på signera-knappen
@@ -16,7 +17,8 @@ Scenario: Det ska inte gå att signera ofullständigt  Läkarintyg FK 7263
   Och ska jag se en lista med vad som saknas
 @prognos 
 Scenario: Det ska inte gå att signera  Läkarintyg FK 7263 om Prognos Går ej att bedöma är vald men beskrivning saknas
- Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+ Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
  Och jag fyller i alla obligatoriska  fält för intyget
  Och jag kryssar i Prognos Går ej att bedöma utan beskrivning
  Och jag klickar på signera-knappen

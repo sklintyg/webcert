@@ -14,7 +14,8 @@ Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
 
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107P"
     Och jag går in på en patient som sparats från Rehabstöd
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
     Och jag fyller i ett "FK7263" intyg som inte är smitta med ny sjukskrivningsperiod
     Och jag signerar intyget
 
@@ -33,7 +34,8 @@ Scenario: Ett makulerat FK7263 intyg ska tas bort från Rehabstöd
 
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107P"
     Och jag går in på en patient som sparats från Rehabstöd
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
     Och jag fyller i ett "FK7263" intyg som inte är smitta med ny sjukskrivningsperiod
     Och jag signerar intyget
 

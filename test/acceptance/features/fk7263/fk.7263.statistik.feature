@@ -9,7 +9,8 @@ Egenskap: FK7263-integration med Statistiktjänsten
 Scenario: Ett nyskapat FK7263 intyg ska finnas i Statistiktjänstens databas
     När att jag är inloggad som läkare
 	Och jag går in på en patient
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
     Så ska jag se intyget i databasen
@@ -18,7 +19,8 @@ Scenario: Ett nyskapat FK7263 intyg ska finnas i Statistiktjänstens databas
 Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort från Statistiktjänstens GUI
     När att jag är inloggad som läkare
 	Och jag går in på en patient
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag ändrar diagnoskoden till "slumpad"
 	Och jag signerar intyget

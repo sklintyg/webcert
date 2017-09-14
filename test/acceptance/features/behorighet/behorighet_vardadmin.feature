@@ -25,7 +25,7 @@ Scenario: Kan förnya Transportstyrelsens läkarintyg, diabetes intyg
 
 @fk7263
 Scenario: Kan inte signera Läkarintyg FK 7263
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig

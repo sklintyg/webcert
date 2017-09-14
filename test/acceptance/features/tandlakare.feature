@@ -24,7 +24,7 @@ Scenario: Ska endast kunna hantera FK7263
 Scenario: Skapa, Skicka och Makulera FK7263
 	Givet att jag är inloggad som tandläkare
 	När jag går in på en patient
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
@@ -43,7 +43,7 @@ Scenario: Skapa, Skicka och Makulera FK7263
 Scenario: Svara och skicka fråga till Försäkringskassan
    Givet att jag är inloggad som tandläkare
    När jag går in på en patient
-   Och att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget

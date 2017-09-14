@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @fk7263
 Scenario: Kortkommando för slutdatum på intyg FK7263
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i ett from datum
 	Och jag fyller i kortkommando som till och med datum

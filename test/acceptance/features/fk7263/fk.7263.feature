@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @minaintyg @keepIntyg @signera @smoke
 Scenario: Skapa och signera ett intyg
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
@@ -19,7 +19,7 @@ Scenario: Skapa och signera ett intyg
 
 @minaintyg @keepIntyg @intygTillFK @skicka
 Scenario: Skicka ett befintligt intyg till Försäkringskassan
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
@@ -32,7 +32,7 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 @smoke
 Scenario: Makulera ett skickat intyg
 	#När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
-	Och att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
@@ -44,14 +44,14 @@ Scenario: Makulera ett skickat intyg
 
 @samtidaanvandare
 Scenario: Samtida användare ska generera felmeddelande (FK7263)
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
 
 @samtidaanvandare @skicka-makulera
 Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (FK7263)
-		Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+		Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 		Och jag går in på utkastet
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
@@ -63,7 +63,7 @@ Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas e
 
 @samtidaanvandare @makulera-skicka
 Scenario: Samtida användare ska generera felmeddelande om man skickar efter makulering (FK7263)
-		Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+		Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 		Och jag går in på utkastet
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
@@ -73,7 +73,7 @@ Scenario: Samtida användare ska generera felmeddelande om man skickar efter mak
 
 @samtidaanvandare @fornya
 Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
-		Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+		Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 		Och jag går in på utkastet
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag klickar på signera-knappen
@@ -83,7 +83,7 @@ Scenario: Samtida användare ska generera felmeddelande om man förnyar efter ma
 
 @samtidaanvandare @makulera-förnya
 Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag klickar på signera-knappen

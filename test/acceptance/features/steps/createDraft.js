@@ -101,8 +101,8 @@ module.exports = function() {
     });
 
     //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat (SMI\-)?(TS\-)?(FK7263\-)?intyg( med samordningsnummer eller personnummer)?$/,
-        function(smi, ts, fk7263, samEllerPersonNummer, callback) {
+    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
+        function(smi, ts, samEllerPersonNummer, callback) {
             global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
             if (samEllerPersonNummer) {
                 var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
@@ -111,7 +111,6 @@ module.exports = function() {
 
             logger.debug('SMI: ' + (smi));
             logger.debug('TS: ' + (ts));
-            logger.debug('fk7263: ' + (fk7263));
 
             var intygtyper = [];
 
@@ -124,8 +123,6 @@ module.exports = function() {
             } else if (ts) {
                 intygtyper.push('Transportstyrelsens läkarintyg',
                     'Transportstyrelsens läkarintyg, diabetes');
-            } else if (fk7263) {
-                intygtyper.push('Läkarintyg FK 7263');
             } else {
                 intygtyper.push(
                     'Läkarintyg för sjukpenning',

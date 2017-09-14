@@ -5,7 +5,7 @@ Egenskap: FK7263 Ärendehantering
 Bakgrund: Jag är inloggad och inne på ett skickat intyg
       Givet att jag är inloggad som läkare "Karin Persson"
       Och jag går in på en patient
-      Och att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+      Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	  Och jag går in på utkastet
 	  Och jag fyller i alla nödvändiga fält för intyget
 	  Och jag signerar intyget
@@ -34,7 +34,7 @@ Scenario: Filtrera frågor på läkare
    Givet att jag är inloggad som läkare "Johan Johansson"
    När jag går in på en patient
    #När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
-   Och att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget

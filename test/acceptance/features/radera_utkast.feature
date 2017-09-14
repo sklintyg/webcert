@@ -8,7 +8,8 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 @removedraft
 Scenario: Radera ett utkast för läkarintyg fk7263
 När jag går in på en patient
-Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 Och jag går tillbaka till start
 Och jag går in på ett "Läkarintyg FK 7263" med status "Utkast, uppgifter saknas"
 Och jag raderar utkastet

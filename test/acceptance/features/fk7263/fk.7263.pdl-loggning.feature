@@ -11,14 +11,14 @@ Bakgrund: Jag är inloggad
 # Första ändring per ändringssession ska loggas
 @skapa @skriva
 Scenario: Skapa intyg
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag ändrar diagnoskod
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
 
 @öppna
 Scenario: Öppna intyg
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
@@ -27,7 +27,7 @@ Scenario: Öppna intyg
 
 @signera
 Scenario: Signera intyg
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
@@ -35,7 +35,7 @@ Scenario: Signera intyg
 
 @skicka @utskrift
 Scenario: Skicka intyg till mottagare
-  Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+  Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
   Och jag går in på utkastet
   Och jag fyller i alla nödvändiga fält för intyget
   Och jag signerar intyget
@@ -45,7 +45,7 @@ Scenario: Skicka intyg till mottagare
 
 @skriv-ut @utskrift
 Scenario: Skriv ut intyg
-  Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+  Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
   Och jag går in på utkastet
   Och jag fyller i alla nödvändiga fält för intyget
   Och jag signerar intyget
@@ -55,7 +55,7 @@ Scenario: Skriv ut intyg
 
 @radera
 Scenario: Radera utkast
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag raderar utkastet
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
@@ -63,7 +63,7 @@ Scenario: Radera utkast
 @makulera
 Scenario: Makulera intyg
 	#När  jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget

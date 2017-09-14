@@ -42,18 +42,17 @@ function createUser() {
 }
 
 function createObj(row) {
-    logger.debug('row:');
-    logger.debug(row);
+    logger.silly('row:');
+    logger.silly(row);
     var elements = row.split(',');
-    logger.debug('elements: ');
-    logger.debug(elements);
     var ssn = elements[0].trim();
-    logger.debug('ssn: ' + ssn);
+    logger.silly('ssn: ' + ssn);
     var startDate = elements[1].trim();
-    logger.debug('startDate: ' + startDate);
+    logger.silly('startDate: ' + startDate);
     var endDate = elements[2].trim();
-    logger.debug('endDate: ' + endDate);
+    logger.silly('endDate: ' + endDate);
     var noOfIntyg = extractDigit(elements[3]);
+    logger.silly('noOfIntyg: ' + noOfIntyg);
     var obj = {};
     obj.ssn = ssn;
     obj.startDate = startDate;
@@ -63,9 +62,10 @@ function createObj(row) {
 }
 
 function extractDigit(intyg) {
-    var regex = /(dagar \d{1,2})/g;
+    var regex = /dagar (\d{1,2})/g;
     var subst = '\$1';
     var result = intyg.replace(regex, subst).trim();
+
     return parseInt(result, 10);
 }
 
@@ -115,11 +115,11 @@ function createUserArr(getObjFromList) {
                 if (savedObj.ssn === newObj.ssn) {
                     personArr.push(newObj);
                 }
-                logger.debug(newObj);
+                logger.silly(newObj);
             } else {
                 var obj = createObj(row.replace(TABLEROW_REGEX, TABLEROW_SUBST));
                 personArr.push(obj);
-                logger.debug(obj);
+                logger.silly(obj);
             }
         });
     }).then(function() {
@@ -149,8 +149,17 @@ module.exports = function() {
     this.Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
         var elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
         var userObj = global.user;
+
+
+
         return element(by.id(elementId)).click().then(function() {
             return browser.sleep(2000).then(function() {
+
+                logger.info('Inloggad på: ');
+                element(by.id('location')).getText().then(function(txt) {
+                    logger.info(txt);
+                });
+
                 var headerboxUser = element(by.css('.headerbox-user-profile'));
                 return expect(headerboxUser.getText()).to.eventually.contain(userObj.roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
             });
@@ -229,6 +238,12 @@ module.exports = function() {
     this.Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabstöd$/, function(antal) {
         return createUserArr(getObjFromList).then(function(personArr) {
             logger.info('Rehabpatient: ( ssn: ' + global.rehabstod.user.ssn + ', Antal intyg: ' + personArr[0].noOfIntyg + ').');
+
+            logger.info('Förväntar oss att global.rehabstod.user.noOfIntyg + ' + antal);
+            logger.info('=> ' + global.rehabstod.user.noOfIntyg + parseInt(antal, 10));
+            logger.info('Ska vara lika mycket som personArr[0].noOfIntyg');
+            logger.info('=> ' + personArr[0].noOfIntyg);
+
             return expect(global.rehabstod.user.noOfIntyg + parseInt(antal, 10)).to.equal(personArr[0].noOfIntyg);
         });
     });

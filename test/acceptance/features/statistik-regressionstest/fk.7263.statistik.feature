@@ -13,7 +13,8 @@ Scenario: Testa att anropa statitisk-APIet
 Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort från Statistiktjänstens GUI
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag ändrar diagnoskoden till "slumpad"
 	Och jag signerar intyget
@@ -41,7 +42,8 @@ Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort
 Scenario: Två nyskapade FK7263 intyg på samma person ska räknas som en i Statistiktjänstens GUI
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag ändrar diagnoskoden till "slumpad"
 	Och jag signerar intyget
@@ -49,7 +51,8 @@ Scenario: Två nyskapade FK7263 intyg på samma person ska räknas som en i Stat
 	
 	När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på patienten
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag ändrar diagnoskoden till "samma som ovan"
 	Och jag signerar intyget
@@ -67,7 +70,8 @@ Scenario: Två nyskapade FK7263 intyg på samma person ska räknas som en i Stat
 Scenario: Två nyskapade FK7263 intyg på olika personer ska räknas som två i Statistiktjänstens GUI
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag ändrar diagnoskoden till "slumpad"
 	Och jag signerar intyget
@@ -75,7 +79,8 @@ Scenario: Två nyskapade FK7263 intyg på olika personer ska räknas som två i 
 	
 	När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en annan patient
-    Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag ändrar diagnoskoden till "samma som ovan"
 	Och jag signerar intyget

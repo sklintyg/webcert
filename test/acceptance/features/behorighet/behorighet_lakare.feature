@@ -34,7 +34,8 @@ Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enh
 Scenario: Kan inte se intyg på överliggande enhet när jag är inne på underenhet
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-107P"
 	När jag går in på en patient
-	Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
 
 	Så ska det finnas en knapp för att skriva ut utkastet
 	

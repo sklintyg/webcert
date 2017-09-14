@@ -9,7 +9,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @nyttIntyg
 Scenario: Ska kunna besvara komplettering med nytt intyg
-   Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
@@ -27,7 +27,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
 
 @textsvar @waitingForFix
 Scenario: Ska kunna besvara komplettering med textmeddelande
-   Och att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
@@ -39,7 +39,7 @@ Scenario: Ska kunna besvara komplettering med textmeddelande
 
 @fortsattUtkast
 Scenario: Ska kunna fortsätta besvara kompletterande intyg 
-   Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget

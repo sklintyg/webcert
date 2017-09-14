@@ -21,7 +21,8 @@ Scenario: Kan signera intyg
 @signera @fk7263
 Scenario: Kan signera intyg
    När jag går in på en patient
-   Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+   Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+ Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
    Så är signeraknappen tillgänglig
    När jag signerar intyget
@@ -83,7 +84,7 @@ Scenario: Ska få varning vid svar med nytt intyg
    
    När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    
-   #Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   #Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    #Och jag går in på utkastet
    #Och jag fyller i alla nödvändiga fält för intyget
    #Och jag signerar intyget
@@ -106,7 +107,7 @@ Scenario: Ska kunna besvara komplettering med textmeddelande
    
    När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    
-   #Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   #Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    #Och jag går in på utkastet
    #Och jag fyller i alla nödvändiga fält för intyget
    #Och jag signerar intyget

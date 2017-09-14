@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @fornya
 Scenario: Skapa ett intyg som sedan förnyas och signeras
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
