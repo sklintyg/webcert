@@ -1028,6 +1028,41 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
+    public void testFilterArendeFiltersOutNonVerifiedSekretessPatients() {
+        WebCertUser webCertUser = createUser();
+
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        when(webcertUserService.getUser()).thenReturn(webCertUser);
+        when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
+
+        List<Arende> queryResults = new ArrayList<>();
+        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
+        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1), null));
+
+        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
+        when(arendeRepository.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
+
+        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
+        fsResponse.setResults(new ArrayList<>());
+        fsResponse.setTotalCount(0);
+
+        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        params.setEnhetId(webCertUser.getValdVardenhet().getId());
+
+        QueryFragaSvarResponse response = service.filterArende(params);
+
+        verify(patientDetailsResolver, times(2)).getSekretessStatus(any(Personnummer.class));
+        verify(webcertUserService).isAuthorizedForUnit(anyString(), eq(true));
+
+        verify(arendeRepository).filterArende(any(Filter.class));
+        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+
+        assertEquals(0, response.getResults().size());
+    }
+
+    @Test
     public void testFilterArendeWithNoEnhetsIdAsParam() {
         when(webcertUserService.getUser()).thenReturn(createUser());
 

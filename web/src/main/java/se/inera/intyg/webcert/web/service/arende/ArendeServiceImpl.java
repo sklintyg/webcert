@@ -18,14 +18,30 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
@@ -50,7 +66,6 @@ import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
-import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.integration.builder.SendMessageToRecipientTypeBuilder;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -66,23 +81,11 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
-
-import javax.xml.bind.JAXBException;
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -341,9 +344,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         WebCertUser user = webcertUserService.getUser();
         Set<String> intygstyperForPrivilege = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(user)
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                .isVerified();
 
         Filter filter;
         if (!Strings.isNullOrEmpty(filterParameters.getEnhetId())) {
@@ -378,19 +378,19 @@ public class ArendeServiceImpl implements ArendeService {
         results.sort(Comparator.comparing(ArendeListItem::getReceivedDate).reversed());
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
-        // Handling when user may not see sekretessmarkering.
-        if (!mayHandleSekretessmarkeradePatienter) {
-            results = results.stream()
-                    .filter(ali -> !isSekretessMarkering(ali))
-                    .collect(Collectors.toList());
-        } else {
-            // We must mark all items having patient with sekretessmarkering
-            results.stream()
-                    .filter(ali -> isSekretessMarkering(ali))
-                    .forEach(ali -> ali.setSekretessmarkering(true));
-        }
+        // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
+        results = results.stream()
+                .filter(ali -> this.passesSekretessCheck(new Personnummer(ali.getPatientId()), ali.getIntygTyp(), user))
+                .collect(Collectors.toList());
+
+
+        // We must mark all items having patient with sekretessmarkering
+        results.stream()
+                .filter(ali -> hasSekretessStatus(ali, SekretessStatus.TRUE))
+                .forEach(ali -> ali.setSekretessmarkering(true));
 
         response.setTotalCount(results.size());
+
         if (originalStartFrom >= results.size()) {
             response.setResults(new ArrayList<>());
         } else {
@@ -399,9 +399,22 @@ public class ArendeServiceImpl implements ArendeService {
         return response;
     }
 
-    private boolean isSekretessMarkering(ArendeListItem ali) {
+    private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user) {
+        final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patientId);
+
+        if (sekretessStatus == SekretessStatus.UNDEFINED) {
+            return false;
+        } else {
+            return sekretessStatus == SekretessStatus.FALSE || authoritiesValidator.given(user, intygsTyp)
+                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                    .isVerified();
+        }
+
+    }
+
+    private boolean hasSekretessStatus(ArendeListItem ali, SekretessStatus sekretessStatus) {
         Personnummer patientPersonnummer = new Personnummer(ali.getPatientId());
-        return patientDetailsResolver.getSekretessStatus(patientPersonnummer) == SekretessStatus.TRUE;
+        return patientDetailsResolver.getSekretessStatus(patientPersonnummer) == sekretessStatus;
     }
 
     @Override
@@ -473,7 +486,8 @@ public class ArendeServiceImpl implements ArendeService {
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                 .isVerified();
 
-        // INTYG-4231: If the user is allowed to handle sekretessmarkerade patients, we use the efficient way of getting stats.
+        // INTYG-4231: If the user is allowed to handle sekretessmarkerade patients, we use the efficient way of getting
+        // stats.
         if (mayHandleSekretessmarkeradePatienter) {
             return arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper)
                     .stream()

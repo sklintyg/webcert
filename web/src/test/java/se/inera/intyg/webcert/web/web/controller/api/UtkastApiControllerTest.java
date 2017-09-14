@@ -18,9 +18,26 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.common.base.Strings;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +45,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.base.Strings;
+
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -37,7 +60,9 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
@@ -46,22 +71,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastApiControllerTest {
@@ -73,12 +84,14 @@ public class UtkastApiControllerTest {
     private static final String PATIENT_MELLANNAMN = "Von";
 
     private static final Personnummer PATIENT_PERSONNUMMER = new Personnummer("19121212-1212");
+    private static final Personnummer PATIENT_PERSONNUMMER_PU_SEKRETESS = new Personnummer("20121212-1212");
 
     private static final String PATIENT_POSTADRESS = "Testadress";
 
     private static final String PATIENT_POSTNUMMER = "12345";
 
     private static final String PATIENT_POSTORT = "Testort";
+
 
     @Mock
     private UtkastService utkastService;
@@ -94,7 +107,8 @@ public class UtkastApiControllerTest {
 
     @Before
     public void setup() throws Exception {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
+        when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
     }
 
@@ -200,12 +214,62 @@ public class UtkastApiControllerTest {
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
-
     @Test(expected = AuthoritiesException.class)
     public void createUtkastWithoutPrivilegeSkrivIntygFails() {
         String intygsTyp = "fk7263";
         setupUser("", intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
         utkastController.createUtkast(intygsTyp, buildRequest("fk7263"));
+    }
+
+    @Test
+    public void testFilterDraftsForUnit() {
+        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, Fk7263EntryPoint.MODULE_ID, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.filterIntyg(any())).thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
+
+        final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
+        final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
+        assertEquals(2, queryIntygResponse.getTotalCount());
+        assertEquals(2, queryIntygResponse.getResults().size());
+
+    }
+
+    @Test
+    public void testFilterDraftsForUnitSkipsSekretessIntygForUserWithoutAuthorithy() {
+        setupUser("", Fk7263EntryPoint.MODULE_ID, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(utkastService.filterIntyg(any())).thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));
+
+        final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
+        final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
+        assertEquals(1, queryIntygResponse.getTotalCount());
+        assertEquals(1, queryIntygResponse.getResults().size());
+        assertEquals(PATIENT_PERSONNUMMER, queryIntygResponse.getResults().get(0).getPatientId());
+
+    }
+
+    @Test
+    public void testFilterDraftsForUnitSkipAllIntygWithUndefinedSekretessStatus() {
+        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, Fk7263EntryPoint.MODULE_ID, WebcertFeature.HANTERA_INTYGSUTKAST);
+
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+
+        when(utkastService.filterIntyg(any())).thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
+
+        
+        final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
+        final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
+        assertEquals(0, queryIntygResponse.getTotalCount());
+        assertEquals(0, queryIntygResponse.getResults().size());
+
+    }
+
+    private QueryIntygParameter buildQueryIntygParameter() {
+        QueryIntygParameter queryIntygParameter = new QueryIntygParameter();
+        queryIntygParameter.setPageSize(10);
+        queryIntygParameter.setStartFrom(0);
+        return queryIntygParameter;
+
     }
 
     private void setupUser(String privilegeString, String intygType, WebcertFeature... features) {
@@ -227,6 +291,7 @@ public class UtkastApiControllerTest {
         when(webcertUserService.getUser()).thenReturn(user);
     }
 
+
     private CreateUtkastRequest buildRequest(String typ) {
         CreateUtkastRequest request = new CreateUtkastRequest();
         request.setIntygType(typ);
@@ -240,6 +305,16 @@ public class UtkastApiControllerTest {
         return request;
     }
 
+    private Utkast buildUtkast(Personnummer personnr) {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsTyp("fk7263");
+        utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
+        utkast.setSenastSparadAv(new VardpersonReferens());
+        utkast.setSenastSparadDatum(LocalDateTime.now());
+        utkast.setPatientPersonnummer(personnr);
+
+        return utkast;
+    }
 
     private Patient buildPatient() {
         Patient patient = new Patient();
