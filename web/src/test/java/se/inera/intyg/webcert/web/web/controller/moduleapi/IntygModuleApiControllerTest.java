@@ -44,7 +44,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;

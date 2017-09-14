@@ -24,24 +24,22 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
 // CHECKSTYLE:OFF LineLength
 public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
 
     /**
-     * Should return a list that contains an array with enhets id and the number of unhandled {@link Arende} questions for that enhet.
+     * Returns a List of GroupableItem instances for the given parameters. Typically used for aggregation of number
+     * of Q/A on a given unit or units with sekretessmarkering taken into account.
      *
      * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities.
      * @param intygsTyper Set of intygstyper that arendens related intyg must be of.
-     * @return A list that contains an array with enhets id and the number of unhandled for that enhet.
+     * @return
      */
-    @Query("SELECT DISTINCT a.enhetId, count(a.enhetId) FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId = null AND a.intygTyp IN (:intygsTyper) GROUP BY a.enhetId")
-    List<Object[]> countUnhandledGroupedByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
-
-
-    @Query("SELECT a.id, a.enhetId, a.patientPersonId FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId = null AND a.intygTyp IN (:intygsTyper)")
-    List<Object[]> getUnhandledByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
+    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(a.id, a.enhetId, a.patientPersonId, a.intygTyp) FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId = null AND a.intygTyp IN (:intygsTyper)")
+    List<GroupableItem> getUnhandledByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * List all unique signing doctors for the supplied units.

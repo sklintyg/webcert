@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,7 +64,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -256,7 +255,7 @@ public class UtkastApiControllerTest {
 
         when(utkastService.filterIntyg(any())).thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
 
-        
+
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
         assertEquals(0, queryIntygResponse.getTotalCount());

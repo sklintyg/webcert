@@ -3,6 +3,7 @@ package se.inera.intyg.webcert.web.service.patient;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 
 /**
  * Created by eriklupander on 2017-08-14.

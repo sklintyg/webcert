@@ -79,7 +79,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;

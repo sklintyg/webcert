@@ -25,6 +25,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -54,24 +55,15 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     List<Utkast> findByEnhetsIdsAndStatuses(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<UtkastStatus> statuses);
 
     /**
-     * Should return a count of {@link Utkast} entities in the repository that has an enhetsId matching one of the
+     * Should return a list of {@link Utkast} entities in the repository that has an enhetsId matching one of the
      * supplied list of id's. Is also discards any entity with a {@link UtkastStatus} not in the list.
      *
      * @param enhetsIds
      *            List of hsa unit id's that should match the counted intyg entities
-     * @return A count of {@link Utkast} matching the search criteria.
      */
-    @Query("SELECT u.enhetsId, count(u) FROM Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper) GROUP BY u.enhetsId")
-    List<Object[]> countIntygWithStatusesGroupedByEnhetsId(@Param("enhetsIds") List<String> enhetsIds,
-            @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
-
-    /**
-     * Should return a list of {@link Utkast} entities in the repository that has an enhetsId matching one of the
-     * supplied list of id's. Is also discards any entity with a {@link UtkastStatus} not in the list.
-     */
-    @Query("SELECT u.intygsId, u.enhetsId, u.patientPersonnummer FROM Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
-    List<Object[]> getIntygWithStatusesByEnhetsId(@Param("enhetsIds") List<String> enhetsIds,
-                                                           @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
+    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(u.intygsId, u.enhetsId, u.patientPersonnummer, u.intygsTyp) FROM Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
+    List<GroupableItem> getIntygWithStatusesByEnhetsId(@Param("enhetsIds") List<String> enhetsIds,
+                                                       @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * Returns all {@link Utkast} entities belonging to a certain patient and belonging to one of several careUnit and

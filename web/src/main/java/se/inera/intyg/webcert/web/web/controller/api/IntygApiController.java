@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the API that serves WebCert.
@@ -146,6 +147,12 @@ public class IntygApiController extends AbstractApiController {
         }
 
         List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(intygItemListResponse.getLeft(), utkastList);
+
+        // INTYG-4477
+        if (patientSekretess == SekretessStatus.TRUE) {
+            Set<String> allowedTypes = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering();
+            allIntyg = allIntyg.stream().filter(intyg -> allowedTypes.contains(intyg.getIntygType())).collect(Collectors.toList());
+        }
 
         Response.ResponseBuilder responseBuilder = Response.ok(allIntyg);
         if (intygItemListResponse.getRight()) {

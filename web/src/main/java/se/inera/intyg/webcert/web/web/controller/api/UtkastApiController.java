@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;

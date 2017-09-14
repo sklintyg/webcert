@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +25,29 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.common.model.GroupableItem;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -148,15 +153,15 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));                     // NONE BELOW HERE
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID, Status.CLOSED));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
 
-        List<Object[]> res = fragasvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
+        List<GroupableItem> res = fragasvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
         assertNotNull(res);
-        assertEquals(2, res.size());
+        assertEquals(3, res.size());
     }
 
     @Test
@@ -172,12 +177,12 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
 
         // With valid type
-        List<Object[]> res = fragasvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
+        List<GroupableItem> res = fragasvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
         assertNotNull(res);
-        assertEquals(2, res.size());
+        assertEquals(3, res.size());
 
         // With unknown type
-        res = fragasvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("other-type"));
+        res = fragasvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("other-type"));
         assertNotNull(res);
         assertEquals(0, res.size());
     }

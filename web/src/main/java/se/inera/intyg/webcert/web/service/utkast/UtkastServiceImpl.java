@@ -43,6 +43,7 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -310,22 +311,8 @@ public class UtkastServiceImpl implements UtkastService {
         // Get intygstyper from write privilege
         Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
-        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(user)
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                .isVerified();
-
-        // INTYG-4231, om användaren ej får hantera sekretessmarkerad person måste vi filtrera bort sådana poster ur räknarna.
-        if (mayHandleSekretessmarkeradePatienter) {
-            List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES,
-                    intygsTyper);
-            for (Object[] resultArr : countResults) {
-                resultsMap.put((String) resultArr[0], (Long) resultArr[1]);
-            }
-            return resultsMap;
-        } else {
-            List<Object[]> resultArr = utkastRepository.getIntygWithStatusesByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES, intygsTyper);
-            return statisticsGroupByUtil.toSekretessFilteredMap(resultArr);
-        }
+        List<GroupableItem> resultArr = utkastRepository.getIntygWithStatusesByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES, intygsTyper);
+        return statisticsGroupByUtil.toSekretessFilteredMap(resultArr);
     }
 
     @Override

@@ -26,7 +26,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
@@ -85,13 +84,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -99,7 +95,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -1142,52 +1137,52 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         assertEquals(4, result.size());
     }
 
-    @Test
-    public void testGetNbrOfUnhandledFragaSvarForCareUnitsUserMayHandleSekretessmarkerade() {
-
-        List<Object[]> queryResult = new ArrayList<>();
-        queryResult.add(new Object[] { "HSA1", 2L });
-        queryResult.add(new Object[] { "HSA2", 4L });
-
-        when(fragasvarRepositoryMock.countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
-                Mockito.anySetOf(String.class)))
-                        .thenReturn(queryResult);
-        when(webCertUserService.getUser()).thenReturn(createUser());
-
-        Map<String, Long> res = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList("HSA1", "HSA2"),
-                Stream.of("fk7263").collect(Collectors.toSet()));
-
-        verify(fragasvarRepositoryMock).countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
-                Mockito.anySetOf(String.class));
-
-        assertNotNull(res);
-        assertEquals(2, res.size());
-    }
-
-    @Test
-    public void testGetNbrOfUnhandledFragaSvarForCareUnitsUserMayNotHandleSekretessmarkerade() {
-
-        List<Object[]> queryResult = new ArrayList<>();
-        queryResult.add(new Object[] { "HSA1", 2L });
-        queryResult.add(new Object[] { "HSA2", 4L });
-
-        when(fragasvarRepositoryMock.getUnhandledWithEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
-                Mockito.anySetOf(String.class)))
-                .thenReturn(queryResult);
-        when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
-        Map<String, Long> map = new HashMap<>();
-        map.put("hsa-123", 1L);
-        when(statisticsGroupByUtil.toSekretessFilteredMap(anyList())).thenReturn(map);
-
-        Map<String, Long> res = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList("HSA1", "HSA2"),
-                Stream.of("fk7263").collect(Collectors.toSet()));
-
-        verify(fragasvarRepositoryMock, times(0))
-                .countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class), Mockito.anySetOf(String.class));
-
-        assertNotNull(res);
-        assertEquals(1, res.size());
-    }
+//    @Test
+//    public void testGetNbrOfUnhandledFragaSvarForCareUnitsUserMayHandleSekretessmarkerade() {
+//
+//        List<Object[]> queryResult = new ArrayList<>();
+//        queryResult.add(new Object[] { "HSA1", 2L });
+//        queryResult.add(new Object[] { "HSA2", 4L });
+//
+//        when(fragasvarRepositoryMock.countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
+//                Mockito.anySetOf(String.class)))
+//                        .thenReturn(queryResult);
+//        when(webCertUserService.getUser()).thenReturn(createUser());
+//
+//        Map<String, Long> res = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList("HSA1", "HSA2"),
+//                Stream.of("fk7263").collect(Collectors.toSet()));
+//
+//        verify(fragasvarRepositoryMock).countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
+//                Mockito.anySetOf(String.class));
+//
+//        assertNotNull(res);
+//        assertEquals(2, res.size());
+//    }
+//
+//    @Test
+//    public void testGetNbrOfUnhandledFragaSvarForCareUnitsUserMayNotHandleSekretessmarkerade() {
+//
+//        List<Object[]> queryResult = new ArrayList<>();
+//        queryResult.add(new Object[] { "HSA1", 2L });
+//        queryResult.add(new Object[] { "HSA2", 4L });
+//
+//        when(fragasvarRepositoryMock.getUnhandledWithEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class),
+//                Mockito.anySetOf(String.class)))
+//                .thenReturn(queryResult);
+//        when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
+//        Map<String, Long> map = new HashMap<>();
+//        map.put("hsa-123", 1L);
+//        when(statisticsGroupByUtil.toSekretessFilteredMap(anyList())).thenReturn(map);
+//
+//        Map<String, Long> res = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList("HSA1", "HSA2"),
+//                Stream.of("fk7263").collect(Collectors.toSet()));
+//
+//        verify(fragasvarRepositoryMock, times(0))
+//                .countUnhandledGroupedByEnhetIdsAndIntygstyper(Mockito.anyListOf(String.class), Mockito.anySetOf(String.class));
+//
+//        assertNotNull(res);
+//        assertEquals(1, res.size());
+//    }
 
     @Test(expected = WebCertServiceException.class)
     public void intygWithoutFragaSvarDoesNotAcceptFraga() {

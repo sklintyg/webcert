@@ -26,6 +26,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
@@ -49,6 +50,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static se.inera.intyg.webcert.persistence.utkast.repository.UtkastTestUtil.PERSON_NUMMER;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -126,15 +128,16 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastStatus.SIGNED));
 
-        List<Object[]> result = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(
+        List<GroupableItem> result = utkastRepository.getIntygWithStatusesByEnhetsId(
                 Arrays.asList(UtkastTestUtil.ENHET_1_ID),
                 Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE),
                 Stream.of(UtkastTestUtil.INTYGSTYP_FK7263).collect(Collectors.toCollection(HashSet::new)));
-        assertThat(result.size(), is(1));
+        assertThat(result.size(), is(3));
 
-        Object[] resObjs = result.get(0);
-        assertThat((String) resObjs[0], equalTo(UtkastTestUtil.ENHET_1_ID));
-        assertThat((Long) resObjs[1], equalTo(3L));
+        GroupableItem resObjs = result.get(0);
+        assertThat(resObjs.getEnhetsId(), equalTo(UtkastTestUtil.ENHET_1_ID));
+        assertThat(resObjs.getPersonnummer(), equalTo(PERSON_NUMMER.getPersonnummer()));
+        assertThat(resObjs.getIntygsTyp(), equalTo("fk7263"));
     }
 
     @Test
@@ -147,7 +150,7 @@ public class UtkastRepositoryTest {
 
         List<String> enhetsIds = Arrays.asList(UtkastTestUtil.ENHET_1_ID);
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(UtkastTestUtil.PERSON_NUMMER.getPersonnummer(),
+        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(PERSON_NUMMER.getPersonnummer(),
                 enhetsIds, statuses, allIntygsTyper());
 
         assertThat(results.size(), is(2));
@@ -164,7 +167,7 @@ public class UtkastRepositoryTest {
 
         String vardgivarId = UtkastTestUtil.ENHET_1_ID;
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-        List<Utkast> results = utkastRepository.findDraftsByPatientAndVardgivareAndStatus(UtkastTestUtil.PERSON_NUMMER.getPersonnummer(),
+        List<Utkast> results = utkastRepository.findDraftsByPatientAndVardgivareAndStatus(PERSON_NUMMER.getPersonnummer(),
                 vardgivarId, statuses, allIntygsTyper());
 
         assertThat(results.size(), is(2));

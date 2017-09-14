@@ -18,30 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
@@ -51,6 +35,8 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
+import se.inera.intyg.webcert.common.model.GroupableItem;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -78,7 +64,6 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
@@ -86,6 +71,19 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
+
+import javax.xml.bind.JAXBException;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -482,21 +480,8 @@ public class ArendeServiceImpl implements ArendeService {
             return new HashMap<>();
         }
 
-        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(webcertUserService.getUser())
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                .isVerified();
-
-        // INTYG-4231: If the user is allowed to handle sekretessmarkerade patients, we use the efficient way of getting
-        // stats.
-        if (mayHandleSekretessmarkeradePatienter) {
-            return arendeRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper)
-                    .stream()
-                    .collect(Collectors.toMap(a -> (String) a[0], a -> (Long) a[1]));
-        } else {
-            List<Object[]> results = arendeRepository.getUnhandledByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
-            return statisticsGroupByUtil.toSekretessFilteredMap(results);
-        }
-
+        List<GroupableItem> results = arendeRepository.getUnhandledByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
+        return statisticsGroupByUtil.toSekretessFilteredMap(results);
     }
 
     @VisibleForTesting

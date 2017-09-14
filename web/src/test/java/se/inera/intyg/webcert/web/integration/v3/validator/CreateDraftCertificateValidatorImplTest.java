@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;

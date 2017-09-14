@@ -2,11 +2,16 @@ package se.inera.intyg.webcert.web.service.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.GroupableItem;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +28,12 @@ import java.util.stream.Collectors;
 public class StatisticsGroupByUtil {
 
     @Autowired
-    private PUService puService;
+    private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     /**
      * Takes a list of object[] where each object[] is one utkast, fraga/svar or arende represented as:
@@ -36,40 +46,45 @@ public class StatisticsGroupByUtil {
      * map: EnhetsId -> number of id for that unit.
      *
      * @param results
-     *            Each item is an array of: id, enhetsId, personnummer.
+     *            Each item is an array of: id, enhetsId, personnummer, intygsTyp.
      * @return
      *         Map with enhetsId -> count, with personummer being sekretessmarkerade has been removed.
      */
-    public Map<String, Long> toSekretessFilteredMap(List<Object[]> results) {
-        List<QAItem> tmpList = new ArrayList<>();
-        for (Object[] resArr : results) {
-            tmpList.add(new QAItem((String) resArr[1], (String) resArr[2]));
+    public Map<String, Long> toSekretessFilteredMap(List<GroupableItem> results) {
+        if (results == null || results.size() == 0) {
+            return new HashMap<>();
         }
-        return tmpList.stream()
-                .filter(qaItem -> !isSekretessMarkerad(qaItem.personnummer))
-                .collect(Collectors.groupingBy(qaItem -> qaItem.enhetsId, Collectors.counting()));
+        WebCertUser user = webCertUserService.getUser();
+
+        results.stream().forEach(item -> item.setSekretessStatus(getSekretessStatus(item.getPersonnummer())));
+
+        return results.stream()
+                .filter(item -> item.getSekretessStatus() != SekretessStatus.UNDEFINED)
+                .filter(item -> authoritiesValidator.given(user, item.getIntygsTyp())
+                        .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                                item.getSekretessStatus() == SekretessStatus.TRUE)
+                        .isVerified())
+                .collect(Collectors.groupingBy(GroupableItem::getEnhetsId, Collectors.counting()));
     }
 
-    private boolean isSekretessMarkerad(String personnummer) {
+    private SekretessStatus getSekretessStatus(String personnummer) {
         Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personnummer)
                 .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer"));
-        PersonSvar personSvar = puService.getPerson(pnr);
-        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-            return personSvar.getPerson().isSekretessmarkering();
-        } else {
-            // For statistics, we can assume NOT sekretessmarkering when the PU-service cannot respond properly.
-            return false;
-        }
+        return patientDetailsResolver.getSekretessStatus(pnr);
     }
 
     private static final class QAItem {
         private String enhetsId;
         private String personnummer;
+        private String intygsTyp;
+        private SekretessStatus sekretessStatus;
 
-        private QAItem(String enhetsId, String personnummer) {
+        private QAItem(String enhetsId, String personnummer, String intygsTyp) {
             this.enhetsId = enhetsId;
             this.personnummer = personnummer;
+            this.intygsTyp = intygsTyp;
         }
+
     }
 
 }

@@ -28,7 +28,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.patient.SekretessStatus;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;

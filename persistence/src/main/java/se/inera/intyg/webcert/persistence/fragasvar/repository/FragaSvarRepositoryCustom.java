@@ -24,6 +24,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 
@@ -55,27 +56,16 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     Long countUnhandledForEnhetsIds(@Param("idList") List<String> enhetsIds);
 
     /**
-     * Should return a list that contains an array with enhets id and the number of unhandled {@link FragaSvar} entities
-     * for that enhet.
-     *
-     * @param enhetsIds
-     *            List of hsa unit id's that should match the counted fraga svar entities.
-     * @return A list that contains an array with enhets id and the number of unhandled for that enhet.
-     */
-    @Query("SELECT DISTINCT fs.vardperson.enhetsId, count(fs.vardperson.enhetsId) FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' AND fs.intygsReferens.intygsTyp IN (:intygsTyper) GROUP BY fs.vardperson.enhetsId")
-    List<Object[]> countUnhandledGroupedByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
-            @Param("intygsTyper") Set<String> intygsTyper);
-
-    /**
-     * Should return a list that contains an array with with id, enhets id and personnummer given the supplied parameters.
+     * Should return a list that contains GroupableItems for the given parameters for later aggregation into number of
+     * items per unit.
      *
      * @param enhetsIds
      *            List of hsa unit id's that should match the counted fraga svar entities.
      * @return A list that contains an array with fragasvar represented by id, enhets id and personnummer.
      */
-    @Query("SELECT fs.internReferens, fs.vardperson.enhetsId, fs.intygsReferens.patientId FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' AND fs.intygsReferens.intygsTyp IN (:intygsTyper)")
-    List<Object[]> getUnhandledWithEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
-            @Param("intygsTyper") Set<String> intygsTyper);
+    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(fs.internReferens, fs.vardperson.enhetsId, fs.intygsReferens.patientId, fs.intygsReferens.intygsTyp) FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' AND fs.intygsReferens.intygsTyp IN (:intygsTyper)")
+    List<GroupableItem> getUnhandledWithEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
+                                                               @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who signed the certificate the FragaSvar is linked to)

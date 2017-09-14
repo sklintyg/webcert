@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.service.patient;
+package se.inera.intyg.webcert.common.model;
 
 /**
  * Created by eriklupander on 2017-07-03.

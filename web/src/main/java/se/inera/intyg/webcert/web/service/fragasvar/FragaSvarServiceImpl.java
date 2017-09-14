@@ -42,6 +42,7 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
@@ -564,24 +565,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             return resultsMap;
         }
 
-        boolean mayHandleSekretessmarkeradePatienter = authoritiesValidator.given(webCertUserService.getUser())
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                .isVerified();
-
-        // INTYG-4231: If the user is allowed to handle sekretessmarkerade patients, we use the efficient way of getting stats.
-        if (mayHandleSekretessmarkeradePatienter) {
-            List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
-            for (Object[] resArr : results) {
-                String id = (String) resArr[0];
-                Long nbr = (Long) resArr[1];
-                resultsMap.put(id, nbr);
-            }
-            return resultsMap;
-        } else {
-            // Otherwise, we must check each patient vs the PU-service.
-            List<Object[]> results = fragaSvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
-            return statisticsGroupByUtil.toSekretessFilteredMap(results);
-        }
+        List<GroupableItem> results = fragaSvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
+        return statisticsGroupByUtil.toSekretessFilteredMap(results);
     }
 
     protected void verifyEnhetsAuth(String enhetsId) {
