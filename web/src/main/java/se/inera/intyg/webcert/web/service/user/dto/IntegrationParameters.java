@@ -6,7 +6,7 @@ public final class IntegrationParameters implements Serializable {
     private final String reference;
     private final String responsibleHospName;
     private final String alternateSsn;
-    private String beforeAlternateSsn; // Sätts när alternateSsn skiljer från intygets patientId för att kunna visa det i utkastet.
+    private String beforeAlternateSsn = ""; // Sätts när alternateSsn skiljer från intygets patientId för att kunna visa det i utkastet.
     private final String fornamn;
     private final String mellannamn;
     private final String efternamn;
