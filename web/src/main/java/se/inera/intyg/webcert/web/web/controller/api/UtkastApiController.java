@@ -100,8 +100,13 @@ public class UtkastApiController extends AbstractApiController {
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
+        final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer());
+        if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                    "Could not fetch sekretesstatus for patient from PU service");
+        }
         // INTYG-4086: If the patient is sekretessmarkerad, we need an additional check.
-        boolean sekr = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer()) == SekretessStatus.TRUE;
+        boolean sekr = sekretessStatus == SekretessStatus.TRUE;
         if (sekr) {
             authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                     .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)

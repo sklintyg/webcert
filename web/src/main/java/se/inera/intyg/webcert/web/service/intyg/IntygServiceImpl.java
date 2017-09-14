@@ -198,7 +198,6 @@ public class IntygServiceImpl implements IntygService {
      * @param relations
      *            If the relations between intyg should be populated. This can be expensive (several database
      *            operations). Use sparsely.
-     * @return
      */
     private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
@@ -317,7 +316,7 @@ public class IntygServiceImpl implements IntygService {
         PersonSvar personFromPUService = patientDetailsResolver
                 .getPersonFromPUService(intyg.getUtlatande().getGrundData().getPatient().getPersonId());
         if (personFromPUService == null || personFromPUService.getStatus() != PersonSvar.Status.FOUND) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     "PU-service unreachable, PDF printing is not allowed.");
         }
     }
@@ -635,10 +634,11 @@ public class IntygServiceImpl implements IntygService {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
 
+            final Personnummer personId = certificate.getUtlatande().getGrundData().getPatient().getPersonId();
+
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
             // Since an FK-intyg never will have anything other than personId, try to fetch all using ruleset
-            Patient patient = patientDetailsResolver.resolvePatient(certificate.getUtlatande().getGrundData().getPatient().getPersonId(),
-                    typ);
+            Patient patient = patientDetailsResolver.resolvePatient(personId, typ);
 
             // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
             // Patient object.
@@ -653,15 +653,21 @@ public class IntygServiceImpl implements IntygService {
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             Relations certificateRelations = intygRelationHelper.getRelationsForIntyg(intygId);
 
+            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personId);
+            if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        "Sekretesstatus could not be fetched from the PU service");
+            }
+            final boolean sekretessmarkering = SekretessStatus.TRUE.equals(sekretessStatus);
+
             return IntygContentHolder.builder()
                     .setContents(internalIntygJsonModel)
                     .setUtlatande(certificate.getUtlatande())
                     .setStatuses(certificate.getMetaData().getStatus())
                     .setRevoked(certificate.isRevoked())
                     .setRelations(certificateRelations)
-                    .setDeceased(isDeceased(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
-                    .setSekretessmarkering(patientDetailsResolver
-                            .isSekretessmarkering(certificate.getUtlatande().getGrundData().getPatient().getPersonId()))
+                    .setDeceased(isDeceased(personId))
+                    .setSekretessmarkering(sekretessmarkering)
                     .build();
 
         } catch (IntygModuleFacadeException me) {
@@ -720,6 +726,14 @@ public class IntygServiceImpl implements IntygService {
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
             Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
 
+
+            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patient.getPersonId());
+            if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        "Sekretesstatus could not be fetched from the PU service");
+            }
+            final boolean sekretessmarkerad = SekretessStatus.TRUE.equals(sekretessStatus);
+
             return IntygContentHolder.builder()
                     .setContents(updatedModel)
                     .setUtlatande(utlatande)
@@ -727,7 +741,7 @@ public class IntygServiceImpl implements IntygService {
                     .setRevoked(utkast.getAterkalladDatum() != null)
                     .setRelations(certificateRelations)
                     .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
-                    .setSekretessmarkering(patientDetailsResolver.isSekretessmarkering(utkast.getPatientPersonnummer()))
+                    .setSekretessmarkering(sekretessmarkerad)
                     .build();
 
         } catch (ModuleException | ModuleNotFoundException e) {

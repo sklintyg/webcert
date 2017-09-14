@@ -187,6 +187,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
             // If the intyg was authored elsewhere, the check has to be performed after the redirect when the actual intyg
             // is loaded from Intygstjänsten.
             SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
+            if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        "Could not fetch sekretesstatus for patient from PU service");
+            }
             authoritiesValidator.given(user, utkast.getIntygsTyp())
                     .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
                             sekretessStatus == SekretessStatus.TRUE)

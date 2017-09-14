@@ -324,7 +324,7 @@ public class ArendeServiceImpl implements ArendeService {
 
             authoritiesValidator.given(user)
                     .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                            patientDetailsResolver.isSekretessmarkering(personnummer))
+                            SekretessStatus.TRUE.equals(patientDetailsResolver.getSekretessStatus(personnummer)))
                     .orThrow();
 
         }

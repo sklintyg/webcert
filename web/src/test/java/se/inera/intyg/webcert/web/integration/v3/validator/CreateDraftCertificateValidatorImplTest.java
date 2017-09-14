@@ -181,10 +181,10 @@ public class CreateDraftCertificateValidatorImplTest {
     }
 
     @Test
-    public void testTsBasIsAllowedWhenPatientCouldNotBeLookedUpInPu() {
+    public void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu() {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
         ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
-        assertFalse(result.hasErrors());
+        assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
 
