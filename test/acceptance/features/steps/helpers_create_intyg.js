@@ -42,7 +42,7 @@ function writeNewIntyg(typ, status) {
 
     if (typ === 'Läkarintyg FK 7263') {
         console.log('Det går inte längre skapa nytt intygs utkast för FK7263');
-        return sokSkrivIntygPage.selectPersonnummer(person.id);
+        return;
     } else {
         // Logga in med en användare som garanterat kan signera intyg
         return loginHelpers.logInAsUserRole(userObj, 'Läkare')

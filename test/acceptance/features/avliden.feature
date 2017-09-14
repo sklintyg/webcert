@@ -29,7 +29,7 @@ Egenskap: Avliden patient
     Och jag svarar på frågan
     Så ska det synas vem som svarat
 
-@svara-på-komplettering
+@svara-på-komplettering @waitingForFix
 Scenario: Kan svara på komplettering med ett nytt intyg
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg

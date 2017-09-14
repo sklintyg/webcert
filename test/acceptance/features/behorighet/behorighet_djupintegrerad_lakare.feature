@@ -7,12 +7,13 @@ Bakgrund: Logga in och gå in på en patient
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 	Och jag går in på en patient
 
+@makulera @lisjp
 Scenario: Kan makulera sjukintyg
 	När jag går in på ett "Läkarintyg för sjukpenning" med status "Signerat"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
 
-@fornya @skriv-ut
+@fornya @lisjp @skriv-ut
 Scenario: Kan förnya och signera ett läkarintyg
 	När jag går in på ett "Läkarintyg för sjukpenning" med status "Signerat"
    Så ska det finnas en knapp för att förnya intyget
@@ -30,15 +31,37 @@ Scenario: Signera ett ts-intyg
    Så ska det finnas en knapp för att skriva ut intyget
 
 
-@waitingForFix
+@komplettera @fk7263 @waitingForFix
 Scenario: Besvara kompletteringsfråga
-   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+   ###### TODO ändra till att testa med lisjp intyg ##########################
+   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
+   
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   
+   #Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   #Och jag går in på utkastet
+   #Och jag fyller i alla nödvändiga fält för intyget
+   #Och jag signerar intyget
+   #Och jag skickar intyget till Försäkringskassan 
+   ###########################################################################
+   
    Och Försäkringskassan ställer en "Kontakt" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
 Scenario: Svara med nytt intyg
-   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+   ###### TODO ändra till att testa med lisjp intyg ##########################
+   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
+   
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   
+   #Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   #Och jag går in på utkastet
+   #Och jag fyller i alla nödvändiga fält för intyget
+   #Och jag signerar intyget
+   #Och jag skickar intyget till Försäkringskassan 
+   ###########################################################################
+   
    Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
 
    När jag går in på intygsutkastet via djupintegrationslänk

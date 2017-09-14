@@ -9,7 +9,7 @@ Scenario: Inloggad som uthoppsläkare
    Så ska jag ha rollen "LAKARE"
    Och jag ska ha origin "UTHOPP"
 
-@lisjp @signera
+@signera @lisjp
 Scenario: Kan signera intyg
    När jag går in på en patient
    Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
@@ -17,7 +17,17 @@ Scenario: Kan signera intyg
    Så är signeraknappen tillgänglig
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
+   
+@signera @fk7263
+Scenario: Kan signera intyg
+   När jag går in på en patient
+   Och jag går in på att skapa ett "Läkarintyg FK 7263" intyg
+   Och jag fyller i alla nödvändiga fält för intyget
+   Så är signeraknappen tillgänglig
+   När jag signerar intyget
+   Så ska jag se den data jag angett för intyget
 
+@fornya @lisjp
 Scenario: Kan inte förnya intyg Läkarintyg för sjukpenning
    När går in på Sök/skriv intyg
    Och jag går in på en patient
@@ -50,19 +60,36 @@ Scenario: Kan inte filtrera osignerade intyg på läkare
    Och väljer att visa sökfilter
    Så ska sökfiltret Sparat av inte vara tillgängligt
 
-@fråga-från-fk @waitingForFix
+@fråga-från-fk @fk7263 @waitingForFix
 Scenario: Ska kunna svara på frågor från Försäkringskassan
    När går in på Sök/skriv intyg
    Och jag går in på en patient
-   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+   
+   ###### TODO ändra till att testa med lisjp intyg ##########################
+   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   ###########################################################################
+   
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
-@nyttIntyg
+@nyttIntyg @fk7263
 Scenario: Ska få varning vid svar med nytt intyg
    När jag går in på en patient
-   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+   
+   ###### TODO ändra till att testa med lisjp intyg ##########################
+   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
+   
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   
+   #Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   #Och jag går in på utkastet
+   #Och jag fyller i alla nödvändiga fält för intyget
+   #Och jag signerar intyget
+   #Och jag skickar intyget till Försäkringskassan 
+   ###########################################################################
+   
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan
@@ -70,10 +97,21 @@ Scenario: Ska få varning vid svar med nytt intyg
    När jag klickar på svara knappen, fortfarande i uthoppsläge
    Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
 
-@komplettering @waitingForFix
+@komplettera @fk7263 @waitingForFix
 Scenario: Ska kunna besvara komplettering med textmeddelande
    När jag går in på en patient
-   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+   
+   ###### TODO ändra till att testa med lisjp intyg ##########################
+   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
+   
+   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   
+   #Givet att vårdsystemet skapat ett intygsutkast för slumpat FK7263-intyg
+   #Och jag går in på utkastet
+   #Och jag fyller i alla nödvändiga fält för intyget
+   #Och jag signerar intyget
+   #Och jag skickar intyget till Försäkringskassan 
+   ###########################################################################
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan

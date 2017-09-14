@@ -29,7 +29,7 @@ var logInAsUserRoleRehabstod = loginHelperRehabstod.logInAsUserRoleRehabstod;
 var testdataHelpers = wcTestTools.helpers.testdata;
 
 // match personNr, startDate, endDate, noOfIntyg
-var TABLEROW_REGEX = /.*(\d{8}\-\d{4}).*(\d{4}\-\d{2}\-\d{2})\s(\d{4}\-\d{2}\-\d{2}).*(\(\d{1,2} intyg\)).*/g;
+var TABLEROW_REGEX = /.*(\d{8}\-\d{4}).*(\d{4}\-\d{2}\-\d{2})\s(\d{4}\-\d{2}\-\d{2}).*(dagar \d{1,3}).*/g;
 var TABLEROW_SUBST = '\$1, \$2, \$3, \$4';
 
 var getObjFromList;
@@ -42,10 +42,17 @@ function createUser() {
 }
 
 function createObj(row) {
+    logger.debug('row:');
+    logger.debug(row);
     var elements = row.split(',');
+    logger.debug('elements: ');
+    logger.debug(elements);
     var ssn = elements[0].trim();
+    logger.debug('ssn: ' + ssn);
     var startDate = elements[1].trim();
+    logger.debug('startDate: ' + startDate);
     var endDate = elements[2].trim();
+    logger.debug('endDate: ' + endDate);
     var noOfIntyg = extractDigit(elements[3]);
     var obj = {};
     obj.ssn = ssn;
@@ -56,7 +63,7 @@ function createObj(row) {
 }
 
 function extractDigit(intyg) {
-    var regex = /\((\d{1,2}) intyg\)/g;
+    var regex = /(dagar \d{1,2})/g;
     var subst = '\$1';
     var result = intyg.replace(regex, subst).trim();
     return parseInt(result, 10);
@@ -108,9 +115,11 @@ function createUserArr(getObjFromList) {
                 if (savedObj.ssn === newObj.ssn) {
                     personArr.push(newObj);
                 }
+                logger.debug(newObj);
             } else {
                 var obj = createObj(row.replace(TABLEROW_REGEX, TABLEROW_SUBST));
                 personArr.push(obj);
+                logger.debug(obj);
             }
         });
     }).then(function() {
