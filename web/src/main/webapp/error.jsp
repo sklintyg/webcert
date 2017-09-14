@@ -164,6 +164,12 @@
                 <spring:message code="error.enhet.auth.exception.text" arguments="${param.enhetHsaId}" />
               </div>
             </c:when>
+            <c:when test="${param.reason eq 'pu-problem'}">
+              <h1><spring:message code="error.pu-problem.title" /></h1>
+              <div id="notFound" class="alert alert-danger">
+                <spring:message code="error.pu-problem.text" />
+              </div>
+            </c:when>
             <c:otherwise>
               <h1><spring:message code="error.generictechproblem.title" /></h1>
               <div id="genericTechProblem" class="alert alert-danger">

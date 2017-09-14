@@ -126,23 +126,24 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);
 
         // Check if patient has sekretessmarkering
-        // Note that we explicitly allow certificates to be issued if the PU-service returns ERROR.
-        if (pnr != null && patientDetailsResolver.getSekretessStatus(pnr).equals(SekretessStatus.TRUE)) {
-            // If intygstyp is NOT allowed to issue for sekretessmarkerad patient return an error.
-            String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
-            if (!commonAuthoritiesResolver.getSekretessmarkeringAllowed().contains(intygsTyp)) {
-                errors.addError("Cannot issue intyg type {0} for patient having sekretessmarkering.", typAvUtlatande.getCode());
-            }  else {
-                // Check if user has PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT or return error
-                IntygUser user = webcertUserDetailsService.loadUserByHsaId(skapadAv.getPersonalId().getExtension().toString());
-                AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-                if (!authoritiesValidator.given(user)
-                        .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                        .isVerified()) {
-                    errors.addError("Du saknar behörighet. För att hantera intyg för patienter med sekretessmarkering "
-                            + "krävs att du har befattningen läkare eller tandläkare");
-                }
+        if (pnr != null) {
+            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
+            switch (sekretessStatus) {
+                case TRUE:
+                    errors.addError("Cannot issue intyg type {0} for patient having "
+                            + "sekretessmarkering.", typAvUtlatande.getCode());
+                    break;
+                case UNDEFINED:
+                    errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
+                            + "to a problem in the PU service.", typAvUtlatande.getCode());
+                    break;
+                case FALSE:
+                    break; //Do nothing
+                default:
+                    errors.addError("Cannot issue intyg type {0} for patient with "
+                            + "unknown sekretessstatus", typAvUtlatande.getCode());
             }
         }
     }
+
 }

@@ -98,6 +98,7 @@ angular.module('webcert').constant('webcert.messages', {
         'error.pu.nopersonnummer': 'Det personnummer du har angett kunde tyvärr inte hämtas från folkbokföringsregistret. Försök igen senare.',
         'error.pu.noname': 'Namn för det nummer du har angett kunde tyvärr inte hämtas från folkbokföringsregistret. Försök igen senare.',
         'error.pu.unknownerror': 'Kunde inte kontakta PU-tjänsten.',
+        'error.pu_problem': 'Den nationella personuppgiftstjänsten svarar inte. Åtgärden kan inte genomföras eftersom den kräver att personuppgifter kan hämtas från personuppgiftsregistret.<br>Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraKundserviceAnmalFel>.',
 
         //Table headings
         //Tidigare intyg tabell

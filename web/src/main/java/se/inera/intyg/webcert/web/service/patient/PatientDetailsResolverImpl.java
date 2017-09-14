@@ -99,16 +99,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     @Override
-    public boolean isSekretessmarkering(Personnummer personNummer) {
-        PersonSvar person = puService.getPerson(personNummer);
-        if (person.getStatus() == PersonSvar.Status.FOUND) {
-            return person.getPerson().isSekretessmarkering();
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     public SekretessStatus getSekretessStatus(Personnummer personNummer) {
         PersonSvar person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {

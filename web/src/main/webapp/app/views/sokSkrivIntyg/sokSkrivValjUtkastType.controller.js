@@ -193,7 +193,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId +  '/', true);
                 }, function(error) {
                     $log.debug('Create draft failed: ' + error.message);
-                    Viewstate.createErrorMessageKey = 'error.failedtocreateintyg';
+                    if (error.errorCode === 'PU_PROBLEM') {
+                        Viewstate.createErrorMessageKey = 'error.pu_problem';
+                    } else {
+                        Viewstate.createErrorMessageKey = 'error.failedtocreateintyg';
+                    }
                 });
             };
 

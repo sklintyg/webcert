@@ -137,7 +137,6 @@ public class IntygModuleApiControllerTest {
 
     @Before
     public void setup() {
-        when(patientDetailsResolver.isSekretessmarkering(any(Personnummer.class))).thenReturn(false);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patient);
     }

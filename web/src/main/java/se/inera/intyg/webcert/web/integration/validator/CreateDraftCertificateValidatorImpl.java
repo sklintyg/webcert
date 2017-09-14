@@ -81,10 +81,25 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
             Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);
 
-            // Note that we explicitly allow certificates to be issued if the PU-service returns ERROR.
-            if (pnr != null && patientDetailsResolver.getSekretessStatus(pnr).equals(SekretessStatus.TRUE)) {
-                errors.addError("Cannot issue intyg type {0} for patient having sekretessmarkering.", intygsTyp);
+            if (pnr != null) {
+                final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
+                switch (sekretessStatus) {
+                    case TRUE:
+                        errors.addError("Cannot issue intyg type {0} for patient having "
+                                + "sekretessmarkering.", intygsTyp);
+                        break;
+                    case UNDEFINED:
+                        errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
+                                + "to a problem in the PU service.", intygsTyp);
+                        break;
+                    case FALSE:
+                        break; //Do nothing
+                    default:
+                        errors.addError("Cannot issue intyg type {0} for patient with "
+                                + "unknown sekretessstatus", intygsTyp);
+                }
             }
+
         }
     }
 

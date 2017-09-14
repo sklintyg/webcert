@@ -13,8 +13,6 @@ public interface PatientDetailsResolver {
 
     Patient resolvePatient(Personnummer personnummer, String intygsTyp);
 
-    boolean isSekretessmarkering(Personnummer personNummer);
-
     SekretessStatus getSekretessStatus(Personnummer personNummer);
 
     boolean isAvliden(Personnummer personnummer);
