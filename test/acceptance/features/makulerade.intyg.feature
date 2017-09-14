@@ -33,17 +33,24 @@ Scenario: Det ska gå att förnya slumpat och makulerat SMI-intyg
 
 Exempel:
   |intygKod |   intyg                        |
-  |FK7263 |   "Läkarintyg FK 7263"           |
   |LISJP    |   "Läkarintyg för sjukpenning" |
 
  @upplys-om-makulering
   Scenario: Användaren ska upplysas om att intyget makulerats
-  När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+  Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+    Och jag går in på utkastet 
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+
   Och jag makulerar intyget
   Så ska intyget visa varningen "Intyget är makulerat"
 
   Scenario: Användaren ska kunna skriva ut ett makulerat intyg
-  När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+  Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+    Och jag går in på utkastet 
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+
   Och jag makulerar intyget
   Så ska det finnas en knapp med texten "Skriv ut"
 

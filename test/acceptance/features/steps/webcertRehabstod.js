@@ -239,10 +239,10 @@ module.exports = function() {
         return createUserArr(getObjFromList).then(function(personArr) {
             logger.info('Rehabpatient: ( ssn: ' + global.rehabstod.user.ssn + ', Antal intyg: ' + personArr[0].noOfIntyg + ').');
 
-            logger.info('Förväntar oss att global.rehabstod.user.noOfIntyg + ' + antal);
-            logger.info('=> ' + global.rehabstod.user.noOfIntyg + parseInt(antal, 10));
-            logger.info('Ska vara lika mycket som personArr[0].noOfIntyg');
-            logger.info('=> ' + personArr[0].noOfIntyg);
+            logger.info('Förväntar oss att global.rehabstod.user.noOfIntyg + ' + antal + ' => ');
+            logger.info(global.rehabstod.user.noOfIntyg + parseInt(antal, 10));
+            logger.info('Ska vara lika mycket som personArr[0].noOfIntyg => ');
+            logger.info(personArr[0].noOfIntyg);
 
             return expect(global.rehabstod.user.noOfIntyg + parseInt(antal, 10)).to.equal(personArr[0].noOfIntyg);
         });

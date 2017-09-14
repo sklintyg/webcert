@@ -73,10 +73,17 @@ module.exports = {
         console.log(userObj);
         global.user.roleName = roleName;
 
-        return logInAsUser(userObj, skipCookieConsent, secondBrowser).then(function() {
-            logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
-            var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
-            return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
-        });
+        return logInAsUser(userObj, skipCookieConsent, secondBrowser)
+            .then(function() {
+                logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
+                var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
+
+                element(by.id('wcHeader')).getText().then(function(txt) {
+                    logger.info('Webcert Header: ' + txt);
+                }).then(function() {
+                    return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
+                });
+            });
+
     }
 };

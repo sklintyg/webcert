@@ -73,7 +73,11 @@ Scenario: Makulera intyg
 
 @fornya
 Scenario: förnya intyg
-	När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+	Och jag går in på utkastet
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 	Och jag förnyar intyget
 	Och jag anger datum för Baserat på

@@ -10,7 +10,11 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Så ska jag se en rubrik med texten "Sök/skriv intyg"
 
 	När jag går in på en patient
-	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+    Och jag går in på utkastet 
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+
 	Och jag sparar länken till aktuell sida
 
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-INT2"
@@ -23,7 +27,11 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enhet
 	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-UND2"
 	När jag går in på en patient
-	Och jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+    Och jag går in på utkastet 
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+
 	Och jag sparar länken till aktuell sida
 
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-107Q"

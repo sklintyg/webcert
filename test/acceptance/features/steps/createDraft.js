@@ -91,12 +91,14 @@ function createBody(intygstyp, callback) {
 }
 
 module.exports = function() {
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för "([^"]*)"( med samordningsnummer)?$/, function(intygstyp, samordningsnummer, callback) {
-        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-        if (samordningsnummer) {
-            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
-        }
+    this.Given(/^att vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
 
+        if (!sammaPatient) {
+            global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+            if (samordningsnummer) {
+                global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+            }
+        }
         createBody(intygstyp, callback);
     });
 
