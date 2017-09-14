@@ -22,7 +22,7 @@
 var today = new Date();
 
 module.exports = {
-    CreateDraftCertificate: function(doctorHsa, doctorName, unitHsa, unitName) {
+    CreateDraftCertificate: function(doctorHsa, doctorName, unitHsa, unitName, personId) {
         return '<urn1:CreateDraftCertificate ' +
             'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:itintegration:registry:1" ' +
             'xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:1" ' +
@@ -32,7 +32,7 @@ module.exports = {
             'codeSystemName="kv_utlåtandetyp_intyg" codeSystemVersion="?" displayName="Tjolahopp" ' +
             'originalText="?"/>' +
             '<urn1:patient>' +
-            '<urn1:person-id root="1.2.752.129.2.1.3.1" extension="' + global.person.id + '" identifierName="X"/>' +
+            '<urn1:person-id root="1.2.752.129.2.1.3.1" extension="' + personId + '" identifierName="X"/>' +
             '<urn1:fornamn>Lars</urn1:fornamn>' +
             '<urn1:efternamn>Persson</urn1:efternamn>' +
             '</urn1:patient>' +

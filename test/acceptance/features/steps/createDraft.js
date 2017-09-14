@@ -80,7 +80,8 @@ function createBody(intygstyp, callback) {
             global.user.hsaId,
             global.user.forNamn + ' ' + global.user.efterNamn,
             global.user.enhetId,
-            'Enhetsnamn'
+            'Enhetsnamn',
+            global.person.id
         );
     }
     console.log(body);

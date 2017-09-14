@@ -5,7 +5,7 @@
 Egenskap: Webcert visa information från SRS i form av prediktioner på sjukskrivningslängd
 
 Bakgrund: 
-    Givet att jag är inloggad som läkare på vårdenhet med SRS
+    Givet att jag är djupintegrerat inloggad som läkare på vårdenhet med SRS
     
 
 @SRS-US-W01
@@ -13,16 +13,15 @@ Bakgrund:
 @SRS-US-W03
 @SRS-US-W04
 Scenario: När samtycke är givet och ytterligare frågor besvarade ska information från SRS visas.
-    Givet att jag valt en patient som inte har givit samtycke till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som inte har givit samtycke till SRS
     När jag fyller i diagnoskod som inte finns i SRS
-    När jag klickar på knappen för SRS
-    Så ska en fråga om samtycke visas
-    När jag anger att patienten samtycker till SRS
-    Och jag fyller i ytterligare frågor för SRS
-    Så ska åtgärdsförslag från SRS-tjänsten visas
-    När jag trycker på fliken "Statistik"
-    Så ska en statistikbild från SRS-tjänsten visas
+    #När jag klickar på knappen för SRS
+    #Så ska en fråga om samtycke visas
+    #När jag anger att patienten samtycker till SRS
+    #Och jag fyller i ytterligare frågor för SRS
+    #Så ska åtgärdsförslag från SRS-tjänsten visas
+    #När jag trycker på fliken "Statistik"
+    #Så ska en statistikbild från SRS-tjänsten visas
 
 
 @SRS-US-W01
@@ -36,11 +35,12 @@ Scenario: SRS-knappen ska bara visas när diagnos som har stöd för SRS är ify
 
 @SRS-US-W01
 Scenario: Samtycken som patienter har givit ska lagras
-    Givet att patienten har givit samtycke för SRS
-    Och jag har fyllt i diagnoskod
+    Givet att jag valt en patient som har givit samtycke till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och jag har fyllt i diagnoskod som finns i SRS
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
-    Och frågan om samtycke ska redan vara ifylld som "Ja"
+    Och frågan om samtycke ska vara ifylld som "Ja"
 
 @SRS-US-W01
 Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS

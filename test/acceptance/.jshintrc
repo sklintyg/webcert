@@ -20,15 +20,15 @@
     "trailing": true,
     "maxstatements": 150,
     "maxcomplexity": 10,
-    "maxlen": 200,
+    "maxlen": 300,
     "maxerr": 10000,
     "browser": true,
     "devel": true,
     "jasmine": true,
-        "jquery": true,
-        "node": true,
-        "nonstandard": true,
-        "phantom": true,
+    "jquery": true,
+    "node": true,
+    "nonstandard": true,
+    "phantom": true,
 
     "globals": {
 
