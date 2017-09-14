@@ -68,8 +68,8 @@ describe('Verify replace intyg ', function() {
             expect(FkIntygPage.replaceDialogContinueBtn().isPresent()).toBe(false);
             FkIntygPage.replaceDialogConfirmBtn().click();
             expect(FkUtkastPage.isAt()).toBeTruthy();
-            browser.getCurrentUrl().then(function(url) {
-                utkastId = url.split('/').pop();
+            specHelper.getUtkastIdFromUrl().then(function(id) {
+                utkastId = id;
             });
         });
 
@@ -118,8 +118,8 @@ describe('Verify replace intyg ', function() {
         it('should take us to the existing utkast when clicking the continue button', function() {
             FkIntygPage.replaceDialogContinueBtn().click();
             expect(FkUtkastPage.isAt()).toBeTruthy();
-            browser.getCurrentUrl().then(function(url) {
-                var replacementUtkastId = url.split('/').pop();
+            specHelper.getUtkastIdFromUrl().then(function(id) {
+                var replacementUtkastId = id;
                 expect(replacementUtkastId === utkastId).toBe(true);
             });
         });

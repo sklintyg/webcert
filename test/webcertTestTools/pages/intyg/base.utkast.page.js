@@ -54,6 +54,7 @@ var BaseUtkast = JClass._extend({
         this.backBtn = element(by.id('tillbakaButton'));
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
         this.patientNamnPersonnummer = element(by.id('patientNamnPersonnummer'));
+        this.patientNamnPersonnummerFd = element(by.css('.old-person-id'));
         this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande'));
         this.enhetensAdress = {
             postAdress: element(by.id('clinicInfoPostalAddress')),

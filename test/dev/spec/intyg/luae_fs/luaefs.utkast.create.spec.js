@@ -43,8 +43,8 @@ describe('Create and Sign luae_fs utkast', function() {
             UtkastPage.disableAutosave();
 
             // Save id so it can be removed in cleanup stage.
-            browser.getCurrentUrl().then(function(url) {
-                utkastId = url.split('/').pop();
+            specHelper.getUtkastIdFromUrl().then(function(id) {
+                utkastId = id;
             });
             data = wcTestTools.testdata.fk.LUAE_FS.getRandom(utkastId);
         });

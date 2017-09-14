@@ -46,8 +46,8 @@ describe('Create and Sign lisjp utkast', function() {
             it('Spara undan intygsId från URL', function() {
                 UtkastPage.disableAutosave();
 
-                browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').pop();
+                specHelper.getUtkastIdFromUrl().then(function(id) {
+                    utkastId = id;
                 });
                 data = wcTestTools.testdata.fk.LISJP.getRandom(utkastId, true);
             });
@@ -102,8 +102,8 @@ describe('Create and Sign lisjp utkast', function() {
             it('Spara undan intygsId från URL', function() {
                 UtkastPage.disableAutosave();
 
-                browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').pop();
+                specHelper.getUtkastIdFromUrl().then(function(id) {
+                    utkastId = id;
                 });
                 data = wcTestTools.testdata.fk.LISJP.getRandom(utkastId);
             });

@@ -43,8 +43,8 @@ describe('Create and Sign luae_na utkast', function() {
             it('Spara undan intygsId från URL', function() {
                 UtkastPage.disableAutosave();
 
-                browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').pop();
+                specHelper.getUtkastIdFromUrl().then(function(id) {
+                    utkastId = id;
                 });
                 data = wcTestTools.testdata.fk.LUAE_NA.getRandom(utkastId);
             });

@@ -44,9 +44,10 @@ describe('INTYG-4083: Create partially complete tsbas utkast and mark as ready t
 
             it('Spara undan intygsId från URL', function() {
 
-                browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').reverse()[1];
+                specHelper.getUtkastIdFromUrl().then(function(id) {
+                    utkastId = id;
                 });
+
                 data = wcTestTools.testdata.ts.bas.getRandom(utkastId);
             });
         });

@@ -51,8 +51,8 @@ describe('Create and Sign FK utkast', function() {
             it('Spara undan intygsId från URL', function() {
                 UtkastPage.disableAutosave();
 
-                browser.getCurrentUrl().then(function(url) {
-                    utkastIdSmittSkydd = url.split('/').reverse()[1];
+                specHelper.getUtkastIdFromUrl().then(function(id) {
+                    utkastIdSmittSkydd = id;
                 });
                 data = wcTestTools.testdata.fk['7263'].getRandom(utkastIdSmittSkydd, true);
             });
@@ -109,8 +109,8 @@ describe('Create and Sign FK utkast', function() {
             it('Spara undan intygsId från URL', function() {
                 UtkastPage.disableAutosave();
 
-                browser.getCurrentUrl().then(function(url) {
-                    utkastId = url.split('/').pop();
+                specHelper.getUtkastIdFromUrl().then(function(id) {
+                    utkastId = id;
                 });
                 data = wcTestTools.testdata.fk['7263'].getRandom(utkastId, false);
             });

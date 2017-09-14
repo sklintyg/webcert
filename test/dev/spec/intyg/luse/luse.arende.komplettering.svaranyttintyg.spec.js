@@ -93,8 +93,8 @@ describe('arende on luse intyg', function() {
 
             // Extract ID of new utkast so we can delete it when we're done.
             // Save id so it can be removed in cleanup stage.
-            browser.getCurrentUrl().then(function(url) {
-                utkastId = url.split('/').reverse()[1];
+            specHelper.getUtkastIdFromUrl().then(function(id) {
+                utkastId = id;
             });
         });
     });

@@ -74,8 +74,9 @@ describe('Generate fk intyg', function() {
 
         it('should set information based on date', function() {
             // Save id so it can be removed in cleanup stage.
-            browser.getCurrentUrl().then(function(url) {
-                utkastIds.push(url.split('/').pop());
+
+            specHelper.getUtkastIdFromUrl().then(function(id) {
+                utkastIds.push(id);
             });
 
             FkUtkastPage.angeIntygetBaserasPa({
@@ -122,8 +123,8 @@ describe('Generate fk intyg', function() {
             FkIntygPage.fornyaDialogConfirmBtn().click();
             expect(FkUtkastPage.isAt()).toBeTruthy();
             // Save id so it can be removed in cleanup stage.
-            browser.getCurrentUrl().then(function(url) {
-                utkastIds.push(url.split('/').pop());
+            specHelper.getUtkastIdFromUrl().then(function(id) {
+                utkastIds.push(id);
             });
         });
     });

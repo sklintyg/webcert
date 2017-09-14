@@ -62,13 +62,8 @@ xdescribe('Testa sekretessmarkering för vårdadmin', function() {
         it('Skapa utkast för Tolvansson', function() {
             SokSkrivIntygPage.get();
             specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
-            browser.getCurrentUrl().then(function(url) {
-                if (url.endsWith('/')) {
-                    var parts = url.split('/');
-                    utkastId = parts[parts.length - 2];
-                } else {
-                    utkastId = url.split('/').pop();
-                }
+            specHelper.getUtkastIdFromUrl().then(function(id) {
+                utkastId = id;
             });
         });
     });

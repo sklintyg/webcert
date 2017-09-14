@@ -44,8 +44,8 @@ describe('Create a FK7263 draft and verify behaviour of diagnosis fields', funct
     describe('Interact with utkast', function() {
 
         // Save id so it can be removed in cleanup stage.
-        browser.getCurrentUrl().then(function(url) {
-            utkastId = url.split('/').pop();
+        specHelper.getUtkastIdFromUrl().then(function(id) {
+            utkastId = id;
         });
 
         it('Verify the initial status of diagnosis fields', function() {

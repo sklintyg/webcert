@@ -148,5 +148,16 @@ module.exports = {
 
             angular.module('httpBackendMock', ['ngMockE2E']);
         });
+    },
+
+    getUtkastIdFromUrl: function() {
+        return browser.getCurrentUrl().then(function(url) {
+            if (url.endsWith('/')) {
+                var parts = url.split('/');
+                return parts[parts.length - 2];
+            } else {
+                return url.split('/').pop();
+            }
+        });
     }
 };

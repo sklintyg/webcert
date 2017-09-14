@@ -30,52 +30,92 @@ describe('Djupintegration on luse intyg', function() {
 
     var intygId = 'luse-integration-renew-1';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        var testData = {
-            'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
-            'utkastStatus': 'SIGNED',
-            'revoked': false
-        };
-
-        // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
-        browser.ignoreSynchronization = true;
-        specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+    describe('signerat intyg', function() {
+        beforeAll(function() {
             browser.ignoreSynchronization = false;
+            specHelper.login();
+            var testData = {
+                'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+                'utkastStatus': 'SIGNED',
+                'revoked': false
+            };
+
+            // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+                browser.ignoreSynchronization = false;
+                restTestdataHelper.deleteUtkast(intygId);
+                restTestdataHelper.createWebcertIntyg(testData);
+            });
+        });
+
+        afterAll(function() {
             restTestdataHelper.deleteUtkast(intygId);
-            restTestdataHelper.createWebcertIntyg(testData);
+        });
+
+        it('should load intyg', function() {
+            LuseIntygPage.getIntegration(intygId, {
+                fornamn:'Nytt förnamn',
+                mellannamn:'Nytt mellannamn',
+                efternamn:'Nytt efternamn',
+                postadress:'Ny postadress',
+                postnummer:'Nytt postnummer',
+                postort:'Ny postort',
+                enhet:'TSTNMT2321000156-1039',
+                alternatePatientSSn: '20121212-1212'
+            });
+            expect(LuseIntygPage.isAt()).toBeTruthy();
+            expect(LuseIntygPage.statusNameAndAddressChanged.isDisplayed()).toBeTruthy();
+        });
+
+        it('should fornya intyg and view resulting utkast', function() {
+            LuseIntygPage.fornya.button.click();
+            LuseIntygPage.fornya.dialogConfirmButton.click();
+            expect(LuseUtkastPage.isAt()).toBeTruthy();
+            expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Lilltolvan Tolvansson - 20121212-1212');
         });
     });
 
-    afterAll(function() {
-        restTestdataHelper.deleteUtkast(intygId);
-    });
+    describe('utkast', function() {
 
-    it('should load intyg', function() {
-        LuseIntygPage.getIntegration(intygId, {
-            fornamn:'Nytt förnamn',
-            mellannamn:'Nytt mellannamn',
-            efternamn:'Nytt efternamn',
-            postadress:'Ny postadress',
-            postnummer:'Nytt postnummer',
-            postort:'Ny postort',
-            enhet:'TSTNMT2321000156-1039'
+        var utkastId;
+
+        beforeAll(function() {
+            browser.ignoreSynchronization = false;
+            specHelper.login();
+
+            specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+
+            specHelper.getUtkastIdFromUrl().then(function(id) {
+               utkastId = id;
+            });
+
+            // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+                browser.ignoreSynchronization = false;
+            });
         });
-        expect(LuseIntygPage.isAt()).toBeTruthy();
 
-        // INTYG-4086:
-        // Only a changed personnummer should be taken into account?
-        expect(LuseIntygPage.statusNameAndAddressChanged.isDisplayed()).toBeTruthy();
-    });
+        afterAll(function() {
+            restTestdataHelper.deleteUtkast(utkastId);
+        });
 
-    it('should fornya intyg and view resulting utkast', function() {
-        LuseIntygPage.fornya.button.click();
-        LuseIntygPage.fornya.dialogConfirmButton.click();
-        expect(LuseUtkastPage.isAt()).toBeTruthy();
-        // INTYG-4086: Integration parameters are ignored if PU-service is available.
-        expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Tolvan Tolvansson - 19121212-1212');
-        // expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Nytt förnamn Nytt mellannamn Nytt efternamn - 19121212-1212');
+        it('should load intyg', function() {
+            LuseIntygPage.getIntegration(utkastId, {
+                fornamn:'Nytt förnamn',
+                mellannamn:'Nytt mellannamn',
+                efternamn:'Nytt efternamn',
+                postadress:'Ny postadress',
+                postnummer:'Nytt postnummer',
+                postort:'Ny postort',
+                enhet:'TSTNMT2321000156-1039',
+                alternatePatientSSn: '20121212-1212'
+            });
+            expect(LuseUtkastPage.isAt()).toBeTruthy();
+            expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Lilltolvan Tolvansson - 20121212-1212');
+            expect(LuseUtkastPage.patientNamnPersonnummerFd.getText()).toBe('f.d. 19121212-1212');
+        });
     });
 
 });
