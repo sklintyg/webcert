@@ -120,7 +120,8 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         }
     }
 
-    private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvIntyg typAvUtlatande, PersonId personId, ResultValidator errors) {
+    private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvIntyg typAvUtlatande,
+                                                        PersonId personId, ResultValidator errors) {
 
         Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);
 
@@ -131,16 +132,15 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
             String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
             if (!commonAuthoritiesResolver.getSekretessmarkeringAllowed().contains(intygsTyp)) {
                 errors.addError("Cannot issue intyg type {0} for patient having sekretessmarkering.", typAvUtlatande.getCode());
-            }
-            else {
+            }  else {
                 // Check if user has PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT or return error
                 IntygUser user = webcertUserDetailsService.loadUserByHsaId(skapadAv.getPersonalId().getExtension().toString());
                 AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
                 if (!authoritiesValidator.given(user)
                         .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                        .isVerified())
-                {
-                    errors.addError("Du saknar behörighet. För att hantera intyg för patienter med sekretessmarkering krävs att du har befattningen läkare eller tandläkare");
+                        .isVerified()) {
+                    errors.addError("Du saknar behörighet. För att hantera intyg för patienter med sekretessmarkering "
+                            + "krävs att du har befattningen läkare eller tandläkare");
                 }
             }
         }
