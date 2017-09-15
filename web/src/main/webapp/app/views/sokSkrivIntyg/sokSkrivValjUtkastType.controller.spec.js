@@ -79,6 +79,7 @@ describe('ChooseCertTypeCtrl', function() {
             $provide.value('common.messageService', CommonMessageServiceSpy);
             $provide.value('$stateParams', $stateParamsMock);
             $provide.value('common.ObjectHelper', jasmine.createSpyObj('common.ObjectHelper', ['isEmpty']));
+            $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isNormalOrigin']));
 
             SokSkrivValjUtkastService = {
                 setupPatientModel: function setupPatientModel(PatientModel, patientId) {},

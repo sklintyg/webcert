@@ -21,12 +21,12 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'common.IntygCopyActions', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-        'common.messageService',
+        'common.messageService', 'common.UserModel',
 
         function($window, $filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             CommonIntygCopyActions, IntygFornyaRequestModel, IntygCopyRequestModel,
-            IntygProxy, UtkastProxy, Service, ObjectHelper, messageService) {
+            IntygProxy, UtkastProxy, Service, ObjectHelper, messageService, UserModel) {
             'use strict';
 
             /**
@@ -41,6 +41,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.intygReplacement = {
                 'fk7263':'lisjp'
+            };
+
+            $scope.isNormalOrigin = function() {
+                //Closure needed, due to 'this' reference in UserModel.isNormalOrigin().
+                return UserModel.isNormalOrigin();
             };
 
             // In case callers do not know the patientId they can use 'default' in which case the controller
