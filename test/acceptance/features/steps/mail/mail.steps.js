@@ -26,8 +26,8 @@ module.exports = function() {
 
     this.Given(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
         console.log('intygsid:' + intyg.id);
-        var textToSearchFor = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/' + intyg.id + '/questions?enhet=' + user.enhetId;
-        // var textToSearchFor = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/certificate/' + 'Hej' + '/questions?enhet=' + user.enhetId;
+        var textToSearchFor = 'https://webcert.ip30.nordicmedtest.sjunet.org/webcert/web/user/basic-certificate/' + intyg.id + '/questions?enhet=' + user.enhetId;
+
         console.log(textToSearchFor);
         return browser.sleep(30000).then(function() {
             return mail.readRecentMails()

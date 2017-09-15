@@ -18,7 +18,7 @@ Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
     När jag skickar intyget till Försäkringskassan
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
-@makulera
+@makulera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
 Scenario: Statusuppdateringar då intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -27,7 +27,7 @@ Scenario: Statusuppdateringar då intyg makuleras
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
-@radera
+@radera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
 Scenario: Statusuppdateringar då intyg raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar intyget
@@ -109,7 +109,7 @@ Scenario: Statusuppdateringar vid ändring av utkast
     När jag ändrar i slumpat fält
     Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
 
-@referens-skickas-med
+@referens-skickas-med @waitingForFix @BUG_REPORTED_IN_INTYG-4511
 Scenario: Referens skickas med statusuppdateringar
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref-X"
 

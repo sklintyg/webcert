@@ -1,6 +1,6 @@
 # language: sv
 
-@ListCertificatesForCareWithQA @smi
+@ListCertificatesForCareWithQA @smi @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
 Egenskap: ListCertificatesForCareWithQA från journalsystem
 
 Bakgrund: Jag är inloggad som djupintegrerad läkare
@@ -42,7 +42,7 @@ Scenario: Hämta händelser för ett intyg
 
 
    # skapat, skickat, ändrat,makulerat
-@fråga-från-vården
+@fråga-från-vården @waitingForFix @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
 Scenario: Hämta fråga/svar händelser för frågor från vården
     När jag går in på intygsutkastet via djupintegrationslänk
 

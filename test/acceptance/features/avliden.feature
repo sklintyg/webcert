@@ -8,7 +8,7 @@ Egenskap: Avliden patient
      Så ska jag varnas om att "Patienten har avlidit"
 
 
- @skicka-till-FK @notReady
+ @skicka-till-FK @integration @notReady
  Scenario: Kan skicka och ställa frågor på intyg
      Givet att jag är inloggad som djupintegrerad läkare
      När jag skickar ett SMI-intyg till intygstjänsten på en avliden person
@@ -16,7 +16,7 @@ Egenskap: Avliden patient
      Och jag skickar intyget till Försäkringskassan
      Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system"
 
- @svara-på-fråga
+ @svara-på-fråga @smi @integration
  Scenario: Försäkringskassan kan ställa frågor på ett intyg
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
@@ -29,7 +29,7 @@ Egenskap: Avliden patient
     Och jag svarar på frågan
     Så ska det synas vem som svarat
 
-@svara-på-komplettering @waitingForFix
+@svara-på-komplettering @djupintegration @smi @integration
 Scenario: Kan svara på komplettering med ett nytt intyg
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
