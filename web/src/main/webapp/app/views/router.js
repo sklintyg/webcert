@@ -82,15 +82,6 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
-        state('webcert.create-edit-patientname', {
-            url:'/create/edit-patient-name/:mode',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/sokSkrivIntyg/sokSkrivPatientName.html',
-                    controller: 'webcert.EditPatientNameCtrl'
-                }
-            }
-        }).
         state('webcert.create-choose-certtype-index', {
             url:'/create/choose-intyg-type/:patientId/index',
             views: {

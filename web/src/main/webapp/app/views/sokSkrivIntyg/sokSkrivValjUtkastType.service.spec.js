@@ -216,7 +216,7 @@ describe('SokSkrivValjUtkastService', function() {
         it('should redirect to edit-patient-name if the pu-service isnt available', function() {
 
             spyOn(PatientProxy, 'getPatient').and.callFake(function(personnummer, onSuccess, onNotFound, onError) {
-                onError();
+                onError('error.pu_problem');
             });
 
             var resolveResponse = null;
@@ -231,7 +231,7 @@ describe('SokSkrivValjUtkastService', function() {
 
             expect(PatientProxy.getPatient).toHaveBeenCalled();
             expect(resolveResponse).toBe(null);
-            expect(rejectResponse).toBe(null);
+            expect(rejectResponse).toBe('error.pu_problem');
         });
 
         it('should reject if the response does not contain personnummer',

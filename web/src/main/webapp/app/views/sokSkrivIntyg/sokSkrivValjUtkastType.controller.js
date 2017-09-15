@@ -83,12 +83,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     }, function(errorId) {
                         Viewstate.loadErrorMessageKey = errorId;
                         Viewstate.patientLoading = false;
-
-                        if (errorId === null) {
-                            // If the pu-service isn't available the doctor can write any name they want.
-                            // redirect to edit patient name
-                            $state.go('webcert.create-edit-patientname', {mode: 'errorOccured'});
-                        }
                     });
                 }
             }

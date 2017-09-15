@@ -76,8 +76,13 @@ angular.module('webcert').factory('webcert.SokSkrivValjUtkastService',
                     }
                 };
 
-                var onError = function() {
-                    deferred.reject(null);
+                var onError = function(isPUError) {
+                    if (isPUError) {
+                        deferred.reject('error.pu_problem');
+                    } else {
+                        deferred.reject('error.pu.server-error');
+                    }
+
                 };
 
                 PatientProxy.getPatient(personnummer, onSuccess, onNotFound, onError);

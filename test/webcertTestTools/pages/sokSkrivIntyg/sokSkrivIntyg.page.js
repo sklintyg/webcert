@@ -35,8 +35,6 @@ var SokSkrivIntyg = WebcertBasePage._extend({
         this.pnButton = element(by.id('skapapersonnummerfortsatt'));
         this.sekretessmarkering = element(by.id('sekretessmarkering'));
         this.puerror = element(by.id('puerror'));
-        this.fornamn = element(by.id('fornamn'));
-        this.efternamn = element(by.id('efternamn'));
         this.namnFortsatt = element(by.id('namnFortsatt'));
         this.intygLista = element(by.id('intygLista'));
         this.sokSkrivIntygForm = element(by.css('form[name=certForm]'));

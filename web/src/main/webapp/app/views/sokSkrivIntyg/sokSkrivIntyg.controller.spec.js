@@ -77,7 +77,7 @@ describe('ChoosePatientCtrl', function() {
         };
         var noConnectionResult = function(personnummer) {
             var promise = $q.defer();
-            promise.reject(null);
+            promise.reject('error.pu_problem');
             return promise.promise;
         };
 
@@ -168,9 +168,8 @@ describe('ChoosePatientCtrl', function() {
             $scope.$digest();
 
             expect(SokSkrivValjUtkastService.lookupPatient).toHaveBeenCalled();
-            expect($state.go).toHaveBeenCalledWith('webcert.create-edit-patientname', {mode:'errorOccured'});
             expect($scope.viewState.loading).toBe(false);
-            expect($scope.viewState.errorid).toBeNull();
+            expect($scope.viewState.errorid).toBe('error.pu_problem');
         });
 
     });

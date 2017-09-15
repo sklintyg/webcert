@@ -49,25 +49,17 @@ describe('Patient lookup variants', function() {
         });
 
         describe('When patient lookup receives error', function() {
-            it('should give option to enter name manually', function () {
+            it('it should show pu error', function () {
                 SokSkrivIntygPage.get();
                 proxy.whenGET(new RegExp('/api\/person\/' + patientId + '\?.*')).respond(500);
                 proxy.whenPOST(/.*/).passThrough();
                 proxy.whenGET(/.*/).passThrough();
                 SokSkrivIntygPage.selectPersonnummer(patientId);
+                expect(SokSkrivIntygPage.puerror.isDisplayed()).toBe(true);
                 expect(SokSkrivValjUtkastType.intygTypeSelector.isPresent()).toBe(false);
                 expect(SokSkrivValjUtkastType.intygTypeButton.isPresent()).toBe(false);
-                expect(SokSkrivIntygPage.fornamn.isDisplayed()).toBe(true);
-                expect(SokSkrivIntygPage.efternamn.isDisplayed()).toBe(true);
             });
 
-            it('should go to intygtype selector after name is entered', function () {
-                SokSkrivIntygPage.fornamn.sendKeys('Test');
-                SokSkrivIntygPage.efternamn.sendKeys('Testsson');
-                SokSkrivIntygPage.namnFortsatt.click();
-                expect(SokSkrivValjUtkastType.intygTypeSelector.isDisplayed()).toBe(true);
-                expect(SokSkrivValjUtkastType.intygTypeButton.isDisplayed()).toBe(true);
-            });
         });
 
         it('should not be possible to select intygtype when patient is not found', function () {
@@ -81,23 +73,16 @@ describe('Patient lookup variants', function() {
             expect(SokSkrivValjUtkastType.intygTypeButton.isPresent()).toBe(false);
         });
 
-        // INTYG-4086: Skriv om detta test, det skall nu bli tillåtet att skriva intyg för sekretessmarkerad patient
-        // för LÄKARE, TANDLÄKARE och PRIVATLÄKARE
-        //
-        // it('should not be possible to create utkast when patient has sekretessmarkering', function () {
-        //     SokSkrivIntygPage.get();
-        //     proxy
-        //         .whenGET(new RegExp('/api\/person\/' + patientId + '\?.*'))
-        //         .respond(200,
-        //             '{"person":{"personnummer":"19121212-1212","sekretessmarkering":true,"fornamn":"Tolvan","efternamn":"Tolvansson","postadress":"Svensson, Storgatan 1, PL 1234","postnummer":"12345","postort":"Småmåla"},"status":"FOUND"}' // jshint ignore:line
-        //         );
-        //     proxy.whenPOST(/.*/).passThrough();
-        //     proxy.whenGET(/.*/).passThrough();
-        //     SokSkrivIntygPage.selectPersonnummer(patientId);
-        //     expect(SokSkrivIntygPage.sekretessmarkering.isDisplayed()).toBe(true);
-        //     expect(SokSkrivValjUtkastType.intygTypeSelector.isDisplayed()).toBe(false);
-        //     expect(SokSkrivValjUtkastType.intygTypeButton.isDisplayed()).toBe(false);
-        // });
+        it('should not be possible to select intygtype when PU responds with error code', function () {
+            SokSkrivIntygPage.get();
+            proxy.whenGET(new RegExp('/api\/person\/' + patientId + '\?.*')).respond(200, '{"status":"ERROR"}');
+            proxy.whenPOST(/.*/).passThrough();
+            proxy.whenGET(/.*/).passThrough();
+            SokSkrivIntygPage.selectPersonnummer(patientId);
+            expect(SokSkrivIntygPage.puerror.isDisplayed()).toBe(true);
+            expect(SokSkrivValjUtkastType.intygTypeSelector.isPresent()).toBe(false);
+            expect(SokSkrivValjUtkastType.intygTypeButton.isPresent()).toBe(false);
+        });
 
         it('should be possible to select intygtype when patient exists without sekretessmarkering', function () {
             SokSkrivIntygPage.get();
