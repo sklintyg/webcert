@@ -104,6 +104,7 @@
          //Prognos
          promiseArr.push(lisjpUtkastPage.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
              logger.info('OK - prognosForArbetsformaga');
+             browser.sleep(500);
          }, function(reason) {
              throw ('FEL, prognosForArbetsformaga,' + reason);
          }));
@@ -111,6 +112,7 @@
          // Åtgärd
          promiseArr.push(lisjpUtkastPage.angeAtgarder(intyg.atgarder).then(function() {
              logger.info('OK - angeAtgarder');
+             browser.sleep(500);
          }, function(reason) {
              throw ('FEL, angeAtgarder,' + reason);
          }));

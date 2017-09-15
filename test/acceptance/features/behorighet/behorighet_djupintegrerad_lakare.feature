@@ -31,35 +31,32 @@ Scenario: Signera ett ts-intyg
    Så ska det finnas en knapp för att skriva ut intyget
 
 
-@komplettera @fk7263 @waitingForFix
+@komplettera @svara @fk7263 @waitingForFix
 Scenario: Besvara kompletteringsfråga
    ###### TODO ändra till att testa med lisjp intyg ##########################
    #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
-   
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
-   
-   #Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
-   #Och jag går in på utkastet
-   #Och jag fyller i alla nödvändiga fält för intyget
-   #Och jag signerar intyget
-   #Och jag skickar intyget till Försäkringskassan 
+    
+   Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+   Och jag går in på utkastet
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan 
    ###########################################################################
    
    Och Försäkringskassan ställer en "Kontakt" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
+@komplettera @nytt-intyg @svara
 Scenario: Svara med nytt intyg
    ###### TODO ändra till att testa med lisjp intyg ##########################
    #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
-   
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
-   
-   #Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
-   #Och jag går in på utkastet
-   #Och jag fyller i alla nödvändiga fält för intyget
-   #Och jag signerar intyget
-   #Och jag skickar intyget till Försäkringskassan 
+      
+   Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+   Och jag går in på utkastet
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan 
    ###########################################################################
    
    Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget

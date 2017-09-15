@@ -1,6 +1,6 @@
 # language: sv
 
-@ListCertificatesForCareWithQA
+@ListCertificatesForCareWithQA @smi
 Egenskap: ListCertificatesForCareWithQA från journalsystem
 
 Bakgrund: Jag är inloggad som djupintegrerad läkare
