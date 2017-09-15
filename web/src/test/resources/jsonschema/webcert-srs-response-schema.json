@@ -21,6 +21,9 @@
     },
     "statistikBild": {
       "type": "string"
+    },
+    "diagnosisCode": {
+      "type": "string"
     }
   },
   "additionalProperties": false,
