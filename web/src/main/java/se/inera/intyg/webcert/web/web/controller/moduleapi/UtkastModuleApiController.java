@@ -127,9 +127,11 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        // INTYG-4086, overwrite patient name details
         Patient resolvedPatient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp);
-        boolean patientResolved = resolvedPatient != null;
+        if (resolvedPatient == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                    "Could not resolve Patient in PU-service when opening draft.");
+        }
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
@@ -137,13 +139,6 @@ public class UtkastModuleApiController extends AbstractApiController {
                 .orThrow();
 
         verifySekretessmarkering(intygsTyp, utkast.getEnhetsId(), resolvedPatient);
-
-        // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,
-        // create an "empty" Patient with personnummer only.
-        if (!patientResolved) {
-            resolvedPatient = new Patient();
-            resolvedPatient.setPersonId(utkast.getPatientPersonnummer());
-        }
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -158,7 +153,8 @@ public class UtkastModuleApiController extends AbstractApiController {
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
         draftHolder.setRelations(relations1);
         draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
-        draftHolder.setPatientResolved(patientResolved);
+        // The patientResolved is unnecessary?
+        draftHolder.setPatientResolved(true);
         draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
         draftHolder.setAvliden(resolvedPatient.isAvliden());
 

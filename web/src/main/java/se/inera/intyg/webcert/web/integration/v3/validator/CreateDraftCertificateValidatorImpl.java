@@ -18,18 +18,18 @@
  */
 package se.inera.intyg.webcert.web.integration.v3.validator;
 
-import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.HANTERA_INTYGSUTKAST;
-
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
+import se.inera.intyg.webcert.web.integration.validator.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
@@ -40,6 +40,8 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
+
+import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.HANTERA_INTYGSUTKAST;
 
 @Component(value = "createDraftCertificateValidatorImplV2")
 public class CreateDraftCertificateValidatorImpl implements CreateDraftCertificateValidator {
@@ -119,14 +121,15 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvIntyg typAvUtlatande,
-                                                        PersonId personId, ResultValidator errors) {
+            PersonId personId, ResultValidator errors) {
+        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
+        if (!commonAuthoritiesResolver.getSekretessmarkeringAllowed().contains(intygsTyp)) {
+            Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);
 
-        Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId.getExtension()).orElse(null);
-
-        // Check if patient has sekretessmarkering
-        if (pnr != null) {
-            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
-            switch (sekretessStatus) {
+            // Check if patient has sekretessmarkering
+            if (pnr != null) {
+                final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
+                switch (sekretessStatus) {
                 case TRUE:
                     errors.addError("Cannot issue intyg type {0} for patient having "
                             + "sekretessmarkering.", typAvUtlatande.getCode());
@@ -136,12 +139,22 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
                             + "to a problem in the PU service.", typAvUtlatande.getCode());
                     break;
                 case FALSE:
-                    break; //Do nothing
-                default:
-                    errors.addError("Cannot issue intyg type {0} for patient with "
-                            + "unknown sekretessstatus", typAvUtlatande.getCode());
+                    break; // Do nothing
+                }
+            }
+        } else {
+            // Check if user has PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT or return error
+            IntygUser user = webcertUserDetailsService.loadUserByHsaId(skapadAv.getPersonalId().getExtension());
+            AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+            if (!authoritiesValidator.given(user)
+                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                    .isVerified()) {
+                errors.addError(
+                        "Du saknar behörighet. För att hantera intyg för patienter med sekretessmarkering krävs "
+                        + "att du har befattningen läkare eller tandläkare");
             }
         }
+
     }
 
 }
