@@ -61,35 +61,32 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             function onPageLoad() {
 
+                //Without personnr context - we have nothing to look up - transition to step 1.
                 if (ObjectHelper.isEmpty(PatientModel.personnummer)) {
                     $state.go('webcert.create-choosepatient-index');
                     return;
                 }
 
-                if (PatientModel.isValid()) {
-                    // All is well just load the rest
+                // We should always validate skretesstatus from PU, as it's not certain we got here from the enter patient personnr search state
+                Viewstate.patientLoading = true;
+                Service.lookupPatient(PatientModel.personnummer).then(function(patientResult) {
+
+                    Viewstate.loadErrorMessageKey = null;
+                    Viewstate.patientLoading = false;
+
+                    // Redirect to index if pnr and name still isn't specified
+                    if (!PatientModel.update(patientResult)) {
+                        $state.go(choosePatientStateName);
+                        return;
+                    }
+
+                    //Patient is now verified via PU lookup - continue loading intyg and utkasttypes.
                     loadUtkastTypesAndIntyg();
-                } else {
-                    // PatientModel is missing name information. Load that first
-                    Viewstate.patientLoading = true;
-                    Service.lookupPatient(PatientModel.personnummer).then(function(patientResult) {
 
-                        Viewstate.loadErrorMessageKey = null;
-                        Viewstate.patientLoading = false;
-
-                        // Redirect to index if pnr and name still isn't specified
-                        if (!PatientModel.update(patientResult)) {
-                            $state.go(choosePatientStateName);
-                            return;
-                        }
-
-                        loadUtkastTypesAndIntyg();
-
-                    }, function(errorId) {
-                        Viewstate.loadErrorMessageKey = errorId;
-                        Viewstate.patientLoading = false;
-                    });
-                }
+                }, function(errorId) {
+                    Viewstate.loadErrorMessageKey = errorId;
+                    Viewstate.patientLoading = false;
+                });
             }
 
             function loadUtkastTypesAndIntyg() {
