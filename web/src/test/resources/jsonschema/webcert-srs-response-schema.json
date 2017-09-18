@@ -24,6 +24,15 @@
     },
     "diagnosisCode": {
       "type": "string"
+    },
+    "predictionStatusCode": {
+      "type": "string"
+    },
+    "atgarderStatusCode": {
+      "type": "string"
+    },
+    "statistikStatusCode": {
+      "type": "string"
     }
   },
   "additionalProperties": false,
