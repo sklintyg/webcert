@@ -16,53 +16,58 @@
                 <span message key="{{viewState.loadErrorMessageKey}}"></span>
               </div>
 
-              <div class="bottom-padding-big">
-                <label class="control-label">Patientuppgifter</label>
-                <div class="form-group row">
-                  <div class="col-md-8">
-                    <span id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span>
-                    <span wc-sekretess-avliden uuid="patientModel.personnummer" printlabel="true" avliden="patientModel.avliden" sekretessmarkering="patientModel.sekretessmarkering"></span><br>
-                    {{patientModel.personnummer | PersonIdFormatter}}
-                  </div>
-                </div>
 
-                <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
-              </div>
+              <div ng-if="!viewState.loadErrorMessageKey">
 
-              <!-- New intyg -->
-              <div class="bottom-padding-medium">
-                <div class="form-group">
-                  <label for="intygType" class="control-label">Skriv nytt intyg</label>
-
-                  <div>
-                    <select id="intygType" class="form-control" name="intygType" ng-model="intygTypeModel.intygType"
-                            ng-options="type.id as type.label for type in intygTypeModel.userIntygTypes"
-                            wc-focus-me="viewState.focusFirstInput"
-                            ng-disabled="patientModel.avliden"></select>
-                    <span id="fortsattBtn">
-                      <button id="intygTypeFortsatt" class="btn btn-success continue-btn" type="submit"
-                              ng-disabled="intygTypeModel.intygType == 'default' || patientModel.avliden || (intygReplacement[intygTypeModel.intygType] && isNormalOrigin())">Skapa intyg
-                      </button>
-                    </span>
+                <div class="bottom-padding-big">
+                  <label class="control-label">Patientuppgifter</label>
+                  <div class="form-group row">
+                    <div class="col-md-8">
+                      <span id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span>
+                      <span wc-sekretess-avliden uuid="patientModel.personnummer" printlabel="true" avliden="patientModel.avliden" sekretessmarkering="patientModel.sekretessmarkering"></span><br>
+                      {{patientModel.personnummer | PersonIdFormatter}}
+                    </div>
                   </div>
 
+                  <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
                 </div>
 
-                <!-- error message -->
-                <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
-                  <span message key="{{viewState.createErrorMessageKey}}"></span>
+                <!-- New intyg -->
+                <div class="bottom-padding-medium">
+                  <div class="form-group">
+                    <label for="intygType" class="control-label">Skriv nytt intyg</label>
+
+                    <div>
+                      <select id="intygType" class="form-control" name="intygType" ng-model="intygTypeModel.intygType"
+                              ng-options="type.id as type.label for type in intygTypeModel.userIntygTypes"
+                              wc-focus-me="viewState.focusFirstInput"
+                              ng-disabled="patientModel.avliden"></select>
+                      <span id="fortsattBtn">
+                        <button id="intygTypeFortsatt" class="btn btn-success continue-btn" type="submit"
+                                ng-disabled="intygTypeModel.intygType == 'default' || patientModel.avliden || (intygReplacement[intygTypeModel.intygType] && isNormalOrigin())">Skapa intyg
+                        </button>
+                      </span>
+                    </div>
+
+                  </div>
+
+                  <!-- error message -->
+                  <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
+                    <span message key="{{viewState.createErrorMessageKey}}"></span>
+                  </div>
+
+                  <div id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType] && isNormalOrigin()" class="alert alert-warning col-lg-7">
+                    {{resolveIntygReplacedText(intygTypeModel.intygType)}}
+                  </div>
+
+                  <div class="alert alert-info col-lg-7"
+                       ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
+                       id="intygTypeWarning">
+                    <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
+                  </div>
+                  <div class="clearfix"></div>
                 </div>
 
-                <div id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType] && isNormalOrigin()" class="alert alert-warning col-lg-7">
-                  {{resolveIntygReplacedText(intygTypeModel.intygType)}}
-                </div>
-
-                <div class="alert alert-info col-lg-7"
-                     ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
-                     id="intygTypeWarning">
-                  <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
-                </div>
-                <div class="clearfix"></div>
               </div>
 
             </form>
@@ -70,7 +75,7 @@
         </div>
 
         <!-- Tidigare intyg table -->
-        <div class="webcert-col-section">
+        <div ng-if="!viewState.loadErrorMessageKey" class="webcert-col-section">
           <h2 class="col-head">Tidigare intyg för {{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</h2>
           <div class="form-group">
             <label class="radio-inline">
