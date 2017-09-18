@@ -1,6 +1,6 @@
 # language: sv
 
-@ListCertificatesForCareWithQA @smi @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@ListCertificatesForCareWithQA @smi
 Egenskap: ListCertificatesForCareWithQA från journalsystem
 
 Bakgrund: Jag är inloggad som djupintegrerad läkare
@@ -15,13 +15,13 @@ Scenario: Hämta en lista med intyg och utkast för en specifik vårdenhet och p
     Och ska svaret endast innehålla intyg för utvald patient
     Och ska svaret endast innehålla intyg för vårdenheten
 
-@samordningsnummer @notReady
+@samordningsnummer
 Scenario: Hämta en lista med intyg och utkast för en patient med samordningsnummer
   När jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten
   Så ska svaret innehålla intyget jag var inne på
   Och ska svaret endast innehålla intyg för utvald patient
 
-@händelser
+@händelser @makulera @signera @forsakringskassan @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
 Scenario: Hämta händelser för ett intyg
    När jag går in på intygsutkastet via djupintegrationslänk
    Och jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten
@@ -42,7 +42,8 @@ Scenario: Hämta händelser för ett intyg
 
 
    # skapat, skickat, ändrat,makulerat
-@fråga-från-vården @waitingForFix @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+   
+@fråga-från-vården
 Scenario: Hämta fråga/svar händelser för frågor från vården
     När jag går in på intygsutkastet via djupintegrationslänk
 
