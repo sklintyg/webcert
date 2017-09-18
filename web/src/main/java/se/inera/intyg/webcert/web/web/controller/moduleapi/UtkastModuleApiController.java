@@ -159,30 +159,18 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setAvliden(resolvedPatient.isAvliden());
 
         try {
-            // Update the internal model with the resolved patient if applicable. This means the draft may be updated
-            // with new patient info on the next auto-save!
             try {
                 Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
-                if (utlatande.getGrundData() != null && utlatande.getGrundData().getPatient() != null) {
-                    if (utlatande.getGrundData().getPatient().getFornamn() == null
-                            || utlatande.getGrundData().getPatient().getEfternamn() == null
-                            || !utlatande.getGrundData().getPatient().getFornamn().equals(resolvedPatient.getFornamn())
-                            || !utlatande.getGrundData().getPatient().getEfternamn().equals(resolvedPatient.getEfternamn())) {
-                        draftHolder.setPatientNameChangedInPU(true);
-                    }
-                    if (utlatande.getGrundData().getPatient().getPostadress() == null
-                            || utlatande.getGrundData().getPatient().getPostnummer() == null
-                            || utlatande.getGrundData().getPatient().getPostort() == null
-                            || !utlatande.getGrundData().getPatient().getPostadress().equals(resolvedPatient.getPostadress())
-                            || !utlatande.getGrundData().getPatient().getPostnummer().equals(resolvedPatient.getPostnummer())
-                            || !utlatande.getGrundData().getPatient().getPostort().equals(resolvedPatient.getPostort())) {
-                        draftHolder.setPatientAddressChangedInPU(true);
-                    }
-                }
+                draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
+                        utlatande.getGrundData().getPatient(), resolvedPatient));
+                draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
+                        utlatande.getGrundData().getPatient(), resolvedPatient));
             } catch (IOException e) {
                 LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygsId);
             }
 
+            // Update the internal model with the resolved patient if applicable. This means the draft may be updated
+            // with new patient info on the next auto-save!
             String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
             utkast.setModel(updatedModel);
 

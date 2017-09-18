@@ -17,5 +17,10 @@ public interface PatientDetailsResolver {
 
     boolean isAvliden(Personnummer personnummer);
 
+    boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient);
+
+    boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient);
+
     Patient updatePatientForSaving(Patient patient, String intygsTyp);
+
 }

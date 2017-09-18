@@ -315,6 +315,8 @@ public class CopyCompletionUtkastBuilderTest {
               //  .setComplementedByRelation(null)
                 .setDeceased(false)
                 .setSekretessmarkering(false)
+                .setPatientNameChangedInPU(false)
+                .setPatientAddressChangedInPU(false)
                 .build();
     }
 

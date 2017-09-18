@@ -137,6 +137,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
         //when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(), any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
     }

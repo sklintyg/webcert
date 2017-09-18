@@ -122,6 +122,24 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         }
     }
 
+    @Override
+    public boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient) {
+        return oldPatient.getPostadress() == null
+                || oldPatient.getPostnummer() == null
+                || oldPatient.getPostort() == null
+                || !oldPatient.getPostadress().equals(newPatient.getPostadress())
+                || !oldPatient.getPostnummer().equals(newPatient.getPostnummer())
+                || !oldPatient.getPostort().equals(newPatient.getPostort());
+    }
+
+    @Override
+    public boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient) {
+        return oldPatient.getFornamn() == null
+                || oldPatient.getEfternamn() == null
+                || !oldPatient.getFornamn().equals(newPatient.getFornamn())
+                || !oldPatient.getEfternamn().equals(newPatient.getEfternamn());
+    }
+
     /**
      * Implements business rules where the intygsTyp determines which patient information that's saved to the backend.
      *

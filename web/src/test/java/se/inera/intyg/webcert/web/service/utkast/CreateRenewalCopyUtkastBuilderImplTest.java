@@ -350,6 +350,8 @@ public class CreateRenewalCopyUtkastBuilderImplTest {
                 .setRelations(new Relations())
                 .setDeceased(false)
                 .setSekretessmarkering(false)
+                .setPatientNameChangedInPU(false)
+                .setPatientAddressChangedInPU(false)
                 .build();
     }
 
