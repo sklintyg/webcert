@@ -166,7 +166,7 @@ public class UtkastModuleApiController extends AbstractApiController {
                 if (utlatande.getGrundData() != null && utlatande.getGrundData().getPatient() != null) {
                     if (utlatande.getGrundData().getPatient().getFornamn() == null
                             || utlatande.getGrundData().getPatient().getEfternamn() == null
-                            || utlatande.getGrundData().getPatient().getFornamn().equals(resolvedPatient.getFornamn())
+                            || !utlatande.getGrundData().getPatient().getFornamn().equals(resolvedPatient.getFornamn())
                             || !utlatande.getGrundData().getPatient().getEfternamn().equals(resolvedPatient.getEfternamn())) {
                         draftHolder.setPatientNameChangedInPU(true);
                     }
