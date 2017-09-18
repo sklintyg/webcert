@@ -125,7 +125,7 @@ public class IntygModuleApiController extends AbstractApiController {
                 .getPersonId()).equals(SekretessStatus.FALSE);
 
         if (isSekretessmarkerad) {
-            authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+            authoritiesValidator.given(user, intygsTyp)
                     .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                     .orThrow();
 
@@ -138,7 +138,6 @@ public class IntygModuleApiController extends AbstractApiController {
             }
         }
     }
-
 
     /**
      * Return the signed certificate identified by the given id as PDF.
@@ -325,7 +324,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createReplacement(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
-                                  @PathParam("intygsId") String orgIntygsId) {
+            @PathParam("intygsId") String orgIntygsId) {
         validateReplaceAuthority(intygsTyp);
 
         LOG.debug("Attempting to create a replacement of {} with id '{}'", intygsTyp, orgIntygsId);
@@ -367,7 +366,6 @@ public class IntygModuleApiController extends AbstractApiController {
         }
         return req;
     }
-
 
     private CreateRenewalCopyRequest createRenewalCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
         HoSPersonal hosPerson = createHoSPersonFromUser();

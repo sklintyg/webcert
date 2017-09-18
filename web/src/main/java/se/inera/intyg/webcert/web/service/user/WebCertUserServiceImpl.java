@@ -26,23 +26,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
-import se.inera.intyg.infra.integration.hsa.model.Mottagning;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -151,34 +147,17 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     /**
-     * @inheritDoc
+     * Note - this is just a proxy for accessing {@link CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet(IntygUser, String)}.
+     *
+     * @param enhetId
+     *      HSA-id of a vardenhet or mottagning.
+     * @return
+     *      True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
      */
     @Override
-    public boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetsId) {
-        WebCertUser user = getUser();
-
-        SelectableVardenhet valdVardenhet = user.getValdVardenhet();
-        Set<String> allowedEnhetsId = new HashSet<>();
-        if (valdVardenhet instanceof Vardenhet) {
-            Vardenhet vardenhet = (Vardenhet) valdVardenhet;
-            allowedEnhetsId.add(vardenhet.getId());
-            vardenhet.getMottagningar().stream().forEach(m -> allowedEnhetsId.add(m.getId()));
-        } else if (valdVardenhet instanceof Mottagning) {
-            Mottagning mottagning = (Mottagning) valdVardenhet;
-
-            for (Vardgivare vg : user.getVardgivare()) {
-                for (Vardenhet ve : vg.getVardenheter()) {
-                    if (ve.getId().equals(mottagning.getParentHsaId())) {
-                        allowedEnhetsId.add(ve.getId());
-                        ve.getMottagningar().stream().forEach(m -> allowedEnhetsId.add(m.getId()));
-                    }
-                }
-            }
-        }
-
-        return allowedEnhetsId.contains(enhetsId);
+    public boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetId) {
+        return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(getUser(), enhetId);
     }
-
     // - - - - - Package scope - - - - -
 
     boolean checkIfAuthorizedForUnit(WebCertUser user, String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
