@@ -25,16 +25,19 @@ import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
-
 
 @Component
 public class CreateDraftCertificateValidatorImpl implements CreateDraftCertificateValidator {
@@ -48,11 +51,15 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Autowired
+    private WebcertUserDetailsService webcertUserDetailsService;
+
     /*
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator#validate(se.inera.certificate.clinicalprocess
+     * se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator#validate(se.inera.certificate.
+     * clinicalprocess
      * .healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType)
      */
     @Override
@@ -69,11 +76,13 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     @Override
     public ResultValidator validateApplicationErrors(Utlatande utlatande) {
         ResultValidator errors = ResultValidator.newInstance();
-        validateSekretessmarkeringOchIntygsTyp(utlatande.getTypAvUtlatande(), utlatande.getPatient().getPersonId(), errors);
+        validateSekretessmarkeringOchIntygsTyp(utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(), utlatande.getPatient().getPersonId(),
+                errors);
         return errors;
     }
 
-    private void validateSekretessmarkeringOchIntygsTyp(TypAvUtlatande typAvUtlatande, PersonId personId, ResultValidator errors) {
+    private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvUtlatande typAvUtlatande, PersonId personId,
+            ResultValidator errors) {
 
         // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the PU-service.
         String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
@@ -84,22 +93,29 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
             if (pnr != null) {
                 final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
                 switch (sekretessStatus) {
-                    case TRUE:
-                        errors.addError("Cannot issue intyg type {0} for patient having "
-                                + "sekretessmarkering.", intygsTyp);
-                        break;
-                    case UNDEFINED:
-                        errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
-                                + "to a problem in the PU service.", intygsTyp);
-                        break;
-                    case FALSE:
-                        break; //Do nothing
-                    default:
-                        errors.addError("Cannot issue intyg type {0} for patient with "
-                                + "unknown sekretessstatus", intygsTyp);
+                case TRUE:
+                    errors.addError("Cannot issue intyg type {0} for patient having "
+                            + "sekretessmarkering.", intygsTyp);
+                    break;
+                case UNDEFINED:
+                    errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
+                            + "to a problem in the PU service.", intygsTyp);
+                    break;
+                case FALSE:
+                    break; // Do nothing
                 }
             }
-
+        } else {
+            // Check if user has PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT or return error
+            IntygUser user = webcertUserDetailsService.loadUserByHsaId(skapadAv.getPersonalId().getExtension());
+            AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+            if (!authoritiesValidator.given(user)
+                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                    .isVerified()) {
+                errors.addError(
+                        "Du saknar behörighet. För att hantera intyg för patienter med sekretessmarkering krävs "
+                        + "att du har befattningen läkare eller tandläkare");
+            }
         }
     }
 

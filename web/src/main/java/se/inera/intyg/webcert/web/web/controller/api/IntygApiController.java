@@ -114,6 +114,11 @@ public class IntygApiController extends AbstractApiController {
         // INTYG-4086 (epic) - make sure only users with HANTERA_SEKRETESSMARKERAD_PATIENT can list intyg for patient
         // with sekretessmarkering.
         SekretessStatus patientSekretess = patientDetailsResolver.getSekretessStatus(personNummer);
+        if (patientSekretess == SekretessStatus.UNDEFINED) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                    "Error checking sekretessmarkering state in PU-service.");
+        }
+
         authoritiesValidator.given(getWebCertUserService().getUser())
                 .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
                         patientSekretess == SekretessStatus.TRUE)

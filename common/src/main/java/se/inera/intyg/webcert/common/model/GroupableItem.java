@@ -1,6 +1,15 @@
 package se.inera.intyg.webcert.common.model;
 
 /**
+ * This class is a general-purpose class for allowing JPQL queries to construct objects meant to be groupable using
+ * the Java 8 streams API.
+ *
+ * The 'id' should always be unique.
+ * The 'enhetsId' is typically used as group by expression.
+ * The 'personnummer' and 'intygsTyp' is typically used for performing user/patient context filtering for sekretessmarkering.
+ * The 'sekretessstatus' is never populated when constructing the GroupableItem as we must query the PU-service for this
+ * information.
+ *
  * Created by eriklupander on 2017-09-14.
  */
 public class GroupableItem {
