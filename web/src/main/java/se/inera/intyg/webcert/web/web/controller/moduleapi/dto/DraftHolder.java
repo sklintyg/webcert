@@ -52,6 +52,8 @@ public class DraftHolder {
     private boolean patientResolved = false;
     private boolean sekretessmarkering = false;
     private boolean avliden = false;
+    private boolean patientNameChangedInPU = false;
+    private boolean patientAddressChangedInPU = false;
 
     public long getVersion() {
         return version;
@@ -147,5 +149,21 @@ public class DraftHolder {
 
     public void setAvliden(boolean avliden) {
         this.avliden = avliden;
+    }
+
+    public boolean isPatientAddressChangedInPU() {
+        return patientAddressChangedInPU;
+    }
+
+    public void setPatientAddressChangedInPU(boolean patientAddressChangedInPU) {
+        this.patientAddressChangedInPU = patientAddressChangedInPU;
+    }
+
+    public boolean isPatientNameChangedInPU() {
+        return patientNameChangedInPU;
+    }
+
+    public void setPatientNameChangedInPU(boolean patientNameChangedInPU) {
+        this.patientNameChangedInPU = patientNameChangedInPU;
     }
 }

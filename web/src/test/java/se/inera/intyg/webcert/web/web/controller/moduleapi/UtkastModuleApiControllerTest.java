@@ -25,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -59,6 +60,7 @@ import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -123,7 +125,7 @@ public class UtkastModuleApiControllerTest {
     private UtkastModuleApiController moduleApiController = new UtkastModuleApiController();
 
     @Before
-    public void setup() throws ModuleNotFoundException, ModuleException {
+    public void setup() throws ModuleNotFoundException, ModuleException, IOException {
         session = mock(HttpSession.class);
         request = mock(HttpServletRequest.class);
         Mockito.doNothing().when(session).removeAttribute("lastSavedDraft");
@@ -132,6 +134,7 @@ public class UtkastModuleApiControllerTest {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
 
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
     }
 

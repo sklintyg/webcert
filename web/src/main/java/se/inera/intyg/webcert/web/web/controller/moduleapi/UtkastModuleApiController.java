@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -65,6 +66,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -164,6 +166,28 @@ public class UtkastModuleApiController extends AbstractApiController {
             // Update the internal model with the resolved patient if applicable. This means the draft may be updated
             // with new patient info on the next auto-save!
             if (patientResolved) {
+                try {
+                    Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
+                    if (utlatande.getGrundData() != null && utlatande.getGrundData().getPatient() != null) {
+                        if (utlatande.getGrundData().getPatient().getFornamn() == null
+                                || utlatande.getGrundData().getPatient().getEfternamn() == null
+                                || utlatande.getGrundData().getPatient().getFornamn().equals(resolvedPatient.getFornamn())
+                                || !utlatande.getGrundData().getPatient().getEfternamn().equals(resolvedPatient.getEfternamn())) {
+                            draftHolder.setPatientNameChangedInPU(true);
+                        }
+                        if (utlatande.getGrundData().getPatient().getPostadress() == null
+                                || utlatande.getGrundData().getPatient().getPostnummer() == null
+                                || utlatande.getGrundData().getPatient().getPostort() == null
+                                || !utlatande.getGrundData().getPatient().getPostadress().equals(resolvedPatient.getPostadress())
+                                || !utlatande.getGrundData().getPatient().getPostnummer().equals(resolvedPatient.getPostnummer())
+                                || !utlatande.getGrundData().getPatient().getPostort().equals(resolvedPatient.getPostort())) {
+                            draftHolder.setPatientAddressChangedInPU(true);
+                        }
+                    }
+                } catch (IOException e) {
+                    LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygsId);
+                }
+
                 String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
                 utkast.setModel(updatedModel);
             }
