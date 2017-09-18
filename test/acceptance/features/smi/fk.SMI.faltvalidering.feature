@@ -8,6 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	När jag går in på en patient
 
 # slumpat SMI-intyg => Ej LISJP för tillfället
+@validering-felaktigt-falt
 Scenariomall: Validera felaktigt <typAvFält> i SMI-intyg
     När jag går in på att skapa ett slumpat SMI-intyg
     Och jag fyller i text i <typAvFält> fältet
@@ -21,7 +22,7 @@ Exempel:
     |   "slumpat-datum"         |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |
     |   "underlag-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"                   |
 
-
+@validering-felaktigt-falt @lisjp
 Scenariomall: Validera felaktigt <typAvFält> i <intygsTyp>
 	När jag går in på att skapa ett <intygsTyp> intyg
 	Och jag fyller i text i <typAvFält> fältet
@@ -33,7 +34,7 @@ Exempel:
     |"Läkarintyg för sjukpenning"	|	"arbetsförmåga-datum"	| "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"			|
 
 
-@INTYG-3760
+@validering-datum @lisjp @INTYG-3760
 Scenario: Intyget kan inte signeras om slut är före startdatum
     När jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
     Och jag fyller i alla nödvändiga fält för intyget

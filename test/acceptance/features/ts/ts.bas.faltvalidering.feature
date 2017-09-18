@@ -1,5 +1,5 @@
 # language: sv
-@faltvalidering @ts @notReady
+@faltvalidering @ts
 
 Egenskap: Fältvalidering TS-Bas
 

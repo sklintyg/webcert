@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-
+@validering-felaktigt-falt
 Scenariomall: Validera felaktigt <typAvFält> i <intygsTyp>
 	#När jag går in på att skapa ett <intygsTyp> intyg
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
@@ -24,6 +24,7 @@ Exempel:
  	| intygsTyp                     |	 typAvFält		     	| feltext       				    | fältet	| meddelande |
     |"Läkarintyg FK 7263"	|	"UndersökningsDatum"	| "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"			| "Intyget baseras på" |  "Utkastet är sparat, men obligatoriska uppgifter saknas." |
 
+@validering-obligatoriska-falt
 Scenario: Meddelanden visas när obligatoriska fält inte är ifyllda
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
@@ -58,6 +59,7 @@ Scenario: Meddelanden visas när obligatoriska fält inte är ifyllda
 	Och jag signerar intyget
 	Så ska intygets status vara "Intyget är signerat"
 
+@validering-baserasPa
 Scenario: Intyget kan inte signeras utan fält 4b Text för Annat
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
@@ -67,6 +69,7 @@ Scenario: Intyget kan inte signeras utan fält 4b Text för Annat
 	Så ska valideringsfelet "Intyget baseras på" visas
 	Så ska valideringsfelet "Fältet får inte vara tomt" visas
 
+@validering-prognos
 Scenario: Intyget kan inte signeras utan förtydligande om Går ej att bedöma är ifyllt
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
@@ -76,7 +79,7 @@ Scenario: Intyget kan inte signeras utan förtydligande om Går ej att bedöma �
 	Så ska valideringsfelet "Prognos" visas
 	Så ska valideringsfelet "Fältet får inte vara tomt" visas
 
-@INTYG-3760
+@validering-datum @INTYG-3760
 Scenario: Intyget kan inte signeras om slut är före startdatum
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet

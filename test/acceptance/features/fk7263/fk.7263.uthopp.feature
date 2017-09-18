@@ -3,7 +3,7 @@
 @uthopp @uthoppsläge
 Egenskap: FK7263 - Uthoppsläge
 
-@fråga-uthopp @mailnotifikation @waitingForFix INTYG-4514
+@fråga-uthopp @mailnotifikation @waitingForFix @INTYG-4514
 Scenario: Mail när fråga på intyg inkommer
 	Givet att jag är inloggad som uthoppsläkare
 	När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
