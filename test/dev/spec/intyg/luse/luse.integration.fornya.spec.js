@@ -65,7 +65,6 @@ describe('Djupintegration on luse intyg', function() {
                 alternatePatientSSn: '20121212-1212'
             });
             expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(LuseIntygPage.statusNameAndAddressChanged.isDisplayed()).toBeTruthy();
         });
 
         it('should fornya intyg and view resulting utkast', function() {
