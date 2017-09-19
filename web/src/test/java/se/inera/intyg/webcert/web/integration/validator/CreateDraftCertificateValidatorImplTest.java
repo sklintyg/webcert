@@ -18,16 +18,11 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
@@ -37,8 +32,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -46,30 +39,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateDraftCertificateValidatorImplTest {
-
-    private static final String FK7263 = "fk7263";
-    private static final String TSBAS = "ts-bas";
-
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
-
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
+public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCertificateValidatorImplTest {
 
     @InjectMocks
     private CreateDraftCertificateValidatorImpl validator;
-
-    @Before
-    public void setup() {
-        when(moduleRegistry.moduleExists(FK7263)).thenReturn(true);
-        when(moduleRegistry.moduleExists(TSBAS)).thenReturn(true);
-        when(commonAuthoritiesResolver.getSekretessmarkeringAllowed())
-                .thenReturn(Arrays.asList("fk7263", "lisjp", "luse", "luae_na", "luae_fs", "db", "doi"));
-    }
 
     @Test
     public void testValidate() {

@@ -24,67 +24,43 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.web.integration.validator.BaseCreateDraftCertificateValidatorImplTest;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateDraftCertificateValidatorImplTest {
-
-    private static final String FK7263 = "fk7263";
-    private static final String TSBAS = "ts-bas";
-
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
+public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCertificateValidatorImplTest {
 
     @Mock
     private WebcertFeatureService featureService;
-
-    @Mock
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
-
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
 
     @InjectMocks
     private CreateDraftCertificateValidatorImpl validator;
 
     @Before
     public void setup() {
-
-        when(commonAuthoritiesResolver.getSekretessmarkeringAllowed())
-                .thenReturn(Arrays.asList("fk7263", "lisjp", "luse", "luae_na", "luae_fs", "db", "doi"));
-
+        super.setup();
         when(featureService.isModuleFeatureActive(eq(WebcertFeature.HANTERA_INTYGSUTKAST.getName()), eq(FK7263.toLowerCase())))
                 .thenReturn(Boolean.TRUE);
         when(featureService.isModuleFeatureActive(eq(WebcertFeature.HANTERA_INTYGSUTKAST.getName()), eq(TSBAS.toLowerCase())))
                 .thenReturn(Boolean.TRUE);
-
-        when(moduleRegistry.moduleExists(FK7263.toLowerCase())).thenReturn(Boolean.TRUE);
-        when(moduleRegistry.moduleExists(TSBAS)).thenReturn(true);
-        when(moduleRegistry.getModuleIdFromExternalId(anyString()))
-                .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     }
 
     @Test
@@ -219,6 +195,9 @@ public class CreateDraftCertificateValidatorImplTest {
         intyg.setPatient(patient);
         HosPersonal hosPersonal = new HosPersonal();
         hosPersonal.setFullstandigtNamn(hosPersonalFullstandigtNamn);
+        HsaId personalHsaId = new HsaId();
+        personalHsaId.setExtension("personal-1");
+        hosPersonal.setPersonalId(personalHsaId);
         if (createUnit) {
             Enhet enhet = new Enhet();
             enhet.setEnhetsnamn(enhetsnamn);
