@@ -27,18 +27,6 @@ angular.module('webcert').controller('webcert.AboutWebcertCtrl',
             });
             $scope.$on('$destroy', unbindLocationChange);
 
-            function loadIntygTypes() {
-                $scope.intygTypes = [];
-                UtkastProxy.getUtkastTypesCachedUnfiltered(function(types) {
-                    $scope.intygTypes = types;
-                });
-            }
-            loadIntygTypes();
-
             $scope.version = moduleConfig.VERSION;
-
-            $scope.getDetailedDescription = function(intygsType) {
-                return intygsType.detailedDescription;
-            };
         }]
 );

@@ -52,11 +52,6 @@ angular.module('webcert').directive('wcAbout', ['$location', 'common.UserModel',
                     label: 'Support och kontaktinformation'
                 });
                 $scope.menuItems.push({
-                    id: 'about-intyg',
-                    link: '/web/dashboard#/certificates/about',
-                    label: 'Intyg som stöds i Webcert'
-                });
-                $scope.menuItems.push({
                     id: 'about-faq',
                     link: '/web/dashboard#/faq/about',
                     label: 'Vanliga frågor'
