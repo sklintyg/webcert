@@ -481,21 +481,21 @@
               <button type="button" class="btn btn-small btn-primary"
                       ng-click="editPU()"
                       ng-disabled="!PU.patientId">
-                Ändra
+                Ändra personuppgifter
               </button>
 
 
               <button type="button" class="btn btn-small btn-primary"
                       ng-click="performPUOperation($event, 'sekretessmarkerad', true)"
                       ng-disabled="!PU.patientId">
-                Ja
+                Sekretessmarkering: På
               </button>
 
 
               <button type="button" class="btn btn-small btn-primary"
                       ng-click="performPUOperation($event, 'sekretessmarkerad', false)"
                       ng-disabled="!PU.patientId">
-                Nej
+                Sekretessmarkering: Av
               </button>
               <button type="button" class="btn btn-small btn-primary"
                       ng-click="performPUOperation($event, 'avliden', true)" ng-disabled="!PU.patientId">
