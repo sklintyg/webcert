@@ -169,15 +169,6 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
-        state('webcert.certificates-about', {
-            url: '/certificates/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.certificates.html',
-                    controller: 'webcert.AboutWebcertCtrl'
-                }
-            }
-        }).
         state('webcert.faq-about', {
             url: '/faq/about',
             views: {
