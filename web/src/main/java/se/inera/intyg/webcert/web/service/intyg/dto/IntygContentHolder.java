@@ -52,6 +52,10 @@ public abstract class IntygContentHolder {
 
     public abstract boolean isSekretessmarkering();
 
+    public abstract boolean isPatientNameChangedInPU();
+
+    public abstract boolean isPatientAddressChangedInPU();
+
     public static Builder builder() {
         return new AutoValue_IntygContentHolder.Builder()
                 .setRelations(new Relations());
@@ -75,6 +79,10 @@ public abstract class IntygContentHolder {
         public abstract Builder setDeceased(boolean deceased);
 
         public abstract Builder setSekretessmarkering(boolean sekretessmarkering);
+
+        public abstract Builder setPatientNameChangedInPU(boolean patientNameChangedInPU);
+
+        public abstract Builder setPatientAddressChangedInPU(boolean patientAddressChangedInPU);
     }
 
 }

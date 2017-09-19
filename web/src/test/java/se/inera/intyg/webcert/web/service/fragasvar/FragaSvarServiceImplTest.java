@@ -584,6 +584,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
               //  .setComplementedByRelation(null)
                 .setDeceased(false)
                 .setSekretessmarkering(false)
+                .setPatientNameChangedInPU(false)
+                .setPatientAddressChangedInPU(false)
                 .build();
     }
 
@@ -600,6 +602,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
               //  .setComplementedByRelation(null)
                 .setDeceased(false)
                 .setSekretessmarkering(false)
+                .setPatientNameChangedInPU(false)
+                .setPatientAddressChangedInPU(false)
                 .build();
     }
 
@@ -618,6 +622,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
                 //.setComplementedByRelation(null)
                 .setDeceased(false)
                 .setSekretessmarkering(false)
+                .setPatientNameChangedInPU(false)
+                .setPatientAddressChangedInPU(false)
                 .build();
     }
 

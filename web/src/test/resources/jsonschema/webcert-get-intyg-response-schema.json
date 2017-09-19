@@ -83,6 +83,12 @@
     "deceased": {
       "id": "deceased",
       "type": "boolean"
+    },
+    "patientNameChangedInPU": {
+      "type": "boolean"
+    },
+    "patientAddressChangedInPU": {
+      "type": "boolean"
     }
   },
   "required": [

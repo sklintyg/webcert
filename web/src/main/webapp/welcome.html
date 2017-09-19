@@ -64,7 +64,8 @@
       // PU stub operations ============================================
         $scope.PU = {
             latestResult: 'Inget',
-            patientId:''
+            patientId:'',
+            showPUEdit:false
         };
         $scope.performPUOperation = function(evt, type, enable) {
             evt.preventDefault();
@@ -109,6 +110,32 @@
                     $scope.PU.latestEvent = 'Fel vid tömning av cache' + response.data;
                 });
 
+        };
+        $scope.editPU = function() {
+          $http({
+            url: '/services/pu-api/person/'+$scope.PU.patientId,
+              method: 'GET'
+          }).then(
+          function success(response) {
+            $scope.PU.editData = response.data;
+            $scope.PU.showPUEdit = true;
+            $scope.PU.latestEvent = 'Hämtat personuppgifter!';
+          }, function error(response) {
+            $scope.PU.latestEvent = 'Fel vid hämtning av personuppgifter' + response.data;
+          });
+        };
+        $scope.editPUSave = function() {
+          $http({
+            url: '/services/pu-api/person',
+            method: 'PUT',
+            data: $scope.PU.editData
+          }).then(
+              function success(response) {
+                $scope.PU.showPUEdit = false;
+                $scope.PU.latestEvent = 'Sparat personuppgifter!';
+              }, function error(response) {
+                $scope.PU.latestEvent = 'Fel vid sparning av personuppgifter' + response.data;
+              });
         };
         // End PU stub operations ============================================
 
@@ -452,16 +479,23 @@
             <div class="btn-group btn-group-sm" role="group">
 
               <button type="button" class="btn btn-small btn-primary"
+                      ng-click="editPU()"
+                      ng-disabled="!PU.patientId">
+                Ändra personuppgifter
+              </button>
+
+
+              <button type="button" class="btn btn-small btn-primary"
                       ng-click="performPUOperation($event, 'sekretessmarkerad', true)"
                       ng-disabled="!PU.patientId">
-                Ja
+                Sekretessmarkering: På
               </button>
 
 
               <button type="button" class="btn btn-small btn-primary"
                       ng-click="performPUOperation($event, 'sekretessmarkerad', false)"
                       ng-disabled="!PU.patientId">
-                Nej
+                Sekretessmarkering: Av
               </button>
               <button type="button" class="btn btn-small btn-primary"
                       ng-click="performPUOperation($event, 'avliden', true)" ng-disabled="!PU.patientId">
@@ -485,6 +519,20 @@
                   Inaktivera PU
                 </button>
               </div>
+
+            <div class="panel panel-body panel-info" ng-show="PU.showPUEdit">
+              <label for="pu-fornamn">Förnamn</label><input id="pu-fornamn" type="text" ng-model="PU.editData.Personpost.Namn.Fornamn"><br>
+              <label for="pu-efternamn">Efternamn</label><input id="pu-efternamn" type="text" ng-model="PU.editData.Personpost.Namn.Efternamn"><br>
+              <label for="pu-careof">CareOf</label><input id="pu-careof" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.CareOf"><br>
+              <label for="pu-utdelningsadress1">Utdelningsadress1</label><input id="pu-utdelningsadress1" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Utdelningsadress1"><br>
+              <label for="pu-utdelningsadress2">Utdelningsadress2</label><input id="pu-utdelningsadress2" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Utdelningsadress2"><br>
+              <label for="pu-postnr">PostNr</label><input id="pu-postnr" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.PostNr"><br>
+              <label for="pu-postort">Postort</label><input id="pu-postort" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Postort"><br>
+              <button type="button" class="btn btn-primary" ng-click="editPUSave()">
+                Spara
+              </button>
+            </div>
+
             <div id="latestEvent">Senaste PU operation: <pre>{{PU.latestEvent}}</pre> </div>
             </div>
 

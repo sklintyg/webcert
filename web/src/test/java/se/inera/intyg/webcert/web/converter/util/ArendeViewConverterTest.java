@@ -130,6 +130,8 @@ public class ArendeViewConverterTest {
                                // .setComplementedByRelation(null)
                                 .setDeceased(false)
                                 .setSekretessmarkering(false)
+                                .setPatientNameChangedInPU(false)
+                                .setPatientAddressChangedInPU(false)
                                 .build());
     }
 

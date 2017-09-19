@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -65,6 +66,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -157,6 +159,16 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setAvliden(resolvedPatient.isAvliden());
 
         try {
+            try {
+                Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
+                draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
+                        utlatande.getGrundData().getPatient(), resolvedPatient));
+                draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
+                        utlatande.getGrundData().getPatient(), resolvedPatient));
+            } catch (IOException e) {
+                LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygsId);
+            }
+
             // Update the internal model with the resolved patient if applicable. This means the draft may be updated
             // with new patient info on the next auto-save!
             String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);

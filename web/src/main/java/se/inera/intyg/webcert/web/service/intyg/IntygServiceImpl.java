@@ -644,6 +644,15 @@ public class IntygServiceImpl implements IntygService {
             // Patient object.
             ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
 
+            boolean patientNameChanged = false, patientAddressChanged = false;
+            try {
+                Utlatande utlatande = moduleRegistry.getModuleApi(typ).getUtlatandeFromJson(internalIntygJsonModel);
+                patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(), patient);
+                patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(), patient);
+            } catch (IOException e) {
+                LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygId);
+            }
+
             // If a Patient were resolved, update the model. If the patient were null, PU-service is probably down and
             // no integration parameters were available.
             if (patient != null) {
@@ -668,6 +677,8 @@ public class IntygServiceImpl implements IntygService {
                     .setRelations(certificateRelations)
                     .setDeceased(isDeceased(personId))
                     .setSekretessmarkering(sekretessmarkering)
+                    .setPatientNameChangedInPU(patientNameChanged)
+                    .setPatientAddressChangedInPU(patientAddressChanged)
                     .build();
 
         } catch (IntygModuleFacadeException me) {
@@ -734,6 +745,9 @@ public class IntygServiceImpl implements IntygService {
             }
             final boolean sekretessmarkerad = SekretessStatus.TRUE.equals(sekretessStatus);
 
+            boolean patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(), patient);
+            boolean patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(), patient);
+
             return IntygContentHolder.builder()
                     .setContents(updatedModel)
                     .setUtlatande(utlatande)
@@ -742,6 +756,8 @@ public class IntygServiceImpl implements IntygService {
                     .setRelations(certificateRelations)
                     .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
                     .setSekretessmarkering(sekretessmarkerad)
+                    .setPatientNameChangedInPU(patientNameChanged)
+                    .setPatientAddressChangedInPU(patientAddressChanged)
                     .build();
 
         } catch (ModuleException | ModuleNotFoundException e) {
