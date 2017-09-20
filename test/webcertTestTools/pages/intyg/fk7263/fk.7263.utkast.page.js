@@ -165,12 +165,13 @@ var FkUtkast = BaseUtkast._extend({
         this.kontaktFk = element(by.id('kontaktFk'));
         this.srs = {
             knapp: () => element(by.buttonText('SRS')),
+            panel: () => element(by.tagName('wc-srs-content')),
             samtycke: {
                 ja: element(by.id('FALT2-fmb-button')),
                 nej: element(by.id('FALT2-fmb-button'))
             },
-            riskruta: element(by.id('FALT2-fmb-button')),
-            fragor: element(by.id('FALT2-fmb-button')),
+            visamer: () => element.all(by.tagName('wc-srs-content')).all(by.tagName('a')).first(),         
+            fragor: () => element(by.tagName('wc-srs-questionaire')),
             statistikTab: element(by.id('FALT2-fmb-button')),
             tabInnehall: element(by.id('FALT2-fmb-button')),
         }
@@ -186,6 +187,11 @@ var FkUtkast = BaseUtkast._extend({
     setSRSAnswer: function(question, answer) {
 
     },
+    getSRSQuestionnaireStatus: function() {
+        return this.srs.fragor().isDisplayed()
+            .then(displayed => displayed ? Promise.resolve('maximerad') : Promise.resolve('minimerad'));
+    },
+
     getSRSButtonStatus: function() {
         return Promise.all([
                 this.srs.knapp().isDisplayed(),

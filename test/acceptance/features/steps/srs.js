@@ -42,8 +42,17 @@ module.exports = function() {
         createDraftUsingSOAP(user, srsdata.patienter[samtycke].id)
         .then(intygsId => browser.get(buildLinkToIntyg(intygsId, srsdata.patienter[samtycke], user.enhetId)))
         .then(() => browser.waitForAngular())
-        .then(() => browser.sleep(2000))
+        .then(() => browser.sleep(2000)) // Behövs för att waitForAngular tydligen inte räcker
         .then(() => expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true))
+        .then(() => setConsent(srsdata.patienter[samtycke], user, samtycke))
+    );
+
+    this.Then(/^ska en frågepanel för SRS "(inte)? ?visas"$/,
+        panelStatus => expect(fk7263utkast.srs.panel().isDisplayed()).to.eventually.equal(panelStatus !== 'inte')
+    );
+
+    this.Then(/^ska en pil med texten "(Visa mindre|Visa mer)" visas$/,
+        text => expect(findLabelContainingText(text).isPresent()).to.eventually.equal(true)
     );
 
     this.When(/^jag fyller i diagnoskod som "(finns i SRS|inte finns i SRS)"$/,
@@ -54,7 +63,60 @@ module.exports = function() {
         srsButtonStatus => expect(fk7263utkast.getSRSButtonStatus()).to.eventually.equal(srsButtonStatus)
     );
 
+    this.When(/^jag klickar på knappen för SRS$/,
+        () => fk7263utkast.srs.knapp().click()
+    );
+
+    this.When(/^jag klickar på pilen$/,
+        () => fk7263utkast.srs.visamer().click()
+        .then(() => browser.sleep(500)) // Det tar en stund för panelen att maximeras/minimeras
+    );
+
+    this.Then(/^ska frågepanelen för SRS vara "(minimerad|maximerad)"$/,
+        status => expect(fk7263utkast.getSRSQuestionnaireStatus()).to.eventually.equal(status)
+    );
+
+    this.Then(/^ska en fråga om samtycke visas$/,
+        () => expect(
+            findLabelContainingText('Patienten samtycker till att delta').isPresent()
+        ).to.eventually.equal(true)
+    );
+
 };
+
+/**
+ * Injicerar ett skript i browsern som skickar "SetConsent" till webcert backend.
+ * Används för att försätta en patient i känt state inför test.
+ */
+function setConsent(patient, user, consent) {
+    const patientId = patient.id.slice(0, 8) + '-' + patient.id.slice(8 + 0);
+    const link = buildLinkToSetConsent(patientId, user.enhetId);
+    return browser.executeAsyncScript(function(url, samtycke) {
+            var callback = arguments[arguments.length - 1];
+            var xhr = new XMLHttpRequest();
+            xhr.open('PUT', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    callback(xhr.responseText);
+                }
+            };
+            xhr.send(samtycke === 'har givit samtycke' ? 'true' : 'false');
+        }, link, consent)
+        .then(response => console.log('SetConsent respons: ' + response));
+}
+
+function buildLinkToSetConsent(patientId, enhetId) {
+    let uri = uriTemplate `api/srs/consent/${patientId}/${enhetId}`;
+    console.log('Consent URL: ' + process.env.WEBCERT_URL + uri);
+    return process.env.WEBCERT_URL + uri;
+}
+
+function findLabelContainingText(text) {
+    return fk7263utkast.srs.panel()
+        .all(by.tagName('div'))
+        .filter(ele => ele.getText().then(t => t.includes(text))).first();
+}
 
 function createDraftUsingSOAP(user, patientId) {
     let path = '/services/create-draft-certificate/v1.0/?wsdl';
