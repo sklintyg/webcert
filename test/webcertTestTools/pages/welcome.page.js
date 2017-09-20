@@ -24,15 +24,16 @@
  */
 'use strict';
 
-var loginButton = element(by.id('loginBtn'));
 var jsonDisplay = element(by.id('userJsonDisplay'));
 
 module.exports = {
-    loginButton:loginButton,
+    loginButton:element(by.id('loginBtn')),
     get: function() {
         return browser.get('welcome.html');
     },
-
+    isAt: function() {
+        return this.loginButton.isDisplayed();
+    },
     disableCookieConsentBanner: function(secondBrowser) {
         //Having this flag in localStorage will suppress the cookieBanner.(This is what will be set
         //when a user gives consent). We pre-set this before logging in to avoid having to click on that button
@@ -57,12 +58,12 @@ module.exports = {
         }
 
         element(by.id(userId)).click();
-        loginButton.click();
+        this.loginButton.click();
     },
     loginByName: function(name) {
         this.disableCookieConsentBanner();
         element(by.cssContainingText('option', name)).click();
-        loginButton.click();
+        this.loginButton.click();
     },
     loginByJSON: function(userJson, giveCookieConsent, secondBrowser) {
         if (giveCookieConsent) {

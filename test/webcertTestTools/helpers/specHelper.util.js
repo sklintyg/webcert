@@ -33,6 +33,7 @@ module.exports = {
 
     login: function(userOptional) {
         WelcomePage.get();
+        expect(WelcomePage.isAt()).toBeTruthy();
         WelcomePage.login(userOptional || 'TSTNMT2321000156-103F_TSTNMT2321000156-1039');
         this.waitForAngularTestability();
         expect(SokSkrivIntygPage.getDoctorText()).toContain('Leonie Koehl');
