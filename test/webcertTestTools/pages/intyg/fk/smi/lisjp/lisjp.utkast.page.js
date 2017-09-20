@@ -288,17 +288,27 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     angePrognosForArbetsformaga: function(prognos) {
         var prognosEL = this.sjukskrivning.prognos;
         return prognosEL.form.element(by.cssContainingText('label', prognos.name)).sendKeys(protractor.Key.SPACE).then(function() {
-            browser.executeScript('window.scrollTo(0,3000);');
+			
             if (prognos.within) {
+				
+				//Front-end funktion för att centrera ett element
+				var frontEndJS = 'Element.prototype.documentOffsetTop = function () {';
+				frontEndJS += ' return this.offsetTop + ( this.offsetParent ? this.offsetParent.documentOffsetTop() : 0 );';
+				frontEndJS += ' };';
+				frontEndJS += 'var top = document.getElementById("prognos-ATER_X_ANTAL_DGR").documentOffsetTop() - (window.innerHeight / 2 );'
+				frontEndJS += ' window.scrollTo( 0, top );';
+				browser.executeScript(frontEndJS);
+				return;
 
-                return prognosEL.select.click().then(function() {
-                    return prognosEL.inom.element(by.cssContainingText('span', prognos.within)).click();
-                });
             } else {
                 return Promise.resolve();
             }
-        });
-
+        })
+		.then(function() {
+			return prognosEL.select.click().then(function() {
+                    return prognosEL.inom.element(by.cssContainingText('span', prognos.within)).click();
+            });
+		});
     }
 
 });
