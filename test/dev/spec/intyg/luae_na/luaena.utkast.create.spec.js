@@ -96,6 +96,11 @@ describe('Create and Sign luae_na utkast', function() {
         });
 
         it('Verifiera intyg', function() {
+            // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
+            // upplysningar ännu. Det hjälper inte att höja timeout tiden ovan. Sidan behöver också laddas om efter
+            // fördröjningen.
+            browser.refresh();
+
             IntygPage.whenCertificateLoaded().then(function() {
                 IntygPage.verify(data);
             });
