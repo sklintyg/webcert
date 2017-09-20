@@ -94,16 +94,39 @@ exports.config = {
         logger.log('error', "");
 		
 		*/
+		winston.cli();
+		winston.addColors({
+		   //error: 'red',
+		   //warn: 'yellow',
+		   //help: 'cyan',
+		   //data: 'grey',
+		   info: 'cyan', //default green
+		   debug: 'grey', //default blue
+		   //prompt: 'grey',
+		   //verbose: 'cyan',
+		   //input: 'grey',
+		   //silly: 'magenta'
+		});
+		
+		var winstonConfig = require('winston/lib/winston/config');
 		
         global.logger = new(winston.Logger)({
             transports: [
                 new(winston.transports.Console)({
+					prettyPrint: true,
                     colorize: true,
+					silent: false,
                     timestamp: formatLocalDate,
                     formatter: function(options) {
                         // Return string will be passed to logger.
-                        return options.timestamp() + ' ' + options.level.toUpperCase() + ' ' + (undefined !== options.message ? options.message : '') +
-                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta) : '');
+						var todo = options.message.match(/(TODO)/i);
+						if (todo) {
+							return winstonConfig.colorize('warn', options.timestamp() + ' ' + options.level.toUpperCase() + ' - ' + options.message);
+						} else {
+							
+							return options.timestamp() + ' ' + winstonConfig.colorize(options.level, (options.level.toUpperCase() + ' ' + (undefined !== options.message ? options.message : '')) +
+								 (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta) : ''));
+						}
                     }
                 })
             ]

@@ -42,7 +42,7 @@ Scenario: Statusuppdateringar då intyg raderas
    Och jag raderar intyget
    Så ska statusuppdatering "HAN4" skickas till vårdsystemet. Totalt: "1"
 
-@fråga-från-fk
+@fråga-från-fk @HAN6 @HAN9 
 Scenario: Statusuppdateringar vid fråga från FK
    När jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
