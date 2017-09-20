@@ -23,105 +23,69 @@
 var luaefsUtkastPage = pages.intyg.luaeFS.utkast;
 module.exports = {
     fillIn: function(intyg) {
-        logger.info('intyg.typ:' + intyg.typ);
-        var promiseArr = [];
-        console.log(intyg);
 
-        //Baserat på
-        promiseArr.push(luaefsUtkastPage.angeBaseratPa(intyg.baseratPa)
-            .then(function(value) {
-                logger.info('Baseras på: ' + JSON.stringify(intyg.baseratPa));
-            }, function(reason) {
-                throw ('FEL, Baseras på: ' + reason);
+        //Returnera Promise kedja
+        return new Promise(function(resolve) {
+                logger.info('Fyller i ' + intyg.typ + ' formuläret synkront');
+                browser.ignoreSynchronization = true;
+                resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
             })
-        );
-
-
-        //Andra medicinska utredningar
-        promiseArr.push(luaefsUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
-            .then(function(value) {
-                logger.info('Andra medicinska utredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
-            }, function(reason) {
-                throw ('FEL, Andra medicinska utredningar: ' + reason);
+            .then(function() {
+                //Baserat på
+                return luaefsUtkastPage.angeBaseratPa(intyg.baseratPa)
+                    .then(function(value) {
+                        logger.info('Baseras på: ' + JSON.stringify(intyg.baseratPa));
+                    }, function(reason) {
+                        throw ('FEL, Baseras på: ' + reason);
+                    });
             })
-        );
-
-        // //Sjukdomsförlopp // ANVÄNDA EJ I LUAE_FS
-        // promiseArr.push(luaefsUtkastPage.angeSjukdomsforlopp(intyg.sjukdomsForlopp)
-        //     .then(function(value) {
-        //         logger.info('Sjukdomsförlopp: ' + JSON.stringify(intyg.sjukdomsForlopp));
-        //     }, function(reason) {
-        //         throw('FEL, Sjukdomsförlopp: ' + reason);
-        //     })
-        // );
-
-        //Diagnoser
-        promiseArr.push(luaefsUtkastPage.angeDiagnos(intyg.diagnos)
-            .then(function(value) {
-                logger.info('Diagnos: ' + JSON.stringify(intyg.diagnos));
-            }, function(reason) {
-                throw ('FEL, Diagnos: ' + reason);
+            .then(function() {
+                //Andra medicinska utredningar
+                return luaefsUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
+                    .then(function(value) {
+                        logger.info('Andra medicinska utredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
+                    }, function(reason) {
+                        throw ('FEL, Andra medicinska utredningar: ' + reason);
+                    });
             })
-        );
-
-        //Funktionsnedsättning
-        promiseArr.push(luaefsUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
-            .then(function(value) {
-                logger.info('Funktionsnedsättning: ' + JSON.stringify(intyg.funktionsnedsattning));
-            }, function(reason) {
-                throw ('FEL, Funktionsnedsättning: ' + reason);
+            .then(function() {
+                //Diagnoser
+                return luaefsUtkastPage.angeDiagnos(intyg.diagnos)
+                    .then(function(value) {
+                        logger.info('Diagnos: ' + JSON.stringify(intyg.diagnos));
+                    }, function(reason) {
+                        throw ('FEL, Diagnos: ' + reason);
+                    });
             })
-        );
-
-        // //aktivitetsbegränsning
-        // promiseArr.push(luaefsUtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning)
-        //     .then(function(value) {
-        //         logger.info('Aktivitetsbegränsning: ' + JSON.stringify(intyg.aktivitetsbegransning));
-        //     }, function(reason) {
-        //         throw('FEL, Aktivitetsbegränsning: ' + reason);
-        //     })
-        // );
-        //
-        // //Medicinsk behandling
-        // promiseArr.push(luaefsUtkastPage.angeMedicinskBehandling(intyg.medicinskbehandling)
-        //     .then(function(value) {
-        //         logger.info('Medicinsk behandling: ' + JSON.stringify(intyg.medicinskbehandling));
-        //     }, function(reason) {
-        //         throw('FEL, Medicinsk behandling: ' + reason);
-        //     })
-        // );
-        //
-        // //Medicinska förutsättningar
-        // promiseArr.push(luaefsUtkastPage.angeMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
-        //     .then(function(value) {
-        //         logger.info('Medicinska förutsättningar: ' + JSON.stringify(intyg.medicinskaForutsattningar));
-        //     }, function(reason) {
-        //         throw('FEL, Medicinska förutsättningar: ' + reason);
-        //     })
-        // );
-        //
-        //Övriga upplysningar
-        promiseArr.push(luaefsUtkastPage.angeOvrigaUpplysningar(intyg.ovrigt)
-            .then(function(value) {
-                logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.ovrigt));
-            }, function(reason) {
-                throw ('FEL, Övriga upplysningar: ' + reason);
+            .then(function() {
+                //Funktionsnedsättning
+                return luaefsUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
+                    .then(function(value) {
+                        logger.info('Funktionsnedsättning: ' + JSON.stringify(intyg.funktionsnedsattning));
+                    }, function(reason) {
+                        throw ('FEL, Funktionsnedsättning: ' + reason);
+                    });
             })
-        );
-
-        //Kontakt med FK
-        promiseArr.push(luaefsUtkastPage.angeKontaktMedFK(intyg.kontaktMedFk)
-            .then(function(value) {
-                logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.kontaktMedFk));
-            }, function(reason) {
-                throw ('FEL, Övriga upplysningar: ' + reason);
+            .then(function() {
+                //Övriga upplysningar
+                return luaefsUtkastPage.angeOvrigaUpplysningar(intyg.ovrigt)
+                    .then(function(value) {
+                        logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.ovrigt));
+                    }, function(reason) {
+                        throw ('FEL, Övriga upplysningar: ' + reason);
+                    });
             })
-        );
-        browser.sleep(30000);
-        return Promise.all(promiseArr).then(function(value) {
-            browser.ignoreSynchronization = false;
-        }, function(reason) {
-            throw (reason);
-        });
+            .then(function() {
+                //Kontakt med FK
+                return luaefsUtkastPage.angeKontaktMedFK(intyg.kontaktMedFk)
+                    .then(function(value) {
+                        logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.kontaktMedFk));
+                    }, function(reason) {
+                        throw ('FEL, Övriga upplysningar: ' + reason);
+                    });
+            })
+            .then(function() {
+                browser.ignoreSynchronization = false;
+            });
     }
 };

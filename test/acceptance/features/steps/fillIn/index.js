@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, Promise*/
+/*global browser, Promise, logger*/
 'use strict';
 
 module.exports = {
@@ -33,18 +33,26 @@ module.exports = {
                 case 'Läkarintyg FK 7263':
                     return require('./fk.7263.js').fillIn(intyg);
                 case 'Läkarutlåtande för sjukersättning':
+                    logger.info('LUSE - require fillIn/fk.LUSE.js');
                     return require('./fk.LUSE.js').fillIn(intyg);
                 case 'Läkarintyg för sjukpenning':
+                    logger.info('LISJP - require fillIn/fk.LISJP.js');
                     return require('./fk.LISJP.js').fillIn(intyg);
                 case 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga':
+                    logger.info('LUAE_NA - require fillIn/fk.LUAE_NA.js');
                     return require('./fk.LUAE_NA.js').fillIn(intyg);
                 case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
+                    logger.info('LUAE_FS - require fillIn/fk.LUAE_FS.js');
                     return require('./fk.LUAE_FS.js').fillIn(intyg);
                 default:
                     throw 'Intyg.typ odefinierad.';
             }
         }));
-        promiseArr.push(require('./common.js').fillIn(intyg));
-        return Promise.all(promiseArr);
+        //promiseArr.push(require('./common.js').fillIn(intyg));
+        return Promise.all(promiseArr).then(function() {
+            return require('./common.js').fillIn(intyg).then(function() {
+                browser.ignoreSynchronization = false;
+            });
+        });
     }
 };
