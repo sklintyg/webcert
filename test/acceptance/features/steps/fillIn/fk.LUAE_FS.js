@@ -34,54 +34,54 @@ module.exports = {
                 //Baserat på
                 return luaefsUtkastPage.angeBaseratPa(intyg.baseratPa)
                     .then(function(value) {
-                        logger.info('Baseras på: ' + JSON.stringify(intyg.baseratPa));
+                        logger.info('OK - angeBaseratPa: ' + JSON.stringify(intyg.baseratPa));
                     }, function(reason) {
-                        throw ('FEL, Baseras på: ' + reason);
+                        throw ('FEL, angeBaseratPa: ' + reason);
                     });
             })
             .then(function() {
                 //Andra medicinska utredningar
                 return luaefsUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
                     .then(function(value) {
-                        logger.info('Andra medicinska utredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
+                        logger.info('OK - angeAndraMedicinskaUtredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
                     }, function(reason) {
-                        throw ('FEL, Andra medicinska utredningar: ' + reason);
+                        throw ('FEL, angeAndraMedicinskaUtredningar: ' + reason);
                     });
             })
             .then(function() {
                 //Diagnoser
                 return luaefsUtkastPage.angeDiagnos(intyg.diagnos)
                     .then(function(value) {
-                        logger.info('Diagnos: ' + JSON.stringify(intyg.diagnos));
+                        logger.info('OK - angeDiagnos: ' + JSON.stringify(intyg.diagnos));
                     }, function(reason) {
-                        throw ('FEL, Diagnos: ' + reason);
+                        throw ('FEL, angeDiagnos: ' + reason);
                     });
             })
             .then(function() {
                 //Funktionsnedsättning
                 return luaefsUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
                     .then(function(value) {
-                        logger.info('Funktionsnedsättning: ' + JSON.stringify(intyg.funktionsnedsattning));
+                        logger.info('OK - angeFunktionsnedsattning: ' + JSON.stringify(intyg.funktionsnedsattning));
                     }, function(reason) {
-                        throw ('FEL, Funktionsnedsättning: ' + reason);
+                        throw ('FEL, angeFunktionsnedsattning: ' + reason);
                     });
             })
             .then(function() {
                 //Övriga upplysningar
                 return luaefsUtkastPage.angeOvrigaUpplysningar(intyg.ovrigt)
                     .then(function(value) {
-                        logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.ovrigt));
+                        logger.info('OK - angeOvrigaUpplysningar: ' + JSON.stringify(intyg.ovrigt));
                     }, function(reason) {
-                        throw ('FEL, Övriga upplysningar: ' + reason);
+                        throw ('FEL, angeOvrigaUpplysningar: ' + reason);
                     });
             })
             .then(function() {
                 //Kontakt med FK
                 return luaefsUtkastPage.angeKontaktMedFK(intyg.kontaktMedFk)
                     .then(function(value) {
-                        logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.kontaktMedFk));
+                        logger.info('OK - angeKontaktMedFK: ' + JSON.stringify(intyg.kontaktMedFk));
                     }, function(reason) {
-                        throw ('FEL, Övriga upplysningar: ' + reason);
+                        throw ('FEL, angeKontaktMedFK: ' + reason);
                     });
             })
             .then(function() {

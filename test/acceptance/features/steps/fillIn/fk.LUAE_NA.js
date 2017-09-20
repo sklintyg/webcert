@@ -34,34 +34,34 @@ module.exports = {
                 //Baserat på
                 return luaenaUtkastPage.angeBaseratPa(intyg.baseratPa)
                     .then(function(value) {
-                        logger.info('Baseras på: ' + JSON.stringify(intyg.baseratPa));
+                        logger.info('OK - angeBaseratPa: \n ' + JSON.stringify(intyg.baseratPa));
                     }, function(reason) {
-                        return Promise.reject('FEL, Baseras på: ' + reason);
+                        return Promise.reject('FEL, angeBaseratPa: ' + reason);
                     });
             })
             .then(function() {
                 //Andra medicinska utredningar		
                 return luaenaUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
                     .then(function(value) {
-                        logger.info('Andra medicinska utredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
+                        logger.info('OK - angeAndraMedicinskaUtredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
                     }, function(reason) {
-                        return Promise.reject('FEL, Andra medicinska utredningar: ' + reason);
+                        return Promise.reject('FEL, angeAndraMedicinskaUtredningar: ' + reason);
                     });
             })
             .then(function() {
                 //Sjukdomsförlopp
                 return luaenaUtkastPage.angeSjukdomsforlopp(intyg.sjukdomsForlopp)
                     .then(function(value) {
-                        logger.info('Sjukdomsförlopp: ' + JSON.stringify(intyg.sjukdomsForlopp));
+                        logger.info('OK - angeSjukdomsforlopp: ' + JSON.stringify(intyg.sjukdomsForlopp));
                     }, function(reason) {
-                        return Promise.reject('FEL, Sjukdomsförlopp: ' + reason);
+                        return Promise.reject('FEL, angeSjukdomsforlopp: ' + reason);
                     });
             })
             .then(function() {
                 //Diagnoser
                 return luaenaUtkastPage.angeDiagnos(intyg.diagnos)
                     .then(function(value) {
-                        logger.info('angeDiagnos: ' + JSON.stringify(intyg.diagnos));
+                        logger.info('OK - angeDiagnos: ' + JSON.stringify(intyg.diagnos));
                     }, function(reason) {
                         return Promise.reject('FEL, angeDiagnos: ' + reason);
                     });
@@ -70,54 +70,54 @@ module.exports = {
                 //Funktionsnedsättning
                 return luaenaUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
                     .then(function(value) {
-                        logger.info('Funktionsnedsättning: ' + JSON.stringify(intyg.funktionsnedsattning));
+                        logger.info('OK - angeFunktionsnedsattning: ' + JSON.stringify(intyg.funktionsnedsattning));
                     }, function(reason) {
-                        return Promise.reject('FEL, Funktionsnedsättning: ' + reason);
+                        return Promise.reject('FEL, angeFunktionsnedsattning: ' + reason);
                     });
             })
             .then(function() {
                 //aktivitetsbegränsning
                 return luaenaUtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning)
                     .then(function(value) {
-                        logger.info('Aktivitetsbegränsning: ' + JSON.stringify(intyg.aktivitetsbegransning));
+                        logger.info('OK - angeAktivitetsbegransning: ' + JSON.stringify(intyg.aktivitetsbegransning));
                     }, function(reason) {
-                        return Promise.reject('FEL, Aktivitetsbegränsning: ' + reason);
+                        return Promise.reject('FEL, angeAktivitetsbegransning: ' + reason);
                     });
             })
             .then(function() {
                 //Medicinsk behandling
                 return luaenaUtkastPage.angeMedicinskBehandling(intyg.medicinskbehandling)
                     .then(function(value) {
-                        logger.info('Medicinsk behandling: ' + JSON.stringify(intyg.medicinskbehandling));
+                        logger.info('OK - angeMedicinskBehandling: ' + JSON.stringify(intyg.medicinskbehandling));
                     }, function(reason) {
-                        return Promise.reject('FEL, Medicinsk behandling: ' + reason);
+                        return Promise.reject('FEL, angeMedicinskBehandling: ' + reason);
                     });
             })
             .then(function() {
                 //Medicinska förutsättningar
                 return luaenaUtkastPage.angeMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
                     .then(function(value) {
-                        logger.info('Medicinska förutsättningar: ' + JSON.stringify(intyg.medicinskaForutsattningar));
+                        logger.info('OK - angeMedicinskaForutsattningar: ' + JSON.stringify(intyg.medicinskaForutsattningar));
                     }, function(reason) {
-                        return Promise.reject('FEL, Medicinska förutsättningar: ' + reason);
+                        return Promise.reject('FEL, angeMedicinskaForutsattningar: ' + reason);
                     });
             })
             .then(function() {
                 //Övriga upplysningar
                 return luaenaUtkastPage.angeOvrigaUpplysningar(intyg.ovrigt)
                     .then(function(value) {
-                        logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.ovrigt));
+                        logger.info('OK - angeOvrigaUpplysningar: ' + JSON.stringify(intyg.ovrigt));
                     }, function(reason) {
-                        return Promise.reject('FEL, Övriga upplysningar: ' + reason);
+                        return Promise.reject('FEL, angeOvrigaUpplysningar: ' + reason);
                     });
             })
             .then(function() {
                 //Kontakt med FK
                 return luaenaUtkastPage.angeKontaktMedFK(intyg.kontaktMedFk)
                     .then(function(value) {
-                        logger.info('Övriga upplysningar: ' + JSON.stringify(intyg.kontaktMedFk));
+                        logger.info('OK - angeKontaktMedFK: ' + JSON.stringify(intyg.kontaktMedFk));
                     }, function(reason) {
-                        return Promise.reject('FEL, Övriga upplysningar: ' + reason);
+                        return Promise.reject('FEL, angeKontaktMedFK: ' + reason);
                     });
             })
             .then(function() {
