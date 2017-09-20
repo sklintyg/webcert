@@ -163,6 +163,46 @@ var FkUtkast = BaseUtkast._extend({
             samsjuklighetForeligger: element(by.id('diagnoseMultipleDiagnoses'))
         };
         this.kontaktFk = element(by.id('kontaktFk'));
+        this.srs = {
+            knapp: () => element(by.buttonText('SRS')),
+            samtycke: {
+                ja: element(by.id('FALT2-fmb-button')),
+                nej: element(by.id('FALT2-fmb-button'))
+            },
+            riskruta: element(by.id('FALT2-fmb-button')),
+            fragor: element(by.id('FALT2-fmb-button')),
+            statistikTab: element(by.id('FALT2-fmb-button')),
+            tabInnehall: element(by.id('FALT2-fmb-button')),
+        }
+    },
+
+    setSRSConsent: function(isConsent) {
+        if (isConsent) {
+            this.srs.samtycke.ja.click()
+        } else {
+            this.srs.samtycke.nej.click()
+        }
+    },
+    setSRSAnswer: function(question, answer) {
+
+    },
+    getSRSButtonStatus: function() {
+        return Promise.all([
+                this.srs.knapp().isDisplayed(),
+                this.srs.knapp().element(by.className('glyphicon-plus-sign')).isPresent(),
+                this.srs.knapp().element(by.className('glyphicon-minus-sign')).isPresent()
+            ]).then(results => {
+                const [displayed, closed, open] = results;
+                if (!displayed) {
+                    return Promise.resolve('gömd');
+                } else if (closed) {
+                    return Promise.resolve('stängd');
+                } else if (open) {
+                    return Promise.resolve('öppen');
+                } else {
+                    return Promise.reject('okänd');
+                }
+            });
     },
 
     get: function get(intygId) {
@@ -425,7 +465,8 @@ var FkUtkast = BaseUtkast._extend({
             text: panel.element(by.css('textarea')),
             sendButton: panel.element(by.css('.btn-success'))
         };
-    }
+    },
+    
 });
 
 module.exports = new FkUtkast();

@@ -23,96 +23,50 @@ let helpers = require('./helpers');
 let Soap = require('soap');
 let soapMessageBodies = require('./soap');
 let fk7263utkast = pages.intyg.fk['7263'].utkast;
-
-let patienter = {
-    'inte har givit samtycke': {
-        id: '195206172339',
-        fornamn: 'Björn Anders Daniel',
-        efternamn: 'Pärsson',
-        adress: {
-            postadress: 'KUNGSGATAN 5',
-            postort: 'GÖTEBORG',
-            postnummer: '41234'
-        },
-        kon: 'man'
-    },
-    'har givit samtycke': {
-        id: '195206172339',
-        fornamn: 'Björn Anders Daniel',
-        efternamn: 'Pärsson',
-        adress: {
-            postadress: 'KUNGSGATAN 5',
-            postort: 'GÖTEBORG',
-            postnummer: '41234'
-        },
-        kon: 'man'
-    },
-};
-
-let diagnoskoder = {
-    'finns i SRS': 'M75',
-    'inte finns i SRS': 'M751'
-};
-
-let inloggningar = {
-    'med SRS': {
-        forNamn: 'Arnold',
-        efterNamn: 'Johansson',
-        hsaId: 'TSTNMT2321000156-1079',
-        enhetId: 'TSTNMT2321000156-1077',
-        origin: 'DJUPINTEGRATION'
-    },
-    'utan SRS': {
-        forNamn: 'Arnold',
-        efterNamn: 'Johansson',
-        hsaId: 'TSTNMT2321000156-1079',
-        enhetId: 'TSTNMT2321000156-1077',
-        origin: 'DJUPINTEGRATION'
-    },
-};
+let srsdata = require('./srsdata.js');
 
 module.exports = function() {
     let user = {};
 
-    this.Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet (med SRS|utan SRS)$/,
+    this.Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet "(med SRS|utan SRS)"$/,
         srsStatus => {
-            user = inloggningar[srsStatus];
+            user = srsdata.inloggningar[srsStatus];
             return pages.welcome.get()
-                .then(() => pages.welcome.loginByJSON(JSON.stringify(user)));
+                .then(() => pages.welcome.loginByJSON(JSON.stringify(user), true));
         }
 
     );
 
-    this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som (inte har givit samtycke|har givit samtycke) till SRS$/,
+    this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "(inte har givit samtycke|har givit samtycke)" till SRS$/,
         samtycke =>
-        createDraftUsingSOAP(user, patienter[samtycke].id)
-        .then(intygsId => gotoDraft(intygsId, patienter[samtycke], user.enhetId))
+        createDraftUsingSOAP(user, srsdata.patienter[samtycke].id)
+        .then(intygsId => browser.get(buildLinkToIntyg(intygsId, srsdata.patienter[samtycke], user.enhetId)))
+        .then(() => browser.waitForAngular())
+        .then(() => browser.sleep(2000))
         .then(() => expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true))
     );
 
-    this.When(/^jag fyller i diagnoskod som (finns i SRS|inte finns i SRS)$/,
-        srsStatus => fk7263utkast.angeDiagnosKod(diagnoskoder[srsStatus])
+    this.When(/^jag fyller i diagnoskod som "(finns i SRS|inte finns i SRS)"$/,
+        srsStatus => fk7263utkast.angeDiagnosKod(srsdata.diagnoskoder[srsStatus])
+    );
+
+    this.Then(/^ska knappen för SRS vara i läge "(stängd|öppen|gömd)"$/,
+        srsButtonStatus => expect(fk7263utkast.getSRSButtonStatus()).to.eventually.equal(srsButtonStatus)
     );
 
 };
-
-function gotoDraft(intygsId, patient, userUnitId) {
-    return browser.get(buildLinkToIntyg(intygsId, patient, userUnitId))
-        .then(() => browser.waitForAngular());
-}
 
 function createDraftUsingSOAP(user, patientId) {
     let path = '/services/create-draft-certificate/v1.0/?wsdl';
     let body = soapMessageBodies.CreateDraftCertificate(
         user.hsaId,
-        user.forNamn + ' ' + user.efterNamn,
+        `${user.forNamn} ${user.efterNamn}`,
         user.enhetId,
         'Enhetsnamn',
         patientId
     );
 
     let url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
-    url = url.replace('https', 'http');
 
     return new Promise((resolve, reject) =>
         Soap.createClient(url, (err, client) => {
@@ -138,7 +92,6 @@ function buildLinkToIntyg(intygsId, patient, enhetsId) {
     console.log('IntygsURL: ' + process.env.WEBCERT_URL + uri);
     return process.env.WEBCERT_URL + uri;
 }
-
 
 function uriTemplate(strings, ...keys) {
     // Applicerar encodeURIComponent på varje variabel i templatet
