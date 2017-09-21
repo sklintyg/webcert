@@ -79,8 +79,8 @@ Scenario: Intyget kan inte signeras utan förtydligande om Går ej att bedöma �
 	Så ska valideringsfelet "Prognos" visas
 	Så ska valideringsfelet "Fältet får inte vara tomt" visas
 
-@validering-datum @INTYG-3760
-Scenario: Intyget kan inte signeras om slut är före startdatum
+@validering-datum
+Scenario: Intyget kan inte signeras om slut är före startdatum på FK7263 intyg
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget

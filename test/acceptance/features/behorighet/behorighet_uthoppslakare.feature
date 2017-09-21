@@ -10,7 +10,7 @@ Scenario: Inloggad som uthoppsläkare
    Och jag ska ha origin "UTHOPP"
 
 @signera @lisjp
-Scenario: Kan signera intyg
+Scenario: Kan signera intyg på lisjp
    När jag går in på en patient
    Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
    Och jag fyller i alla nödvändiga fält för intyget
@@ -19,7 +19,7 @@ Scenario: Kan signera intyg
    Så ska jag se den data jag angett för intyget
    
 @signera @fk7263
-Scenario: Kan signera intyg
+Scenario: Kan signera intyg på fk7263
    När jag går in på en patient
    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
  Och jag går in på utkastet
@@ -99,7 +99,7 @@ Scenario: Ska få varning vid svar med nytt intyg
    Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
 
 @komplettera @fk7263 @waitingForFix
-Scenario: Ska kunna besvara komplettering med textmeddelande
+Scenario: Ska kunna besvara komplettering med textmeddelande via uthoppslänk
    När jag går in på en patient
    
    ###### TODO ändra till att testa med lisjp intyg ##########################

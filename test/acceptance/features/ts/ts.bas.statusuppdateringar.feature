@@ -8,7 +8,7 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @skicka-till-ts @SIGNAT
-Scenario: Statusuppdateringar då intyg skickas till Transportstyrelsen
+Scenario: Statusuppdateringar då TS bas intyg skickas till Transportstyrelsen
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
     När jag fyller i alla nödvändiga fält för intyget
@@ -20,7 +20,7 @@ Scenario: Statusuppdateringar då intyg skickas till Transportstyrelsen
 
 
 @makulera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
-Scenario: Statusuppdateringar då intyg makuleras
+Scenario: Statusuppdateringar då TS bas intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag skickar intyget till Försäkringskassan
@@ -29,13 +29,13 @@ Scenario: Statusuppdateringar då intyg makuleras
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
 @radera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
-Scenario: Statusuppdateringar då intyg raderas
+Scenario: Statusuppdateringar då TS bas intyg raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
 
 @vardkontakt-skickas-med
-Scenario: Vårdkontakt skickas med statusuppdateringar
+Scenario: TS bas - ref (vårdkontakt) skickas med statusuppdateringar 
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref"
 
     Och jag fyller i alla nödvändiga fält för intyget

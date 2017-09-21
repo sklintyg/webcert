@@ -10,11 +10,11 @@ Scenario: Testa att anropa statitisk-APIet
     När jag anropar statitisk-APIet processIntyg
 
 @makulera @verksamhetsStatistik
-Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort från Statistiktjänstens GUI
+Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort från Statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
- Och jag går in på utkastet
+	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag ändrar diagnoskoden till "slumpad"
 	Och jag signerar intyget

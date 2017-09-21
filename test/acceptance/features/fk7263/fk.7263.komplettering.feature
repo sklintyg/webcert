@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
    När jag går in på en patient
 
 @nyttIntyg
-Scenario: Ska kunna besvara komplettering med nytt intyg
+Scenario: Ska kunna besvara komplettering med nytt FK7263-intyg
    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
@@ -38,7 +38,7 @@ Scenario: Ska kunna besvara komplettering med textmeddelande
    Och jag ska kunna svara med textmeddelande
 
 @fortsattUtkast
-Scenario: Ska kunna fortsätta besvara kompletterande intyg 
+Scenario: Ska kunna fortsätta besvara kompletterande FK7283-intyg 
    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
