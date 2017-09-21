@@ -144,6 +144,18 @@ Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen ab
 
 Klicka på "E-legitimation" och logga in mha BankID eller Mobilt BankID
 
+### Restassured
+
+Restassured-tester kan köras från roten av /minaintyg
+
+    # Alla testklasser i ett paket
+    ./gradlew restAssured --tests se.inera.intyg.webcert.web.integration.integrationtest.*
+    
+    # Alla metoder i en testklass
+    ./gradlew restAssured --tests *ApiControllerIT
+    
+    # Enskild metod i testklass
+    ./gradlew restAssured --tests *ApiControllerIT.testArchive
 
 ## Licens
 Copyright (C) 2014 Inera AB (http://www.inera.se)
