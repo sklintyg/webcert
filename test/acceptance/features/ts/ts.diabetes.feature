@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
     När jag går in på en patient
 
 @keepIntyg @signera @smoke @waitingForFix
-Scenario: Skapa och signera ett intyg
+Scenario: Skapa och signera ett TS diabetes intyg
     När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -25,7 +25,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
     Så ska intygets status i Mina intyg visa "Skickat till Transportstyrelsen"
 
 @makulera @smoke
-Scenario: Makulera ett skickat intyg
+Scenario: Makulera ett skickat TS Diabetes intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Skickat"
     Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"

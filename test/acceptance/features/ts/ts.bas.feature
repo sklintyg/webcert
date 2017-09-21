@@ -8,7 +8,7 @@ Bakgrund: Jag är inloggad
     När jag går in på en patient
 
 @tsbas @keepIntyg @signera @smoke
-Scenario: Skapa och signera ett intyg
+Scenario: Skapa och signera ett TS bas intyg
     När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -22,7 +22,7 @@ Scenario: Skicka ett signerat intyg till Transportstyrelsen
     Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
 
 @makulera @smoke
-Scenario: Makulera ett skickat intyg
+Scenario: Makulera ett skickat TS Bas intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg" med status "Skickat"
     Så ska intygets status vara "Intyget är signerat, skickat och mottaget av Transportstyrelsens system"
 	Och jag makulerar intyget

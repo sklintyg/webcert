@@ -20,7 +20,7 @@ Scenario: Avstämningsmöte
    Så ska statusuppdatering "HAN9" skickas till vårdsystemet. Totalt: "1"
 
 @paminnelse
-Scenario: Påminnelse
+Scenario: HAN Påminnelse
    När Försäkringskassan ställer en "Paminnelse" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
 

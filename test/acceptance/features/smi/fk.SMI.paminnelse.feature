@@ -5,7 +5,7 @@ Egenskap: Som läkare vill jag att påminnelser syns tydligt och leder mig till 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 
-Scenario: Påminnelse
+Scenario: Påminnelse - KOMPLT, PAMINN & NYFRFM
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     Och jag går in på intygsutkastet via djupintegrationslänk
     När jag fyller i alla nödvändiga fält för intyget

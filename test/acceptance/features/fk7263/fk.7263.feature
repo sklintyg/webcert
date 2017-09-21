@@ -7,7 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	När jag går in på en patient
 
 @minaintyg @keepIntyg @signera @smoke
-Scenario: Skapa och signera ett intyg
+Scenario: Skapa och signera ett FK7263-intyg
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -30,7 +30,7 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	Så ska intygets status i Mina intyg visa "Skickat till Försäkringskassan"
 
 @smoke
-Scenario: Makulera ett skickat intyg
+Scenario: Makulera ett skickat FK 7263 intyg
 	#När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
 	Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
@@ -80,16 +80,6 @@ Scenario: Samtida användare ska generera felmeddelande om man förnyar efter ma
 		Och sedan öppnar intyget i två webbläsarinstanser
 		Och jag makulerar intyget
 		Så ska varningen "Kunde inte förnya intyget" visas om man försöker förnya intyget i andra webbläsarinstansen
-
-@samtidaanvandare @makulera-förnya @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
-Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
-	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
-	Och jag går in på utkastet
-	Och jag fyller i alla nödvändiga fält för intyget
-	Och jag klickar på signera-knappen
-	Och sedan öppnar intyget i två webbläsarinstanser
-	Och jag makulerar intyget
-	Så ska varningen "Kunde inte förnya intyget" visas om man försöker förnya intyget i andra webbläsarinstansen
 
 # @makulera @ersatt
 # Scenario: Makulera ett signerat intyg och ersätt det

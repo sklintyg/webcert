@@ -8,7 +8,7 @@ Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @skicka-till-fk @SIGNAT @SKAPAT @SKICKA
-Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
+Scenario: Statusuppdateringar då SMI-intyg skickas till Försäkringskassan
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
     När jag fyller i alla nödvändiga fält för intyget
@@ -19,7 +19,7 @@ Scenario: Statusuppdateringar då intyg skickas till Försäkringskassan
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
 @makulera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
-Scenario: Statusuppdateringar då intyg makuleras
+Scenario: Statusuppdateringar då SMI-intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag skickar intyget till Försäkringskassan
@@ -28,7 +28,7 @@ Scenario: Statusuppdateringar då intyg makuleras
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
 @radera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
-Scenario: Statusuppdateringar då intyg raderas
+Scenario: Statusuppdateringar då SMI-intyg raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"

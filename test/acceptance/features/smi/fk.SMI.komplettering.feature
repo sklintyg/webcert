@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
    När jag går in på en patient
    
 @nyttIntyg
-Scenario: Ska kunna besvara komplettering med nytt intyg
+Scenario: Ska kunna besvara komplettering med nytt SMI-intyg
    När jag går in på att skapa ett slumpat SMI-intyg
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
@@ -23,7 +23,7 @@ Scenario: Ska kunna besvara komplettering med nytt intyg
    Så jag ska se den data jag angett för intyget
 
 @komplettering @utkast @fortsattUtkast
-Scenario: Ska kunna fortsätta besvara kompletterande intyg 
+Scenario: Ska kunna fortsätta besvara kompletterande SMI-intyg 
    När jag går in på ett slumpat SMI-intyg med status "Signerat" 
    Och jag skickar intyget till Försäkringskassan
    När Försäkringskassan skickar ett "KOMPLT" meddelande på intyget
