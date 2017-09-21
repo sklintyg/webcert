@@ -1,5 +1,5 @@
 plugins {
-    id "se.inera.intyg.plugin.common" version "1.0.45" apply false
+    id "se.inera.intyg.plugin.common" version "1.0.56" apply false
     id "org.akhikhl.gretty" version "1.4.2" apply false
     id "net.ltgt.apt" version "0.11" apply false
     id "com.moowork.node" version "1.1.1" apply false
