@@ -70,7 +70,9 @@ module.exports = {
             this.disableCookieConsentBanner();
         }
 
+		
         if (!secondBrowser) {
+			var loginButton = this.loginButton;
             return jsonDisplay.clear().sendKeys(userJson).then(function() {
                 return loginButton.click();
             });
