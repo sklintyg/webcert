@@ -24,43 +24,43 @@ stage('build') {
     }
 }
 
-stage('deploy') {
-    node {
-        util.run {
-            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
-                installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/test', playbook: 'ansible/deploy.yml'
-            util.waitForServer('https://webcert.inera.nordicmedtest.se/version.jsp')
-        }
-    }
-}
+// stage('deploy') {
+//     node {
+//         util.run {
+//             ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
+//                 installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/test', playbook: 'ansible/deploy.yml'
+//             util.waitForServer('https://webcert.inera.nordicmedtest.se/version.jsp')
+//         }
+//     }
+// }
 
-stage('restAssured') {
-   node {
-       try {
-           shgradle "restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/ \
-                 -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
-       } finally {
-           publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
-               reportFiles: 'index.html', reportName: 'RestAssured results'
-       }
-   }
-}
+// stage('restAssured') {
+//    node {
+//        try {
+//            shgradle "restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/ \
+//                  -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+//        } finally {
+//            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
+//                reportFiles: 'index.html', reportName: 'RestAssured results'
+//        }
+//    }
+// }
 
-stage('protractor') {
-   node {
-       try {
-           sh(script: 'sed -i -r "s,(e.code === \'ECONNRESET\'),e.code === \'ECONNRESET\' || e.code === \'ETIMEDOUT\'," test/node_modules/selenium-webdriver/http/index.js')// NMT magic
-           sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
-           wrap([$class: 'Xvfb']) {
-               shgradle "protractorTests -Dprotractor.env=build-server \
-                     -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
-           }
-       } finally {
-           publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/dev/report', \
-               reportFiles: 'index.html', reportName: 'Protractor results'
-       }
-   }
-}
+// stage('protractor') {
+//    node {
+//        try {
+//            sh(script: 'sed -i -r "s,(e.code === \'ECONNRESET\'),e.code === \'ECONNRESET\' || e.code === \'ETIMEDOUT\'," test/node_modules/selenium-webdriver/http/index.js')// NMT magic
+//            sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
+//            wrap([$class: 'Xvfb']) {
+//                shgradle "protractorTests -Dprotractor.env=build-server \
+//                      -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+//            }
+//        } finally {
+//            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/dev/report', \
+//                reportFiles: 'index.html', reportName: 'Protractor results'
+//        }
+//    }
+// }
 
 stage('tag and upload') {
     node {
