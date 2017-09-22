@@ -51,7 +51,8 @@ stage('protractor') {
        try {
            sh(script: 'sed -i -r "s,(e.code === \'ECONNRESET\'),e.code === \'ECONNRESET\' || e.code === \'ETIMEDOUT\'," test/node_modules/selenium-webdriver/http/index.js') // NMT magic
            sh(script: 'mkdir -p test/node_modules')
-           sh(script: 'ln -s ../webcertTestTools test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
+           sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
+           sh(script: 'ln -s ../webcertTestTools test/node_modules/webcert-testtools')
            wrap([$class: 'Xvfb']) {
                shgradle "protractorTests -Dprotractor.env=build-server \
                      -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
