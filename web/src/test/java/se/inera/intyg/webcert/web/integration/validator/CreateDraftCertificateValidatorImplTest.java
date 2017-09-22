@@ -35,6 +35,8 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -181,6 +183,16 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+    }
+
+    @Test
+    public void testValidateIntygstypPrivilege() {
+        // We do the same validation as to view the utkast when CreateDraftCertificate.
+        when(webcertUserDetailsService.loadUserByHsaId(anyString())).thenReturn(buildUserUnauthorized());
+        ResultValidator result = validator
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+        assertTrue(result.hasErrors());
+        verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
     }
 
     private Utlatande buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,
