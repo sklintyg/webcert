@@ -22,7 +22,11 @@ import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
@@ -69,12 +73,18 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the PU-service.
         String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
         String personnummer = personId.getExtension();
-        String skapadAvHsaId =  skapadAv.getPersonalId().getExtension();
+        IntygUser user = webcertUserDetailsService.loadUserByHsaId(skapadAv.getPersonalId().getExtension());
 
-        validateBusinessRulesForSekretessmarkeradPatient(errors, intygsTyp, personnummer, skapadAvHsaId);
+        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+        if (!authoritiesValidator.given(user, intygsTyp)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .isVerified()) {
+            errors.addError("Du saknar behörighet att skapa intyg med denna typ.");
+        } else {
+            validateBusinessRulesForSekretessmarkeradPatient(errors, intygsTyp, personnummer, user);
+        }
     }
-
-
 
     private void validateTypAvUtlatande(TypAvUtlatande typAvUtlatandeType, ResultValidator errors) {
         String intygsTyp = typAvUtlatandeType.getCode();

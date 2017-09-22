@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.integration.validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -35,31 +34,26 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 public abstract class BaseCreateDraftCertificateValidator {
 
     @Autowired
+    protected WebcertUserDetailsService webcertUserDetailsService;
+    @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
-
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
-    @Autowired
-    private WebcertUserDetailsService webcertUserDetailsService;
-
     protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors, String intygsTyp, String personnummer,
-            String skapadAvHsaId) {
+            IntygUser user) {
 
         Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personnummer).orElse(null);
 
         if (pnr != null) {
             final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
             validateSekretess(errors, intygsTyp, sekretessStatus);
-            validateHsaUserMayCreateDraft(errors, skapadAvHsaId, sekretessStatus);
+            validateHsaUserMayCreateDraft(errors, user, sekretessStatus);
         }
     }
 
-    private void validateHsaUserMayCreateDraft(ResultValidator errors, String skapadAvHsaId, SekretessStatus sekretessStatus) {
+    private void validateHsaUserMayCreateDraft(ResultValidator errors, IntygUser user, SekretessStatus sekretessStatus) {
         if (sekretessStatus == SekretessStatus.TRUE) {
-            // Check if user has PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT or return error
-            IntygUser user = webcertUserDetailsService.loadUserByHsaId(skapadAvHsaId);
-
             AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
             if (!authoritiesValidator.given(user)
                     .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)

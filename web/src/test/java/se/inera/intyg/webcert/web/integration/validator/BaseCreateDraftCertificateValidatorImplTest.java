@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.mockito.Mock;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -27,6 +28,7 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -70,13 +72,40 @@ public abstract class BaseCreateDraftCertificateValidatorImplTest {
     protected WebCertUser buildUser() {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
+
+        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
+        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+                createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
+        user.setFeatures(ImmutableSet
+                .of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + FK7263,
+                        WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + TSBAS));
+        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+        return user;
+    }
+
+    protected WebCertUser buildUserUnauthorized() {
+        WebCertUser user = new WebCertUser();
+        user.setAuthorities(new HashMap<>());
+
+        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
+        user.setFeatures(ImmutableSet
+                .of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + FK7263,
+                        WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + TSBAS));
+        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+        return user;
+    }
+
+
+    protected Privilege createPrivilege(String privilege) {
         Privilege priv = new Privilege();
-        priv.setName(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT);
+        priv.setName(privilege);
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName(WebCertUserOriginType.DJUPINTEGRATION.name());
+        requestOrigin.setIntygstyper(Arrays.asList(FK7263, TSBAS));
         priv.setRequestOrigins(Arrays.asList(requestOrigin));
-        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, priv);
-        return user;
+        priv.setIntygstyper(Arrays.asList(FK7263, TSBAS));
+        return priv;
     }
 }
