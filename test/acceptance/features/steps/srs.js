@@ -39,12 +39,12 @@ module.exports = function() {
 
     this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "(inte har givit samtycke|har givit samtycke)" till SRS$/,
         samtycke =>
-        createDraftUsingSOAP(user, srsdata.patienter[samtycke].id)
-        .then(intygsId => browser.get(buildLinkToIntyg(intygsId, srsdata.patienter[samtycke], user.enhetId)))
+        createDraftUsingSOAP(user, srsdata.patient.id)
+        .then(intygsId => browser.get(buildLinkToIntyg(intygsId, srsdata.patient, user.enhetId)))
         .then(() => browser.waitForAngular())
         .then(() => browser.sleep(2000)) // Behövs för att waitForAngular tydligen inte räcker
         .then(() => expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true))
-        .then(() => setConsent(srsdata.patienter[samtycke], user, samtycke))
+        .then(() => setConsent(srsdata.patient, user, samtycke))
     );
 
     this.Then(/^ska en frågepanel för SRS "(inte)? ?visas"$/,
@@ -55,7 +55,7 @@ module.exports = function() {
         text => expect(findLabelContainingText(text).isPresent()).to.eventually.equal(true)
     );
 
-    this.When(/^jag fyller i diagnoskod som "(finns i SRS|inte finns i SRS)"$/,
+    this.When(/^jag (?:fyller|fyllt) i diagnoskod som "(finns i SRS|inte finns i SRS)"$/,
         srsStatus => fk7263utkast.angeDiagnosKod(srsdata.diagnoskoder[srsStatus])
     );
 
@@ -82,13 +82,28 @@ module.exports = function() {
         ).to.eventually.equal(true)
     );
 
+    this.When(/^jag anger att patienten (inte)? ?samtycker till SRS$/,
+        samtycke => fk7263utkast.setSRSConsent(samtycke === 'inte' ? false : true)
+    );
+
+    this.Then(/^frågan om samtycke ska vara förifylld med "(Ja|Nej)"$/,
+        samtycke => expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(true)
+    );
+
+
+    this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/,
+        () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true)
+    );
+
+
+
 };
 
-/**
- * Injicerar ett skript i browsern som skickar "SetConsent" till webcert backend.
- * Används för att försätta en patient i känt state inför test.
- */
 function setConsent(patient, user, consent) {
+    /**
+     * Injicerar ett skript i browsern som skickar "SetConsent" till webcert backend.
+     * Används för att försätta en patient i känt state inför test.
+     */
     const patientId = patient.id.slice(0, 8) + '-' + patient.id.slice(8 + 0);
     const link = buildLinkToSetConsent(patientId, user.enhetId);
     return browser.executeAsyncScript(function(url, samtycke) {

@@ -18,10 +18,11 @@ Scenario: När samtycke är givet och ytterligare frågor besvarade ska informat
     Och jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
     När jag anger att patienten samtycker till SRS
-    Och jag fyller i ytterligare frågor för SRS
-    Så ska åtgärdsförslag från SRS-tjänsten visas
-    När jag trycker på fliken "Statistik"
-    Så ska en statistikbild från SRS-tjänsten visas
+    #Och jag fyller i ytterligare frågor för SRS
+    #Och trycker på knappen "Visa"
+    #Så ska åtgärdsförslag från SRS-tjänsten visas
+    #När jag trycker på fliken "Statistik"
+    #Så ska en statistikbild från SRS-tjänsten visas
 
 
 @SRS-US-W01
@@ -33,14 +34,21 @@ Scenario: SRS-knappen ska bara visas när diagnos som har stöd för SRS är ify
     Så ska knappen för SRS vara i läge "gömd"
 
 @SRS-US-W01
-@notReady
-@WIP
 Scenario: Samtycken som patienter har givit ska lagras
     Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "har givit samtycke" till SRS
-    Och jag har fyllt i diagnoskod som "finns i SRS"
+    Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
     Och frågan om samtycke ska vara förifylld med "Ja"
+
+@SRS-US-W01
+@WIP
+Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som "nej"
+    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "inte har givit samtycke" till SRS
+    Och jag fyllt i diagnoskod som "finns i SRS"
+    När jag klickar på knappen för SRS
+    Så ska en fråga om samtycke visas
+    Och frågan om samtycke ska vara förifylld med "Nej"
 
 @SRS-US-W01
 Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
@@ -55,13 +63,22 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     Och ska en pil med texten "Visa mer" visas
     När jag klickar på pilen
     Så ska frågepanelen för SRS vara "maximerad"
-    
-    
+
+@SRS-US-W02
+@notReady
+Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
+    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "har givit samtycke" till SRS
+    När jag fyller i diagnoskod som "finns i SRS"
+    Och jag klickar på knappen för SRS
+    Och jag klickar på knappen för att skicka förfrågan till SRS
+    Så ska tänk-på-att-åtgärder visas
+    Och ska rekommenderade åtgärder visas
+
 
 @SRS-US-W02
 @notReady
 Scenario: När åtgärdsförslag inte kan ges ska korrekt felmeddelande visas
-    Givet att jag valt en patient som har givit samtycke till SRS
+    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som finns i SRS men med tekniskt fel
     Och jag fyller i ytterligare frågor för SRS
