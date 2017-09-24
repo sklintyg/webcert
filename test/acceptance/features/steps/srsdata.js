@@ -20,29 +20,16 @@
 'use strict';
 
 module.exports = {
-    patienter: {
-        'inte har givit samtycke': {
-            id: '195206172339',
-            fornamn: 'Björn Anders Daniel',
-            efternamn: 'Pärsson',
-            adress: {
-                postadress: 'KUNGSGATAN 5',
-                postort: 'GÖTEBORG',
-                postnummer: '41234'
-            },
-            kon: 'man'
+    patient: {
+        id: '195206172339',
+        fornamn: 'Björn Anders Daniel',
+        efternamn: 'Pärsson',
+        adress: {
+            postadress: 'KUNGSGATAN 5',
+            postort: 'GÖTEBORG',
+            postnummer: '41234'
         },
-        'har givit samtycke': {
-            id: '195206172339',
-            fornamn: 'Björn Anders Daniel',
-            efternamn: 'Pärsson',
-            adress: {
-                postadress: 'KUNGSGATAN 5',
-                postort: 'GÖTEBORG',
-                postnummer: '41234'
-            },
-            kon: 'man'
-        },
+        kon: 'man'
     },
 
     diagnoskoder: {

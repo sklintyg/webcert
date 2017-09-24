@@ -167,21 +167,28 @@ var FkUtkast = BaseUtkast._extend({
             knapp: () => element(by.buttonText('SRS')),
             panel: () => element(by.tagName('wc-srs-content')),
             samtycke: {
-                ja: element(by.id('FALT2-fmb-button')),
-                nej: element(by.id('FALT2-fmb-button'))
+                ja: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('ng-change').then(v => v === 'setConsent(true)')).first(),
+                nej: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('ng-change').then(v => v === 'setConsent(false)')).first()
             },
-            visamer: () => element.all(by.tagName('wc-srs-content')).all(by.tagName('a')).first(),         
+            visamer: () => element.all(by.id('questionsCollapser')),
+            visaKnapp: () => element(by.tagName('wc-srs-questionaire')).element(by.buttonText('Visa')),
             fragor: () => element(by.tagName('wc-srs-questionaire')),
-            statistikTab: element(by.id('FALT2-fmb-button')),
-            tabInnehall: element(by.id('FALT2-fmb-button')),
+            statistikFlik: () => element(by.linkName('Statistik')),
+            atgardsFlik: () => element(by.linkName('Åtgärder')),
+            atgarder: () => element(by.id('atgarder')),
+            statistik: () => element(by.id('statistik')),
+            atgarderRek: () => element(by.id('atgarderRek')),
+            atgarderObs: () => element(by.id('atgarderObs')),
+            Panel: () => element(by.id('atgarderRek')),
+
         }
     },
 
     setSRSConsent: function(isConsent) {
         if (isConsent) {
-            this.srs.samtycke.ja.click()
+            this.srs.samtycke.ja().click()
         } else {
-            this.srs.samtycke.nej.click()
+            this.srs.samtycke.nej().click()
         }
     },
     setSRSAnswer: function(question, answer) {
