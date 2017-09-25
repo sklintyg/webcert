@@ -33,7 +33,7 @@ var proxy = new HttpBackend(browser);
 var texts = require('../../../../webcertTestTools/testdata/luse_questions.json');
 
 // disabled until we get textfiles with tilläggsfrågor in them
-describe('Luse tillaggsfragor variants', function() {
+xdescribe('Luse tillaggsfragor variants', function() {
     it('Login through the welcome page with user', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();

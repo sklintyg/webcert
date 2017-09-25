@@ -64,18 +64,15 @@ describe('Luse diagnos tests', function() {
     it ('should not clear diagnoskod if 4-character psykiskdiagnos is entered', function() {
         LuseUtkastPage.diagnos.diagnosRow(0).kod.clear();
         LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('Z730');
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('\t');
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('\t');
+        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys(protractor.Key.TAB, protractor.Key.TAB);
         expect(LuseUtkastPage.diagnos.diagnosRow(0).kod.getAttribute('value')).toEqual('Z730');
         expect(LuseUtkastPage.diagnos.diagnosRow(0).beskrivning.getAttribute('value')).toEqual('Utbrändhet');
     });
 
     it ('should clear diagnoskod if 3-character psykiskdiagnos is entered', function() {
         LuseUtkastPage.diagnos.diagnosRow(0).kod.clear();
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('Z73');
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('\t');
         LuseUtkastPage.enableAutosave();
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('\t');
+        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('Z73', protractor.Key.TAB, protractor.Key.TAB);
         expect(LuseUtkastPage.diagnos.diagnosRow(0).kod.getAttribute('value')).toEqual('');
         expect(LuseUtkastPage.diagnos.diagnosRow(0).beskrivning.getAttribute('value')).toEqual('');
     });

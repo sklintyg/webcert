@@ -30,7 +30,7 @@ var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var HttpBackend = require('http-backend-proxy');
 var proxy = new HttpBackend(browser);
 
-describe('Luse kompletteringsbegäran tests', function() {
+xdescribe('Luse kompletteringsbegäran tests', function() {
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
