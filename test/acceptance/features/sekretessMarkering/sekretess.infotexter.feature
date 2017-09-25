@@ -1,16 +1,52 @@
 # language: sv
-@sekretess
+@sekretess @Varningmeddelanden
 Egenskap: Sekretessmarkerad patient
 
-@varningsmeddelande
+Bakgrund: 
+	Givet att jag är inloggad som läkare
+	Och jag går in på en patient med sekretessmarkering
+
+@fk7263 @fornya @intygstjänsten
 Scenario: Varningmeddelanden när man går in på patient
-   Givet att jag är inloggad som läkare
-   Och jag går in på en patient med sekretessmarkering
    När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
    Så ska det finnas en knapp med texten "Förnya"
-   Så ska det finnas en knapp med texten "Makulera"
-   Så ska en varningsruta innehålla texten "Patienten har en sekretessmarkering."
-   Så ska en varningsruta innehålla texten "På grund av sekretessmarkeringen går det inte att förnya intyg."
+   Så ska jag varnas om att "Patienten har en sekretessmarkering."
 
+   
+#@TODO
+#Scenario: X   
+#Varningmeddelanden meddelanden ska visas på : 
+#													Översiktssidan
+#													fråga&svar sidan
+#													pågående utkast sidan
+#													utkast vy
+#													signerat vy
+#												och Varningmeddelanden vid utskrift.
 
-
+@signera @frågasvar @smi @skriv-ut
+Scenario: Varningmeddelanden i fråga-svar för sekretessmarkerad person
+	Så ska jag varnas om att "Patienten har en sekretessmarkering."
+	När jag går in på att skapa ett slumpat SMI-intyg
+	Så ska jag varnas om att "Patienten har en sekretessmarkering."
+	
+	När jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Så ska jag varnas om att "Patienten har en sekretessmarkering."
+	
+	Och jag skriver ut intyget
+	Så ska jag varnas om att "Patienten har en sekretessmarkering. Hantera utskriften varsamt." i nytt fönster
+	
+	När jag skickar intyget till Försäkringskassan
+	Och Försäkringskassan ställer en "OVRIGT" fråga om intyget
+	Och jag går till sidan Frågor och svar
+	Så ska frågan ha en indikator som indikerar sekretessmarkering
+	
+@utkast @smi
+Scenario: Varningmeddelanden i Ej signerade utkast för sekretessmarkerad person
+	Så ska jag varnas om att "Patienten har en sekretessmarkering."
+	När jag går in på att skapa ett slumpat SMI-intyg
+	Så ska jag varnas om att "Patienten har en sekretessmarkering."
+	
+	Och jag går till ej signerade utkast
+	Så ska intyget ha en indikator som indikerar sekretessmarkering
+	

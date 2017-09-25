@@ -333,9 +333,17 @@ module.exports = function() {
             return parallell.closeBrowser(forkedBrowser);
         });
     });
-    this.Then(/^ska jag varnas om att "([^"]*)"$/, function(msg) {
 
-        return element.all(by.css('.patient-alert')).map(function(data) {
+    this.Then(/^ska jag varnas om att "([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
+
+        var elmCss;
+        if (nyttFonster) {
+            elmCss = '.modal-body';
+        } else {
+            elmCss = '.patient-alert';
+        }
+
+        return element.all(by.css(elmCss)).map(function(data) {
             return data.getText();
         }).then(function(theMsg) {
             return expect(theMsg.join('\n')).to.contain(msg);
