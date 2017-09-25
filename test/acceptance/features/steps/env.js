@@ -20,8 +20,11 @@
 /* globals browser, logger, JSON */
 'use strict';
 
-var hasFoundConsoleErrors = false;
+
 var fs = require('fs');
+
+var hasFoundConsoleErrors = false;
+var duplicateIds = [];
 
 function writeScreenShot(data, filename, cb) {
     var stream = fs.createWriteStream(filename);
@@ -32,12 +35,14 @@ function writeScreenShot(data, filename, cb) {
 
 function checkConsoleErrors(cb) {
     if (hasFoundConsoleErrors) {
-        logger.info(hasFoundConsoleErrors);
 
         // 500-error är ett godkänt fel i detta test, se INTYG-3524
         if (global.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
             logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
+        } else if (hasFoundConsoleErrors.indexOf('ID-dubletter') > -1) {
+            logger.warn(hasFoundConsoleErrors);
         } else {
+            logger.error(hasFoundConsoleErrors);
             throw ('Hittade script-fel under körning');
         }
     }
@@ -47,6 +52,7 @@ function checkConsoleErrors(cb) {
 module.exports = function() {
     this.setDefaultTimeout(600 * 1000);
     global.externalPageLinks = [];
+
 
     this.AfterStep(function(event, callback) {
 
@@ -67,16 +73,39 @@ module.exports = function() {
             });
         }).then(function() {
 
+            //Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.
+
+            var frontEndScript = '';
+
+            frontEndScript += 'if (window.jQuery) {';
+            frontEndScript += 'var arr = [];';
+            frontEndScript += '$("[id]").each(function(){';
+            frontEndScript += 'var ids = $("[id]");';
+            frontEndScript += 'if(ids.length>1 && ids[0]==this) {';
+            frontEndScript += 'arr.push(this.id);}';
+
+            frontEndScript += '});';
+            frontEndScript += 'console.error(arr.length + "st ID-dubletter Hittade, " + JSON.stringify(arr));'; //använder console.error så plockas det upp i nästa steg som kollar efter error.
+            frontEndScript += '}';
+
+            browser.executeScript(frontEndScript);
+
+
+        }).then(function() {
+
             //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
             browser.executeScript('return window.errs;').then(function(v) {
                 if (v && v.length > 0) {
                     hasFoundConsoleErrors = JSON.stringify(v);
-                    logger.info(hasFoundConsoleErrors);
 
+
+                    if (hasFoundConsoleErrors.indexOf('ID-dubletter') === -1) {
+                        logger.warn(hasFoundConsoleErrors);
+                    }
                 }
-                callback();
-            });
 
+            });
+            callback();
         });
 
     });
@@ -90,6 +119,7 @@ module.exports = function() {
         global.meddelanden = []; //{typ:'', id:''}
         global.user = {};
         hasFoundConsoleErrors = false;
+        duplicateIds = [];
     });
     //After scenario
     this.After(function(scenario, callback) {
@@ -98,14 +128,14 @@ module.exports = function() {
         browser.executeScript('window.sessionStorage.clear();');
         browser.executeScript('window.localStorage.clear();');
 
-        //Ska intyg rensas bort efter scenario?
-        var rensaBortIntyg = true;
+        //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
+        /*var rensaBortIntyg = true;
         var tagArr = scenario.getTags();
         for (var i = 0; i < tagArr.length; i++) {
             if (tagArr[i].getName() === '@keepIntyg') {
                 rensaBortIntyg = false;
             }
-        }
+        }*/
 
         if (scenario.isFailed()) {
             browser.takeScreenshot().then(function(png) {
@@ -116,6 +146,7 @@ module.exports = function() {
                         if (err) {
                             throw err;
                         }
+                        console.log('Skärmbild tagen: ' + filename);
                         checkConsoleErrors(callback);
                     });
                 });
@@ -123,6 +154,8 @@ module.exports = function() {
         } else {
             checkConsoleErrors(callback);
         }
+
+
 
 
     });
