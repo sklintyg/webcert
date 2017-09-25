@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals logger, wcTestTools*/
+/*globals logger, wcTestTools, intyg*/
 
 'use strict';
 var soap = require('soap');
@@ -26,6 +26,29 @@ var helpers = require('./helpers');
 
 module.exports = function() {
     // });
+
+    this.Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/, function(typ) {
+        //ej signerade utkast: wc-sekretessmarkering-icon-6aa41c19-a950-4c04-96dd-a75fa054029f
+
+        console.log('intyg');
+        console.log(intyg);
+
+        console.log('global.meddelanden');
+        console.log(global.meddelanden);
+
+        var elm;
+
+        if (typ === 'frågan') {
+            elm = 'wc-sekretessmarkering-icon-' + global.meddelanden[0].id;
+            console.log(elm);
+        } else if (typ === 'intyget') {
+            //Annars kollar vi efter 'icon+intyg' elemenetet
+            elm = 'wc-sekretessmarkering-icon-' + intyg.id;
+        }
+
+        return expect(element(by.id(elm)).isPresent()).to.eventually.become(true);
+
+    });
 
     this.Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
         global.intyg.guidcheck = testdataHelper.generateTestGuid();

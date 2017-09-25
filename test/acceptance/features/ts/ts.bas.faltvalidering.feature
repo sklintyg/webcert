@@ -28,7 +28,7 @@ Scenario: Validerar alla fält i TS bas intyget
 
 	När jag fyller i text i "alla synfält" fältet
 	Och jag byter fokus från fält
-	Så ska valideringsfelet "Måste ligga i intervallet 0,0 till 2,0." visas "3" gånger
+	Så ska valideringsfelet "Måste ligga i intervallet 0,0 till 2,0." visas "6" gånger
 
 	När jag tar bort information i "synfälten" fältet
 	Och jag fyller i alla nödvändiga fält för intyget
