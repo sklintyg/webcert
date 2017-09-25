@@ -171,15 +171,14 @@ var FkUtkast = BaseUtkast._extend({
                 nej: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('ng-change').then(v => v === 'setConsent(false)')).first()
             },
             visamer: () => element.all(by.id('questionsCollapser')),
-            visaKnapp: () => element(by.tagName('wc-srs-questionaire')).element(by.buttonText('Visa')),
+            visaKnapp: () => element(by.buttonText('Visa')),
             fragor: () => element(by.tagName('wc-srs-questionaire')),
-            statistikFlik: () => element(by.linkName('Statistik')),
-            atgardsFlik: () => element(by.linkName('Åtgärder')),
+            prediktion: () => element(by.tagName('wc-srs-result')).all(by.tagName('div')).filter(el => el.getAttribute('ng-if').then(a => a === 'riskSignal')).first(),
+            flik: linkText => element(by.linkText(linkText)),
             atgarder: () => element(by.id('atgarder')),
-            statistik: () => element(by.id('statistik')),
+            statistik: () => element(by.id('statstics')),
             atgarderRek: () => element(by.id('atgarderRek')),
             atgarderObs: () => element(by.id('atgarderObs')),
-            Panel: () => element(by.id('atgarderRek')),
 
         }
     },

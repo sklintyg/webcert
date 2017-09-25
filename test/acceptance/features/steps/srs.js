@@ -37,14 +37,17 @@ module.exports = function() {
 
     );
 
-    this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "(inte har givit samtycke|har givit samtycke)" till SRS$/,
-        samtycke =>
+    this.Given(/^en patient som "(inte har givit samtycke|har givit samtycke)" till SRS$/,
+        samtycke => setConsent(srsdata.patient, user, samtycke)
+    );
+
+    this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263$/,
+        () =>
         createDraftUsingSOAP(user, srsdata.patient.id)
         .then(intygsId => browser.get(buildLinkToIntyg(intygsId, srsdata.patient, user.enhetId)))
         .then(() => browser.waitForAngular())
         .then(() => browser.sleep(2000)) // Behövs för att waitForAngular tydligen inte räcker
         .then(() => expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true))
-        .then(() => setConsent(srsdata.patient, user, samtycke))
     );
 
     this.Then(/^ska en frågepanel för SRS "(inte)? ?visas"$/,
@@ -66,6 +69,7 @@ module.exports = function() {
     this.When(/^jag klickar på knappen för SRS$/,
         () => fk7263utkast.srs.knapp().click()
     );
+
 
     this.When(/^jag klickar på pilen$/,
         () => fk7263utkast.srs.visamer().click()
@@ -95,15 +99,39 @@ module.exports = function() {
         () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true)
     );
 
+    this.When(/^jag fyller i ytterligare svar för SRS$/,
+        () => clickAnswerRadioButtons()
+    );
 
+    this.When(/^jag trycker på knappen "Visa"$/,
+        () => fk7263utkast.srs.visaKnapp().click()
+    );
+
+    this.Then(/^ska prediktion från SRS-tjänsten visas$/,
+        () => expect(fk7263utkast.srs.prediktion().isDisplayed()).to.eventually.equal(true)
+    );
+
+    this.When(/^jag trycker på fliken "(Statistik|Åtgärder)"$/,
+        flikText => fk7263utkast.srs.flik(flikText).click()
+    );
+
+    this.Then(/^ska en statistikbild från SRS-tjänsten visas$/,
+        () => expect(fk7263utkast.srs.statistik().isDisplayed()).to.eventually.equal(true)
+    );
 
 };
+
+function clickAnswerRadioButtons() {
+    return fk7263utkast.srs.fragor()
+        .all(by.css('input[type=radio]'))
+        .each(el => el.click()).catch(() => console.log('Ignoring unclickable radio button.')); // Av någon anledning kastas ett fel trots att alla element går att klicka på
+}
 
 function setConsent(patient, user, consent) {
     /**
      * Injicerar ett skript i browsern som skickar "SetConsent" till webcert backend.
      * Används för att försätta en patient i känt state inför test.
-     */
+     **/
     const patientId = patient.id.slice(0, 8) + '-' + patient.id.slice(8 + 0);
     const link = buildLinkToSetConsent(patientId, user.enhetId);
     return browser.executeAsyncScript(function(url, samtycke) {
@@ -118,7 +146,7 @@ function setConsent(patient, user, consent) {
             };
             xhr.send(samtycke === 'har givit samtycke' ? 'true' : 'false');
         }, link, consent)
-        .then(response => console.log('SetConsent respons: ' + response));
+        .then(response => expect(response).to.equal('"OK"'));
 }
 
 function buildLinkToSetConsent(patientId, enhetId) {

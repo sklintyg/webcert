@@ -11,23 +11,25 @@ Bakgrund:
 @SRS-US-W02
 @SRS-US-W03
 @SRS-US-W04
-@notReady
 Scenario: När samtycke är givet och ytterligare frågor besvarade ska information från SRS visas.
-    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "inte har givit samtycke" till SRS
+    Givet en patient som "inte har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
     När jag anger att patienten samtycker till SRS
-    #Och jag fyller i ytterligare frågor för SRS
-    #Och trycker på knappen "Visa"
-    #Så ska åtgärdsförslag från SRS-tjänsten visas
-    #När jag trycker på fliken "Statistik"
-    #Så ska en statistikbild från SRS-tjänsten visas
+    Och jag fyller i ytterligare svar för SRS
+    Och jag trycker på knappen "Visa"
+    Så ska prediktion från SRS-tjänsten visas
+    Och ska åtgärdsförslag från SRS-tjänsten visas
+    När jag trycker på fliken "Statistik"
+    Så ska en statistikbild från SRS-tjänsten visas
 
 
 @SRS-US-W01
 Scenario: SRS-knappen ska bara visas när diagnos som har stöd för SRS är ifylld
-    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "har givit samtycke" till SRS
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "finns i SRS"
     Så ska knappen för SRS vara i läge "stängd"
     När jag fyller i diagnoskod som "inte finns i SRS"
@@ -35,16 +37,17 @@ Scenario: SRS-knappen ska bara visas när diagnos som har stöd för SRS är ify
 
 @SRS-US-W01
 Scenario: Samtycken som patienter har givit ska lagras
-    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "har givit samtycke" till SRS
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
     Och frågan om samtycke ska vara förifylld med "Ja"
 
 @SRS-US-W01
-@WIP
 Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som "nej"
-    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "inte har givit samtycke" till SRS
+    Givet en patient som "inte har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
@@ -52,7 +55,8 @@ Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som
 
 @SRS-US-W01
 Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
-    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "har givit samtycke" till SRS
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "finns i SRS"
     Så ska knappen för SRS vara i läge "stängd"
     När jag klickar på knappen för SRS
@@ -87,7 +91,7 @@ Scenario: När åtgärdsförslag inte kan ges ska korrekt felmeddelande visas
 @SRS-US-W02
 @notReady
 Scenario: När åtgärdsförslag saknas ska korrekt felmeddelande visas
-    Givet att jag valt en patient som har givit samtycke till SRS
+    Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som finns i SRS men där åtgärdsförslag saknas
     Och jag fyller i ytterligare frågor för SRS
