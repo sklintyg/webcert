@@ -28,7 +28,7 @@ var diagnosKategorier = wcTestTools.testdata.diagnosKategorier;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 
 var restAPIOptions = {
-    url: 'https://statistik.ip30.nordicmedtest.sjunet.org/api/testsupport/processIntyg',
+    url: process.env.WEBCERT_URL + '/api/testsupport/processIntyg',
     method: 'POST',
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

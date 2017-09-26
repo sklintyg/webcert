@@ -20,7 +20,7 @@
 /* globals Promise,JSON,logger */
 
 'use strict';
-var statsPool = require('./statisticsPool');
+var statsPool = require('./pool');
 
 function getIntygEntries(intygsID, connection) {
     var dbName = process.env.STAT_DATABASE_NAME;

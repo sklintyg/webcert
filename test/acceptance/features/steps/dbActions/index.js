@@ -23,5 +23,5 @@ module.exports = {
     storeLog: require('./storeLog'),
     statistics: require('./statistics'),
     dbPool: require('./pool'),
-    statsPool: require('./statisticsPool')
+    smPool: require('./smPool')
 };
