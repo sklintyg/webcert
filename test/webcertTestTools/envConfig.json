@@ -40,8 +40,11 @@
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",
         "INTYGTJANST_URL": "https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate",
+		"STATISTIKTJANST_URL": "https://statistik.ip20.nordicmedtest.sjunet.org",
         "DATABASE_NAME": "webcert_ip20",
-        "DATABASE_HOST": "mysql.sm.nordicmedtest.se",
+        "STAT_DATABASE_NAME": "statistik_ip20",
+        "SM_DATABASE_HOST": "mysql.sm.nordicmedtest.se",
+        "DATABASE_HOST": "mysql.ip20.nordicmedtest.se",
         "DATABASE_USER": "intyg_autotest",
         "SELENIUM_ADDRESS": ""
     },
@@ -62,8 +65,8 @@
         "STATISTIKTJANST_URL": "https://statistik.ip30.nordicmedtest.sjunet.org",
         "DATABASE_NAME": "webcert_ip30",
         "STAT_DATABASE_NAME": "statistik_ip30",
-        "DATABASE_HOST": "mysql.sm.nordicmedtest.se",
-        "STAT_DATABASE_HOST": "mysql.ip30.nordicmedtest.se",
+        "SM_DATABASE_HOST": "mysql.sm.nordicmedtest.se",
+        "DATABASE_HOST": "mysql.ip30.nordicmedtest.se",
         "DATABASE_USER": "intyg_autotest",
         "SELENIUM_ADDRESS": ""
     },

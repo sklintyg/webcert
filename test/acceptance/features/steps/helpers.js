@@ -21,7 +21,7 @@
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
-var mysql = require('mysql');
+var pool = require('./dbActions').dbPool;
 
 function sh(value) {
     return (value.search(/\s-\s/g) !== -1) ? value.split(/\s-\s/g)[0].replace('Ämne: ', '') : value.split(/\n/g)[0].replace('Ämne: ', '');
@@ -128,43 +128,41 @@ module.exports = {
     getIntygElementRow: function(intygstyp, status, cb) {
         var qaTable = element(by.css('table.table-qa'));
 
-        var connection = mysql.createConnection({
-            host: 'mysql.ip30.nordicmedtest.se',
-            user: process.env.DATABASE_USER,
-            password: process.env.DATABASE_PASSWORD,
-            // database: process.env.DATABASE_NAME,
-            multipleStatements: true
+        pool.getConnection().then(function(connection) {
+            qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
+                    return elem.all(by.css('td')).get(2).getText().then(function(text) {
+                        return (text === intygstyp);
+                    });
+                })
+                // Kontrollera att intyget ej är ersatt
+                // Förhoppningsvis temporärt tills vi har någon label att gå på istället
+                .filter(function(el, i) {
+                    return el.element(by.cssContainingText('button', 'Visa')).getAttribute('id')
+                        .then(function(id) {
+                            id = id.replace('showBtn-', '');
+                            var query = 'SELECT RELATION_KOD FROM ' + process.env.DATABASE_NAME + '.INTYG where RELATION_INTYG_ID = "' + id + '"  AND RELATION_KOD = "ERSATT"';
+
+                            return new Promise(function(resolve, reject) {
+                                connection.query(query,
+                                    function(err, rows, fields) {
+                                        if (err) {
+                                            throw (err);
+                                        }
+                                        resolve(rows.length <= 0);
+                                    });
+
+                            });
+                        });
+                })
+                .then(function(filteredElements) {
+                    connection.release();
+                    cb(filteredElements[0]);
+                });
+
         });
 
-        qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
-                return elem.all(by.css('td')).get(2).getText().then(function(text) {
-                    return (text === intygstyp);
-                });
-            })
-            // Kontrollera att intyget ej är ersatt
-            // Förhoppningsvis temporärt tills vi har någon label att gå på istället
-            .filter(function(el, i) {
-                return el.element(by.cssContainingText('button', 'Visa')).getAttribute('id')
-                    .then(function(id) {
-                        id = id.replace('showBtn-', '');
-                        var query = 'SELECT RELATION_KOD FROM webcert_ip30.INTYG where RELATION_INTYG_ID = "' + id + '"  AND RELATION_KOD = "ERSATT"';
 
-                        return new Promise(function(resolve, reject) {
-                            connection.query(query,
-                                function(err, rows, fields) {
-                                    if (err) {
-                                        throw (err);
-                                    }
-                                    resolve(rows.length <= 0);
-                                });
 
-                        });
-                    });
-            })
-            .then(function(filteredElements) {
-                connection.end();
-                cb(filteredElements[0]);
-            });
     },
     getAbbrev: function(value) {
         for (var key in this.intygShortcode) {

@@ -21,7 +21,7 @@
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
-var dbPool = require('./pool');
+var dbPool = require('./smPool');
 
 
 function formatDate(date) {

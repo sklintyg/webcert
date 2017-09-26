@@ -42,9 +42,9 @@ USAGE:
 		
 */
 
-logger.info('#### Skapar ny Mysql Pool för ' + process.env.STAT_DATABASE_HOST + ' ####');
+logger.info('#### Skapar ny Mysql Pool för ' + process.env.SM_DATABASE_HOST + ' ####');
 var connectionPool = mysql.createPool({
-    host: process.env.STAT_DATABASE_HOST,
+    host: process.env.SM_DATABASE_HOST,
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     // database: process.env.DATABASE_NAME,
