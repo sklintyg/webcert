@@ -34,7 +34,11 @@ module.exports = {
 
     diagnoskoder: {
         'finns i SRS': 'M79',
-        'inte finns i SRS': 'A23'
+        'inte finns i SRS': 'A23',
+        'har åtgärder': 'F31',
+        'inte har åtgärder': 'S82',
+        'har förhöjd risk': 'F43',
+        'inte har förhöjd risk': ''
     },
 
     inloggningar: {
@@ -52,5 +56,18 @@ module.exports = {
             enhetId: 'TSTNMT2321000156-1077',
             origin: 'DJUPINTEGRATION'
         }
+    },
+
+    'åtgärder': {
+        'åtgärdslista 1': [
+            '',
+            '',
+            ''
+        ],
+        'åtgärdslista 2': [
+            '',
+            '',
+            ''
+        ]
     }
 };

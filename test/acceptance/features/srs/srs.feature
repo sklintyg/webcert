@@ -68,38 +68,66 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     När jag klickar på pilen
     Så ska frågepanelen för SRS vara "maximerad"
 
+@SRS-US-W01
+@notReady
+@WIP
+Scenario: Prediktion ska kunna visa förhöjd risk
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "har förhöjd risk"
+    Och jag klickar på knappen för SRS
+    Och jag trycker på knappen "Visa"
+    Så ska meddelandet "Förhöjd risk" visas
+
+@SRS-US-W01
+@notReady
+Scenario: Prediktion ska kunna visa ingen förhöjd risk
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "för ingen förhöjd risk"
+    Och jag klickar på knappen för SRS
+    Och jag trycker på knappen "Visa"
+    Så ska meddelandet "Förhöjd risk" visas
+
 @SRS-US-W02
 @notReady
 Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
-    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "har givit samtycke" till SRS
-    När jag fyller i diagnoskod som "finns i SRS"
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "har åtgärder"
     Och jag klickar på knappen för SRS
-    Och jag klickar på knappen för att skicka förfrågan till SRS
-    Så ska tänk-på-att-åtgärder visas
-    Och ska rekommenderade åtgärder visas
+    Och jag trycker på knappen "Visa"
+    Så ska OBS-åtgärder från "åtgärdslista 1" visas
+    Och ska REK-åtgärder från "åtgärdslista 2" visas
 
 
 @SRS-US-W02
 @notReady
 Scenario: När åtgärdsförslag inte kan ges ska korrekt felmeddelande visas
-    Givet att jag befinner mig på ett nyskapat Läkarintyg FK 7263 för en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
-    När jag fyller i diagnoskod som finns i SRS men med tekniskt fel
-    Och jag fyller i ytterligare frågor för SRS
-    Så ska felmeddelandet "Tekniskt fel" visas
-
-@SRS-US-W02
-@notReady
-Scenario: När åtgärdsförslag saknas ska korrekt felmeddelande visas
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
-    När jag fyller i diagnoskod som finns i SRS men där åtgärdsförslag saknas
-    Och jag fyller i ytterligare frågor för SRS
+    När jag fyller i diagnoskod som "saknar åtgärder"
+    Och jag klickar på knappen för SRS
+    Och jag trycker på knappen "Visa"
     Så ska felmeddelandet "Åtgärdsförslag saknas" visas
 
-@SRS-US-W04
-Scenario: När jag byter svar i diagnosspecifika frågor ska ny information från SRS visas
+@SRS-US-W03
+@notReady
+Scenario: När prediktion inte kan ges ska korrekt felmeddelande visas
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "saknar prediktion"
+    Och jag klickar på knappen för SRS
+    Och jag trycker på knappen "Visa"
+    Så ska felmeddelandet "Prediktion saknas" visas
 
 
 @SRS-US-W04
-Scenario: När prediktion för en viss diagnoskod saknas ska användaren informeras.
+@notReady
+Scenario: När statistikbild för en viss diagnoskod saknas ska användaren informeras.
+Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "saknar statistik"
+    Och jag klickar på knappen för SRS
+    Och jag trycker på knappen "Visa"
+    Så ska felmeddelandet "Prediktion saknas" visas
