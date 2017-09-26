@@ -448,7 +448,14 @@ module.exports = function() {
         return pages.fragorOchSvar.get();
     });
 
+    this.Given(/^ska frågan inte finnas i listan$/, function() {
 
+        return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
+
+            return expect(element(by.id('showqaBtn-' + intyg.id)).isPresent()).to.become(false);
+
+        });
+    });
 
     var matchingQARow;
     this.Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {

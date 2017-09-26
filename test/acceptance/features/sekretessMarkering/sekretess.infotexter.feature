@@ -12,17 +12,6 @@ Scenario: Varningmeddelanden när man går in på patient
    Så ska det finnas en knapp med texten "Förnya"
    Så ska jag varnas om att "Patienten har en sekretessmarkering."
 
-   
-#@TODO
-#Scenario: X   
-#Varningmeddelanden meddelanden ska visas på : 
-#													Översiktssidan
-#													fråga&svar sidan
-#													pågående utkast sidan
-#													utkast vy
-#													signerat vy
-#												och Varningmeddelanden vid utskrift.
-
 @signera @frågasvar @smi @skriv-ut
 Scenario: Varningmeddelanden i fråga-svar för sekretessmarkerad person
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."

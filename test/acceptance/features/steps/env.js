@@ -81,12 +81,13 @@ module.exports = function() {
             frontEndScript += 'var arr = [];';
             frontEndScript += '$("[id]").each(function(){';
             frontEndScript += 'var ids = $("[id]");';
-            frontEndScript += 'if(ids.length>1 && ids[0]==this) {';
+            frontEndScript += 'if(ids.length>1 && ids[0]==this && this.id != "ng-app") {';
             frontEndScript += 'arr.push(this.id);}';
 
             frontEndScript += '});';
+            frontEndScript += 'if (arr.length > 1) {';
             frontEndScript += 'console.error(arr.length + "st ID-dubletter Hittade, " + JSON.stringify(arr));'; //använder console.error så plockas det upp i nästa steg som kollar efter error.
-            frontEndScript += '}';
+            frontEndScript += '}}';
 
             browser.executeScript(frontEndScript);
 
@@ -99,9 +100,8 @@ module.exports = function() {
                     hasFoundConsoleErrors = JSON.stringify(v);
 
 
-                    if (hasFoundConsoleErrors.indexOf('ID-dubletter') === -1) {
-                        logger.warn(hasFoundConsoleErrors);
-                    }
+                    logger.error(hasFoundConsoleErrors);
+
                 }
 
             });

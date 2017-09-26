@@ -92,7 +92,7 @@ function createBody(intygstyp, callback) {
 }
 
 module.exports = function() {
-    this.Given(/^att vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
+    this.Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
 
         if (!sammaPatient) {
             global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
@@ -104,7 +104,7 @@ module.exports = function() {
     });
 
     //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
-    this.Given(/^att vårdsystemet skapat ett intygsutkast för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
+    this.Given(/^(?:att )vårdsystemet skapat ett intygsutkast för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
         function(smi, ts, samEllerPersonNummer, callback) {
             global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
             if (samEllerPersonNummer) {

@@ -3,8 +3,9 @@
 @uthopp @uthoppsläge
 Egenskap: FK7263 - Uthoppsläge
 
-@fråga-uthopp @mailnotifikation @waitingForFix @INTYG-4514
+@fråga-uthopp @mailnotifikation
 Scenario: Mail när fråga på intyg inkommer
+	#Om testfallet felar kolla : SELECT * FROM INTEGRERADE_VARDENHETER WHERE ENHETS_ID = 'TSTNMT2321000156-107Q';
 	Givet att jag är inloggad som uthoppsläkare
 	När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
 	Och jag skickar intyget direkt till Försäkringskassan

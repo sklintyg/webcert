@@ -164,6 +164,13 @@ module.exports = function() {
         return expect(element(by.id('draft-marked-ready-text')).getText()).to.eventually.contain(msg);
     });
 
+    this.Given(/^ska intyget inte finnas i listan$/, function() {
 
+        return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
+
+            return expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false);
+
+        });
+    });
 
 };

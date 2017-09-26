@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals intyg, logger, Promise, protractor, pages, wcTestTools, JSON*/
+/*globals intyg, logger, Promise, protractor, pages, wcTestTools, JSON, browser*/
 
 'use strict';
 
@@ -31,7 +31,22 @@ module.exports = function() {
     this.Given(/^jag förnyar intyget$/, function(callback) {
         helpers.updateEnhetAdressForNewIntyg();
         fkIntygPage.fornyaBtn.sendKeys(protractor.Key.SPACE).then(function() {
-            return fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE);
+
+            return fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    return browser.sleep(4000);
+                })
+                .then(function() {
+                    return browser.getCurrentUrl()
+                        .then(function(text) {
+                            global.fornyatIntyg = intyg;
+
+                            intyg.id = text.split('/').slice(-2)[0];
+                            intyg.id = intyg.id.split('?')[0];
+                        });
+
+                });
+
         }).then(callback);
     });
 
