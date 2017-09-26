@@ -58,7 +58,7 @@ module.exports = function() {
         text => expect(findLabelContainingText(text).isPresent()).to.eventually.equal(true)
     );
 
-    this.When(/^jag (?:fyller|fyllt) i diagnoskod som "(finns i SRS|inte finns i SRS)"$/,
+    this.When(/^jag (?:fyller|fyllt) i diagnoskod som "(.*)"$/,
         srsStatus => fk7263utkast.angeDiagnosKod(srsdata.diagnoskoder[srsStatus])
     );
 
@@ -105,6 +105,7 @@ module.exports = function() {
 
     this.When(/^jag trycker på knappen "Visa"$/,
         () => fk7263utkast.srs.visaKnapp().click()
+        .then(() => browser.sleep(500)) // Ge lite tid åt SRS-tjänsten att svara
     );
 
     this.Then(/^ska prediktion från SRS-tjänsten visas$/,

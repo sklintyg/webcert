@@ -173,7 +173,7 @@ var FkUtkast = BaseUtkast._extend({
             visamer: () => element.all(by.id('questionsCollapser')),
             visaKnapp: () => element(by.buttonText('Visa')),
             fragor: () => element(by.tagName('wc-srs-questionaire')),
-            prediktion: () => element(by.tagName('wc-srs-result')).all(by.tagName('div')).filter(el => el.getAttribute('ng-if').then(a => a === 'riskSignal')).first(),
+            prediktion: () => element(by.id('predictionBox')),
             flik: linkText => element(by.linkText(linkText)),
             atgarder: () => element(by.id('atgarder')),
             statistik: () => element(by.id('statstics')),
@@ -189,9 +189,6 @@ var FkUtkast = BaseUtkast._extend({
         } else {
             this.srs.samtycke.nej().click()
         }
-    },
-    setSRSAnswer: function(question, answer) {
-
     },
     getSRSQuestionnaireStatus: function() {
         return this.srs.fragor().isDisplayed()
