@@ -28,13 +28,6 @@ module.exports = function() {
     // });
 
     this.Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/, function(typ) {
-        //ej signerade utkast: wc-sekretessmarkering-icon-6aa41c19-a950-4c04-96dd-a75fa054029f
-
-        console.log('intyg');
-        console.log(intyg);
-
-        console.log('global.meddelanden');
-        console.log(global.meddelanden);
 
         var elm;
 

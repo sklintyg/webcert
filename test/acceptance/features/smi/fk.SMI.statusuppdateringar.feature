@@ -109,13 +109,16 @@ Scenario: Statusuppdateringar vid ändring av utkast
     När jag ändrar i slumpat fält
     Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
 
-@referens-skickas-med @waitingForFix @BUG_REPORTED_IN_INTYG-4511
+@referens-skickas-med
 Scenario: Referens skickas med statusuppdateringar
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref-X"
 
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag förnyar intyget
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+	Och jag signerar intyget
+	
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 	Så ska statusuppdatering "SIGNAT" skickas till vårdsystemet. Totalt: "1"
 	#Viktigt att vi kör Signat innan nedan steg
