@@ -181,12 +181,14 @@ module.exports = function(grunt) {
         let tags = ['~@waitingForFix', '~@notReady'];
         if (grunt.option('tags')) {
             tags = grunt.option('tags').split(',');
-
+			
+			
+			
             // När man kör med parallella tester måste man av någon 
             // anledning manuellt filtrera bort de feature-filer som inte 
             // innehåller några av de aktuella taggarna för att det inte 
             // ska ta väldigt lång tid.
-            if (grunt.option('gridnodeinstances')) {
+			if (grunt.option('gridnodeinstances') && tags.indexOf('~@waitingForFix') === -1 && tags.indexOf('~@notReady') === -1 ) {
                 let tagList = grunt.option('tags').split(/ |,/);
                 let featureFiles = grunt.file.expand('features/**/*.feature');
 
