@@ -35,10 +35,12 @@ module.exports = {
     diagnoskoder: {
         'finns i SRS': 'M79',
         'inte finns i SRS': 'A23',
-        'har åtgärder': 'F31',
-        'inte har åtgärder': 'S82',
+        'har åtgärder': 'M54',
         'har förhöjd risk': 'F43',
-        'inte har förhöjd risk': ''
+        'inte har förhöjd risk': '',
+        'saknar prediktion': '',
+        'saknar statistik': 'S82',
+        'saknar åtgärder': 'S82',
     },
 
     inloggningar: {
@@ -58,16 +60,15 @@ module.exports = {
         }
     },
 
-    'åtgärder': {
+    atgarder: {
         'åtgärdslista 1': [
-            '',
-            '',
-            ''
+            'partiell sjukskrivning',
+            'FaR med regelbunden styrketräning för att förebygger nya besvär'
         ],
         'åtgärdslista 2': [
-            '',
-            '',
-            ''
+            'borsta tänderna',
+            'inte vara uppe för länge',
+            'inte prata med främlingar'
         ]
     }
 };

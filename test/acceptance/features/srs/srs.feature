@@ -70,7 +70,6 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
 
 @SRS-US-W01
 @notReady
-@WIP
 Scenario: Prediktion ska kunna visa förhöjd risk
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
@@ -90,26 +89,23 @@ Scenario: Prediktion ska kunna visa ingen förhöjd risk
     Så ska meddelandet "Förhöjd risk" visas
 
 @SRS-US-W02
-@notReady
+@WIP
 Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "har åtgärder"
     Och jag klickar på knappen för SRS
-    Och jag trycker på knappen "Visa"
-    Så ska OBS-åtgärder från "åtgärdslista 1" visas
-    Och ska REK-åtgärder från "åtgärdslista 2" visas
+    Så ska REK-åtgärder från "åtgärdslista 1" visas
+    Och ska OBS-åtgärder från "åtgärdslista 2" visas
 
 
 @SRS-US-W02
-@notReady
 Scenario: När åtgärdsförslag inte kan ges ska korrekt felmeddelande visas
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "saknar åtgärder"
     Och jag klickar på knappen för SRS
-    Och jag trycker på knappen "Visa"
-    Så ska felmeddelandet "Åtgärdsförslag saknas" visas
+    Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas
 
 @SRS-US-W03
 @notReady
@@ -119,15 +115,14 @@ Scenario: När prediktion inte kan ges ska korrekt felmeddelande visas
     När jag fyller i diagnoskod som "saknar prediktion"
     Och jag klickar på knappen för SRS
     Och jag trycker på knappen "Visa"
-    Så ska felmeddelandet "Prediktion saknas" visas
+    Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas
 
 
 @SRS-US-W04
-@notReady
 Scenario: När statistikbild för en viss diagnoskod saknas ska användaren informeras.
-Givet en patient som "har givit samtycke" till SRS
+    Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "saknar statistik"
     Och jag klickar på knappen för SRS
-    Och jag trycker på knappen "Visa"
-    Så ska felmeddelandet "Prediktion saknas" visas
+    Och jag trycker på fliken "Statistik"
+    Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, browser */
+/* globals pages, browser, protractor */
 'use strict';
 let helpers = require('./helpers');
 let Soap = require('soap');
@@ -60,6 +60,7 @@ module.exports = function() {
 
     this.When(/^jag (?:fyller|fyllt) i diagnoskod som "(.*)"$/,
         srsStatus => fk7263utkast.angeDiagnosKod(srsdata.diagnoskoder[srsStatus])
+        .then(() => browser.sleep(1000)) // Angular behöver extra tid på sig här för att spara diagnoskoden
     );
 
     this.Then(/^ska knappen för SRS vara i läge "(stängd|öppen|gömd)"$/,
@@ -113,11 +114,23 @@ module.exports = function() {
     );
 
     this.When(/^jag trycker på fliken "(Statistik|Åtgärder)"$/,
-        flikText => fk7263utkast.srs.flik(flikText).click()
+        flikText => fk7263utkast.srs.flik(flikText).sendKeys(protractor.Key.ENTER)
     );
 
     this.Then(/^ska en statistikbild från SRS-tjänsten visas$/,
         () => expect(fk7263utkast.srs.statistik().isDisplayed()).to.eventually.equal(true)
+    );
+
+    this.Then(/^ska felmeddelandet "(.*)" visas$/,
+        text => expect(findLabelContainingText(text).isDisplayed()).to.eventually.equal(true)
+    );
+
+    this.Then(/^ska OBS-åtgärder från "(.*)" visas$/,
+        listNamn => expect(getAtgarderOBS()).to.eventually.have.same.members(srsdata.atgarder[listNamn])
+    );
+
+    this.Then(/^ska REK-åtgärder från "(.*)" visas$/,
+        listNamn => expect(getAtgarderREK()).to.eventually.have.same.members(srsdata.atgarder[listNamn])
     );
 
 };
@@ -154,6 +167,26 @@ function buildLinkToSetConsent(patientId, enhetId) {
     let uri = uriTemplate `api/srs/consent/${patientId}/${enhetId}`;
     console.log('Consent URL: ' + process.env.WEBCERT_URL + uri);
     return process.env.WEBCERT_URL + uri;
+}
+
+function getAtgarderREK() {
+    return fk7263utkast.srs.atgarderRek().getText().then(t => {
+        const atgarder = t.replace('Läs mer', '') // Ta bort "Läs mer" som finns på slutet
+            .replace(/\n/g, '') // Ta bort alla radbrytningar
+            .split('• ')
+            .slice(1); // Första elementet blir alltid tomt
+        console.log('Hittade REK-åtgärder: ' + atgarder);
+        return Promise.resolve(atgarder);
+    });
+}
+
+function getAtgarderOBS() {
+    return fk7263utkast.srs.atgarderObs().getText().then(t => {
+        const atgarder = t.replace(/\\n/g, '') // Ta bort alla radbrytningar
+            .split('. ');
+        console.log('Hittade OBS-åtgärder: ' + atgarder);
+        return Promise.resolve(atgarder);
+    });
 }
 
 function findLabelContainingText(text) {
