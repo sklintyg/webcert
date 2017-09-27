@@ -81,7 +81,7 @@ public class UtkastApiController extends AbstractApiController {
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     @Autowired
-    private UtkastService intygDraftService;
+    private UtkastService utkastService;
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
@@ -122,7 +122,7 @@ public class UtkastApiController extends AbstractApiController {
 
         CreateNewDraftRequest serviceRequest = createServiceRequest(request);
 
-        Utkast utkast = intygDraftService.createNewDraft(serviceRequest);
+        Utkast utkast = utkastService.createNewDraft(serviceRequest);
         LOG.debug("Created a new draft of type '{}' with id '{}'", intygsTyp, utkast.getIntygsId());
 
         return Response.ok().entity(utkast).build();
@@ -136,7 +136,7 @@ public class UtkastApiController extends AbstractApiController {
 
         LOG.debug("Requesting questions for '{}' with version '{}'.", intygsTyp, version);
 
-        String questions = intygDraftService.getQuestions(intygsTyp, version);
+        String questions = utkastService.getQuestions(intygsTyp, version);
 
         return Response.ok().entity(questions).build();
     }
@@ -173,7 +173,7 @@ public class UtkastApiController extends AbstractApiController {
         WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
-        List<Lakare> lakareWithDraftsByEnhet = intygDraftService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
+        List<Lakare> lakareWithDraftsByEnhet = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
 
         return Response.ok().entity(lakareWithDraftsByEnhet).build();
     }
@@ -235,7 +235,7 @@ public class UtkastApiController extends AbstractApiController {
         filter.setPageSize(null);
 
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter
-                .convertUtkastsToListIntygEntries(intygDraftService.filterIntyg(filter));
+                .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter));
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
