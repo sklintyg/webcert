@@ -59,7 +59,7 @@ function getNotificationEntries(intygsId, value, numEvents) {
 
     var promise = new Promise(function(resolve, reject) {
 
-        db.dbPool.getConnection().then(function(connection) {
+        db.smPool.getConnection().then(function(connection) {
             connection.query(query,
                 function(err, rows, fields) {
                     connection.release();
