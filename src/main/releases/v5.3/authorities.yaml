@@ -234,6 +234,8 @@ privileges:
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
+      - *ki020 # ts-bas
+      - *ki030 # ts-diabetes
     requestOrigins:
       - *ro020 # DJUPINTEGRATION
   - &p140
@@ -247,9 +249,7 @@ privileges:
       - *ki070 # luae_fs
       - *ki080 # db
       - *ki090 # DOI
-    requestOrigins:
-      - *ro010 # NORMAL
-      - *ro020 # DJUPINTEGRATION
+    requestOrigins: # Implicit alla
 
 # Roller
 roles:
@@ -324,6 +324,7 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -572,6 +573,9 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör
@@ -598,6 +602,11 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro030 # UTHOPP
+      - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -614,6 +623,10 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro030 # UTHOPP
+      - <<: *p120 # SVARA_MED_NYTT_INTYG
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
       - <<: *p130 # NOTIFIERING_UTKAST
         requestOrigins:
           - <<: *ro020 # DJUPINTEGRATION

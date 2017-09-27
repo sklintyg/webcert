@@ -249,9 +249,7 @@ privileges:
       - *ki070 # luae_fs
       - *ki080 # db
       - *ki090 # DOI
-    requestOrigins:
-      - *ro010 # NORMAL
-      - *ro020 # DJUPINTEGRATION
+    requestOrigins: # Implicit alla
 
 # Roller
 roles:
@@ -326,6 +324,7 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -574,6 +573,9 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör
