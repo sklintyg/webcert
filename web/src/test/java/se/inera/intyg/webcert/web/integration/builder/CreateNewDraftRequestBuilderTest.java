@@ -18,62 +18,62 @@
  */
 package se.inera.intyg.webcert.web.integration.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.webcert.web.integration.BaseCreateDraftCertificateTest;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
+import se.riv.infrastructure.directory.v1.CommissionType;
+import se.riv.infrastructure.directory.v1.PaTitleType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.*;
-import se.riv.infrastructure.directory.v1.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateNewDraftRequestBuilderTest {
+public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
 
     private static final String CERT_TYPE = "fk7263";
     private static final String USER_HSAID = "SE1234567890";
     private static final String UNIT_HSAID = "SE0987654321";
     private static final String CAREGIVER_HSAID = "SE0000112233";
-    public static final String FULLSTANDIGT_NAMN = "Abel Baker";
-    public static final String INVARTES_MEDICIN = "Invärtes medicin";
-    public static final String TITLE_CODE = "203010";
-    public static final String TITLE_NAME = "Läkare";
-    public static final String ALLMAN_MEDICIN = "Allmänmedicin";
 
-    @Mock
-    private HsaOrganizationsService orgServiceMock;
 
-    @Mock
-    private HsaPersonService hsaPersonService;
+    private WebCertUser user;
 
     @InjectMocks
     private CreateNewDraftRequestBuilderImpl builder;
+
+    @Before
+    public void setup() {
+        user = buildWebCertUser();
+    }
 
     @Test
     public void test() {
 
         Vardenhet hsaVardenhet = createHsaVardenhet();
-        when(orgServiceMock.getVardenhet(anyString())).thenReturn(hsaVardenhet);
 
         Utlatande utlatande = createUtlatande();
 
-        CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
+        //CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
 
-        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, miu);
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, user);
 
         assertNotNull(res);
 
@@ -102,11 +102,9 @@ public class CreateNewDraftRequestBuilderTest {
 
     @Test
     public void testBuildSetsPatientFullName() {
-        when(orgServiceMock.getVardenhet(anyString())).thenReturn(createHsaVardenhet());
-        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(createHsaPerson());
 
         CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createUtlatande(),
-                createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
+                user);
 
         assertNotNull(res);
 
@@ -118,14 +116,12 @@ public class CreateNewDraftRequestBuilderTest {
     public void testWithHsaBefattningAndSpecialityNames() {
 
         Vardenhet hsaVardenhet = createHsaVardenhet();
-        when(orgServiceMock.getVardenhet(anyString())).thenReturn(hsaVardenhet);
-        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(createHsaPerson());
 
         Utlatande utlatande = createUtlatande();
 
-        CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
+        // CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
 
-        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, miu);
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, user);
 
         assertNotNull(res);
 

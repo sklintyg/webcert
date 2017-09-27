@@ -60,20 +60,19 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
     }
 
     @Override
-    public ResultValidator validateApplicationErrors(Utlatande utlatande) {
+    public ResultValidator validateApplicationErrors(Utlatande utlatande, IntygUser user) {
         ResultValidator errors = ResultValidator.newInstance();
-        validateSekretessmarkeringOchIntygsTyp(utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(), utlatande.getPatient().getPersonId(),
-                errors);
+        validateSekretessmarkeringOchIntygsTyp(utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(),
+                utlatande.getPatient().getPersonId(), user, errors);
         return errors;
     }
 
-    private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvUtlatande typAvUtlatande, PersonId personId,
-            ResultValidator errors) {
+    private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvUtlatande typAvUtlatande,
+                                                        PersonId personId, IntygUser user, ResultValidator errors) {
 
         // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the PU-service.
         String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
         String personnummer = personId.getExtension();
-        IntygUser user = webcertUserDetailsService.loadUserByHsaId(skapadAv.getPersonalId().getExtension());
 
         AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         if (!authoritiesValidator.given(user, intygsTyp)

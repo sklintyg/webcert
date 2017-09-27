@@ -25,7 +25,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 
 /**
@@ -33,8 +32,6 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
  */
 public abstract class BaseCreateDraftCertificateValidator {
 
-    @Autowired
-    protected WebcertUserDetailsService webcertUserDetailsService;
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
     @Autowired

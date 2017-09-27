@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.web.integration.v3.validator;
 
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
 public interface CreateDraftCertificateValidator {
 
     ResultValidator validate(Intyg intyg);
-    ResultValidator validateApplicationErrors(Intyg intyg);
+    ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user);
 }

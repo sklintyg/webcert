@@ -28,16 +28,18 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.integration.BaseCreateDraftCertificateTest;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.v3.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.v3.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
@@ -51,13 +53,8 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
-import se.riv.infrastructure.directory.v1.CommissionType;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -68,7 +65,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateDraftCertificateResponderImplTest {
+public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
     private static final String LOGICAL_ADDR = "1234567890";
 
@@ -83,9 +80,6 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Mock
     private UtkastService mockUtkastService;
-
-    @Mock
-    private HsaPersonService mockHsaPersonService;
 
     @Mock
     private CreateNewDraftRequestBuilder mockRequestBuilder;
@@ -104,12 +98,13 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Before
     public void setup() {
-        when(mockValidator.validateApplicationErrors(any(Intyg.class))).thenReturn(ResultValidator.newInstance());
+        super.setup();
+        when(mockValidator.validateApplicationErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(ResultValidator.newInstance());
     }
 
     @Test
     public void testCreateDraftCertificateSuccess() throws HsaServiceCallException {
-        List<CommissionType> miuList = Collections.singletonList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
+
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
 
@@ -121,8 +116,7 @@ public class CreateDraftCertificateResponderImplTest {
                 vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
-        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(CommissionType.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
@@ -153,11 +147,13 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Test
     public void testCreateDraftCertificateNoMIUs() throws HsaServiceCallException {
-        List<CommissionType> miuList = new ArrayList<>();
+        WebCertUser userWithoutMiu = buildWebCertUser();
+        userWithoutMiu.setVardgivare(new ArrayList<>());
+        when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(userWithoutMiu);
+
         CreateDraftCertificateType certificateType = createCertificateType();
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
-        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
@@ -170,8 +166,7 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Test
     public void testCreateDraftCertificateMultipleMIUs() throws HsaServiceCallException {
-        List<CommissionType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)),
-                createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
+
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
 
@@ -183,8 +178,7 @@ public class CreateDraftCertificateResponderImplTest {
                 vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
-        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(CommissionType.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
@@ -199,8 +193,6 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Test
     public void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() throws HsaServiceCallException {
-        List<CommissionType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)),
-                createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
 
@@ -212,8 +204,7 @@ public class CreateDraftCertificateResponderImplTest {
                 vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
-        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(CommissionType.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
@@ -297,19 +288,6 @@ public class CreateDraftCertificateResponderImplTest {
         certificateType.setIntyg(utlatande);
 
         return certificateType;
-    }
-
-    private CommissionType createMIU(String personHsaId, String unitHsaId, LocalDateTime miuEndDate) {
-
-        CommissionType miu = new CommissionType();
-        miu.setHealthCareProviderHsaId(CAREGIVER_HSAID);
-        miu.setHealthCareProviderName("Landstinget");
-        miu.setHealthCareUnitName("Sjukhuset");
-        miu.setHealthCareUnitHsaId(unitHsaId);
-        miu.setHealthCareUnitEndDate(miuEndDate);
-        miu.setCommissionHsaId(personHsaId);
-
-        return miu;
     }
 
     private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,

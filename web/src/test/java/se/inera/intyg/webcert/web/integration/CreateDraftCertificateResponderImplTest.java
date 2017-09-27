@@ -29,7 +29,8 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -39,6 +40,7 @@ import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
@@ -56,8 +58,6 @@ import se.riv.infrastructure.directory.v1.CommissionType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -68,24 +68,10 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateDraftCertificateResponderImplTest {
-
-    private static final String LOGICAL_ADDR = "1234567890";
-
-    private static final String USER_HSAID = "SE1234567890";
-    private static final String UNIT_HSAID = "SE0987654321";
-    private static final String CAREGIVER_HSAID = "SE0000112233";
-
-    private static final String UTKAST_ID = "abc123";
-    private static final String UTKAST_VERSION = "1";
-    private static final String UTKAST_TYPE = "fk7263";
-    private static final String UTKAST_JSON = "A bit of text representing json";
+public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
     @Mock
     private UtkastService mockUtkastService;
-
-    @Mock
-    private HsaPersonService mockHsaPersonService;
 
     @Mock
     private CreateNewDraftRequestBuilder mockRequestBuilder;
@@ -104,7 +90,8 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Before
     public void setup() {
-        when(mockValidator.validateApplicationErrors(any(Utlatande.class))).thenReturn(ResultValidator.newInstance());
+        super.setup();
+        when(mockValidator.validateApplicationErrors(any(Utlatande.class), any(IntygUser.class))).thenReturn(ResultValidator.newInstance());
     }
 
     /**
@@ -119,7 +106,6 @@ public class CreateDraftCertificateResponderImplTest {
 
         // Given
         ResultValidator resultsValidator = new ResultValidator();
-        List<CommissionType> miuList = Collections.singletonList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         Vardgivare vardgivare = createVardgivare();
         Vardenhet vardenhet = createVardenhet(vardgivare);
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(vardenhet);
@@ -133,8 +119,7 @@ public class CreateDraftCertificateResponderImplTest {
 
         // When
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
-        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(CommissionType.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
         // Then
@@ -162,7 +147,6 @@ public class CreateDraftCertificateResponderImplTest {
 
         verifyZeroInteractions(mockUtkastService);
         verifyZeroInteractions(mockIntegreradeEnheterService);
-        verifyZeroInteractions(mockHsaPersonService);
 
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
@@ -178,12 +162,11 @@ public class CreateDraftCertificateResponderImplTest {
         CreateDraftCertificateType certificateType = createCertificateType();
 
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(new ResultValidator());
-        when(mockValidator.validateApplicationErrors(any(Utlatande.class))).thenReturn(resultsValidator);
+        when(mockValidator.validateApplicationErrors(any(Utlatande.class), any(IntygUser.class))).thenReturn(resultsValidator);
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verifyZeroInteractions(mockUtkastService);
         verifyZeroInteractions(mockIntegreradeEnheterService);
-        verifyZeroInteractions(mockHsaPersonService);
 
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
@@ -193,11 +176,12 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Test
     public void testCreateDraftCertificateHsaException() throws HsaServiceCallException {
+        when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenThrow(new MissingMedarbetaruppdragException(USER_HSAID));
+
         ResultValidator resultsValidator = new ResultValidator();
         CreateDraftCertificateType certificateType = createCertificateType();
 
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
-        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenThrow(new HsaServiceCallException(""));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
@@ -213,11 +197,14 @@ public class CreateDraftCertificateResponderImplTest {
 
     @Test
     public void testCreateDraftCertificateHsaReturnsNoMIUs() throws HsaServiceCallException {
+        WebCertUser userWithNoMiu = buildWebCertUser();
+        userWithNoMiu.setVardgivare(new ArrayList<>());
+        when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(userWithNoMiu);
+
         ResultValidator resultsValidator = new ResultValidator();
         CreateDraftCertificateType certificateType = createCertificateType();
 
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
-        when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(new ArrayList<>());
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 

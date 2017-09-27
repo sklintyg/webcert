@@ -18,26 +18,15 @@
  */
 package se.inera.intyg.webcert.web.integration.v3.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.webcert.web.integration.BaseCreateDraftCertificateTest;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;
@@ -46,12 +35,14 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
-import se.riv.infrastructure.directory.v1.CommissionType;
-import se.riv.infrastructure.directory.v1.PaTitleType;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateNewDraftRequestBuilderTest {
+public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
 
     public static final String PERSONNUMMER = "19121212-1212";
     public static final String FORNAMN = "Adam";
@@ -69,11 +60,8 @@ public class CreateNewDraftRequestBuilderTest {
     private static final String USER_HSAID = "SE1234567890";
     private static final String UNIT_HSAID = "SE0987654321";
     private static final String CAREGIVER_HSAID = "SE0000112233";
-    @Mock
-    private HsaOrganizationsService orgServiceMock;
 
-    @Mock
-    private HsaPersonService hsaPersonService;
+    private WebCertUser user;
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -83,17 +71,15 @@ public class CreateNewDraftRequestBuilderTest {
 
     @Before
     public void setup() {
+        user = buildWebCertUser();
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
                 .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     }
 
     @Test
     public void testBuildCreateNewDraftRequest() {
-        when(orgServiceMock.getVardenhet(anyString())).thenReturn(createHsaVardenhet());
 
-        CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
-
-        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), miu);
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), user);
 
         assertNotNull(res);
         assertEquals(CERT_TYPE.toLowerCase(), res.getIntygType());
@@ -119,46 +105,14 @@ public class CreateNewDraftRequestBuilderTest {
 
     @Test
     public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
-        when(orgServiceMock.getVardenhet(anyString())).thenReturn(createHsaVardenhet());
-        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(createHsaPerson());
 
-        CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
-
-        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), miu);
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), user);
 
         assertNotNull(res);
         assertNotNull(res.getHosPerson());
         assertEquals(TITLE_CODE, res.getHosPerson().getBefattningar().get(0));
         assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiteter().get(0));
         assertEquals(INVARTES_MEDICIN, res.getHosPerson().getSpecialiteter().get(1));
-    }
-
-    private Vardenhet createHsaVardenhet() {
-        Vardenhet hsaVardenhet = new Vardenhet();
-        hsaVardenhet.setId(UNIT_HSAID);
-        hsaVardenhet.setNamn("Vardenheten");
-        hsaVardenhet.setArbetsplatskod("0000001");
-        hsaVardenhet.setPostadress("Postaddr");
-        hsaVardenhet.setPostnummer("12345");
-        hsaVardenhet.setPostort("Staden");
-        hsaVardenhet.setTelefonnummer("0123-456789");
-
-        return hsaVardenhet;
-    }
-
-    private List<PersonInformationType> createHsaPerson() {
-        List<PersonInformationType> pitList = new ArrayList<>();
-        PersonInformationType pit = new PersonInformationType();
-        pit.setPersonHsaId(USER_HSAID);
-        pit.setGivenName(FULLSTANDIGT_NAMN);
-        PaTitleType befattning = new PaTitleType();
-        befattning.setPaTitleCode(TITLE_CODE);
-        befattning.setPaTitleName(TITLE_NAME);
-        pit.getPaTitle().add(befattning);
-        pit.getSpecialityName().add(INVARTES_MEDICIN);
-        pit.getSpecialityName().add(ALLMAN_MEDICIN);
-        pitList.add(pit);
-        return pitList;
     }
 
     private Intyg createIntyg() {
@@ -199,15 +153,4 @@ public class CreateNewDraftRequestBuilderTest {
         return intyg;
     }
 
-    private CommissionType createMIU(String personHsaId, String unitHsaId,
-            LocalDateTime miuEndDate) {
-        CommissionType miu = new CommissionType();
-        miu.setHealthCareProviderHsaId(CAREGIVER_HSAID);
-        miu.setHealthCareProviderName("Landstinget");
-        miu.setHealthCareUnitName("Sjukhuset");
-        miu.setHealthCareUnitHsaId(unitHsaId);
-        miu.setHealthCareUnitEndDate(miuEndDate);
-        miu.setCommissionHsaId(personHsaId);
-        return miu;
-    }
 }

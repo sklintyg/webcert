@@ -26,7 +26,6 @@ import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -46,6 +45,9 @@ public abstract class BaseCreateDraftCertificateValidatorImplTest {
     protected static final String FK7263 = "fk7263";
     protected static final String TSBAS = "ts-bas";
 
+    protected WebCertUser user;
+
+
     @Mock
     protected IntygModuleRegistry moduleRegistry;
 
@@ -54,9 +56,9 @@ public abstract class BaseCreateDraftCertificateValidatorImplTest {
 
     @Mock
     protected PatientDetailsResolver patientDetailsResolver;
-
-    @Mock
-    protected WebcertUserDetailsService webcertUserDetailsService;
+//
+//    @Mock
+//    protected WebcertUserDetailsService webcertUserDetailsService;
 
     @Before
     public void setup() {
@@ -66,7 +68,8 @@ public abstract class BaseCreateDraftCertificateValidatorImplTest {
         when(moduleRegistry.moduleExists(TSBAS)).thenReturn(true);
         when(commonAuthoritiesResolver.getSekretessmarkeringAllowed())
                 .thenReturn(Arrays.asList("fk7263", "lisjp", "luse", "luae_na", "luae_fs", "db", "doi"));
-        when(webcertUserDetailsService.loadUserByHsaId(anyString())).thenReturn(buildUser());
+        user = buildUser();
+        //when(webcertUserDetailsService.loadUserByHsaId(anyString())).thenReturn(user);
     }
 
     protected WebCertUser buildUser() {
