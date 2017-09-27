@@ -146,9 +146,6 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     get: function get(intygId) {
         get._super.call(this, 'lisjp', intygId);
     },
-    isAt: function isAt() {
-        return isAt._super.call(this);
-    },
     angeAktivitetsbegransning: function(text) {
         return this.konsekvenser.aktivitetsbegransning.sendKeys(text);
     },

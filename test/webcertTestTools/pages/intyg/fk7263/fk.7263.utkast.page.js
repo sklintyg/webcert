@@ -217,9 +217,6 @@ var FkUtkast = BaseUtkast._extend({
     get: function get(intygId) {
         get._super.call(this, 'fk7263', intygId);
     },
-    isAt: function isAt() {
-        return isAt._super.call(this);
-    },
     whenSmittskyddIsDisplayed: function() {
         return browser.wait(this.smittskyddLabel.isDisplayed());
     },

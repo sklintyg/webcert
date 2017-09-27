@@ -82,9 +82,6 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
 
     get: function get(intygId) {
         get._super.call(this, 'luae_na', intygId);
-    },
-    isAt: function isAt() {
-        return isAt._super.call(this);
     }
 });
 

@@ -126,9 +126,6 @@ var LuseUtkast = BaseSmiUtkast._extend({
 
     get: function get(intygId) {
         get._super.call(this, 'luse', intygId);
-    },
-    isAt: function isAt() {
-        return isAt._super.call(this);
     }
 });
 
