@@ -46,7 +46,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
         specHelper.getUtkastIdFromUrl().then(function(id) {
             utkastId = id;
         });
-        data = wcTestTools.testdata.ts.diabetes.getRandom(utkastId);
+        data = wcTestTools.testdata.ts.diabetes.get(utkastId);
     });
 
     describe('Fyll i intyget', function() {
@@ -80,11 +80,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
     it('Signera intyget', function() {
         UtkastPage.whenSigneraButtonIsEnabled();
 
-        browser.sleep(1000);
-
         UtkastPage.signeraButtonClick();
-
-        browser.sleep(1000);
 
         expect(IntygPage.isAt()).toBeTruthy();
     });

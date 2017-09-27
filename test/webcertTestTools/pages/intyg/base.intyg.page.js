@@ -26,6 +26,8 @@
 var JClass = require('jclass');
 var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
+var restUtil = require('../../util/rest.util.js');
+
 var BaseIntyg = JClass._extend({
     init: function() {
         this.intygType = null;
@@ -234,6 +236,22 @@ var BaseIntyg = JClass._extend({
     },
     getKompletteringsDialogSvaraMedMeddelandeButton: function() {
         return element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
+    },
+    waitUntilIntygInIT: function(intygsId) {
+        browser.wait(function() {
+            var innerDefer = protractor.promise.defer();
+            restUtil.getIntyg(intygsId).then(function(intygBody) {
+                if (intygBody.body) {
+                    innerDefer.fulfill(true);
+                }
+                else {
+                    innerDefer.fulfill(false);
+                }
+            }, function(error) {
+                innerDefer.reject(error);
+            });
+            return innerDefer.promise;
+        }, 10000);
     }
 });
 

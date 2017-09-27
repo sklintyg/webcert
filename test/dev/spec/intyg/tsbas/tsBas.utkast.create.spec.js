@@ -47,7 +47,7 @@ describe('Create and Sign ts-bas utkast', function() {
         specHelper.getUtkastIdFromUrl().then(function(id) {
             utkastId = id;
         });
-        data = wcTestTools.testdata.ts.bas.getRandom(utkastId);
+        data = wcTestTools.testdata.ts.bas.get(utkastId);
     });
 
     describe('Fyll i intyget', function() {
@@ -120,11 +120,7 @@ describe('Create and Sign ts-bas utkast', function() {
     it('Signera intyget', function() {
         UtkastPage.whenSigneraButtonIsEnabled();
 
-        browser.sleep(1000);
-
         UtkastPage.signeraButtonClick();
-
-        browser.sleep(1000);
 
         expect(IntygPage.isAt()).toBeTruthy();
     });

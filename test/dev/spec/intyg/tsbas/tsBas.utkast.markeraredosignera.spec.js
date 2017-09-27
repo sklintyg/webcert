@@ -48,7 +48,7 @@ describe('INTYG-4083: Create partially complete tsbas utkast and mark as ready t
                     utkastId = id;
                 });
 
-                data = wcTestTools.testdata.ts.bas.getRandom(utkastId);
+                data = wcTestTools.testdata.ts.bas.get(utkastId);
             });
         });
 

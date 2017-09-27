@@ -46,7 +46,7 @@ describe('Create and Sign luae_fs utkast', function() {
             specHelper.getUtkastIdFromUrl().then(function(id) {
                 utkastId = id;
             });
-            data = wcTestTools.testdata.fk.LUAE_FS.getRandom(utkastId);
+            data = wcTestTools.testdata.fk.LUAE_FS.get(utkastId);
         });
 
         it('tomt utkast skall visa lista med fel efter klick på Signera', function() {
@@ -90,19 +90,16 @@ describe('Create and Sign luae_fs utkast', function() {
         it('Signera intyget', function() {
             UtkastPage.whenSigneraButtonIsEnabled();
 
-            browser.sleep(1000);
-
             UtkastPage.signeraButtonClick();
-
-            browser.sleep(1000);
 
             expect(IntygPage.isAt()).toBeTruthy();
         });
 
         it('Verifiera intyg', function() {
             // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-            // upplysningar ännu. Det hjälper inte att höja timeout tiden ovan. Sidan behöver också laddas om efter
-            // fördröjningen.
+            // upplysningar ännu.
+            // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
+            IntygPage.waitUntilIntygInIT(utkastId);
             browser.refresh();
 
             IntygPage.whenCertificateLoaded();

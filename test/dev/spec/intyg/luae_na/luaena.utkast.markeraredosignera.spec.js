@@ -48,7 +48,7 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                 specHelper.getUtkastIdFromUrl().then(function(id) {
                     utkastId = id;
                 });
-                data = wcTestTools.testdata.fk.LUAE_NA.getRandom(utkastId);
+                data = wcTestTools.testdata.fk.LUAE_NA.get(utkastId);
             });
         });
 
