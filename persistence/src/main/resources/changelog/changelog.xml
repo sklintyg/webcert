@@ -962,6 +962,10 @@
   </changeSet>
 
   <changeSet id="49" author="kja">
+    <preConditions onFail="MARK_RAN">
+        <sqlCheck expectedResult="blob">SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'INTYG' AND COLUMN_NAME = 'MODEL'</sqlCheck>
+    </preConditions>
+
     <modifyDataType
       columnName="MODEL"
       newDataType="mediumblob"
