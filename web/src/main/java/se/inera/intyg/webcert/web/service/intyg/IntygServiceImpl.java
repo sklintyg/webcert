@@ -416,18 +416,14 @@ public class IntygServiceImpl implements IntygService {
                     "Cannot send intyg to recipient, PU-service is not accessible so sekretessmarkering cannot be checked.");
         }
 
+        // Specialfall för fk7263 utfärdade innan patientuppgifter rensades från intyg.
         if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intyg.getTyp())) {
             if (sekretessStatus != SekretessStatus.FALSE) {
-
-                try {
-                    CertificateResponse certificate = modelFacade.getCertificate(intygsId, typ);
-                    if (certificate.getMetaData().getSignDate().isBefore(sekretessmarkeringStartDatum)) {
-                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
-                                "Cannot send certificate for sekretessmarkerad patient having existing name or address.");
-                    }
-                } catch (IntygModuleFacadeException e) {
-                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+                if (intyg.getGrundData().getSigneringsdatum().isBefore(sekretessmarkeringStartDatum)) {
+                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
+                            "Cannot send certificate for sekretessmarkerad patient having existing name or address.");
                 }
+
             }
         }
     }
