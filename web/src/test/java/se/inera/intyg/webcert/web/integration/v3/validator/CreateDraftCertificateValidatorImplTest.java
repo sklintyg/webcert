@@ -42,7 +42,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -159,7 +158,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testPuServiceLooksUpPatientForTsBas() {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertFalse(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
@@ -168,7 +167,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu() {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
         ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
@@ -177,7 +176,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
@@ -185,9 +184,8 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidateIntygstypPrivilege() {
         // We do the same validation as to view the utkast when CreateDraftCertificate.
-        when(webcertUserDetailsService.loadUserByHsaId(anyString())).thenReturn(buildUserUnauthorized());
         ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), buildUserUnauthorized());
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
     }

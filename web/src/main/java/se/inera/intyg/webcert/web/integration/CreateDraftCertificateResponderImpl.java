@@ -24,12 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.integration.util.HoSPersonEnhetHelper;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -42,9 +43,6 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
-import se.riv.infrastructure.directory.v1.CommissionType;
-
-import java.util.List;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -52,9 +50,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private UtkastService utkastService;
-
-    @Autowired
-    private HsaPersonService hsaPersonService;
 
     @Autowired
     private CreateNewDraftRequestBuilder draftRequestBuilder;
@@ -68,10 +63,23 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     @Autowired
     private MonitoringLogService monitoringLogService;
 
+    @Autowired
+    private WebcertUserDetailsService webcertUserDetailsService;
+
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
 
         Utlatande utkastsParams = parameters.getUtlatande();
+
+        // Redo this: Build a full Vårdgivare -> Vårdenhet -> Mottagning tree and then check.
+        String invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
+        String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
+        IntygUser user;
+        try {
+            user = webcertUserDetailsService.loadUserByHsaId(invokingUserHsaId);
+        } catch (Exception e) {
+            return createMIUErrorResponse(utkastsParams);
+        }
 
         // Validate draft parameters
         ResultValidator resultsValidator = validator.validate(utkastsParams);
@@ -79,36 +87,32 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             return createValidationErrorResponse(resultsValidator);
         }
 
-        ResultValidator appErrorsValidator = validator.validateApplicationErrors(utkastsParams);
+        ResultValidator appErrorsValidator = validator.validateApplicationErrors(utkastsParams, user);
         if (appErrorsValidator.hasErrors()) {
             return createApplicationErrorResponse(appErrorsValidator);
         }
 
-        String invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
-        String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
-
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
 
         // Check if the invoking health personal has MIU rights on care unit
-        CommissionType unitMIU = checkMIU(utkastsParams);
-        if (unitMIU == null) {
+        if (!checkMIU(user, invokingUnitHsaId)) {
             return createMIUErrorResponse(utkastsParams);
         }
 
         // Create the draft
-        Utkast utkast = createNewDraft(utkastsParams, unitMIU);
+        Utkast utkast = createNewDraft(utkastsParams, user);
 
         return createSuccessResponse(utkast.getIntygsId());
     }
 
-    private Utkast createNewDraft(Utlatande utlatandeRequest, CommissionType unitMIU) {
+    private Utkast createNewDraft(Utlatande utlatandeRequest, IntygUser user) {
 
         String invokingUserHsaId = utlatandeRequest.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension();
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
 
         // Create draft request
-        CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utlatandeRequest, unitMIU);
+        CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utlatandeRequest, user);
 
         // Add the creating vardenhet to registry
         addVardenhetToRegistry(draftRequest);
@@ -121,27 +125,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
      * Method checks if invoking person, i.e the health care personal,
      * is entitled to look at the information.
      */
-    private CommissionType checkMIU(Utlatande utlatandeType) {
-
-        String invokingUserHsaId = utlatandeType.getSkapadAv().getPersonalId().getExtension();
-        String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
-
-        List<CommissionType> miusOnUnit;
-        try {
-            miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
-        } catch (HsaServiceCallException e) {
-            return null;
-        }
-
-        switch (miusOnUnit.size()) {
-        case 0:
-            return null;
-        case 1:
-            return miusOnUnit.get(0);
-        default:
-            LOG.warn("Found more than one MIU for user '{}' on unit '{}', returning the first one", invokingUserHsaId, invokingUnitHsaId);
-            return miusOnUnit.get(0);
-        }
+    private boolean checkMIU(IntygUser user, String invokingUnitHsaId) {
+        return HoSPersonEnhetHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent();
     }
 
     /**

@@ -62,9 +62,10 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
     }
 
     @Override
-    public ResultValidator validateApplicationErrors(Intyg intyg) {
+    public ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user) {
         ResultValidator errors = ResultValidator.newInstance();
-        validateSekretessmarkeringOchIntygsTyp(intyg.getSkapadAv(), intyg.getTypAvIntyg(), intyg.getPatient().getPersonId(), errors);
+        validateSekretessmarkeringOchIntygsTyp(intyg.getSkapadAv(), intyg.getTypAvIntyg(), intyg.getPatient().getPersonId(),
+                user, errors);
         return errors;
     }
 
@@ -72,7 +73,8 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         String intygsTyp = typAvIntygType.getCode();
 
         String moduleId = moduleRegistry.getModuleIdFromExternalId(intygsTyp);
-        if (!moduleRegistry.moduleExists(moduleId) || !featureService.isModuleFeatureActive(HANTERA_INTYGSUTKAST.getName(), moduleId)) {
+        if (!moduleRegistry.moduleExists(moduleId) || !featureService.isModuleFeatureActive(HANTERA_INTYGSUTKAST.getName(),
+                moduleId)) {
             errors.addError("Intyg {0} is not supported", intygsTyp);
         }
     }
@@ -110,9 +112,8 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
     }
 
     private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvIntyg typAvUtlatande,
-            PersonId personId, ResultValidator errors) {
+            PersonId personId, IntygUser user, ResultValidator errors) {
         String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
-        IntygUser user = webcertUserDetailsService.loadUserByHsaId(skapadAv.getPersonalId().getExtension());
 
         AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         if (!authoritiesValidator.given(user, intygsTyp)

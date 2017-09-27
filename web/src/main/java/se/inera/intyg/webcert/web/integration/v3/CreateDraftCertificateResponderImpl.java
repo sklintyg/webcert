@@ -27,9 +27,12 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.integration.util.HoSPersonEnhetHelper;
 import se.inera.intyg.webcert.web.integration.v3.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.v3.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
@@ -70,10 +73,23 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     @Autowired
     private MonitoringLogService monitoringLogService;
 
+    @Autowired
+    private WebcertUserDetailsService webcertUserDetailsService;
+
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
 
         Intyg utkastsParams = parameters.getIntyg();
+
+        String invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
+        String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
+
+        IntygUser user;
+        try {
+            user = webcertUserDetailsService.loadUserByHsaId(invokingUserHsaId);
+        } catch (Exception e) {
+            return createMIUErrorResponse(utkastsParams);
+        }
 
         // Validate draft parameters
         ResultValidator resultsValidator = validator.validate(utkastsParams);
@@ -81,36 +97,32 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             return createValidationErrorResponse(resultsValidator);
         }
 
-        ResultValidator appErrorsValidator = validator.validateApplicationErrors(utkastsParams);
+        ResultValidator appErrorsValidator = validator.validateApplicationErrors(utkastsParams, user);
         if (appErrorsValidator.hasErrors()) {
             return createApplicationErrorResponse(appErrorsValidator);
         }
-
-
-        String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastsParams.getSkapadAv().getPersonalId().getExtension(),
                 invokingUnitHsaId);
 
         // Check if the invoking health personal has MIU rights on care unit
-        CommissionType unitMIU = checkMIU(utkastsParams);
-        if (unitMIU == null) {
+        if (!HoSPersonEnhetHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent()) {
             return createMIUErrorResponse(utkastsParams);
         }
 
         // Create the draft
-        Utkast utkast = createNewDraft(utkastsParams, unitMIU);
+        Utkast utkast = createNewDraft(utkastsParams, user);
 
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId);
     }
 
-    private Utkast createNewDraft(Intyg utkastRequest, CommissionType unitMIU) {
+    private Utkast createNewDraft(Intyg utkastRequest, IntygUser user) {
 
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastRequest.getSkapadAv().getPersonalId().getExtension(),
                 utkastRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
         // Create draft request
-        CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastRequest, unitMIU);
+        CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastRequest, user);
 
         // Add the creating vardenhet to registry
         addVardenhetToRegistry(draftRequest);
