@@ -388,7 +388,7 @@ public class IntygServiceImpl implements IntygService {
         verifyNotReplacedBySignedIntyg(intygsId, "send");
 
         // WC-US-SM-001 - vi får ej skicka FK-intyg för sekretessmarkerad patient som innehåller personuppgifter.
-        verifyNoExposureOfSekretessmarkeradPatient(intygsId, typ, intyg);
+        verifyNoExposureOfSekretessmarkeradPatient(intyg);
 
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, webCertUserService.getUser());
 
@@ -406,7 +406,7 @@ public class IntygServiceImpl implements IntygService {
 
     // Kontrollera om det signerade intyget i intygstjänsten har namn- eller adressuppgifter. Om så är fallet,
     // så får vi EJ skicka intyget för sekretessmarkerad patient.
-    private void verifyNoExposureOfSekretessmarkeradPatient(String intygsId, String typ, Utlatande intyg) {
+    private void verifyNoExposureOfSekretessmarkeradPatient(Utlatande intyg) {
 
         SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(intyg.getGrundData().getPatient().getPersonId());
 
