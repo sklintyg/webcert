@@ -76,11 +76,14 @@ exports.config = {
 
         // Any other browser
         browserName: 'chrome', // possible values: firefox, chrome
-/*
+
         chromeOptions: {
-            args: [ "--headless", "--disable-gpu", "--window-size=1280,768" ]
+            args: [
+                /*"--headless", "--disable-gpu", */
+                "--window-size=1280,1024"
+            ]
         },
-*/
+
         // Run parallell instances of same browser (combine with any browser above)
         shardTestFiles: false, // set to true to divide tests among instances
         maxInstances: 1 // change to >1 for parallell instances
