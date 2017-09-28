@@ -41,8 +41,12 @@ module.exports = function() {
                         .then(function(text) {
                             global.fornyatIntyg = intyg;
 
+                            logger.info('global.fornyatIntyg.id: ' + global.fornyatIntyg.id);
+
                             intyg.id = text.split('/').slice(-2)[0];
                             intyg.id = intyg.id.split('?')[0];
+
+                            logger.info('intyg.id: ' + intyg.id);
                         });
 
                 });

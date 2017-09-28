@@ -36,7 +36,7 @@ function formatDate(date) {
 function getLogEntries(activity, intygsID, userHSA, connection) {
     var dbTable = 'webcert_requests.storelog__mock_requests';
     var now = new Date();
-    var oneMinuteSinceNow = new Date(now.getTime() + (-1) * 60000);
+    var oneMinuteSinceNow = new Date(now.getTime() + (-2) * 60000);
     oneMinuteSinceNow = formatDate(oneMinuteSinceNow);
 
     var query = `SELECT * FROM ${dbTable} WHERE
