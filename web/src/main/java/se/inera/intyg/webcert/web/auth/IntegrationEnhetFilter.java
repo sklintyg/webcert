@@ -21,9 +21,11 @@ package se.inera.intyg.webcert.web.auth;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.servlet.FilterChain;
@@ -39,6 +41,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.mapping;
@@ -51,6 +54,9 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationEnhetFilter.class);
 
     private static final String ENHET = "enhet";
+
+    @Autowired(required = false)
+    private Optional<CommonFeatureService> commonFeatureService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -74,6 +80,7 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
             // the UserDetailsService that built the Principal, but better safe than sorry...
             if (userHasExactlyOneSelectableVardenhet(webCertUser)) {
                 webCertUser.changeValdVardenhet(webCertUser.getVardgivare().get(0).getVardenheter().get(0).getId());
+                updateFeatures(webCertUser);
                 filterChain.doFilter(request, response);
             } else {
                 LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
@@ -83,6 +90,7 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
         } else {
             List<String> enhet = queryMap.get(ENHET);
             if (webCertUser.changeValdVardenhet(enhet.get(0))) {
+                updateFeatures(webCertUser);
                 filterChain.doFilter(request, response);
             } else {
                 LOG.warn(
@@ -91,6 +99,13 @@ public class IntegrationEnhetFilter extends OncePerRequestFilter {
                         webCertUser.getHsaId(), enhet.get(0));
                 response.sendRedirect("/error.jsp?reason=login.medarbetaruppdrag");
             }
+        }
+    }
+
+    private void updateFeatures(WebCertUser webCertUser) {
+        if (commonFeatureService.isPresent()) {
+            webCertUser.setFeatures(commonFeatureService.get().getActiveFeatures(webCertUser.getValdVardenhet().getId(),
+                    webCertUser.getValdVardgivare().getId()));
         }
     }
 

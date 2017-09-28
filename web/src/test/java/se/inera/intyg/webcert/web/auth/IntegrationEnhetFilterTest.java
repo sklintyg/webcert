@@ -21,12 +21,15 @@ package se.inera.intyg.webcert.web.auth;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.servlet.FilterChain;
@@ -38,8 +41,11 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,6 +82,9 @@ public class IntegrationEnhetFilterTest {
     SecurityContextImpl securityContextImpl;
 
     @Mock
+    CommonFeatureService featureService;
+
+    @Mock
     Authentication authentication;
 
     @org.junit.Before
@@ -85,6 +94,7 @@ public class IntegrationEnhetFilterTest {
         when(req.getSession(false)).thenReturn(session);
         when(session.getAttribute(SPRING_SECURITY_CONTEXT)).thenReturn(securityContextImpl);
         when(securityContextImpl.getAuthentication()).thenReturn(authentication);
+        ReflectionTestUtils.setField(testee, "commonFeatureService", Optional.of(featureService));
     }
 
     @Test
@@ -145,6 +155,32 @@ public class IntegrationEnhetFilterTest {
 
         verify(resp, times(1)).sendRedirect(any());
         verify(filterChain, times(0)).doFilter(req, resp);
+    }
+
+    @Test
+    public void testSetsFeaturesWhenEnhetIsSpecified() throws IOException, ServletException {
+        WebCertUser user = spy(new WebCertUser(buildIntygUserWithMultipleVgAndVe()));
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(req.getQueryString()).thenReturn("fornamn=Fornamnet&enhet=" + ENHET_ID + "-0");
+        testee.doFilterInternal(req, resp, filterChain);
+
+        verify(resp, times(0)).sendRedirect(any());
+        verify(filterChain, times(1)).doFilter(req, resp);
+        verify(featureService).getActiveFeatures(anyString(), anyString());
+        verify(user).setFeatures(any());
+    }
+
+    @Test
+    public void testSetsFeatures() throws IOException, ServletException {
+        WebCertUser user = spy(new WebCertUser(buildIntygUserWithSingleEnhet()));
+        when(authentication.getPrincipal()).thenReturn(user);
+        when(req.getQueryString()).thenReturn("");
+        testee.doFilterInternal(req, resp, filterChain);
+
+        verify(resp, times(0)).sendRedirect(any());
+        verify(filterChain, times(1)).doFilter(req, resp);
+        verify(featureService).getActiveFeatures(anyString(), anyString());
+        verify(user).setFeatures(any());
     }
 
     private IntygUser buildIntygUserWithMultipleVgAndVe() {
