@@ -68,17 +68,6 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     När jag klickar på pilen
     Så ska frågepanelen för SRS vara "maximerad"
 
-@SRS-US-W01 @allmänt
-@notReady
-Scenario: Prediktion ska kunna visa förhöjd risk
-    Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
-    När jag fyller i diagnoskod som "har förhöjd risk"
-    Och jag klickar på knappen för SRS
-    Och jag trycker på knappen "Visa"
-    Så ska meddelandet "Förhöjd risk" visas
-
-
 @SRS-US-W02 @åtgärder
 Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
     Givet en patient som "har givit samtycke" till SRS
@@ -125,4 +114,14 @@ Scenario: Prediktion ska kunna visa ingen förhöjd risk
     Och jag klickar på knappen för SRS
     Och jag trycker på knappen "Visa"
     Så ska meddelandet "Ingen förhöjd risk" visas
+
+@SRS-US-W04 @prediktion
+@notReady
+Scenario: Prediktion ska kunna visa förhöjd risk
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "har förhöjd risk"
+    Och jag klickar på knappen för SRS
+    Och jag trycker på knappen "Visa"
+    Så ska meddelandet "Förhöjd risk" visas
 
