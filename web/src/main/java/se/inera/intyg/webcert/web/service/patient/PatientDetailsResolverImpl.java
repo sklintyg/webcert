@@ -44,13 +44,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class is responsible for implementing GE-002, e.g. requirements on how to fetch patient details for a given
  * intygstyp.
- *
+ * <p>
  * It's over-complex and needs refactoring.
- *
+ * <p>
  * Created by eriklupander on 2017-07-03.
  */
 public class PatientDetailsResolverImpl implements PatientDetailsResolver {
@@ -133,11 +134,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     @Override
     public boolean isAvliden(Personnummer personnummer) {
         PersonSvar personSvar = puService.getPerson(personnummer);
-        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-            return personSvar.getPerson().isAvliden();
-        } else {
-            return false;
-        }
+        return personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
     }
 
     @Override
@@ -158,8 +155,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      *
      * @param patient
      * @param intygsTyp
-     * @return
-     *         An updated patient DTO with the non-relevant fields nulled out.
+     * @return An updated patient DTO with the non-relevant fields nulled out.
      */
     @Override
     public Patient updatePatientForSaving(Patient patient, String intygsTyp) {
@@ -204,13 +200,19 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return retPatient;
     }
 
+    /*
+     * I: Info om avliden från både PU-tjänst och journalsystem.
+     */
     private Patient resolveFkPatient(Personnummer personnummer, WebCertUser user) {
         PersonSvar personSvar = puService.getPerson(personnummer);
-        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-            return toPatientFromPersonSvarNameOnly(personnummer, personSvar);
-        } else {
-            return resolveFkPatientPuUnavailable(personnummer, user);
+        Patient patient = personSvar.getStatus() == PersonSvar.Status.FOUND
+                ? toPatientFromPersonSvarNameOnly(personnummer, personSvar)
+                : resolveFkPatientPuUnavailable(personnummer, user);
+        if (patient != null) {
+            patient.setAvliden(patient.isAvliden()
+                    || Optional.ofNullable(user.getParameters()).map(IntegrationParameters::isPatientDeceased).orElse(false));
         }
+        return patient;
     }
 
     private Patient resolveFkPatientPuUnavailable(Personnummer personnummer, WebCertUser user) {
@@ -224,9 +226,10 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     /*
-     * I: Namn, s-markering från PU-tjänst, info om avliden.
-     * I: Adress från journalsystem
-     * F: PU-tjänsten (alla uppgifter)
+     * I: Namn, s-markering från PU-tjänst.
+     * I: Info om avliden från både PU-tjänst och journalsystem.
+     * I: Adress från journalsystem.
+     * F: PU-tjänsten (alla uppgifter).
      */
     private Patient resolveTsPatient(Personnummer personnummer, WebCertUser user) {
 
@@ -237,6 +240,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
                 Patient patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
                 IntegrationParameters parameters = user.getParameters();
+
+                // Update avliden with integrationparameters
+                patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
 
                 // All address fields needs to be present from Journalsystem, otherwise use PU instead.
                 if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
