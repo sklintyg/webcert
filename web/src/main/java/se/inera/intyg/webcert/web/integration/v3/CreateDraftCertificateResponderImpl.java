@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -46,9 +45,6 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
-import se.riv.infrastructure.directory.v1.CommissionType;
-
-import java.util.List;
 
 @SchemaValidation
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
@@ -129,33 +125,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         // Create draft and return its id
         return utkastService.createNewDraft(draftRequest);
-    }
-
-    /**
-     * Method checks if invoking person, i.e the health care personal,
-     * is entitled to look at the information.
-     */
-    private CommissionType checkMIU(Intyg utkastType) {
-
-        String invokingUserHsaId = utkastType.getSkapadAv().getPersonalId().getExtension();
-        String invokingUnitHsaId = utkastType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
-
-        List<CommissionType> miusOnUnit;
-        try {
-            miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
-        } catch (HsaServiceCallException e) {
-            return null;
-        }
-
-        switch (miusOnUnit.size()) {
-        case 0:
-            return null;
-        case 1:
-            return miusOnUnit.get(0);
-        default:
-            LOG.warn("Found more than one MIU for user '{}' on unit '{}', returning the first one", invokingUserHsaId, invokingUnitHsaId);
-            return miusOnUnit.get(0);
-        }
     }
 
     /**
