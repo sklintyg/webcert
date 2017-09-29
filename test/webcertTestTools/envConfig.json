@@ -39,6 +39,7 @@
     "ip20": {
         "WEBCERT_URL": "https://webcert.ip20.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",
+        "REHABSTOD_URL": "https://rehabstod.ip20.nordicmedtest.sjunet.org/",
         "INTYGTJANST_URL": "https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate",
 		"STATISTIKTJANST_URL": "https://statistik.ip20.nordicmedtest.sjunet.org",
         "DATABASE_NAME": "webcert_ip20",

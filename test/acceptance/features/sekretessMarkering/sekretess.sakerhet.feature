@@ -61,8 +61,6 @@ Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts di
 	När jag går in på att skapa ett "Transportstyrelsens, diabetes" intyg
 	Så ska jag varnas om att "Behörighet saknas"
 	
-	
-	
 
 #@djupintegration
 #Scenario: Djupintegrerat: SJF flaggan ger inte några extra rättigheter om patienten är sekrettessmarkerad.

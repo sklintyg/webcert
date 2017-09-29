@@ -17,6 +17,7 @@ Scenariomall: Skapa och signera ett intyg för <intygKod>
 	När jag går till Mina intyg för patienten
 	Så ska intyget finnas i Mina intyg
 
+	Och jag loggar ut ur Mina intyg
 	#När jag går in på intyget i Mina intyg
 	#Så ska intygets information i Mina intyg vara den jag angett
 
