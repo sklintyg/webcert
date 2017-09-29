@@ -173,6 +173,10 @@
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
         <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+        <!-- temp test: If we do this, we should should use ALLOW-FROM with a strategy (whitelist or regexp) -->
+        <security:headers>
+          <security:frame-options disabled="true"></security:frame-options>
+        </security:headers>
       </security:http>
 
       <security:authentication-manager alias="authenticationManager">
@@ -196,6 +200,11 @@
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+
+      <!-- temp test: If we do this, we should should use ALLOW-FROM with a strategy (whitelist or regexp) -->
+      <security:headers>
+        <security:frame-options disabled="true"></security:frame-options>
+      </security:headers>
     </security:http>
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
