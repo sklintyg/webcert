@@ -50,9 +50,6 @@ var SokSkrivIntyg = WebcertBasePage._extend({
             this.setPersonnummer(pn).then(),
             this.pnButton.click().then()
         ]);
-    },
-    isAt: function() {
-        return this.at.isDisplayed();
     }
 });
 

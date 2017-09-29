@@ -72,7 +72,10 @@ var BaseUtkast = JClass._extend({
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId + '/');
     },
     isAt: function() {
-        return this.at.isDisplayed();
+        var at = this.at;
+        return browser.wait(function() {
+            return at.isPresent();
+        }, 5000);
     },
     isSigneraButtonEnabled: function() {
         return this.signeraButton.isEnabled();
