@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, browser, protractor */
+/* globals pages, browser, protractor, logger */
 'use strict';
 let helpers = require('./helpers');
 let Soap = require('soap');
@@ -31,6 +31,7 @@ module.exports = function() {
     this.Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet "(med SRS|utan SRS)"$/,
         srsStatus => {
             user = srsdata.inloggningar[srsStatus];
+            logger.log('info', `Loggar in som ${user.forNamn} ${user.efterNamn}`);
             return pages.welcome.get()
                 .then(() => pages.welcome.loginByJSON(JSON.stringify(user), true));
         }
@@ -60,7 +61,10 @@ module.exports = function() {
 
     this.When(/^jag (?:fyller|fyllt) i diagnoskod som "(.*)"$/,
         srsStatus => fk7263utkast.angeDiagnosKod(srsdata.diagnoskoder[srsStatus])
-        .then(() => browser.sleep(1000)) // Angular behöver extra tid på sig här för att spara diagnoskoden
+        .then(() => {
+            logger.log('info', 'Använder diagnoskod: ' + srsdata.diagnoskoder[srsStatus]);
+            return browser.sleep(1000); // Angular behöver extra tid på sig här för att spara diagnoskoden
+        })
     );
 
     this.Then(/^ska knappen för SRS vara i läge "(stängd|öppen|gömd)"$/,
@@ -70,7 +74,6 @@ module.exports = function() {
     this.When(/^jag klickar på knappen för SRS$/,
         () => fk7263utkast.srs.knapp().click()
     );
-
 
     this.When(/^jag klickar på pilen$/,
         () => fk7263utkast.srs.visamer().click()
@@ -126,11 +129,17 @@ module.exports = function() {
     );
 
     this.Then(/^ska OBS-åtgärder från "(.*)" visas$/,
-        listNamn => expect(getAtgarderOBS()).to.eventually.have.same.members(srsdata.atgarder[listNamn])
+        listNamn => {
+            logger.debug('Förväntade OBS-åtgärder: ' + srsdata.atgarder[listNamn]);
+            return expect(getAtgarderOBS()).to.eventually.have.same.members(srsdata.atgarder[listNamn]);
+        }
     );
 
     this.Then(/^ska REK-åtgärder från "(.*)" visas$/,
-        listNamn => expect(getAtgarderREK()).to.eventually.have.same.members(srsdata.atgarder[listNamn])
+        listNamn => {
+            logger.debug('Förväntade REK-åtgärder: ' + srsdata.atgarder[listNamn]);
+            return expect(getAtgarderREK()).to.eventually.have.same.members(srsdata.atgarder[listNamn]);
+        }
     );
 
 };
@@ -138,7 +147,7 @@ module.exports = function() {
 function clickAnswerRadioButtons() {
     return fk7263utkast.srs.fragor()
         .all(by.css('input[type=radio]'))
-        .each(el => el.click()).catch(() => console.log('Ignoring unclickable radio button.')); // Av någon anledning kastas ett fel trots att alla element går att klicka på
+        .each(el => el.click()).catch(() => logger.log('debug', 'Ignoring unclickable radio button.')); // Av någon anledning kastas ett fel trots att alla element går att klicka på
 }
 
 function setConsent(patient, user, consent) {
@@ -148,7 +157,9 @@ function setConsent(patient, user, consent) {
      **/
     const patientId = patient.id.slice(0, 8) + '-' + patient.id.slice(8 + 0);
     const link = buildLinkToSetConsent(patientId, user.enhetId);
-    return browser.executeAsyncScript(function(url, samtycke) {
+    const payload = consent === 'har givit samtycke' ? 'true' : 'false';
+    logger.log('debug', `URL: ${link} PAYLOAD: ${payload}`);
+    return browser.executeAsyncScript(function(url, samtycke, body) {
             var callback = arguments[arguments.length - 1];
             var xhr = new XMLHttpRequest();
             xhr.open('PUT', url, true);
@@ -158,14 +169,13 @@ function setConsent(patient, user, consent) {
                     callback(xhr.responseText);
                 }
             };
-            xhr.send(samtycke === 'har givit samtycke' ? 'true' : 'false');
-        }, link, consent)
+            xhr.send(body);
+        }, link, consent, payload)
         .then(response => expect(response).to.equal('"OK"'));
 }
 
 function buildLinkToSetConsent(patientId, enhetId) {
     let uri = uriTemplate `api/srs/consent/${patientId}/${enhetId}`;
-    console.log('Consent URL: ' + process.env.WEBCERT_URL + uri);
     return process.env.WEBCERT_URL + uri;
 }
 
@@ -175,7 +185,7 @@ function getAtgarderREK() {
             .replace(/\n/g, '') // Ta bort alla radbrytningar
             .split('• ')
             .slice(1); // Första elementet blir alltid tomt
-        console.log('Hittade REK-åtgärder: ' + atgarder);
+        logger.log('debug', 'Hittade REK-åtgärder: ' + atgarder);
         return Promise.resolve(atgarder);
     });
 }
@@ -184,7 +194,7 @@ function getAtgarderOBS() {
     return fk7263utkast.srs.atgarderObs().getText().then(t => {
         const atgarder = t.replace(/\\n/g, '') // Ta bort alla radbrytningar
             .split('. ');
-        console.log('Hittade OBS-åtgärder: ' + atgarder);
+        logger.log('debug', 'Hittade OBS-åtgärder: ' + atgarder);
         return Promise.resolve(atgarder);
     });
 }
@@ -206,6 +216,8 @@ function createDraftUsingSOAP(user, patientId) {
     );
 
     let url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
+    logger.debug('debug', url);
+    logger.debug('debug', body);
 
     return new Promise((resolve, reject) =>
         Soap.createClient(url, (err, client) => {
@@ -219,7 +231,7 @@ function createDraftUsingSOAP(user, patientId) {
                 }
             });
         })
-    );
+    ).catch(err => logger.log('error', err));
 }
 
 function isNotOk(response) {
@@ -228,7 +240,7 @@ function isNotOk(response) {
 
 function buildLinkToIntyg(intygsId, patient, enhetsId) {
     let uri = uriTemplate `visa/intyg/${intygsId}?fornamn=${patient.fornamn}&efternamn=${patient.efternamn}&postadress=${patient.adress.postadress}&postnummer=${patient.adress.postnummer}&postort=${patient.adress.postort}&enhet=${enhetsId}`;
-    console.log('IntygsURL: ' + process.env.WEBCERT_URL + uri);
+    logger.log('info', 'IntygsURL: ' + process.env.WEBCERT_URL + uri);
     return process.env.WEBCERT_URL + uri;
 }
 

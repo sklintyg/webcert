@@ -49,12 +49,19 @@ function checkConsoleErrors(cb) {
     cb();
 }
 
+function removeAlerts() {
+    browser.switchTo().alert().accept()
+        .then(() => logger.log('info', 'Dialogruta accepterad.'))
+        .catch(err => {}); // Ingen dialogruta hittad, allt är frid och fröjd.
+}
+
 module.exports = function() {
     this.setDefaultTimeout(600 * 1000);
     global.externalPageLinks = [];
 
-
     this.AfterStep(function(event, callback) {
+        // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
+        removeAlerts();
 
         // Samla in alla externa länkar på aktuell sida
         element.all(by.css('a')).each(function(link) {
