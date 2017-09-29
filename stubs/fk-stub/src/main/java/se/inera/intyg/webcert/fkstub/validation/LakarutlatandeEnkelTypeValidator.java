@@ -47,20 +47,6 @@ public class LakarutlatandeEnkelTypeValidator {
             if (lakarutlatandeEnkelType.getSigneringsTidpunkt() == null) {
                 validationErrors.add("No signeringstidpunkt found!");
             }
-            // validateAndCorrectPatient();
         }
     }
-
-    // INTYG-4086
-//    private void validateAndCorrectPatient() {
-//        PatientType patient = lakarutlatandeEnkelType.getPatient();
-//        if (PatientValidator.validateAndCorrect(lakarutlatandeEnkelType.getLakarutlatandeId(), patient, validationErrors)) {
-//            // Get namn for patient - mandatory
-//            // As per INTYG-4086, name is intentionally left out.
-////            if (patient.getFullstandigtNamn() == null || patient.getFullstandigtNamn().isEmpty()) {
-////                validationErrors.add("No Patient fullstandigtNamn elements found or set!");
-////            }
-//        }
-//    }
-
 }
