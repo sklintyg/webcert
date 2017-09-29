@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.intyg.webcert.web.integration.util.HoSPersonEnhetHelper;
+import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -126,7 +126,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
      * is entitled to look at the information.
      */
     private boolean checkMIU(IntygUser user, String invokingUnitHsaId) {
-        return HoSPersonEnhetHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent();
+        return HoSPersonHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent();
     }
 
     /**

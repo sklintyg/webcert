@@ -1,5 +1,7 @@
 package se.inera.intyg.webcert.web.integration;
 
+import static org.mockito.Mockito.when;
+
 import com.google.common.collect.ImmutableSet;
 import org.mockito.Mock;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -14,8 +16,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
 import java.util.HashMap;
-
-import static org.mockito.Mockito.when;
+import java.util.Map;
 
 /**
  * Created by eriklupander on 2017-09-27.
@@ -41,6 +42,8 @@ public abstract class BaseCreateDraftCertificateTest {
     public static final String TITLE_CODE = "203010";
     public static final String TITLE_NAME = "Läkare";
     public static final String ALLMAN_MEDICIN = "Allmänmedicin";
+    public static final String MEDARBETARUPPDRAG = "Vård och behandling";
+
 
     @Mock
     protected WebcertUserDetailsService webcertUserDetailsService;
@@ -63,9 +66,16 @@ public abstract class BaseCreateDraftCertificateTest {
         user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
         user.setBefattningar(Arrays.asList(TITLE_CODE));
         user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
-
+        user.setTitel(TITLE_NAME);
         user.setVardgivare(Arrays.asList(createVardgivare()));
+        user.setMiuNamnPerEnhetsId(createMiuNamnPerEnhetsId());
         return user;
+    }
+
+    private Map<String, String> createMiuNamnPerEnhetsId() {
+        Map<String, String> map = new HashMap<>();
+        map.put(UNIT_HSAID, MEDARBETARUPPDRAG);
+        return map;
     }
 
     private Privilege createPrivilege(String privilege) {

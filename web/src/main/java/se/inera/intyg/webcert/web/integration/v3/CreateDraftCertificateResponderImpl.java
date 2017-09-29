@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.intyg.webcert.web.integration.util.HoSPersonEnhetHelper;
+import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.v3.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.v3.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
@@ -102,7 +102,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
                 invokingUnitHsaId);
 
         // Check if the invoking health personal has MIU rights on care unit
-        if (!HoSPersonEnhetHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent()) {
+        if (!HoSPersonHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent()) {
             return createMIUErrorResponse(utkastsParams);
         }
 

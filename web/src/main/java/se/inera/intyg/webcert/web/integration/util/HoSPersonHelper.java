@@ -15,10 +15,9 @@ import java.util.Optional;
  *
  * Created by eriklupander on 2017-09-27.
  */
-public final class HoSPersonEnhetHelper {
+public final class HoSPersonHelper {
 
-    private HoSPersonEnhetHelper() {
-
+    private HoSPersonHelper() {
     }
 
     public static Optional<AbstractVardenhet> findVardenhetEllerMottagning(IntygUser user, String enhetsId) {
@@ -61,13 +60,13 @@ public final class HoSPersonEnhetHelper {
 
     public static Vardenhet createVardenhetFromIntygUser(String enhetId, IntygUser user) {
 
-        AbstractVardenhet enhet = HoSPersonEnhetHelper.findVardenhetEllerMottagning(user, enhetId)
+        AbstractVardenhet enhet = HoSPersonHelper.findVardenhetEllerMottagning(user, enhetId)
                 .orElseThrow(() -> new IllegalStateException("User '" + user.getHsaId() + "' has no MIU for care unit '" + enhetId + "'"));
 
         if (enhet instanceof se.inera.intyg.infra.integration.hsa.model.Vardenhet) {
             se.inera.intyg.infra.integration.hsa.model.Vardenhet hsaVardenhet =
                     (se.inera.intyg.infra.integration.hsa.model.Vardenhet) enhet;
-            se.inera.intyg.infra.integration.hsa.model.Vardgivare hsaVardgivare = HoSPersonEnhetHelper
+            se.inera.intyg.infra.integration.hsa.model.Vardgivare hsaVardgivare = HoSPersonHelper
                     .findVardgivare(user, hsaVardenhet.getVardgivareHsaId())
                     .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for vardenhet '" + enhetId + "'"));
 
@@ -90,7 +89,7 @@ public final class HoSPersonEnhetHelper {
         }
         if (enhet instanceof Mottagning) {
             Mottagning m = (Mottagning) enhet;
-            se.inera.intyg.infra.integration.hsa.model.Vardgivare hsaVardgivare = HoSPersonEnhetHelper
+            se.inera.intyg.infra.integration.hsa.model.Vardgivare hsaVardgivare = HoSPersonHelper
                     .findVardgivareForMottagning(user, m.getId())
                     .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for mottagning '" + enhetId + "'"));
 
@@ -116,7 +115,9 @@ public final class HoSPersonEnhetHelper {
     }
 
     public static void enrichHoSPerson(HoSPersonal hosPerson, IntygUser user) {
-        // set befattningar and specialiteter from user object
+        // set titel, medarbetaruppdrag, befattningar and specialiteter from user object
+        hosPerson.setTitel(user.getTitel());
+        hosPerson.setMedarbetarUppdrag(user.getSelectedMedarbetarUppdragNamn());
         hosPerson.getBefattningar().addAll(user.getBefattningar());
         hosPerson.getSpecialiteter().addAll(user.getSpecialiseringar());
     }

@@ -25,7 +25,7 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.TransportConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.integration.util.HoSPersonEnhetHelper;
+import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
@@ -38,8 +38,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     @Override
     public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, IntygUser user) {
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(),
-                HoSPersonEnhetHelper.createVardenhetFromIntygUser(intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
-        HoSPersonEnhetHelper.enrichHoSPerson(hosPerson, user);
+                HoSPersonHelper.createVardenhetFromIntygUser(intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
+        HoSPersonHelper.enrichHoSPerson(hosPerson, user);
         return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), null, hosPerson,
                 TransportConverterUtil.getPatient(intyg.getPatient(), true));
     }
