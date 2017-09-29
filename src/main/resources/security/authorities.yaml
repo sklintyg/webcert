@@ -57,7 +57,7 @@ knownIntygstyper:
   - &ki060 luae_na
   - &ki070 luae_fs
   - &ki080 db
-  - &ki090 DOI
+  - &ki090 doi
 
 # De rättigheter som systemet har
 knownPrivileges:
