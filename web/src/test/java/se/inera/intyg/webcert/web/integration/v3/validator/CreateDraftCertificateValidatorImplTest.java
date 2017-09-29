@@ -192,6 +192,16 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
     }
 
+    @Test
+    public void testValidatePuNotAvailable() {
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        ResultValidator result = validator
+                .validateApplicationErrors(buildIntyg(FK7263, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+        assertTrue(result.hasErrors());
+        verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+    }
+
+
     private Intyg buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,
             String enhetsnamn,
             boolean createUnit) {
