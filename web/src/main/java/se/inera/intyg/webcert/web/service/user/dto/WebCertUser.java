@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.user.dto;
 
+import se.inera.intyg.infra.security.common.model.IntygUser;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import se.inera.intyg.infra.security.common.model.IntygUser;
 
 /**
  * @author andreaskaltenbach
@@ -55,7 +55,6 @@ public class WebCertUser extends IntygUser {
         this.valdVardgivare = intygUser.getValdVardgivare();
         this.miuNamnPerEnhetsId = intygUser.getMiuNamnPerEnhetsId();
         this.authenticationMethod = intygUser.getAuthenticationMethod();
-
         this.features = intygUser.getFeatures();
         this.roles = intygUser.getRoles();
         this.authorities = intygUser.getAuthorities();
