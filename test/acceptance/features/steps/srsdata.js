@@ -36,7 +36,7 @@ module.exports = {
         'finns i SRS': 'M79',
         'inte finns i SRS': 'A23',
         'har åtgärder': 'M54',
-        'har förhöjd risk': 'F43',
+        'har förhöjd risk': '',
         'inte har förhöjd risk': '',
         'saknar prediktion': '',
         'saknar statistik': 'S82',
@@ -52,10 +52,10 @@ module.exports = {
             origin: 'DJUPINTEGRATION'
         },
         'utan SRS': {
-            forNamn: 'Arnold',
-            efterNamn: 'Johansson',
-            hsaId: 'TSTNMT2321000156-1079',
-            enhetId: 'TSTNMT2321000156-1077',
+            hsaId: 'TST5565594230-106J',
+            forNamn: 'Markus',
+            efterNamn: 'Gran',
+            enhetId: 'IFV1239877878-103D',
             origin: 'DJUPINTEGRATION'
         }
     },

@@ -31,7 +31,7 @@ module.exports = function() {
     this.Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet "(med SRS|utan SRS)"$/,
         srsStatus => {
             user = srsdata.inloggningar[srsStatus];
-            logger.log('info', `Loggar in som ${user.forNamn} ${user.efterNamn}`);
+            logger.log('info', `Loggar in som ${user.forNamn} ${user.efterNamn} på enhet ${user.enhetId}`);
             return pages.welcome.get()
                 .then(() => pages.welcome.loginByJSON(JSON.stringify(user), true));
         }
