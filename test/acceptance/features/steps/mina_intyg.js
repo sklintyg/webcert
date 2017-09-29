@@ -102,4 +102,11 @@ module.exports = function() {
             callback.pending();
         }
     });
+
+    this.Given(/^jag loggar ut ur Mina intyg$/, function() {
+        return element(by.id('mvklogoutLink')).sendKeys(protractor.Key.SPACE).then(function() {
+            browser.sleep(3000);
+        });
+
+    });
 };

@@ -30,6 +30,7 @@ function sendCreateDraft(url, body, callback) {
     soap.createClient(url, function(err, client) {
         logger.info(url);
         if (err) {
+            logger.error('sendCreateDraft misslyckades' + err);
             callback(err);
         } else {
             client.CreateDraftCertificate(body, function(err, result, resBody) {
