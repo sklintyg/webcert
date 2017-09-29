@@ -46,10 +46,7 @@ import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
 
-    private static final String CERT_TYPE = "fk7263";
-    private static final String USER_HSAID = "SE1234567890";
-    private static final String UNIT_HSAID = "SE0987654321";
-    private static final String CAREGIVER_HSAID = "SE0000112233";
+    private static final String CERT_TYPE = FK7263;
 
 
     private WebCertUser user;
@@ -60,19 +57,18 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     @Before
     public void setup() {
         user = buildWebCertUser();
+        user.changeValdVardenhet(UNIT_HSAID);
     }
 
     @Test
     public void test() {
-
-        Vardenhet hsaVardenhet = createHsaVardenhet();
-
+        // given
         Utlatande utlatande = createUtlatande();
 
-        //CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
-
+        // when
         CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, user);
 
+        // then
         assertNotNull(res);
 
         assertEquals(CERT_TYPE, res.getIntygType());
@@ -100,27 +96,25 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
 
     @Test
     public void testBuildSetsPatientFullName() {
+        // when
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createUtlatande(), user);
 
-        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createUtlatande(),
-                user);
-
+        // then
         assertNotNull(res);
-
         assertNotNull(res.getPatient().getFullstandigtNamn());
         assertEquals("Adam Bertil Cesarsson Davidsson Eriksson", res.getPatient().getFullstandigtNamn());
     }
 
     @Test
     public void testWithHsaBefattningAndSpecialityNames() {
-
-        Vardenhet hsaVardenhet = createHsaVardenhet();
-
+        // given
         Utlatande utlatande = createUtlatande();
 
+        // when
         CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, user);
 
+        // then
         assertNotNull(res);
-
         assertNotNull(res.getHosPerson());
         assertEquals(TITLE_CODE, res.getHosPerson().getBefattningar().get(0));
         assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiteter().get(0));
@@ -128,7 +122,6 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     }
 
     private Vardenhet createHsaVardenhet() {
-
         Vardenhet hsaVardenhet = new Vardenhet();
         hsaVardenhet.setId(UNIT_HSAID);
         hsaVardenhet.setNamn("Vardenheten");

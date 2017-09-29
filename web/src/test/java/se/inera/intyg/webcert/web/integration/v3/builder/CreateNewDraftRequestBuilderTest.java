@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.integration.v3.builder;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,13 +41,10 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
+
+    private static final String CERT_TYPE = "LUSE";
 
     public static final String PERSONNUMMER = "19121212-1212";
     public static final String FORNAMN = "Adam";
@@ -51,15 +53,6 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     public static final String PATIENT_POSTADRESS = "postadress";
     public static final String PATIENT_POSTNUMMER = "postnummer";
     public static final String PATIENT_POSTORT = "postort";
-    public static final String FULLSTANDIGT_NAMN = "Abel Baker";
-    public static final String INVARTES_MEDICIN = "Invärtes medicin";
-    public static final String TITLE_CODE = "203010";
-    public static final String TITLE_NAME = "Läkare";
-    public static final String ALLMAN_MEDICIN = "Allmänmedicin";
-    private static final String CERT_TYPE = "LUSE";
-    private static final String USER_HSAID = "SE1234567890";
-    private static final String UNIT_HSAID = "SE0987654321";
-    private static final String CAREGIVER_HSAID = "SE0000112233";
 
     private WebCertUser user;
 
@@ -72,6 +65,8 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     @Before
     public void setup() {
         user = buildWebCertUser();
+        user.changeValdVardenhet(UNIT_HSAID);
+
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
                 .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     }
