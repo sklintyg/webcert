@@ -47,8 +47,12 @@ public abstract class BaseCreateDraftCertificateValidator {
 
         if (pnr != null) {
             final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
-            validateSekretess(errors, intygsTyp, sekretessStatus);
-            validateHsaUserMayCreateDraft(errors, user, sekretessStatus);
+            if (sekretessStatus != SekretessStatus.UNDEFINED) {
+                validateSekretess(errors, intygsTyp, sekretessStatus);
+                validateHsaUserMayCreateDraft(errors, user, sekretessStatus);
+            } else {
+                errors.addError("Cannot issue intyg. The PU-service was unreachable. Please try again later.");
+            }
         }
     }
 
