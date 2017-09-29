@@ -40,7 +40,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
@@ -80,7 +79,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -120,7 +118,6 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
 
-    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -154,20 +151,26 @@ public class UtkastServiceImpl implements UtkastService {
         sendNotification(savedUtkast, Event.CREATED, getUserReference());
 
         // Create a PDL log for this action
-        Vardenhet vardenhet = request.getHosPerson().getVardenhet();
-
-        LogUser logUser = new LogUser.Builder(
-                request.getHosPerson().getPersonId(),
-                vardenhet.getEnhetsid(),
-                vardenhet.getVardgivare().getVardgivarid())
-                        .userName(request.getHosPerson().getFullstandigtNamn())
-                        .userAssignment(request.getHosPerson().getBefattningar().stream().collect(Collectors.joining(", ")))
-                        .enhetsNamn(vardenhet.getEnhetsnamn())
-                        .vardgivareNamn(vardenhet.getVardgivare().getVardgivarnamn())
-                        .build();
-
+        LogUser logUser = createLogUser(request);
         logCreateDraftPDL(savedUtkast, logUser);
+
         return savedUtkast;
+    }
+
+    private LogUser createLogUser(CreateNewDraftRequest request) {
+        HoSPersonal hosPerson = request.getHosPerson();
+
+        String personId = hosPerson.getPersonId();
+        String vardenhetId = hosPerson.getVardenhet().getEnhetsid();
+        String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
+
+        return new LogUser.Builder(personId, vardenhetId, vardgivareId)
+            .userName(hosPerson.getFullstandigtNamn())
+            .userTitle(hosPerson.getTitel())
+            .userAssignment(hosPerson.getMedarbetarUppdrag())
+            .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
+            .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
+            .build();
     }
 
     @Override
@@ -448,35 +451,6 @@ public class UtkastServiceImpl implements UtkastService {
         } else {
             LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
         }
-
-        //
-        //
-        //
-        // if(personId == null || (!Personnummer.createValidatedPersonnummerWithDash(personId).isPresent() &&
-        // !SamordningsnummerValidator.isSamordningsNummer(personId))) {
-        // // Do nothing
-        // } else {
-        // draftPatient.setPersonId(personId);
-        // }
-        // //Patient newPatient = WebcertModelFactoryUtil.buildNewEffectivePatient(draftPatient,
-        // request.getNewPatientDetails());
-        //
-        // if (!draftPatient.equals(newPatient)) {
-        // LOG.debug("Updated patient detected - about to update draft {}", draftId);
-        // try {
-        // String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), newPatient);
-        // updateUtkastModel(utkast, updatedModel);
-        // saveDraft(utkast);
-        // monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
-        // sendNotification(utkast, Event.CHANGED, getUserReference());
-        // } catch (ModuleException e) {
-        // throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-        // "Patient details on Utkast " + draftId + " could not be updated", e);
-        // }
-        //
-        // } else {
-        // LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
-        // }
 
     }
 

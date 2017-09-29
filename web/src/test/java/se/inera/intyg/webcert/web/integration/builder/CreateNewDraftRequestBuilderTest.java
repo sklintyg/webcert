@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.integration.builder;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,16 +37,11 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
-import se.riv.infrastructure.directory.v1.CommissionType;
 import se.riv.infrastructure.directory.v1.PaTitleType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
@@ -119,8 +117,6 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
 
         Utlatande utlatande = createUtlatande();
 
-        // CommissionType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
-
         CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(utlatande, user);
 
         assertNotNull(res);
@@ -161,7 +157,6 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     }
 
     private Utlatande createUtlatande() {
-
         Utlatande utlatande = new Utlatande();
 
         // Type
@@ -179,15 +174,14 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         hosPerson.setPersonalId(userHsaId);
         hosPerson.setFullstandigtNamn(FULLSTANDIGT_NAMN);
 
-
-
-        Enhet hosEnhet = new Enhet();
         HsaId unitHsaId = new HsaId();
         unitHsaId.setExtension(UNIT_HSAID);
         unitHsaId.setRoot("UNITHSAID");
-        hosEnhet.setEnhetsId(unitHsaId);
-        hosPerson.setEnhet(hosEnhet);
 
+        Enhet hosEnhet = new Enhet();
+        hosEnhet.setEnhetsId(unitHsaId);
+
+        hosPerson.setEnhet(hosEnhet);
         utlatande.setSkapadAv(hosPerson);
 
         // Patient
@@ -207,15 +201,4 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         return utlatande;
     }
 
-    private CommissionType createMIU(String personHsaId, String unitHsaId,
-            LocalDateTime miuEndDate) {
-        CommissionType miu = new CommissionType();
-        miu.setHealthCareProviderHsaId(CAREGIVER_HSAID);
-        miu.setHealthCareProviderName("Landstinget");
-        miu.setHealthCareUnitName("Sjukhuset");
-        miu.setHealthCareUnitHsaId(unitHsaId);
-        miu.setHealthCareUnitEndDate(miuEndDate);
-        miu.setCommissionHsaId(personHsaId);
-        return miu;
-    }
 }
