@@ -29,7 +29,7 @@ var jsonDisplay = element(by.id('userJsonDisplay'));
 module.exports = {
     loginButton:element(by.id('loginBtn')),
     get: function() {
-        return browser.get('welcome.html');
+        return browser.get(process.env.WEBCERT_URL + 'welcome.html');
     },
     isAt: function() {
         return this.loginButton.isDisplayed();

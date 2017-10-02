@@ -62,15 +62,8 @@ Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts di
 	Så ska jag varnas om att "Behörighet saknas"
 	
 
-#@djupintegration
-#Scenario: Djupintegrerat: SJF flaggan ger inte några extra rättigheter om patienten är sekrettessmarkerad.
-#Går in på vårdenhet A
-#Går in på patient som är sekretessmarkerad
-#Skapar intyg x
-#Går in på vårdenhet B med SJF=true
-#Så ska ett felmedelande visas
 
-#@Rehabstod
+#@Rehabstod #TODO
 #Scenario: Rehabkordinator ska inte kunna se sekrettessmarkerade intyg.
 #Logga in som läkare, så ska du se S-markerat intyg med namn: "Sekretessmarkerad patient"
 #Logga in som Rehabkordinator, så ska du inte se intyget
@@ -88,7 +81,7 @@ Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts di
 
 #@Uthopp
 #Scenario: Uthopp
-#Testa att intyg som är skapat med registerCertificate och skickat till FK kan hämtas från intygstjänsten och visas i webcert. #kristina
+#Inga tester krävs - inga krav påvärkar (efter att FK7263 är bortplockat)
 
 #@Statistik
 #Scenario: Statistik

@@ -145,19 +145,35 @@ module.exports = function() {
         }*/
 
         if (scenario.isFailed()) {
-            browser.takeScreenshot().then(function(png) {
-                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-                var filename = 'screenshots/' + new Date().getTime() + '.png';
-                writeScreenShot(png, ssPath + filename, function() {
-                    scenario.attach(filename, 'image/png', function(err) {
-                        if (err) {
-                            throw err;
-                        }
-                        console.log('Skärmbild tagen: ' + filename);
-                        checkConsoleErrors(callback);
+
+            var frontEndJS = 'var div = document.createElement("DIV"); ';
+            frontEndJS += 'div.style.position = "fixed";';
+            frontEndJS += 'div.style.height = (window.innerHeight - 2) + "px";';
+            frontEndJS += 'div.style.width = (window.innerWidth - 2) + "px";';
+            frontEndJS += 'div.style.border = "1px solid red";';
+            frontEndJS += 'div.style.top = "1px";';
+            frontEndJS += 'div.style.zIndex = "10000";';
+            frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
+            frontEndJS += 'body.appendChild(div);';
+
+            browser.executeScript(frontEndJS).then(function() {
+                return browser.takeScreenshot().then(function(png) {
+                    var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+                    var filename = 'screenshots/' + new Date().getTime() + '.png';
+                    writeScreenShot(png, ssPath + filename, function() {
+                        scenario.attach(filename, 'image/png', function(err) {
+                            if (err) {
+                                throw err;
+                            }
+                            console.log('Skärmbild tagen: ' + filename);
+                            checkConsoleErrors(callback);
+                        });
                     });
                 });
             });
+
+
+
         } else {
             checkConsoleErrors(callback);
         }
