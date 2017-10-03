@@ -18,10 +18,30 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
@@ -32,15 +52,10 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCertificateValidatorImplTest {
+
+
 
     @InjectMocks
     private CreateDraftCertificateValidatorImpl validator;
@@ -178,20 +193,46 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Test
     public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
+        when(commonAuthoritiesResolver.getSekretessmarkeringAllowed())
+                .thenReturn(Arrays.asList(Fk7263EntryPoint.MODULE_ID));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
+    @Test
+    public void testCreateDBAllowedWhenPatientIsDeceased() {
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(patientDetailsResolver.isAvliden(any(Personnummer.class))).thenReturn(true);
+        ResultValidator result = validator.validateApplicationErrors(buildIntyg(DbModuleEntryPoint.MODULE_ID, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), buildUserUnauthorized());
+        assertFalse(result.hasErrors());
+        verify(patientDetailsResolver).isAvliden(any(Personnummer.class));
+    }
+   
+    @Test
+    public void testCreateDOIAllowedWhenPatientIsDeceased() {
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(patientDetailsResolver.isAvliden(any(Personnummer.class))).thenReturn(true);
+        ResultValidator result = validator.validateApplicationErrors(buildIntyg(DoiModuleEntryPoint.MODULE_ID, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), buildUserUnauthorized());
+        assertFalse(result.hasErrors());
+        verify(patientDetailsResolver).isAvliden(any(Personnummer.class));
+    }
 
     @Test
-    public void testValidateIntygstypPrivilege() {
-        // We do the same validation as to view the utkast when CreateDraftCertificate.
+    public void testCreateOtherTypesNotAllowedWhenPatientIsDeceased() {
+        List<String> typesToTest = Arrays.asList(Fk7263EntryPoint.MODULE_ID,
+                TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
+                LisjpEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
+                LuaenaEntryPoint.MODULE_ID);
 
-        ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), buildUserUnauthorized());
-        assertTrue(result.hasErrors());
-        verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
+        when(patientDetailsResolver.isAvliden(any(Personnummer.class))).thenReturn(true);
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+       for(String type: typesToTest) {
+           ResultValidator result = validator.validateApplicationErrors(buildIntyg(type, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+           assertTrue(result.hasErrors());
+       }
+
+        verify(patientDetailsResolver, times(typesToTest.size())).isAvliden(any(Personnummer.class));
     }
 
     private Utlatande buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,

@@ -18,7 +18,13 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -31,6 +37,13 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
  * Created by eriklupander on 2017-09-19.
  */
 public abstract class BaseCreateDraftCertificateValidator {
+
+    // Static config of the only types of intyg that allows creation when patient is actually dead.
+    // Potentially this could have been implemented as a feature, but it was considered to be more of a long-lived
+    // business requirement, without the need of being easily toggled.
+    private static final List<String> AVLIDEN_PATIENT_ALLOWED_FOR_TYPES = Arrays.asList(
+            DbModuleEntryPoint.MODULE_ID,
+            DoiModuleEntryPoint.MODULE_ID);
 
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
@@ -50,6 +63,19 @@ public abstract class BaseCreateDraftCertificateValidator {
             } else {
                 errors.addError("Cannot issue intyg. The PU-service was unreachable. Please try again later.");
             }
+        }
+    }
+
+    protected void validateCreateForAvlidenPatientAllowed(ResultValidator errors, String personId, String typAvUtlatande) {
+        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande);
+        Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
+
+        if (pnr != null) {
+            if (patientDetailsResolver.isAvliden(pnr) && !AVLIDEN_PATIENT_ALLOWED_FOR_TYPES.contains(intygsTyp)) {
+                errors.addError("Cannot issue intyg type {0} for deceased patient", intygsTyp);
+            }
+        } else {
+            errors.addError("Cannot issue intyg type {0} for patient with invalid personnummer {1}", intygsTyp, personId);
         }
     }
 

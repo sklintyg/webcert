@@ -18,9 +18,13 @@
  */
 package se.inera.intyg.webcert.web.integration.v3.validator;
 
-import com.google.common.base.Strings;
+import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.HANTERA_INTYGSUTKAST;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -38,8 +42,6 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
-
-import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.HANTERA_INTYGSUTKAST;
 
 @Component(value = "createDraftCertificateValidatorImplV2")
 public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertificateValidator implements CreateDraftCertificateValidator {
@@ -66,6 +68,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         ResultValidator errors = ResultValidator.newInstance();
         validateSekretessmarkeringOchIntygsTyp(intyg.getSkapadAv(), intyg.getTypAvIntyg(), intyg.getPatient().getPersonId(),
                 user, errors);
+        validateCreateForAvlidenPatientAllowed(errors, intyg.getPatient().getPersonId().getExtension(), intyg.getTypAvIntyg().getCode());
         return errors;
     }
 
