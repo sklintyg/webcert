@@ -157,26 +157,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(webcertFeatureServiceMock.isModuleFeatureActive(eq(ModuleFeature.HANTERA_FRAGOR.getName()), anyString())).thenReturn(true);
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFindByEnhetsIdSorting() {
-        List<FragaSvar> unsortedList = new ArrayList<>();
-        unsortedList.add(buildFragaSvar(1L, MAY, null));
-        unsortedList.add(buildFragaSvar(2L, DECEMBER_YEAR_9999, null));
-        unsortedList.add(buildFragaSvar(3L, null, JANUARY));
-        unsortedList.add(buildFragaSvar(4L, null, AUGUST));
-        when(fragasvarRepositoryMock.findByEnhetsId(any(List.class))).thenReturn(unsortedList);
-
-        List<FragaSvar> result = service.getFragaSvar(Collections.singletonList("123"));
-
-        assertEquals(4, result.size());
-
-        assertEquals(2, (long) result.get(0).getInternReferens());
-        assertEquals(4, (long) result.get(1).getInternReferens());
-        assertEquals(1, (long) result.get(2).getInternReferens());
-        assertEquals(3, (long) result.get(3).getInternReferens());
-    }
-
     @Test
     public void testFindByIntygSorting() {
         List<FragaSvar> unsortedList = new ArrayList<>();

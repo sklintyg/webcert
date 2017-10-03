@@ -200,20 +200,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     @Transactional(value = "jpaTransactionManager", readOnly = true)
-    public List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds) {
-        List<FragaSvar> result = fragaSvarRepository.findByEnhetsId(enhetsHsaIds);
-        if (result != null) {
-            // We do the sorting in code, since we need to sort on a derived
-            // property and not a direct entity persisted
-            // proerty in which case we could have used an order by in the
-            // query.
-            Collections.sort(result, SENASTE_HANDELSE_DATUM_COMPARATOR);
-        }
-        return result;
-    }
-
-    @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public List<FragaSvarView> getFragaSvar(String intygId) {
 
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
@@ -281,8 +267,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + fragaSvar.getInternReferens().toString() + " has invalid Amne(" + fragaSvar.getAmne()
                     + ") for saving answer");
         }
-
-        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
         // Implement Business Rule FS-005, FS-006
         WebCertUser user = webCertUserService.getUser();
