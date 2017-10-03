@@ -98,6 +98,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         if (!checkMIU(user, invokingUnitHsaId)) {
             return createMIUErrorResponse(utkastsParams);
         }
+        user.changeValdVardenhet(invokingUnitHsaId);
 
         // Create the draft
         Utkast utkast = createNewDraft(utkastsParams, user);

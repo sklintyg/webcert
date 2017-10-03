@@ -105,6 +105,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         if (!HoSPersonHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent()) {
             return createMIUErrorResponse(utkastsParams);
         }
+        user.changeValdVardenhet(invokingUnitHsaId);
 
         // Create the draft
         Utkast utkast = createNewDraft(utkastsParams, user);

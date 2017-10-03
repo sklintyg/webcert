@@ -194,7 +194,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testValidatePuNotAvailable() {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
         ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(FK7263, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+                .validateApplicationErrors(buildIntyg(FK7263, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
