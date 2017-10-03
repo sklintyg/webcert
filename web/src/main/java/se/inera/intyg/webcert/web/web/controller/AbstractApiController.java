@@ -18,17 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.util.List;
 
 public abstract class AbstractApiController {
 
@@ -40,7 +39,6 @@ public abstract class AbstractApiController {
 
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @Autowired
     private WebCertUserService webCertUserService;
 
     protected HoSPersonal createHoSPersonFromUser() {
@@ -62,4 +60,8 @@ public abstract class AbstractApiController {
         return webCertUserService;
     }
 
+    @Autowired
+    public void setWebCertUserService(WebCertUserService webCertUserService) {
+        this.webCertUserService = webCertUserService;
+    }
 }

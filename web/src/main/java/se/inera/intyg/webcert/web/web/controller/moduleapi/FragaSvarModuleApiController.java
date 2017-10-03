@@ -18,8 +18,25 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DispatchState;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -30,21 +47,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DispatchState;
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/fragasvar")
 @Api(value = "fragasvar", description = "REST API - moduleapi - fragasvar", produces = MediaType.APPLICATION_JSON)
@@ -55,13 +59,20 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Autowired
     private FragaSvarService fragaSvarService;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     @GET
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public List<FragaSvarView> fragaSvarForIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         abortIfFragaSvarNotActive(intygsTyp);
-        return fragaSvarService.getFragaSvar(intygsId);
+        List<FragaSvarView> fragaSvarList = fragaSvarService.getFragaSvar(intygsId);
+
+        validateSekretessmarkering(intygsTyp, intygsId, fragaSvarList);
+        return fragaSvarList;
     }
+
 
     @PUT
     @Path("/{intygsTyp}/{fragasvarId}/besvara")
@@ -138,4 +149,26 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     private void abortIfFragaSvarNotActive(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
     }
+
+    /**
+     * If there is at least one fragaSvar in the response, we fetch the personId and check for sekretessmarkering.
+     */
+    private void validateSekretessmarkering(String intygsTyp, String intygsId, List<FragaSvarView> fragaSvarList) {
+        if (fragaSvarList.size() > 0) {
+            WebCertUser user = getWebCertUserService().getUser();
+
+            Personnummer pnr = fragaSvarList.get(0).getFragaSvar().getIntygsReferens().getPatientId();
+            SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
+            if (sekretessStatus == SekretessStatus.UNDEFINED) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, "Cannot list fraga/svar for '"
+                        + intygsId + "'. PU service unavailable or personnummer " + pnr.getPnrHash() + " not valid");
+            }
+
+            authoritiesValidator.given(user, intygsTyp)
+                    .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, sekretessStatus == SekretessStatus.TRUE)
+                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                            "User is not allowed to handle sekretessmarkerad patient"));
+        }
+    }
+
 }
