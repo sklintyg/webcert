@@ -235,11 +235,6 @@ module.exports = {
         id: '194201199124',
         namn: '',
         efternamn: ''
-    },{
-        id: '190001199801', // Har adress i PU
-        namn: '',
-        efternamn: '',
-		kon: 'kvinna'
     }],
     patienterAvlidna: [{
         id: '190001309814',
