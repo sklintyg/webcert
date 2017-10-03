@@ -18,9 +18,11 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
-import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -64,13 +66,16 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         ResultValidator errors = ResultValidator.newInstance();
         validateSekretessmarkeringOchIntygsTyp(utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(),
                 utlatande.getPatient().getPersonId(), user, errors);
+        validateCreateForAvlidenPatientAllowed(errors, utlatande.getPatient().getPersonId().getExtension(),
+                utlatande.getTypAvUtlatande().getCode());
         return errors;
     }
 
     private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvUtlatande typAvUtlatande,
-                                                        PersonId personId, IntygUser user, ResultValidator errors) {
+            PersonId personId, IntygUser user, ResultValidator errors) {
 
-        // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the PU-service.
+        // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the
+        // PU-service.
         String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
         String personnummer = personId.getExtension();
 
