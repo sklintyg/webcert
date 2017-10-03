@@ -316,7 +316,8 @@
           postort: 'Nyberga',
           sjf: true,
           kopieringOk: true,
-          red: ''
+          red: '',
+          enhet: undefined
       };
 
       $scope.environment = {
@@ -335,7 +336,7 @@
       $scope.djupintegrationsInloggning = function(evt) {
         evt.preventDefault();
         $http.post('/fake', "userJsonDisplay=" + $scope.jsonModel, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
-          var q = 'visa/intyg/'
+          var q = 'visa/intyg/';
           if ($scope.intlink.intygTyp !== '') {
             q+= $scope.intlink.intygTyp + '/'
           }
@@ -345,6 +346,9 @@
           q+='&kopieringOK=' + $scope.intlink.kopieringOk;
           q+='&avliden=' + $scope.intlink.avliden;
           q+='&ref=' + $scope.intlink.ref;
+          if ($scope.intlink.enhet) {
+              q+='&enhet=' + $scope.intlink.enhet;
+          }
           window.location.href=q;
         }, function fail(error) {
           alert("Fel vid djupintegrations-inloggningen!");
@@ -457,6 +461,7 @@
                   <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.postadress" placeholder="Postadress"><br>
                   <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
                   <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="intlink.ref" placeholder="Ref"><br>
+                  <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="intlink.enhet" placeholder="enhetsid"><br>
                   <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
                   <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.kopieringOk"> <br>
                   <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.avliden"> <br>
