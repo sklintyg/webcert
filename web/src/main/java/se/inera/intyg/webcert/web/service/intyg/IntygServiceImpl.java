@@ -47,8 +47,10 @@ import se.inera.intyg.common.support.modules.support.api.notification.ArendeCoun
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -79,7 +81,6 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -173,6 +174,8 @@ public class IntygServiceImpl implements IntygService {
 
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+
     @PostConstruct
     public void init() {
         sekretessmarkeringStartDatum = LocalDateTime.parse(sekretessmarkeringProdDate, DateTimeFormatter.ISO_DATE_TIME);
@@ -206,6 +209,11 @@ public class IntygServiceImpl implements IntygService {
         if (!coherentJournaling) {
             verifyEnhetsAuth(intygsData.getUtlatande(), true);
         }
+        Personnummer pnr = intygsData.getUtlatande().getGrundData().getPatient().getPersonId();
+        String enhetsId = intygsData.getUtlatande().getGrundData().getSkapadAv().getVardenhet()
+                .getEnhetsid();
+
+        verifySekretessmarkering(intygsTyp, webCertUserService.getUser(), enhetsId, pnr);
 
         // Log read to PDL
         logService.logReadIntyg(logRequest);
@@ -214,6 +222,26 @@ public class IntygServiceImpl implements IntygService {
         monitoringService.logIntygRead(intygsId, intygsTyp);
 
         return intygsData;
+    }
+
+    private void verifySekretessmarkering(String intygsTyp, WebCertUser user, String enhetsId, Personnummer pnr) {
+        // I.e. if not explicitly FALSE, set flag to true.
+        boolean isSekretessmarkerad = !patientDetailsResolver.getSekretessStatus(pnr)
+                .equals(SekretessStatus.FALSE);
+
+        if (isSekretessmarkerad) {
+            authoritiesValidator.given(user, intygsTyp)
+                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                    .orThrow();
+
+            // INTYG-4231: Verifiera enhet / mottagning. Får ej visa utanför vald enhet (och dess underenheter)
+            if (!webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(
+                    enhetsId)) {
+                LOG.debug("User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
+                        "User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
+            }
+        }
     }
 
     @Override

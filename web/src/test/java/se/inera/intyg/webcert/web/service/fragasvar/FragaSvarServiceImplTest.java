@@ -49,6 +49,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
@@ -70,6 +71,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
@@ -140,6 +142,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     private ArendeDraftService arendeDraftService;
     @Mock
     private StatisticsGroupByUtil statisticsGroupByUtil;
+    @Mock
+    private PatientDetailsResolver patientDetailsResolver;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -275,6 +279,42 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         assertEquals(2, result.size());
         assertEquals(fragaSvarList.get(0), result.get(0).getFragaSvar());
         assertEquals(fragaSvarList.get(2), result.get(1).getFragaSvar());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testGetFragaSvarWithSekretessPatientForVardadminThrowsException() {
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
+        List<FragaSvar> fragaSvarList = new ArrayList<>();
+        fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+        fragaSvarList.add(buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now()));
+        fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
+
+        // the second question/answer pair was sent to a unit out of the current user's range -> has to be filtered
+        fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
+
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1")).thenReturn(new ArrayList<>(fragaSvarList));
+        when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
+        when(utkastRepository.findAllByRelationIntygsId(any(String.class))).thenReturn(Collections.emptyList());
+
+        service.getFragaSvar("intyg-1");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testGetFragaSvarWithPuFailsForVardadminThrowsException() {
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        List<FragaSvar> fragaSvarList = new ArrayList<>();
+        fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+        fragaSvarList.add(buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now()));
+        fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
+
+        // the second question/answer pair was sent to a unit out of the current user's range -> has to be filtered
+        fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
+
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1")).thenReturn(new ArrayList<>(fragaSvarList));
+        when(webCertUserService.getUser()).thenReturn(createUser());
+        when(utkastRepository.findAllByRelationIntygsId(any(String.class))).thenReturn(Collections.emptyList());
+
+        service.getFragaSvar("intyg-1");
     }
 
     @Test
