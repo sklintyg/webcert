@@ -37,7 +37,6 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -110,34 +109,10 @@ public class IntygModuleApiController extends AbstractApiController {
         LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
-
-        verifySekretessmarkering(intygsTyp, user, intygAsExternal);
-
         return Response.ok().entity(intygAsExternal).build();
     }
 
-    private void verifySekretessmarkering(String intygsTyp, WebCertUser user, IntygContentHolder intygAsExternal) {
-        // I.e. if not explicitly FALSE, set flag to true.
-        boolean isSekretessmarkerad = !patientDetailsResolver.getSekretessStatus(intygAsExternal
-                .getUtlatande()
-                .getGrundData()
-                .getPatient()
-                .getPersonId()).equals(SekretessStatus.FALSE);
 
-        if (isSekretessmarkerad) {
-            authoritiesValidator.given(user, intygsTyp)
-                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .orThrow();
-
-            // INTYG-4231: Verifiera enhet / mottagning. Får ej visa utanför vald enhet (och dess underenheter)
-            if (!getWebCertUserService().userIsLoggedInOnEnhetOrUnderenhet(
-                    intygAsExternal.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid())) {
-                LOG.debug("User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
-                        "User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
-            }
-        }
-    }
 
     /**
      * Return the signed certificate identified by the given id as PDF.

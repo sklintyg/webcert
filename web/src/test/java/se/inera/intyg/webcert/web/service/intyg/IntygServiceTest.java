@@ -47,6 +47,7 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -186,6 +187,7 @@ public class IntygServiceTest {
     @Mock
     private UtkastIntygDecorator utkastIntygDecorator;
 
+
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -271,6 +273,11 @@ public class IntygServiceTest {
         when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class)))
                 .thenReturn(Optional.empty());
         // when(relationService.getLatestComplementedByRelation(eq(CERTIFICATE_ID))).thenReturn(Optional.empty());
+    }
+
+    @Before
+    public void setupPatientDetailsResolver() {
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
     }
 
     @Test
