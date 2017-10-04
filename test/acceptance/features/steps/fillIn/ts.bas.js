@@ -24,123 +24,125 @@ var tsBasUtkastPage = pages.intyg.ts.bas.utkast;
 module.exports = {
     fillIn: function(intyg) {
         'use strict';
-        var promiseArr = [];
-        promiseArr.push(tsBasUtkastPage.fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm').then(function() {
+        //Returnera Promise kedja
+        return new Promise(function(resolve) {
+            logger.info('Fyller i ' + intyg.typ + ' formuläret synkront');
+            browser.ignoreSynchronization = true;
+            resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
+        }).then(function() {
+            logger.info('Fyller i patient address det sista vi gör (common)');
+        }).then(function() {
+            //Intyget Avser
+            return tsBasUtkastPage.fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm').then(function() {
                 logger.info('OK - fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper));
-
-                //Hörsel och balans kräver att körkortstyper är angivna
-                return tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel)
-                    .then(function() {
-                        logger.info('OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));
-
-                        //Rörelseorganens funktioner kräver att körkortstyper är angivna
-                        return tsBasUtkastPage.fillInRorelseorganensFunktioner(intyg.rorelseorganensFunktioner)
-                            .then(function() {
-                                logger.info('OK - fillInRorelseorganensFunktioner, ' + JSON.stringify(intyg.rorelseorganensFunktioner));
-                            }, function(reason) {
-                                throw ('FEL, fillInRorelseorganensFunktioner,' + JSON.stringify(intyg.rorelseorganensFunktioner) + reason);
-                            });
-
-                    }, function(reason) {
-                        throw ('FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
-                    });
-            },
-            function(reason) {
+            }, function(reason) {
                 throw ('FEL, fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper) + reason);
-            }));
-
-        promiseArr.push(tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
-            logger.info('OK - fillInIdentitetStyrktGenom:' + intyg.identitetStyrktGenom.toString());
-        }, function(reason) {
-            throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
-        }));
-
-        // promiseArr.push(tsBasUtkastPage.fillInPatientAdress(person.adress).then(function() {
-        //     logger.info('OK - fillInPatientAdress :' + JSON.stringify(person.adress));
-        // }, function(reason) {
-        //     throw ('FEL, fillInPatientAdress,' + reason);
-        // }));
-
-        browser.ignoreSynchronization = true;
-
-        // Synfunktioner
-        promiseArr.push(tsBasUtkastPage.fillInSynfunktioner(intyg).then(function() {
-            logger.info('OK - fillInSynfunktioner');
-        }, function(reason) {
-            throw ('FEL, fillInSynfunktioner,' + reason);
-        }));
-
-        promiseArr.push(tsBasUtkastPage.fillInHjartOchKarlsjukdomar(intyg).then(function() {
-            logger.info('OK - fillInHjartOchKarlsjukdomar');
-        }, function(reason) {
-            throw ('FEL, fillInHjartOchKarlsjukdomar,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInDiabetes(intyg.diabetes).then(function() {
-            logger.info('OK - fillInDiabetes: ' + JSON.stringify(intyg.diabetes));
-        }, function(reason) {
-            throw ('FEL, fillInDiabetes:, ' + JSON.stringify(intyg.diabetes) + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInNeurologiskaSjukdomar(intyg).then(function() {
-            logger.info('OK - fillInNeurologiskaSjukdomar');
-        }, function(reason) {
-            throw ('FEL, fillInNeurologiskaSjukdomar,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInEpilepsi(intyg).then(function() {
-            logger.info('OK - fillInEpilepsi');
-        }, function(reason) {
-            throw ('FEL, fillInEpilepsi,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInNjursjukdomar(intyg).then(function() {
-            logger.info('OK - fillInNjursjukdomar');
-        }, function(reason) {
-            throw ('FEL, fillInNjursjukdomar,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInDemens(intyg).then(function() {
-            logger.info('OK - fillInDemens');
-        }, function(reason) {
-            throw ('FEL, fillInDemens,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInSomnOchVakenhet(intyg).then(function() {
-            logger.info('OK - fillInSomnOchVakenhet');
-        }, function(reason) {
-            throw ('FEL, fillInSomnOchVakenhet,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(intyg).then(function() {
-            logger.info('OK - fillInAlkoholNarkotikaLakemedel');
-        }, function(reason) {
-            throw ('FEL, fillInAlkoholNarkotikaLakemedel,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInPsykiska(intyg).then(function() {
-            logger.info('OK - fillInPsykiska');
-        }, function(reason) {
-            throw ('FEL, fillInPsykiska,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInAdhd(intyg).then(function() {
-            logger.info('OK - fillInAdhd');
-        }, function(reason) {
-            throw ('FEL, fillInAdhd,' + reason);
-        }));
-        promiseArr.push(tsBasUtkastPage.fillInSjukhusvard(intyg).then(function() {
-            logger.info('OK - fillInSjukhusvard');
-        }, function(reason) {
-            throw ('FEL, fillInSjukhusvard,' + reason);
-        }));
-
-        promiseArr.push(tsBasUtkastPage.fillInOvrigMedicinering(intyg).then(function() {
-            logger.info('OK - fillInOvrigMedicinering');
-        }, function(reason) {
-            throw ('FEL, fillInOvrigMedicinering,' + reason);
-        }));
-
-        promiseArr.push(tsBasUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
-            logger.info('OK - fillInBedomning');
-        }, function(reason) {
-            throw ('FEL, fillInBedomning,' + reason);
-        }));
-
-        return Promise.all(promiseArr)
-            .then(function(value) {
-                browser.ignoreSynchronization = false;
             });
+        }).then(function() {
+            return tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
+                logger.info('OK - fillInIdentitetStyrktGenom:' + intyg.identitetStyrktGenom.toString());
+            }, function(reason) {
+                throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInSynfunktioner(intyg).then(function() {
+                logger.info('(1) OK - fillInSynfunktioner');
+            }, function(reason) {
+                throw ('(1) FEL, fillInSynfunktioner,' + reason);
+            });
+        }).then(function() {
+            //Hörsel och balans kräver att körkortstyper är angivna
+            return tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel).then(function() {
+                logger.info('(2) OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));
+            }, function(reason) {
+                throw ('(2) FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
+            });
+        }).then(function() {
+            //Rörelseorganens funktioner kräver att körkortstyper är angivna
+            return tsBasUtkastPage.fillInRorelseorganensFunktioner(intyg.rorelseorganensFunktioner).then(function() {
+                logger.info('(3) OK - fillInRorelseorganensFunktioner, ' + JSON.stringify(intyg.rorelseorganensFunktioner));
+            }, function(reason) {
+                throw ('(3) FEL, fillInRorelseorganensFunktioner,' + JSON.stringify(intyg.rorelseorganensFunktioner) + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInHjartOchKarlsjukdomar(intyg).then(function() {
+                logger.info('(4) OK - fillInHjartOchKarlsjukdomar');
+            }, function(reason) {
+                throw ('(4) FEL, fillInHjartOchKarlsjukdomar,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInDiabetes(intyg.diabetes).then(function() {
+                logger.info('(5) OK - fillInDiabetes: ' + JSON.stringify(intyg.diabetes));
+            }, function(reason) {
+                throw ('(5) FEL, fillInDiabetes:, ' + JSON.stringify(intyg.diabetes) + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInNeurologiskaSjukdomar(intyg).then(function() {
+                logger.info('(6) OK - fillInNeurologiskaSjukdomar');
+            }, function(reason) {
+                throw ('(6) FEL, fillInNeurologiskaSjukdomar,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInEpilepsi(intyg).then(function() {
+                logger.info('(7) OK - fillInEpilepsi');
+            }, function(reason) {
+                throw ('(7) FEL, fillInEpilepsi,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInNjursjukdomar(intyg).then(function() {
+                logger.info('(8) OK - fillInNjursjukdomar');
+            }, function(reason) {
+                throw ('(8) FEL, fillInNjursjukdomar,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInDemens(intyg).then(function() {
+                logger.info('(9) OK - fillInDemens');
+            }, function(reason) {
+                throw ('(9) FEL, fillInDemens,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInSomnOchVakenhet(intyg).then(function() {
+                logger.info('(10) OK - fillInSomnOchVakenhet');
+            }, function(reason) {
+                throw ('(10) FEL, fillInSomnOchVakenhet,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(intyg).then(function() {
+                logger.info('(11) OK - fillInAlkoholNarkotikaLakemedel');
+            }, function(reason) {
+                throw ('(11) FEL, fillInAlkoholNarkotikaLakemedel,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInPsykiska(intyg).then(function() {
+                logger.info('(12) OK - fillInPsykiska');
+            }, function(reason) {
+                throw ('(12) FEL, fillInPsykiska,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInAdhd(intyg).then(function() {
+                logger.info('(13) OK - fillInAdhd');
+            }, function(reason) {
+                throw ('(13) FEL, fillInAdhd,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInSjukhusvard(intyg).then(function() {
+                logger.info('(14) OK - fillInSjukhusvard');
+            }, function(reason) {
+                throw ('(14) FEL, fillInSjukhusvard,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInOvrigMedicinering(intyg).then(function() {
+                logger.info('(15) OK - fillInOvrigMedicinering');
+            }, function(reason) {
+                throw ('(15) FEL, fillInOvrigMedicinering,' + reason);
+            });
+        }).then(function() {
+            return tsBasUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
+                logger.info('OK - fillInBedomning');
+            }, function(reason) {
+                throw ('FEL, fillInBedomning,' + reason);
+            });
+        });
+
     }
 };
