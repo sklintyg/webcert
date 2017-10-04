@@ -29,14 +29,11 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
@@ -48,7 +45,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -60,8 +56,6 @@ public class FragaSvarModuleApiControllerTest {
 
     private static final String FK7263 = "fk7263";
     private static final String INTYG_ID = "abc-123";
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
 
     @Mock
     private WebCertUserService webCertUserService;
@@ -85,23 +79,11 @@ public class FragaSvarModuleApiControllerTest {
 
     @Test
     public void testGetFragaSvarNotSekretessmarkerad() {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         List<FragaSvarView> fragaSvarViewList = testee.fragaSvarForIntyg(FK7263, INTYG_ID);
         assertNotNull(fragaSvarViewList);
         assertEquals(1, fragaSvarViewList.size());
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testGetFragaSvarWithSekretessPatientForVardadminThrowsException() {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
-        testee.fragaSvarForIntyg(FK7263, INTYG_ID);
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testGetFragaSvarWithPuFailsForVardadminThrowsException() {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
-        testee.fragaSvarForIntyg(FK7263, INTYG_ID);
-    }
 
     private List<FragaSvarView> buildFragaSvarViewList() {
         List<FragaSvarView> fragaSvarViewList = new ArrayList<>();

@@ -42,7 +42,9 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
@@ -60,7 +62,6 @@ import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.converter.FKQuestionConverter;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
-import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -72,9 +73,11 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
@@ -153,6 +156,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
@@ -205,6 +211,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
 
         WebCertUser user = webCertUserService.getUser();
+        validateSekretessmarkering(intygId, fragaSvarList, user);
+
         List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
 
         // Filter questions to that current user only sees questions issued to
@@ -238,6 +246,27 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                                 .orElse(null)))
                 .collect(Collectors.toList());
         return fragaSvarWithBesvaratMedIntygInfo;
+    }
+
+    /**
+     * If there is at least one fragaSvar in the response, we fetch the personId and check for sekretessmarkering.
+     */
+    private void validateSekretessmarkering(String intygsId, List<FragaSvar> fragaSvarList, WebCertUser user) {
+        if (fragaSvarList.size() > 0) {
+
+            Personnummer pnr = fragaSvarList.get(0).getIntygsReferens().getPatientId();
+            String intygsTyp = fragaSvarList.get(0).getIntygsReferens().getIntygsTyp();
+            SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
+            if (sekretessStatus == SekretessStatus.UNDEFINED) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, "Cannot list fraga/svar for '"
+                        + intygsId + "'. PU service unavailable or personnummer " + pnr.getPnrHash() + " not valid");
+            }
+
+            authoritiesValidator.given(user, intygsTyp)
+                    .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, sekretessStatus == SekretessStatus.TRUE)
+                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                            "User is not allowed to handle sekretessmarkerad patient"));
+        }
     }
 
     @Override
