@@ -28,7 +28,7 @@ var diagnosKategorier = wcTestTools.testdata.diagnosKategorier;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 
 var restAPIOptions = {
-    url: process.env.WEBCERT_URL + '/api/testsupport/processIntyg',
+    url: process.env.STATISTIKTJANST_URL + '/api/testsupport/processIntyg',
     method: 'POST',
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -299,9 +299,9 @@ module.exports = function() {
                 if (error || message.statusCode >= 400) {
                     logger.info('Request error:', error);
                     if (message) {
-                        logger.info('Error message:', message.statusCode, message.statusMessage /*, body*/ );
+                        logger.error('Error message: ' + message.statusCode, message.statusMessage /*, body*/ );
                     }
-                    defer.fulfill({
+                    defer.reject({
                         error: error,
                         message: message
                     });
