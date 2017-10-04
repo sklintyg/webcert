@@ -334,7 +334,7 @@ module.exports = function() {
         });
     });
 
-    this.Then(/^ska jag varnas om att "([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
+    this.Then(/^ska jag varnas om (?:att )"([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
 
         var elmCss;
         if (nyttFonster) {

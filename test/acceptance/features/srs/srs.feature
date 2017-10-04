@@ -113,7 +113,7 @@ Scenario: Prediktion ska kunna visa ingen förhöjd risk
     När jag fyller i diagnoskod som "för ingen förhöjd risk"
     Och jag klickar på knappen för SRS
     Och jag trycker på knappen "Visa"
-    Så ska meddelandet "Ingen förhöjd risk" visas
+    Så ska jag varnas om "Ingen förhöjd risk"
 
 @SRS-US-W04 @prediktion
 @notReady
@@ -123,5 +123,5 @@ Scenario: Prediktion ska kunna visa förhöjd risk
     När jag fyller i diagnoskod som "har förhöjd risk"
     Och jag klickar på knappen för SRS
     Och jag trycker på knappen "Visa"
-    Så ska meddelandet "Förhöjd risk" visas
+    Så ska jag varnas om "Förhöjd risk"
 

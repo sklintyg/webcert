@@ -31,7 +31,7 @@ module.exports = function() {
     this.Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet "(med SRS|utan SRS)"$/,
         srsStatus => {
             user = srsdata.inloggningar[srsStatus];
-            logger.log('info', `Loggar in som ${user.forNamn} ${user.efterNamn} på enhet ${user.enhetId}`);
+            logger.info(`Loggar in som ${user.forNamn} ${user.efterNamn} på enhet ${user.enhetId}`);
             return pages.welcome.get()
                 .then(() => pages.welcome.loginByJSON(JSON.stringify(user), true));
         }
@@ -62,7 +62,7 @@ module.exports = function() {
     this.When(/^jag (?:fyller|fyllt) i diagnoskod som "(.*)"$/,
         srsStatus => fk7263utkast.angeDiagnosKod(srsdata.diagnoskoder[srsStatus])
         .then(() => {
-            logger.log('info', 'Använder diagnoskod: ' + srsdata.diagnoskoder[srsStatus]);
+            logger.info('Använder diagnoskod: ' + srsdata.diagnoskoder[srsStatus]);
             return browser.sleep(1000); // Angular behöver extra tid på sig här för att spara diagnoskoden
         })
     );
@@ -147,7 +147,7 @@ module.exports = function() {
 function clickAnswerRadioButtons() {
     return fk7263utkast.srs.fragor()
         .all(by.css('input[type=radio]'))
-        .each(el => el.click()).catch(() => logger.log('debug', 'Ignoring unclickable radio button.')); // Av någon anledning kastas ett fel trots att alla element går att klicka på
+        .each(el => el.click()).catch(() => logger.debug('Ignoring unclickable radio button.')); // Av någon anledning kastas ett fel trots att alla element går att klicka på
 }
 
 function setConsent(patient, user, consent) {
@@ -158,7 +158,7 @@ function setConsent(patient, user, consent) {
     const patientId = patient.id.slice(0, 8) + '-' + patient.id.slice(8 + 0);
     const link = buildLinkToSetConsent(patientId, user.enhetId);
     const payload = consent === 'har givit samtycke' ? 'true' : 'false';
-    logger.log('debug', `URL: ${link} PAYLOAD: ${payload}`);
+    logger.debug(`URL: ${link} PAYLOAD: ${payload}`);
     return browser.executeAsyncScript(function(url, samtycke, body) {
             var callback = arguments[arguments.length - 1];
             var xhr = new XMLHttpRequest();
@@ -185,7 +185,7 @@ function getAtgarderREK() {
             .replace(/\n/g, '') // Ta bort alla radbrytningar
             .split('• ')
             .slice(1); // Första elementet blir alltid tomt
-        logger.log('debug', 'Hittade REK-åtgärder: ' + atgarder);
+        logger.info('Hittade REK-åtgärder: ' + atgarder);
         return Promise.resolve(atgarder);
     });
 }
@@ -193,8 +193,9 @@ function getAtgarderREK() {
 function getAtgarderOBS() {
     return fk7263utkast.srs.atgarderObs().getText().then(t => {
         const atgarder = t.replace(/\\n/g, '') // Ta bort alla radbrytningar
+            .replace('Tänk på att; ', '')
             .split('. ');
-        logger.log('debug', 'Hittade OBS-åtgärder: ' + atgarder);
+        logger.info('Hittade OBS-åtgärder: ' + atgarder);
         return Promise.resolve(atgarder);
     });
 }
@@ -231,7 +232,7 @@ function createDraftUsingSOAP(user, patientId) {
                 }
             });
         })
-    ).catch(err => logger.log('error', err));
+    ).catch(err => logger.error(err));
 }
 
 function isNotOk(response) {
@@ -240,7 +241,7 @@ function isNotOk(response) {
 
 function buildLinkToIntyg(intygsId, patient, enhetsId) {
     let uri = uriTemplate `visa/intyg/${intygsId}?fornamn=${patient.fornamn}&efternamn=${patient.efternamn}&postadress=${patient.adress.postadress}&postnummer=${patient.adress.postnummer}&postort=${patient.adress.postort}&enhet=${enhetsId}`;
-    logger.log('info', 'IntygsURL: ' + process.env.WEBCERT_URL + uri);
+    logger.info('IntygsURL: ' + process.env.WEBCERT_URL + uri);
     return process.env.WEBCERT_URL + uri;
 }
 
