@@ -28,6 +28,9 @@
       },
       "dependencyDefinitionPath": {
         "type": "string"
+      },
+      "defaultRecipient": {
+        "type": "string"
       }
     },
     "additionalProperties": false,
@@ -38,7 +41,8 @@
       "detailedDescription",
       "cssPath",
       "scriptPath",
-      "dependencyDefinitionPath"
+      "dependencyDefinitionPath",
+      "defaultRecipient"
     ]
   }
 }
