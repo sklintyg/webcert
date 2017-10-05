@@ -32,6 +32,7 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -59,6 +60,7 @@ import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.IntygRelationHelper;
@@ -109,11 +111,13 @@ import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.SIGNERA_SKICKA_DIREKT;
 
 /**
  * @author andreaskaltenbach
@@ -187,6 +191,8 @@ public class IntygServiceTest {
     @Mock
     private UtkastIntygDecorator utkastIntygDecorator;
 
+    @Mock
+    private WebcertFeatureService featureService;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -733,7 +739,8 @@ public class IntygServiceTest {
         final String intygId = "intygId";
         final String intygTyp = "intygTyp";
         final String relationIntygId = "relationIntygId";
-        final String recipient = "recipient";
+        final String recipient = new Fk7263EntryPoint().getDefaultRecipient();
+
         final Personnummer personnummer = new Personnummer("19121212-1212");
 
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
@@ -753,13 +760,54 @@ public class IntygServiceTest {
         when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED))))
                         .thenReturn(Optional.empty());
+        when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
 
-        intygService.handleSignedCompletion(utkast, recipient);
+        intygService.handleAfterSigned(utkast);
 
         verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient));
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
+        verify(notificationService).sendNotificationForIntygSent(intygId, USER_REFERENCE);
+        ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
+        verify(intygRepository).save(utkastCaptor.capture());
+        assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
+        assertEquals(recipient, utkastCaptor.getValue().getSkickadTillMottagare());
+    }
+
+    @Test
+    public void testHandleSignedWithSigneraSkickaDirekt() throws Exception {
+        final String intygId = "intygId";
+        final String intygTyp = "intygTyp";
+        final String relationIntygId = "relationIntygId";
+        final String recipient = new Fk7263EntryPoint().getDefaultRecipient();
+
+        final Personnummer personnummer = new Personnummer("19121212-1212");
+
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        utlatande.setId(intygId);
+        utlatande.setTyp(intygTyp);
+        utlatande.getGrundData().getPatient().setPersonId(personnummer);
+
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygId);
+        utkast.setIntygsTyp(intygTyp);
+        utkast.setModel(json);
+
+        when(intygRepository.findOne(intygId)).thenReturn(utkast);
+        when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
+        when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
+                eq(Arrays.asList(UtkastStatus.SIGNED))))
+                .thenReturn(Optional.empty());
+        when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
+        when(featureService.isModuleFeatureActive(SIGNERA_SKICKA_DIREKT.getName(), intygTyp)).thenReturn(true);
+
+        intygService.handleAfterSigned(utkast);
+
+        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient));
+        verify(mockMonitoringService).logIntygSent(intygId, recipient);
+        verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
+        verify(arendeService, never()).closeCompletionsAsHandled(relationIntygId, intygTyp);
         verify(notificationService).sendNotificationForIntygSent(intygId, USER_REFERENCE);
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
         verify(intygRepository).save(utkastCaptor.capture());
@@ -796,7 +844,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Arrays.asList(handelse));
@@ -833,7 +881,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
@@ -871,7 +919,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
@@ -912,7 +960,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));

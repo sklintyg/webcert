@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.SIGNERA_SKICKA_DIREKT;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
@@ -64,6 +66,7 @@ import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
@@ -171,6 +174,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private WebcertFeatureService featureService;
 
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
@@ -495,16 +501,33 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
+    /**
+     * Check if signed certificate is a completion, in that case, send to recipient and close pending completion QA /
+     * Arende as handled.
+     *
+     * Check if signed certificate should be sent directly to default recipient for this intygstyp
+     */
     @Override
-    public void handleSignedCompletion(Utkast utkast, String recipient) {
-        if (RelationKod.KOMPLT != utkast.getRelationKod()) {
-            return;
-        }
+    public void handleAfterSigned(Utkast utkast) {
+        boolean isKomplettering = RelationKod.KOMPLT == utkast.getRelationKod();
+        boolean isSigneraSkickaDirekt = featureService.isModuleFeatureActive(SIGNERA_SKICKA_DIREKT.getName(), utkast.getIntygsTyp());
 
-        LOG.info("Send komplettering '{}' directly to recipient", utkast.getIntygsId());
-        sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), recipient);
-        LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
-        arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
+        if (isKomplettering || isSigneraSkickaDirekt) {
+            try {
+                LOG.info("Send intyg '{}' directly to recipient", utkast.getIntygsId());
+                sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), moduleRegistry.getModuleEntryPoint(
+                        utkast.getIntygsTyp()).getDefaultRecipient());
+
+                if (isKomplettering) {
+                    LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
+                    arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
+                }
+
+            } catch (ModuleNotFoundException e) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+                        "Could not send intyg directly to recipient", e);
+            }
+        }
     }
 
     @Override

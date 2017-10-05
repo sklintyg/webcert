@@ -98,7 +98,7 @@ public class WebcertFeatureServiceTest {
         Map<String, Boolean> featuresMap = new HashMap<>();
         featureService.initWebcertFeatures(featuresMap);
         assertFalse(featuresMap.isEmpty());
-        assertEquals(11, featuresMap.size());
+        assertEquals(12, featuresMap.size());
     }
 
     @Test
@@ -107,7 +107,8 @@ public class WebcertFeatureServiceTest {
         featureService.initModuleFeatures(featuresMap);
 
         assertFalse(featuresMap.isEmpty());
-        assertEquals(18, featuresMap.size());
+
+        assertEquals(20, featuresMap.size());
 
         assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1)));
         assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2)));
@@ -159,7 +160,7 @@ public class WebcertFeatureServiceTest {
         featureService.setFeatures(featureProps);
         featureService.initFeaturesMap();
 
-        assertEquals(29, featureService.getFeaturesMap().size());
+        assertEquals(32, featureService.getFeaturesMap().size());
 
         assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
         assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST));

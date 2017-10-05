@@ -93,7 +93,7 @@ public interface IntygService {
      * Handle a signed completion, i.e., send the certificate to its recipient and close all pending completion QA /
      * Arende as handled.
      */
-    void handleSignedCompletion(Utkast utkast, String recipient);
+    void handleAfterSigned(Utkast utkast);
 
     /**
      * Retrieves the hsaId of the vardenhet this intyg is issued on.
