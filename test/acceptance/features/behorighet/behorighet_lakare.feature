@@ -59,7 +59,7 @@ Scenario: Kan inte se intyg på överliggande enhet när jag är inne på undere
 Scenario: Det går att förnya signerade och mottagna intyg från intygslistan men inte utkast
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient
-	Så ska Förnya-knappen visas för alla signerade eller mottagna "Läkarintyg FK 7263"-intyg
+	Så ska Förnya-knappen visas för aktuella signerade eller mottagna "Läkarintyg FK 7263"-intyg
 
    	Givet att det finns intygsutkast
    	Så ska Förnya-knappen inte visas för något utkast

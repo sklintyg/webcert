@@ -165,9 +165,11 @@ module.exports = function() {
     });
 
 
-    this.Given(/^ska Förnya\-knappen visas för alla signerade eller mottagna "([^"]*)"\-intyg$/, function(intygstyp) {
+    this.Given(/^ska Förnya\-knappen visas för( alla)?( aktuella)? signerade eller mottagna "([^"]*)"\-intyg$/, function(alla, aktuella, intygstyp) {
 
-        element(by.id('intygFilterSamtliga')).sendKeys(protractor.Key.SPACE);
+        if (alla) {
+            element(by.id('intygFilterSamtliga')).sendKeys(protractor.Key.SPACE);
+        }
 
         function checkRowForBtnWithText(rowText, buttonText, shouldBePresent) {
             var qaTable = element(by.css('table.table-qa'));
