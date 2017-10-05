@@ -6,54 +6,56 @@ Här hittar du grundläggande instruktioner för hur man kommer igång med proje
 
 ### Bygg projektet
 Webcert byggs med hjälp av Maven enligt följande:
-```
-$ git clone https://github.com/sklintyg/webcert.git
 
-$ cd webcert
-$ ./gradlew clean build install -PcodeQuality
-```
+    $ git clone https://github.com/sklintyg/webcert.git
+    $ cd webcert
+    $ ./gradlew clean build install -PcodeQuality
+``
 
 ### Starta webbapplikationen
 Webbapplikationen kan startas med Jetty enligt följande:
-```
-$ cd webcert
-$ ./gradlew appRun
-$ open http://localhost:9088/welcome.html
-```
+
+    $ cd webcert
+    $ ./gradlew appRun
+    $ open http://localhost:9088/welcome.html
 
 Detta startar Webcert med stubbar för alla externa tjänster som Webcert använder. För att köra både Mina intyg och Webcert samtidigt behöver [Intygstjänsten](https://github.com/sklintyg/intygstjanst) startas före Mina intyg och Webcert.
 
+### Starta webbapplikationen i debugläge
+För att starta applikationen i debugläge används:
+
+    $ cd webcert
+    $ ./gradlew appRunDebug
+    
+Applikationen kommer då att starta upp med debugPort = **5007**. Det är denna port du ska använda när du sätter upp din 
+debug-konfiguration i din utvecklingsmiljö.
+
 ### Starta specifik version
 Man kan även starta Webcert i ett läge där endast de funktioner som är tillgängliga i en viss version är tillgängliga.
-```
-$ ./gradlew appRun -Pv3.0
-```
+
+    $ ./gradlew appRun -Pv3.0
 
 ### Visa databasen
 Man kan även komma åt H2-databasen som startas:
-```
-$ open http://localhost:9090/
-```
 
-För att komma åt webcert eller intyggs databasen fyll i JDBC URL'n :
+    $ open http://localhost:9090/
+
+För att komma åt Webcert eller Intygsdatabasen fyll i JDBC URL'n :
 
 WebCert 
-```
-JDBC URL : jdbc:h2:tcp://localhost:9094/mem:dataSource
-```
+
+    JDBC URL : jdbc:h2:tcp://localhost:9094/mem:dataSource
 
 Intyg
-```
-JDBC URL : jdbc:h2:tcp://localhost:9092/mem:dataSource
-```
+
+    JDBC URL : jdbc:h2:tcp://localhost:9092/mem:dataSource
 
 ### Kör FitNesse
 För att köra FitNesse-testerna måste man starta FitNesse wiki samt att Intygstjänsten och Webcert är igång:
-```
-$ cd webcert
-$ ./gradlew fitnessWiki
-$ open http://localhost:9126/WebCert.AutomatiseradeTester
-```
+
+    $ cd webcert
+    $ ./gradlew fitnessWiki
+    $ open http://localhost:9126/WebCert.AutomatiseradeTester
 
 ### Köra flera Webcert-instanser för dev-ändamål
 (Detta avsnitt var skrivet specifikt för Maven, behöver uppdateras med gradle-instruktioner)
@@ -138,7 +140,7 @@ Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen ab
     
 4. Starta webcert från /webcert/web
 
-    > gradle appRun
+    ./gradlew appRun
     
 5. Knappa in LAN-adressen till Webcert i din webbläsares adressfält, t.ex: http://192.168.0.180:9089/
 
