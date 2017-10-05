@@ -175,7 +175,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         // Make sure we have a valid personnr to work with..
         Personnummer personNummer = Personnummer.createValidatedPersonnummerWithDash(hosPerson.getPersonId().getExtension())
                 .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        String.format("Can't determine sekretesstatus for invalid personId {0}", hosPerson.getPersonId().getExtension())));
+                        String.format("Can't determine sekretesstatus for invalid personId %s", hosPerson.getPersonId().getExtension())));
 
         PersonSvar person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
