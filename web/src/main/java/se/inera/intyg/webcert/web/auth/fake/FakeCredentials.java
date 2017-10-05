@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 /**
@@ -35,6 +36,7 @@ public class FakeCredentials implements Serializable {
     private static final String TANDLAKARE = "Tandläkare";
 
     private String hsaId;
+    private Boolean sekretessMarkerad;
     private String forNamn;
     private String efterNamn;
     private String enhetId;
@@ -57,6 +59,7 @@ public class FakeCredentials implements Serializable {
         this.forskrivarKod = builder.forskrivarKod;
         this.origin = builder.origin;
         this.legitimeradeYrkesgrupper = builder.legitimeradeYrkesgrupper;
+        this.sekretessMarkerad = builder.sekretessMarkerad;
     }
 
     public String getBefattningsKod() {
@@ -89,6 +92,14 @@ public class FakeCredentials implements Serializable {
 
     public List<String> getLegitimeradeYrkesgrupper() {
         return legitimeradeYrkesgrupper;
+    }
+
+    public Boolean getSekretessMarkerad() {
+        return sekretessMarkerad;
+    }
+
+    public void setSekretessMarkerad(Boolean sekretessMarkerad) {
+        this.sekretessMarkerad = sekretessMarkerad;
     }
 
 
@@ -127,6 +138,7 @@ public class FakeCredentials implements Serializable {
         private String befattningsKod;
         private String forskrivarKod;
         private String origin;
+        private Boolean sekretessMarkerad;
         private List<String> legitimeradeYrkesgrupper;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
@@ -163,6 +175,11 @@ public class FakeCredentials implements Serializable {
             this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
             return this;
         }
+        public FakeCredentialsBuilder sekretessMarkerad(boolean sekretessMarkerad) {
+            this.sekretessMarkerad = sekretessMarkerad;
+            return this;
+        }
+
 
         public FakeCredentials build() {
             return new FakeCredentials(this);

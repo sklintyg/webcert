@@ -67,12 +67,24 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
 
         addAbsentAttributesFromFakeCredentials(token, details);
         selectVardenhetFromFakeCredentials(token, details);
+        overrideSekretessMarkeringFromFakeCredentials(token, details);
         updateFeatures(details);
         applyUserOrigin(token, details);
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential, new ArrayList<>());
         result.setDetails(details);
 
         return result;
+    }
+
+    private void overrideSekretessMarkeringFromFakeCredentials(Authentication token, Object details) {
+        if (details instanceof IntygUser) {
+            IntygUser user = (IntygUser) details;
+            final FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
+            //Only override if set
+            if (fakeCredentials.getSekretessMarkerad() != null) {
+                user.setSekretessMarkerad(fakeCredentials.getSekretessMarkerad());
+            }
+        }
     }
 
     private void updateFeatures(Object details) {

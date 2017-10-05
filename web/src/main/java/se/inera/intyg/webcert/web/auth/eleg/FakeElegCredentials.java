@@ -39,6 +39,8 @@ public class FakeElegCredentials {
 
     private boolean privatLakare;
 
+    private boolean sekretessMarkerad;
+
     public String getPersonId() {
         return personId;
     }
@@ -69,5 +71,13 @@ public class FakeElegCredentials {
 
     public void setPrivatLakare(boolean privatLakare) {
         this.privatLakare = privatLakare;
+    }
+
+    public boolean isSekretessMarkerad() {
+        return sekretessMarkerad;
+    }
+
+    public void setSekretessMarkerad(boolean sekretessMarkerad) {
+        this.sekretessMarkerad = sekretessMarkerad;
     }
 }

@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +30,19 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
@@ -43,10 +53,6 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -64,6 +70,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired
     private PPService ppService;
+
+    @Autowired
+    private PUService puService;
 
     @Autowired
     private AvtalService avtalService;
@@ -157,8 +166,25 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithVardgivare(hosPerson, user);
         decorateWebCertUserWithBefattningar(hosPerson, user);
         decorateWebCertUserWithDefaultVardenhet(user);
+        decorateWebcertUserWithSekretessMarkering(user, hosPerson);
 
         return user;
+    }
+
+    private void decorateWebcertUserWithSekretessMarkering(WebCertUser webCertUser, HoSPersonType hosPerson) {
+        // Make sure we have a valid personnr to work with..
+        Personnummer personNummer = Personnummer.createValidatedPersonnummerWithDash(hosPerson.getPersonId().getExtension())
+                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        String.format("Can't determine sekretesstatus for invalid personId {0}", hosPerson.getPersonId().getExtension())));
+
+        PersonSvar person = puService.getPerson(personNummer);
+        if (person.getStatus() == PersonSvar.Status.FOUND) {
+            webCertUser.setSekretessMarkerad(person.getPerson().isSekretessmarkering());
+        } else {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                    String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
+                            personNummer.getPersonnummer()));
+        }
     }
 
     private void decorateWebCertUserWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {
