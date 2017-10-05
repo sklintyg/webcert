@@ -34,10 +34,12 @@ var TABLEROW_SUBST = '\$1, \$2, \$3, \$4';
 
 var getObjFromList;
 
-function createUser() {
+
+//TODO ändra från "user" till "patient" i funktioner för readablity
+function createUser(id) {
     var date = new Date();
     var startDate = createDateString(date);
-    var endDate = createDateString(date, 20);
+    var endDate = createDateString(date, 30);
     return createObj('19121212-1212,' + startDate + ',' + endDate + ',0');
 }
 
@@ -161,7 +163,15 @@ module.exports = function() {
                 });
 
                 var headerboxUser = element(by.css('.headerbox-user-profile'));
-                return expect(headerboxUser.getText()).to.eventually.contain(userObj.roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
+
+                var compareStr = '';
+
+                if (userObj.roleName !== 'rehabkoordinator') {
+                    compareStr = userObj.roleName + ' - ';
+                }
+                compareStr += userObj.forNamn + ' ' + userObj.efterNamn;
+
+                return expect(headerboxUser.getText()).to.eventually.contain(compareStr);
             });
         });
     });
@@ -177,6 +187,22 @@ module.exports = function() {
             });
         });
     });
+    this.When(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, function() {
+        return element.all(by.css('.rhs-table-row')).getText().then(function(tableRows) {
+            return tableRows.forEach(function(row) {
+                row = row.replace('-', '');
+
+                logger.info('letar efter "' + global.person.id + '" i :');
+                logger.debug(row);
+
+                return expect(row).to.not.contain(global.person.id);
+            });
+
+
+
+        });
+    });
+
 
     this.Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(callback) {
         createUserArr().then(function(personArr) {
@@ -209,6 +235,18 @@ module.exports = function() {
         };
 
         return logInAsUserRoleRehabstod(userObj, 'Läkare', true);
+    });
+
+    this.Given(/^jag är inloggad som rehabkoordinator$/, function() {
+        // Setting rehabstod to new bas url
+        browser.baseUrl = process.env.REHABSTOD_URL;
+        var userObj = {
+            forNamn: 'Automatkoordinator',
+            efterNamn: 'Rehab',
+            hsaId: 'TSTNMT2321000156-REKO',
+            enhetId: 'TSTNMT2321000156-107Q'
+        };
+        return logInAsUserRoleRehabstod(userObj, 'rehabkoordinator', true);
     });
 
     this.Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(enhetsId) {

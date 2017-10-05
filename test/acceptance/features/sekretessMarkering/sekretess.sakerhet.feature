@@ -61,14 +61,27 @@ Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts di
 	När jag går in på att skapa ett "Transportstyrelsens, diabetes" intyg
 	Så ska jag varnas om att "Behörighet saknas"
 	
+@rehabstod @rehabKoordinator
+Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
+	Givet vårdenhet ska vara "VG_TestAutomation - TestEnhet2"
+	#TSTNMT2321000156-107Q
+	
+	#Säkerställer att det finns ett lisjp intyg på patienten.
+	När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+		
+	#Säkerställer att det finns ett fk7263 intyg på patienten.
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263"
+	Och jag går in på utkastet
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan
+		
+	När jag är inloggad som rehabkoordinator
+	Och jag väljer enhet "TSTNMT2321000156-107Q"
+	Och jag går till pågående sjukfall i Rehabstöd
+	Så ska jag inte se patientens personnummer bland pågående sjukfall
 
-
-#@Rehabstod #TODO
-#Scenario: Rehabkordinator ska inte kunna se sekrettessmarkerade intyg.
-#Logga in som läkare, så ska du se S-markerat intyg med namn: "Sekretessmarkerad patient"
-#Logga in som Rehabkordinator, så ska du inte se intyget
-
-#LÅG PRIO:
+#LÅG PRIO / Manuella Tester:
 
 #@ts
 #Scenario: TS-intyg Översiktssidan ska inte lista intyg med sekretessmarkerade patienter

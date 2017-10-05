@@ -22,7 +22,7 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Så ska ett fel-meddelande visa "Kunde inte hämta intyget eftersom du saknar behörighet"
 
 
-#Är detta krav giltigt?
+#Är detta krav giltigt? #TODO
 @underliggande-enhet @notReady
 Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enhet
 	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-UND2"
