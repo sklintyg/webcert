@@ -13,7 +13,12 @@ stage('checkout webcert') {
 
 stage('build') {
     node {
-        shgradle "--refresh-dependencies clean build -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+        try {
+            shgradle "--refresh-dependencies clean build npmInstall -DgruntColors=false -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+        } finally {
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
+                reportFiles: 'index.html', reportName: 'JUnit results'
+        }
     }
 }
 
