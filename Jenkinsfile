@@ -3,6 +3,7 @@
 def buildVersion = "5.4.${BUILD_NUMBER}"
 def commonVersion = "3.5.+"
 def infraVersion = "3.5.+"
+def logsenderBaseVersion = "5.4.*" // Star is needed as this is a regexp
 
 stage('checkout') {
     node {
@@ -26,8 +27,9 @@ stage('build') {
 
 stage('deploy') {
     node {
+        def logsenderVersion = util.latestVersion("se/inera/intyg/logsender/logsender", logsenderBaseVersion)
         util.run {
-            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
+            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false", logsender_version: "${logsenderVersion}"], \
                 installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/test', playbook: 'ansible/deploy.yml'
             util.waitForServer('https://webcert.inera.nordicmedtest.se/version.jsp')
         }
