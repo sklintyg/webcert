@@ -231,11 +231,15 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void verifySekretessmarkering(String intygsTyp, WebCertUser user, String enhetsId, Personnummer pnr) {
-        // I.e. if not explicitly FALSE, set flag to true.
-        boolean isSekretessmarkerad = !patientDetailsResolver.getSekretessStatus(pnr)
-                .equals(SekretessStatus.FALSE);
 
-        if (isSekretessmarkerad) {
+        SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
+
+        if (sekretessStatus == SekretessStatus.UNDEFINED) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                    "PU-service unavailable, cannot check sekretessmarkering.");
+        }
+
+        if (sekretessStatus == SekretessStatus.TRUE) {
             authoritiesValidator.given(user, intygsTyp)
                     .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                     .orThrow();
@@ -783,7 +787,6 @@ public class IntygServiceImpl implements IntygService {
             Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
             Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
-
 
             final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patient.getPersonId());
             if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
