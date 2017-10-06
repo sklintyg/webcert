@@ -14,7 +14,7 @@ stage('checkout webcert') {
 stage('build') {
     node {
         try {
-            shgradle "--refresh-dependencies clean build npmInstall -DgruntColors=false -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+            shgradle "--refresh-dependencies clean build jsInclude -DgruntColors=false -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
                 reportFiles: 'index.html', reportName: 'JUnit results'
