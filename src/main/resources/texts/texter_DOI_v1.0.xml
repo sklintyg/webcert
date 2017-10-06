@@ -35,16 +35,20 @@ Annan/okänd: övrigt</text>
     <text id="DFR_8.1.RBK">Beskrivning</text>
     <text id="DFR_8.1.HLP">Den diagnos eller det tillstånd som ledde till den terminala dödsorsaken</text>
     <text id="DFR_8.2.RBK">Ungefärlig debut</text>
+    <text id="DFR_8.3.RBK">Specificera tillståndet</text>
+
     <text id="KV_ORSAKSTYPER.PLOTSLIG.RBK">Akut</text>
     <text id="KV_ORSAKSTYPER.KRONISK.RBK">Kronisk</text>
     <text id="KV_ORSAKSTYPER.UPPGIFT_SAKNAS.RBK">Uppgift saknas</text>
     <text id="FRG_9.RBK">Som var en följd av</text>
     <text id="DFR_9.1.RBK">Beskrivning</text>
     <text id="DFR_9.2.RBK">Ungefärlig debut</text>
+    <text id="DFR_9.3.RBK">Specificera tillståndet</text>
     <text id="KAT_7.2.RBK">Andra sjukdomar eller skador som bidragit till dödsfallet</text>
     <text id="KAT_7.2.HLP">Ange en diagnos eller skada per fält i rangordning efter den betydelse de haft för dödsfallet, den allvarligaste först.</text>
     <text id="DFR_10.1.RBK">Beskrivning</text>
     <text id="DFR_10.2.RBK">Ungefärlig debut</text>
+    <text id="DFR_10.3.RBK">Specificera tillståndet</text>
     <text id="KAT_8.RBK">Opererad inom fyra veckor före döden</text>
     <text id="KAT_8.HLP">Som operation räknas åtgärder enligt Socialstyrelsens "Klassifikationer av kirurgiska åtgärder, KKÅ".</text>
     <text id="DFR_11.1.RBK">Opererad inom 4 veckor före döden?</text>
