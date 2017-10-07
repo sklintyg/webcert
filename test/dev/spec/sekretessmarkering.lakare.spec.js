@@ -28,7 +28,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var UnsignedIntygPage = wcTestTools.pages.unsignedPage;
 
-xdescribe('Testa sekretessmarkering för läkare', function() {
+describe('Testa sekretessmarkering för läkare', function() {
 
     var intygsId;
     var utkastId;
@@ -84,7 +84,7 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
         });
 
         it('LUSE-intyget skall ej gå att förnya', function() {
-            expect(element(by.id('fornyaBtn-' + intygsId)).isPresent()).toBe(false);
+            expect(element(by.id('fornyaBtn-' + intygsId)).isPresent()).toBe(true);
         });
 
         it('Gå in på LUSE-intyget och verifiera att ikon och text syns', function() {
@@ -96,21 +96,29 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
 
         it('Verifiera varningstext för utskrift av s-märkt', function() {
             element(by.id('downloadprint')).sendKeys(protractor.Key.SPACE);
-            expect(element(by.id('print-patient-sekretessmarkerad')).isPresent()).toBe(true);
-            element(by.id('button2print-patient-sekretessmarkerad')).sendKeys(protractor.Key.SPACE);
+            expect(element(by.id('button1print-patient-sekretessmarkerad')).isPresent()).toBe(true);
+            expect(element(by.id('button2print-patient-sekretessmarkerad')).isPresent()).toBe(true);
         });
+
+        it('Stäng diaglogen', function() {
+            element(by.id('button2print-patient-sekretessmarkerad')).sendKeys(protractor.Key.SPACE);
+        })
     });
 
 
     describe('Avaktivera PU-tjänsten', function() {
 
-        it('Avaktivera PU-tjänsten och ladda om intyget', function() {
+        it('Ladda om intyget', function() {
+            LuseIntygPage.get(intygsId);
+            expect(LuseIntygPage.isAt()).toBeTruthy();
+        });
+
+        it('Avaktivera PU-tjänsten', function() {
             restUtil.setPuServiceState(false).then(function() {
-                LuseIntygPage.get(intygsId);
-                expect(LuseIntygPage.isAt()).toBeTruthy();
-                expect(element(by.id('sekretessmarkeringError')).isPresent()).toBe(true);
+
             });
         });
+
 
         it('Verifiera felmeddelande vid utskrift och PU-tjänsten är nere', function() {
             element(by.id('downloadprint')).sendKeys(protractor.Key.SPACE);
@@ -122,6 +130,12 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
             element(by.id('sendBtn')).sendKeys(protractor.Key.SPACE);
             expect(element(by.id('dialogErrorText')).isPresent()).toBe(true);
             element(by.id('dialogErrorOkBtn')).sendKeys(protractor.Key.SPACE);
+        });
+
+        it('Ladda om intyget, verifiera att felmeddelande syns', function() {
+            LuseIntygPage.get(intygsId);
+            expect(LuseIntygPage.isAt()).toBeTruthy();
+            expect(element(by.id('intyg-load-error')).isPresent()).toBe(true);
         });
 
         it('Återställ PU-tjänsten och ladda om intyget', function() {
