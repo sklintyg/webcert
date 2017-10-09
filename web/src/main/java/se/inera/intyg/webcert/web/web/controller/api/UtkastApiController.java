@@ -18,10 +18,33 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.PreviousCertificateWarningResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -33,40 +56,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
-import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
-import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * API controller for REST services concerning certificate drafts.
  *
  * @author npet
- *
  */
 @Path("/utkast")
 @Api(value = "utkast", description = "REST API för utkasthantering", produces = MediaType.APPLICATION_JSON)
@@ -178,6 +177,23 @@ public class UtkastApiController extends AbstractApiController {
         return Response.ok().entity(lakareWithDraftsByEnhet).build();
     }
 
+    @GET
+    @Path("/previousIntyg/{personnummer}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
+        WebCertUser user = getWebCertUserService().getUser();
+        List<PreviousCertificateWarningResponse> res = utkastService.getPrevious(new Personnummer(personnummer))
+                .stream().map(utkast -> new PreviousCertificateWarningResponse(utkast.getIntygsTyp(),
+                        Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId())))
+                .collect(Collectors.groupingBy(PreviousCertificateWarningResponse::getModuleId))
+                .entrySet()
+                .stream()
+                .map(entry -> new PreviousCertificateWarningResponse(entry.getKey(),
+                        entry.getValue().stream().anyMatch(PreviousCertificateWarningResponse::isWithinCareGiver)))
+                .collect(Collectors.toList());
+        return Response.ok(res).build();
+    }
+
     private CreateNewDraftRequest createServiceRequest(CreateUtkastRequest req) {
         Patient pat = patientDetailsResolver.resolvePatient(req.getPatientPersonnummer(), req.getIntygType());
 
@@ -266,7 +282,6 @@ public class UtkastApiController extends AbstractApiController {
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
     }
-
 
     private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user) {
         final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patientId);

@@ -52,6 +52,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -118,7 +119,6 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
 
-
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
     public int countFilterIntyg(UtkastFilter filter) {
@@ -165,12 +165,12 @@ public class UtkastServiceImpl implements UtkastService {
         String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
 
         return new LogUser.Builder(personId, vardenhetId, vardgivareId)
-            .userName(hosPerson.getFullstandigtNamn())
-            .userTitle(hosPerson.getTitel())
-            .userAssignment(hosPerson.getMedarbetarUppdrag())
-            .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
-            .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
-            .build();
+                .userName(hosPerson.getFullstandigtNamn())
+                .userTitle(hosPerson.getTitel())
+                .userAssignment(hosPerson.getMedarbetarUppdrag())
+                .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
+                .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
+                .build();
     }
 
     @Override
@@ -196,6 +196,12 @@ public class UtkastServiceImpl implements UtkastService {
             saveDraft(utkast);
             LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
         }
+    }
+
+    @Override
+    public List<Utkast> getPrevious(Personnummer personnummer) {
+        return utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
+                authoritiesHelper.getIntygstyperForModuleFeature(webCertUserService.getUser(), WebcertFeature.WARN_ON_PREVIOUS));
     }
 
     private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {
@@ -426,7 +432,7 @@ public class UtkastServiceImpl implements UtkastService {
         Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
         if (personId != null
                 && (Personnummer.createValidatedPersonnummerWithDash(personId).isPresent()
-                        || SamordningsnummerValidator.isSamordningsNummer(personId))
+                || SamordningsnummerValidator.isSamordningsNummer(personId))
                 && !personId.getPnrHash().equals(draftPatient.getPersonId().getPnrHash())) {
 
             String oldPersonId = draftPatient.getPersonId().getPersonnummer();
@@ -451,7 +457,6 @@ public class UtkastServiceImpl implements UtkastService {
         } else {
             LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
         }
-
     }
 
     @Override
@@ -709,11 +714,11 @@ public class UtkastServiceImpl implements UtkastService {
     /**
      * See INTYG-3077 - when autosaving we make sure that the columns for fornamn, mellannamn and efternamn match
      * whatever values that are present in the actual utkast model.
-     *
+     * <p>
      * In the rare occurance that a patient has a name change after the initial utkast was created - e.g. the utkast
      * was continued on at a subsequent date - this method makes sure that the three "metadata" 'name' columns in the
      * INTYG table reflects the actual model.
-     *
+     * <p>
      * The one exception is when the utkast is of type fk7263 and copied from Intygstjänsten (or have an ancestor which
      * is created as a copy of an intyg in Intygstjänsten). In this case the JSON will not have a fornamn and we cannot
      * save null in UTKAST.PATIENT_FORNAMN.

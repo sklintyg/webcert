@@ -100,6 +100,13 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     IntygTypeSelectorModel.intygTypes = types;
                 });
 
+                // load warnings of previous certificates
+                UtkastProxy.getWarningsExisting(PatientModel.personnummer, function(existing) {
+                    for (var i = 0; i < existing.length; i++) {
+                        IntygTypeSelectorModel.previousIntygWarnings[existing[i].moduleId] = existing[i];
+                    }
+                });
+
                 // Load intyg for person with specified pnr
                 Viewstate.tidigareIntygLoading = true;
                 IntygProxy.getIntygForPatient(PatientModel.personnummer, function(data) {
@@ -113,7 +120,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     Viewstate.intygListErrorMessageKey = errorCode;
                 });
             }
-
+            $scope.shouldWarnPreviousCertificate = function (intygType) {
+                return IntygTypeSelectorModel.previousIntygWarnings.some(function (element) { return element.moduleId === intygType; });
+            };
             $scope.isRenewalAllowed = function(intyg) {
 
                 var statusAllowed = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';

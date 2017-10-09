@@ -64,7 +64,7 @@ public class ModuleApiController extends AbstractApiController {
 
     /**
      * Serving module configuration for Angular bootstrapping.
-     *
+     * <p>
      * Note that IntygModule#setDetailedDescription may be invoked to replace dynamic link placeholders.
      *
      * @return a JSON object

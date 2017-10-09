@@ -178,7 +178,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
 
-       // when(patientDetailsResolver.updatePatientForSaving(any(Patient.class), anyString())).thenReturn(defaultPatient);
     }
 
     @Test
@@ -431,7 +430,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         Patient newPatient = getUpdatedPatient();
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(),
+                utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -500,7 +500,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testUpdatePatientOnDraftSamePatientId() throws Exception {
         utkast.setEnhetsId(UTKAST_ENHETS_ID);
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(defaultPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(defaultPatient.getPersonId(), utkast.getIntygsId(),
+                utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -535,7 +536,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setEnhetsId("<unknownenhet>");
         Patient newPatient = getUpdatedPatient();
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(),
+                utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -557,7 +559,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verifyNoMoreInteractions(mockUtkastRepository, notificationService);
 
     }
-        @Test
+
+    @Test
     public void testSaveDoesNotUpdateOnEmptyFornamn() throws Exception {
         final String utkastFornamn = "fornamn";
         final String utkastEfternamn = "efternamn";
@@ -658,7 +661,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         return p;
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
+            VardpersonReferens vardperson) {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);
@@ -699,5 +703,4 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         return user;
     }
-
 }

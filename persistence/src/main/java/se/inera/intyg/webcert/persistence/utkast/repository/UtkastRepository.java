@@ -22,11 +22,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UtkastRepository extends JpaRepository<Utkast, String>, UtkastRepositoryCustom {
 
     List<Utkast> findAllByRelationIntygsId(String relationIntygsId);
 
     Utkast findOneByIntygsIdAndIntygsTyp(String intygsId, String intygsTyp);
+
+    List<Utkast> findAllByPatientPersonnummerAndIntygsTypIn(String personnummer, Set<String> intygstyp);
 
 }

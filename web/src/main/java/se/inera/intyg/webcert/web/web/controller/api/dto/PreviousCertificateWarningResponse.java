@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,20 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').factory('webcert.IntygTypeSelectorModel',
-    ['$log',
-        function($log) {
-            'use strict';
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-            return {
-                build: function() {
-                    this.intygType = 'default';
-                    this.certificateTypeText = '';
-                    this.intygTypes = []; // Format: { id: 'default', label: '' }
-                    this.userIntygTypes = []; // Only the types the current user can actually access in this context.
-                    this.previousIntygWarnings = {};
-                    return this;
-                }
-            };
-        }
-    ]);
+public final class PreviousCertificateWarningResponse {
+    private final String moduleId;
+    private final boolean withinCareGiver;
+
+    public PreviousCertificateWarningResponse(String moduleId, boolean withinCareGiver) {
+        this.moduleId = moduleId;
+        this.withinCareGiver = withinCareGiver;
+    }
+
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    public boolean isWithinCareGiver() {
+        return withinCareGiver;
+    }
+}

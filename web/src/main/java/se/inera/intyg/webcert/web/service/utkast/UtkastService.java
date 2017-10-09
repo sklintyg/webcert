@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -56,4 +57,6 @@ public interface UtkastService {
     String getQuestions(String intygsTyp, String version);
 
     void setKlarForSigneraAndSendStatusMessage(String intygsId, String intygsTyp);
+
+    List<Utkast> getPrevious(Personnummer personnummer);
 }

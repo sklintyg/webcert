@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "moduleId": {
+        "type": "string"
+      },
+      "withinCareGiver": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "moduleId",
+      "withinCareGiver"
+    ]
+  }
+}

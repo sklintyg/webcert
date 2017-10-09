@@ -201,6 +201,21 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                 });
             }
 
+            /*
+             * Load all the warnings that should be displayed for previous certificates for a patient.
+             */
+            function _getWarningsExisting(patientId, onSuccess, onError) {
+                $log.debug('_getWarningsExisting');
+                var restPath = '/api/utkast/previousIntyg/' + patientId;
+                $http.get(restPath).success(function(data) {
+                    $log.debug('_getWarningsExisting got data:' + data);
+                    onSuccess(data);
+                }).error(function(data, status) {
+                    $log.debug('_getWarningsExisting error :' + status);
+                    onError(data);
+                });
+            }
+
             // Return public API for the service
             return {
                 createUtkast: _createUtkast,
@@ -210,6 +225,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                 getUtkastType: _getUtkastType,
                 getUtkastList: _getUtkastList,
                 getUtkastFetchMore: _getUtkastFetchMore,
-                getUtkastSavedByList: _getUtkastSavedByList
+                getUtkastSavedByList: _getUtkastSavedByList,
+                getWarningsExisting: _getWarningsExisting
             };
         }]);
