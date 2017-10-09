@@ -170,6 +170,16 @@
                 <spring:message code="error.pu-problem.text" />
               </div>
             </c:when>
+            <c:when test="${param.reason eq 'sekretessapproval.needed'}">
+              <h1><spring:message code="error.sekretessapproval.needed.title" /></h1>
+              <div id="notFound" class="alert alert-danger">
+                <spring:message code="error.sekretessapproval.needed.text" />
+              </div>
+              <c:if test="${param.showlogin eq 'true'}">
+                <spring:message code="error.sekretessapproval.needed.showlogin" />
+              </c:if>
+
+            </c:when>
             <c:otherwise>
               <h1><spring:message code="error.generictechproblem.title" /></h1>
               <div id="genericTechProblem" class="alert alert-danger">

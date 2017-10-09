@@ -10,7 +10,7 @@
                    placeholder="Exempel: ååååmmdd-nnnn"
                    ng-model="personnummer"
                    wc-person-number
-                   required wc-visited maxlength="13"
+                   required maxlength="13"
                    wc-focus-me="focusPnr" />
             <div ng-show="pnrForm.pnr.$invalid && pnrForm.pnr.$touched && pnrForm.pnr.$viewValue != ''">
               <span class="error">Du måste ange ett giltigt personnummer</span>
