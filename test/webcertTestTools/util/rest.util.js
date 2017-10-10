@@ -205,5 +205,12 @@ module.exports = {
             method: 'GET'
         };
         return restClient.run(options);
-    }
+    },
+    deleteAnvandarPreference: function(hsaId, key) {
+        var options = {
+            url: 'testability/anvandare/preferences/' + hsaId + '/' + key,
+            method: 'DELETE'
+        };
+        return restClient.run(options);
+    },
 };

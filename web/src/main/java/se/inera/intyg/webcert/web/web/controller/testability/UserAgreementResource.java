@@ -21,9 +21,12 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -42,6 +45,9 @@ public class UserAgreementResource {
     @Autowired
     private GodkantAvtalRepository godkantAvtalRepository;
 
+    @Autowired
+    private AnvandarPreferenceRepository anvandarPreferenceRepository;
+
     @PUT
     @Path("/godkannavtal/{hsaId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -56,6 +62,17 @@ public class UserAgreementResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response avgodkannAvtal(@PathParam("hsaId") String hsaId) {
         godkantAvtalRepository.removeAllUserApprovments(hsaId);
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/preferences/{hsaId}/{key}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deletePreference(@PathParam("hsaId") String hsaId, @PathParam("key") String key) {
+        AnvandarPreference ap = anvandarPreferenceRepository.findByHsaIdAndKey(hsaId, key);
+        if (ap != null) {
+            anvandarPreferenceRepository.delete(ap);
+        }
         return Response.ok().build();
     }
 
