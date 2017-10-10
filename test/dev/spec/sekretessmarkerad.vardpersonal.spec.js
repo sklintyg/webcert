@@ -44,11 +44,11 @@ describe('Testa enkelt flöde för sekretessmarkerad vårdpersonal', function() 
 
     it('Logga in med en sekretessmarkerad användare', function() {
         WelcomePage.get();
-        specHelper.waitForAngularTestability();
-
+        expect(WelcomePage.isAt()).toBeTruthy();
         //Logga in som "Sara Sekretess"
         WelcomePage.login('TSTNMT2321000156-1099_TSTNMT2321000156-1077', false);
         specHelper.waitForAngularTestability();
+        expect(SokSkrivIntygPage.isAt()).toBeTruthy();
         expect(SokSkrivIntygPage.getDoctorText()).toContain('Sara Sekretess');
 
         expect(sekretessInfoDialogLink.isDisplayed()).toBe(true);
