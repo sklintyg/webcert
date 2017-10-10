@@ -67,8 +67,8 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     }
 
     private Response handleRuntimeException(RuntimeException re) {
-        LOG.error("Unhandled RuntimeException occured!", re);
         if (re instanceof WebCertServiceException) {
+            LOG.warn("WebCertServiceException caught", re.getMessage());
             WebCertServiceException we = (WebCertServiceException) re;
             if (we.getErrorCode() == WebCertServiceErrorCodeEnum.MISSING_PARAMETER) {
                 return buildErrorRedirectResponse("missing-parameter", we.getMessage());
@@ -80,6 +80,7 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
                 return buildErrorRedirectResponse("pu-problem", we.getMessage());
             }
         }
+        LOG.error("Unhandled RuntimeException occured!", re);
         return buildErrorRedirectResponse("unknown", re.getMessage());
     }
 
