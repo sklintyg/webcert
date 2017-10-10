@@ -313,8 +313,7 @@ module.exports = function() {
                 // console.log(result);
                 expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['3', '6']);
                 expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
-                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('23');
-                expect(antalAvLoop(result, 'Ett alternativ måste anges.')).to.equal('1');
+                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('24');
             });
         }
         if (arg1 === 'utökade' && intygsTyp === 'Transportstyrelsens läkarintyg') {
@@ -322,8 +321,7 @@ module.exports = function() {
                 // console.log(result);
                 expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['10', '13']);
                 expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
-                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('19');
-                expect(antalAvLoop(result, 'Ett alternativ måste anges.')).to.equal('1');
+                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('20');
             });
         }
     });
