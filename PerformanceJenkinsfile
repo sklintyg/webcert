@@ -1,9 +1,5 @@
 #!groovy
 
-def buildVersion = "5.4.${BUILD_NUMBER}"
-def commonVersion = "3.5.+"
-def infraVersion = "3.5.+"
-
 stage('checkout webcert') {
     node {
         git url: "https://github.com/sklintyg/webcert.git", branch: GIT_BRANCH
@@ -21,10 +17,12 @@ stage('build') {
 
 stage('gatling') {
     node {
-        try {
-            sh("cd performanceTests; ../gradlew gatling -Dcertificate.baseUrl=http://webcert.inera.nordicmedtest.se")
-        } finally {
-            gatlingArchive()
+        dir("performanceTests") {
+            try {
+                sh("../gradlew gatling -Dcertificate.baseUrl=http://webcert.inera.nordicmedtest.se")
+            } finally {
+                gatlingArchive()
+            }
         }
     }
 }
