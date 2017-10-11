@@ -101,8 +101,10 @@ public class SrsApiController extends AbstractApiController {
             Utdatafilter filter = buildUtdatafilter(prediktion, atgard, statistik);
             SrsResponse response = srsService
                     .getSrs(userService.getUser(), intygId, new Personnummer(personnummer), diagnosisCode, filter, questions);
-            logService.logShowPrediction(personnummer);
-            monitoringLog.logSrsInformationRetreived(diagnosisCode, intygId);
+            if (prediktion) {
+                logService.logShowPrediction(personnummer);
+                monitoringLog.logSrsInformationRetreived(diagnosisCode, intygId);
+            }
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException | IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
