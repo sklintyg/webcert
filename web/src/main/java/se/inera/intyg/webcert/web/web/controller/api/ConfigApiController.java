@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
 
@@ -34,6 +35,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 import java.util.Map;
 
 @Path("/config")
@@ -55,6 +57,9 @@ public class ConfigApiController extends AbstractApiController {
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
+    @Autowired
+    private PostnummerService postnummerService;
+
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -69,6 +74,14 @@ public class ConfigApiController extends AbstractApiController {
     @ApiOperation(value = "Get dynamic links for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     public Map<String, DynamicLink> getDynamicLinks() {
         return dynamicLinkService.getAllAsMap();
+    }
+
+    @GET
+    @Path("/kommuner")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get list of kommuner from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    public List<String> getKommunList() {
+        return postnummerService.getKommunList();
     }
 
     @PostConstruct

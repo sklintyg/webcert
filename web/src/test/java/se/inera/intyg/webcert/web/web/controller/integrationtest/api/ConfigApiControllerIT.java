@@ -46,4 +46,15 @@ public class ConfigApiControllerIT extends BaseRestIntegrationTest {
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-links-schema.json"));
     }
 
+    @Test
+    public void testGetKommuner() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/config/kommuner")
+                .then().statusCode(200).and()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-kommuner-schema.json"));
+    }
+
+
 }

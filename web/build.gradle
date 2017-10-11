@@ -135,6 +135,7 @@ dependencies {
     compile "se.inera.intyg.infra:common-cache-metrics:${infraVersion}"
     compile "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     compile "se.inera.intyg.infra:grp-stub:${infraVersion}"
+    compile "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"
