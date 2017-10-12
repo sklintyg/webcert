@@ -164,7 +164,9 @@
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.moduleService',
              'common.UserModel', 'formlyConfig', 'webcert.messages', 'common.MonitoringLogService', 'dynamicLinkService',
-        function($log, $rootScope, $window, $location, $state, $q, messageService, moduleService, UserModel, formlyConfig, wcMessages, MonitoringLogService, dynamicLinkService) {
+             '$uibModalStack',
+        function($log, $rootScope, $window, $location, $state, $q, messageService, moduleService, UserModel, formlyConfig,
+            wcMessages, MonitoringLogService, dynamicLinkService, $uibModalStack) {
 
             // Configure formly to use default hide directive.
             // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
@@ -185,7 +187,7 @@
             dynamicLinkService.addLinks(_links);
 
             $rootScope.$on('$stateChangeStart',
-                function(event, toState, toParams/*, fromState, fromParams*/) {
+                function(event, toState, toParams, fromState, fromParams) {
                     var redirectToUnitSelection = function() {
                         if (toState.name!=='normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
                             event.preventDefault();
@@ -215,6 +217,13 @@
                     } else {
                         if (!redirectToUnitSelection()) {
                             termsCheck();
+                        }
+                        // INTYG-4465: prevent state change when user press 'backwards' if modal is open, but close modal.
+                        if($uibModalStack.getTop()) {
+                            event.preventDefault();
+                            $uibModalStack.dismissAll();
+                            // Restore original state in order to make it work for DJUPINTEGRATION and avoid messing up the history.
+                            $state.go(fromState, fromParams);
                         }
                     }
                 });
