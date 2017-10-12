@@ -19,13 +19,14 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public abstract class AbstractCreateCopyRequest {
     private String originalIntygId;
+
+    private String originalIntygTyp;
 
     private String typ;
 
@@ -37,11 +38,17 @@ public abstract class AbstractCreateCopyRequest {
 
     private boolean djupintegrerad = false;
 
-    public AbstractCreateCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson) {
-        this.originalIntygId = orginalIntygsId;
-        this.typ = intygsTyp;
+    public AbstractCreateCopyRequest(String originalIntygId, String intygTyp, Patient patient, HoSPersonal hosPerson) {
+        this(originalIntygId, intygTyp, patient, hosPerson, intygTyp);
+    }
+
+    public AbstractCreateCopyRequest(String originalIntygId, String intygTyp, Patient patient, HoSPersonal hosPerson,
+            String originalIntygTyp) {
+        this.originalIntygId = originalIntygId;
+        this.typ = intygTyp;
         this.patient = patient;
         this.hosPerson = hosPerson;
+        this.originalIntygTyp = originalIntygTyp;
     }
 
     public AbstractCreateCopyRequest() {
@@ -58,6 +65,14 @@ public abstract class AbstractCreateCopyRequest {
 
     public void setOriginalIntygId(String originalIntygId) {
         this.originalIntygId = originalIntygId;
+    }
+
+    public String getOriginalIntygTyp() {
+        return originalIntygTyp;
+    }
+
+    public void setOriginalIntygTyp(String originalIntygTyp) {
+        this.originalIntygTyp = originalIntygTyp;
     }
 
     public String getTyp() {

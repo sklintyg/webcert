@@ -145,6 +145,7 @@
     <bean id="copyCompletionUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CopyCompletionUtkastBuilder"/>
     <bean id="createRenewalUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateRenewalCopyUtkastBuilder"/>
     <bean id="createReplacementUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateReplacementUtkastBuilder"/>
+    <bean id="createUtkastFromTemplateBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateUtkastFromTemplateBuilder"/>
 
     <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
 

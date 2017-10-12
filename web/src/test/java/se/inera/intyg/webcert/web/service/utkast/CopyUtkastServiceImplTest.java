@@ -558,10 +558,6 @@ public class CopyUtkastServiceImplTest {
         return utkast;
     }
 
-//    private CreateNewDraftCopyRequest buildCopyRequest() {
-//        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
-//    }
-
     private CreateCompletionCopyRequest buildCompletionRequest() {
         return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, patient, hoSPerson);
     }

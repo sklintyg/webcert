@@ -24,6 +24,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 
 public interface CopyUtkastService {
 
@@ -50,5 +52,13 @@ public interface CopyUtkastService {
      * @return {@link CreateReplacementCopyResponse}
      */
     CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest copyRequest);
+
+    /**
+     * Create a new utkast from template.
+     *
+     * @param copyRequest
+     * @return {@link CreateRenewalCopyRequest}
+     */
+    CreateUtkastFromTemplateResponse createUtkastFromTemplate(CreateUtkastFromTemplateRequest copyRequest);
 
 }

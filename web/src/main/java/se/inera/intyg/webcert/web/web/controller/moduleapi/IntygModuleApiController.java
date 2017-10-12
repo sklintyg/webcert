@@ -47,6 +47,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
@@ -90,8 +92,7 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Retrieves a signed intyg from intygstjänst.
      *
-     * @param intygsId
-     *            intygid
+     * @param intygsId intygid
      * @return Response
      */
     @GET
@@ -112,15 +113,11 @@ public class IntygModuleApiController extends AbstractApiController {
         return Response.ok().entity(intygAsExternal).build();
     }
 
-
-
     /**
      * Return the signed certificate identified by the given id as PDF.
      *
-     * @param intygsTyp
-     *            the type of certificate
-     * @param intygsId
-     *            - the globally unique id of a certificate.
+     * @param intygsTyp the type of certificate
+     * @param intygsId  - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
@@ -138,10 +135,8 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Return the signed certificate identified by the given id as PDF suited for the employer of the patient.
      *
-     * @param intygsTyp
-     *            the type of certificate
-     * @param intygsId
-     *            - the globally unique id of a certificate.
+     * @param intygsTyp the type of certificate
+     * @param intygsId  - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
@@ -192,10 +187,8 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Issues a request to Intygstjanst to revoke the signed intyg.
      *
-     * @param intygsId
-     *            The id of the intyg to revoke
-     * @param param
-     *            A JSON struct containing an optional message
+     * @param intygsId The id of the intyg to revoke
+     * @param param    A JSON struct containing an optional message
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/aterkalla")
@@ -292,6 +285,48 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     /**
+     * Create a new utkast from a template.
+     * <p>
+     * Usually (but not necessarily) the template is of a different intygType than the new utkast.
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/{newIntygsTyp}/create")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response createUtkastFromTemplate(CopyIntygRequest request, @PathParam("intygsTyp") String orgIntygsTyp,
+            @PathParam("intygsId") String orgIntygsId, @PathParam("newIntygsTyp") String newIntygsTyp) {
+
+        validateCreateUtkastFromTemplateAuthority(newIntygsTyp);
+
+        LOG.debug("Attempting to create a new certificate with type {} from certificate with type {} and id '{}'", newIntygsTyp,
+                orgIntygsTyp, orgIntygsId);
+
+        WebCertUser user = userService.getUser();
+
+        boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
+        if (!copyOkParam) {
+            LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
+            final String message = "Authorization failed due to false kopieraOK-parameter";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
+        }
+
+        if (!request.isValid()) {
+            LOG.error("Request to create utkast from certificate '{}' as template is not valid", orgIntygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+        }
+        CreateUtkastFromTemplateRequest serviceRequest = createUtkastFromDifferentIntygTypeRequest(orgIntygsId, newIntygsTyp, orgIntygsTyp,
+                request);
+        CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastFromTemplate(serviceRequest);
+
+        LOG.debug("Created a new draft with id: '{}' and type: {} from certificate with type: {} and id '{}'.",
+                serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsTyp, orgIntygsId);
+
+        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+
+        return Response.ok().entity(response).build();
+    }
+
+    /**
      * Create a copy that is a replacement (ersättning) of an existing certificate.
      */
     @POST
@@ -347,6 +382,28 @@ public class IntygModuleApiController extends AbstractApiController {
         Patient patient = createPatientFromCopyIntygRequest(request);
 
         CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
+
+        IntegrationParameters parameters = userService.getUser().getParameters();
+        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
+            LOG.debug("Adding new personnummer to request");
+            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
+        }
+
+        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
+            LOG.debug("Setting djupintegrerad flag on request to true");
+            req.setDjupintegrerad(true);
+        }
+        return req;
+    }
+
+    private CreateUtkastFromTemplateRequest createUtkastFromDifferentIntygTypeRequest(String orgIntygsId, String newIntygsTyp,
+            String orgIntygsTyp,
+            CopyIntygRequest request) {
+        HoSPersonal hosPerson = createHoSPersonFromUser();
+        Patient patient = createPatientFromCopyIntygRequest(request);
+
+        CreateUtkastFromTemplateRequest req = new CreateUtkastFromTemplateRequest(orgIntygsId, newIntygsTyp, patient,
+                hosPerson, orgIntygsTyp);
 
         IntegrationParameters parameters = userService.getUser().getParameters();
         if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
@@ -425,6 +482,13 @@ public class IntygModuleApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(WebcertFeature.KOPIERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
+                .orThrow();
+    }
+
+    private void validateCreateUtkastFromTemplateAuthority(String newIntygTyp) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), newIntygTyp)
+                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
     }
 
