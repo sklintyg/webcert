@@ -44,6 +44,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
@@ -82,6 +83,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
+
+    @Autowired
+    private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) {
@@ -167,8 +171,12 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithBefattningar(hosPerson, user);
         decorateWebCertUserWithDefaultVardenhet(user);
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
-
+        decorateWebcertUserWithAnvandarPreferenser(user);
         return user;
+    }
+
+    private void decorateWebcertUserWithAnvandarPreferenser(WebCertUser user) {
+        user.setAnvandarPreference(anvandarPreferenceRepository.getAnvandarPreference(user.getHsaId()));
     }
 
     private void decorateWebcertUserWithSekretessMarkering(WebCertUser webCertUser, HoSPersonType hosPerson) {

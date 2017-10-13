@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -31,7 +32,9 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -58,6 +61,7 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
@@ -92,11 +96,14 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Mock
     private PUService puService;
     @Mock
+    private AnvandarPreferenceRepository anvandarPreferenceRepository;
+    @Mock
     private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
     @Mock
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
     @InjectMocks
     private ElegWebCertUserDetailsService testee;
+    private Map<String, String> expectedPreferences = new HashMap<>();
 
     @BeforeClass
     public static void readSamlAssertions() throws Exception {
@@ -118,6 +125,9 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
         when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
+        expectedPreferences.put("some", "setting");
+        when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
+
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false, PersonSvar.Status.FOUND));
 
     }
@@ -128,6 +138,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
         assertNotNull(user);
         assertFalse(user.isSekretessMarkerad());
+        assertEquals(expectedPreferences, user.getAnvandarPreference());
 
         // WEBCERT-2028
         verify(avtalService, times(1)).userHasApprovedLatestAvtal(anyString());
