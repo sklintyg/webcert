@@ -3,9 +3,9 @@
 @SRS
 Egenskap: Webcert visa information från SRS i form av prediktioner på sjukskrivningslängd, statistikbilder och åtgärdsförslag
 
-Bakgrund: 
+Bakgrund:
     Givet att jag är djupintegrerat inloggad som läkare på vårdenhet "med SRS"
-    
+
 
 @SRS-US-W01 @allmänt
 @SRS-US-W02 @åtgärder
@@ -125,3 +125,13 @@ Scenario: Prediktion ska kunna visa förhöjd risk
     Och jag trycker på knappen "Visa"
     Så ska meddelandet "Förhöjd risk" visas
 
+@SRS-US-W06 @hjälpinformation @samtycke
+@notReady
+Scenario: Som användare vill jag få hjälpinformation (samtycke)
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "finns i SRS"
+    Och jag klickar på knappen för SRS
+    Och jag klickar på knappen "?" vid samtycke
+    Och jag klickar på knappen "Läs mer" vid samtycke
+    Så ska en ny sida öppnas och urlen innehålla "samtycke"

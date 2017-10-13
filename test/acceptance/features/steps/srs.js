@@ -42,8 +42,7 @@ module.exports = function() {
         samtycke => setConsent(srsdata.patient, user, samtycke)
     );
 
-    this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263$/,
-        () =>
+    this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263$/, () =>
         createDraftUsingSOAP(user, srsdata.patient.id)
         .then(intygsId => browser.get(buildLinkToIntyg(intygsId, srsdata.patient, user.enhetId)))
         .then(() => browser.waitForAngular())
@@ -71,12 +70,9 @@ module.exports = function() {
         srsButtonStatus => expect(fk7263utkast.getSRSButtonStatus()).to.eventually.equal(srsButtonStatus)
     );
 
-    this.When(/^jag klickar på knappen för SRS$/,
-        () => fk7263utkast.srs.knapp().click()
-    );
+    this.When(/^jag klickar på knappen för SRS$/, () => fk7263utkast.srs.knapp().click());
 
-    this.When(/^jag klickar på pilen$/,
-        () => fk7263utkast.srs.visamer().click()
+    this.When(/^jag klickar på pilen$/, () => fk7263utkast.srs.visamer().click()
         .then(() => browser.sleep(500)) // Det tar en stund för panelen att maximeras/minimeras
     );
 
@@ -84,11 +80,9 @@ module.exports = function() {
         status => expect(fk7263utkast.getSRSQuestionnaireStatus()).to.eventually.equal(status)
     );
 
-    this.Then(/^ska en fråga om samtycke visas$/,
-        () => expect(
-            findLabelContainingText('Patienten samtycker till att delta').isPresent()
-        ).to.eventually.equal(true)
-    );
+    this.Then(/^ska en fråga om samtycke visas$/, () => expect(
+        findLabelContainingText('Patienten samtycker till att delta').isPresent()
+    ).to.eventually.equal(true));
 
     this.When(/^jag anger att patienten (inte)? ?samtycker till SRS$/,
         samtycke => fk7263utkast.setSRSConsent(samtycke === 'inte' ? false : true)
@@ -99,30 +93,41 @@ module.exports = function() {
     );
 
 
-    this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/,
-        () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true)
-    );
+    this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
 
-    this.When(/^jag fyller i ytterligare svar för SRS$/,
-        () => clickAnswerRadioButtons()
-    );
+    this.When(/^jag fyller i ytterligare svar för SRS$/, () => clickAnswerRadioButtons());
 
-    this.When(/^jag trycker på knappen "Visa"$/,
-        () => fk7263utkast.srs.visaKnapp().click()
+    this.When(/^ska en ny sida öppnas och urlen innehålla "([^"]*)"$/, (type) => {
+        getWindowHandles().then(function(handles) {
+            switchToWindow(handles[1], true).then(function() {
+                testTypeOfUrl(handles[0], type).then((urlPart) => {
+                    return expect(type).to.contain(urlPart);
+
+                });
+
+            });
+        });
+    });
+
+    this.When(/^jag klickar på knappen "([^"]*)" vid samtycke$/, (knappText) => {
+        if (knappText === '?') { // Vid samtyckte
+            element.all(by.css('.glyphicon-question-sign')).get(0).click().then(() => browser.sleep(5000));
+        } else if (knappText === 'Läs mer') { // Vid samtyckte
+            return element(by.css('[ng-click="readMoreConsent()"]')).click();
+        }
+    });
+
+    this.When(/^jag trycker på knappen "Visa"$/, () => fk7263utkast.srs.visaKnapp().click()
         .then(() => browser.sleep(500)) // Ge lite tid åt SRS-tjänsten att svara
     );
 
-    this.Then(/^ska prediktion från SRS-tjänsten visas$/,
-        () => expect(fk7263utkast.srs.prediktion().isDisplayed()).to.eventually.equal(true)
-    );
+    this.Then(/^ska prediktion från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.prediktion().isDisplayed()).to.eventually.equal(true));
 
     this.When(/^jag trycker på fliken "(Statistik|Åtgärder)"$/,
         flikText => fk7263utkast.srs.flik(flikText).sendKeys(protractor.Key.ENTER)
     );
 
-    this.Then(/^ska en statistikbild från SRS-tjänsten visas$/,
-        () => expect(fk7263utkast.srs.statistik().isDisplayed()).to.eventually.equal(true)
-    );
+    this.Then(/^ska en statistikbild från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.statistik().isDisplayed()).to.eventually.equal(true));
 
     this.Then(/^ska felmeddelandet "(.*)" visas$/,
         text => expect(findLabelContainingText(text).isDisplayed()).to.eventually.equal(true)
@@ -249,4 +254,33 @@ function uriTemplate(strings, ...keys) {
     return strings.map((s, i) => [s, encodeURIComponent(keys[i])])
         .slice(0, -1)
         .reduce((sum, str) => sum += str[0] + str[1], '');
+}
+
+function getWindowHandles() {
+    return browser.getAllWindowHandles();
+}
+
+function switchToWindow(handle, returnable) {
+    if (returnable) {
+        return browser.switchTo().window(handle);
+    } else {
+        browser.switchTo().window(handle);
+    }
+}
+
+function testTypeOfUrl(handle, typeOfUrl) {
+    return browser.getCurrentUrl().then(function(url) {
+        return filterUrl(url, typeOfUrl, handle);
+    });
+}
+
+function filterUrl(url, typeOfUrl, handle) {
+    switch (typeOfUrl) {
+        case 'samtycke':
+            switchToWindow(handle, false);
+            logger.info(url);
+            return url.split('%2F').filter(urlPart => (urlPart === typeOfUrl)).toString();
+        default:
+            logger.warn('No URL type found');
+    }
 }
