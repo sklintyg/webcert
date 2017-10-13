@@ -122,14 +122,14 @@ public class PatientDetailsResolverTest {
     private IntegrationParameters buildIntegrationParameters() {
         IntegrationParameters params = new IntegrationParameters("ref", "hospname", "20121212-1212", INTEGR_FNAMN, INTEGR_MNAMN,
                 INTEGR_LNAMN,
-                INTEGR_POST_ADDR, INTEGR_POST_NR, INTEGR_POST_ORT, false, true, false, true);
+                INTEGR_POST_ADDR, INTEGR_POST_NR, INTEGR_POST_ORT, false, INTEGR_AVLIDEN, false, true);
         return params;
     }
 
     private IntegrationParameters buildIntegrationParametersWithNullAddress() {
         IntegrationParameters params = new IntegrationParameters("ref", "hospname", "20121212-1212", INTEGR_FNAMN, INTEGR_MNAMN,
                 INTEGR_LNAMN,
-                null, null, null, false, true, false, true);
+                null, null, null, false, INTEGR_AVLIDEN, false, true);
         return params;
     }
 
@@ -321,7 +321,7 @@ public class PatientDetailsResolverTest {
         assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
         assertEquals(INTEGR_POST_NR, patient.getPostnummer());
         assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -342,7 +342,7 @@ public class PatientDetailsResolverTest {
         assertEquals(null, patient.getPostadress());
         assertEquals(null, patient.getPostnummer());
         assertEquals(null, patient.getPostort());
-        assertEquals(PU_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -427,7 +427,7 @@ public class PatientDetailsResolverTest {
         assertEquals(DB_POST_ADDR, patient.getPostadress());
         assertEquals(DB_POST_NR, patient.getPostnummer());
         assertEquals(DB_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -486,7 +486,7 @@ public class PatientDetailsResolverTest {
         assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
         assertEquals(INTEGR_POST_NR, patient.getPostnummer());
         assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -499,11 +499,9 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getValdVardgivare()).thenReturn(new Vardgivare("vg-1", "vardgivare-1"));
 
-
         List<Utkast> drafts = new ArrayList<>();
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
                 anySet())).thenReturn(drafts);
-
 
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
@@ -645,6 +643,6 @@ public class PatientDetailsResolverTest {
 
     private Person buildPerson() {
         return new Person(Personnummer.createValidatedPersonnummerWithDash("19121212-1212").get(),
-                false, false, FNAMN, MNAMN, LNAMN, POST_ADDR, POST_NR, POST_ORT);
+                false, PU_AVLIDEN, FNAMN, MNAMN, LNAMN, POST_ADDR, POST_NR, POST_ORT);
     }
 }

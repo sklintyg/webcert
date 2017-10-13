@@ -217,10 +217,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private Patient resolveFkPatientPuUnavailable(Personnummer personnummer, WebCertUser user) {
         if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name()) && user.getParameters() != null) {
-            // DJUPINTEGRATION
             return toPatientFromParametersNameOnly(personnummer, user.getParameters());
         } else {
-            // Perhaps return Patient instance with personnummer only?
             return null;
         }
     }
@@ -244,7 +242,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 // Update avliden with integrationparameters
                 patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
 
-                // All address fields needs to be present from Journalsystem, otherwise use PU instead.
+                // All address fields needs to be present from integration parameters, otherwise use PU instead.
                 if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
                         && isNotNullOrEmpty(parameters.getPostort())) {
                     patient.setPostadress(parameters.getPostadress());
@@ -261,12 +259,10 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 return toPatientFromPersonSvar(personnummer, personSvar);
             }
         } else {
-            // Om PU-svar saknas helt skall allt som går hämtas från Integrationsparametrar om sådana finns.
+            // No PU means only use integration parameters
             if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
                 return toPatientFromParameters(personnummer, user.getParameters());
             } else {
-                // Om vi varken har DJUPINTEGRATION parametrar eller PU så blir det manuellt. Eller ska vi köra på
-                // ett Patient-objekt med endast personnummer?
                 return null;
             }
         }
@@ -280,39 +276,34 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     private Patient resolveDbPatient(Personnummer personnummer, WebCertUser user) {
         PersonSvar personSvar = puService.getPerson(personnummer);
 
+        Patient patient = null;
         // Djupintegration
         if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
 
-            // Om svar från PU finns, kombinera ihop PU för namn och s-mark medan adress från J-system.
+            // Use PU for name och s-mark and address from integration parameters
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                Patient patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
+                patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
                 IntegrationParameters parameters = user.getParameters();
                 if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
                         && isNotNullOrEmpty(parameters.getPostort())) {
                     patient.setPostadress(parameters.getPostadress());
                     patient.setPostnummer(parameters.getPostnummer());
                     patient.setPostort(parameters.getPostort());
-                    return patient;
-                } else {
-                    // Manuell inmatning, dvs lämna fälten nullade.
-                    return patient;
                 }
+                patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
 
             } else {
-                // Om patient ej finns i PU alls, bygg namn från parametrar och lämna adress tomt för manuell ifyllnad.
-                return toPatientFromParameters(personnummer, user.getParameters());
+                // use integration parameters if no answer from PU
+                patient = toPatientFromParameters(personnummer, user.getParameters());
             }
 
         } else {
-            // Fristående byggs helt från PU, om möjligt
+            // NORMAL uses only PU
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                return toPatientFromPersonSvar(personnummer, personSvar);
-            } else {
-                // Om ej svar från PU, returnera blankt för manuell ifyllnad.
-                return null;
+                patient = toPatientFromPersonSvar(personnummer, personSvar);
             }
         }
-
+        return patient;
     }
 
     /**
@@ -324,7 +315,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         PersonSvar personSvar = puService.getPerson(personnummer);
 
         // Find ALL existing intyg for this patient, filter out so we only have DB left.
-        // Förstahands-valen för sos_doi är identiska oavett Integration eller Fristående
         List<Utkast> utkastList = new ArrayList<>();
         if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummer(),
@@ -336,8 +326,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                     Sets.newHashSet("db")));
         }
 
-        // If any utkast were found, take the newest one and transfer name & address från DB intyg. (Use PU for s-markering and
-        // deceased)
+        // If any utkast were found, take the newest one and transfer name & address från DB intyg.
+        // Use PU for s-markering
+        // Use PU and integration parameters for deceased
         if (utkastList.size() > 0) {
             Utkast newest = utkastList.stream()
                     .sorted((u1, u2) -> u2.getSenastSparadDatum().compareTo(u1.getSenastSparadDatum()))
@@ -349,51 +340,51 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 Utlatande utlatande = moduleApi.getUtlatandeFromJson(newest.getModel());
                 Patient patient = utlatande.getGrundData().getPatient();
                 if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                    patient.setAvliden(personSvar.getPerson().isAvliden());
                     patient.setSekretessmarkering(personSvar.getPerson().isSekretessmarkering());
-                } else if (user.getParameters() != null) {
-                    patient.setAvliden(user.getParameters().isPatientDeceased());
-                } else {
-                    // Avliden ej möjlig att ta reda på. Men eftersom vi skriver DOI-intyg kan vi förmoda att patienten är död.
-                    patient.setAvliden(true);
                 }
+                patient.setAvliden(
+                        (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
+                                || (user.getParameters() != null && user.getParameters().isPatientDeceased())
+                                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null)
+                );
                 return patient;
             } catch (ModuleNotFoundException | IOException e) {
-                // Vid fel här, gå vidare utifrån att DB-intyg saknas.
+                // No usabe DB exist
                 return handleDoiNoExistingDb(personnummer, personSvar, user);
             }
         } else {
-            // Om ej existerande och användbar DB verkar finnas, fortsätt här.
+            // No usabe DB exist
             return handleDoiNoExistingDb(personnummer, personSvar, user);
         }
     }
 
     private Patient handleDoiNoExistingDb(Personnummer personnummer, PersonSvar personSvar, WebCertUser user) {
 
+        Patient patient = null;
         // Handle DJUPINTEGRATION
         if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
-            // Hämta namn från PU, om möjligt
+
+            // Prioritize PU
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                // Hämta namn från PU
-                Patient patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
-                // Address från Integrationsparametrar
+                patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
+
+                // Address from integration parameters
                 patient.setPostadress(user.getParameters().getPostadress());
                 patient.setPostnummer(user.getParameters().getPostnummer());
                 patient.setPostort(user.getParameters().getPostort());
-                return patient;
+                patient.setAvliden(patient.isAvliden() || (user.getParameters() != null && user.getParameters().isPatientDeceased()));
+
             } else {
-                // Om PU saknas, bygg så gott det går från parmetrar.
-                return toPatientFromParameters(personnummer, user.getParameters());
+                // If PU is missing, use integration parameters
+                patient = toPatientFromParameters(personnummer, user.getParameters());
             }
         } else {
             // HANDLE FRISTÅENDE
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
                 return toPatientFromPersonSvar(personnummer, personSvar);
-            } else {
-                // Knappa in manuellt...
-                return null;
             }
         }
+        return patient;
     }
 
     private Patient toPatientFromParameters(Personnummer personnummer, IntegrationParameters parameters) {
@@ -402,6 +393,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         patient.setPostadress(parameters.getPostadress());
         patient.setPostnummer(parameters.getPostnummer());
         patient.setPostort(parameters.getPostort());
+        patient.setAvliden(parameters.isPatientDeceased());
 
         return patient;
     }
@@ -441,7 +433,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         Patient patient = new Patient();
         patient.setPersonId(personnummer);
 
-        // Namn
+        // Name
         patient.setFornamn(personSvar.getPerson().getFornamn());
         patient.setMellannamn(personSvar.getPerson().getMellannamn());
         patient.setEfternamn(personSvar.getPerson().getEfternamn());
@@ -449,7 +441,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 Joiner.on(' ').skipNulls().join(personSvar.getPerson().getFornamn(), personSvar.getPerson().getMellannamn(),
                         personSvar.getPerson().getEfternamn()));
 
-        // Övrigt
+        // Other
         patient.setAvliden(personSvar.getPerson().isAvliden());
         patient.setSekretessmarkering(personSvar.getPerson().isSekretessmarkering());
         return patient;
