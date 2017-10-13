@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <texter typ="DB" giltigFrom="2017-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <text id="KAT_1.RBK">Den avlidnes personuppgifter</text>
+    <text id="KAT_1.RBK">Kompletterande patientuppgifter</text>
     <text id="DFR_1.1.RBK">Identiteten styrkt genom</text>
     <text id="KAT_2.RBK">Dödsdatum och dödsplats</text>
     <text id="FRG_2.RBK">Dödsdatum</text>
     <text id="FRG_2.HLP">Om dödsdatum är säkert markeras "Säkert" och dödsdatum anges.
 
 Om dödsdatum inte kan fastställas markeras "Ej säkert". Både dödsdatum och datum när kroppen påträffades måste då anges. Om uppgifter saknas för dödsdatums månad eller dag, ersätt siffrorna med 00. År måste anges.</text>
-    <text id="DFR_2.1.SVA_1">Säkert</text>
-    <text id="DFR_2.1.SVA_2">Ej säkert</text>
+    <text id="SVAR_SAKERT">Säkert</text>
+    <text id="SVAR_EJ_SAKERT">Ej säkert</text>
     <text id="DFR_2.2.RBK">Datum</text>
     <text id="DFR_2.3.RBK">Anträffad död</text>
     <text id="FRG_3.RBK">Dödsplats</text>
@@ -34,19 +34,34 @@ Annan/okänd: övrigt</text>
     <text id="DFR_6.1.SVA_3">Nej, den avlidne undersökt kort före döden</text>
     <text id="DFR_6.3.RBK">Undersökningsdatum</text>
     <text id="KAT_6.RBK">Polisanmälan</text>
-    <text id="KAT_6.HLP">Polisanmälan skall göras snarast möjligt om förhållandena vid dödsfallet är sådana att det kan finnas skäl för en rättsmedicinsk undersökning. Dödsbeviset skall då istället utan dröjsmål lämnas till polismyndigheten (4 kap. 4 § begravningslagen).
+    <text id="KAT_6.HLP">En anmälan till Polismyndigheten ska göras i följande fall.
+        <ol>
+            <li>1. Om ett dödsfall har eller kan kan ha orsakats av yttre påverkan, dvs. skada eller förgiftning tillfogad
+                <ul>
+                    <li>av någon annan person än den som har avlidit,</li>
+                    <li>genom olycksfall, eller</li>
+                    <li>genom självmord</li>
+                    <li>och inte enbart av sjukdom.</li>
+                </ul>
+            </li>
+        <li>2. Om det är svårt att avgöra om ett dödsfall har orsakats av yttre påverkan
+            <ul>
+                <li>när någon anträffas död och tidigare sjukdom eller sjukdomsbild inte kan förklara dödsfallet, dvs. vid helt oväntade dödsfall hos både barn och vuxna,</li>
+                <li>när en missbrukare anträffas död, eller</li>
+                <li>vid framskriden förruttnelse.</li>
+            </ul>
+        </li>
 
-Polisanmälan skall göras:
+        <li>3. Om ett dödsfall kan misstänkas ha samband med fel eller försummelse i hälso- och sjukvården.</li>
 
-När dödsfallet har eller kan ha orsakats av yttre påverkan (skada eller förgiftning) och alltså inte enbart av sjukdom, dvs. av någon annan person, olycksfall eller självmord.
-När det är svårt att avgöra om dödsfallet har orsakats av yttre påverkan. Detta gäller
-när någon annträffas död och tidigare sjukdomsbild inte kan förklara dödsfallet, dvs. vid helt oväntade dödsfall hos både barn - bl.a. vid plötslig spädbarnsdöd - och vuxna när det finns anledning till tveksamhet om dödsfallet har naturliga orsaker,
-när en misstrukare anträffas död,
-vid framskriden föruttnelse.
-När dödsfallet kan misstänkas ha samband med fel eller försummelse inom hälso- och sjukvården.
-När den döde inte har kunnat identifieras.
+        <li>4. Om en avliden inte har kunnat identifieras.</li>
+        </ol>
 
-(SOSFS 1996:29, avsnitt 5)</text>
+        När ett dödsbevis lämnas till Polismyndigheten bör en kopia av dödsbeviset samtidigt skickas till Skatteverket.
+
+        (HSLF-FS 2015:15)
+
+        Polismyndigheten ska skicka dödsbeviset tillsammans med tillståndet till gravsättning och kremering till Skatteverket enligt 4 kap. 4 § begravningslagen (1990:1144).</text>
     <text id="DFR_7.1.RBK">Finns skäl för polisanmälan?</text>
     <text id="DFR_7.1.SVA_1">Ja, om dödsfallet har eller kan ha orsakats av yttre påverkan (skada/förgiftning) eller fel/försummelse i vården eller den dödes identitet är okänd, ska polisanmälan göras och dödsbeviset lämnas till Polismyndigheten</text>
     <text id="DFR_7.1.SVA_2">Nej</text>
@@ -57,10 +72,10 @@ När den döde inte har kunnat identifieras.
     <text id="KV_DETALJER_UNDERSOKNING.UNDERSOKNING_SKA_GORAS.RBK">Nej, rättsmedicinsk undersökning ska göras</text>
     <text id="KV_DETALJER_UNDERSOKNING.UNDERSOKNING_GJORT_KORT_FORE_DODEN.RBK">Nej, den avlidne undersökt kort före döden</text>
 
-    <text id="KV_DODSPLATS_BOENDE.SJUKHUS.RBK">Sjukhus</text>
-    <text id="KV_DODSPLATS_BOENDE.ORDINART_BOENDE.RBK">Särskilt boende</text>
-    <text id="KV_DODSPLATS_BOENDE.SARSKILT_BOENDE.RBK">Ordinärt boende</text>
-    <text id="KV_DODSPLATS_BOENDE.ANNAN.RBK">Annan/okänd</text>
+    <text id="DODSPLATS_BOENDE.SJUKHUS.RBK">Sjukhus</text>
+    <text id="DODSPLATS_BOENDE.ORDINART_BOENDE.RBK">Särskilt boende</text>
+    <text id="DODSPLATS_BOENDE.SARSKILT_BOENDE.RBK">Ordinärt boende</text>
+    <text id="DODSPLATS_BOENDE.ANNAN.RBK">Annan/okänd</text>
 
     <text id="FRM_1.RBK">Bestämmelser om dödsbevis
 
