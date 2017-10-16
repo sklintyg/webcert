@@ -109,17 +109,28 @@ module.exports = function() {
         });
     });
 
-    this.When(/^jag klickar på knappen "([^"]*)" vid samtycke$/, (knappText) => {
-        if (knappText === '?') { // Vid samtyckte
-            element.all(by.css('.glyphicon-question-sign')).get(0).click().then(() => browser.sleep(5000));
-        } else if (knappText === 'Läs mer') { // Vid samtyckte
-            return element(by.css('[ng-click="readMoreConsent()"]')).click();
+    this.When(/^jag klickar på knappen "([^"]*)" vid (samtycke|prediktionsmeddelandet)$/, (knappText, place) => {
+        if ('?' === knappText) {
+            let questionmarkIndex = ('samtycke' === place) ? 0 : 1;
+            element.all(by.css('.glyphicon-question-sign')).get(questionmarkIndex).click().then(() => browser.sleep(5000));
+        } else if ('Läs mer' === knappText) {
+            let ngfunction = ('samtycke' === place) ? '[ng-click="readMoreConsent()"]' : '[ng-click="readMoreRisk()"]';
+            return element(by.css(ngfunction)).click();
         }
     });
 
-    this.When(/^jag trycker på knappen "Visa"$/, () => fk7263utkast.srs.visaKnapp().click()
-        .then(() => browser.sleep(500)) // Ge lite tid åt SRS-tjänsten att svara
-    );
+    this.When(/^jag trycker på knappen "Visa"$/, () => fk7263utkast.srs.visaKnapp().isDisplayed()
+        .then((isDisplayed) => {
+            if (isDisplayed) {
+                fk7263utkast.srs.visaKnapp().click().then(() => browser.sleep(500)); // Ge lite tid åt SRS-tjänsten att svara
+            } else {
+                browser.actions().mouseMove(fk7263utkast.srs.questionsCollapser()).perform() // If small window, center element in window
+                    .then(() => fk7263utkast.srs.questionsCollapser().click())
+                    .then(() => browser.sleep(500))
+                    .then(() => fk7263utkast.srs.visaKnapp().click())
+                    .then(() => browser.sleep(500));
+            }
+        }));
 
     this.Then(/^ska prediktion från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.prediktion().isDisplayed()).to.eventually.equal(true));
 
@@ -271,17 +282,14 @@ function switchToWindow(handle, returnable) {
 
 function testTypeOfUrl(handle, typeOfUrl) {
     return browser.getCurrentUrl().then(function(url) {
-        return filterUrl(url, typeOfUrl, handle);
+        return filterUrl(decodeURIComponent(url), typeOfUrl, handle);
     });
 }
 
 function filterUrl(url, typeOfUrl, handle) {
-    switch (typeOfUrl) {
-        case 'samtycke':
-            switchToWindow(handle, false);
-            logger.info(url);
-            return url.split('%2F').filter(urlPart => (urlPart === typeOfUrl)).toString();
-        default:
-            logger.warn('No URL type found');
-    }
+    logger.info(url);
+    switchToWindow(handle, false);
+    return url.split('/')
+        .filter(urlPart => (urlPart === typeOfUrl))
+        .toString();
 }
