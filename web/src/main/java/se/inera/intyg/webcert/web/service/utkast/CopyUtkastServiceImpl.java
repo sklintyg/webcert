@@ -133,13 +133,14 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
             CopyUtkastBuilderResponse builderResponse = buildCompletionUtkastBuilderResponse(copyRequest, originalIntygId, true);
 
+            if (copyRequest.isDjupintegrerad()) {
+                checkIntegreradEnhet(builderResponse);
+            }
+
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
 
             monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
 
-            if (copyRequest.isDjupintegrerad()) {
-                checkIntegreradEnhet(builderResponse);
-            }
 
             return new CreateCompletionCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
 
@@ -176,13 +177,14 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
 
+            if (copyRequest.isDjupintegrerad()) {
+                checkIntegreradEnhet(builderResponse);
+            }
+
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse, user);
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
-            if (copyRequest.isDjupintegrerad()) {
-                checkIntegreradEnhet(builderResponse);
-            }
 
             return new CreateRenewalCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
 
@@ -212,13 +214,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             CopyUtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
-
-            monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
-
             if (replacementRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
+
+            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+
+            monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
 
             return new CreateReplacementCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
 
