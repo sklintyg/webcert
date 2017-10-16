@@ -179,6 +179,7 @@ var FkUtkast = BaseUtkast._extend({
             statistik: () => element(by.id('statstics')),
             atgarderRek: () => element(by.id('atgarderRek')),
             atgarderObs: () => element(by.id('atgarderObs')),
+            questionsCollapser: () => element(by.id('questionsCollapser')),
 
         }
     },
@@ -197,21 +198,21 @@ var FkUtkast = BaseUtkast._extend({
 
     getSRSButtonStatus: function() {
         return Promise.all([
-                this.srs.knapp().isDisplayed(),
-                this.srs.knapp().element(by.className('glyphicon-plus-sign')).isPresent(),
-                this.srs.knapp().element(by.className('glyphicon-minus-sign')).isPresent()
-            ]).then(results => {
-                const [displayed, closed, open] = results;
-                if (!displayed) {
-                    return Promise.resolve('gömd');
-                } else if (closed) {
-                    return Promise.resolve('stängd');
-                } else if (open) {
-                    return Promise.resolve('öppen');
-                } else {
-                    return Promise.reject('okänd');
-                }
-            });
+            this.srs.knapp().isDisplayed(),
+            this.srs.knapp().element(by.className('glyphicon-plus-sign')).isPresent(),
+            this.srs.knapp().element(by.className('glyphicon-minus-sign')).isPresent()
+        ]).then(results => {
+            const [displayed, closed, open] = results;
+            if (!displayed) {
+                return Promise.resolve('gömd');
+            } else if (closed) {
+                return Promise.resolve('stängd');
+            } else if (open) {
+                return Promise.resolve('öppen');
+            } else {
+                return Promise.reject('okänd');
+            }
+        });
     },
 
     get: function get(intygId) {
@@ -475,7 +476,7 @@ var FkUtkast = BaseUtkast._extend({
             sendButton: panel.element(by.css('.btn-success'))
         };
     },
-    
+
 });
 
 module.exports = new FkUtkast();

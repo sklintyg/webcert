@@ -135,3 +135,16 @@ Scenario: Som användare vill jag få hjälpinformation (samtycke)
     Och jag klickar på knappen "?" vid samtycke
     Och jag klickar på knappen "Läs mer" vid samtycke
     Så ska en ny sida öppnas och urlen innehålla "samtycke"
+
+@SRS-US-W06 @hjälpinformation @prediktionsmodell
+@notReady
+Scenario: Som användare vill jag få hjälpinformation (prediktionsmodell)
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "finns i SRS"
+    Och jag klickar på knappen för SRS
+    Och jag trycker på knappen "Visa"
+    Och jag klickar på knappen "?" vid prediktionsmeddelandet
+    Och jag klickar på knappen "Läs mer" vid prediktionsmeddelandet
+    Så ska en ny sida öppnas och urlen innehålla "prediktionsmodell"
+    
