@@ -24,38 +24,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -71,42 +55,80 @@ import java.util.Map;
 // CHECKSTYLE:OFF ParameterNumber
 public class IntygIntegrationController extends BaseIntegrationController {
 
-    private static final String PARAM_CERT_ID = "certId";
-    private static final String PARAM_CERT_TYPE = "certType";
-    private static final String PARAM_COHERENT_JOURNALING = "sjf";
-    private static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
+    public static final String PARAM_ENHET_ID = "enhet";
+    public static final String PARAM_CERT_ID = "certId";
+    public static final String PARAM_CERT_TYPE = "certType";
+    public static final String PARAM_COHERENT_JOURNALING = "sjf";
+    public static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
     public static final String PARAM_COPY_OK = "kopieringOK";
-    private static final String PARAM_PATIENT_ALTERNATE_SSN = "alternatePatientSSn";
-    private static final String PARAM_PATIENT_DECEASED = "avliden";
-    private static final String PARAM_PATIENT_EFTERNAMN = "efternamn";
-    private static final String PARAM_PATIENT_FORNAMN = "fornamn";
-    private static final String PARAM_PATIENT_MELLANNAMN = "mellannamn";
-    private static final String PARAM_PATIENT_POSTADRESS = "postadress";
-    private static final String PARAM_PATIENT_POSTNUMMER = "postnummer";
-    private static final String PARAM_PATIENT_POSTORT = "postort";
-    private static final String PARAM_REFERENCE = "ref";
-    private static final String PARAM_RESPONSIBLE_HOSP_NAME = "responsibleHospName";
+    public static final String PARAM_PATIENT_ALTERNATE_SSN = "alternatePatientSSn";
+    public static final String PARAM_PATIENT_DECEASED = "avliden";
+    public static final String PARAM_PATIENT_EFTERNAMN = "efternamn";
+    public static final String PARAM_PATIENT_FORNAMN = "fornamn";
+    public static final String PARAM_PATIENT_MELLANNAMN = "mellannamn";
+    public static final String PARAM_PATIENT_POSTADRESS = "postadress";
+    public static final String PARAM_PATIENT_POSTNUMMER = "postnummer";
+    public static final String PARAM_PATIENT_POSTORT = "postort";
+    public static final String PARAM_REFERENCE = "ref";
+    public static final String PARAM_RESPONSIBLE_HOSP_NAME = "responsibleHospName";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
-    private static final String[] GRANTED_ROLES = new String[] { AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE,
-            AuthoritiesConstants.ROLE_ADMIN };
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
+
+    private static final String[] GRANTED_ROLES = new String[] {
+            AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN
+    };
+
+    @Autowired
+    private IntegrationService integrationService;
+
+    @Autowired(required = false)
+    private Optional<CommonFeatureService> commonFeatureService;
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
 
-    @Autowired
-    private UtkastRepository utkastRepository;
+    /**
+     * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
+     * the certificate. Can be used for all types of certificates.
+     *
+     * @param intygId
+     *            The id of the certificate to view.
+     * @param intygTyp
+     *            The type of certificate
+     */
+    @GET
+    @Path("/{intygTyp}/{intygId}")
+    public Response getRedirectToIntyg(@Context UriInfo uriInfo,
+                                    @PathParam("intygId") String intygId,
+                                    @PathParam("intygTyp") String intygTyp,
+                                    @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
+                                    @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+                                    @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+                                    @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
+                                    @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+                                    @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+                                    @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
+                                    @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+                                    @QueryParam(PARAM_PATIENT_POSTORT) String postort,
+                                    @QueryParam(PARAM_REFERENCE) String reference,
+                                    @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+                                    @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+                                    @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+                                    @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
-    @Autowired
-    private MonitoringLogService monitoringLog;
+        super.validateRedirectToIntyg(intygId);
 
-    @Autowired
-    private UtkastService utkastService;
+        IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
+                responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
+                coherentJournaling, deceased, inactiveUnit, copyOk);
 
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
+        WebCertUser user = getWebCertUser();
+        user.setParameters(integrationParameters);
+
+        return handleRedirectToIntyg(uriInfo, enhetId, intygTyp, intygId, user);
+    }
 
     /**
      * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
@@ -117,111 +139,88 @@ public class IntygIntegrationController extends BaseIntegrationController {
      */
     @GET
     @Path("/{intygId}")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId,
-            @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-            @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-            @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
-            @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-            @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-            @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
-            @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-            @QueryParam(PARAM_PATIENT_POSTORT) String postort,
-            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference,
-            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
-            @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
-        return redirectToIntyg(uriInfo, intygId, null, alternatePatientSSn, responsibleHospName, fornamn, efternamn, mellannamn, postadress,
-                postnummer, postort, coherentJournaling, reference, inactiveUnit, deceased, copyOk);
-    }
-
-    /**
-     * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
-     * the certificate. Can be used for all types of certificates.
-     *
-     * @param intygId
-     *            The id of the certificate to view.
-     * @param typParam
-     *            The type of certificate
-     */
-    @GET
-    @Path("/{typ}/{intygId}")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typParam,
-            @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-            @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-            @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
-            @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-            @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-            @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
-            @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-            @QueryParam(PARAM_PATIENT_POSTORT) String postort,
-            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference,
-            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
-            @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
+    public Response getRedirectToIntyg(@Context UriInfo uriInfo,
+                                    @PathParam("intygId") String intygId,
+                                    @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
+                                    @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+                                    @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+                                    @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
+                                    @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+                                    @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+                                    @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
+                                    @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+                                    @QueryParam(PARAM_PATIENT_POSTORT) String postort,
+                                    @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+                                    @QueryParam(PARAM_REFERENCE) String reference,
+                                    @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+                                    @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+                                    @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
         super.validateRedirectToIntyg(intygId);
 
-        WebCertUser user = getWebCertUserService().getUser();
+        IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
+                responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
+                coherentJournaling, deceased, inactiveUnit, copyOk);
 
-        if (user.getParameters() != null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
+        WebCertUser user = getWebCertUser();
+        user.setParameters(integrationParameters);
+
+        return handleRedirectToIntyg(uriInfo, enhetId, null, intygId, user);
+    }
+
+    @POST
+    @Path("/{intygId}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response postRedirectToIntyg(@Context UriInfo uriInfo,
+                                    @PathParam("intygId") String intygId,
+                                    @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
+                                    @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+                                    @DefaultValue("") @FormParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+                                    @FormParam(PARAM_PATIENT_FORNAMN) String fornamn,
+                                    @FormParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+                                    @FormParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+                                    @FormParam(PARAM_PATIENT_POSTADRESS) String postadress,
+                                    @FormParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+                                    @FormParam(PARAM_PATIENT_POSTORT) String postort,
+                                    @DefaultValue("false") @FormParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+                                    @FormParam(PARAM_REFERENCE) String reference,
+                                    @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+                                    @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
+                                    @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
+
+        super.validateRedirectToIntyg(intygId);
+
+        IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
+                responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
+                coherentJournaling, deceased, inactiveUnit, copyOk);
+
+        WebCertUser user = getWebCertUser();
+        user.setParameters(integrationParameters);
+
+        return handleRedirectToIntyg(uriInfo, enhetId, null, intygId, user);
+    }
+
+    @GET
+    @Path("/{intygId}/resume")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response resumeRedirectToIntyg(
+            @Context UriInfo uriInfo,
+            @PathParam("intygId") String intygId,
+            @DefaultValue("") @QueryParam(PARAM_CERT_TYPE) String intygTyp,
+            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
+
+        // Input validation
+        if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
+            throw new IllegalArgumentException("Query parameter 'enhet' was either whitespace, empty (\"\") or null");
         }
+        super.validateRedirectToIntyg(intygId);
 
-        user.setParameters(new IntegrationParameters(StringUtils.trimToNull(reference), responsibleHospName, alternatePatientSSn, fornamn,
-                mellannamn, efternamn, postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk));
+        WebCertUser user = getWebCertUser();
 
-        Boolean isUtkast = false;
-        Utkast utkast = utkastRepository.findOne(intygId);
+        // Reset state parameter telling us that we have been redirected to 'enhetsvaljaren'
+        user.getParameters().getState().setRedirectToEnhetsval(false);
 
-        // If intygstyp can't be established, default to FK7263 to be backwards compatible
-        String intygsTyp = typParam;
-        if (typParam == null) {
-            intygsTyp = utkast != null ? utkast.getIntygsTyp() : Fk7263EntryPoint.MODULE_ID;
-        }
-
-        if (utkast != null) {
-            // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.
-            // If the intyg was authored elsewhere, the check has to be performed after the redirect when the actual intyg
-            // is loaded from Intygstjänsten.
-            SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
-            if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        "Could not fetch sekretesstatus for patient from PU service");
-            }
-            authoritiesValidator.given(user, utkast.getIntygsTyp())
-                    .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                            sekretessStatus == SekretessStatus.TRUE)
-                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                            "User missing required privilege or cannot handle sekretessmarkerad patient"));
-
-            if (!utkast.getStatus().equals(UtkastStatus.SIGNED)) {
-                isUtkast = true;
-                // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
-                // integrating journaling system
-                ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), alternatePatientSSn);
-            }
-
-            // Monitoring log the usage of coherentJournaling
-            if (coherentJournaling) {
-                if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
-                    monitoringLog.logIntegratedOtherCaregiver(intygId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
-                } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
-                    monitoringLog.logIntegratedOtherUnit(intygId, intygsTyp, utkast.getEnhetsId());
-                }
-            }
-        }
-
-
-        // If the type doesn't equals to FK7263 then verify the required query-parameters
-        if (!intygsTyp.equals(Fk7263EntryPoint.MODULE_ID)) {
-            verifyQueryStrings(fornamn, efternamn, postadress, postnummer, postort);
-        }
-
-        LOG.debug("Redirecting to view intyg {} of type {} coherent journaling: {}", intygId, intygsTyp, coherentJournaling);
-        return buildRedirectResponse(uriInfo, intygsTyp, intygId, isUtkast);
+        return handleRedirectToIntyg(uriInfo, enhetId, null, intygId, user);
     }
 
     public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
@@ -242,55 +241,126 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return GRANTED_ORIGIN;
     }
 
-    /**
-     * Updates Patient section of a draft with updated patient details for selected types.
-     *
-     * @param intygsType
-     * @param draftId
-     * @param draftVersion
-     * @param alternatePatientSSn
-     */
-    private void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, String alternatePatientSSn) {
 
-        // To be allowed to update utkast, we need to have the same authority as when saving a draft..
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsType)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
+    // default scope
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(new Personnummer(alternatePatientSSn), draftId, draftVersion);
+    Response handleRedirectToIntyg(UriInfo uriInfo, String enhetId, String intygTyp, String intygId, WebCertUser user) {
+        // Call service
+        PrepareRedirectToIntyg prepareRedirectToIntyg =
+                integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
 
-        utkastService.updatePatientOnDraft(request);
+        if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
+
+            // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
+            // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
+            // the UserDetailsService that built the Principal, but better safe than sorry...
+
+            if (userHasExactlyOneSelectableVardenhet(user)) {
+                user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
+                updateUserWithActiveFeatures(user);
+
+                LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
+                return buildRedirectResponse(uriInfo, prepareRedirectToIntyg);
+            }
+
+            // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
+            user.getParameters().getState().setRedirectToEnhetsval(true);
+
+            LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
+            return buildChooseUnitResponse(uriInfo, prepareRedirectToIntyg);
+
+        } else {
+            if (user.changeValdVardenhet(enhetId)) {
+                updateUserWithActiveFeatures(user);
+
+                LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
+                return buildRedirectResponse(uriInfo, prepareRedirectToIntyg);
+            }
+
+            LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
+                    user.getHsaId(), enhetId);
+            return buildErroResponse(uriInfo);
+        }
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, boolean isUtkast) {
+    Response buildChooseUnitResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        String destinationUrl = getDestinationUrl(uriInfo, prepareRedirectToIntyg);
+
+        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
+
+        String urlFragment = "/integration-enhetsval";
+        URI location = uriBuilder.queryParam("destination", destinationUrl).fragment(urlFragment).build();
+
+        return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
+    }
+
+    Response buildErroResponse(UriInfo uriInfo) {
+        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+
+        Map<String, Object> urlParams = new HashMap<>();
+        urlParams.put("reason", "login.medarbetaruppdrag");
+
+        URI location = uriBuilder.replacePath(getUrlBaseTemplate() + "/error.jsp").buildFromMap(urlParams);
+        return Response.status(Response.Status.UNAUTHORIZED).location(location).build();
+    }
+
+    Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        String intygId = prepareRedirectToIntyg.getIntygId();
+        String intygTyp = prepareRedirectToIntyg.getIntygTyp();
+        boolean isUtkast = prepareRedirectToIntyg.isUtkast();
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<>();
-        urlParams.put(PARAM_CERT_TYPE, certificateType);
-        urlParams.put(PARAM_CERT_ID, certificateId);
+        urlParams.put(PARAM_CERT_TYPE, intygTyp);
+        urlParams.put(PARAM_CERT_ID, intygId);
 
         String urlFragmentTemplate = isUtkast ? urlUtkastFragmentTemplate : urlIntygFragmentTemplate;
-
         URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
-        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
+        return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
     }
 
-    private void verifyQueryStrings(String fornamn, String efternamn, String postadress, String postnummer, String postort) {
-        verifyQueryString(PARAM_PATIENT_FORNAMN, fornamn);
-        verifyQueryString(PARAM_PATIENT_EFTERNAMN, efternamn);
-        verifyQueryString(PARAM_PATIENT_POSTADRESS, postadress);
-        verifyQueryString(PARAM_PATIENT_POSTNUMMER, postnummer);
-        verifyQueryString(PARAM_PATIENT_POSTORT, postort);
-    }
 
-    private void verifyQueryString(String queryStringName, String queryStringValue) {
-        if (Strings.nullToEmpty(queryStringValue).trim().isEmpty()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "Missing required parameter '" + queryStringName + "'");
+    // private stuff
+
+    private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        try {
+            // get the builder without any existing query params
+            UriBuilder uriBuilder = uriInfo.getRequestUriBuilder().replaceQuery(null);
+            URI uri = uriBuilder.queryParam(PARAM_CERT_TYPE, prepareRedirectToIntyg.getIntygTyp()).build();
+
+            return URLEncoder.encode(uri.toString() + "/resume", "UTF-8");
+
+        } catch (UnsupportedEncodingException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e);
         }
+    }
+
+    private WebCertUser getWebCertUser() {
+        WebCertUser user = getWebCertUserService().getUser();
+
+        // Throw an exception if user already has the integration parameters set
+        if (user.getParameters() != null && !user.getParameters().getState().hasUserBeenRedirectedToEnhetsval()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
+        }
+
+        return user;
+    }
+
+    private void updateUserWithActiveFeatures(WebCertUser webCertUser) {
+        if (commonFeatureService.isPresent()) {
+            webCertUser.setFeatures(commonFeatureService.get().getActiveFeatures(webCertUser.getValdVardenhet().getId(),
+                    webCertUser.getValdVardgivare().getId()));
+        }
+    }
+
+    private boolean userHasExactlyOneSelectableVardenhet(WebCertUser webCertUser) {
+        return webCertUser.getVardgivare().stream()
+                .distinct()
+                .flatMap(vg -> vg.getVardenheter().stream().distinct())
+                .count() == 1L;
     }
 
 }

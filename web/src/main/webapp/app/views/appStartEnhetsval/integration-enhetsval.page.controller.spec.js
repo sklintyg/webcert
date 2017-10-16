@@ -63,7 +63,7 @@ describe(
             describe('when ADDING "enhet" parameter', function() {
 
                         beforeEach(function() {
-                            $window.location.search = '?destination=http%3A%2F%2Flocalhost%3A9088%2Fvisa%2Fintyg%2F438fef62-1bde-4d00-9ae5-b29a95a8f077%3Ffornamn%3Dtest#/integration-enhetsval';
+                            $window.location.search = '?destination=http%3A%2F%2Flocalhost%3A9088%2Fvisa%2Fintyg%2F438fef62-1bde-4d00-9ae5-b29a95a8f077%2Fresume%3FcertType%3Dlisjp#/integration-enhetsval';
                             $controller('integration.EnhetsvalPageCtrl', {
                                 $scope: $scope
                             });
@@ -74,7 +74,7 @@ describe(
                                 id: '1234'
                             });
 
-                            expect($window.location.replace).toHaveBeenCalledWith('http://localhost:9088/visa/intyg/438fef62-1bde-4d00-9ae5-b29a95a8f077?fornamn=test&enhet=1234');
+                            expect($window.location.replace).toHaveBeenCalledWith('http://localhost:9088/visa/intyg/438fef62-1bde-4d00-9ae5-b29a95a8f077/resume?certType=lisjp&enhet=1234');
                         });
 
             });
@@ -82,7 +82,7 @@ describe(
             describe('when REPLACING existing "enhet" parameter', function() {
 
                 beforeEach(function() {
-                    $window.location.search = '?destination=http%3A%2F%2Flocalhost%3A9088%2Fvisa%2Fintyg%2F438fef62-1bde-4d00-9ae5-b29a95a8f077%3Ffornamn%3Dtest&enhet=01#/integration-enhetsval';
+                    $window.location.search = '?destination=http%3A%2F%2Flocalhost%3A9088%2Fvisa%2Fintyg%2F438fef62-1bde-4d00-9ae5-b29a95a8f077%2Fresume%3FcertType%3Dlisjp%26enhet%3D01#/integration-enhetsval';
 
                     $controller('integration.EnhetsvalPageCtrl', {
                         $scope: $scope
@@ -94,7 +94,7 @@ describe(
                         id: '1234'
                     });
 
-                    expect($window.location.replace).toHaveBeenCalledWith('http://localhost:9088/visa/intyg/438fef62-1bde-4d00-9ae5-b29a95a8f077?fornamn=test&enhet=1234');
+                    expect($window.location.replace).toHaveBeenCalledWith('http://localhost:9088/visa/intyg/438fef62-1bde-4d00-9ae5-b29a95a8f077/resume?certType=lisjp&enhet=1234');
                 });
 
             });
@@ -102,7 +102,7 @@ describe(
             describe('when NO existing parameters exist in destination', function() {
 
                 beforeEach(function() {
-                    $window.location.search = '?destination=http%3A%2F%2Flocalhost%3A9088%2Fvisa%2Fintyg%2F438fef62-1bde-4d00-9ae5-b29a95a8f077#/integration-enhetsval';
+                    $window.location.search = '?destination=http%3A%2F%2Flocalhost%3A9088%2Fvisa%2Fintyg%2F438fef62-1bde-4d00-9ae5-b29a95a8f077%2Fresume#/integration-enhetsval';
 
                     $controller('integration.EnhetsvalPageCtrl', {
                         $scope: $scope
@@ -114,7 +114,7 @@ describe(
                         id: '1234'
                     });
 
-                    expect($window.location.replace).toHaveBeenCalledWith('http://localhost:9088/visa/intyg/438fef62-1bde-4d00-9ae5-b29a95a8f077?enhet=1234');
+                    expect($window.location.replace).toHaveBeenCalledWith('http://localhost:9088/visa/intyg/438fef62-1bde-4d00-9ae5-b29a95a8f077/resume?enhet=1234');
                 });
 
             });

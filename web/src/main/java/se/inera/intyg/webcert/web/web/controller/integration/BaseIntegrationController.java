@@ -34,11 +34,15 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 public abstract class BaseIntegrationController {
 
     protected WebCertUserService webCertUserService;
+
+    protected IntegrationService integrationService;
+
     private String urlBaseTemplate;
+
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    // ~ API
-    // ========================================================================================
+
+    // api
 
     public void validateRedirectToIntyg(String intygId) {
 
@@ -56,6 +60,11 @@ public abstract class BaseIntegrationController {
     }
 
     @Autowired
+    public void setIntegrationService(IntegrationService integrationService) {
+        this.integrationService = integrationService;
+    }
+
+    @Autowired
     public void setUrlBaseTemplate(String urlBaseTemplate) {
         this.urlBaseTemplate = urlBaseTemplate;
     }
@@ -65,8 +74,8 @@ public abstract class BaseIntegrationController {
         this.webCertUserService = webCertUserService;
     }
 
-    // ~ Protected
-    // ========================================================================================
+
+    // protected
 
     /**
      * Method should return the granted roles that allows.

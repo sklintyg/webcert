@@ -18,10 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.user.dto;
 
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import se.inera.intyg.infra.security.common.model.IntygUser;
 
 /**
  * @author andreaskaltenbach

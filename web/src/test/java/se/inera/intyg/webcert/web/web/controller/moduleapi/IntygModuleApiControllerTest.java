@@ -48,7 +48,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
@@ -365,8 +365,9 @@ public class IntygModuleApiControllerTest {
         copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
 
         WebCertUser user = new WebCertUser();
-        user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-                postort, false, false, false, true));
+        user.setParameters(new IntegrationParameters(null, null,
+                newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
+                false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
         user.setOrigin("NORMAL");

@@ -158,6 +158,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     public boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetId) {
         return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(getUser(), enhetId);
     }
+
+
     // - - - - - Package scope - - - - -
 
     boolean checkIfAuthorizedForUnit(WebCertUser user, String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {

@@ -45,7 +45,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
      * Verify that a djupintegrerad lakare can use a utkast redirect link and gets redirected to the correct url.
      */
     @Test
-    public void testRedirectSuccessUtkast() {
+    public void testRedirectSuccessUtkastUsingGET() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -69,11 +69,38 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
     }
 
     /**
+     * Verify that a djupintegrerad lakare can use a utkast redirect link and gets redirected to the correct url.
+     */
+    @Test
+    public void testRedirectSuccessUtkastUsingPOST() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsId", utkastId);
+
+        Map<String, String> formParams = new HashMap<>();
+        formParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
+        formParams.put("responsibleHospName", "HrDoktor");
+        formParams.put("enhet", "IFV1239877878-1042");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+                .pathParam("intygsId", utkastId).formParams(formParams)
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .when().post("/visa/intyg/{intygsId}")
+                .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"));
+    }
+
+    /**
      * Verify that a djupintegrerad lakare can use a intyg redirect link and gets redirected to the correct url (that is
      * different from an utkast link).
      */
     @Test
-    public void testRedirectSuccessSigneratIntyg() {
+    public void testRedirectSuccessSigneratIntygUsingGET() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -85,6 +112,22 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().pathParam("intygsId", intygsId)
                 .and().queryParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
+                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "/"));
+    }
+
+    @Test
+    public void testRedirectSuccessSigneratIntygUsingPOST() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+                .and().pathParam("intygsId", intygsId)
+                .and().formParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsId}").then()
                 .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "/"));
     }
 
@@ -202,12 +245,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("moduleapi/utkast/luse/" + utkastId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
                 .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")));
-//                .body("content.grundData.patient.fornamn", isEmptyOrNullString()) //equalTo(queryParams.get("fornamn")))
-//                .body("content.grundData.patient.efternamn", isEmptyOrNullString()) //equalTo(queryParams.get("efternamn")))
-//                .body("content.grundData.patient.fullstandigtNamn", isEmptyOrNullString()) // INTYG-4086
-//                .body("content.grundData.patient.postadress", isEmptyOrNullString()) //equalTo(queryParams.get("postadress")))
-//                .body("content.grundData.patient.postnummer", isEmptyOrNullString()) //equalTo(queryParams.get("postnummer")))
-//                .body("content.grundData.patient.postort", isEmptyOrNullString()); //equalTo(queryParams.get("postort")));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
@@ -318,7 +355,8 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("enhet", "IFV1239877878-1042");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .and().pathParam("intygsId", intygsId).and().queryParams(queryParams)
+                .and().pathParam("intygsId", intygsId)
+                .and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId + "/"));
 
@@ -350,7 +388,9 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects()
+                .follow(false)
                 .and().pathParam("intygsId", utkastId)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042")
@@ -375,11 +415,19 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
         queryParams.put("responsibleHospName", "HrDoktor");
+        queryParams.put("fornamn", "nyaförnamnet");
+        queryParams.put("efternamn", "nyaefternamnet");
+        queryParams.put("mellannamn", "nyamellannamnet");
+        queryParams.put("postadress", "nyvägen 12");
+        queryParams.put("postnummer", "000001");
+        queryParams.put("postort", "sjukort");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .and().pathParam("intygsId", utkastId)
-                .expect().statusCode(HttpServletResponse.SC_MOVED_TEMPORARILY)
-                .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x")
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects().follow(false)
+                .and().pathParams(pathParams)
+                .and().queryParams(queryParams)
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .when().get("visa/intyg/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("#/integration-enhetsval"));
     }
 
