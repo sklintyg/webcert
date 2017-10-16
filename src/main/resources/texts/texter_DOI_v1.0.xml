@@ -5,10 +5,14 @@
     <text id="DFR_14.1.RBK">Land (om ej stadigvarande bosatt i Sverige)</text>
     <text id="KAT_2.RBK">Dödsdatum och dödsplats</text>
     <text id="FRG_2.RBK">Dödsdatum</text>
-    <text id="FRG_2.HLP">Om dödsdatum är säkert markeras "Säkert" och dödsdatum anges.
+    <text id="FRG_2.HLP"><![CDATA[Om dödsdatum är säkert, markera "Säkert" och ange dödsdatum.
+Om dödsdatumet inte kan faställas, ange då "Ej säkert".
+<ul>
+  <li>I detta fall, ange dödsdatumet så långt det är känt. Om år och/eller månad är okända, välj då "0000" för år och "00" för månad. Dagen kan inte anges för ett ej säkert dödsdatum och är därför satt till 00 per automatik.</li>
+  <li>Utöver dödsdatumet måste ett fullständigt datum anges för "Anträffad död".</li>
+</ul>]]></text>
 
-Om dödsdatum inte kan fastställas markeras "Ej säkert". Både dödsdatum och datum när kroppen påträffades måste då anges. Om uppgifter saknas för dödsdatums månad eller dag, ersätt siffrorna med 00. År måste anges.</text>
-    <text id="SVAR_SAKERT">Säkert</text>
+    <text id="SVAR_SAKERT.RBK">Säkert</text>
     <text id="SVAR_EJ_SAKERT.RBK">Ej säkert</text>
     <text id="DFR_2.2.RBK">Datum</text>
     <text id="DFR_2.3.RBK">Anträffad död</text>
@@ -33,9 +37,9 @@ Annan/okänd: övrigt</text>
     <text id="KAT_7.1.RBK">Sjukdoms- eller skadeförlopp som ledde till den terminala dödsorsaken</text>
     <text id="FRG_8.RBK">Den terminala dödsorsaken var</text>
     <text id="DFR_8.1.HLP">Den diagnos eller det tillstånd som ledde till den terminala dödsorsaken</text>
-    <text id="DELAD_TEXT.1.RBK">Beskrivning</text>
-    <text id="DELAD_TEXT.2.RBK">Ungefärlig debut</text>
-    <text id="DELAD_TEXT.3.RBK">Specificera tillståndet</text>
+    <text id="DELAT_TEXT.BESKRIVNING.RBK">Beskrivning</text>
+    <text id="DELAT_TEXT.DEBUT.RBK">Ungefärlig debut</text>
+    <text id="DELAT_TEXT.SPECIFIKATION.RBK">Specificera tillståndet</text>
 
     <text id="DELAD_SVAR.PLOTSLIG.RBK">Akut</text>
     <text id="DELAD_SVAR.KRONISK.RBK">Kronisk</text>
