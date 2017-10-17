@@ -109,14 +109,58 @@ module.exports = function() {
         });
     });
 
-    this.When(/^jag klickar på knappen "([^"]*)" vid (samtycke|prediktionsmeddelandet)$/, (knappText, place) => {
-        if ('?' === knappText) {
-            let questionmarkIndex = ('samtycke' === place) ? 0 : 1;
-            element.all(by.css('.glyphicon-question-sign')).get(questionmarkIndex).click().then(() => browser.sleep(5000));
-        } else if ('Läs mer' === knappText) {
-            let ngfunction = ('samtycke' === place) ? '[ng-click="readMoreConsent()"]' : '[ng-click="readMoreRisk()"]';
-            return element(by.css(ngfunction)).click();
+    this.When(/^ska en ny sida öppnas och urlen innehålla diagnoskod som "([^"]*)"$/, (type) => {
+        if (srsdata.diagnoskoder[type] !== undefined) {
+            type = srsdata.diagnoskoder[type].toLowerCase();
         }
+        getWindowHandles().then(function(handles) {
+            switchToWindow(handles[1], true).then(function() {
+                testTypeOfUrl(handles[0], type).then((urlPart) => {
+                    return expect(type).to.contain(urlPart);
+
+                });
+
+            });
+        });
+    });
+
+    this.When(/^ska en ny sida öppnas och urlen innehålla diagnoskod som "([^"]*)" med postfix "([^"]*)"$/, (type, postfix) => {
+        if (srsdata.diagnoskoder[type] !== undefined) {
+            type = srsdata.diagnoskoder[type].toLowerCase();
+        }
+        getWindowHandles().then(function(handles) {
+            switchToWindow(handles[1], true).then(function() {
+                testTypeOfUrl(handles[0], type, postfix).then((urlPart) => {
+                    return expect(type).to.contain(urlPart);
+
+                });
+
+            });
+        });
+    });
+
+    this.When(/^jag klickar på knappen "([^"]*)" vid (samtycke)$/, (knappText, type) => {
+        if (isQuestionmarkBtn(knappText)) {
+            clickQuestionmarkBtn(type).then(() => browser.sleep(500));
+        } else {
+            clickReadMoreBtn(type).then(() => browser.sleep(500));
+        }
+    });
+
+    this.When(/^jag klickar på knappen "([^"]*)" vid (prediktionsmeddelandet)$/, (knappText, type) => {
+        if (isQuestionmarkBtn(knappText)) {
+            clickQuestionmarkBtn(type).then(() => browser.sleep(500));
+        } else {
+            clickReadMoreBtn(type).then(() => browser.sleep(500));
+        }
+    });
+
+    this.When(/^jag klickar på knappen "([^"]*)" vid (åtgärder)$/, (knappText, type) => {
+        clickReadMoreBtn(type).then(() => browser.sleep(500));
+    });
+
+    this.When(/^jag klickar på knappen "([^"]*)" vid (statistik)$/, (knappText, type) => {
+        clickReadMoreBtn(type).then(() => browser.sleep(500));
     });
 
     this.When(/^jag trycker på knappen "Visa"$/, () => fk7263utkast.srs.visaKnapp().isDisplayed()
@@ -280,16 +324,50 @@ function switchToWindow(handle, returnable) {
     }
 }
 
-function testTypeOfUrl(handle, typeOfUrl) {
+function testTypeOfUrl(handle, typeOfUrl, postfix) {
     return browser.getCurrentUrl().then(function(url) {
-        return filterUrl(decodeURIComponent(url), typeOfUrl, handle);
+        return filterUrl(decodeURIComponent(url), typeOfUrl, postfix, handle);
     });
 }
 
-function filterUrl(url, typeOfUrl, handle) {
+function filterUrl(url, typeOfUrl, postfix, handle) {
     logger.info(url);
     switchToWindow(handle, false);
     return url.split('/')
-        .filter(urlPart => (urlPart === typeOfUrl))
+        .filter(urlPart => (urlPart === (typeOfUrl + (postfix !== undefined) ? postfix : '')))
         .toString();
+}
+
+function clickQuestionmarkBtn(type) {
+    let index = ('samtycke' === type) ? 0 : 1;
+    return element.all(by.css('.glyphicon-question-sign')).get(index).click();
+}
+
+function clickReadMoreBtn(type) {
+    switch (type) {
+        case srsdata.position.SAMTYCKE:
+            return element(by.css('[ng-click="readMoreConsent()"]')).click();
+        case srsdata.position.PREDIKTIONSMEDDELANDET:
+            return element(by.css('[ng-click="readMoreRisk()"]')).click();
+        case srsdata.position.ATGARDER:
+            return browser.actions().mouseMove(element(by.id('atgarderRek'))).perform()
+                .then(() => browser.sleep(500))
+                .then(() => {
+                    return element(by.id('atgarderRek')).element(by.buttonText('Läs mer')).click();
+                });
+        case srsdata.position.STATISTIK:
+            return browser.actions().mouseMove(element(by.id('statstics'))).perform()
+                .then(() => browser.sleep(500))
+                .then(() => {
+                    return element(by.id('statstics')).element(by.buttonText('Läs mer')).click();
+                });
+        default:
+            return Promise.reject();
+
+    }
+
+}
+
+function isQuestionmarkBtn(knappText) {
+    return ('?' === knappText) ? true : false;
 }
