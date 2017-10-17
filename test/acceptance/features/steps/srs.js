@@ -72,7 +72,8 @@ module.exports = function() {
 
     this.When(/^jag klickar på knappen för SRS$/, () => fk7263utkast.srs.knapp().click());
 
-    this.When(/^jag klickar på pilen$/, () => fk7263utkast.srs.visamer().click()
+    this.When(/^jag klickar på pilen$/, () => browser.actions().mouseMove(fk7263utkast.srs.questionsCollapser()).perform()
+        .then(() => fk7263utkast.srs.visamer().click())
         .then(() => browser.sleep(500)) // Det tar en stund för panelen att maximeras/minimeras
     );
 
@@ -168,9 +169,7 @@ module.exports = function() {
             if (isDisplayed) {
                 fk7263utkast.srs.visaKnapp().click().then(() => browser.sleep(500)); // Ge lite tid åt SRS-tjänsten att svara
             } else {
-                browser.actions().mouseMove(fk7263utkast.srs.questionsCollapser()).perform() // If small window, center element in window
-                    .then(() => fk7263utkast.srs.questionsCollapser().click())
-                    .then(() => browser.sleep(500))
+                browser.actions().mouseMove(fk7263utkast.srs.visaKnapp()).perform()
                     .then(() => fk7263utkast.srs.visaKnapp().click())
                     .then(() => browser.sleep(500));
             }

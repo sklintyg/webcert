@@ -143,6 +143,7 @@ Scenario: Som användare vill jag få hjälpinformation (prediktionsmodell)
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
+    Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
     Och jag klickar på knappen "?" vid prediktionsmeddelandet
     Och jag klickar på knappen "Läs mer" vid prediktionsmeddelandet
