@@ -70,5 +70,12 @@ module.exports = {
             'inte vara uppe för länge',
             'inte prata med främlingar'
         ]
+    },
+
+    position: {
+        SAMTYCKE: 'samtycke',
+        PREDIKTIONSMEDDELANDET: 'prediktionsmeddelandet',
+        ATGARDER: 'åtgärder',
+        STATISTIK: 'statistik',
     }
 };

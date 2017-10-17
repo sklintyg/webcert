@@ -147,4 +147,24 @@ Scenario: Som användare vill jag få hjälpinformation (prediktionsmodell)
     Och jag klickar på knappen "?" vid prediktionsmeddelandet
     Och jag klickar på knappen "Läs mer" vid prediktionsmeddelandet
     Så ska en ny sida öppnas och urlen innehålla "prediktionsmodell"
-    
+
+@SRS-US-W06 @hjälpinformation @åtgärder
+@notReady
+Scenario: Som användare vill jag få hjälpinformation (åtgärder)
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "finns i SRS"
+    Och jag klickar på knappen för SRS
+    Och jag klickar på knappen "Läs mer" vid åtgärder
+    Så ska en ny sida öppnas och urlen innehålla diagnoskod som "finns i SRS"
+
+@SRS-US-W06 @hjälpinformation @statistik
+@notReady
+Scenario: Som användare vill jag få hjälpinformation (statistik)
+    Givet en patient som "har givit samtycke" till SRS
+    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    När jag fyller i diagnoskod som "finns i SRS"
+    Och jag klickar på knappen för SRS
+    Och jag trycker på fliken "Statistik"
+    Och jag klickar på knappen "Läs mer" vid statistik
+    Så ska en ny sida öppnas och urlen innehålla diagnoskod som "finns i SRS" med postfix "-statistik"
