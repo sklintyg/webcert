@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -32,6 +33,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
@@ -88,6 +90,9 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
 
     /**
      * Retrieves a signed intyg from intygstjänst.
@@ -198,7 +203,8 @@ public class IntygModuleApiController extends AbstractApiController {
             RevokeSignedIntygParameter param) {
         validateRevokeAuthority(intygsTyp);
 
-        if (!param.isValid()) {
+        if (webcertFeatureService.isModuleFeatureActive(ModuleFeature.MAKULERA_INTYG_KRAVER_ANLEDNING.getName(), intygsTyp)
+                && !param.isValid()) {
             LOG.warn("Request to revoke '{}' is not valid", intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }

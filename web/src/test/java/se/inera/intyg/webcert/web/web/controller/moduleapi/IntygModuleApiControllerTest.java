@@ -31,6 +31,7 @@ import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -40,6 +41,7 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
@@ -115,6 +117,9 @@ public class IntygModuleApiControllerTest {
 
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Mock
+    private WebcertFeatureService webcertFeatureService;
 
     @InjectMocks
     private IntygModuleApiController moduleApiController = new IntygModuleApiController();
@@ -287,6 +292,45 @@ public class IntygModuleApiControllerTest {
 
         setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, true, WebcertFeature.MAKULERA_INTYG);
 
+        when(webcertFeatureService.isModuleFeatureActive(ModuleFeature.MAKULERA_INTYG_KRAVER_ANLEDNING.getName(), intygType)).thenReturn(true);
+        when(intygService.revokeIntyg(CERTIFICATE_ID, intygType, revokeMessage, revokeReason)).thenReturn(IntygServiceResult.OK);
+
+        RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
+        param.setMessage(revokeMessage);
+        param.setReason(revokeReason);
+        Response response = moduleApiController.revokeSignedIntyg(intygType, CERTIFICATE_ID, param);
+
+        verify(intygService).revokeIntyg(CERTIFICATE_ID, intygType, revokeMessage, revokeReason);
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(IntygServiceResult.OK, response.getEntity());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRevokeSignedIntygMissingParameter() {
+        final String intygType = "fk7263";
+        final String revokeMessage = "";
+        final String revokeReason = "";
+
+        setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, true, WebcertFeature.MAKULERA_INTYG);
+
+        when(webcertFeatureService.isModuleFeatureActive(ModuleFeature.MAKULERA_INTYG_KRAVER_ANLEDNING.getName(), intygType)).thenReturn(true);
+        when(intygService.revokeIntyg(CERTIFICATE_ID, intygType, revokeMessage, revokeReason)).thenReturn(IntygServiceResult.OK);
+
+        RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
+        param.setMessage(revokeMessage);
+        param.setReason(revokeReason);
+        Response response = moduleApiController.revokeSignedIntyg(intygType, CERTIFICATE_ID, param);
+    }
+
+    @Test
+    public void testRevokeSignedIntygReasonNotRequired() {
+        final String intygType = "fk7263";
+        final String revokeMessage = "";
+        final String revokeReason = "";
+
+        setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, true, WebcertFeature.MAKULERA_INTYG);
+
+        when(webcertFeatureService.isModuleFeatureActive(ModuleFeature.MAKULERA_INTYG_KRAVER_ANLEDNING.getName(), intygType)).thenReturn(false);
         when(intygService.revokeIntyg(CERTIFICATE_ID, intygType, revokeMessage, revokeReason)).thenReturn(IntygServiceResult.OK);
 
         RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();

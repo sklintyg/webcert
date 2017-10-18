@@ -26,6 +26,7 @@ public enum WebcertFeature implements Feature {
     HANTERA_INTYGSUTKAST("hanteraIntygsutkast"),
     KOPIERA_INTYG("kopieraIntyg"),
     MAKULERA_INTYG("makuleraIntyg"),
+    MAKULERA_INTYG_KRAVER_ANLEDNING("makuleraIntygKraverAnledning"),
     SKAPA_NYFRAGA("skapaNyFraga"),
     SKICKA_INTYG("skickaIntyg"),
     SIGNERA_SKICKA_DIREKT("signeraSkickaDirekt"),
