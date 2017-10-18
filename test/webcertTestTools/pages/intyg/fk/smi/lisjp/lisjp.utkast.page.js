@@ -127,7 +127,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             },
             ejAktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderEjAktuelltBeskrivning')),
             aktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderAktuelltBeskrivning')),
-            labels: element(by.id('form_arbetslivsinriktadeAtgarder')).all(by.css('label.checkbox'))
+            labels: element(by.id('form_arbetslivsinriktadeAtgarder')).all(by.css('label.checkbox-inline'))
         };
         this.arendeQuestion = {
             newArendeButton: element(by.id('askArendeBtn')),
