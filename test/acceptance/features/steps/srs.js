@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, browser, protractor, logger */
+/* globals pages, browser, protractor, logger, Promise, intyg */
 'use strict';
 let helpers = require('./helpers');
 let Soap = require('soap');
@@ -27,6 +27,20 @@ let srsdata = require('./srsdata.js');
 
 module.exports = function() {
     let user = {};
+
+    // this.Given(/^spara intygsid$/, () => {
+    //
+    //     console.log(intyg);
+    //     // browser.getCurrentUrl().then((url) => {
+    //     //     logger.info(`URL ${url}`);
+    //     // });
+    // });
+
+    this.Given(/^spara användare till globaluser$/, () => {
+        global.user = user;
+        logger.info(`Användare ${global.user.forNamn} ${global.user.efterNamn} på enhet ${global.user.hsaId} sparad sparad till intygsobjekt`);
+        return browser.sleep(500);
+    });
 
     this.Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet "(med SRS|utan SRS)"$/,
         srsStatus => {
@@ -44,7 +58,10 @@ module.exports = function() {
 
     this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263$/, () =>
         createDraftUsingSOAP(user, srsdata.patient.id)
-        .then(intygsId => browser.get(buildLinkToIntyg(intygsId, srsdata.patient, user.enhetId)))
+        .then(intygsId => {
+            intyg.id = intygsId;
+            browser.get(buildLinkToIntyg(intygsId, srsdata.patient, user.enhetId));
+        })
         .then(() => browser.waitForAngular())
         .then(() => browser.sleep(2000)) // Behövs för att waitForAngular tydligen inte räcker
         .then(() => expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true))
