@@ -28,14 +28,6 @@ let srsdata = require('./srsdata.js');
 module.exports = function() {
     let user = {};
 
-    // this.Given(/^spara intygsid$/, () => {
-    //
-    //     console.log(intyg);
-    //     // browser.getCurrentUrl().then((url) => {
-    //     //     logger.info(`URL ${url}`);
-    //     // });
-    // });
-
     this.Given(/^spara användare till globaluser$/, () => {
         global.user = user;
         logger.info(`Användare ${global.user.forNamn} ${global.user.efterNamn} på enhet ${global.user.hsaId} sparad sparad till intygsobjekt`);
@@ -181,16 +173,10 @@ module.exports = function() {
         clickReadMoreBtn(type).then(() => browser.sleep(500));
     });
 
-    this.When(/^jag trycker på knappen "Visa"$/, () => fk7263utkast.srs.visaKnapp().isDisplayed()
-        .then((isDisplayed) => {
-            if (isDisplayed) {
-                fk7263utkast.srs.visaKnapp().click().then(() => browser.sleep(500)); // Ge lite tid åt SRS-tjänsten att svara
-            } else {
-                browser.actions().mouseMove(fk7263utkast.srs.visaKnapp()).perform()
-                    .then(() => fk7263utkast.srs.visaKnapp().click())
-                    .then(() => browser.sleep(500));
-            }
-        }));
+    this.When(/^jag trycker på knappen "Visa"$/, () => browser.actions().mouseMove(fk7263utkast.srs.visaKnapp()).perform()
+        .then(() => fk7263utkast.srs.visaKnapp().click())
+        .then(() => browser.sleep(500))
+    );
 
     this.Then(/^ska prediktion från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.prediktion().isDisplayed()).to.eventually.equal(true));
 

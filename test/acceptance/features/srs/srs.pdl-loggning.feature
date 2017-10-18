@@ -9,7 +9,6 @@ Bakgrund:
 # Log.activity.activityType = "Läsa"
 # Log.activity.activityArg = "Prediktion från SRS av risk för lång sjukskrivning"
 @SRS-US-W07 @prediktion
-@notReady
 Scenario: Loggning vid visning av prediktion
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263

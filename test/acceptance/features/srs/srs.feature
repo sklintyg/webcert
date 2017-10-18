@@ -96,12 +96,12 @@ Scenario: När statistikbild för en viss diagnoskod saknas ska användaren info
     Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas
 
 @SRS-US-W04 @prediktion
-@notReady
 Scenario: När prediktion inte kan ges ska korrekt felmeddelande visas
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "saknar prediktion"
     Och jag klickar på knappen för SRS
+    Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
     Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas
 
@@ -126,7 +126,6 @@ Scenario: Prediktion ska kunna visa förhöjd risk
     Så ska jag varnas om "Förhöjd risk"
 
 @SRS-US-W06 @hjälpinformation @samtycke
-@notReady
 Scenario: Som användare vill jag få hjälpinformation (samtycke)
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
@@ -137,7 +136,6 @@ Scenario: Som användare vill jag få hjälpinformation (samtycke)
     Så ska en ny sida öppnas och urlen innehålla "samtycke"
 
 @SRS-US-W06 @hjälpinformation @prediktionsmodell
-@notReady
 Scenario: Som användare vill jag få hjälpinformation (prediktionsmodell)
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
@@ -150,7 +148,6 @@ Scenario: Som användare vill jag få hjälpinformation (prediktionsmodell)
     Så ska en ny sida öppnas och urlen innehålla "prediktionsmodell"
 
 @SRS-US-W06 @hjälpinformation @åtgärder
-@notReady
 Scenario: Som användare vill jag få hjälpinformation (åtgärder)
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
@@ -160,7 +157,6 @@ Scenario: Som användare vill jag få hjälpinformation (åtgärder)
     Så ska en ny sida öppnas och urlen innehålla diagnoskod som "finns i SRS"
 
 @SRS-US-W06 @hjälpinformation @statistik
-@notReady
 Scenario: Som användare vill jag få hjälpinformation (statistik)
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
