@@ -77,9 +77,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
             AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN
     };
 
-    @Autowired
-    private IntegrationService integrationService;
-
     @Autowired(required = false)
     private Optional<CommonFeatureService> commonFeatureService;
 
