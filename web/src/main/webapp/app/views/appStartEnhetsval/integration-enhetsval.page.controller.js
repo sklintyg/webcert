@@ -54,7 +54,7 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
 
             //When enhet is selected in dialog, redirect window to original destination + &enhet=<selected enhetsid>
             function onUnitSelected(enhet) {
-                var uri = buildTargetUri(baseDestUrl, enhet.id)
+                var uri = buildTargetUri(baseDestUrl, enhet.id);
                 $window.location.replace(uri);
             }
 
