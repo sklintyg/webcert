@@ -47,6 +47,7 @@
   }
 </style>
 
+<script type="text/javascript" src="/bower_components/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
 
 <script type="text/javascript">
@@ -81,7 +82,6 @@
                 });
 
         };
-
         $scope.togglePU = function(evt, enable) {
             evt.preventDefault();
             $http({
@@ -333,27 +333,59 @@
         $scope.updateUserContext($scope.selectedIndex);
       });
 
-      $scope.djupintegrationsInloggning = function(evt) {
+      $scope.loginDjupintegration = function(evt, method) {
         evt.preventDefault();
-        $http.post('/fake', "userJsonDisplay=" + $scope.jsonModel, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function success(response) {
-          var q = 'visa/intyg/';
-          if ($scope.intlink.intygTyp !== '') {
-            q+= $scope.intlink.intygTyp + '/'
-          }
-          q+= $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
-          q+='&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
-          q+='&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
-          q+='&kopieringOK=' + $scope.intlink.kopieringOk;
-          q+='&avliden=' + $scope.intlink.avliden;
-          q+='&ref=' + $scope.intlink.ref;
-          if ($scope.intlink.enhet) {
-              q+='&enhet=' + $scope.intlink.enhet;
-          }
-          window.location.href=q;
-        }, function fail(error) {
-          alert("Fel vid djupintegrations-inloggningen!");
-        });
+        $http.post('/fake', "userJsonDisplay=" + $scope.jsonModel, {
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }).then(
+          function success(response) {
+              sendData($scope.intlink, method)
+          }, function fail(error) {
+            alert("Fel vid inloggningen av användare!");
+          });
       };
+
+      function doLoginDjupintegrationGet() {
+          var q = '/visa/intyg/';
+          if ($scope.intlink.intygTyp !== '') {
+              q += $scope.intlink.intygTyp + '/'
+          }
+          q += $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
+          q += '&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
+          q += '&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
+          q += '&kopieringOK=' + $scope.intlink.kopieringOk;
+          q += '&avliden=' + $scope.intlink.avliden;
+          q += '&ref=' + $scope.intlink.ref;
+          if ($scope.intlink.enhet) {
+              q += '&enhet=' + $scope.intlink.enhet;
+          }
+
+          window.location.href = q;
+      }
+
+      function sendData(data, method) {
+          var name,
+              form = document.createElement('form'),
+              node = document.createElement('input');
+
+          form.method = method;
+          form.action = window.location.origin + '/visa/intyg/' + $scope.intlink.id;
+
+          for(name in data) {
+              node.name  = name;
+              node.value = data[name] === undefined ? '' : data[name].toString();
+              form.appendChild(node.cloneNode());
+          }
+
+          // To be sent, the form needs to be attached to the main document.
+          form.style.display = "none";
+          document.body.appendChild(form);
+
+          form.submit();
+
+          // Once the form is sent, remove it.
+          document.body.removeChild(form);
+      }
 
       $scope.updateUserContext = function(newSelected, oldVal) {
         if (newSelected === undefined) {
@@ -397,7 +429,6 @@
 </script>
 </head>
 <body ng-controller="welcomeController">
-  <form id="loginForm" action="/fake" method="POST" class="form-inline" accept-charset="UTF-8">
     <div class="container">
 
       <div id="content-container">
@@ -410,36 +441,37 @@
             inloggningsprofilen i högerspalten om man har ett känt hsaId vars identitet finns i stubbe eller test-HSA
             men som inte förekommer i template-listan.</p>
 
-          <div class="form-group col-xs-8">
-            <h4>Visa Mallar för : <span class="envButtons"><label for="all"><input id="all" name="all" type="radio"
-                                                                                 ng-model="environment.name"
-                                                                                 value="all" /> Alla</label></span>
-            <span class="envButtons"><label for="dev"><input id="dev" name="dev" type="radio"
-                                                             ng-model="environment.name"
-                                                             value="dev" /> Dev</label></span>
-            <span class="envButtons"><label for="demo"><input id="demo" name="demo" type="radio"
-                                                              ng-model="environment.name" value="demo" /> Demo</label></span>
-            </h4>
-            <select name="jsonSelect" id="jsonSelect" ng-model="selectedIndex" size="15" class="form-control"
-                    style="width: 100%">
-              <option ng-repeat="login in loginOptions" ng-if="whichEnv(login.env)" id="{{login.hsaId}}_{{login.forvaldEnhet}}"
-                      value="{{login.index}}">{{login.beskrivning}}
-              </option>
-            </select>
+          <form id="loginForm" action="/fake" method="POST" class="form-inline" accept-charset="UTF-8">
+            <div class="form-group col-xs-8">
+                <h4>Visa Mallar för : <span class="envButtons"><label for="all"><input id="all" name="all" type="radio"
+                                                                                     ng-model="environment.name"
+                                                                                     value="all" /> Alla</label></span>
+                <span class="envButtons"><label for="dev"><input id="dev" name="dev" type="radio"
+                                                                 ng-model="environment.name"
+                                                                 value="dev" /> Dev</label></span>
+                <span class="envButtons"><label for="demo"><input id="demo" name="demo" type="radio"
+                                                                  ng-model="environment.name" value="demo" /> Demo</label></span>
+                </h4>
 
-              <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-lg"
-                     style="margin-top: 20px; width: 100%">
-          </div>
-
-          <div class="form-group col-xs-4">
-            <div style="padding-top: 0.6em;">
-              <h4>Inloggningsprofil</h4>
-              <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
-                        style="height: 200px; width: 100%;" ng-model="jsonModel">
-                        </textarea>
+                <select name="jsonSelect" id="jsonSelect" ng-model="selectedIndex" size="15" class="form-control"
+                        style="width: 100%">
+                  <option ng-repeat="login in loginOptions" ng-if="whichEnv(login.env)" id="{{login.hsaId}}_{{login.forvaldEnhet}}"
+                          value="{{login.index}}">{{login.beskrivning}}
+                  </option>
+                </select>
+                <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-lg"
+                       style="margin-top: 20px; width: 100%">
             </div>
 
-            <h5>Logga in med origin: </h5>
+            <div class="form-group col-xs-4">
+              <div style="padding-top: 0.4em;">
+                <h4>Inloggningsprofil</h4>
+                <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
+                          style="height: 270px; width: 100%;" ng-model="jsonModel">
+                          </textarea>
+              </div>
+
+              <h5>Logga in med origin: </h5>
               <span class="originButtons"><label for="NORMAL"><input id="NORMAL" name="origin" type="radio"
                                                                      ng-model="environment.origin" value="NORMAL"
                                                                      checked /> NORMAL</label></span>
@@ -447,28 +479,31 @@
                                                                               type="radio" ng-model="environment.origin"
                                                                               value="DJUPINTEGRATION" /> DJUPINTEGRATION</label></span>
               <span class="originButtons"><label for="UTHOPP"><input id="UTHOPP" name="origin" type="radio"
-                                                                     ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
-                <div ng-if="environment.origin === 'DJUPINTEGRATION'" class="panel panel-body panel-info">
+                                                                       ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
+            </div>
+          </form>
 
-                  <p>Djupintegrationslänk-genväg: Välj journalsystem-parametrar och tryck på länkinloggning.</p>
+          <div ng-if="environment.origin === 'DJUPINTEGRATION'" class="form-group col-xs-4" style="padding-top: 0.5em;">
 
-                  <label for="intlink-id" class="control-label">utkast/intygsid:</label> <input type="text" class="form-control" size="40" id="intlink-id" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
-                  <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="intlink.intygTyp" placeholder="Intygstyp"><br>
-                  <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
-                  <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
-                  <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
-                  <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
-                  <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.postadress" placeholder="Postadress"><br>
-                  <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
-                  <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="intlink.ref" placeholder="Ref"><br>
-                  <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="intlink.enhet" placeholder="enhetsid"><br>
-                  <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
-                  <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.kopieringOk"> <br>
-                  <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.avliden"> <br>
-                  <button ng-click="djupintegrationsInloggning($event)" class="btn btn-sm btn-warning" style="width:100%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">länkinloggning</button>
+            <p>Genväg länkinloggning för djupintegration: Välj journalsystem-parametrar och tryck på GET alt. POST.</p>
 
-                </div>
-
+            <label for="intlink-id" class="control-label">utkast/intygsid:</label> <input type="text" class="form-control" size="40" id="intlink-id" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
+            <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="intlink.intygTyp" placeholder="Intygstyp"><br>
+            <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
+            <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
+            <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
+            <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
+            <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.postadress" placeholder="Postadress"><br>
+            <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
+            <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="intlink.ref" placeholder="Ref"><br>
+            <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="intlink.enhet" placeholder="enhetsid"><br>
+            <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
+            <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.kopieringOk"> <br>
+            <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.avliden"> <br>
+            <div style="text-align: center; padding-top: 0.5em">
+              <button type="button" ng-click="loginDjupintegration($event, 'GET')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">GET</button>
+              <button type="button" ng-click="loginDjupintegration($event, 'POST')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">POST</button>
+            </div>
           </div>
 
         </div>
@@ -554,6 +589,5 @@
         </div>
       </div>
     </div>
-  </form>
 </body>
 </html>

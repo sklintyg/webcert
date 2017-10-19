@@ -93,7 +93,7 @@ public class PageController {
         }
     }
 
-    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
+    @RequestMapping(value = "/dashboard", method = { RequestMethod.GET, RequestMethod.POST })
     public ModelAndView displayDashBoard() {
         ModelAndView modelAndView = new ModelAndView(DASHBOARD_VIEW);
         populateUseMinifiedJavaScript(modelAndView);

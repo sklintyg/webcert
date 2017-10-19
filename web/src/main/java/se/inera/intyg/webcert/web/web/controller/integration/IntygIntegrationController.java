@@ -45,9 +45,6 @@ import java.util.Optional;
  * Controller to enable an external user to access certificates directly from a
  * link in an external patient care system.
  *
- * Please note that the vardenhet selection and auth validation is handled by
- * {@link se.inera.intyg.webcert.web.auth.IntegrationEnhetFilter}.
- *
  * @author bensam
  */
 @Path("/intyg")
@@ -328,9 +325,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
         try {
             // get the builder without any existing query params
             UriBuilder uriBuilder = uriInfo.getRequestUriBuilder().replaceQuery(null);
-            URI uri = uriBuilder.queryParam(PARAM_CERT_TYPE, prepareRedirectToIntyg.getIntygTyp()).build();
+            URI uri = uriBuilder.path("/resume").queryParam(PARAM_CERT_TYPE, prepareRedirectToIntyg.getIntygTyp()).build();
 
-            return URLEncoder.encode(uri.toString() + "/resume", "UTF-8");
+            return URLEncoder.encode(uri.toString(), "UTF-8");
 
         } catch (UnsupportedEncodingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e);
