@@ -33,6 +33,8 @@ describe('ChooseCertTypeCtrl', function() {
     var $stateParamsMock;
     var CommonMessageServiceSpy;
     var SokSkrivValjUtkastService = {};
+    var AuthorityService = {};
+    var UserModel;
     var $q;
 
     beforeEach(function() {
@@ -55,9 +57,12 @@ describe('ChooseCertTypeCtrl', function() {
                 postadress: 'Skogsvägen 1',
                 postnummer: '111 22',
                 postort: 'Skogen',
-                build: function() {},
-                isValid: function() {},
-                update: function() {}
+                build: function() {
+                },
+                isValid: function() {
+                },
+                update: function() {
+                }
             };
             CommonMessageServiceSpy.getProperty.and.returnValue('Test text');
             IntygFornyaRequestModelSpy.build.and.returnValue(IntygFornyaRequestInstanceMock);
@@ -79,10 +84,18 @@ describe('ChooseCertTypeCtrl', function() {
             $provide.value('common.messageService', CommonMessageServiceSpy);
             $provide.value('$stateParams', $stateParamsMock);
             $provide.value('common.ObjectHelper', jasmine.createSpyObj('common.ObjectHelper', ['isEmpty']));
-            $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isNormalOrigin']));
+            UserModel = jasmine.createSpyObj('common.UserModel', ['isNormalOrigin']);
+            UserModel.user = {
+                origin: 'NORMAL'
+            };
+            UserModel.privileges = {
+                KOPIERA_INTYG: {}
+            };
+            $provide.value('common.UserModel', UserModel);
 
             SokSkrivValjUtkastService = {
-                setupPatientModel: function setupPatientModel(PatientModel, patientId) {},
+                setupPatientModel: function setupPatientModel(PatientModel, patientId) {
+                },
                 lookupPatient: function lookupPatient(personnummer) {
                     var deferred = $q.defer();
                     PatientModelMock.personnummer = personnummer;
@@ -91,6 +104,14 @@ describe('ChooseCertTypeCtrl', function() {
                 }
             };
             $provide.value('webcert.SokSkrivValjUtkastService', SokSkrivValjUtkastService);
+
+            AuthorityService = {
+                isAuthorityActive: function(options) {
+                    // Mock the behaviour when ts-intyg are checked for renewal.
+                    return !(options.intygstyp === 'ts-bas' || options.intygstyp === 'ts-diabetes');
+                }
+            };
+            $provide.value('common.authorityService', AuthorityService);
         });
 
         inject(function($rootScope, _$location_, _$controller_, _$q_) {
@@ -111,8 +132,7 @@ describe('ChooseCertTypeCtrl', function() {
                 intygId: 'abc123',
                 status: 'SIGNED',
                 relations: {
-                    latestChildRelations: {
-                    }
+                    latestChildRelations: {}
                 }
             };
 
@@ -123,6 +143,12 @@ describe('ChooseCertTypeCtrl', function() {
 
         it('is förnya allowed', function() {
 
+            intyg.intygType = 'ts-bas';
+            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+
+            intyg.intygType = 'fk7263';
+            expect($scope.isRenewalAllowed(intyg)).toBeTruthy();
+
             expect($scope.isRenewalAllowed(intyg)).toBeTruthy();
 
             intyg.status = 'DRAFT_INCOMPLETE';
@@ -130,6 +156,7 @@ describe('ChooseCertTypeCtrl', function() {
 
             intyg.status = 'CANCELLED';
             expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+
 
             $scope.patientModel.sekretessmarkering = true;
             expect($scope.isRenewalAllowed(intyg)).toBeFalsy();

@@ -21,12 +21,13 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'common.IntygCopyActions', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-        'common.messageService', 'common.UserModel',
+        'common.messageService', 'common.UserModel', 'common.authorityService',
 
         function($window, $filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             CommonIntygCopyActions, IntygFornyaRequestModel, IntygCopyRequestModel,
-            IntygProxy, UtkastProxy, Service, ObjectHelper, messageService, UserModel) {
+            IntygProxy, UtkastProxy, Service, ObjectHelper, messageService, UserModel,
+            authorityService) {
             'use strict';
 
             /**
@@ -125,9 +126,14 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
             $scope.isRenewalAllowed = function(intyg) {
 
+                var renewable = authorityService.isAuthorityActive(
+                    { requestOrigin: UserModel.user.origin,
+                        authority: UserModel.privileges.KOPIERA_INTYG,
+                        intygstyp: intyg.intygType
+                });
                 var statusAllowed = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';
 
-                return !(intyg.intygsTyp === 'ts-bas' || intyg.intygsTyp ==='ts-diabetes') &&
+                return renewable &&
                     statusAllowed &&
                     !(intyg.relations.latestChildRelations.replacedByIntyg ||
                     intyg.relations.latestChildRelations.complementedByIntyg);
