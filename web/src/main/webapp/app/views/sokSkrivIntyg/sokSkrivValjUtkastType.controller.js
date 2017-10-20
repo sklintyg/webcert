@@ -157,6 +157,13 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
              * Exposed to scope
              */
 
+            $scope.showCreateUtkast = function() {
+                return !(IntygTypeSelectorModel.intygType === 'default' ||
+                    ($scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()) ||
+                    (IntygTypeSelectorModel.previousIntygWarnings[IntygTypeSelectorModel.intygType] &&
+                        IntygTypeSelectorModel.previousIntygWarnings[IntygTypeSelectorModel.intygType].withinCareGiver));
+            };
+
             $scope.updateIntygList = function() {
                 Viewstate.currentList =
                     $filter('TidigareIntygFilter')(Viewstate.intygListUnhandled, Viewstate.intygFilter);

@@ -35,7 +35,8 @@ public enum WebcertFeature implements Feature {
     JS_LOGGNING("jsLoggning"),
     JS_MINIFIED("jsMinified", "webcert.useMinifiedJavaScript"),
     SRS("srs"),
-    WARN_ON_PREVIOUS("varnaOmTidigareIntyg");
+    WARN_ON_PREVIOUS("varnaOmTidigareIntyg"),
+    HANTERA_INTYGSUTKAST_AVLIDEN("hanteraIntygsutkastAvliden");
 
     private final String name;
     private final String envName;

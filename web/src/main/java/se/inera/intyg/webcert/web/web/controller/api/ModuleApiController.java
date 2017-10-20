@@ -28,6 +28,7 @@ import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -104,6 +105,14 @@ public class ModuleApiController extends AbstractApiController {
                             .isVerified())
                     .collect(Collectors.toList());
         }
+
+        if (patientDetailsResolver.isAvliden(new Personnummer(patientId))) {
+            intygModules = intygModules.stream()
+                    .filter(module -> authoritiesValidator.given(getWebCertUserService().getUser(), module.getId())
+                            .features(WebcertFeature.HANTERA_INTYGSUTKAST_AVLIDEN).isVerified())
+                    .collect(Collectors.toList());
+        }
+
         return Response.ok(intygModules).build();
     }
 

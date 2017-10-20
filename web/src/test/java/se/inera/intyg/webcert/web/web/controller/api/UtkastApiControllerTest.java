@@ -268,7 +268,12 @@ public class UtkastApiControllerTest {
     @Test
     public void testGetPrevious() {
         setupUser("", "fk7263");
-        when(utkastService.getPrevious(eq(PATIENT_PERSONNUMMER))).thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
+
+        Utkast utkast1 = buildUtkast(PATIENT_PERSONNUMMER);
+        utkast1.setStatus(UtkastStatus.SIGNED);
+        Utkast utkast2 = buildUtkast(PATIENT_PERSONNUMMER);
+        utkast2.setStatus(UtkastStatus.SIGNED);
+        when(utkastService.getPrevious(eq(PATIENT_PERSONNUMMER))).thenReturn(Arrays.asList(utkast1, utkast2));
 
         Response response = utkastController.getPreviousCertificateWarnings(PATIENT_PERSONNUMMER.getPersonnummer());
 

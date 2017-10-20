@@ -134,7 +134,12 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     @Override
     public boolean isAvliden(Personnummer personnummer) {
         PersonSvar personSvar = puService.getPerson(personnummer);
-        return personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
+        boolean avlidenPU = personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
+
+        WebCertUser user = webCertUserService.getUser();
+        boolean avlidenIntegration = user.getParameters() != null && user.getParameters().isPatientDeceased();
+
+        return avlidenPU || avlidenIntegration;
     }
 
     @Override
