@@ -62,7 +62,8 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("enhet", "IFV1239877878-1042");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .pathParam("intygsId", utkastId).queryParams(queryParams)
+                .and().pathParams(pathParams)
+                .and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("/visa/intyg/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"));
@@ -81,6 +82,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         changeOriginTo("DJUPINTEGRATION");
 
         Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
         pathParams.put("intygsId", utkastId);
 
         Map<String, String> formParams = new HashMap<>();
@@ -89,9 +91,10 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         formParams.put("enhet", "IFV1239877878-1042");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .pathParam("intygsId", utkastId).formParams(formParams)
+                .and().pathParams(pathParams)
+                .and().formParams(formParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
-                .when().post("/visa/intyg/{intygsId}")
+                .when().post("/visa/intyg/{intygsTyp}/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"));
     }
 
@@ -122,12 +125,16 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", intygsId);
+
         changeOriginTo("DJUPINTEGRATION");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .and().pathParam("intygsId", intygsId)
+                .and().pathParams(pathParams)
                 .and().formParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
-                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsId}").then()
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsTyp}/{intygsId}").then()
                 .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "/"));
     }
 

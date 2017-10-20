@@ -305,19 +305,21 @@
       $scope.loginOptions = [];
 
       $scope.intlink = {
-          id: '',
-          intygTyp: '',
-          alternatePatientSSn: '',
-          fornamn: 'Nils',
-          mellannamn: 'Nisse',
-          efternamn: 'Nygren',
-          postadress: 'Nygatan 14',
-          postnummer: '555 66',
-          postort: 'Nyberga',
-          sjf: true,
-          kopieringOk: true,
-          red: '',
-          enhet: undefined
+          certId: '',
+          certType: '',
+          formData: {
+              alternatePatientSSn: '',
+              fornamn: 'Nils',
+              mellannamn: 'Nisse',
+              efternamn: 'Nygren',
+              postadress: 'Nygatan 14',
+              postnummer: '555 66',
+              postort: 'Nyberga',
+              sjf: true,
+              kopieringOk: true,
+              ref: '',
+              enhet: undefined
+          }
       };
 
       $scope.environment = {
@@ -339,37 +341,44 @@
               headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         }).then(
           function success(response) {
-              sendData($scope.intlink, method)
+              try {
+                var url = getLoginDjupintegrationUrl(method),
+                    data = $scope.intlink.formData;
+                // submit data
+                sendData(url, data , method);
+              } catch(e) {
+                  alert(e);
+              }
           }, function fail(error) {
             alert("Fel vid inloggningen av användare!");
           });
       };
 
-      function doLoginDjupintegrationGet() {
-          var q = '/visa/intyg/';
-          if ($scope.intlink.intygTyp !== '') {
-              q += $scope.intlink.intygTyp + '/'
-          }
-          q += $scope.intlink.id + '?fornamn=' +  $scope.intlink.fornamn + '&mellannamn=' + $scope.intlink.mellannamn + '&efternamn=' + $scope.intlink.efternamn;
-          q += '&postadress=' + $scope.intlink.postadress + '&postnummer=' + $scope.intlink.postnummer + '&postort=' + $scope.intlink.postort + '&sjf=' + $scope.intlink.sjf;
-          q += '&alternatePatientSSn=' + $scope.intlink.alternatePatientSSn;
-          q += '&kopieringOK=' + $scope.intlink.kopieringOk;
-          q += '&avliden=' + $scope.intlink.avliden;
-          q += '&ref=' + $scope.intlink.ref;
-          if ($scope.intlink.enhet) {
-              q += '&enhet=' + $scope.intlink.enhet;
-          }
+      function getLoginDjupintegrationUrl(method) {
+          var url = window.location.origin + '/visa/intyg';
+          var intygTyp = $scope.intlink.certType;
+          var intygId = $scope.intlink.certId;
 
-          window.location.href = q;
+          if (!intygId) {
+              throw 'When doing login via djupintegration you must provide the \'intygId\' parameter';
+          }
+          if (intygTyp) {
+              url += '/' + intygTyp;
+          } else {
+            if (method === 'POST') {
+                throw 'When doing login via djupintegration you must provide the \'intygTyp\' parameter';
+            }
+          }
+          return url + '/' + $scope.intlink.certId;
       }
 
-      function sendData(data, method) {
+      function sendData(url, data, method) {
           var name,
               form = document.createElement('form'),
               node = document.createElement('input');
 
           form.method = method;
-          form.action = window.location.origin + '/visa/intyg/' + $scope.intlink.id;
+          form.action = url;
 
           for(name in data) {
               node.name  = name;
@@ -392,8 +401,6 @@
             return;
         }
 
-        var selector = angular.element(document.querySelector('#jsonSelect'));
-
         // Catch user login option
         var login = $scope.loginOptions[newSelected];
 
@@ -409,16 +416,9 @@
       };
 
       $scope.whichEnv = function(env) {
-        if ($scope.environment.name === 'all') {
-          return true;
-        }
-        if ($scope.environment.name === 'dev' && env === 'dev') {
-          return true;
-        }
-        if ($scope.environment.name === 'demo' && env === 'demo') {
-          return true;
-        }
-
+        if ($scope.environment.name === 'all') { return true; }
+        if ($scope.environment.name === 'dev' && env === 'dev') { return true; }
+        if ($scope.environment.name === 'demo' && env === 'demo') { return true; }
         return false;
       };
 
@@ -487,19 +487,19 @@
 
             <p>Genväg länkinloggning för djupintegration: Välj journalsystem-parametrar och tryck på GET alt. POST.</p>
 
-            <label for="intlink-id" class="control-label">utkast/intygsid:</label> <input type="text" class="form-control" size="40" id="intlink-id" ng-model="intlink.id" placeholder="utkast/intygsid"><br>
-            <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="intlink.intygTyp" placeholder="Intygstyp"><br>
-            <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
-            <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.fornamn" placeholder="Förnamn"><br>
-            <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.mellannamn" placeholder="Mellannamn"><br>
-            <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.efternamn" placeholder="Efternamn"><br>
-            <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.postadress" placeholder="Postadress"><br>
-            <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
-            <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="intlink.ref" placeholder="Ref"><br>
-            <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="intlink.enhet" placeholder="enhetsid"><br>
-            <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.sjf"> <br>
-            <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.kopieringOk"> <br>
-            <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.avliden"> <br>
+            <label for="intygId" class="control-label">intygId:</label> <input type="text" class="form-control" size="40" id="intygId" ng-model="intlink.certId" placeholder="utkast/intygsid"><br>
+            <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="intlink.certType" placeholder="Intygstyp"><br>
+            <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.formData.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
+            <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.formData.fornamn" placeholder="Förnamn"><br>
+            <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.formData.mellannamn" placeholder="Mellannamn"><br>
+            <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.formData.efternamn" placeholder="Efternamn"><br>
+            <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.formData.postadress" placeholder="Postadress"><br>
+            <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.formData.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
+            <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="intlink.formData.ref" placeholder="Ref"><br>
+            <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="intlink.formData.enhet" placeholder="enhetsid"><br>
+            <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.formData.sjf"> <br>
+            <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.formData.kopieringOk"> <br>
+            <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.formData.avliden"> <br>
             <div style="text-align: center; padding-top: 0.5em">
               <button type="button" ng-click="loginDjupintegration($event, 'GET')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">GET</button>
               <button type="button" ng-click="loginDjupintegration($event, 'POST')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">POST</button>

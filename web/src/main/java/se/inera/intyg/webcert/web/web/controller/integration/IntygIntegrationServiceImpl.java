@@ -75,8 +75,9 @@ public class IntygIntegrationServiceImpl implements IntegrationService {
 
         Utkast utkast = utkastRepository.findOne(intygsId);
 
-        // If intygTyp can't be established, default to FK7263 to be backwards compatible
-        if (intygTyp == null) {
+        // INTYG-4336: If intygTyp can't be established,
+        // default to FK7263 to be backwards compatible
+        if (intygsTyp == null) {
             intygsTyp = utkast != null ? utkast.getIntygsTyp() : Fk7263EntryPoint.MODULE_ID;
         }
 
@@ -104,15 +105,15 @@ public class IntygIntegrationServiceImpl implements IntegrationService {
             // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
             if (isUtkast(utkast)) {
-                ensureDraftPatientInfoUpdated(intygsTyp, intygId, utkast.getVersion(), user);
+                ensureDraftPatientInfoUpdated(intygsTyp, intygsId, utkast.getVersion(), user);
             }
 
             // Monitoring log the usage of coherentJournaling
             if (user.getParameters().isSjf()) {
                 if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
-                    monitoringLog.logIntegratedOtherCaregiver(intygId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
+                    monitoringLog.logIntegratedOtherCaregiver(intygsId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
                 } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
-                    monitoringLog.logIntegratedOtherUnit(intygId, intygsTyp, utkast.getEnhetsId());
+                    monitoringLog.logIntegratedOtherUnit(intygsId, intygsTyp, utkast.getEnhetsId());
                 }
             }
         }
@@ -140,6 +141,9 @@ public class IntygIntegrationServiceImpl implements IntegrationService {
         utkastService.updatePatientOnDraft(request);
     }
 
+
+    // private stuff
+
     private void verifyParameters(IntegrationParameters parameters) {
         if (parameters == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
@@ -159,9 +163,6 @@ public class IntygIntegrationServiceImpl implements IntegrationService {
                     "Missing required parameter '" + queryStringName + "'");
         }
     }
-
-
-    // private stuff
 
     private PrepareRedirectToIntyg createPrepareRedirectToIntyg(String intygTyp, String intygId, Utkast utkast) {
         PrepareRedirectToIntyg prepareRedirectToIntyg = new PrepareRedirectToIntyg();

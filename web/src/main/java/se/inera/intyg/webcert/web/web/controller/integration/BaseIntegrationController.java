@@ -44,6 +44,15 @@ public abstract class BaseIntegrationController {
 
     // api
 
+    public void validateRedirectToIntyg(String intygTyp, String intygId) {
+
+        // Input validation
+        if (Strings.nullToEmpty(intygTyp).trim().isEmpty()) {
+            throw new IllegalArgumentException("Path parameter 'intygTyp' was either whitespace, empty (\"\") or null");
+        }
+        validateRedirectToIntyg(intygId);
+    }
+
     public void validateRedirectToIntyg(String intygId) {
 
         // Input validation
@@ -56,7 +65,6 @@ public abstract class BaseIntegrationController {
                 .roles(getGrantedRoles())
                 .origins(getGrantedRequestOrigin())
                 .orThrow();
-
     }
 
     @Autowired

@@ -112,7 +112,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
                                     @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
                                     @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
-        super.validateRedirectToIntyg(intygId);
+        super.validateRedirectToIntyg(intygTyp, intygId);
 
         IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
                 responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
@@ -163,9 +163,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     @POST
-    @Path("/{intygId}")
+    @Path("/{intygTyp}/{intygId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response postRedirectToIntyg(@Context UriInfo uriInfo,
+                                    @PathParam("intygTyp") String intygTyp,
                                     @PathParam("intygId") String intygId,
                                     @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
                                     @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
@@ -182,7 +183,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
                                     @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
                                     @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
 
-        super.validateRedirectToIntyg(intygId);
+        super.validateRedirectToIntyg(intygTyp, intygId);
 
         IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
                 responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
@@ -191,30 +192,30 @@ public class IntygIntegrationController extends BaseIntegrationController {
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, enhetId, null, intygId, user);
+        return handleRedirectToIntyg(uriInfo, enhetId, intygTyp, intygId, user);
     }
 
     @GET
-    @Path("/{intygId}/resume")
+    @Path("/{intygTyp}/{intygId}/resume")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response resumeRedirectToIntyg(
             @Context UriInfo uriInfo,
+            @PathParam("intygTyp") String intygTyp,
             @PathParam("intygId") String intygId,
-            @DefaultValue("") @QueryParam(PARAM_CERT_TYPE) String intygTyp,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
         // Input validation
         if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
             throw new IllegalArgumentException("Query parameter 'enhet' was either whitespace, empty (\"\") or null");
         }
-        super.validateRedirectToIntyg(intygId);
+        super.validateRedirectToIntyg(intygTyp, intygId);
 
         WebCertUser user = getWebCertUser();
 
         // Reset state parameter telling us that we have been redirected to 'enhetsvaljaren'
         user.getParameters().getState().setRedirectToEnhetsval(false);
 
-        return handleRedirectToIntyg(uriInfo, enhetId, null, intygId, user);
+        return handleRedirectToIntyg(uriInfo, enhetId, intygTyp, intygId, user);
     }
 
     public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
@@ -319,10 +320,15 @@ public class IntygIntegrationController extends BaseIntegrationController {
     // private stuff
 
     private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        String intygId = prepareRedirectToIntyg.getIntygId();
+        String intygTyp = prepareRedirectToIntyg.getIntygTyp();
+
+        String urlPath = String.format("/visa/intyg/%s/%s/resume", intygTyp, intygId);
+
         try {
             // get the builder without any existing query params
-            UriBuilder uriBuilder = uriInfo.getRequestUriBuilder().replaceQuery(null);
-            URI uri = uriBuilder.path("/resume").queryParam(PARAM_CERT_TYPE, prepareRedirectToIntyg.getIntygTyp()).build();
+            UriBuilder uriBuilder = uriInfo.getRequestUriBuilder().replacePath(urlPath).replaceQuery(null);
+            URI uri = uriBuilder.build();
 
             return URLEncoder.encode(uri.toString(), "UTF-8");
 
