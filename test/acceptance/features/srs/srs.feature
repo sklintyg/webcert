@@ -63,12 +63,10 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     Så ska knappen för SRS vara i läge "stängd"
     När jag klickar på knappen för SRS
     Och ska en frågepanel för SRS "visas"
-    Och ska en pil med texten "Visa mindre" visas
-    När jag klickar på pilen
-    Så ska frågepanelen för SRS vara "minimerad"
-    Och ska en pil med texten "Visa mer" visas
     När jag klickar på pilen
     Så ska frågepanelen för SRS vara "maximerad"
+    När jag klickar på pilen
+    Så ska frågepanelen för SRS vara "minimerad"
 
 @SRS-US-W02 @åtgärder @OBS-åtgärder @REK-åtgärder
 Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
