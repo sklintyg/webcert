@@ -24,6 +24,7 @@ Scenario: När samtycke är givet och ytterligare frågor besvarade ska informat
     Och ska åtgärdsförslag från SRS-tjänsten visas
     När jag trycker på fliken "Statistik"
     Så ska en statistikbild från SRS-tjänsten visas
+	#Testet går igenom men ingen bild visas.
 
 
 @SRS-US-W01 @allmänt
@@ -68,7 +69,7 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     När jag klickar på pilen
     Så ska frågepanelen för SRS vara "maximerad"
 
-@SRS-US-W02 @åtgärder
+@SRS-US-W02 @åtgärder @OBS-åtgärder @REK-åtgärder
 Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
@@ -113,7 +114,7 @@ Scenario: Prediktion ska kunna visa ingen förhöjd risk
     När jag fyller i diagnoskod som "för ingen förhöjd risk"
     Och jag klickar på knappen för SRS
     Och jag trycker på knappen "Visa"
-    Så ska jag varnas om "Ingen förhöjd risk"
+    Så ska jag varnas om att "Ingen förhöjd risk"
 
 @SRS-US-W04 @prediktion
 @notReady

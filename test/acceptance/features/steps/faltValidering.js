@@ -461,7 +461,7 @@ module.exports = function() {
                 return fkUtkastPage.prognos.GAR_EJ_ATT_BEDOMA.click();
 
             case 'Diagnoskod':
-                logger.info('Ändrar Aktivitetsbegransning switch');
+                logger.info('Ändrar Diagnoskod');
                 return fkUtkastPage.diagnosKod.sendKeys('A00').then(function() {
                     enter = browser.actions().sendKeys(protractor.Key.ENTER);
                     return enter.perform();
