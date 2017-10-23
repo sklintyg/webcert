@@ -90,7 +90,7 @@ describe(
                 beforeEach(function() {
                     $window.location.search = '?destination=' +
                         'http%3A%2F%2Flocalhost%3A9088%2Fvisa%2Fintyg%2Ffk7263%2F438fef62-1bde-4d00-9ae5-b29a95a8f077%2Fresume' +
-                        '%26enhet%3D01#/integration-enhetsval';
+                        '%3Fenhet%3D01#/integration-enhetsval';
 
                     $controller('integration.EnhetsvalPageCtrl', {
                         $scope: $scope
