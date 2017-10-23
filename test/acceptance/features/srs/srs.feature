@@ -19,6 +19,7 @@ Scenario: När samtycke är givet och ytterligare frågor besvarade ska informat
     Så ska en fråga om samtycke visas
     När jag anger att patienten samtycker till SRS
     Och jag fyller i ytterligare svar för SRS
+    Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
     Så ska prediktion från SRS-tjänsten visas
     Och ska åtgärdsförslag från SRS-tjänsten visas
