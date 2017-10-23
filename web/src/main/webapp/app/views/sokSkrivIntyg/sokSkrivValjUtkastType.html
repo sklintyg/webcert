@@ -64,7 +64,7 @@
                       <span ng-if="!intygTypeModel.previousIntygWarnings[intygTypeModel.intygType].withinCareGiver" message key="{{intygTypeModel.intygType}}.warn.previouscertificate.differentvg"></span>
                   </div>
 
-                  <div class="alert alert-info col-lg-7"
+                  <div class="alert alert-info col-lg-7 text-8-lines"
                        ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
                        id="intygTypeWarning">
                     <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
