@@ -98,9 +98,10 @@ module.exports = function() {
         samtycke => fk7263utkast.setSRSConsent(samtycke === 'inte' ? false : true)
     );
 
-    this.Then(/^frågan om samtycke ska vara förifylld med "(Ja|Nej)"$/,
-        samtycke => expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(true)
-    );
+    this.Then(/^frågan om samtycke ska (?:inte )?vara förifylld med "(Ja|Nej)"$/, samtycke => (('nej' === samtycke.toLowerCase()) ?
+            expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(false) :
+            expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(true))
+        .then(() => browser.sleep(500)));
 
 
     this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));

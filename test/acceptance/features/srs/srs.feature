@@ -53,7 +53,7 @@ Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som
     Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
-    Och frågan om samtycke ska vara förifylld med "Nej"
+    Och frågan om samtycke ska inte vara förifylld med "Nej"
 
 @SRS-US-W01 @allmänt
 Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
