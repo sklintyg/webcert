@@ -7,7 +7,7 @@
     "textVersion": "1.0",
     "grundData": {
         "patient": {
-            "personId": "19121212-1212",
+            "personId": "${personNr}",
             "fullstandigtNamn": "Tolvan Tolvansson",
             "fornamn": "Tolvan",
             "efternamn": "Tolvansson",

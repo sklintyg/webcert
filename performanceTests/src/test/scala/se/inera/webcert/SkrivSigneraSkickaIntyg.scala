@@ -6,9 +6,17 @@ import scala.concurrent.duration._
 
 class SkrivSigneraSkickaIntyg extends Simulation {
 
-  val testpersonnummer = csv("data/testpersonnummer_skatteverket.cvs").circular
+  val testpersonnummer = csv("data/testpersonnummer_skatteverket_subset.cvs").circular
+  val bootstrapPu = csv("data/testpersonnummer_skatteverket_subset.cvs").records
+
+  val bootstrap = exec("Bootstrap PU")
+    .foreach(bootstrapPu, "personNr") {
+      exec(flattenMapIntoAttributes("${personNr}"))
+          .exec(Utils.injectPersonIntoPU("${personNr}"))
+    }
 
   val scn = scenario("SkrivSigneraSkicka")
+    .exec(bootstrap)
     .exec(Login.loginAs("Leonie"))
     .exec(http("Get user details")
       .get("/siths.jsp"))
@@ -28,7 +36,9 @@ class SkrivSigneraSkickaIntyg extends Simulation {
           .post("/api/utkast/fk7263")
           .headers(Headers.json)
           .body(StringBody("""{"intygType":"fk7263","patientPersonnummer":"${personNr}","patientFornamn":"test","patientEfternamn":"test"}"""))
-          .check(jsonPath("$.intygsId").saveAs("intyg")))
+            .check(
+              status.is(200),
+              jsonPath("$.intygsId").saveAs("intyg")))
         .exec(http("Get draft certificate")
           .get("/moduleapi/utkast/fk7263/${intyg}")
           .headers(Headers.json))
@@ -82,6 +92,11 @@ class SkrivSigneraSkickaIntyg extends Simulation {
     .exec(http("Logout")
       .get("/logout")
       .headers(Headers.default))
+
+  before {
+    println("Boostrapping PU")
+    exec(bootstrap)
+  }
 
   setUp(scn.inject(rampUsers(100) over (120 seconds)).protocols(Conf.httpConf))
 }

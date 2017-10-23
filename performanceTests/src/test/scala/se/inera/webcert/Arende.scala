@@ -3,9 +3,13 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 import scala.concurrent.duration._
-import java.util.UUID 
+import java.util.UUID
+import io.gatling.core.feeder._
+import scala.collection.mutable.ListBuffer
 
 class Arende extends Simulation {
+
+  private var internReferenser = new ListBuffer[String]
 
   val intyg = csv("data/intyg.csv").circular
 
@@ -35,7 +39,7 @@ class Arende extends Simulation {
             "skickatTidpunkt": "2016-10-06T07:25:17.989Z",
             "intygsId": "${intygsId}",
             "patientPersonId": "${personNr}",
-            "amne": "ARBTID",
+            "amne": "KOMPLT",
             "rubrik": "string",
             "meddelande": "string",
             "paminnelseMeddelandeId": "string",
@@ -60,6 +64,11 @@ class Arende extends Simulation {
           .check(
               status.is(200),
               jsonPath("$.meddelandeId").saveAs("internReferens")))
+        .exec(session => {
+          internReferenser += session("internReferens").as[String]
+          session
+        })
+        .pause(50 milliseconds)
         .exec(http("Dashboard")
           .get("/web/dashboard#/unhandled-qa.html")
           .headers(Headers.default))
@@ -75,20 +84,23 @@ class Arende extends Simulation {
         .exec(http("Get QAs")
           .get("/moduleapi/arende/${intygsId}")
           .headers(Headers.json))
-        .exec(http("Answer the question ${internReferens}")
-          .put("/moduleapi/arende/luse/${internReferens}/besvara")
-          .body(StringBody("""SvarsText-${internReferens}"""))
-          .headers(Headers.json))
-        .exec(http("Delete incoming question")
-          .delete("/testability/arendetest/${internReferens}"))
+        .doIf("${internReferens}" != null && !"${internReferens}".isEmpty()) {
+          exec(http("Answer the question ${internReferens}")
+            .put("/moduleapi/arende/luse/${internReferens}/besvara")
+            .body(StringBody("""SvarsText-${internReferens}"""))
+            .headers(Headers.json))
+        }
+
     }
-    .feed(intyg)
-      .exec(http("Delete intyg")
-        .delete("/testability/intyg/${intygsId}"))
-      .pause(200 milliseconds)
     .exec(http("Logout")
       .get("/logout")
       .headers(Headers.default))
 
   setUp(scn.inject(rampUsers(10) over (10 seconds)).protocols(Conf.httpConf))
+
+  after {
+    println("Cleaning test data")
+    Utils.deleteItemsFromUrl("/testability/arendetest", internReferenser.toList)
+    Utils.cleanCertificates()
+  }
 }
