@@ -442,14 +442,14 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        Intyg dbIntyg = createDbIntyg(personnummer);
+        String dbIntyg = createDbIntyg(personnummer);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "db");
-        pathParams.put("intygsId", dbIntyg.id);
+        pathParams.put("intygsId", dbIntyg);
         pathParams.put("newIntygsTyp", "doi");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -458,11 +458,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/{newIntygsTyp}/create")
                 .then()
                 .body("intygsUtkastId", not(isEmptyString()))
-                .body("intygsUtkastId", not(equalTo(dbIntyg.id)))
+                .body("intygsUtkastId", not(equalTo(dbIntyg)))
                 .body("intygsTyp", equalTo("doi"));
     }
 
-    private Intyg createDbIntyg(String personnummer) throws IOException {
+    private String createDbIntyg(String personnummer) throws IOException {
         String intygsTyp = "db";
 
         String intygsId = createUtkast(intygsTyp, personnummer);
@@ -499,18 +499,14 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         node.put("from", "2016-01-19");
         node.put("tom", "2016-01-25");
 
-        responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(content)
                 .expect().statusCode(200)
                 .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
                 .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
 
-        JsonPath model = new JsonPath(responseIntyg.body().asString());
-
-        version = model.getString("version");
-
-        return new Intyg(version, intygsId, intygsTyp);
+        return intygsId;
     }
 
 
@@ -532,29 +528,4 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     private void deleteUtkast(String id) {
         given().contentType(ContentType.JSON).expect().statusCode(200).when().delete("testability/intyg/" + id);
     }
-
-    private class Intyg {
-        private String id;
-        private String intygsTyp;
-        private String version;
-
-        public Intyg(String version, String id, String intygsTyp) {
-            this.version = version;
-            this.id = id;
-            this.intygsTyp = intygsTyp;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getIntygsTyp() {
-            return intygsTyp;
-        }
-
-        public String getVersion() {
-            return version;
-        }
-    }
-
 }
