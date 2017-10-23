@@ -136,8 +136,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         PersonSvar personSvar = puService.getPerson(personnummer);
         boolean avlidenPU = personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
 
-        WebCertUser user = webCertUserService.getUser();
-        boolean avlidenIntegration = user.getParameters() != null && user.getParameters().isPatientDeceased();
+        WebCertUser user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
+        boolean avlidenIntegration = user != null && user.getParameters() != null && user.getParameters().isPatientDeceased();
 
         return avlidenPU || avlidenIntegration;
     }
