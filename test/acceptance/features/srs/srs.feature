@@ -110,10 +110,11 @@ Scenario: När prediktion inte kan ges ska korrekt felmeddelande visas
 Scenario: Prediktion ska kunna visa ingen förhöjd risk
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
-    När jag fyller i diagnoskod som "för ingen förhöjd risk"
+    När jag fyller i diagnoskod som "inte har förhöjd risk"
     Och jag klickar på knappen för SRS
+    Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
-    Så ska jag varnas om att "Ingen förhöjd risk"
+    Så ska jag få prediktion "Ingen förhöjd risk"
 
 @SRS-US-W04 @prediktion
 @notReady

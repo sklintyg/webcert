@@ -37,7 +37,7 @@ module.exports = {
         'inte finns i SRS': 'A23',
         'har åtgärder': 'M54',
         'har förhöjd risk': '',
-        'inte har förhöjd risk': '',
+        'inte har förhöjd risk': 'M79',
         'saknar prediktion': 'M79',
         'saknar statistik': 'S82',
         'saknar åtgärder': 'S82',

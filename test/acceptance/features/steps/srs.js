@@ -90,6 +90,10 @@ module.exports = function() {
         status => expect(fk7263utkast.getSRSQuestionnaireStatus()).to.eventually.equal(status)
     );
 
+    this.Then(/^ska jag få prediktion "([^"]*)"$/, predictionMsg =>
+        expect(fk7263utkast.srs.prediktion().getText()).to.eventually.contain(predictionMsg)
+    );
+
     this.Then(/^ska en fråga om samtycke visas$/, () => expect(
         findLabelContainingText('Patienten samtycker till att delta').isPresent()
     ).to.eventually.equal(true));
