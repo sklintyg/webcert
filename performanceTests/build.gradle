@@ -8,7 +8,7 @@ apply plugin: 'scala'
 
 sourceSets.test.output.classesDir = new File(buildDir, "classes/scala")
 
-task gatling(dependsOn: 'build') {
+task gatling() {
     doLast {
         logger.lifecycle(" ---- Executing all Gatling scenarios from: ${sourceSets.test.output.classesDir} ----")
         sourceSets.test.output.classesDirs.singleFile.eachFileRecurse { file ->
