@@ -37,9 +37,9 @@ Annan/okänd: övrigt</text>
     <text id="DFR_6.1.SVA_3">Nej, den avlidne undersökt kort före döden</text>
     <text id="DFR_6.3.RBK">Undersökningsdatum</text>
     <text id="KAT_6.RBK">Polisanmälan</text>
-    <text id="KAT_6.HLP"><![CDATA[En anmälan till Polismyndigheten ska göras i följande fall.
+    <text id="KAT_6.HLP"><![CDATA[<div class="white-space-normal">En anmälan till Polismyndigheten ska göras i följande fall.
         <ol>
-            <li>1. Om ett dödsfall har eller kan kan ha orsakats av yttre påverkan, dvs. skada eller förgiftning tillfogad
+            <li>Om ett dödsfall har eller kan kan ha orsakats av yttre påverkan, dvs. skada eller förgiftning tillfogad
                 <ul>
                     <li>av någon annan person än den som har avlidit,</li>
                     <li>genom olycksfall, eller</li>
@@ -47,21 +47,17 @@ Annan/okänd: övrigt</text>
                     <li>och inte enbart av sjukdom.</li>
                 </ul>
             </li>
-          <li>2. Om det är svårt att avgöra om ett dödsfall har orsakats av yttre påverkan
+          <li>Om det är svårt att avgöra om ett dödsfall har orsakats av yttre påverkan
               <ul>
                   <li>när någon anträffas död och tidigare sjukdom eller sjukdomsbild inte kan förklara dödsfallet, dvs. vid helt oväntade dödsfall hos både barn och vuxna,</li>
                   <li>när en missbrukare anträffas död, eller</li>
                   <li>vid framskriden förruttnelse.</li>
               </ul>
           </li>
-
-          <li>3. Om ett dödsfall kan misstänkas ha samband med fel eller försummelse i hälso- och sjukvården.</li>
-
-          <li>4. Om en avliden inte har kunnat identifieras.</li>
+          <li>Om ett dödsfall kan misstänkas ha samband med fel eller försummelse i hälso- och sjukvården.</li>
+          <li>Om en avliden inte har kunnat identifieras.</li>
         </ol>
-
-        När ett dödsbevis lämnas till Polismyndigheten bör en kopia av dödsbeviset samtidigt skickas till Skatteverket.
-
+        När ett dödsbevis lämnas till Polismyndigheten bör en kopia av dödsbeviset samtidigt skickas till Skatteverket.</div>
         (HSLF-FS 2015:15)
 
         Polismyndigheten ska skicka dödsbeviset tillsammans med tillståndet till gravsättning och kremering till Skatteverket enligt 4 kap. 4 § begravningslagen (1990:1144).]]></text>
