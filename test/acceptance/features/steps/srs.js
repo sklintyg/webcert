@@ -189,7 +189,10 @@ module.exports = function() {
         flikText => fk7263utkast.srs.flik(flikText).sendKeys(protractor.Key.ENTER)
     );
 
-    this.Then(/^ska en statistikbild från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.statistik().isDisplayed()).to.eventually.equal(true));
+    this.Then(/^ska en statistikbild från SRS-tjänsten visas för en diagnoskod som "([^"]*)"$/, (srsStatus) => fk7263utkast.srs.statistik().isDisplayed()
+        .then((isDisplayed) => isDisplayed ? fk7263utkast.srs.statistik().element(by.tagName('img')).getAttribute('src') : 'unknown url')
+        .then((srcUrl) => expect(srcUrl.indexOf(srsdata.diagnoskoder[srsStatus]) > -1).to.equal(true))
+    );
 
     this.Then(/^ska felmeddelandet "(.*)" visas$/,
         text => expect(findLabelContainingText(text).isDisplayed()).to.eventually.equal(true)

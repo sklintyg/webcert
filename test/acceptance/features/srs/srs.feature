@@ -24,7 +24,7 @@ Scenario: När samtycke är givet och ytterligare frågor besvarade ska informat
     Så ska prediktion från SRS-tjänsten visas
     Och ska åtgärdsförslag från SRS-tjänsten visas
     När jag trycker på fliken "Statistik"
-    Så ska en statistikbild från SRS-tjänsten visas
+    Så ska en statistikbild från SRS-tjänsten visas för en diagnoskod som "finns i SRS"
 	#Testet går igenom men ingen bild visas.
 
 
