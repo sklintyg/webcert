@@ -273,7 +273,14 @@ public class UtkastApiControllerTest {
         utkast1.setStatus(UtkastStatus.SIGNED);
         Utkast utkast2 = buildUtkast(PATIENT_PERSONNUMMER);
         utkast2.setStatus(UtkastStatus.SIGNED);
-        when(utkastService.getPrevious(eq(PATIENT_PERSONNUMMER))).thenReturn(Arrays.asList(utkast1, utkast2));
+        Utkast utkast3 = buildUtkast(PATIENT_PERSONNUMMER);
+        utkast3.setIntygsTyp("Fel typ");
+        utkast3.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        Utkast utkast4 = buildUtkast(PATIENT_PERSONNUMMER);
+        utkast4.setIntygsTyp("Fel typ 2");
+        utkast4.setStatus(UtkastStatus.SIGNED);
+        utkast4.setAterkalladDatum(LocalDateTime.of(2017, 1, 1, 1, 1));
+        when(utkastService.getPrevious(eq(PATIENT_PERSONNUMMER))).thenReturn(Arrays.asList(utkast1, utkast2, utkast3, utkast4));
 
         Response response = utkastController.getPreviousCertificateWarnings(PATIENT_PERSONNUMMER.getPersonnummer());
 

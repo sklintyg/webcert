@@ -187,6 +187,7 @@ public class UtkastApiController extends AbstractApiController {
         Map<String, List<PreviousCertificateWarningResponse>> grouped = utkastService.getPrevious(new Personnummer(personnummer))
                 .stream()
                 .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
+                .filter(utkast -> utkast.getAterkalladDatum() == null)
                 .map(utkast -> new PreviousCertificateWarningResponse(utkast.getIntygsTyp(),
                         Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId())))
                 .collect(Collectors.groupingBy(PreviousCertificateWarningResponse::getModuleId));
