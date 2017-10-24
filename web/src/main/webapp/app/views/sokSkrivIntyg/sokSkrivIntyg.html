@@ -3,6 +3,10 @@
       <div id="skapa-valj-patient" class="col-xs-7 webcert-col webcert-col-single">
 
         <form name="pnrForm" ng-submit="loadPatient()" novalidate autocomplete="off">
+          <div wc-authority request-origin="DJUPINTEGRATION" class="warning alert-warning">
+            <h1 class="error">DJUPINTEGRERAD testläge</h1>
+            <span class="error">OBS! Dashboard i djupintegrerat läge är EJ tillgängligt i prod-miljö, den finns endast för att vid behov underlätta utveckling/testning.</span>
+          </div>
           <h1 class="page-title">Sök/skriv intyg</h1>
           <div class="form-group">
             <label for="pnr" class="control-label">Patientens personnummer</label>

@@ -289,13 +289,13 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
                 patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
                 IntegrationParameters parameters = user.getParameters();
-                if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
+                if (parameters != null && isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
                         && isNotNullOrEmpty(parameters.getPostort())) {
                     patient.setPostadress(parameters.getPostadress());
                     patient.setPostnummer(parameters.getPostnummer());
                     patient.setPostort(parameters.getPostort());
                 }
-                patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
+                patient.setAvliden(patient.isAvliden() || (parameters != null && parameters.isPatientDeceased()));
 
             } else {
                 // use integration parameters if no answer from PU
@@ -374,10 +374,14 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
 
                 // Address from integration parameters
-                patient.setPostadress(user.getParameters().getPostadress());
-                patient.setPostnummer(user.getParameters().getPostnummer());
-                patient.setPostort(user.getParameters().getPostort());
-                patient.setAvliden(patient.isAvliden() || (user.getParameters() != null && user.getParameters().isPatientDeceased()));
+                IntegrationParameters parameters = user.getParameters();
+                if (parameters != null && isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
+                        && isNotNullOrEmpty(parameters.getPostort())) {
+                    patient.setPostadress(user.getParameters().getPostadress());
+                    patient.setPostnummer(user.getParameters().getPostnummer());
+                    patient.setPostort(user.getParameters().getPostort());
+                }
+                patient.setAvliden(patient.isAvliden() || (parameters != null && parameters.isPatientDeceased()));
 
             } else {
                 // If PU is missing, use integration parameters
