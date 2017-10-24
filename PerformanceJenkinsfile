@@ -10,7 +10,7 @@ stage('checkout webcert') {
 stage('build') {
     node {
         dir("performanceTests") {
-            sh("../gradlew build")
+            sh("../gradlew build --stacktrace")
         }
     }
 }
@@ -19,7 +19,7 @@ stage('gatling') {
     node {
         dir("performanceTests") {
             try {
-                sh("../gradlew gatling -Dcertificate.baseUrl=https://webcert.inera.nordicmedtest.se")
+                sh("../gradlew gatling --stacktrace -Dcertificate.baseUrl=https://webcert.inera.nordicmedtest.se")
             } finally {
                 gatlingArchive()
             }
