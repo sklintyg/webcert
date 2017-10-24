@@ -60,6 +60,8 @@ object Utils {
       .method("delete")
       .header("content-type", "application/json")
       .option(HttpOptions.allowUnsafeSSL)
+      .option(HttpOptions.connTimeout(5000))
+      .option(HttpOptions.readTimeout(5000))
       .asString
   }
 
@@ -70,6 +72,8 @@ object Utils {
         .method("delete")
         .header("content-type", "application/json")
         .option(HttpOptions.allowUnsafeSSL)
+        .option(HttpOptions.connTimeout(5000))
+        .option(HttpOptions.readTimeout(5000))
         .asString
     }
   }
