@@ -19,7 +19,7 @@ stage('gatling') {
     node {
         dir("performanceTests") {
             try {
-                sh("../gradlew gatling -Dcertificate.baseUrl=http://webcert.inera.nordicmedtest.se")
+                sh("../gradlew gatling -Dcertificate.baseUrl=https://webcert.inera.nordicmedtest.se")
             } finally {
                 gatlingArchive()
             }
