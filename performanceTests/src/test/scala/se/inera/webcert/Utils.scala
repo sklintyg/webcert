@@ -59,6 +59,7 @@ object Utils {
     Http(url)
       .method("delete")
       .header("content-type", "application/json")
+      .option(HttpOptions.allowUnsafeSSL)
       .asString
   }
 
@@ -68,6 +69,7 @@ object Utils {
       Http(finalUrl)
         .method("delete")
         .header("content-type", "application/json")
+        .option(HttpOptions.allowUnsafeSSL)
         .asString
     }
   }
