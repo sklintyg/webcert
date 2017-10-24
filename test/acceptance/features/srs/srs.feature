@@ -106,7 +106,6 @@ Scenario: När prediktion inte kan ges ska korrekt felmeddelande visas
     Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas
 
 @SRS-US-W04 @prediktion
-@notReady
 Scenario: Prediktion ska kunna visa ingen förhöjd risk
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
