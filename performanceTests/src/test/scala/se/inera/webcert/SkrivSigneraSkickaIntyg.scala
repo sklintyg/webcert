@@ -7,21 +7,13 @@ import scala.concurrent.duration._
 class SkrivSigneraSkickaIntyg extends Simulation {
 
   val testpersonnummer = csv("data/testpersonnummer_skatteverket_subset.cvs").circular
-  val bootstrapPu = csv("data/testpersonnummer_skatteverket_subset.cvs").records
-
-  val bootstrap = exec("Bootstrap PU")
-    .foreach(bootstrapPu, "personNr") {
-      exec(flattenMapIntoAttributes("${personNr}"))
-          .exec(Utils.injectPersonIntoPU("${personNr}"))
-    }
 
   val scn = scenario("SkrivSigneraSkicka")
-    .exec(bootstrap)
     .exec(Login.loginAs("Leonie"))
     .exec(http("Get user details")
       .get("/siths.jsp"))
     .pause(50 milliseconds)
-    .repeat(10, "i") {
+    .repeat(10) {
       feed(testpersonnummer)
         .exec(http("Dashboard")
           .get("/web/dashboard#/unhandled-qa.html")
@@ -95,8 +87,14 @@ class SkrivSigneraSkickaIntyg extends Simulation {
 
   before {
     println("Boostrapping PU")
-    exec(bootstrap)
+    Utils.injectPersonsIntoPU("testpersonnummer_skatteverket_subset.cvs", 0)
   }
 
   setUp(scn.inject(rampUsers(100) over (120 seconds)).protocols(Conf.httpConf))
+
+  after {
+    println("Cleanup test data")
+    Utils.removePersonsFromPU("testpersonnummer_skatteverket_subset.cvs", 0)
+  }
+
 }

@@ -70,7 +70,7 @@ class FragaSvar extends Simulation {
 
   before {
     println("Boostrapping PU")
-    Utils.injectPersonsIntoPU()
+    Utils.injectPersonsIntoPU("intyg.csv", 1)
   }
 
   setUp(scn.inject(rampUsers(10) over (10 seconds)).protocols(Conf.httpConf))
@@ -78,6 +78,6 @@ class FragaSvar extends Simulation {
   after {
     println("Cleanup test data")
     Utils.deleteItemsFromUrl("/testability/fragasvar", internReferenser.toList)
-    Utils.removePersonsFromPU()
+    Utils.removePersonsFromPU("intyg.csv", 1)
   }
 }
