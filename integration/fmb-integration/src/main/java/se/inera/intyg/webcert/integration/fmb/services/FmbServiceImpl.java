@@ -19,13 +19,13 @@
 package se.inera.intyg.webcert.integration.fmb.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -33,28 +33,22 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-// CHECKSTYLE:OFF LineLength
+import se.inera.intyg.webcert.integration.fmb.consumer.FailedToFetchFmbData;
+import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
+import se.inera.intyg.webcert.integration.fmb.model.Kod;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Aktivitetsbegransning;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Funktionsnedsattning;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Markup;
+import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
+import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
+import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
 import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationResponderInterface;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationResponseType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getdiagnosinformationresponder.v1.GetDiagnosInformationType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getfmbresponder.v1.GetFmbResponderInterface;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getfmbresponder.v1.GetFmbResponseType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getfmbresponder.v1.GetFmbType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsResponderInterface;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsResponseType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.getversionsresponder.v1.GetVersionsType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.BeslutsunderlagType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.DiagnosInformationType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.HuvuddiagnosType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.ICD10SEType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.OvrigFmbInformationType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionType;
-import se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport.v1.VersionerType;
-// CHECKSTYLE:ON LineLength
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -71,19 +65,10 @@ public class FmbServiceImpl implements FmbService {
     public static final String UNKNOWN_TIMESTAMP = "UnknownTimestamp";
 
     @Autowired
-    private GetDiagnosInformationResponderInterface getDiagnosInformationResponder;
-
-    @Autowired
-    private GetFmbResponderInterface getFmbResponder;
-
-    @Autowired
-    private GetVersionsResponderInterface getVersionsResponder;
+    private FmbConsumer fmbConsumer;
 
     @Autowired
     private FmbRepository fmbRepository;
-
-    @Value("${fmb.logicaladdress}")
-    private String logicalAddress;
 
     @Override
     @Scheduled(cron = "${fmb.dataupdate.cron}")
@@ -98,122 +83,96 @@ public class FmbServiceImpl implements FmbService {
     }
 
     private void performUpdate() {
-        final FmbVersionStatus versionStatus = getVersionStatus();
-
-        if (!versionStatus.isDiagnosInfoIsUpToDate()) {
-            LOG.info("Updating diagnosInfo");
-            final List<Fmb> updatedDiagnosinfos = getUpdatedDiagnosinfos();
-            updateDbForCallType(FmbCallType.DIAGNOSINFORMATION, updatedDiagnosinfos);
-        }
-
-        if (!versionStatus.isFmbIsUpToDate()) {
-            LOG.info("Updating fmbInfo");
-            final List<Fmb> updatedFmbs = getUpdatedFmbs();
-            updateDbForCallType(FmbCallType.FMB, updatedFmbs);
-        }
-    }
-
-    private void updateDbForCallType(FmbCallType callType, List<Fmb> updatedFmbs) {
-        if (!updatedFmbs.isEmpty()) {
-            removeAll(callType);
-            fmbRepository.save(updatedFmbs);
-            LOG.info("Added {} rows for {}", updatedFmbs.size(), callType);
-        }
-    }
-
-    private void removeAll(@Nullable FmbCallType callType) {
-        if (callType == null) {
-            return;
-        }
-        final List<Fmb> fmbs = fmbRepository.findByUrsprung(callType);
-        LOG.info("Removing all '{}' rows from FMB of calltype '{}'", fmbs.size(), callType);
-        fmbRepository.deleteInBatch(fmbs);
-    }
-
-    @Nonnull
-    private FmbVersionStatus getVersionStatus() {
-        GetVersionsResponseType versions = getVersionsResponder.getVersions(logicalAddress, new GetVersionsType());
-        if (versions == null) {
-            LOG.warn("Versions is null. FMB data will not be updated.");
-            return new FmbVersionStatus(true, true);
-        }
-
-        final VersionerType versioner = versions.getVersioner();
-        if (versioner == null) {
-            LOG.warn("Versioner is null. FMB data will not be updated.");
-            return new FmbVersionStatus(true, true);
-        }
-
-        final boolean diagnosInfoIsUpToDate = isDiagnosInfoUpToDate(versioner);
-        final boolean fmbIsUpToDate = isFmbInfoUpToDate(versioner);
-        return new FmbVersionStatus(fmbIsUpToDate, diagnosInfoIsUpToDate);
-    }
-
-    private boolean isFmbInfoUpToDate(@Nonnull VersionerType versioner) {
-        final String fmbDate = versioner.getFmbSenateAndring();
-        final List<Fmb> fmbs = fmbRepository.findByUrsprung(FmbCallType.FMB);
-        final boolean fmbIsUpToDate = isUpToDate(fmbDate, fmbs);
-        LOG.info("Latest FMB version is '{}'. 'The database is up to date with this version'='{}'", fmbDate, fmbIsUpToDate);
-        return fmbIsUpToDate;
-    }
-
-    private boolean isDiagnosInfoUpToDate(@Nonnull VersionerType versioner) {
-        final String diagnosInfoDate = versioner.getDiagnosInformationSenateAndring();
-        final List<Fmb> diagnosInfos = fmbRepository.findByUrsprung(FmbCallType.DIAGNOSINFORMATION);
-        final boolean diagnosInfoIsUpToDate = isUpToDate(diagnosInfoDate, diagnosInfos);
-        LOG.info("Latest diagnosInfo version is '{}'. 'The database is up to date with this version'='{}'", diagnosInfoDate,
-                diagnosInfoIsUpToDate);
-        return diagnosInfoIsUpToDate;
-    }
-
-    private boolean isUpToDate(@Nullable String lastUpdate, @Nullable List<Fmb> fmbs) {
-        if (fmbs == null || fmbs.isEmpty()) {
-            return false;
-        }
-        if (lastUpdate == null) {
-            return true;
-        }
-        for (Fmb fmb : fmbs) {
-            if (fmb != null && !lastUpdate.equals(fmb.getLastUpdate())) {
-                return false;
+        LOG.info("Updating FMB information");
+        try {
+            final FmdxInformation fmdxInfo = fmbConsumer.getForsakringsmedicinskDiagnosinformation();
+            final Typfall typfall = fmbConsumer.getTypfall();
+            final List<Fmb> updatedDiagnosinfos = getUpdatedDiagnosinfos(fmdxInfo, typfall);
+            if (updatedDiagnosinfos.isEmpty()) {
+                LOG.warn("Updated diagnos infos is empty. No FMB update will be performed.");
+            } else {
+                updateFmbDb(updatedDiagnosinfos);
             }
+        } catch (FailedToFetchFmbData failedToFetchFmbData) {
+            LOG.error("Failed to update FMB information", failedToFetchFmbData);
         }
-        return true;
+    }
+
+    private void updateFmbDb(List<Fmb> updatedFmbs) {
+        if (!updatedFmbs.isEmpty()) {
+            fmbRepository.deleteAllInBatch();
+            fmbRepository.save(updatedFmbs);
+            LOG.info("Inserted {} rows for FMB", updatedFmbs.size());
+        }
     }
 
     @Nonnull
-    private List<Fmb> getUpdatedDiagnosinfos() {
+    private List<Fmb> getUpdatedDiagnosinfos(FmdxInformation fmdxInfo, Typfall typfall) {
         final List<Fmb> fmbs = new ArrayList<>();
-        final GetDiagnosInformationResponseType diagnosInformation = getDiagnosInformationResponder.getDiagnosInformation(logicalAddress,
-                new GetDiagnosInformationType());
-        if (diagnosInformation == null) {
+
+        if (fmdxInfo == null) {
             LOG.warn("Diagnosinformation is null");
             return fmbs;
         }
-        final VersionType version = diagnosInformation.getVersion();
-        final String senateAndring = version != null ? version.getSenateAndring() : UNKNOWN_TIMESTAMP;
-        final List<DiagnosInformationType> diagnosInformations = diagnosInformation.getDiagnosInformation();
-        if (diagnosInformations == null) {
-            LOG.warn("Diagnosinformation does not contain any data");
+        if (typfall == null) {
+            LOG.warn("Typfall info is null");
             return fmbs;
         }
-        for (DiagnosInformationType information : diagnosInformations) {
-            if (information != null) {
-                fmbs.addAll(createFmbsForDiagnosInfo(senateAndring, information));
+
+        final String senateAndring = fmdxInfo.getMeta() != null ? fmdxInfo.getMeta().getBuildtimestamp() : UNKNOWN_TIMESTAMP;
+        final List<FmdxData> datas = fmdxInfo.getData();
+        if (datas == null) {
+            LOG.warn("Fmdx datas is null");
+            return fmbs;
+        }
+
+        for (FmdxData data : datas) {
+            final Attributes attributes = data.getAttributes();
+            if (attributes != null) {
+                final Aktivitetsbegransning ab = attributes.getAktivitetsbegransning();
+                final String aktivitetsbegransning = ab != null ? ab.getAktivitetsbegransningsbeskrivning() : null;
+                final Funktionsnedsattning fn = attributes.getFunktionsnedsattning();
+                final String funktionsnedsattning = fn != null ? fn.getFunktionsnedsattningsbeskrivning() : null;
+                final Markup spb = attributes.getSymtomprognosbehandling();
+                final String symtomprognosbehandling = spb != null ? spb.getMarkup() : null;
+                final Markup fmi = attributes.getForsakringsmedicinskinformation();
+                final String beskrivning = fmi != null ? fmi.getMarkup() : null;
+                final List<Kod> diagnoskod = attributes.getDiagnoskod();
+                final List<String> formatedIcd10Codes = getFormatedIcd10Codes(diagnoskod);
+                fmbs.addAll(getFmbs(senateAndring, aktivitetsbegransning, funktionsnedsattning,
+                        symtomprognosbehandling, beskrivning, formatedIcd10Codes));
+                fmbs.addAll(getTypfallForDx(typfall, formatedIcd10Codes, senateAndring));
             }
         }
         return fmbs;
     }
 
-    private List<Fmb> createFmbsForDiagnosInfo(@Nonnull String senateAndring, @Nonnull DiagnosInformationType information) {
+    private List<Fmb> getTypfallForDx(Typfall typfall, List<String> diagnoskods, String senateAndring) {
         final List<Fmb> fmbs = new ArrayList<>();
-        final String aktivitetsbegransningBeskrivning = information.getAktivitetsbegransningBeskrivning();
-        final String funktionsnedsattningBeskrivning = information.getFunktionsnedsattningBeskrivning();
-        final OvrigFmbInformationType ovrigFmbInformation = information.getOvrigFmbInformation();
-        final String symptomPrognosBehandling = ovrigFmbInformation != null ? ovrigFmbInformation.getSymtomPrognosBehandling() : null;
-        final String generellInformation = ovrigFmbInformation != null ? ovrigFmbInformation.getGenrellInformation() : null;
-        final List<HuvuddiagnosType> huvuddxs = information.getHuvuddiagnos();
-        final List<String> formatedIcd10Codes = getFormatedIcd10Codes(huvuddxs);
+        final List<TypfallData> datas = typfall.getData();
+        if (datas == null || datas.isEmpty()) {
+            LOG.info("Typfall datas is null");
+            return fmbs;
+        }
+        for (TypfallData data : datas) {
+            final se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes attributes = data.getAttributes();
+            if (attributes != null) {
+                final String typfallsmening = attributes.getTypfallsmening();
+                final Fmbtillstand fmbtillstand = attributes.getFmbtillstand();
+                final List<Kod> dxs = fmbtillstand != null ? fmbtillstand.getDiagnoskod() : Collections.emptyList();
+                for (Kod dx : dxs) {
+                    final String kod = dx.getKod();
+                    if (diagnoskods.contains(kod)) {
+                        fmbs.add(new Fmb(kod, FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, typfallsmening, senateAndring));
+                    }
+                }
+            }
+        }
+        return fmbs;
+    }
+
+    private List<Fmb> getFmbs(@Nonnull String senateAndring, String aktivitetsbegransningBeskrivning, String funktionsnedsattningBeskrivning, String symptomPrognosBehandling, String generellInformation, List<String> formatedIcd10Codes) {
+        final List<Fmb> fmbs = new ArrayList<>();
         for (String code : formatedIcd10Codes) {
             if (symptomPrognosBehandling != null) {
                 fmbs.add(new Fmb(code, FmbType.SYMPTOM_PROGNOS_BEHANDLING, FmbCallType.DIAGNOSINFORMATION, symptomPrognosBehandling,
@@ -235,49 +194,13 @@ public class FmbServiceImpl implements FmbService {
     }
 
     @Nonnull
-    private List<Fmb> getUpdatedFmbs() {
-        final List<Fmb> fmbs = new ArrayList<>();
-        GetFmbResponseType fmb = getFmbResponder.getFmb(logicalAddress, new GetFmbType());
-        if (fmb == null) {
-            LOG.warn("FMB response is null");
-            return fmbs;
-        }
-        final VersionType version = fmb.getVersion();
-        final String senateAndring = version != null ? version.getSenateAndring() : UNKNOWN_TIMESTAMP;
-        final List<BeslutsunderlagType> beslutsunderlags = fmb.getBeslutsunderlag();
-        if (beslutsunderlags == null) {
-            LOG.warn("FMB beslutsunderlag is null");
-            return fmbs;
-        }
-        for (BeslutsunderlagType beslutsunderlag : beslutsunderlags) {
-            if (beslutsunderlag != null) {
-                fmbs.addAll(createFmbsForFmbInfo(senateAndring, beslutsunderlag));
-            }
-        }
-        return fmbs;
-    }
-
-    private List<Fmb> createFmbsForFmbInfo(@Nonnull String senateAndring, @Nonnull BeslutsunderlagType beslutsunderlag) {
-        final List<Fmb> fmbs = new ArrayList<>();
-        final String falt8b = beslutsunderlag.getTextuelltUnderlag();
-        if (falt8b != null) {
-            final List<HuvuddiagnosType> huvuddxs = beslutsunderlag.getHuvuddiagnos();
-            final List<String> formatedIcd10Codes = getFormatedIcd10Codes(huvuddxs);
-            for (String code : formatedIcd10Codes) {
-                fmbs.add(new Fmb(code, FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, falt8b, senateAndring));
-            }
-        }
-        return fmbs;
-    }
-
-    @Nonnull
-    private List<String> getFormatedIcd10Codes(@Nullable List<HuvuddiagnosType> huvuddxs) {
+    private List<String> getFormatedIcd10Codes(@Nullable List<Kod> huvuddxs) {
         final List<String> codes = new ArrayList<>();
         if (huvuddxs == null) {
             LOG.info("Missing huvuddiagnos");
             return codes;
         }
-        for (HuvuddiagnosType huvuddx : huvuddxs) {
+        for (Kod huvuddx : huvuddxs) {
             final String code = getFormatedIcd10Code(huvuddx);
             if (code != null) {
                 codes.add(code);
@@ -287,21 +210,16 @@ public class FmbServiceImpl implements FmbService {
     }
 
     @Nullable
-    private String getFormatedIcd10Code(@Nullable HuvuddiagnosType huvuddx) {
+    private String getFormatedIcd10Code(@Nullable Kod huvuddx) {
         if (huvuddx == null) {
             return null;
         }
-        final ICD10SEType kod = huvuddx.getKod();
+        final String kod = huvuddx.getKod();
 
         if (kod == null) {
             return null;
         }
-        final String codeRaw = kod.getCode();
-
-        if (codeRaw == null) {
-            return null;
-        }
-        return codeRaw.replaceAll("\\.", "").toUpperCase(Locale.ENGLISH);
+        return kod.replaceAll("\\.", "").toUpperCase(Locale.ENGLISH);
     }
 
 }
