@@ -72,7 +72,7 @@ module.exports = function() {
 
     this.Given(/^jag går in på Statistiktjänsten$/, function() {
         global.statistik.intygsId = intyg.id;
-        var url = process.env.STATISTIKTJANST_URL + '/#/fakelogin';
+        var url = process.env.STATISTIKTJANST_URL + '/#!/fakelogin';
         return browser.get(url).then(function() {
             logger.info('Går till url: ' + url);
         });

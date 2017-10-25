@@ -22,8 +22,7 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Så ska ett fel-meddelande visa "Kunde inte hämta intyget eftersom du saknar behörighet"
 
 
-#Är detta krav giltigt? #TODO
-@underliggande-enhet @notReady
+@underliggande-enhet
 Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enhet
 	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-UND2"
 	När jag går in på en patient
@@ -39,7 +38,7 @@ Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enh
 	Så ska intygets status vara "Intyget är signerat"
 
 
-	@fornya-utkast
+@fornya-utkast
 Scenario: Det går att förnya signerade och mottagna intyg från intygslistan men inte utkast
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient

@@ -120,7 +120,7 @@ module.exports = function() {
     this.Before(function(scenario) {
         global.scenario = scenario;
 
-        //Återställ globala variabler
+        logger.info('Återställer globala variabler');
         global.person = {};
         global.intyg = {};
         global.meddelanden = []; //{typ:'', id:''}
