@@ -64,6 +64,7 @@ public class Typfall implements FmInfo {
         this.links = links;
     }
 
+    @Override
     @JsonProperty("meta")
     public Meta getMeta() {
         return meta;

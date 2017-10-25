@@ -31,6 +31,7 @@ public class FmdxInformation implements FmInfo {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    @Override
     @JsonProperty("meta")
     public Meta getMeta() {
         return meta;
