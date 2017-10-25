@@ -50,13 +50,6 @@ Intyg
 
     JDBC URL : jdbc:h2:tcp://localhost:9092/mem:dataSource
 
-### Kör FitNesse
-För att köra FitNesse-testerna måste man starta FitNesse wiki samt att Intygstjänsten och Webcert är igång:
-
-    $ cd webcert
-    $ ./gradlew fitnessWiki
-    $ open http://localhost:9126/WebCert.AutomatiseradeTester
-
 ### Köra flera Webcert-instanser för dev-ändamål
 (Detta avsnitt var skrivet specifikt för Maven, behöver uppdateras med gradle-instruktioner)
 
