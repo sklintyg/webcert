@@ -171,7 +171,9 @@ public class FmbServiceImpl implements FmbService {
         return fmbs;
     }
 
-    private List<Fmb> getFmbs(@Nonnull String senateAndring, String aktivitetsbegransningBeskrivning, String funktionsnedsattningBeskrivning, String symptomPrognosBehandling, String generellInformation, List<String> formatedIcd10Codes) {
+    private List<Fmb> getFmbs(@Nonnull String senateAndring, String aktivitetsbegransningBeskrivning,
+                              String funktionsnedsattningBeskrivning, String symptomPrognosBehandling,
+                              String generellInformation, List<String> formatedIcd10Codes) {
         final List<Fmb> fmbs = new ArrayList<>();
         for (String code : formatedIcd10Codes) {
             if (symptomPrognosBehandling != null) {

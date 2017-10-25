@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.integration.fmb.stub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,16 +101,23 @@ public class FmbStub {
             final FmdxData copy = copy(fmdxData, FmdxData.class);
             final Attributes attributes = copy.getAttributes();
             attributes.setDiagnoskod(Arrays.asList(getDiagnoskod("J22"), getDiagnoskod("J20")));
-            attributes.getAktivitetsbegransning().setAktivitetsbegransningsbeskrivning("Akut bronkit påverkar inte funktionstillståndet, bortsett från irriterande hosta i normalfallet. "
+            attributes.getAktivitetsbegransning().setAktivitetsbegransningsbeskrivning("Akut bronkit påverkar inte "
+                    + "funktionstillståndet, bortsett från irriterande hosta i normalfallet. "
                     + "Bakteriell sekundärinfektion kan påverka allmäntillståndet genom att patienten blir trött.");
-            attributes.getFunktionsnedsattning().setFunktionsnedsattningsbeskrivning("Tillståndet är vanligtvis kortvarigt och varar några dagar till några veckor. "
+            attributes.getFunktionsnedsattning().setFunktionsnedsattningsbeskrivning("Tillståndet är vanligtvis "
+                    + "kortvarigt och varar några dagar till några veckor. "
                     + "Ibland får patienten hosta under flera månader vilket är ett uttryck för en sekundärinfektion.");
-            attributes.getForsakringsmedicinskinformation().setMarkup("Återkommande akuta bronkiter hos rökare bör medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom "
-                    + "återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med mykoplasma pneumoni. "
-                    + "\n\nHos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller kol kan symtomen "
+            attributes.getForsakringsmedicinskinformation().setMarkup("Återkommande akuta bronkiter hos rökare bör "
+                    + "medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom "
+                    + "återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med "
+                    + "mykoplasma pneumoni. "
+                    + "\n\nHos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller "
+                    + "kol kan symtomen "
                     + "vid akut bronkit bli mer uttalade och funktionsnedsättningen bli mer långdragen.");
-            attributes.getSymtomprognosbehandling().setMarkup("Akut bronkit orsakas vanligen av luftvägsinflammation och epitelskada (skador på hud och slemhinnor i kroppen) "
-                    + "efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta tecken på inflammation "
+            attributes.getSymtomprognosbehandling().setMarkup("Akut bronkit orsakas vanligen av luftvägsinflammation "
+                    + "och epitelskada (skador på hud och slemhinnor i kroppen) "
+                    + "efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta "
+                    + "tecken på inflammation "
                     + "i bronkerna. Symtom är akut påkommande torr eller slemmig hosta.");
             data.add(copy);
         } catch (IOException e) {
