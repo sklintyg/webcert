@@ -43,7 +43,7 @@ public abstract class BaseIntegrationController {
     // api
 
     public void validateParameters(Map<String, Object> parameters) {
-        parameters.forEach((key, value) -> validateParameter(key, (String)value));
+        parameters.forEach((key, value) -> validateParameter(key, (String) value));
     }
 
     public void validateParameter(String paramName, String paramValue) {

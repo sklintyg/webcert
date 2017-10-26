@@ -57,10 +57,10 @@ public class PrepareRedirectToIntyg {
 
     @Override
     public String toString() {
-        return "PrepareRedirectToIntyg{" +
-                "intygTyp='" + intygTyp + '\'' +
-                ", intygId='" + intygId + '\'' +
-                ", utkast=" + utkast +
-                '}';
+        return "PrepareRedirectToIntyg {"
+                + "intygTyp='" + intygTyp + '\''
+                + ", intygId='" + intygId + '\''
+                + ", utkast=" + utkast
+                + "}";
     }
 }
