@@ -52,6 +52,7 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     // api
 
+    @Override
     public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
         Utkast utkast = utkastRepository.findOne(intygId);
 
