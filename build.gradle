@@ -11,7 +11,6 @@ ext {
 
     commonsIoVersion = "2.4"
     funktionstjansterGrpSchemasVersion = "1.0.3"
-    insurancemedicinedecisionsupportSchemasVersion = "1.0.1"
     intygClinicalprocessSchemasVersion = "1.0.7-beta3"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"

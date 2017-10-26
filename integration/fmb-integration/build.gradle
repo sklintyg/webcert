@@ -1,8 +1,6 @@
 dependencies {
   compile project(':webcert-persistence')
 
-  compile "se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport:processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas:${insurancemedicinedecisionsupportSchemasVersion}"
-
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
 }
