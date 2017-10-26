@@ -1,14 +1,15 @@
 Version: 1.0
 Released: Wed Nov 18 01:00:00 CET 2015
 Changedby: Magnus Ekstrand
-KnownRequestOrigins: [NORMAL, DJUPINTEGRATION, UTHOPP]
+KnownRequestOrigins: [NORMAL, DJUPINTEGRATION, UTHOPP, READONLY]
 KnownRoles: [LAKARE, PRIVATLAKARE, TANDLAKARE, VARDADMINISTRATOR]
 KnownPrivileges: [VISA_INTYG, SKRIVA_INTYG, SIGNERA_INTYG, MAKULERA_INTYG, KOPIERA_INTYG, FILTRERA_PA_LAKARE, HANTERA_SEKRETESSMARKERAD_PATIENT]
 KnownIntygstyper: [fk7263, ts-bas, ts-diabetes]
 RequestOrigins: [
 RequestOrigin{name='NORMAL',intygstyper=[]},
 RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]},
-RequestOrigin{name='UTHOPP',intygstyper=[fk7263]}]
+RequestOrigin{name='UTHOPP',intygstyper=[fk7263]},
+RequestOrigin{name='READONLY',intygstyper=[]}]
 Privileges: [
 Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], requestOrigins= []},
 Privilege { name='SKRIVA_INTYG', desc='Skriva intyg', intygstyper= [fk7263], requestOrigins= []},

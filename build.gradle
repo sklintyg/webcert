@@ -11,7 +11,7 @@ ext {
 
     commonsIoVersion = "2.4"
     funktionstjansterGrpSchemasVersion = "1.0.3"
-    intygClinicalprocessSchemasVersion = "1.0.7-beta3"
+    intygClinicalprocessSchemasVersion = "1.0.9"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
     rivtaClinicalprocessSchemasVersion = "3.1.0-RC1.1"

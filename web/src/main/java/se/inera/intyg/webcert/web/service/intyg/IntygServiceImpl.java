@@ -20,15 +20,30 @@ package se.inera.intyg.webcert.web.service.intyg;
 
 import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.SIGNERA_SKICKA_DIREKT;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponseType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -51,6 +66,7 @@ import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
@@ -62,7 +78,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -72,11 +87,7 @@ import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.IntygRelationHelper;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -94,19 +105,6 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-import javax.annotation.PostConstruct;
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * @author andreaskaltenbach
  */
@@ -120,6 +118,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Value("${sekretessmarkering.prod.date}")
     private String sekretessmarkeringProdDate;
+
+    @Autowired
+    private GetCertificateTypeResponderInterface getCertificateTypeService;
 
     @Autowired
     private ListCertificatesForCareResponderInterface listCertificateService;
@@ -245,8 +246,7 @@ public class IntygServiceImpl implements IntygService {
                     .orThrow();
 
             // INTYG-4231: Verifiera enhet / mottagning. Får ej visa utanför vald enhet (och dess underenheter)
-            if (!webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(
-                    enhetsId)) {
+            if (!webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(enhetsId)) {
                 LOG.debug("User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
                         "User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
@@ -364,7 +364,7 @@ public class IntygServiceImpl implements IntygService {
      */
     private boolean userIsDjupintegreradWithSjf() {
         WebCertUser user = webCertUserService.getUser();
-        return user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())
+        return user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())
                 && user.getParameters().isSjf();
     }
 
@@ -610,9 +610,33 @@ public class IntygServiceImpl implements IntygService {
         return res;
     }
 
+    @Override
+    public String getIntygsTyp(String intygsId) {
+
+        GetCertificateTypeType requestType = new GetCertificateTypeType();
+        requestType.setIntygsId(intygsId);
+
+        try {
+            GetCertificateTypeResponseType responseType = getCertificateTypeService.getCertificateType(logicalAddress, requestType);
+            return responseType.getTyp().getCode();
+
+        } catch (WebCertServiceException e) {
+            if (e.getErrorCode() == WebCertServiceErrorCodeEnum.DATA_NOT_FOUND) {
+                return null;
+            }
+            throw e;
+        }
+    }
+
     public void setLogicalAddress(String logicalAddress) {
         this.logicalAddress = logicalAddress;
     }
+
+    @VisibleForTesting
+    public void setSekretessmarkeringStartDatum(ChronoLocalDateTime sekretessmarkeringStartDatum) {
+        this.sekretessmarkeringStartDatum = sekretessmarkeringStartDatum;
+    }
+
 
     /* --------------------- Protected scope --------------------- */
 
@@ -869,7 +893,7 @@ public class IntygServiceImpl implements IntygService {
     private boolean isDeceased(Personnummer personnummer) {
         WebCertUser user = webCertUserService.getUser();
         boolean deceasedAccordingToPu = patientDetailsResolver.isAvliden(personnummer);
-        if (WebCertUserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
+        if (UserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
             // INTYG-4469
             return deceasedAccordingToPu || (user.getParameters() != null && user.getParameters().isPatientDeceased());
         } else {
@@ -882,8 +906,4 @@ public class IntygServiceImpl implements IntygService {
         return user.getParameters() != null ? user.getParameters().getReference() : null;
     }
 
-    @VisibleForTesting
-    public void setSekretessmarkeringStartDatum(ChronoLocalDateTime sekretessmarkeringStartDatum) {
-        this.sekretessmarkeringStartDatum = sekretessmarkeringStartDatum;
-    }
 }

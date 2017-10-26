@@ -46,6 +46,7 @@ knownRequestOrigins:
   - &kro010 NORMAL # Inloggning via SITHS / BankID
   - &kro020 DJUPINTEGRATION # Inloggning via länk från journalsystem
   - &kro030 UTHOPP # Inloggning via uthoppslänk från journalsystem
+  - &kro040 READONLY # Inloggning via länk från annat system men ges endast läsrättigheter
 
 # De intygstyper som systemet har
 knownIntygstyper:
@@ -111,6 +112,9 @@ requestOrigins:
     intygstyper: # Implicit alla
   - &ro030
     name: *kro030
+    intygstyper: # Implicit alla
+  - &ro040
+    name: *kro040
     intygstyper: # Implicit alla
 
 # Rättigheter
@@ -262,6 +266,7 @@ roles:
           - *ro010 # NORMAL
           - *ro020 # DJUPINTEGRATION
           - *ro030 # UTHOPP
+          - *ro040 # READONLY
       - <<: *p005 # SKRIVA_INTYG
         requestOrigins:
           - *ro010 # NORMAL
@@ -585,6 +590,7 @@ roles:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
+          - <<: *ro040 # READONLY
       - <<: *p005 # SKRIVA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL

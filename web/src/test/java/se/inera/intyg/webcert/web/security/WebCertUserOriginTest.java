@@ -18,17 +18,18 @@
  */
 package se.inera.intyg.webcert.web.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+import org.junit.Test;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.junit.Test;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
  * Created by Magnus Ekstrand on 03/12/15.
@@ -36,6 +37,12 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 public class WebCertUserOriginTest {
 
     private WebCertUserOrigin webcertUserOrigin = new WebCertUserOrigin();
+
+    @Test
+    public void testReadonlyRegexp() throws Exception {
+        assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/readonly".matches(WebCertUserOrigin.REGEXP_REQUESTURI_READONLY));
+        assertFalse("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/readonly/".matches(WebCertUserOrigin.REGEXP_REQUESTURI_READONLY));
+    }
 
     @Test
     public void testDjupintegrationRegexp() throws Exception {
@@ -46,6 +53,7 @@ public class WebCertUserOriginTest {
     @Test
     public void testUthoppRegexp() throws Exception {
         assertTrue("/webcert/web/user/certificate/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions".matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
+        assertFalse("/webcert/web/user/certificate/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions/".matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -72,6 +80,13 @@ public class WebCertUserOriginTest {
         String res = webcertUserOrigin.resolveOrigin(buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0"));
 
         assertEquals("DJUPINTEGRATION", res);
+    }
+
+    @Test
+    public void testResolveOriginReadonly() {
+        String res = webcertUserOrigin.resolveOrigin(buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/readonly"));
+
+        assertEquals("READONLY", res);
     }
 
     @Test

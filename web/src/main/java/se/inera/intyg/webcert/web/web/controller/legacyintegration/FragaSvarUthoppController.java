@@ -18,28 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-
+import com.google.common.base.Strings;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -48,6 +31,16 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.Status;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -76,15 +69,8 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     @Autowired
     private IntygService intygService;
 
-    @Override
-    protected String[] getGrantedRoles() {
-        return GRANTED_ROLES;
-    }
 
-    @Override
-    protected UserOriginType getGrantedRequestOrigin() {
-        return GRANTED_ORIGIN;
-    }
+    // api
 
     /**
      * Fetches a certificate from IT and then performs a redirect to the view that displays
@@ -95,10 +81,14 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
      */
     @GET
     @Path("/{type}/{intygId}/questions")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("type") String type, @PathParam("intygId") String intygId,
-            @QueryParam("enhet") String enhetHsaId) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo,
+                                    @PathParam("type") String type,
+                                    @PathParam("intygId") String intygId,
+                                    @QueryParam("enhet") String enhetHsaId) {
 
-        super.validateRedirectToIntyg(intygId);
+        super.validateParameter("type", type);
+        super.validateParameter("intygId", intygId);
+        super.validateAuthorities();
         this.validateAndChangeEnhet(intygId, type, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
@@ -115,15 +105,17 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
      */
     @GET
     @Path("/{intygId}/questions")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId,
-            @QueryParam("enhet") String enhetHsaId) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo,
+                                    @PathParam("intygId") String intygId,
+                                    @QueryParam("enhet") String enhetHsaId) {
 
-        super.validateRedirectToIntyg(intygId);
+        super.validateParameter("intygId", intygId);
+        super.validateAuthorities();
 
         String intygType = DEFAULT_TYPE;
         this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
-        LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
 
+        LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
 
@@ -131,7 +123,21 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         this.urlFragmentTemplate = urlFragmentTemplate;
     }
 
-    // - - - - - Private scope - - - - -
+
+    // protected scope
+
+    @Override
+    protected String[] getGrantedRoles() {
+        return GRANTED_ROLES;
+    }
+
+    @Override
+    protected UserOriginType getGrantedRequestOrigin() {
+        return GRANTED_ORIGIN;
+    }
+
+
+    // private stuff
 
     /**
      * Makes sure we change (if possible) the current vardEnhet to the one either specified in the URL or to the one
@@ -162,7 +168,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
-
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<>();

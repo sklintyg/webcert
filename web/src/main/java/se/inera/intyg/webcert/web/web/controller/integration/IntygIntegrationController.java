@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.common.service.CommonFeatureService;
@@ -52,9 +54,9 @@ import java.util.Optional;
 // CHECKSTYLE:OFF ParameterNumber
 public class IntygIntegrationController extends BaseIntegrationController {
 
-    public static final String PARAM_ENHET_ID = "enhet";
     public static final String PARAM_CERT_ID = "certId";
     public static final String PARAM_CERT_TYPE = "certType";
+    public static final String PARAM_ENHET_ID = "enhet";
     public static final String PARAM_COHERENT_JOURNALING = "sjf";
     public static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
     public static final String PARAM_COPY_OK = "kopieringOK";
@@ -77,8 +79,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
             AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN
     };
 
-    @Autowired(required = false)
     private Optional<CommonFeatureService> commonFeatureService;
+
+    private IntegrationService integrationService;
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
@@ -95,8 +98,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/{intygTyp}/{intygId}")
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-                                    @PathParam("intygId") String intygId,
                                     @PathParam("intygTyp") String intygTyp,
+                                    @PathParam("intygId") String intygId,
                                     @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
                                     @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
                                     @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
@@ -112,7 +115,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
                                     @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
                                     @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
-        super.validateRedirectToIntyg(intygTyp, intygId);
+        super.validateParameter("intygTyp", intygTyp);
+        super.validateParameter("intygId", intygId);
+        super.validateAuthorities();
 
         IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
                 responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
@@ -121,7 +126,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, enhetId, intygTyp, intygId, user);
+        return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
     }
 
     /**
@@ -150,7 +155,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
                                     @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
                                     @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
-        super.validateRedirectToIntyg(intygId);
+        super.validateParameter("intygId", intygId);
+        super.validateAuthorities();
 
         IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
                 responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
@@ -159,7 +165,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, enhetId, null, intygId, user);
+        return handleRedirectToIntyg(uriInfo, null, intygId, enhetId, user);
     }
 
     @POST
@@ -183,7 +189,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
                                     @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
                                     @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
 
-        super.validateRedirectToIntyg(intygTyp, intygId);
+        super.validateParameter("intygTyp", intygTyp);
+        super.validateParameter("intygId", intygId);
+        super.validateAuthorities();
 
         IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
                 responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
@@ -192,7 +200,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, enhetId, intygTyp, intygId, user);
+        return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
     }
 
     @GET
@@ -204,18 +212,27 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @PathParam("intygId") String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
-        // Input validation
-        if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
-            throw new IllegalArgumentException("Query parameter 'enhet' was either whitespace, empty (\"\") or null");
-        }
-        super.validateRedirectToIntyg(intygTyp, intygId);
+        super.validateParameter("intygTyp", intygTyp);
+        super.validateParameter("intygId", intygId);
+        super.validateParameter(PARAM_ENHET_ID, enhetId);
+        super.validateAuthorities();
 
         WebCertUser user = getWebCertUser();
-
         // Reset state parameter telling us that we have been redirected to 'enhetsvaljaren'
         user.getParameters().getState().setRedirectToEnhetsval(false);
 
-        return handleRedirectToIntyg(uriInfo, enhetId, intygTyp, intygId, user);
+        return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
+    }
+
+    @Autowired(required = false)
+    public void setCommonFeatureService(Optional<CommonFeatureService> commonFeatureService) {
+        this.commonFeatureService = commonFeatureService;
+    }
+
+    @Autowired
+    @Qualifier("intygIntegrationServiceImpl")
+    public void setIntegrationService(IntegrationService integrationService) {
+        this.integrationService = integrationService;
     }
 
     public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
@@ -225,6 +242,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public void setUrlUtkastFragmentTemplate(String urlFragmentTemplate) {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
+
+
+    // protected scope
 
     @Override
     protected String[] getGrantedRoles() {
@@ -239,10 +259,16 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     // default scope
 
-    Response handleRedirectToIntyg(UriInfo uriInfo, String enhetId, String intygTyp, String intygId, WebCertUser user) {
+    Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
         // Call service
-        PrepareRedirectToIntyg prepareRedirectToIntyg =
+        PrepareRedirectToIntyg prepareRedirect =
                 integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+
+
+        // If the type doesn't equals to FK7263 then verify the required query-parameters
+        if (!prepareRedirect.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
+            verifyIntegrationParameters(user.getParameters());
+        }
 
         if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
 
@@ -255,21 +281,21 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 updateUserWithActiveFeatures(user);
 
                 LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                return buildRedirectResponse(uriInfo, prepareRedirectToIntyg);
+                return buildRedirectResponse(uriInfo, prepareRedirect);
             }
 
             // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
             user.getParameters().getState().setRedirectToEnhetsval(true);
 
             LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
-            return buildChooseUnitResponse(uriInfo, prepareRedirectToIntyg);
+            return buildChooseUnitResponse(uriInfo, prepareRedirect);
 
         } else {
             if (user.changeValdVardenhet(enhetId)) {
                 updateUserWithActiveFeatures(user);
 
                 LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                return buildRedirectResponse(uriInfo, prepareRedirectToIntyg);
+                return buildRedirectResponse(uriInfo, prepareRedirect);
             }
 
             LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
@@ -279,40 +305,38 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     Response buildChooseUnitResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
-        String destinationUrl = getDestinationUrl(uriInfo, prepareRedirectToIntyg);
-
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
 
+        String destinationUrl = getDestinationUrl(uriInfo, prepareRedirectToIntyg);
         String urlFragment = "/integration-enhetsval";
-        URI location = uriBuilder.queryParam("destination", destinationUrl).fragment(urlFragment).build();
 
+        URI location = uriBuilder.queryParam("destination", destinationUrl).fragment(urlFragment).build();
         return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
     }
 
     Response buildErroResponse(UriInfo uriInfo) {
-        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
 
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put("reason", "login.medarbetaruppdrag");
 
-        URI location = uriBuilder.replacePath(getUrlBaseTemplate() + "/error.jsp").buildFromMap(urlParams);
+        URI location = uriBuilder.path("error.jsp").buildFromMap(urlParams);
         return Response.status(Response.Status.UNAUTHORIZED).location(location).build();
     }
 
     Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
+
         String intygId = prepareRedirectToIntyg.getIntygId();
         String intygTyp = prepareRedirectToIntyg.getIntygTyp();
         boolean isUtkast = prepareRedirectToIntyg.isUtkast();
-
-        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
+        String urlFragmentTemplate = isUtkast ? urlUtkastFragmentTemplate : urlIntygFragmentTemplate;
 
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, intygTyp);
         urlParams.put(PARAM_CERT_ID, intygId);
 
-        String urlFragmentTemplate = isUtkast ? urlUtkastFragmentTemplate : urlIntygFragmentTemplate;
-        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
-
+        URI location = uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
         return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
     }
 
@@ -361,6 +385,26 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 .distinct()
                 .flatMap(vg -> vg.getVardenheter().stream().distinct())
                 .count() == 1L;
+    }
+
+    private void verifyIntegrationParameters(IntegrationParameters parameters) {
+        if (parameters == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    "Missing required integration parameters");
+        }
+
+        verifyParameter(PARAM_PATIENT_FORNAMN, parameters.getFornamn());
+        verifyParameter(PARAM_PATIENT_EFTERNAMN, parameters.getEfternamn());
+        verifyParameter(PARAM_PATIENT_POSTADRESS, parameters.getPostadress());
+        verifyParameter(PARAM_PATIENT_POSTNUMMER, parameters.getPostnummer());
+        verifyParameter(PARAM_PATIENT_POSTORT, parameters.getPostort());
+    }
+
+    private void verifyParameter(String paramName, String paramValue) {
+        if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    "Missing required parameter '" + paramName + "'");
+        }
     }
 
 }

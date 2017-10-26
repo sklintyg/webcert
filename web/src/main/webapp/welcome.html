@@ -304,7 +304,7 @@
       $scope.loginModel = [];
       $scope.loginOptions = [];
 
-      $scope.intlink = {
+      $scope.deeplink = {
           certId: '',
           certType: '',
           formData: {
@@ -322,6 +322,13 @@
           }
       };
 
+      $scope.readonlylink = {
+          certId: '',
+          formData: {
+              enhet: undefined
+          }
+      };
+
       $scope.environment = {
         name: 'all',
         origin: 'NORMAL'
@@ -332,32 +339,40 @@
       });
 
       $scope.$watch('environment.origin', function() {
-        $scope.updateUserContext($scope.selectedIndex);
+          $scope.updateUserContext($scope.selectedIndex);
       });
 
-      $scope.loginDjupintegration = function(evt, method) {
-        evt.preventDefault();
-        $http.post('/fake', "userJsonDisplay=" + $scope.jsonModel, {
+      $scope.loginLink = function(evt, method) {
+          evt.preventDefault();
+          $http.post('/fake', "userJsonDisplay=" + $scope.jsonModel, {
               headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        }).then(
-          function success(response) {
-              try {
-                var url = getLoginDjupintegrationUrl(method),
-                    data = $scope.intlink.formData;
-                // submit data
-                sendData(url, data , method);
-              } catch(e) {
-                  alert(e);
-              }
-          }, function fail(error) {
-            alert("Fel vid inloggningen av användare!");
-          });
+          }).then(
+              function success(response) {
+                  if ($scope.environment.origin === 'DJUPINTEGRATION') {
+                      loginDjupintegration(method);
+                  } else if ($scope.environment.origin === 'READONLY') {
+                      loginReadonly(method);
+                  }
+              }, function fail(error) {
+                  alert("Fel vid inloggningen av användare!");
+              });
       };
+
+      function loginDjupintegration(method) {
+          try {
+              var url = getLoginDjupintegrationUrl(method),
+                  data = $scope.deeplink.formData;
+              // submit data
+              sendData(url, data , method);
+          } catch(e) {
+              alert(e);
+          }
+      }
 
       function getLoginDjupintegrationUrl(method) {
           var url = window.location.origin + '/visa/intyg';
-          var intygTyp = $scope.intlink.certType;
-          var intygId = $scope.intlink.certId;
+          var intygTyp = $scope.deeplink.certType;
+          var intygId = $scope.deeplink.certId;
 
           if (!intygId) {
               throw 'When doing login via djupintegration you must provide the \'intygId\' parameter';
@@ -369,7 +384,28 @@
                 throw 'When doing login via djupintegration you must provide the \'intygTyp\' parameter';
             }
           }
-          return url + '/' + $scope.intlink.certId;
+          return url + '/' + intygId;
+      }
+
+      function loginReadonly(method) {
+          try {
+              var url = getLoginReadonlyUrl(),
+                  data = $scope.readonlylink.formData;
+              // submit data
+              sendData(url, data , method);
+          } catch(e) {
+              alert(e);
+          }
+      }
+
+      function getLoginReadonlyUrl() {
+          var url = window.location.origin + '/visa/intyg';
+          var intygId = $scope.readonlylink.certId;
+
+          if (!intygId) {
+              throw 'When doing login via djupintegration you must provide the \'intygId\' parameter';
+          }
+          return url + '/' + intygId + '/readonly';
       }
 
       function sendData(url, data, method) {
@@ -480,29 +516,40 @@
                                                                               value="DJUPINTEGRATION" /> DJUPINTEGRATION</label></span>
               <span class="originButtons"><label for="UTHOPP"><input id="UTHOPP" name="origin" type="radio"
                                                                        ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
+              <span class="originButtons"><label for="READONLY"><input id="READONLY" name="origin" type="radio"
+                                                                     ng-model="environment.origin" value="READONLY" /> READONLY</label></span>
             </div>
           </form>
 
           <div ng-if="environment.origin === 'DJUPINTEGRATION'" class="form-group col-xs-4" style="padding-top: 0.5em;">
-
             <p>Genväg länkinloggning för djupintegration: Välj journalsystem-parametrar och tryck på GET alt. POST.</p>
 
-            <label for="intygId" class="control-label">intygId:</label> <input type="text" class="form-control" size="40" id="intygId" ng-model="intlink.certId" placeholder="utkast/intygsid"><br>
-            <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="intlink.certType" placeholder="Intygstyp"><br>
-            <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="intlink.formData.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
-            <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="intlink.formData.fornamn" placeholder="Förnamn"><br>
-            <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="intlink.formData.mellannamn" placeholder="Mellannamn"><br>
-            <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="intlink.formData.efternamn" placeholder="Efternamn"><br>
-            <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="intlink.formData.postadress" placeholder="Postadress"><br>
-            <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="intlink.formData.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="intlink.postort" placeholder="Postort"><br>
-            <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="intlink.formData.ref" placeholder="Ref"><br>
-            <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="intlink.formData.enhet" placeholder="enhetsid"><br>
-            <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="intlink.formData.sjf"> <br>
-            <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="intlink.formData.kopieringOk"> <br>
-            <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="intlink.formData.avliden"> <br>
+            <label for="intygId" class="control-label">intygId:</label> <input type="text" class="form-control" size="40" id="intygId" ng-model="deeplink.certId" placeholder="utkast/intygsid"><br>
+            <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="deeplink.certType" placeholder="Intygstyp"><br>
+            <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="deeplink.formData.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
+            <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="deeplink.formData.fornamn" placeholder="Förnamn"><br>
+            <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="deeplink.formData.mellannamn" placeholder="Mellannamn"><br>
+            <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="deeplink.formData.efternamn" placeholder="Efternamn"><br>
+            <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="deeplink.formData.postadress" placeholder="Postadress"><br>
+            <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="deeplink.formData.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="deeplink.postort" placeholder="Postort"><br>
+            <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="deeplink.formData.ref" placeholder="Ref"><br>
+            <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="deeplink.formData.enhet" placeholder="enhetsid"><br>
+            <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="deeplink.formData.sjf"> <br>
+            <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="deeplink.formData.kopieringOk"> <br>
+            <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="deeplink.formData.avliden"> <br>
             <div style="text-align: center; padding-top: 0.5em">
-              <button type="button" ng-click="loginDjupintegration($event, 'GET')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">GET</button>
-              <button type="button" ng-click="loginDjupintegration($event, 'POST')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">POST</button>
+              <button type="button" ng-click="loginLink($event, 'GET')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">GET</button>
+              <button type="button" ng-click="loginLink($event, 'POST')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">POST</button>
+            </div>
+          </div>
+
+          <div ng-if="environment.origin === 'READONLY'" class="form-group col-xs-4" style="padding-top: 0.5em;">
+            <p>Genväg länkinloggning för readonly-view: Välj parametrar och tryck på GET</p>
+
+            <label for="intygId" class="control-label">intygId:</label> <input type="text" class="form-control" size="40" id="intygId" ng-model="readonlylink.certId" placeholder="utkast/intygsid (obligatorisk)"><br>
+            <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="readonlylink.formData.enhet" placeholder="enhetsid (obligatorisk)"><br>
+            <div style="text-align: center; padding-top: 0.5em">
+              <button type="button" ng-click="loginLink($event, 'GET')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in i readonly-läge med angivna parametrar">GET</button>
             </div>
           </div>
 

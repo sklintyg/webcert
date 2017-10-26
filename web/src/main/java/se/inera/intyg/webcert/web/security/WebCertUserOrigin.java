@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.security;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
 import se.inera.intyg.infra.security.common.model.UserOrigin;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
  * Created by Magnus Ekstrand on 25/11/15.
@@ -37,8 +37,9 @@ public class WebCertUserOrigin implements UserOrigin {
     // ~ Static fields/initializers
     // =====================================================================================
 
-    public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+";
-    public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions";
+    public static final String REGEXP_REQUESTURI_READONLY = "/visa/intyg/.+/readonly$";
+    public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "/visa/intyg/.+$";
+    public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions$";
 
     // ~ API
     // =====================================================================================
@@ -48,18 +49,20 @@ public class WebCertUserOrigin implements UserOrigin {
 
         DefaultSavedRequest savedRequest = getSavedRequest(request);
         if (savedRequest == null) {
-            return WebCertUserOriginType.NORMAL.name();
+            return UserOriginType.NORMAL.name();
         }
 
         String uri = savedRequest.getRequestURI();
 
-        if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
-            return WebCertUserOriginType.DJUPINTEGRATION.name();
+        if (uri.matches(REGEXP_REQUESTURI_READONLY)) {
+            return UserOriginType.READONLY.name();
+        } else if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
+            return UserOriginType.DJUPINTEGRATION.name();
         } else if (uri.matches(REGEXP_REQUESTURI_UTHOPP)) {
-            return WebCertUserOriginType.UTHOPP.name();
+            return UserOriginType.UTHOPP.name();
         }
 
-        return WebCertUserOriginType.NORMAL.name();
+        return UserOriginType.NORMAL.name();
     }
 
 

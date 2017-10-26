@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 import com.jayway.restassured.RestAssured;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -219,7 +219,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("luse", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+        changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);
@@ -280,7 +280,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+        changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);
@@ -445,7 +445,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+        changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);
@@ -478,7 +478,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+        changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);

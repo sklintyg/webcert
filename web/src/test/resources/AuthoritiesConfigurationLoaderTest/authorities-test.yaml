@@ -8,6 +8,7 @@ knownRequestOrigins:
   - &kro010 NORMAL
   - &kro020 DJUPINTEGRATION
   - &kro030 UTHOPP
+  - &kro040 READONLY
 
 # De intygstyper som systemet har
 knownIntygstyper:
@@ -49,6 +50,9 @@ requestOrigins:
     name: *kro030
     intygstyper:
       - *ki010 # FK7263
+  - &ro040
+    name: *kro040
+    intygstyper: # Implicit alla
 
 # Rättigheter
 privileges:

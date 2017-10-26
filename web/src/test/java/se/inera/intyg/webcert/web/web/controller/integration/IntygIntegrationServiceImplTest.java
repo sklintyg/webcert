@@ -27,17 +27,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.*;
 import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -51,14 +47,10 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Stream.of;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Magnus Ekstrand on 2017-10-13.
@@ -143,8 +135,8 @@ public class IntygIntegrationServiceImplTest {
         Privilege p = createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
                 Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
                 Arrays.asList(
-                        createRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
-                        createRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas"))));
+                        createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
+                        createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas"))));
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -203,26 +195,6 @@ public class IntygIntegrationServiceImplTest {
         // then
         verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
 
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void invalidParametersShouldThrowException() throws Exception {
-        // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-
-        IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
-                null, null, "Nollansson", "Nollgatan", "000000", "Nollby",
-                false, false, false, false);
-
-        WebCertUser user = createDefaultUser();
-        user.setParameters(parameters);
-
-        // when
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
-
-        // if code reaches this point we fail the test
-        fail();
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -346,10 +318,10 @@ public class IntygIntegrationServiceImplTest {
                 createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
                         Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
                         Arrays.asList(
-                                createRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
-                                createRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
+                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
                 ImmutableSet.of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".lisjp",
-                        "base_feature"), WebCertUserOriginType.DJUPINTEGRATION.name());
+                        "base_feature"), UserOriginType.DJUPINTEGRATION.name());
     }
 
     private List<RequestOrigin> getOriginList(RequestOrigin... requestOrigin) {

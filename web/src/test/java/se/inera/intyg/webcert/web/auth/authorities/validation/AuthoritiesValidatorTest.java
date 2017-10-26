@@ -24,12 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.infra.security.common.model.*;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -229,7 +224,7 @@ public class AuthoritiesValidatorTest {
     @Test
     public void testMustHavePrevilegeIntygsTypFailsOnMissingRequestOrigin() {
         WebCertUser user = createDefaultUser();
-        user.setOrigin(WebCertUserOriginType.UTHOPP.name());
+        user.setOrigin(UserOriginType.UTHOPP.name());
 
         thrown.expect(AuthoritiesException.class);
 
@@ -240,7 +235,7 @@ public class AuthoritiesValidatorTest {
     @Test
     public void testMustHavePrevilegeIntygsTypFailsOnMissingRequestOriginIntygsTyp() {
         WebCertUser user = createDefaultUser();
-        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
         thrown.expect(AuthoritiesException.class);
 
@@ -371,16 +366,16 @@ public class AuthoritiesValidatorTest {
                 createPrivilege("p1",
                         Arrays.asList("fk7263", "ts-bas"), // p1 is restricted to these intygstyper
                         Arrays.asList(
-                                createRequestOrigin(WebCertUserOriginType.NORMAL.name(), Arrays.asList("fk7263")), // Normal
+                                createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")), // Normal
                                                                                                                    // restricted
                                                                                                                    // to
                                                                                                                    // fk7263
-                                createRequestOrigin(WebCertUserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
                 ImmutableSet.of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".fk7263",
                         "base_feature"),// feature_a is active for
                                                                                  // intygscontext fk7263, base_feature
                                                                                  // is not.
-                WebCertUserOriginType.NORMAL.name());
+                UserOriginType.NORMAL.name());
     }
 
 }

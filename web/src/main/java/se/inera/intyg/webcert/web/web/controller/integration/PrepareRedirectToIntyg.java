@@ -54,4 +54,13 @@ public class PrepareRedirectToIntyg {
     public void setUtkast(boolean utkast) {
         this.utkast = utkast;
     }
+
+    @Override
+    public String toString() {
+        return "PrepareRedirectToIntyg{" +
+                "intygTyp='" + intygTyp + '\'' +
+                ", intygId='" + intygId + '\'' +
+                ", utkast=" + utkast +
+                '}';
+    }
 }
