@@ -61,7 +61,7 @@ public class ViewIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("/visa/intyg/{intygsId}/readonly")
-                .then().header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + utkastId + "/"));
+                .then().header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + utkastId));
     }
 
 }
