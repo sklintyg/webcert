@@ -29,16 +29,16 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.validator.IntygsTypToInternal;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -221,7 +221,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     private Patient resolveFkPatientPuUnavailable(Personnummer personnummer, WebCertUser user) {
-        if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name()) && user.getParameters() != null) {
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name()) && user.getParameters() != null) {
             return toPatientFromParametersNameOnly(personnummer, user.getParameters());
         } else {
             return null;
@@ -240,7 +240,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
 
             // Get address if djupintegration from params, fallback to PU for address if unavailable.
-            if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
+            if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
                 Patient patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
                 IntegrationParameters parameters = user.getParameters();
 
@@ -265,7 +265,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             }
         } else {
             // No PU means only use integration parameters
-            if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
+            if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
                 return toPatientFromParameters(personnummer, user.getParameters());
             } else {
                 return null;
@@ -283,7 +283,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
         Patient patient = null;
         // Djupintegration
-        if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
 
             // Use PU for name och s-mark and address from integration parameters
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
@@ -321,7 +321,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
         // Find ALL existing intyg for this patient, filter out so we only have DB left.
         List<Utkast> utkastList = new ArrayList<>();
-        if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummer(),
                     user.getValdVardgivare().getId(),
                     UTKAST_STATUSES, Sets.newHashSet("db")));
@@ -367,7 +367,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
         Patient patient = null;
         // Handle DJUPINTEGRATION
-        if (user.getOrigin().equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
 
             // Prioritize PU
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {

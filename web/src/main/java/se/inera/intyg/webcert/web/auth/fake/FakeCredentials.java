@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.web.auth.fake;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+
 import java.io.Serializable;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 /**
  * @author andreaskaltenbach
@@ -42,7 +41,7 @@ public class FakeCredentials implements Serializable {
     private String enhetId;
     private String befattningsKod;
     private String forskrivarKod;
-    private String origin = WebCertUserOriginType.NORMAL.name();
+    private String origin = UserOriginType.NORMAL.name();
 
     private List<String> legitimeradeYrkesgrupper;
 

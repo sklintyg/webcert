@@ -18,10 +18,7 @@
  */
 package se.inera.intyg.webcert.web.auth.fake.common;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
-
-import java.util.ArrayList;
-
+import com.google.common.base.Strings;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.NameID;
@@ -34,20 +31,21 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+
+import java.util.ArrayList;
+
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 
 /**
  * @author andreaskaltenbach
@@ -102,7 +100,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
             if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
                 String origin = ((FakeCredentials) token.getCredentials()).getOrigin();
                 try {
-                    WebCertUserOriginType.valueOf(origin); // Type check.
+                    UserOriginType.valueOf(origin); // Type check.
                     ((IntygUser) details).setOrigin(origin);
                 } catch (IllegalArgumentException e) {
                     throw new AuthoritiesException(

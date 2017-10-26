@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.integration;
 
-import static org.mockito.Mockito.when;
-
 import com.google.common.collect.ImmutableSet;
 import org.mockito.Mock;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -27,14 +25,16 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-09-27.
@@ -81,7 +81,7 @@ public abstract class BaseCreateDraftCertificateTest {
         user.setFeatures(ImmutableSet
                 .of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + FK7263,
                         WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + TSBAS));
-        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         user.setBefattningar(Arrays.asList(TITLE_CODE));
         user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
         user.setTitel(TITLE_NAME);
@@ -100,7 +100,7 @@ public abstract class BaseCreateDraftCertificateTest {
         Privilege priv = new Privilege();
         priv.setName(privilege);
         RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(WebCertUserOriginType.DJUPINTEGRATION.name());
+        requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
         requestOrigin.setIntygstyper(Arrays.asList(FK7263, TSBAS));
         priv.setRequestOrigins(Arrays.asList(requestOrigin));
         priv.setIntygstyper(Arrays.asList(FK7263, TSBAS));

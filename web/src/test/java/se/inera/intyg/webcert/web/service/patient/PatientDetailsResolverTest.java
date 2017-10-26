@@ -37,13 +37,13 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -52,10 +52,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -113,10 +110,10 @@ public class PatientDetailsResolverTest {
     public void init() {
         when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
         when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParameters());
-        when(integratedWebCertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
+        when(integratedWebCertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
 
         when(freeWebCertUser.getParameters()).thenReturn(null);
-        when(freeWebCertUser.getOrigin()).thenReturn(WebCertUserOriginType.NORMAL.name());
+        when(freeWebCertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
     }
 
     private IntegrationParameters buildIntegrationParameters() {

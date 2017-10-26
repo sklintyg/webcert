@@ -28,10 +28,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -109,7 +109,7 @@ public class FragaSvarModuleApiControllerTest {
                 createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
         user.setFeatures(ImmutableSet
                 .of(WebcertFeature.HANTERA_FRAGOR.getName(),WebcertFeature.HANTERA_FRAGOR.getName() + "." + FK7263));
-        user.setOrigin(WebCertUserOriginType.UTHOPP.name());
+        user.setOrigin(UserOriginType.UTHOPP.name());
         return user;
     }
 
@@ -117,7 +117,7 @@ public class FragaSvarModuleApiControllerTest {
         Privilege priv = new Privilege();
         priv.setName(privilege);
         RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(WebCertUserOriginType.UTHOPP.name());
+        requestOrigin.setName(UserOriginType.UTHOPP.name());
         requestOrigin.setIntygstyper(Arrays.asList(FK7263));
         priv.setRequestOrigins(Arrays.asList(requestOrigin));
         priv.setIntygstyper(Arrays.asList(FK7263));

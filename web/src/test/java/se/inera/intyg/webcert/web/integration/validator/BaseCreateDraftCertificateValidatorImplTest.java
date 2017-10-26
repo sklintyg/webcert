@@ -18,18 +18,9 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
+import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.mockito.Mock;
-
-import com.google.common.collect.ImmutableSet;
-
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -44,10 +35,17 @@ import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-09-19.
@@ -100,7 +98,7 @@ public abstract class BaseCreateDraftCertificateValidatorImplTest {
         user.setFeatures(ImmutableSet
                 .of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + Fk7263EntryPoint.MODULE_ID,
                         WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + TsBasEntryPoint.MODULE_ID));
-        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         return user;
     }
 
@@ -123,7 +121,7 @@ public abstract class BaseCreateDraftCertificateValidatorImplTest {
                         WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + LuaenaEntryPoint.MODULE_ID,
                         WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + DbModuleEntryPoint.MODULE_ID,
                         WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + DoiModuleEntryPoint.MODULE_ID));
-        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         return user;
     }
     protected Privilege createPrivilege(String privilege) {
@@ -134,7 +132,7 @@ public abstract class BaseCreateDraftCertificateValidatorImplTest {
         Privilege priv = new Privilege();
         priv.setName(privilege);
         RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(WebCertUserOriginType.DJUPINTEGRATION.name());
+        requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
         requestOrigin.setIntygstyper(intygstyper);
         priv.setRequestOrigins(Arrays.asList(requestOrigin));
         priv.setIntygstyper(intygstyper);

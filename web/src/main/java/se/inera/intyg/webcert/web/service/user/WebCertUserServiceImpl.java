@@ -30,11 +30,11 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
@@ -168,7 +168,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
 
         String origin = user.getOrigin();
-        if (origin.equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
+        if (origin.equals(UserOriginType.DJUPINTEGRATION.name())) {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }
