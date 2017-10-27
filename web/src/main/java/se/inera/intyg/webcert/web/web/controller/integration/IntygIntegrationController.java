@@ -98,22 +98,22 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/{intygTyp}/{intygId}")
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-                                    @PathParam("intygTyp") String intygTyp,
-                                    @PathParam("intygId") String intygId,
-                                    @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
-                                    @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-                                    @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-                                    @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
-                                    @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-                                    @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-                                    @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
-                                    @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-                                    @QueryParam(PARAM_PATIENT_POSTORT) String postort,
-                                    @QueryParam(PARAM_REFERENCE) String reference,
-                                    @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-                                    @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-                                    @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
-                                    @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
+            @PathParam("intygTyp") String intygTyp,
+            @PathParam("intygId") String intygId,
+            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
+            @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+            @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+            @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
+            @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+            @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+            @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
+            @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+            @QueryParam(PARAM_PATIENT_POSTORT) String postort,
+            @QueryParam(PARAM_REFERENCE) String reference,
+            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+            @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
         Map<String, Object> pathParameters = new HashMap<>();
         pathParameters.put("intygTyp", intygTyp);
@@ -122,9 +122,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
         // validate the request
         validateRequest(pathParameters);
 
-        IntegrationParameters integrationParameters =
-                getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
-                        postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
+        IntegrationParameters integrationParameters = getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn,
+                efternamn, mellannamn,
+                postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -142,21 +142,21 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/{intygId}")
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-                                    @PathParam("intygId") String intygId,
-                                    @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
-                                    @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-                                    @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-                                    @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
-                                    @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-                                    @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-                                    @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
-                                    @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-                                    @QueryParam(PARAM_PATIENT_POSTORT) String postort,
-                                    @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-                                    @QueryParam(PARAM_REFERENCE) String reference,
-                                    @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-                                    @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
-                                    @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
+            @PathParam("intygId") String intygId,
+            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
+            @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+            @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+            @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
+            @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+            @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+            @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
+            @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+            @QueryParam(PARAM_PATIENT_POSTORT) String postort,
+            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+            @QueryParam(PARAM_REFERENCE) String reference,
+            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+            @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("intygId", intygId);
@@ -164,9 +164,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
         // validate the request
         validateRequest(params);
 
-        IntegrationParameters integrationParameters =
-                getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
-                        postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
+        IntegrationParameters integrationParameters = getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn,
+                efternamn, mellannamn,
+                postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -178,22 +178,22 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Path("/{intygTyp}/{intygId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response postRedirectToIntyg(@Context UriInfo uriInfo,
-                                    @PathParam("intygTyp") String intygTyp,
-                                    @PathParam("intygId") String intygId,
-                                    @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
-                                    @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-                                    @DefaultValue("") @FormParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-                                    @FormParam(PARAM_PATIENT_FORNAMN) String fornamn,
-                                    @FormParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-                                    @FormParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-                                    @FormParam(PARAM_PATIENT_POSTADRESS) String postadress,
-                                    @FormParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-                                    @FormParam(PARAM_PATIENT_POSTORT) String postort,
-                                    @DefaultValue("false") @FormParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-                                    @FormParam(PARAM_REFERENCE) String reference,
-                                    @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-                                    @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
-                                    @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
+            @PathParam("intygTyp") String intygTyp,
+            @PathParam("intygId") String intygId,
+            @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
+            @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+            @DefaultValue("") @FormParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+            @FormParam(PARAM_PATIENT_FORNAMN) String fornamn,
+            @FormParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+            @FormParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+            @FormParam(PARAM_PATIENT_POSTADRESS) String postadress,
+            @FormParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+            @FormParam(PARAM_PATIENT_POSTORT) String postort,
+            @DefaultValue("false") @FormParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+            @FormParam(PARAM_REFERENCE) String reference,
+            @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+            @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
+            @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("intygTyp", intygTyp);
@@ -202,9 +202,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
         // validate the request
         validateRequest(params);
 
-        IntegrationParameters integrationParameters =
-                getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
-                        postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
+        IntegrationParameters integrationParameters = getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn,
+                efternamn, mellannamn,
+                postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -255,7 +255,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
 
-
     // protected scope
 
     @Override
@@ -268,13 +267,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return GRANTED_ORIGIN;
     }
 
-
     // default scope
 
     Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
         // Call service
-        PrepareRedirectToIntyg prepareRedirect =
-                integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+        PrepareRedirectToIntyg prepareRedirect = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
 
         // If the type doesn't equals to FK7263 then verify the required query-parameters
         if (!prepareRedirect.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
@@ -315,7 +312,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
     }
 
-
     // private stuff
 
     private Response buildChooseUnitResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
@@ -354,7 +350,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
     }
 
-
     private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         String intygId = prepareRedirectToIntyg.getIntygId();
         String intygTyp = prepareRedirectToIntyg.getIntygTyp();
@@ -373,7 +368,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
     }
 
-    private IntegrationParameters getIntegrationParameters(String reference, String responsibleHospName, String alternatePatientSSn, String fornamn, String efternamn, String mellannamn, String postadress, String postnummer, String postort, boolean coherentJournaling, boolean inactiveUnit, boolean deceased, boolean copyOk) {
+    private IntegrationParameters getIntegrationParameters(String reference, String responsibleHospName, String alternatePatientSSn,
+            String fornamn, String efternamn, String mellannamn, String postadress, String postnummer, String postort,
+            boolean coherentJournaling, boolean inactiveUnit, boolean deceased, boolean copyOk) {
         return new IntegrationParameters(StringUtils.trimToNull(reference),
                 responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
                 coherentJournaling, deceased, inactiveUnit, copyOk);
