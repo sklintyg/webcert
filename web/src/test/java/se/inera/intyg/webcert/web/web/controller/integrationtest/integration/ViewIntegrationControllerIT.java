@@ -18,17 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 
-import com.jayway.restassured.RestAssured;
-import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.endsWith;
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+
+import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Created by marced on 16/12/15.
@@ -61,7 +66,9 @@ public class ViewIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("/visa/intyg/{intygsId}/readonly")
-                .then().header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + utkastId));
+                .then()
+                .header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + utkastId))
+                .header(XFRAME_OPTIONS_HEADER, isEmptyOrNullString());
     }
 
 }

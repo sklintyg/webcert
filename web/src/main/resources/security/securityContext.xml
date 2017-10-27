@@ -120,6 +120,16 @@
     <constructor-arg ref="loggingSessionRegistry"/>
   </bean>
 
+  <!-- Custom xFrameOptionsHeaderWriter that conditionally will skip adding headers so that content may be loaded in an iframe  -->
+  <bean id="xFrameOptionsHeaderWriter" class="org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter">
+    <constructor-arg>
+      <bean class="org.springframework.security.web.util.matcher.AnyRequestMatcher"/>
+    </constructor-arg>
+    <constructor-arg>
+      <bean class="se.inera.intyg.webcert.web.auth.CustomXFrameOptionsHeaderWriter"/>
+    </constructor-arg>
+  </bean>
+
   <!-- =============================================================== -->
   <!-- Unsecured pages when not in production                          -->
   <!-- =============================================================== -->
@@ -174,6 +184,11 @@
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
         <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+
+        <security:headers>
+          <security:frame-options disabled="true"/>
+          <security:header ref="xFrameOptionsHeaderWriter"/>
+        </security:headers>
       </security:http>
 
       <security:authentication-manager alias="authenticationManager">
@@ -197,6 +212,10 @@
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
     </security:http>
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
@@ -207,6 +226,10 @@
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
     </security:http>
 
     <security:authentication-manager alias="authenticationManager">
@@ -234,6 +257,10 @@
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
     </security:http>
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
@@ -242,6 +269,10 @@
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
     </security:http>
 
     <security:authentication-manager alias="authenticationManager">
