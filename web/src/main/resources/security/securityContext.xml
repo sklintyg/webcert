@@ -319,11 +319,13 @@
     </bean>
 
     <!-- Decide which requests should be saved for redirection after successful login.
-         Triggers on: /web/* and deep-integration links /visa/* and /webcert/*
-         We don't want to save /api and /moduleapi requests since this will make the browser display the data. -->
+         Triggers on: /web/* and integration links /visa/* and /webcert/*
+         We don't want to save /api and /moduleapi requests since this will make the browser display the data.
+         Second constructor argument is set to null to match all HTTP methods.
+    -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
       <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*"/>
-      <constructor-arg index="1" value="GET"/>
+      <constructor-arg index="1"><null/></constructor-arg>
     </bean>
     <bean id="httpSessionRequestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
       <property name="requestMatcher" ref="saveRequestMatcher"/>
