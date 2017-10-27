@@ -33,7 +33,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.webcert.integration.fmb.consumer.FailedToFetchFmbData;
+import se.inera.intyg.webcert.integration.fmb.consumer.FailedToFetchFmbDataException;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Aktivitetsbegransning;
@@ -93,8 +93,8 @@ public class FmbServiceImpl implements FmbService {
             } else {
                 updateFmbDb(updatedDiagnosinfos);
             }
-        } catch (FailedToFetchFmbData failedToFetchFmbData) {
-            LOG.error("Failed to update FMB information", failedToFetchFmbData);
+        } catch (FailedToFetchFmbDataException failedToFetchFmbDataException) {
+            LOG.error("Failed to update FMB information", failedToFetchFmbDataException);
         }
     }
 

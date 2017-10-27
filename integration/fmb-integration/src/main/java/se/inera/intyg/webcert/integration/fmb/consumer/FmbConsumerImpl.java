@@ -18,48 +18,39 @@
  */
 package se.inera.intyg.webcert.integration.fmb.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import javax.annotation.PostConstruct;
 
 public class FmbConsumerImpl implements FmbConsumer {
 
+    private static final String TYPFALL_PATH = "/typfall?inlinehtmlmarkup=true";
+    private static final String FMBINFO_PATH = "/forsakringsmedicinskdiagnosinformation?inlinehtmlmarkup=true";
+
     private String baseUrl;
+    private RestTemplate restTemplate;
 
     public FmbConsumerImpl(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
-    @Override
-    public Typfall getTypfall() throws FailedToFetchFmbData {
-        final String urlString = baseUrl + "/typfall?inlinehtmlmarkup=true";
-        return fetchFmbData(urlString, Typfall.class);
+    @PostConstruct
+    public void init() {
+        restTemplate = new RestTemplate();
     }
 
     @Override
-    public FmdxInformation getForsakringsmedicinskDiagnosinformation() throws FailedToFetchFmbData {
-        final String urlString = baseUrl + "/forsakringsmedicinskdiagnosinformation?inlinehtmlmarkup=true";
-        return fetchFmbData(urlString, FmdxInformation.class);
+    public Typfall getTypfall() throws FailedToFetchFmbDataException {
+        final String urlString = baseUrl + TYPFALL_PATH;
+        return restTemplate.getForEntity(urlString, Typfall.class).getBody();
     }
 
-    private <T> T fetchFmbData(String urlString, Class<T> valueType) throws FailedToFetchFmbData {
-        try {
-            URL url = new URL(urlString);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("Content-Type", "application/json");
-            final int timeout = 5000;
-            con.setConnectTimeout(timeout);
-            con.setReadTimeout(timeout);
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(con.getInputStream(), valueType);
-        } catch (IOException e) {
-            throw new FailedToFetchFmbData(baseUrl, e);
-        }
+    @Override
+    public FmdxInformation getForsakringsmedicinskDiagnosinformation() throws FailedToFetchFmbDataException {
+        final String urlString = baseUrl + FMBINFO_PATH;
+        return restTemplate.getForEntity(urlString, FmdxInformation.class).getBody();
     }
 
 }

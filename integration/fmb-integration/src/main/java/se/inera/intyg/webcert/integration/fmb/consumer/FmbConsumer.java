@@ -23,8 +23,8 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 
 public interface FmbConsumer {
 
-    Typfall getTypfall() throws FailedToFetchFmbData;
+    Typfall getTypfall() throws FailedToFetchFmbDataException;
 
-    FmdxInformation getForsakringsmedicinskDiagnosinformation() throws FailedToFetchFmbData;
+    FmdxInformation getForsakringsmedicinskDiagnosinformation() throws FailedToFetchFmbDataException;
 
 }
