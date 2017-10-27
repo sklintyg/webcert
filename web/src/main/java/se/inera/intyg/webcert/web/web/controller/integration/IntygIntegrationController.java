@@ -115,13 +115,16 @@ public class IntygIntegrationController extends BaseIntegrationController {
                                     @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
                                     @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
-        super.validateParameter("intygTyp", intygTyp);
-        super.validateParameter("intygId", intygId);
-        super.validateAuthorities();
+        Map<String, Object> pathParameters = new HashMap<>();
+        pathParameters.put("intygTyp", intygTyp);
+        pathParameters.put("intygId", intygId);
 
-        IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
-                responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
-                coherentJournaling, deceased, inactiveUnit, copyOk);
+        // validate the request
+        validateRequest(pathParameters);
+
+        IntegrationParameters integrationParameters =
+                getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
+                        postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -155,12 +158,15 @@ public class IntygIntegrationController extends BaseIntegrationController {
                                     @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
                                     @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
-        super.validateParameter("intygId", intygId);
-        super.validateAuthorities();
+        Map<String, Object> params = new HashMap<>();
+        params.put("intygId", intygId);
 
-        IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
-                responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
-                coherentJournaling, deceased, inactiveUnit, copyOk);
+        // validate the request
+        validateRequest(params);
+
+        IntegrationParameters integrationParameters =
+                getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
+                        postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -189,13 +195,16 @@ public class IntygIntegrationController extends BaseIntegrationController {
                                     @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
                                     @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
 
-        super.validateParameter("intygTyp", intygTyp);
-        super.validateParameter("intygId", intygId);
-        super.validateAuthorities();
+        Map<String, Object> params = new HashMap<>();
+        params.put("intygTyp", intygTyp);
+        params.put("intygId", intygId);
 
-        IntegrationParameters integrationParameters = new IntegrationParameters(StringUtils.trimToNull(reference),
-                responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
-                coherentJournaling, deceased, inactiveUnit, copyOk);
+        // validate the request
+        validateRequest(params);
+
+        IntegrationParameters integrationParameters =
+                getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
+                        postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -212,10 +221,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @PathParam("intygId") String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
-        super.validateParameter("intygTyp", intygTyp);
-        super.validateParameter("intygId", intygId);
-        super.validateParameter(PARAM_ENHET_ID, enhetId);
-        super.validateAuthorities();
+        Map<String, Object> params = new HashMap<>();
+        params.put("intygTyp", intygTyp);
+        params.put("intygId", intygId);
+        params.put(PARAM_ENHET_ID, enhetId);
+
+        // validate the request
+        validateRequest(params);
 
         WebCertUser user = getWebCertUser();
         // Reset state parameter telling us that we have been redirected to 'enhetsvaljaren'
@@ -264,7 +276,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         PrepareRedirectToIntyg prepareRedirect =
                 integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
 
-
         // If the type doesn't equals to FK7263 then verify the required query-parameters
         if (!prepareRedirect.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
             verifyIntegrationParameters(user.getParameters());
@@ -304,7 +315,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
     }
 
-    Response buildChooseUnitResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+
+    // private stuff
+
+    private Response buildChooseUnitResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
 
         String destinationUrl = getDestinationUrl(uriInfo, prepareRedirectToIntyg);
@@ -314,7 +328,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
     }
 
-    Response buildErroResponse(UriInfo uriInfo) {
+    private Response buildErroResponse(UriInfo uriInfo) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
 
         Map<String, Object> urlParams = new HashMap<>();
@@ -324,7 +338,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.status(Response.Status.UNAUTHORIZED).location(location).build();
     }
 
-    Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+    private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
 
         String intygId = prepareRedirectToIntyg.getIntygId();
@@ -340,8 +354,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
     }
 
-
-    // private stuff
 
     private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         String intygId = prepareRedirectToIntyg.getIntygId();
@@ -359,6 +371,12 @@ public class IntygIntegrationController extends BaseIntegrationController {
         } catch (UnsupportedEncodingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e);
         }
+    }
+
+    private IntegrationParameters getIntegrationParameters(String reference, String responsibleHospName, String alternatePatientSSn, String fornamn, String efternamn, String mellannamn, String postadress, String postnummer, String postort, boolean coherentJournaling, boolean inactiveUnit, boolean deceased, boolean copyOk) {
+        return new IntegrationParameters(StringUtils.trimToNull(reference),
+                responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
+                coherentJournaling, deceased, inactiveUnit, copyOk);
     }
 
     private WebCertUser getWebCertUser() {
@@ -385,6 +403,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 .distinct()
                 .flatMap(vg -> vg.getVardenheter().stream().distinct())
                 .count() == 1L;
+    }
+
+    private void validateRequest(Map<String, Object> pathParameters) {
+        super.validateParameters(pathParameters);
+        super.validateAuthorities();
     }
 
     private void verifyIntegrationParameters(IntegrationParameters parameters) {

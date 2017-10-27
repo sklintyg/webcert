@@ -42,26 +42,6 @@ public abstract class BaseIntegrationController {
 
     // api
 
-    public void validateParameters(Map<String, Object> parameters) {
-        parameters.forEach((key, value) -> validateParameter(key, (String) value));
-    }
-
-    public void validateParameter(String paramName, String paramValue) {
-        // Input validation
-        if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
-            throw new IllegalArgumentException(
-                    String.format("Path/query parameter '%s' was either whitespace, empty (\"\") or null", paramName));
-        }
-    }
-
-    public void validateAuthorities() {
-        // Do Auth validation, given the subclass role/origin constraints
-        authoritiesValidator.given(webCertUserService.getUser())
-                .roles(getGrantedRoles())
-                .origins(getGrantedRequestOrigin())
-                .orThrow();
-    }
-
     @Autowired
     public void setUrlBaseTemplate(String urlBaseTemplate) {
         this.urlBaseTemplate = urlBaseTemplate;
@@ -90,6 +70,26 @@ public abstract class BaseIntegrationController {
 
     protected WebCertUserService getWebCertUserService() {
         return webCertUserService;
+    }
+
+    protected void validateParameters(Map<String, Object> parameters) {
+        parameters.forEach((key, value) -> validateParameter(key, (String) value));
+    }
+
+    protected void validateParameter(String paramName, String paramValue) {
+        // Input validation
+        if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    String.format("Path/query parameter '%s' was either whitespace, empty (\"\") or null", paramName));
+        }
+    }
+
+    protected void validateAuthorities() {
+        // Do Auth validation, given the subclass role/origin constraints
+        authoritiesValidator.given(webCertUserService.getUser())
+                .roles(getGrantedRoles())
+                .origins(getGrantedRequestOrigin())
+                .orThrow();
     }
 
 }

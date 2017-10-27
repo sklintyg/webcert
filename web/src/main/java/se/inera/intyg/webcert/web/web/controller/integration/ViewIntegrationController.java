@@ -177,7 +177,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
         }
     }
 
-    void validateRequest(String intygId, String enhetId) {
+    private void validateRequest(String intygId, String enhetId) {
         Map<String, Object> params = new HashMap<>();
         params.put(PARAM_CERT_ID, intygId);
         params.put(PARAM_ENHET_ID, enhetId);
