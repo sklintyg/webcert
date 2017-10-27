@@ -41,6 +41,7 @@ public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
     @Autowired
     private WebCertUserService userService;
 
+    @Override
     public void writeHeaders(HttpServletRequest request, HttpServletResponse response) {
 
         if (shouldSkipHeader()) {
