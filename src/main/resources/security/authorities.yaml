@@ -251,8 +251,6 @@ privileges:
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
-      - *ki080 # db
-      - *ki090 # DOI
     requestOrigins: # Implicit alla
 
 # Roller
