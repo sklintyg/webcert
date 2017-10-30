@@ -21,6 +21,7 @@
 
  'use strict';
  var lisjpUtkastPage = pages.intyg.lisjp.utkast;
+ var helpers = require('../helpers');
 
  module.exports = {
      fillIn: function(intyg) {
@@ -57,20 +58,18 @@
                  });
              })
              .then(function() {
-                 // Konsekvenser - funktionsnedsattning för patient
-                 return lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.funktionsnedsattning).then(function() {
-                     logger.info('OK - konsekvenser funktionsnedsattning');
-                 }, function(reason) {
-                     throw ('FEL, konsekvenser funktionsnedsattning, ' + reason);
-                 });
+                 var description = 'Konsekvenser - funktionsnedsattning för patient';
+                 var elm = lisjpUtkastPage.konsekvenser.funktionsnedsattning;
+                 var data = intyg.funktionsnedsattning;
+
+                 return helpers.moveAndSendKeys(elm, data, description);
              })
              .then(function() {
-                 // Konsekvenser - aktivitetsbegransning för patient
-                 return lisjpUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(function() {
-                     logger.info('OK - konsekvenser aktivitetsbegransning');
-                 }, function(reason) {
-                     throw ('FEL, konsekvenser aktivitetsbegransning,' + reason);
-                 });
+                 var description = 'Konsekvenser - aktivitetsbegransning för patient';
+                 var elm = lisjpUtkastPage.konsekvenser.aktivitetsbegransning;
+                 var data = intyg.aktivitetsbegransning;
+
+                 return helpers.moveAndSendKeys(elm, data, description);
              })
              .then(function() {
                  logger.info('TODO - Medicinsk behandling');
@@ -93,12 +92,11 @@
                  });
              })
              .then(function() {
-                 //Trots FMB
-                 return lisjpUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning.sendKeys(intyg.arbetsformagaFMB).then(function() {
-                     logger.info('OK - ange FMB');
-                 }, function(reason) {
-                     throw ('FEL, ange FMB,' + reason);
-                 });
+                 var description = 'ange FMB';
+                 var elm = lisjpUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning;
+                 var data = intyg.arbetsformagaFMB;
+
+                 return helpers.moveAndSendKeys(elm, data, description);
              })
              .then(function() {
                  //Resor till arbete
@@ -121,6 +119,7 @@
                  return lisjpUtkastPage.angeAtgarder(intyg.atgarder).then(function() {
                      logger.info('OK - angeAtgarder');
                  }, function(reason) {
+                     console.trace(reason);
                      throw ('FEL, angeAtgarder,' + reason);
                  });
              })

@@ -21,25 +21,29 @@
  * Created by BESA on 2015-11-25.
  * Holds helper functions for actions that are needed often in pages.
  */
-/*globals protractor, Promise */
+/*globals protractor,element,Promise */
 'use strict';
 
+var moveAndSendKeys = require('common-testtools').uiHelpers.moveAndSendKeys;
+
 module.exports = {
+	moveAndSendKeys: moveAndSendKeys,
     clickAll: function(elementArray, elementTextsArray) {
         if (!elementTextsArray) {
             return Promise.resolve();
 
         }
-        // filter all elemenets matching elementTextsArray
         return elementArray.filter(function(elem) {
             return elem.getText().then(function(text) {
                 return (elementTextsArray.indexOf(text) >= 0);
             });
         }).then(function(filteredElements) {
-            //filteredElements is the list of filtered elements
-            for (var i = 0; i < filteredElements.length; i++) {
-                filteredElements[i].sendKeys(protractor.Key.SPACE);
-            }
+			
+			return filteredElements.forEach(function(element, i) {
+					filteredElements[i].getText().then(function(description){
+					moveAndSendKeys(filteredElements[i], protractor.Key.SPACE, description);
+				});
+			});
         });
     },
     hasHogreKorkortsbehorigheter: function(korkortstyper) {
