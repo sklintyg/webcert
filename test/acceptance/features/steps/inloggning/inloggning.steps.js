@@ -335,15 +335,7 @@ module.exports = function() {
     });
 
     this.Then(/^ska jag varnas om (?:att )"([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
-
-        var elmCss;
-        if (nyttFonster) {
-            elmCss = '.modal-body';
-        } else {
-            elmCss = '.patient-alert';
-        }
-
-        return element.all(by.css(elmCss)).map(function(data) {
+        return element.all((nyttFonster) ? by.css('.modal-body') : by.id('intyg-load-error')).map(function(data) {
             return data.getText();
         }).then(function(theMsg) {
             return expect(theMsg.join('\n')).to.contain(msg);
