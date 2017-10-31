@@ -27,7 +27,7 @@ module.exports = function() {
     this.Given(/^ska jag( inte)? se en varning om kakor$/, function(inte, callback) {
         var shouldBeVisible = (inte === undefined); //Om 'inte' finns med i stegnamnet
         console.log('shouldBeVisible:' + shouldBeVisible);
-        expect(sokSkrivIntygPage.cookie.consentBanner.isDisplayed()).to.eventually.equal(shouldBeVisible).then(function() {
+        expect(sokSkrivIntygPage.cookie.consentBanner.element(by.tagName('button')).isPresent()).to.eventually.equal(shouldBeVisible).then(function() {
             if (!inte) {
                 inte = '';
             }
