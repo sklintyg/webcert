@@ -159,9 +159,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.showCreateUtkast = function() {
                 return !(IntygTypeSelectorModel.intygType === 'default' ||
-                    ($scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()) ||
-                    (IntygTypeSelectorModel.previousIntygWarnings[IntygTypeSelectorModel.intygType] &&
-                        IntygTypeSelectorModel.previousIntygWarnings[IntygTypeSelectorModel.intygType].withinCareGiver));
+                    ($scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()));
             };
 
             $scope.updateIntygList = function() {
