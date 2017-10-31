@@ -7,7 +7,7 @@ Egenskap: Avliden patient
      När jag går in på en patient som är avliden
      Så ska jag varnas om att "Patienten har avlidit"
 
-
+# TODO: Skriv om detta och sätt patient till avliden via APIet för avliden
  @skicka-till-FK @integration @notReady
  Scenario: Kan skicka och ställa frågor på intyg
      Givet att jag är inloggad som djupintegrerad läkare
