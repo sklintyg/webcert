@@ -24,7 +24,22 @@
 /*globals protractor,element,Promise */
 'use strict';
 
-var moveAndSendKeys = require('common-testtools').uiHelpers.moveAndSendKeys;
+var testtools = require('common-testtools');
+
+var moveAndSendKeys;
+
+if (testtools.uiHelpers) {
+	moveAndSendKeys = testtools.uiHelpers.moveAndSendKeys;
+} else {
+	moveAndSendKeys = function(elm, keys, description){
+	return elm.sendKeys(keys).then(function() {
+		return logger.silly('sendKeys OK - ' + description);
+	}, function(reason) {
+		console.trace(reason);
+		throw ('FEL, ' + description + ', ' + reason);
+		});
+	}
+}
 
 module.exports = {
 	moveAndSendKeys: moveAndSendKeys,
