@@ -335,7 +335,8 @@ module.exports = function() {
     });
 
     this.Then(/^ska jag varnas om (?:att )"([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
-        return element.all((nyttFonster) ? by.css('.modal-body') : by.id('intyg-load-error')).map(function(data) {
+        let avlidenId = 'wc-avliden-text-' + person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
+        return element.all((nyttFonster) ? by.css('.modal-body') : by.id(avlidenId)).map(function(data) {
             return data.getText();
         }).then(function(theMsg) {
             return expect(theMsg.join('\n')).to.contain(msg);
