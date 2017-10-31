@@ -335,13 +335,42 @@ module.exports = function() {
     });
 
     this.Then(/^ska jag varnas om (?:att )"([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
-        let avlidenId = 'wc-avliden-text-' + person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
-        return element.all((nyttFonster) ? by.css('.modal-body') : by.id(avlidenId)).map(function(data) {
-            return data.getText();
-        }).then(function(theMsg) {
-            return expect(theMsg.join('\n')).to.contain(msg);
-        });
+        var promiseArr = [];
+        var elementArray = [
+            element(by.id('wc-avliden-text-' + person.id.replace(/(\d{8})(\d{4})/, '$1-$2'))), //.patient-alert? db/doi?
+            element(by.id('intyg-load-error')), //?
+            element(by.id('error-panel')) //Behörighet saknas => sekretessmarkering
+        ];
 
+        return element.all(by.css('.modal-body')).map(function(elm) { //nyttFonster => sekretessmarkering
+            return elementArray.push(elm);
+        }).then(function() {
+            return element.all(by.css('.patient-alert')).map(function(elm) {
+                return elementArray.push(elm);
+
+            });
+        }).then(function() {
+            elementArray.forEach(function(elm, index) {
+                elm.isPresent().then(function(present) {
+                    if (present) {
+                        elm.getText().then(function(theMsg) {
+                            if (theMsg !== '') {
+                                return promiseArr.push(expect(theMsg).to.contain(msg));
+                            } else {
+                                Promise.resolve();
+                            }
+                        });
+
+                    } else {
+                        Promise.resolve();
+                    }
+                });
+            });
+        }).then(function() {
+            return promiseArr.push(expect(promiseArr.length).to.be.at.least(1)); // vikitigt så att vi inte får passed när inga felmeddelanden visas.
+        }).then(function() {
+            return Promise.all(promiseArr);
+        });
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {
