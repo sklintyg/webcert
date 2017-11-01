@@ -21,20 +21,11 @@
 'use strict';
 
 var FkBaseUtkast = require('../fk.base.utkast.page.js');
-
-function sendKeysWithBackspaceFix(el, text) {
-    return el.sendKeys(text);
-        /*.then(function() {
-            return el.sendKeys(protractor.Key.BACK_SPACE);
-        })
-        .then(function() {
-            return el.sendKeys(text.substr(text.length - 1));
-        });*/
-}
+var pageHelpers = require('../../../pageHelper.util.js');
 
 function sendEnterToElement(el) {
     return function() {
-        return el.sendKeys(protractor.Key.ENTER);
+        return pageHelpers.moveAndSendKeys(el, protractor.Key.ENTER);
     };
 }
 
@@ -66,15 +57,8 @@ function getTextarea(el) {
 }
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
-    return checkboxEL.sendKeys(protractor.Key.SPACE).then(function() {
-        return browser.sleep(1000).then(function() {
-            return textEL.sendKeys(text)
-                .then(function() {
-                    logger.debug('OK - Angav: ' + text);
-                }, function(reason) {
-                    throw ('FEL - Angav: ' + text + ' ' + reason);
-                });
-        });
+    return pageHelpers.moveAndSendKeys(checkboxEL, protractor.Key.SPACE).then(function() {
+        return pageHelpers.moveAndSendKeys(textEL,text);
     });
 }
 
@@ -209,23 +193,23 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeBaseratPa: function(baseratPa) {
         var promiseArr = [];
         if (baseratPa.minUndersokningAvPatienten) {
-            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten));
         }
         if (baseratPa.journaluppgifter) {
-            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.journaluppgifter.datum, baseratPa.journaluppgifter));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.journaluppgifter.datum, baseratPa.journaluppgifter));
         }
         if (baseratPa.telefonkontakt) {
-            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.telefonkontakt.datum, baseratPa.telefonkontakt));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.telefonkontakt.datum, baseratPa.telefonkontakt));
         }
         if (baseratPa.anhorigsBeskrivning) {
-            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning));
 
         }
 
         if (baseratPa.annat) {
             var annatEl = this.baseratPa.annat;
             promiseArr.push(
-                sendKeysWithBackspaceFix(annatEl.datum, baseratPa.annat)
+                pageHelpers.moveAndSendKeys(annatEl.datum, baseratPa.annat)
                 .then(function() {
                     return annatEl.beskrivning.sendKeys(baseratPa.annatBeskrivning);
                 })
@@ -233,7 +217,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         }
 
         if (baseratPa.personligKannedom) {
-            promiseArr.push(sendKeysWithBackspaceFix(this.baseratPa.kannedomOmPatient.datum, baseratPa.personligKannedom));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.kannedomOmPatient.datum, baseratPa.personligKannedom));
         }
 
         return Promise.all(promiseArr);
@@ -259,7 +243,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var fillIn = function fillInUtr(val, index) {
             var row = utredningarElement.underlagRow(index);
 
-            return sendKeysWithBackspaceFix(row.datum, val.datum)
+            return pageHelpers.moveAndSendKeys(row.datum, val.datum)
                 .then(function() {
                     return row.underlag.click()
                         .then(function() {

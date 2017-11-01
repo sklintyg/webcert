@@ -23,9 +23,8 @@
 /*globals element,by,protractor, Promise,browser*/
 'use strict';
 
-// NOTE: This file is loaded before helpers in protractor.conf.js onPrepare. Therefore helpers are not available in file scope.
 var BaseTsUtkast = require('../ts.base.utkast.page.js');
-//var pageHelpers = require('../../../pageHelper.util.js');
+var pageHelpers = require('../../../pageHelper.util.js');
 
 var TsBasUtkast = BaseTsUtkast._extend({
     init: function init() {
@@ -133,53 +132,53 @@ var TsBasUtkast = BaseTsUtkast._extend({
     fillInSynfunktioner: function(utkast) {
         var promiseArr = [];
         if (utkast.synDonder === 'Ja') {
-            promiseArr.push(this.syn.aYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.aYes,protractor.Key.SPACE));
         } else {
-            promiseArr.push(this.syn.aNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.aNo, protractor.Key.SPACE));
         }
         if (utkast.synNedsattBelysning === 'Ja') {
-            promiseArr.push(this.syn.bYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.bYes, protractor.Key.SPACE));
         } else {
-            promiseArr.push(this.syn.bNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.bNo, protractor.Key.SPACE));
         }
         if (utkast.synOgonsjukdom === 'Ja') {
-            promiseArr.push(this.syn.cYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.cYes, protractor.Key.SPACE));
         } else {
-            promiseArr.push(this.syn.cNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.cNo, protractor.Key.SPACE));
         }
         if (utkast.synDubbel === 'Ja') {
-            promiseArr.push(this.syn.dYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.dYes, protractor.Key.SPACE));
         } else {
-            promiseArr.push(this.syn.dNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.dNo, protractor.Key.SPACE));
         }
         if (utkast.synNystagmus === 'Ja') {
-            promiseArr.push(this.syn.eYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.eYes, protractor.Key.SPACE));
         } else {
-            promiseArr.push(this.syn.eNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.eNo, protractor.Key.SPACE));
         }
         if (utkast.linser.hoger === 'Ja') {
-            promiseArr.push(this.syn.kontaktlins.hoger.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.kontaktlins.hoger, protractor.Key.SPACE));
 
         }
         if (utkast.linser.vanster === 'Ja') {
-            promiseArr.push(this.syn.kontaktlins.vanster.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.kontaktlins.vanster, protractor.Key.SPACE));
         }
 
-        promiseArr.push(this.syn.hoger.utan.sendKeys(utkast.styrkor.houk));
-        promiseArr.push(this.syn.vanster.utan.sendKeys(utkast.styrkor.vouk));
-        promiseArr.push(this.syn.binokulart.utan.sendKeys(utkast.styrkor.buk));
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.hoger.utan, utkast.styrkor.houk));
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.vanster.utan, utkast.styrkor.vouk));
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.binokulart.utan, utkast.styrkor.buk));
 
-        promiseArr.push(this.syn.hoger.med.sendKeys(utkast.styrkor.homk));
-        promiseArr.push(this.syn.vanster.med.sendKeys(utkast.styrkor.vomk));
-        promiseArr.push(this.syn.binokulart.med.sendKeys(utkast.styrkor.bmk));
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.hoger.med, utkast.styrkor.homk));
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.vanster.med, utkast.styrkor.vomk));
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.binokulart.med, utkast.styrkor.bmk));
 
         return Promise.all(promiseArr);
     },
     fillInYrsel: function(yrsel) {
         if (yrsel === 'Ja') {
-            return this.horselBalans.aYes.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.horselBalans.aYes, protractor.Key.SPACE);
         } else {
-            return this.horselBalans.aNo.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.horselBalans.aNo, protractor.Key.SPACE);
         }
     },
     fillInHorselOchBalanssinne: function(horselObj) {
@@ -187,9 +186,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
         return this.fillInYrsel(horselObj.yrsel)
             .then(function() {
                 if (horselObj.samtal === 'Ja') {
-                    return horselBalansEl.bYes.sendKeys(protractor.Key.SPACE);
+                    return pageHelpers.moveAndSendKeys(horselBalansEl.bYes, protractor.Key.SPACE);
                 } else if (horselObj.samtal === 'Nej') {
-                    return horselBalansEl.bNo.sendKeys(protractor.Key.SPACE);
+                    return pageHelpers.moveAndSendKeys(horselBalansEl.bNo, protractor.Key.SPACE);
                 }
             });
     },
@@ -198,13 +197,13 @@ var TsBasUtkast = BaseTsUtkast._extend({
         var nedsattningEl = this.funktionsnedsattning;
 
         if (nedsattning === 'Ja') {
-            return nedsattningEl.aYes.sendKeys(protractor.Key.SPACE)
+            return pageHelpers.moveAndSendKeys(nedsattningEl.aYes, protractor.Key.SPACE)
                 .then(function() {
-                    return nedsattningEl.aText.sendKeys(beskrivning ? beskrivning : 'Nedsattning text');
+                    return pageHelpers.moveAndSendKeys(nedsattningEl.aText, beskrivning ? beskrivning : 'Nedsattning text');
                 });
 
         } else if (nedsattning === 'Nej') {
-            return nedsattningEl.aNo.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(nedsattningEl.aNo, protractor.Key.SPACE);
         }
     },
     fillInRorelseorganensFunktioner: function(rorelseorganensFunktionerObj) {
@@ -214,9 +213,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
         return this.fillInRorelseNedsattning(rorelseorganensFunktionerObj.nedsattning, rorelseorganensFunktionerObj.nedsattningBeskrivning)
             .then(function() {
                 if (inUtUrFordon === 'Ja') {
-                    return nedsattningEl.bYes.sendKeys(protractor.Key.SPACE);
+                    return pageHelpers.moveAndSendKeys(nedsattningEl.bYes, protractor.Key.SPACE);
                 } else if (inUtUrFordon === 'Nej') {
-                    return nedsattningEl.bNo.sendKeys(protractor.Key.SPACE);
+                    return pageHelpers.moveAndSendKeys(nedsattningEl.bNo, protractor.Key.SPACE);
                 }
             });
     },
@@ -226,95 +225,95 @@ var TsBasUtkast = BaseTsUtkast._extend({
         var hjartKarlCEl = this.hjartKarl;
 
         if (utkast.hjartHjarna === 'Ja') {
-            promiseArr.push(hjartKarlCEl.aYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(hjartKarlCEl.aYes, protractor.Key.SPACE));
         } else {
-            promiseArr.push(hjartKarlCEl.aNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(hjartKarlCEl.aNo, protractor.Key.SPACE));
         }
         if (utkast.hjartSkada === 'Ja') {
-            promiseArr.push(hjartKarlCEl.bYes.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(hjartKarlCEl.bYes, protractor.Key.SPACE));
         } else {
-            promiseArr.push(hjartKarlCEl.bNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(hjartKarlCEl.bNo, protractor.Key.SPACE));
         }
         if (utkast.hjartRisk === 'Ja') {
-            promiseArr.push(hjartKarlCEl.cYes.sendKeys(protractor.Key.SPACE)
+            promiseArr.push(pageHelpers.moveAndSendKeys(hjartKarlCEl.cYes, protractor.Key.SPACE)
                 .then(function() {
                     return browser.sleep(1000); // Testar att vänta på animering eller nästa tick
                 })
                 .then(function() {
-                    return hjartKarlCEl.cText.sendKeys(utkast.hjartRiskBeskrivning);
+                    return pageHelpers.moveAndSendKeys(hjartKarlCEl.cText, utkast.hjartRiskBeskrivning);
                 }));
         } else {
-            promiseArr.push(hjartKarlCEl.cNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(hjartKarlCEl.cNo, protractor.Key.SPACE));
         }
         return Promise.all(promiseArr);
     },
     fillInDiabetes: function(diabetesObj) {
         var diabetes = this.diabetes;
         if (diabetesObj.hasDiabetes === 'Ja') {
-            return diabetes.aYes.sendKeys(protractor.Key.SPACE).then(function() {
+            return pageHelpers.moveAndSendKeys(diabetes.aYes, protractor.Key.SPACE).then(function() {
 
                 if (diabetesObj.typ === 'Typ 1') {
-                    return diabetes.typ1.sendKeys(protractor.Key.SPACE);
+                    return pageHelpers.moveAndSendKeys(diabetes.typ1, protractor.Key.SPACE);
                 } else {
-                    return diabetes.typ2.sendKeys(protractor.Key.SPACE)
+                    return pageHelpers.moveAndSendKeys(diabetes.typ2, protractor.Key.SPACE)
                         .then(function() {
                             // Ange behandlingstyp 
                             var promiseArr = [];
                             var typ = diabetesObj.behandlingsTyper;
                             if (typ.indexOf('Endast kost') > -1) {
-                                promiseArr.push(diabetes.endastkost.sendKeys(protractor.Key.SPACE));
+                                promiseArr.push(pageHelpers.moveAndSendKeys(diabetes.endastkost, protractor.Key.SPACE));
                             }
                             if (typ.indexOf('Tabletter') > -1) {
-                                promiseArr.push(diabetes.tabletter.sendKeys(protractor.Key.SPACE));
+                                promiseArr.push(pageHelpers.moveAndSendKeys(diabetes.tabletter, protractor.Key.SPACE));
                             }
                             if (typ.indexOf('Insulin') > -1) {
-                                promiseArr.push(diabetes.insulin.sendKeys(protractor.Key.SPACE));
+                                promiseArr.push(pageHelpers.moveAndSendKeys(diabetes.insulin, protractor.Key.SPACE));
                             }
                             return Promise.all(promiseArr);
                         });
                 }
             });
         } else {
-            return diabetes.aNo.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(diabetes.aNo, protractor.Key.SPACE);
         }
 
     },
     fillInNeurologiskaSjukdomar: function(utkast) {
         if (utkast.neurologiska === 'Ja') {
-            return this.neurologiska.aYes.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.neurologiska.aYes, protractor.Key.SPACE);
         } else {
-            return this.neurologiska.aNo.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.neurologiska.aNo, protractor.Key.SPACE);
         }
     },
     fillInEpilepsi: function(utkast) {
         var promiseArr = [];
         if (utkast.epilepsi === 'Ja') {
-            promiseArr.push(this.epilepsi.aYes.sendKeys(protractor.Key.SPACE));
-            promiseArr.push(this.epilepsi.aText.sendKeys(utkast.epilepsiBeskrivning));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.epilepsi.aYes, protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.epilepsi.aText, utkast.epilepsiBeskrivning));
         } else {
-            promiseArr.push(this.epilepsi.aNo.sendKeys(protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.epilepsi.aNo, protractor.Key.SPACE));
         }
         return Promise.all(promiseArr);
     },
     fillInNjursjukdomar: function(utkast) {
         if (utkast.njursjukdom === 'Ja') {
-            return this.njursjukdom.aYes.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.njursjukdom.aYes, protractor.Key.SPACE);
         } else {
-            return this.njursjukdom.aNo.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.njursjukdom.aNo, protractor.Key.SPACE);
         }
     },
     fillInDemens: function(utkast) {
         if (utkast.demens === 'Ja') {
-            return this.kognitivt.aYes.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.kognitivt.aYes, protractor.Key.SPACE);
         } else {
-            return this.kognitivt.aNo.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.kognitivt.aNo, protractor.Key.SPACE);
         }
     },
     fillInSomnOchVakenhet: function(utkast) {
         if (utkast.somnVakenhet === 'Ja') {
-            return this.somnOchVakenhetsStorningar.JA.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.somnOchVakenhetsStorningar.JA, protractor.Key.SPACE);
         } else {
-            return this.somnOchVakenhetsStorningar.NEJ.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.somnOchVakenhetsStorningar.NEJ, protractor.Key.SPACE);
         }
     },
     fillInAlkoholNarkotikaLakemedel: function(utkast) {
@@ -322,36 +321,36 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
         promiseArr.push(element.all(by.css('[name="narkotikalakemedela"]')).then(function(elm) {
             if (utkast.alkoholMissbruk === 'Ja') {
-                return elm[0].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         }));
         promiseArr.push(element.all(by.css('[name="narkotikalakemedelb"]')).then(function(elm) {
             if (utkast.alkoholVard === 'Ja') {
-                return elm[0].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         }));
 
         promiseArr.push(element.all(by.css('[name="narkotikalakemedelc"]')).then(function(elm) {
             if (utkast.alkoholLakemedel === 'Ja') {
                 return Promise.all([
-                    elm[0].sendKeys(protractor.Key.SPACE),
-                    element(by.id('beskrivningNarkotikalakemedel')).sendKeys(utkast.alkoholLakemedelBeskrivning)
+                    pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE),
+                    pageHelpers.moveAndSendKeys(element(by.id('beskrivningNarkotikalakemedel')), utkast.alkoholLakemedelBeskrivning)
                 ]);
             } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         }));
 
         promiseArr.push(element.all(by.css('[name="narkotikalakemedelb2"]')).then(function(elm) {
             if (utkast.alkoholMissbruk === 'Ja' || utkast.alkoholVard === 'Ja') {
                 if (utkast.alkoholProvtagning === 'Ja') {
-                    return elm[0].sendKeys(protractor.Key.SPACE);
+                    return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
                 } else {
-                    return elm[1].sendKeys(protractor.Key.SPACE);
+                    return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
                 }
             }
         }));
@@ -362,9 +361,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
     fillInPsykiska: function(utkast) {
         return element.all(by.css('[name="psykiskta"]')).then(function(elm) {
             if (utkast.psykiskSjukdom === 'Ja') {
-                return elm[0].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[0],protractor.Key.SPACE);
             } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1],protractor.Key.SPACE);
             }
         });
     },
@@ -373,9 +372,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
         var a = element.all(by.css('[name="utvecklingsstorninga"]')).then(function(elm) {
             if (utkast.adhdPsykisk === 'Ja') {
-                return elm[0].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         });
 
@@ -383,9 +382,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
         var b = element.all(by.css('[name="utvecklingsstorningb"]')).then(function(elm) {
             if (utkast.adhdSyndrom === 'Ja') {
-                return elm[0].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         });
 
@@ -397,13 +396,13 @@ var TsBasUtkast = BaseTsUtkast._extend({
         return element.all(by.css('[name="sjukhusvarda"]')).then(function(elm) {
             if (utkast.sjukhusvard === 'Ja') {
                 var promiseArr = [];
-                promiseArr.push(elm[0].sendKeys(protractor.Key.SPACE));
-                promiseArr.push(element(by.id('tidpunkt')).sendKeys(utkast.sjukhusvardTidPunkt));
-                promiseArr.push(element(by.id('vardinrattning')).sendKeys(utkast.sjukhusvardInrattning));
-                promiseArr.push(element(by.id('anledning')).sendKeys(utkast.sjukhusvardAnledning));
+                promiseArr.push(pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE));
+                promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('tidpunkt')),utkast.sjukhusvardTidPunkt));
+                promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('vardinrattning')), utkast.sjukhusvardInrattning));
+                promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('anledning')), utkast.sjukhusvardAnledning));
                 return Promise.all(promiseArr);
             } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1],protractor.Key.SPACE);
             }
         });
     },
@@ -411,11 +410,11 @@ var TsBasUtkast = BaseTsUtkast._extend({
         return element.all(by.css('[name="medicineringa"]')).then(function(elm) {
             if (utkast.ovrigMedicin === 'Ja') {
                 return Promise.all([
-                    elm[0].sendKeys(protractor.Key.SPACE),
-                    element(by.id('beskrivningMedicinering')).sendKeys(utkast.ovrigMedicinBeskrivning)
+                    pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE),
+                    pageHelpers.moveAndSendKeys(element(by.id('beskrivningMedicinering')), utkast.ovrigMedicinBeskrivning)
                 ]);
             } else {
-                return elm[1].sendKeys(protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         });
     }

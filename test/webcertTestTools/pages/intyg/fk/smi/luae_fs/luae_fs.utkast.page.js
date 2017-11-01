@@ -21,6 +21,7 @@
 'use strict';
 
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
+var pageHelpers = require('../../../../pageHelper.util.js');
 
 var LuaefsUtkast = BaseSmiUtkast._extend({
     init: function init() {
@@ -84,8 +85,8 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
         var fn = this.funktionsnedsattning;
 
         var promisesArr = [];
-        promisesArr.push(fn.debut.sendKeys(funktionsnedsattning.debut));
-        promisesArr.push(fn.paverkan.sendKeys(funktionsnedsattning.paverkan));
+        promisesArr.push(pageHelpers.moveAndSendKeys(fn.debut,funktionsnedsattning.debut));
+        promisesArr.push(pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan));
 
         return Promise.all(promisesArr);
     },

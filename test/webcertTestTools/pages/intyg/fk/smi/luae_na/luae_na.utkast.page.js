@@ -21,6 +21,7 @@
 'use strict';
 
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
+var pageHelpers = require('../../../../pageHelper.util.js');
 
 var LuaeNaUtkast = BaseSmiUtkast._extend({
     init: function init() {
@@ -69,14 +70,14 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
         };
     },
     angeAktivitetsbegransning: function(aktivitetsbegransning) {
-        return this.aktivitetsbegransning.sendKeys(aktivitetsbegransning);
+        return pageHelpers.moveAndSendKeys(this.aktivitetsbegransning,aktivitetsbegransning);
     },
 
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([
-            this.medicinskaForutsattningar.utecklasOverTid.sendKeys(forutsattningar.utecklasOverTid),
-            this.medicinskaForutsattningar.trotsBegransningar.sendKeys(forutsattningar.trotsBegransningar),
-            this.medicinskaForutsattningar.forslagTillAtgard.sendKeys(forutsattningar.forslagTillAtgard)
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid,forutsattningar.utecklasOverTid),
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.trotsBegransningar,forutsattningar.trotsBegransningar),
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.forslagTillAtgard,forutsattningar.forslagTillAtgard)
         ]);
     },
 

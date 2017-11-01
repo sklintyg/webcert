@@ -19,19 +19,12 @@
 
 /*globals element,by, Promise,browser,protractor*/
 'use strict';
-
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
+var pageHelpers = require('../../../../pageHelper.util.js');
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
-    return checkboxEL.sendKeys(protractor.Key.SPACE).then(function() {
-        return browser.sleep(1000).then(function() {
-            return textEL.sendKeys(text)
-                .then(function() {
-                    logger.debug('OK - Angav: ' + text);
-                }, function(reason) {
-                    throw ('FEL - Angav: ' + text + ' ' + reason);
-                });
-        });
+    return pageHelpers.moveAndSendKeys(checkboxEL,protractor.Key.SPACE).then(function() {
+        return pageHelpers.moveAndSendKeys(textEL,text);
     });
 }
 
@@ -98,11 +91,11 @@ var LuseUtkast = BaseSmiUtkast._extend({
 
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([
-            this.medicinskaForutsattningar.utecklasOverTid.sendKeys(forutsattningar.utecklasOverTid),
-            this.medicinskaForutsattningar.trotsBegransningar.sendKeys(forutsattningar.trotsBegransningar)
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid),
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.trotsBegransningar, forutsattningar.trotsBegransningar)
         ]);
     },
-    angeFunktionsnedsattning: function(nedsattning) {
+    angeFunktionsnedsattning: function(nedsattning) {//TODO angeFunktionsnedsattning finns i smi.base.utkast.page
         var fn = this.funktionsnedsattning;
         return Promise.all([
             checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell),
@@ -117,10 +110,10 @@ var LuseUtkast = BaseSmiUtkast._extend({
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
         return Promise.all([
-            mb.avslutad.text.sendKeys(behandling.avslutad),
-            mb.pagaende.text.sendKeys(behandling.pagaende),
-            mb.planerad.text.sendKeys(behandling.planerad),
-            mb.substansintag.text.sendKeys(behandling.substansintag)
+            pageHelpers.moveAndSendKeys(mb.avslutad.text, behandling.avslutad),
+            pageHelpers.moveAndSendKeys(mb.pagaende.text, behandling.pagaende),
+            pageHelpers.moveAndSendKeys(mb.planerad.text, behandling.planerad),
+            pageHelpers.moveAndSendKeys(mb.substansintag.text, behandling.substansintag)
         ]);
     },
 

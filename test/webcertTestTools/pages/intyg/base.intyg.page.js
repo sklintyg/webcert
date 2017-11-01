@@ -27,6 +27,8 @@ var JClass = require('jclass');
 var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
 var restUtil = require('../../util/rest.util.js');
+var pageHelpers = require('../pageHelper.util.js');
+
 
 var BaseIntyg = JClass._extend({
     init: function() {
@@ -119,12 +121,12 @@ var BaseIntyg = JClass._extend({
                 reason = optionalOrsak;
             }
             logger.debug('Väljer orsak: ' + reason);
-            return element(by.cssContainingText('label', reason)).sendKeys(protractor.Key.SPACE)
+            return pageHelpers.moveAndSendKeys(element(by.cssContainingText('label', reason)), protractor.Key.SPACE)
                 .then(function() {
                     return browser.sleep(1500);
                 })
                 .then(function() {
-                    return makuleraDialog.element(by.css('textarea')).sendKeys('Beskrivning för ') + reason;
+                    return pageHelpers.moveAndSendKeys(makuleraDialog.element(by.css('textarea')), 'Beskrivning för ' + reason);
                 });
         });
     },
@@ -176,7 +178,7 @@ var BaseIntyg = JClass._extend({
     sendNewArende: function(arendeText, arendeAmne) {
         var self = this;
         return this.newArendeBtn.click().then(function() {
-            return self.arendeText.sendKeys(arendeText).then(function() {
+            return pageHelpers.moveAndSendKeys(self.arendeText,arendeText).then(function() {
                 return self.arendeValjAmne(arendeAmne).then(function() {
                     return self.arendeSend.click();
                 });
