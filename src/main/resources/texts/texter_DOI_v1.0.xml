@@ -33,6 +33,8 @@ Annan/okänd: övrigt</text>
 
     <text id="KAT_3.RBK">Barn som avlidit senast 28 dygn efter födelsen</text>
     <text id="DFR_4.1.RBK">Avlidet inom 28 dygn efter födelsen</text>
+    <text id="DFR_4.1_INOM28.INFO">Det angivna dödsdatumet infaller inom 28 dagar efter födelsedatum. Fältet har därför förifyllts.</text>
+    <text id="DFR_4.1_EJ_INOM28.INFO">Det angivna dödsdatumet infaller inte inom 28 dagar efter födelsedatum. Fältet har därför förifyllts.</text>
     <text id="KAT_7.RBK">Läkarens utlåtande om dödsorsaken</text>
     <text id="KAT_7.1.RBK">Sjukdoms- eller skadeförlopp som ledde till den terminala dödsorsaken</text>
     <text id="FRG_8.RBK">Den terminala dödsorsaken var</text>
