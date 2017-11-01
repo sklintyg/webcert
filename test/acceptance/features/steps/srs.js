@@ -81,9 +81,10 @@ module.exports = function() {
 
     this.When(/^jag klickar på knappen för SRS$/, () => fk7263utkast.srs.knapp().click());
 
-    this.When(/^jag klickar på pilen$/, () => browser.actions().mouseMove(fk7263utkast.srs.questionsCollapser()).perform()
-        .then(() => fk7263utkast.srs.visamer().click())
-        .then(() => browser.sleep(500)) // Det tar en stund för panelen att maximeras/minimeras
+    this.When(/^jag klickar på pilen$/, () => fk7263utkast.srs.visamer().getAttribute('class')
+        .then((collapsed) => collapsed.includes('collapsed') ? true : false)
+        .then((isCollapsed) => isCollapsed ? fk7263utkast.srs.visamer().click() : undefined)
+        .then(() => browser.sleep(500))
     );
 
     this.Then(/^ska frågepanelen för SRS vara "(minimerad|maximerad)"$/,
