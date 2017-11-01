@@ -119,9 +119,6 @@ module.exports = {
                     }, function(reason) {
                         return Promise.reject('FEL, angeKontaktMedFK: ' + reason);
                     });
-            })
-            .then(function() {
-                browser.ignoreSynchronization = false;
             });
     }
 };

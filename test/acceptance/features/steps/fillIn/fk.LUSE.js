@@ -128,9 +128,6 @@ module.exports = {
                     }, function(reason) {
                         throw ('FEL, angeTillaggsfragor: ' + reason);
                     });
-            })
-            .then(function() {
-                browser.ignoreSynchronization = false;
             });
 
     }

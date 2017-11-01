@@ -118,9 +118,6 @@ module.exports = {
         //     throw ('FEL, angeEnhetAdress,' + reason);
         // }));
 
-        return Promise.all(promisesArr)
-            .then(function(value) {
-                browser.ignoreSynchronization = false;
-            });
+        return Promise.all(promisesArr);
     }
 };

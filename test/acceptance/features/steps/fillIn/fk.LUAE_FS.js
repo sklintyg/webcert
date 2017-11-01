@@ -83,9 +83,6 @@ module.exports = {
                     }, function(reason) {
                         throw ('FEL, angeKontaktMedFK: ' + reason);
                     });
-            })
-            .then(function() {
-                browser.ignoreSynchronization = false;
             });
     }
 };
