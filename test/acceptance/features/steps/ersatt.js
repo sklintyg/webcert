@@ -32,26 +32,21 @@ module.exports = function() {
             console.log('Intygstyp är inte ' + intygstyp);
             return Promise.resolve();
         } else {
+            browser.ignoreSynchronization = true;
             console.log('Intygstyp är: ' + intyg.typ);
             return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
                 .then(function() {
-                    logger.info('OK - angeBaseratPa');
+                    return logger.info('OK - angeBaseratPa');
                 }, function(reason) {
                     throw ('FEL, angeBaseratPa,' + reason);
                 })
                 .then(function() {
-                    browser.sleep(1000);
-                })
-                .then(function() {
-                    pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
-                        console.log('Intygstyp är: ' + intyg.typ);
-                        logger.info('OK - angeArbetsformaga');
+                    return pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
+                        browser.ignoreSynchronization = false;
+                        return logger.info('OK - angeArbetsformaga');
                     }, function(reason) {
                         throw ('FEL, angeArbetsformaga,' + reason);
                     });
-                })
-                .then(function() {
-                    browser.sleep(1000);
                 });
         }
     });

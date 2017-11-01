@@ -23,13 +23,13 @@
 var FkBaseUtkast = require('../fk.base.utkast.page.js');
 
 function sendKeysWithBackspaceFix(el, text) {
-    return el.sendKeys(text)
-        .then(function() {
+    return el.sendKeys(text);
+        /*.then(function() {
             return el.sendKeys(protractor.Key.BACK_SPACE);
         })
         .then(function() {
             return el.sendKeys(text.substr(text.length - 1));
-        });
+        });*/
 }
 
 function sendEnterToElement(el) {

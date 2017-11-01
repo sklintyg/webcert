@@ -38,7 +38,7 @@ function signeraUtkast() {
     };
 
     return uppdateraAdressOmErsattandeIntyg().then(function() {
-        return browser.sleep(2000).then(function() { // fix för nåt med animering?
+        return browser.sleep(1).then(function() { // fix för nåt med animering?
 
             return expect(fkUtkastPage.sparatOchKomplettMeddelande.isDisplayed()).to.eventually.equal(true)
                 .then(function() {

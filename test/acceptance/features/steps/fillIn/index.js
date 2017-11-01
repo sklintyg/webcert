@@ -23,8 +23,7 @@
 module.exports = {
     fillIn: function(intyg) {
         var promiseArr = [];
-        // Vänta på animering
-        promiseArr.push(browser.sleep(2000).then(function() {
+        promiseArr.push(browser.sleep(1).then(function() {
             switch (intyg.typ) {
                 case 'Transportstyrelsens läkarintyg':
                     return require('./ts.bas.js').fillIn(intyg);

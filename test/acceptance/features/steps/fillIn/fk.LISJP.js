@@ -134,9 +134,6 @@
              .then(function() {
                  logger.info('TODO - Tillägsfrågor');
                  return;
-             })
-             .then(function() {
-                 browser.ignoreSynchronization = false;
              });
 
      }
