@@ -25,7 +25,8 @@ Exempel:
 
 @treställig
 Scenariomall: FMB information för treställig diagnoskod ska visas vid rätt fält då koden inte har egen FMB info när <intygKod> skapas
-	När jag går in på att skapa ett <intyg> intyg
+	Givet att vårdsystemet skapat ett intygsutkast för <intyg>
+	Och jag går in på utkastet
 	Och jag fyller i diagnoskod utan egen FMB info
 	Så ska FMB info för överliggande diagnoskod visas
 
@@ -35,7 +36,8 @@ Exempel:
   |LISJP		| 	"Läkarintyg för sjukpenning" | 
 
 Scenariomall: Ska inte visas för alla diagnoskoder då man skapar <intygKod>
-	När jag går in på att skapa ett <intyg> intyg
+	Givet att vårdsystemet skapat ett intygsutkast för <intyg>
+	Och jag går in på utkastet
 	Och jag fyller i diagnoskod utan FMB info
 	Så ska ingen info gällande FMB visas
 
