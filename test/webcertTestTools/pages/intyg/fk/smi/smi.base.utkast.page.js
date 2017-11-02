@@ -211,7 +211,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             promiseArr.push(
                 pageHelpers.moveAndSendKeys(annatEl.datum, baseratPa.annat)
                 .then(function() {
-                    return annatEl.beskrivning.sendKeys(baseratPa.annatBeskrivning);
+                    return pageHelpers.moveAndSendKeys(annatEl.beskrivning, baseratPa.annatBeskrivning);
                 })
             );
         }
@@ -225,16 +225,19 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     },
     angeFunktionsnedsattning: function(nedsattning) {
         var fn = this.funktionsnedsattning;
-        return Promise.all([
-            checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell),
-            checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation),
-            checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration),
-            checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk),
-            checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal),
-            checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination),
-            checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan)
-
-        ]);
+        return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell).then(function(){
+			return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);
+		}).then(function(){
+			return checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration);
+		}).then(function(){
+			return checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk);
+		}).then(function(){
+			return checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal);
+		}).then(function(){
+			return checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination);
+		}).then(function(){
+			return checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan);
+		});
     },
 
     angeAndraMedicinskaUtredningar: function(utredningar) {
