@@ -36,6 +36,7 @@ module.exports = {
                     .then(function(value) {
                         logger.info('OK - angeBaseratPa: ' + JSON.stringify(intyg.baseratPa));
                     }, function(reason) {
+                        console.trace(reason);
                         throw ('FEL, angeBaseratPa: ' + reason);
                     });
             })
@@ -45,6 +46,7 @@ module.exports = {
                     .then(function(value) {
                         logger.info('OK - angeAndraMedicinskaUtredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
                     }, function(reason) {
+                        console.trace(reason);
                         throw ('FEL, angeAndraMedicinskaUtredningar: ' + reason);
                     });
             })
@@ -54,6 +56,7 @@ module.exports = {
                     .then(function(value) {
                         logger.info('OK - angeDiagnos: ' + JSON.stringify(intyg.diagnos));
                     }, function(reason) {
+                        console.trace(reason);
                         throw ('FEL, angeDiagnos: ' + reason);
                     });
             })
@@ -63,6 +66,7 @@ module.exports = {
                     .then(function(value) {
                         logger.info('OK - angeFunktionsnedsattning: ' + JSON.stringify(intyg.funktionsnedsattning));
                     }, function(reason) {
+                        console.trace(reason);
                         throw ('FEL, angeFunktionsnedsattning: ' + reason);
                     });
             })
@@ -72,6 +76,7 @@ module.exports = {
                     .then(function(value) {
                         logger.info('OK - angeOvrigaUpplysningar: ' + JSON.stringify(intyg.ovrigt));
                     }, function(reason) {
+                        console.trace(reason);
                         throw ('FEL, angeOvrigaUpplysningar: ' + reason);
                     });
             })
@@ -81,6 +86,7 @@ module.exports = {
                     .then(function(value) {
                         logger.info('OK - angeKontaktMedFK: ' + JSON.stringify(intyg.kontaktMedFk));
                     }, function(reason) {
+                        console.trace(reason);
                         throw ('FEL, angeKontaktMedFK: ' + reason);
                     });
             });

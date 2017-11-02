@@ -191,37 +191,50 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         };
     },
     angeBaseratPa: function(baseratPa) {
-        var promiseArr = [];
-        if (baseratPa.minUndersokningAvPatienten) {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten));
-        }
-        if (baseratPa.journaluppgifter) {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.journaluppgifter.datum, baseratPa.journaluppgifter));
-        }
-        if (baseratPa.telefonkontakt) {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.telefonkontakt.datum, baseratPa.telefonkontakt));
-        }
-        if (baseratPa.anhorigsBeskrivning) {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning));
-
-        }
-
-        if (baseratPa.annat) {
-            var annatEl = this.baseratPa.annat;
-            promiseArr.push(
-                pageHelpers.moveAndSendKeys(annatEl.datum, baseratPa.annat)
-                .then(function() {
-                    return pageHelpers.moveAndSendKeys(annatEl.beskrivning, baseratPa.annatBeskrivning);
-                })
-            );
-        }
-
-        if (baseratPa.personligKannedom) {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.baseratPa.kannedomOmPatient.datum, baseratPa.personligKannedom));
-        }
-
-        return Promise.all(promiseArr);
-
+		
+		var baseratPaElmObj = this.baseratPa;
+		return new Promise(function(resolve) {
+			resolve('anger BaseratPa');
+		})
+		.then(function(){
+			if (baseratPa.minUndersokningAvPatienten) {
+				return pageHelpers.moveAndSendKeys(baseratPaElmObj.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten);
+			}
+			return;
+		})
+		.then(function(){
+			if (baseratPa.journaluppgifter) {
+				return pageHelpers.moveAndSendKeys(baseratPaElmObj.journaluppgifter.datum, baseratPa.journaluppgifter);
+			}
+			return;
+		})
+		.then(function(){
+			if (baseratPa.telefonkontakt) {
+				return pageHelpers.moveAndSendKeys(baseratPaElmObj.telefonkontakt.datum, baseratPa.telefonkontakt);
+			}
+			return;
+		})
+		.then(function(){
+			if (baseratPa.anhorigsBeskrivning) {
+				return pageHelpers.moveAndSendKeys(baseratPaElmObj.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning);
+			} 
+			return;
+		})
+		.then(function(){
+			if (baseratPa.annat) {
+				return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.datum, baseratPa.annat)
+					.then(function() {
+						return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.beskrivning,baseratPa.annatBeskrivning);
+					})
+			}
+			return;
+		})
+		.then(function(){
+			if (baseratPa.personligKannedom) {
+				return pageHelpers.moveAndSendKeys(baseratPaElmObj.kannedomOmPatient.datum, baseratPa.personligKannedom);
+			}
+			return;
+		});
     },
     angeFunktionsnedsattning: function(nedsattning) {
         var fn = this.funktionsnedsattning;

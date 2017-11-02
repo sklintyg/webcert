@@ -38,6 +38,7 @@
                      .then(function() {
                          logger.info('OK - angeBaseratPa');
                      }, function(reason) {
+                         console.trace(reason);
                          throw ('FEL, angeBaseratPa,' + reason);
                      });
              })
@@ -46,6 +47,7 @@
                  return lisjpUtkastPage.angeSysselsattning(intyg.sysselsattning).then(function() {
                      logger.info('OK - angeSysselsattning');
                  }, function(reason) {
+                     console.trace(reason);
                      throw ('FEL, angeSysselsattning,' + reason);
                  });
              })
@@ -54,6 +56,7 @@
                  return lisjpUtkastPage.angeDiagnos(intyg.diagnos).then(function() {
                      logger.info('OK - angeDiagnos');
                  }, function(reason) {
+                     console.trace(reason);
                      throw ('FEL, angeDiagnos,' + reason);
                  });
              })
@@ -80,6 +83,7 @@
                  return lisjpUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function() {
                      logger.info('OK - angeArbetsformaga');
                  }, function(reason) {
+                     console.trace(reason);
                      throw ('FEL, angeArbetsformaga,' + reason);
                  });
              })
@@ -88,6 +92,7 @@
                  return lisjpUtkastPage.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
                      logger.info('OK - angeArbetstidsforlaggning');
                  }, function(reason) {
+                     console.trace(reason);
                      throw ('FEL, angeArbetstidsforlaggning,' + reason);
                  });
              })
@@ -103,6 +108,7 @@
                  return lisjpUtkastPage.angeResorTillArbete(intyg.resorTillArbete).then(function() {
                      logger.info('OK - angeResorTillArbete');
                  }, function(reason) {
+                     console.trace(reason);
                      throw ('FEL, angeResorTillArbete,' + reason);
                  });
              })
@@ -111,6 +117,7 @@
                  return lisjpUtkastPage.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
                      logger.info('OK - prognosForArbetsformaga');
                  }, function(reason) {
+                     console.trace(reason);
                      throw ('FEL, prognosForArbetsformaga,' + reason);
                  });
              })
