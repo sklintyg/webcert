@@ -8,7 +8,8 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 
 Scenariomall: Visas vid rätt fält för <intygKod>
-	När jag går in på att skapa ett <intyg> intyg
+	Givet att vårdsystemet skapat ett intygsutkast för <intyg>
+	Och jag går in på utkastet
 	Och jag fyller i diagnoskod 
 	Så ska rätt info gällande FMB visas
 
