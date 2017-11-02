@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('ViewCertCtrl', function() {
+describe('VisaIntygFragasvarCtrl', function() {
     'use strict';
 
     var UtkastProxy;
@@ -133,7 +133,7 @@ describe('ViewCertCtrl', function() {
             $state.current.data = 'fk7263';
 
             $controller = _$controller_;
-            $controller('webcert.ViewCertCtrl',
+            $controller('webcert.VisaIntygFragasvarCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
 
             spyOn(featureService, 'isFeatureActive').and.callThrough();
@@ -143,7 +143,7 @@ describe('ViewCertCtrl', function() {
 
     describe('#checkSpecialQALink', function() {
         beforeEach(function(){
-            $controller('webcert.ViewCertCtrl',
+            $controller('webcert.VisaIntygFragasvarCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
 
             // ----- arrange
@@ -156,7 +156,7 @@ describe('ViewCertCtrl', function() {
 
         it('Check if the user used the special qa-link to get here', function(){
 
-            $controller('webcert.ViewCertCtrl',
+            $controller('webcert.VisaIntygFragasvarCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
 
             // ----- arrange

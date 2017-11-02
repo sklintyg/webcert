@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('ChoosePatientCtrl', function() {
+describe('SokSkrivIntygCtrl', function() {
     'use strict';
 
     var $controller;
@@ -52,7 +52,7 @@ describe('ChoosePatientCtrl', function() {
             $q = _$q_;
             $state = _$state_;
             $controller = _$controller_;
-            $controller('webcert.ChoosePatientCtrl', {$scope: $scope});
+            $controller('webcert.SokSkrivIntygCtrl', {$scope: $scope});
         });
     });
 

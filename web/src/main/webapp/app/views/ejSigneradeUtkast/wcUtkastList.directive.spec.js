@@ -74,7 +74,7 @@ describe('wcUtkastListSpec', function() {
         });
     });
 
-    describe('UnsignedCertCtrl QA forwarding', function() {
+    describe('EjSigneradeUtkastCtrl QA forwarding', function() {
 
         it('should change forwarded state on a utkast when clicking a forward checkbox', function() {
             element.isolateScope().onNotifyChange(mockResponse.utkast);

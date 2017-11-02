@@ -20,7 +20,7 @@
 /*
  * Controller for logic related to viewing signed certs
  */
-angular.module('webcert').controller('webcert.ViewCertCtrl',
+angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
     ['$rootScope', '$state', '$stateParams', '$scope', '$location', '$q', 'common.dialogService',
         'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
         'common.featureService', 'common.moduleService',

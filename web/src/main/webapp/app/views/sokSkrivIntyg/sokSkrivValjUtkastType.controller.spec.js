@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('ChooseCertTypeCtrl', function() {
+describe('SokSkrivValjUtkastTypeCtrl', function() {
     'use strict';
 
     var $controller;
@@ -126,7 +126,7 @@ describe('ChooseCertTypeCtrl', function() {
         var intyg;
 
         beforeEach(function() {
-            $controller('webcert.ChooseCertTypeCtrl', {$scope: $scope});
+            $controller('webcert.SokSkrivValjUtkastTypeCtrl', {$scope: $scope});
             intyg = {
                 intygType: 'fk7263',
                 intygId: 'abc123',
@@ -192,7 +192,7 @@ describe('ChooseCertTypeCtrl', function() {
         var intyg;
 
         beforeEach(function() {
-            $controller('webcert.ChooseCertTypeCtrl', {$scope: $scope});
+            $controller('webcert.SokSkrivValjUtkastTypeCtrl', {$scope: $scope});
             intyg = {
                 source: 'WC',
                 intygType: 'fk7263',

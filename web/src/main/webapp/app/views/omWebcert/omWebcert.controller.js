@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.AboutWebcertCtrl',
+angular.module('webcert').controller('webcert.OmWebcertCtrl',
     ['$rootScope', '$scope', '$log', 'common.fragaSvarCommonService', 'webcert.UtkastProxy', 'moduleConfig',
         function($rootScope, $scope, $log, fragaSvarCommonService, UtkastProxy, moduleConfig) {
             'use strict';

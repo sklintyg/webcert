@@ -69,7 +69,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
-                    controller: 'webcert.InitCertCtrl'
+                    controller: 'webcert.SokSkrivIntygStartCtrl'
                 }
             }
         }).
@@ -78,7 +78,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
-                    controller: 'webcert.ChoosePatientCtrl'
+                    controller: 'webcert.SokSkrivIntygCtrl'
                 }
             }
         }).
@@ -87,7 +87,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/sokSkrivIntyg/sokSkrivValjUtkastType.html',
-                    controller: 'webcert.ChooseCertTypeCtrl'
+                    controller: 'webcert.SokSkrivValjUtkastTypeCtrl'
                 }
             }
         }).
@@ -96,7 +96,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/fragorOchSvar/fragorOchSvar.html',
-                    controller: 'webcert.UnhandledQACtrl'
+                    controller: 'webcert.FragorOchSvarCtrl'
                 }
             }
         }).
@@ -105,7 +105,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/ejSigneradeUtkast/ejSigneradeUtkast.html',
-                    controller: 'webcert.UnsignedCertCtrl'
+                    controller: 'webcert.EjSigneradeUtkastCtrl'
                 }
             }
         }).
@@ -122,7 +122,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'main@webcert.intyg': {
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
-                    controller: 'webcert.ViewCertCtrl'
+                    controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
             }
         }).
@@ -130,7 +130,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'main@webcert.intyg' : {
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.ts.html',
-                    controller: 'webcert.ViewCertCtrl'
+                    controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
             }
         }).
@@ -138,7 +138,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
-                    controller: 'webcert.ViewCertCtrl'
+                    controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
             }
         }).
@@ -147,7 +147,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/omWebcert/omWebcert.webcert.html',
-                    controller: 'webcert.AboutWebcertCtrl'
+                    controller: 'webcert.OmWebcertCtrl'
                 }
             }
         }).
@@ -156,7 +156,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/omWebcert/omWebcert.terms.html',
-                    controller: 'webcert.AboutWebcertTermsCtrl'
+                    controller: 'webcert.OmWebcertTermsCtrl'
                 }
             }
         }).
@@ -165,7 +165,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/omWebcert/omWebcert.support.html',
-                    controller: 'webcert.AboutWebcertCtrl'
+                    controller: 'webcert.OmWebcertCtrl'
                 }
             }
         }).
@@ -174,7 +174,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/omWebcert/omWebcert.faq.html',
-                    controller: 'webcert.AboutWebcertCtrl'
+                    controller: 'webcert.OmWebcertCtrl'
                 }
             }
         }).
@@ -183,7 +183,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             views: {
                 'content@': {
                     templateUrl: '/app/views/omWebcert/omWebcert.cookies.html',
-                    controller: 'webcert.AboutWebcertCtrl'
+                    controller: 'webcert.OmWebcertCtrl'
                 }
             }
         }).

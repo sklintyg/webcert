@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.ChoosePatientCtrl',
+angular.module('webcert').controller('webcert.SokSkrivIntygCtrl',
     [ '$scope', '$state', 'webcert.SokSkrivValjUtkastService',
         function($scope, $state, Service) {
             'use strict';

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.AboutWebcertTermsCtrl',
+angular.module('webcert').controller('webcert.OmWebcertTermsCtrl',
     ['$scope', '$log', 'common.AvtalProxy',
         function($scope, $log, avtalProxy) {
             'use strict';
