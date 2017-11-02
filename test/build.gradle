@@ -14,7 +14,7 @@ node {
 
 tasks.npmInstall.inputs.files("$projectDir/webcertTestTools/package.json")
 
-task protractorTests(type: NodeTask, dependsOn: npmInstall) {
+task protractorTests(type: NodeTask, dependsOn: [npmInstall, npm_update] ) {
     outputs.upToDateWhen { false }
     def environment = System.properties['protractor.env'] ?: "dev"
 
