@@ -79,7 +79,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
-        // Setting rehabstod to new bas url
+        // Setting Statistiktjänsten to new bas url
         browser.baseUrl = process.env.STATISTIKTJANST_URL;
         // VG_TestAutomation => TSTNMT2321000156-107M => TSTNMT2321000156-107Q
         var userObj = {
