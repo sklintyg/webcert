@@ -40,14 +40,14 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
     if (skipCookieConsent) {
         logger.info('Lämnar inte samtycke för kakor');
     }
-    logger.info('Loggar in som ' + userObj.forNamn + ' ' + userObj.efterNamn);
+    logger.info('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn);
 
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
 
     var login;
     browser.ignoreSynchronization = true;
-    browser.get('/#/fakelogin');
+    browser.get('/#!/fakelogin');
     browser.sleep(2000);
     login = loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
     browser.ignoreSynchronization = false;
