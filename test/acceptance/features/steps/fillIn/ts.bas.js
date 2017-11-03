@@ -36,18 +36,21 @@ module.exports = {
             return tsBasUtkastPage.fillInKorkortstyper(intyg.korkortstyper, 'intygetAvserForm').then(function() {
                 logger.info('OK - fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper));
             }, function(reason) {
+                console.trace(reason);
                 throw ('FEL, fillInKorkortstyper, ' + JSON.stringify(intyg.korkortstyper) + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
                 logger.info('OK - fillInIdentitetStyrktGenom:' + intyg.identitetStyrktGenom.toString());
             }, function(reason) {
+                console.trace(reason);
                 throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInSynfunktioner(intyg).then(function() {
                 logger.info('(1) OK - fillInSynfunktioner');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(1) FEL, fillInSynfunktioner,' + reason);
             });
         }).then(function() {
@@ -55,6 +58,7 @@ module.exports = {
             return tsBasUtkastPage.fillInHorselOchBalanssinne(intyg.horsel).then(function() {
                 logger.info('(2) OK - fillInHorselOchBalanssinne: ' + JSON.stringify(intyg.horsel));
             }, function(reason) {
+                console.trace(reason);
                 throw ('(2) FEL, fillInHorselOchBalanssinne,' + JSON.stringify(intyg.horsel) + reason);
             });
         }).then(function() {
@@ -62,84 +66,98 @@ module.exports = {
             return tsBasUtkastPage.fillInRorelseorganensFunktioner(intyg.rorelseorganensFunktioner).then(function() {
                 logger.info('(3) OK - fillInRorelseorganensFunktioner, ' + JSON.stringify(intyg.rorelseorganensFunktioner));
             }, function(reason) {
+                console.trace(reason);
                 throw ('(3) FEL, fillInRorelseorganensFunktioner,' + JSON.stringify(intyg.rorelseorganensFunktioner) + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInHjartOchKarlsjukdomar(intyg).then(function() {
                 logger.info('(4) OK - fillInHjartOchKarlsjukdomar');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(4) FEL, fillInHjartOchKarlsjukdomar,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInDiabetes(intyg.diabetes).then(function() {
                 logger.info('(5) OK - fillInDiabetes: ' + JSON.stringify(intyg.diabetes));
             }, function(reason) {
+                console.trace(reason);
                 throw ('(5) FEL, fillInDiabetes:, ' + JSON.stringify(intyg.diabetes) + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInNeurologiskaSjukdomar(intyg).then(function() {
                 logger.info('(6) OK - fillInNeurologiskaSjukdomar');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(6) FEL, fillInNeurologiskaSjukdomar,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInEpilepsi(intyg).then(function() {
                 logger.info('(7) OK - fillInEpilepsi');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(7) FEL, fillInEpilepsi,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInNjursjukdomar(intyg).then(function() {
                 logger.info('(8) OK - fillInNjursjukdomar');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(8) FEL, fillInNjursjukdomar,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInDemens(intyg).then(function() {
                 logger.info('(9) OK - fillInDemens');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(9) FEL, fillInDemens,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInSomnOchVakenhet(intyg).then(function() {
                 logger.info('(10) OK - fillInSomnOchVakenhet');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(10) FEL, fillInSomnOchVakenhet,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInAlkoholNarkotikaLakemedel(intyg).then(function() {
                 logger.info('(11) OK - fillInAlkoholNarkotikaLakemedel');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(11) FEL, fillInAlkoholNarkotikaLakemedel,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInPsykiska(intyg).then(function() {
                 logger.info('(12) OK - fillInPsykiska');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(12) FEL, fillInPsykiska,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInAdhd(intyg).then(function() {
                 logger.info('(13) OK - fillInAdhd');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(13) FEL, fillInAdhd,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInSjukhusvard(intyg).then(function() {
                 logger.info('(14) OK - fillInSjukhusvard');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(14) FEL, fillInSjukhusvard,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInOvrigMedicinering(intyg).then(function() {
                 logger.info('(15) OK - fillInOvrigMedicinering');
             }, function(reason) {
+                console.trace(reason);
                 throw ('(15) FEL, fillInOvrigMedicinering,' + reason);
             });
         }).then(function() {
             return tsBasUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
                 logger.info('OK - fillInBedomning');
             }, function(reason) {
+                console.trace(reason);
                 throw ('FEL, fillInBedomning,' + reason);
             });
         });

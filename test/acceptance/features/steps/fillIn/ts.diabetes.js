@@ -38,6 +38,7 @@ module.exports = {
             return tsdUtkastPage.fillInKorkortstyper(intyg.korkortstyper).then(function() {
                 logger.info('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
             }, function(reason) {
+                console.trace(reason);
                 throw ('FEL, fillInKorkortstyper,' + reason);
             });
         }).then(function() {
@@ -45,6 +46,7 @@ module.exports = {
             return tsdUtkastPage.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
                 logger.info('OK - fillInIdentitetStyrktGenom :' + JSON.stringify(intyg.identitetStyrktGenom));
             }, function(reason) {
+                console.trace(reason);
                 throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
             });
         }).then(function() {
@@ -52,6 +54,7 @@ module.exports = {
             return tsdUtkastPage.fillInAllmant(intyg.allmant).then(function() {
                 logger.info('(1) OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
             }, function(reason) {
+                console.trace(reason);
                 throw ('(1) FEL, fillInAllmant,' + reason);
             });
         }).then(function() {
@@ -59,18 +62,21 @@ module.exports = {
             return tsdUtkastPage.fillInHypoglykemier(intyg.hypoglykemier).then(function() {
                 logger.info('(2) OK - fillInHypoglykemier :' + JSON.stringify(intyg.hypoglykemier));
             }, function(reason) {
+                console.trace(reason);
                 throw ('(2) FEL, fillInHypoglykemier,' + reason);
             });
         }).then(function() {
             return tsdUtkastPage.fillInSynintyg(intyg.synintyg).then(function() {
                 logger.info('(3) OK - fillInSynintyg :' + JSON.stringify(intyg.synintyg));
             }, function(reason) {
+                console.trace(reason);
                 throw ('(3) FEL, fillInSynintyg,' + reason);
             });
         }).then(function() {
             return tsdUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
                 logger.info('(4) OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
             }, function(reason) {
+                console.trace(reason);
                 throw ('(4) FEL, fillInBedomning,' + reason);
             });
         }).then(function() {

@@ -60,6 +60,7 @@ function changeField(intygShortcode, field, callback, clearFlag) {
                             console.log('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
                             callback();
                         }, function(reason) {
+                            console.trace(reason);
                             throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
                         });
                 });

@@ -26,6 +26,8 @@
 
 var testtools = require('common-testtools');
 
+console.trace(testtools);
+console.trace(testtools.uiHelpers);
 var moveAndSendKeys;
 
 if (testtools.uiHelpers) {
