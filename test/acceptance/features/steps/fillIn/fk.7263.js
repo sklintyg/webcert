@@ -23,101 +23,120 @@
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 module.exports = {
     fillIn: function(intyg) {
-        browser.ignoreSynchronization = true;
-        var promisesArr = [];
-
-        //Ange smittskydd
-        promisesArr.push(fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function() {
-            logger.info('OK - angeSmittskydd :' + intyg.smittskydd);
-        }, function(reason) {
-            throw ('FEL, angeSmittskydd, ' + intyg.smittskydd + ' , ' + reason);
-        }));
-
-        //Ange baseras på
-        promisesArr.push(fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa).then(function() {
-            logger.info('OK - angeIntygetBaserasPa :' + JSON.stringify(intyg.baserasPa));
-        }, function(reason) {
-            throw ('FEL, angeIntygetBaserasPa,' + reason);
-        }));
-
-        //Ange funktionsnedsättning
-        promisesArr.push(fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning).then(function() {
-            logger.info('OK - angeFunktionsnedsattning :' + JSON.stringify(intyg.funktionsnedsattning));
-        }, function(reason) {
-            throw ('FEL, angeFunktionsnedsattning,' + reason);
-        }));
-
-        browser.ignoreSynchronization = false;
-        //Ange diagnoser
-        promisesArr.push(fkUtkastPage.angeDiagnoser(intyg.diagnos).then(function() {
-            logger.info('OK - angeDiagnoser :' + JSON.stringify(intyg.diagnos));
-        }, function(reason) {
-            throw ('FEL, angeDiagnoser,' + reason);
-        }));
-
-        //Ange aktuellt sjukdomsförlopp
-        promisesArr.push(fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp).then(function() {
-            logger.info('OK - angeAktuelltSjukdomsForlopp :' + JSON.stringify(intyg.aktuelltSjukdomsforlopp));
-        }, function(reason) {
-            throw ('FEL, angeAktuelltSjukdomsForlopp,' + reason);
-        }));
-
-        //Ange aktivitetsbegränsning
-        promisesArr.push(fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning).then(function() {
-            logger.info('OK - angeAktivitetsBegransning :' + JSON.stringify(intyg.aktivitetsBegransning));
-        }, function(reason) {
-            throw ('FEL, angeAktivitetsBegransning,' + reason);
-        }));
-
-        promisesArr.push(fkUtkastPage.angeArbete(intyg.arbete).then(function() {
-            logger.info('OK - angeArbete :' + JSON.stringify(intyg.arbete));
-        }, function(reason) {
-            throw ('FEL, angeArbete,' + reason);
-        }));
-        promisesArr.push(fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function() {
-            logger.info('OK - angeArbetsformaga :' + JSON.stringify(intyg.arbetsformaga));
-        }, function(reason) {
-            throw ('FEL, angeArbetsformaga,' + reason);
-        }));
-        promisesArr.push(fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB).then(function() {
-            logger.info('OK - angeArbetsformagaFMB :' + JSON.stringify(intyg.arbetsformagaFMB));
-        }, function(reason) {
-            throw ('FEL, angeArbetsformagaFMB,' + reason);
-        }));
-
-        promisesArr.push(fkUtkastPage.angePrognos(intyg.prognos).then(function() {
-            logger.info('OK - angePrognos :' + JSON.stringify(intyg.prognos));
-        }, function(reason) {
-            throw ('FEL, angePrognos, value:' +
-                JSON.stringify(intyg.prognos) + ' ,' + reason);
-        }));
-        browser.ignoreSynchronization = true;
-
-        promisesArr.push(fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK).then(function() {
-            logger.info('OK - angeKontaktOnskasMedFK :' + JSON.stringify(intyg.kontaktOnskasMedFK));
-        }, function(reason) {
-            throw ('FEL, angeKontaktOnskasMedFK,' + reason);
-        }));
-
-        promisesArr.push(fkUtkastPage.angeRekommendationer(intyg.rekommendationer).then(function() {
-            logger.info('OK - angeRekommendationer :' + JSON.stringify(intyg.rekommendationer));
-        }, function(reason) {
-            throw ('FEL, angeRekommendationer,' + reason);
-        }));
-
-        promisesArr.push(fkUtkastPage.angeFaktiskTjanstgoring('37,5').then(function() {
-            logger.info('OK - angeFaktiskTjanstgoring :' + JSON.stringify('37,5'));
-        }, function(reason) {
-            throw ('FEL, angeFaktiskTjanstgoring,' + reason);
-        }));
-
-        // //Ange enhetadress
-        // promisesArr.push(fkUtkastPage.angeEnhetAdress(global.user.enhetsAdress).then(function() {
-        //     logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
-        // }, function(reason) {
-        //     throw ('FEL, angeEnhetAdress,' + reason);
-        // }));
-
-        return Promise.all(promisesArr);
+        return new Promise(function(resolve) {
+                logger.info('Fyller i ' + intyg.typ + ' formuläret synkront');
+                browser.ignoreSynchronization = true;
+                resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
+            })
+            .then(function() {
+                //Ange smittskydd
+                return fkUtkastPage.angeSmittskydd(intyg.smittskydd).then(function() {
+                    return logger.info('OK - angeSmittskydd :' + intyg.smittskydd);
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeSmittskydd, ' + intyg.smittskydd + ' , ' + reason);
+                });
+            })
+            .then(function() {
+                //Ange baseras på
+                return fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa).then(function() {
+                    return logger.info('OK - angeIntygetBaserasPa :' + JSON.stringify(intyg.baserasPa));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeIntygetBaserasPa,' + reason);
+                });
+            })
+            .then(function() {
+                //Ange funktionsnedsättning
+                return fkUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning).then(function() {
+                    return logger.info('OK - angeFunktionsnedsattning :' + JSON.stringify(intyg.funktionsnedsattning));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeFunktionsnedsattning,' + reason);
+                });
+            })
+            .then(function() {
+                //Ange diagnoser
+                return fkUtkastPage.angeDiagnoser(intyg.diagnos).then(function() {
+                    return logger.info('OK - angeDiagnoser :' + JSON.stringify(intyg.diagnos));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeDiagnoser,' + reason);
+                });
+            })
+            .then(function() {
+                //Ange aktuellt sjukdomsförlopp
+                return fkUtkastPage.angeAktuelltSjukdomsForlopp(intyg.aktuelltSjukdomsforlopp).then(function() {
+                    return logger.info('OK - angeAktuelltSjukdomsForlopp :' + JSON.stringify(intyg.aktuelltSjukdomsforlopp));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeAktuelltSjukdomsForlopp,' + reason);
+                });
+            })
+            .then(function() {
+                //Ange aktivitetsbegränsning
+                return fkUtkastPage.angeAktivitetsBegransning(intyg.aktivitetsBegransning).then(function() {
+                    return logger.info('OK - angeAktivitetsBegransning :' + JSON.stringify(intyg.aktivitetsBegransning));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeAktivitetsBegransning,' + reason);
+                });
+            })
+            .then(function() {
+                return fkUtkastPage.angeArbete(intyg.arbete).then(function() {
+                    return logger.info('OK - angeArbete :' + JSON.stringify(intyg.arbete));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeArbete,' + reason);
+                });
+            })
+            .then(function() {
+                return fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function() {
+                    return logger.info('OK - angeArbetsformaga :' + JSON.stringify(intyg.arbetsformaga));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeArbetsformaga,' + reason);
+                });
+            })
+            .then(function() {
+                return fkUtkastPage.angeArbetsformagaFMB(intyg.arbetsformagaFMB).then(function() {
+                    return logger.info('OK - angeArbetsformagaFMB :' + JSON.stringify(intyg.arbetsformagaFMB));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeArbetsformagaFMB,' + reason);
+                });
+            })
+            .then(function() {
+                return fkUtkastPage.angePrognos(intyg.prognos).then(function() {
+                    return logger.info('OK - angePrognos :' + JSON.stringify(intyg.prognos));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angePrognos, value:' + JSON.stringify(intyg.prognos) + ' ,' + reason);
+                });
+            })
+            .then(function() {
+                return fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK).then(function() {
+                    return logger.info('OK - angeKontaktOnskasMedFK :' + JSON.stringify(intyg.kontaktOnskasMedFK));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeKontaktOnskasMedFK,' + reason);
+                });
+            })
+            .then(function() {
+                return fkUtkastPage.angeRekommendationer(intyg.rekommendationer).then(function() {
+                    return logger.info('OK - angeRekommendationer :' + JSON.stringify(intyg.rekommendationer));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeRekommendationer,' + reason);
+                });
+            })
+            .then(function() {
+                return fkUtkastPage.angeFaktiskTjanstgoring('37,5').then(function() {
+                    return logger.info('OK - angeFaktiskTjanstgoring :' + JSON.stringify('37,5'));
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeFaktiskTjanstgoring,' + reason);
+                });
+            });
     }
 };
