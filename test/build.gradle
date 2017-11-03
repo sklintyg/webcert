@@ -12,6 +12,10 @@ node {
     nodeModulesDir = projectDir
 }
 
+npm_update {
+    args = ['--verbose']
+}
+
 tasks.npmInstall.inputs.files("$projectDir/webcertTestTools/package.json")
 
 task protractorTests(type: NodeTask, dependsOn: [npmInstall, npm_update] ) {
