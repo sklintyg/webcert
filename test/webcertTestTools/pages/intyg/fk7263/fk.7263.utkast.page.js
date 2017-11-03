@@ -552,7 +552,7 @@ var FkBaseUtkast = BaseUtkast._extend({
                 return rekommendationerElement.ovrigt.checkbox.check().then(function() {
                     return rekommendationerElement.ovrigt.beskrivning.clear();
                 }).then(function() {
-                    return pageHelpers.moveAndSendKeys(rekommendationerElement, rekommendationer.ovrigt);
+                    return pageHelpers.moveAndSendKeys(rekommendationerElement.ovrigt.beskrivning, rekommendationer.ovrigt);
                 });
             }
         }).then(function() {
