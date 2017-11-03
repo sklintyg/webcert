@@ -1,6 +1,6 @@
 {
   "name": "webcert-testtools",
-  "version": "1.0.228",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "author": "",
   "dependencies": {
-    "common-testtools": "^0.1.14",
+    "common-testtools": "0.1.15",
     "jclass": "^1.2.1",
     "lodash": "^4.17.4",
     "request": "^2.79.0",
