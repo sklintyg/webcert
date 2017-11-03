@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by,browser, protractor, Promise */
+/*globals element,by,browser, protractor, Promise, logger */
 'use strict';
 
 var BaseUtkast = require('../base.utkast.page.js');
@@ -181,14 +181,14 @@ var FkUtkast = BaseUtkast._extend({
             atgarderObs: () => element(by.id('atgarderObs')),
             questionsCollapser: () => element(by.id('questionsCollapser')),
 
-        }
+        };
     },
 
     setSRSConsent: function(isConsent) {
         if (isConsent) {
-            this.srs.samtycke.ja().click()
+            this.srs.samtycke.ja().click();
         } else {
-            this.srs.samtycke.nej().click()
+            this.srs.samtycke.nej().click();
         }
     },
     getSRSQuestionnaireStatus: function() {

@@ -17,16 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise,browser,protractor*/
+/*globals element, by, Promise*/
 'use strict';
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
 var pageHelpers = require('../../../../pageHelper.util.js');
 
-function checkAndSendTextToForm(checkboxEL, textEL, text) {
-    return pageHelpers.moveAndSendKeys(checkboxEL,protractor.Key.SPACE).then(function() {
-        return pageHelpers.moveAndSendKeys(textEL,text);
-    });
-}
 
 var LuseUtkast = BaseSmiUtkast._extend({
     init: function init() {

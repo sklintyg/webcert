@@ -22,7 +22,6 @@
 'use strict';
 
 var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
-var testdataHelper = require('common-testtools').testdataHelper;
 
 var LisjpIntyg = BaseSmiIntygPage._extend({
     init: function init() {

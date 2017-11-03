@@ -132,7 +132,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
     fillInSynfunktioner: function(utkast) {
         var promiseArr = [];
         if (utkast.synDonder === 'Ja') {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.aYes,protractor.Key.SPACE));
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.aYes, protractor.Key.SPACE));
         } else {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.syn.aNo, protractor.Key.SPACE));
         }
@@ -361,9 +361,9 @@ var TsBasUtkast = BaseTsUtkast._extend({
     fillInPsykiska: function(utkast) {
         return element.all(by.css('[name="psykiskta"]')).then(function(elm) {
             if (utkast.psykiskSjukdom === 'Ja') {
-                return pageHelpers.moveAndSendKeys(elm[0],protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
-                return pageHelpers.moveAndSendKeys(elm[1],protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         });
     },
@@ -397,12 +397,12 @@ var TsBasUtkast = BaseTsUtkast._extend({
             if (utkast.sjukhusvard === 'Ja') {
                 var promiseArr = [];
                 promiseArr.push(pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE));
-                promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('tidpunkt')),utkast.sjukhusvardTidPunkt));
+                promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('tidpunkt')), utkast.sjukhusvardTidPunkt));
                 promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('vardinrattning')), utkast.sjukhusvardInrattning));
                 promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('anledning')), utkast.sjukhusvardAnledning));
                 return Promise.all(promiseArr);
             } else {
-                return pageHelpers.moveAndSendKeys(elm[1],protractor.Key.SPACE);
+                return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         });
     },

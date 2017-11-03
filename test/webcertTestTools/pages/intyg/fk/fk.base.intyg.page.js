@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by */
+/*globals element, by, protractor */
 'use strict';
 
 /**
@@ -51,7 +51,7 @@ var FkBaseIntyg = BaseIntyg._extend({
             sendButton: panel.element(by.css('.btn-success'))
         };
     },
-	clickKompletteraIntyg: function(id) {
+    clickKompletteraIntyg: function(id) {
         return element(by.id('komplettera-intyg-' + id)).sendKeys(protractor.Key.SPACE);
     }
 });

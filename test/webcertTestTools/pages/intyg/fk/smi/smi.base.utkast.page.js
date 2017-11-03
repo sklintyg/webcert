@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element, by, Promise, protractor, browser */
+/*globals element, by, Promise, protractor, browser, logger */
 'use strict';
 
 var FkBaseUtkast = require('../fk.base.utkast.page.js');
@@ -58,7 +58,7 @@ function getTextarea(el) {
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
     return pageHelpers.moveAndSendKeys(checkboxEL, protractor.Key.SPACE).then(function() {
-        return pageHelpers.moveAndSendKeys(textEL,text);
+        return pageHelpers.moveAndSendKeys(textEL, text);
     });
 }
 
@@ -191,66 +191,66 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         };
     },
     angeBaseratPa: function(baseratPa) {
-		
-		var baseratPaElmObj = this.baseratPa;
-		return new Promise(function(resolve) {
-			resolve('anger BaseratPa');
-		})
-		.then(function(){
-			if (baseratPa.minUndersokningAvPatienten) {
-				return pageHelpers.moveAndSendKeys(baseratPaElmObj.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten);
-			}
-			return;
-		})
-		.then(function(){
-			if (baseratPa.journaluppgifter) {
-				return pageHelpers.moveAndSendKeys(baseratPaElmObj.journaluppgifter.datum, baseratPa.journaluppgifter);
-			}
-			return;
-		})
-		.then(function(){
-			if (baseratPa.telefonkontakt) {
-				return pageHelpers.moveAndSendKeys(baseratPaElmObj.telefonkontakt.datum, baseratPa.telefonkontakt);
-			}
-			return;
-		})
-		.then(function(){
-			if (baseratPa.anhorigsBeskrivning) {
-				return pageHelpers.moveAndSendKeys(baseratPaElmObj.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning);
-			} 
-			return;
-		})
-		.then(function(){
-			if (baseratPa.annat) {
-				return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.datum, baseratPa.annat)
-					.then(function() {
-						return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.beskrivning,baseratPa.annatBeskrivning);
-					})
-			}
-			return;
-		})
-		.then(function(){
-			if (baseratPa.personligKannedom) {
-				return pageHelpers.moveAndSendKeys(baseratPaElmObj.kannedomOmPatient.datum, baseratPa.personligKannedom);
-			}
-			return;
-		});
+
+        var baseratPaElmObj = this.baseratPa;
+        return new Promise(function(resolve) {
+                resolve('anger BaseratPa');
+            })
+            .then(function() {
+                if (baseratPa.minUndersokningAvPatienten) {
+                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten);
+                }
+                return;
+            })
+            .then(function() {
+                if (baseratPa.journaluppgifter) {
+                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.journaluppgifter.datum, baseratPa.journaluppgifter);
+                }
+                return;
+            })
+            .then(function() {
+                if (baseratPa.telefonkontakt) {
+                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.telefonkontakt.datum, baseratPa.telefonkontakt);
+                }
+                return;
+            })
+            .then(function() {
+                if (baseratPa.anhorigsBeskrivning) {
+                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning);
+                }
+                return;
+            })
+            .then(function() {
+                if (baseratPa.annat) {
+                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.datum, baseratPa.annat)
+                        .then(function() {
+                            return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.beskrivning, baseratPa.annatBeskrivning);
+                        });
+                }
+                return;
+            })
+            .then(function() {
+                if (baseratPa.personligKannedom) {
+                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.kannedomOmPatient.datum, baseratPa.personligKannedom);
+                }
+                return;
+            });
     },
     angeFunktionsnedsattning: function(nedsattning) {
         var fn = this.funktionsnedsattning;
-        return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell).then(function(){
-			return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);
-		}).then(function(){
-			return checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration);
-		}).then(function(){
-			return checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk);
-		}).then(function(){
-			return checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal);
-		}).then(function(){
-			return checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination);
-		}).then(function(){
-			return checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan);
-		});
+        return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell).then(function() {
+            return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);
+        }).then(function() {
+            return checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration);
+        }).then(function() {
+            return checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk);
+        }).then(function() {
+            return checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal);
+        }).then(function() {
+            return checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination);
+        }).then(function() {
+            return checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan);
+        });
     },
 
     angeAndraMedicinskaUtredningar: function(utredningar) {

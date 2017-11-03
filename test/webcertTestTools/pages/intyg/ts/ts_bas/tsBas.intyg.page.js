@@ -61,7 +61,7 @@ var TsBasIntyg = TsBaseIntyg._extend({
         this.progressivOgonsjukdom = element(by.id('syn-progressivOgonsjukdom'));
 
         this.harDiabetes = element(by.id('diabetes-harDiabetes'));
-		this.kostTabletterInsulin = element(by.id('["diabetes.kost","diabetes.tabletter","diabetes.insulin"]'));
+        this.kostTabletterInsulin = element(by.id('["diabetes.kost","diabetes.tabletter","diabetes.insulin"]'));
         this.diabetesTyp = element(by.id('diabetes-diabetesTyp'));
         this.getBehandlingsTyp = function(index) {
             return element(by.id('diabetes-kost-diabetes-tabletter-diabetes-insulin-' + index));
@@ -132,7 +132,7 @@ var TsBasIntyg = TsBaseIntyg._extend({
 
             if (diabetes.typ === 'Typ 2') {
                 for (var i = 0; diabetes.behandlingsTyper.length > i; i++) {
-                    var typ = diabetes.behandlingsTyper[i]  === 'Endast kost' ? 'Kost' : diabetes.behandlingsTyper[i];
+                    var typ = diabetes.behandlingsTyper[i] === 'Endast kost' ? 'Kost' : diabetes.behandlingsTyper[i];
                     expect(this.getBehandlingsTyp(i).getText()).toBe(typ);
                 }
             }

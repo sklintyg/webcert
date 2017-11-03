@@ -70,14 +70,14 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
         };
     },
     angeAktivitetsbegransning: function(aktivitetsbegransning) {
-        return pageHelpers.moveAndSendKeys(this.aktivitetsbegransning,aktivitetsbegransning);
+        return pageHelpers.moveAndSendKeys(this.aktivitetsbegransning, aktivitetsbegransning);
     },
 
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([
-            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid,forutsattningar.utecklasOverTid),
-            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.trotsBegransningar,forutsattningar.trotsBegransningar),
-            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.forslagTillAtgard,forutsattningar.forslagTillAtgard)
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid),
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.trotsBegransningar, forutsattningar.trotsBegransningar),
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.forslagTillAtgard, forutsattningar.forslagTillAtgard)
         ]);
     },
 

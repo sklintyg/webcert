@@ -21,7 +21,7 @@
  * Created by BESA on 2015-11-25.
  * Holds helper functions for actions that are needed often in pages.
  */
-/*globals protractor,element,Promise */
+/*globals protractor, Promise, logger */
 'use strict';
 
 var testtools = require('common-testtools');
@@ -31,20 +31,20 @@ console.trace(testtools.uiHelpers);
 var moveAndSendKeys;
 
 if (testtools.uiHelpers) {
-	moveAndSendKeys = testtools.uiHelpers.moveAndSendKeys;
+    moveAndSendKeys = testtools.uiHelpers.moveAndSendKeys;
 } else {
-	moveAndSendKeys = function(elm, keys, description){
-	return elm.sendKeys(keys).then(function() {
-		return logger.silly('sendKeys OK - ' + description);
-	}, function(reason) {
-		console.trace(reason);
-		throw ('FEL, ' + description + ', ' + reason);
-		});
-	}
+    moveAndSendKeys = function(elm, keys, description) {
+        return elm.sendKeys(keys).then(function() {
+            return logger.silly('sendKeys OK - ' + description);
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, ' + description + ', ' + reason);
+        });
+    };
 }
 
 module.exports = {
-	moveAndSendKeys: moveAndSendKeys,
+    moveAndSendKeys: moveAndSendKeys,
     clickAll: function(elementArray, elementTextsArray) {
         if (!elementTextsArray) {
             return Promise.resolve();
@@ -55,12 +55,12 @@ module.exports = {
                 return (elementTextsArray.indexOf(text) >= 0);
             });
         }).then(function(filteredElements) {
-			
-			return filteredElements.forEach(function(element, i) {
-					filteredElements[i].getText().then(function(description){
-					moveAndSendKeys(filteredElements[i], protractor.Key.SPACE, description);
-				});
-			});
+
+            return filteredElements.forEach(function(element, i) {
+                filteredElements[i].getText().then(function(description) {
+                    moveAndSendKeys(filteredElements[i], protractor.Key.SPACE, description);
+                });
+            });
         });
     },
     hasHogreKorkortsbehorigheter: function(korkortstyper) {

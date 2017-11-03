@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals element,by,browser, protractor, Promise */
+/*globals element,by,browser, protractor, Promise, logger */
 'use strict';
 
 var BaseUtkast = require('../base.utkast.page.js');
@@ -182,14 +182,14 @@ var FkUtkast = BaseUtkast._extend({
             atgarderObs: () => element(by.id('atgarderObs')),
             questionsCollapser: () => element(by.id('questionsCollapser')),
 
-        }
+        };
     },
 
     setSRSConsent: function(isConsent) {
         if (isConsent) {
-            this.srs.samtycke.ja().click()
+            this.srs.samtycke.ja().click();
         } else {
-            this.srs.samtycke.nej().click()
+            this.srs.samtycke.nej().click();
         }
     },
     getSRSQuestionnaireStatus: function() {
@@ -247,58 +247,58 @@ var FkUtkast = BaseUtkast._extend({
         var element = !diagnosKodElement ? this.diagnosKod : diagnosKodElement;
 
         return element.clear()
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(element,kod);
-		})
-		.then(function() {
-            return browser.sleep(200);
-        }).then(function(){
-			return pageHelpers.moveAndSendKeys(element,protractor.Key.ENTER);
-		});
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(element, kod);
+            })
+            .then(function() {
+                return browser.sleep(200);
+            }).then(function() {
+                return pageHelpers.moveAndSendKeys(element, protractor.Key.ENTER);
+            });
 
     },
     angeDiagnosFortydligande: function(txt) {
         var elm = this.diagnos.fortydligande;
-		return elm.clear().then(function(){
-			return pageHelpers.moveAndSendKeys(elm, txt);
-		});
-		},
+        return elm.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(elm, txt);
+        });
+    },
     angeFunktionsnedsattning: function(txt) {
         if (!txt) {
             return Promise.resolve('Success');
         }
-		var elm = this.funktionsNedsattning;
-        return elm.clear().then(function(){
-			return pageHelpers.moveAndSendKeys(elm,txt);
-		});
-		
+        var elm = this.funktionsNedsattning;
+        return elm.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(elm, txt);
+        });
+
     },
     angeAktivitetsBegransning: function(txt) {
         if (!txt) {
-			return Promise.resolve('Success');   
+            return Promise.resolve('Success');
         }
-		var elm = this.aktivitetsBegransning;
-		return elm.clear().then(function(){
-			return pageHelpers.moveAndSendKeys(elm,txt);
-		});
+        var elm = this.aktivitetsBegransning;
+        return elm.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(elm, txt);
+        });
     },
     angeNuvarandeArbete: function(txt) {
-		var elm = this.nuvarandeArbete;
-		return elm.clear().then(function(){
-			return pageHelpers.moveAndSendKeys(elm,txt);
-		});
+        var elm = this.nuvarandeArbete;
+        return elm.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(elm, txt);
+        });
     },
     angeFaktiskTjanstgoring: function(txt) {
         var elm = this.faktiskTjanstgoring;
-		return elm.clear().then(function(){
-			return pageHelpers.moveAndSendKeys(elm,txt);
-		});
+        return elm.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(elm, txt);
+        });
     },
     angeOvrigaUpplysningar: function(txt) {
-		var elm = this.otherInformation;
-		return elm.clear().then(function(){
-			return pageHelpers.moveAndSendKeys(elm,txt);
-		});
+        var elm = this.otherInformation;
+        return elm.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(elm, txt);
+        });
     },
     angeSmittskydd: function(isSmittskydd) {
         if (isSmittskydd) {
@@ -307,125 +307,145 @@ var FkUtkast = BaseUtkast._extend({
             return Promise.resolve('Success');
         }
     },
-    angeIntygetBaserasPa: function(intygetBaserasPa) {		
+    angeIntygetBaserasPa: function(intygetBaserasPa) {
         if (!intygetBaserasPa) {
             return Promise.resolve('Success');
         } else {
-			var baserasPa = this.baserasPa;
-			return new Promise(function(resolve) {
-				resolve('anger BaseratPa');
-			}).then(function(){
-				if (intygetBaserasPa.minUndersokning) {
-					return baserasPa.minUndersokning.datum.clear().then(function(){
-						return pageHelpers.moveAndSendKeys(baserasPa.minUndersokning.datum, intygetBaserasPa.minUndersokning.datum);
-					});
-				} else {return;}
-			}).then(function(){
-				if (intygetBaserasPa.minTelefonkontakt) {
-					return baserasPa.minTelefonkontakt.datum.clear().then(function(){
-						return pageHelpers.moveAndSendKeys(baserasPa.minTelefonkontakt.datum, intygetBaserasPa.minTelefonkontakt.datum);
-					});
-				} else {return;}
-			}).then(function(){
-				if (intygetBaserasPa.journaluppgifter) {
-					return baserasPa.journaluppgifter.datum.clear().then(function(){
-						return pageHelpers.moveAndSendKeys(baserasPa.journaluppgifter.datum, intygetBaserasPa.journaluppgifter.datum);
-					});
-				} else {return;}
-			}).then(function(){
-				if (intygetBaserasPa.annat) {
-					return baserasPa.annat.datum.clear().then(function(){
-						return pageHelpers.moveAndSendKeys(baserasPa.annat.datum, intygetBaserasPa.annat.datum);
-					}).then(function(){
-						return baserasPa.annat.text.clear();
-					}).then(function(){
-						return pageHelpers.moveAndSendKeys(baserasPa.annat.text,intygetBaserasPa.annat.text);
-					});
-				} else {return;}
-			});	
-		}
+            var baserasPa = this.baserasPa;
+            return new Promise(function(resolve) {
+                resolve('anger BaseratPa');
+            }).then(function() {
+                if (intygetBaserasPa.minUndersokning) {
+                    return baserasPa.minUndersokning.datum.clear().then(function() {
+                        return pageHelpers.moveAndSendKeys(baserasPa.minUndersokning.datum, intygetBaserasPa.minUndersokning.datum);
+                    });
+                } else {
+                    return;
+                }
+            }).then(function() {
+                if (intygetBaserasPa.minTelefonkontakt) {
+                    return baserasPa.minTelefonkontakt.datum.clear().then(function() {
+                        return pageHelpers.moveAndSendKeys(baserasPa.minTelefonkontakt.datum, intygetBaserasPa.minTelefonkontakt.datum);
+                    });
+                } else {
+                    return;
+                }
+            }).then(function() {
+                if (intygetBaserasPa.journaluppgifter) {
+                    return baserasPa.journaluppgifter.datum.clear().then(function() {
+                        return pageHelpers.moveAndSendKeys(baserasPa.journaluppgifter.datum, intygetBaserasPa.journaluppgifter.datum);
+                    });
+                } else {
+                    return;
+                }
+            }).then(function() {
+                if (intygetBaserasPa.annat) {
+                    return baserasPa.annat.datum.clear().then(function() {
+                        return pageHelpers.moveAndSendKeys(baserasPa.annat.datum, intygetBaserasPa.annat.datum);
+                    }).then(function() {
+                        return baserasPa.annat.text.clear();
+                    }).then(function() {
+                        return pageHelpers.moveAndSendKeys(baserasPa.annat.text, intygetBaserasPa.annat.text);
+                    });
+                } else {
+                    return;
+                }
+            });
+        }
     },
     angeDiagnoser: function(diagnos) {
-		var angeDiagnosKod = this.angeDiagnosKod;
-		var diagnosKodElm = this.diagnosKod;
-		var diagnosElm = this.diagnos;
-		
-		return new Promise(function(resolve) {
-			resolve('anger Diagnoser');
-		}).then(function(){
-			if (diagnos.diagnoser && diagnos.diagnoser[0].ICD10) {
-				return angeDiagnosKod(diagnos.diagnoser[0].ICD10, diagnosKodElm);
-			} else { return; }
-		}).then(function(){
-			if (diagnos.fortydligande) {
-				return diagnosElm.fortydligande.clear().then(function(){
-					return pageHelpers.moveAndSendKeys(diagnosElm.fortydligande, diagnos.fortydligande);
-				});
-			} else { return; }
-		}).then(function(){
-			if (diagnos.samsjuklighetForeligger) {
-				return diagnosElm.samsjuklighetForeligger.check();
-			} else { return; }
-		});
+        var angeDiagnosKod = this.angeDiagnosKod;
+        var diagnosKodElm = this.diagnosKod;
+        var diagnosElm = this.diagnos;
+
+        return new Promise(function(resolve) {
+            resolve('anger Diagnoser');
+        }).then(function() {
+            if (diagnos.diagnoser && diagnos.diagnoser[0].ICD10) {
+                return angeDiagnosKod(diagnos.diagnoser[0].ICD10, diagnosKodElm);
+            } else {
+                return;
+            }
+        }).then(function() {
+            if (diagnos.fortydligande) {
+                return diagnosElm.fortydligande.clear().then(function() {
+                    return pageHelpers.moveAndSendKeys(diagnosElm.fortydligande, diagnos.fortydligande);
+                });
+            } else {
+                return;
+            }
+        }).then(function() {
+            if (diagnos.samsjuklighetForeligger) {
+                return diagnosElm.samsjuklighetForeligger.check();
+            } else {
+                return;
+            }
+        });
     },
     angeArbetsformaga: function(arbetsformaga) {
-		var nedsatt = this.nedsatt;
-		
-		return new Promise(function(resolve) {
-			resolve('anger Arbetsformaga');
-		}).then(function(){
-			var promisesArr = [
-            nedsatt.med25.from.clear(),
-            nedsatt.med25.tom.clear(),
-            nedsatt.med50.from.clear(),
-            nedsatt.med50.tom.clear(),
-            nedsatt.med75.from.clear(),
-            nedsatt.med75.tom.clear(),
-            nedsatt.med100.from.clear(),
-            nedsatt.med100.tom.clear()
-			];
-			return Promise.all(promisesArr);
-		}).then(function(){
-			if (arbetsformaga.nedsattMed25) {
-            return pageHelpers.moveAndSendKeys(nedsatt.med25.from, arbetsformaga.nedsattMed25.from).then(function(){
-					return pageHelpers.moveAndSendKeys(nedsatt.med25.tom, arbetsformaga.nedsattMed25.tom);
-			});
-			} else { return; }
-		}).then(function(){
-			if (arbetsformaga.nedsattMed50) {
-				return pageHelpers.moveAndSendKeys(nedsatt.med50.from, arbetsformaga.nedsattMed50.from).then(function(){
-						return pageHelpers.moveAndSendKeys(nedsatt.med50.tom, arbetsformaga.nedsattMed50.tom);
-				});
-			} else { return; }
-		}).then(function(){
-			if (arbetsformaga.nedsattMed75) {
-				return pageHelpers.moveAndSendKeys(nedsatt.med75.from, arbetsformaga.nedsattMed75.from).then(function(){
-					return pageHelpers.moveAndSendKeys(nedsatt.med75.tom, arbetsformaga.nedsattMed75.tom);
-				});	
-			} else { return; }
-		}).then(function(){
-			if (arbetsformaga.nedsattMed100) {
-				return pageHelpers.moveAndSendKeys(nedsatt.med100.from, arbetsformaga.nedsattMed100.from).then(function() {
-					return pageHelpers.moveAndSendKeys(nedsatt.med100.tom, arbetsformaga.nedsattMed100.tom);
-				});
-			}
-		});
+        var nedsatt = this.nedsatt;
+
+        return new Promise(function(resolve) {
+            resolve('anger Arbetsformaga');
+        }).then(function() {
+            var promisesArr = [
+                nedsatt.med25.from.clear(),
+                nedsatt.med25.tom.clear(),
+                nedsatt.med50.from.clear(),
+                nedsatt.med50.tom.clear(),
+                nedsatt.med75.from.clear(),
+                nedsatt.med75.tom.clear(),
+                nedsatt.med100.from.clear(),
+                nedsatt.med100.tom.clear()
+            ];
+            return Promise.all(promisesArr);
+        }).then(function() {
+            if (arbetsformaga.nedsattMed25) {
+                return pageHelpers.moveAndSendKeys(nedsatt.med25.from, arbetsformaga.nedsattMed25.from).then(function() {
+                    return pageHelpers.moveAndSendKeys(nedsatt.med25.tom, arbetsformaga.nedsattMed25.tom);
+                });
+            } else {
+                return;
+            }
+        }).then(function() {
+            if (arbetsformaga.nedsattMed50) {
+                return pageHelpers.moveAndSendKeys(nedsatt.med50.from, arbetsformaga.nedsattMed50.from).then(function() {
+                    return pageHelpers.moveAndSendKeys(nedsatt.med50.tom, arbetsformaga.nedsattMed50.tom);
+                });
+            } else {
+                return;
+            }
+        }).then(function() {
+            if (arbetsformaga.nedsattMed75) {
+                return pageHelpers.moveAndSendKeys(nedsatt.med75.from, arbetsformaga.nedsattMed75.from).then(function() {
+                    return pageHelpers.moveAndSendKeys(nedsatt.med75.tom, arbetsformaga.nedsattMed75.tom);
+                });
+            } else {
+                return;
+            }
+        }).then(function() {
+            if (arbetsformaga.nedsattMed100) {
+                return pageHelpers.moveAndSendKeys(nedsatt.med100.from, arbetsformaga.nedsattMed100.from).then(function() {
+                    return pageHelpers.moveAndSendKeys(nedsatt.med100.tom, arbetsformaga.nedsattMed100.tom);
+                });
+            }
+        });
     },
     angeAktuelltSjukdomsForlopp: function(txt) {
         if (txt) {
-			var aktuelltSjukdomsForlopp = this.aktuelltSjukdomsForlopp;
-            return aktuelltSjukdomsForlopp.clear().then(function(){
-				return pageHelpers.moveAndSendKeys(aktuelltSjukdomsForlopp, txt);
-			});
+            var aktuelltSjukdomsForlopp = this.aktuelltSjukdomsForlopp;
+            return aktuelltSjukdomsForlopp.clear().then(function() {
+                return pageHelpers.moveAndSendKeys(aktuelltSjukdomsForlopp, txt);
+            });
         } else {
             return Promise.resolve('Success');
         }
     },
     angeArbetsformagaFMB: function(txt) {
-		var arbetsformagaFMB = this.arbetsformagaFMB;
-        return arbetsformagaFMB.clear().then(function(){
-			return pageHelpers.moveAndSendKeys(arbetsformagaFMB, txt);
-		});
+        var arbetsformagaFMB = this.arbetsformagaFMB;
+        return arbetsformagaFMB.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(arbetsformagaFMB, txt);
+        });
     },
     angePrognos: function(prognos) {
         logger.debug(prognos);
@@ -440,53 +460,59 @@ var FkUtkast = BaseUtkast._extend({
         } else if (prognos.val === 'Går inte att bedöma') {
             return this.prognos.GAR_EJ_ATT_BEDOMA.check().then(function() {
                 if (prognos.fortydligande) {
-                    return prognosFortydligande.clear().then(function(){
-						return pageHelpers.moveAndSendKeys(prognosFortydligande, prognos.fortydligande);
-					});  
-				} else {
+                    return prognosFortydligande.clear().then(function() {
+                        return pageHelpers.moveAndSendKeys(prognosFortydligande, prognos.fortydligande);
+                    });
+                } else {
                     return Promise.resolve('Inget förtydligande');
                 }
             });
         }
     },
     angeArbete: function(arbete) {
-		var arbeteElemenet = this.arbete;
+        var arbeteElemenet = this.arbete;
         var nuvarandeArbeteTextElement = this.arbete.nuvarandeArbete.text;
-		
-		return new Promise(function(resolve) {
-			resolve('anger Arbete');
-		}).then(function(){
-			if (arbete.nuvarandeArbete) {
-				return arbeteElemenet.nuvarandeArbete.checkbox.check().then(function() {
-					if (arbete.nuvarandeArbete.aktuellaArbetsuppgifter) {
-						return nuvarandeArbeteTextElement.clear().then(function(){
-							return pageHelpers.moveAndSendKeys(nuvarandeArbeteTextElement, arbete.nuvarandeArbete.aktuellaArbetsuppgifter);
-						});
-					} else {
-						return Promise.resolve('Success');
-					}
-				});
-			} else { return Promise.resolve('Success'); }
-		}).then(function(){
-			if (arbete.arbetsloshet) {
-				return arbeteElemenet.arbetslos.checkbox.check();
-			} else { return Promise.resolve('Success'); }
-		}).then(function(){
-			if (arbete.foraldraledighet) {
-				return arbeteElemenet.foraldraledig.checkbox.check();
-			} else { return Promise.resolve('Success'); }
-		});
+
+        return new Promise(function(resolve) {
+            resolve('anger Arbete');
+        }).then(function() {
+            if (arbete.nuvarandeArbete) {
+                return arbeteElemenet.nuvarandeArbete.checkbox.check().then(function() {
+                    if (arbete.nuvarandeArbete.aktuellaArbetsuppgifter) {
+                        return nuvarandeArbeteTextElement.clear().then(function() {
+                            return pageHelpers.moveAndSendKeys(nuvarandeArbeteTextElement, arbete.nuvarandeArbete.aktuellaArbetsuppgifter);
+                        });
+                    } else {
+                        return Promise.resolve('Success');
+                    }
+                });
+            } else {
+                return Promise.resolve('Success');
+            }
+        }).then(function() {
+            if (arbete.arbetsloshet) {
+                return arbeteElemenet.arbetslos.checkbox.check();
+            } else {
+                return Promise.resolve('Success');
+            }
+        }).then(function() {
+            if (arbete.foraldraledighet) {
+                return arbeteElemenet.foraldraledig.checkbox.check();
+            } else {
+                return Promise.resolve('Success');
+            }
+        });
     },
     angeAtgarder: function(atgarder) {
-		var atgarderElement = this.atgarder;
-		
-        return atgarderElement.measuresCurrent.clear().then(function(){
-			return pageHelpers.moveAndSendKeys(atgarderElement.measuresCurrent, atgarder.planerad);
-		}).then(function(){
-			return atgarderElement.measuresOther.clear();
-		}).then(function(){
-			return pageHelpers.moveAndSendKeys(atgarderElement.measuresOther, atgarder.annan);
-		});
+        var atgarderElement = this.atgarder;
+
+        return atgarderElement.measuresCurrent.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(atgarderElement.measuresCurrent, atgarder.planerad);
+        }).then(function() {
+            return atgarderElement.measuresOther.clear();
+        }).then(function() {
+            return pageHelpers.moveAndSendKeys(atgarderElement.measuresOther, atgarder.annan);
+        });
     },
     angeKontaktOnskasMedFK: function(kontaktOnskas) {
         if (kontaktOnskas) {
@@ -496,46 +522,50 @@ var FkUtkast = BaseUtkast._extend({
         }
     },
     angeRekommendationer: function(rekommendationer) {
-        
-		var rekommendationerElement = this.rekommendationer;
-		var travelRadioButtonJa = this.travelRadioButtonJa;
-		var travelRadioButtonNej = this.travelRadioButtonNej;
-		
-		return new Promise(function(resolve) {
-			resolve('anger Arbete');
-		}).then(function(){
-			if (rekommendationer.resor) {
-				return travelRadioButtonJa.check();
-			} else {
-				return travelRadioButtonNej.check();
-			}
-		}).then(function(){
-			if (rekommendationer.kontaktMedArbetsformedlingen) {
-				return rekommendationerElement.kontaktAf.check();
-			} else {return; }
-		}).then(function(){
-			if (rekommendationer.kontaktMedForetagshalsovard) {
-				return rekommendationerElement.kontaktFH.check();
-			} else {return; }
-		}).then(function(){
-			if (rekommendationer.ovrigt) {
-				return rekommendationerElement.ovrigt.checkbox.check().then(function(){
-					return rekommendationerElement.ovrigt.beskrivning.clear();
-				}).then(function(){
-					return pageHelpers.moveAndSendKeys(rekommendationerElement, rekommendationer.ovrigt);
-				});
-			}
-		}).then(function(){
-			if (rekommendationer.arbetslivsinriktadRehab) {
-				if (rekommendationer.arbetslivsinriktadRehab === 'Ja') {
-					return rekommendationerElement.rehab.JA.check();
-				} else if (rekommendationer.arbetslivsinriktadRehab === 'Nej') {
-					return rekommendationerElement.rehab.NEJ.check();
-				} else if (rekommendationer.arbetslivsinriktadRehab === 'Går inte att bedöma') {
-					return rekommendationerElement.rehab.GAR_EJ_ATT_BEDOMA.check();
-				}
-			}
-		});
+
+        var rekommendationerElement = this.rekommendationer;
+        var travelRadioButtonJa = this.travelRadioButtonJa;
+        var travelRadioButtonNej = this.travelRadioButtonNej;
+
+        return new Promise(function(resolve) {
+            resolve('anger Arbete');
+        }).then(function() {
+            if (rekommendationer.resor) {
+                return travelRadioButtonJa.check();
+            } else {
+                return travelRadioButtonNej.check();
+            }
+        }).then(function() {
+            if (rekommendationer.kontaktMedArbetsformedlingen) {
+                return rekommendationerElement.kontaktAf.check();
+            } else {
+                return;
+            }
+        }).then(function() {
+            if (rekommendationer.kontaktMedForetagshalsovard) {
+                return rekommendationerElement.kontaktFH.check();
+            } else {
+                return;
+            }
+        }).then(function() {
+            if (rekommendationer.ovrigt) {
+                return rekommendationerElement.ovrigt.checkbox.check().then(function() {
+                    return rekommendationerElement.ovrigt.beskrivning.clear();
+                }).then(function() {
+                    return pageHelpers.moveAndSendKeys(rekommendationerElement, rekommendationer.ovrigt);
+                });
+            }
+        }).then(function() {
+            if (rekommendationer.arbetslivsinriktadRehab) {
+                if (rekommendationer.arbetslivsinriktadRehab === 'Ja') {
+                    return rekommendationerElement.rehab.JA.check();
+                } else if (rekommendationer.arbetslivsinriktadRehab === 'Nej') {
+                    return rekommendationerElement.rehab.NEJ.check();
+                } else if (rekommendationer.arbetslivsinriktadRehab === 'Går inte att bedöma') {
+                    return rekommendationerElement.rehab.GAR_EJ_ATT_BEDOMA.check();
+                }
+            }
+        });
     },
     getQAElementByText: function(containingText) {
         var panel = element(by.cssContainingText('.qa-panel', containingText));

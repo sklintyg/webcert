@@ -20,6 +20,7 @@
 /**
  * Created by bennysce on 17-12-15.
  */
+/*globals browser*/
 'use strict';
 
 var JClass = require('jclass');

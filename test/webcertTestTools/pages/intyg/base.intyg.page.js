@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 02-12-15.
  */
-/*globals browser, protractor,Promise*/
+/*globals browser, protractor, Promise, logger*/
 'use strict';
 
 var JClass = require('jclass');
@@ -149,7 +149,7 @@ var BaseIntyg = JClass._extend({
     isAt: function() {
         var at = this.at;
         return browser.wait(function() {
-           return at.isPresent();
+            return at.isPresent();
         }, 5000);
     },
     send: function() {
@@ -178,7 +178,7 @@ var BaseIntyg = JClass._extend({
     sendNewArende: function(arendeText, arendeAmne) {
         var self = this;
         return this.newArendeBtn.click().then(function() {
-            return pageHelpers.moveAndSendKeys(self.arendeText,arendeText).then(function() {
+            return pageHelpers.moveAndSendKeys(self.arendeText, arendeText).then(function() {
                 return self.arendeValjAmne(arendeAmne).then(function() {
                     return self.arendeSend.click();
                 });
@@ -228,7 +228,7 @@ var BaseIntyg = JClass._extend({
         return element(by.id('komplettera-intyg-' + id));
     },
     getUthoppKompletteraSvaraButton: function(id) {
-        return element(by.id('uthopp-svara-med-meddelande-'+id))
+        return element(by.id('uthopp-svara-med-meddelande-' + id));
     },
     getKompletteraIntygFortsattPaIntygsutkastButton: function(id) {
         return element(by.id('komplettera-open-utkast-' + id));
@@ -248,8 +248,7 @@ var BaseIntyg = JClass._extend({
             restUtil.getIntyg(intygsId).then(function(intygBody) {
                 if (intygBody.body) {
                     innerDefer.fulfill(true);
-                }
-                else {
+                } else {
                     innerDefer.fulfill(false);
                 }
             }, function(error) {

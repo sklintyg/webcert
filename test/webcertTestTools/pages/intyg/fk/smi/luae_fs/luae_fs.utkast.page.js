@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise, protractor, browser*/
+/*globals element,by, Promise*/
 'use strict';
 
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
@@ -85,7 +85,7 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
         var fn = this.funktionsnedsattning;
 
         var promisesArr = [];
-        promisesArr.push(pageHelpers.moveAndSendKeys(fn.debut,funktionsnedsattning.debut));
+        promisesArr.push(pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut));
         promisesArr.push(pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan));
 
         return Promise.all(promisesArr);

@@ -148,6 +148,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
 
     },
     fillInHypoglykemier: function(hypoglykemierObj) {
+        //TODO: jshint: This function's cyclomatic complexity is too high.
         //logger.info('Anger hypoglykemier:' + hypoglykemierObj.toString());
         var promisesArr = [];
         var hypoglykemierEl = this.hypoglykemier;

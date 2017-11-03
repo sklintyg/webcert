@@ -30,7 +30,6 @@ var FkBaseIntyg = require('../fk.base.intyg.page.js');
 var BaseSmiIntygPage = FkBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
-        var that = this;
 
         this.certficate = element(by.id('certificate'));
         this.notSentMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
