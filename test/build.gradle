@@ -12,13 +12,9 @@ node {
     nodeModulesDir = projectDir
 }
 
-npm_update {
-    args = ['--verbose']
-}
-
 tasks.npmInstall.inputs.files("$projectDir/webcertTestTools/package.json")
 
-task protractorTests(type: NodeTask, dependsOn: [npmInstall, npm_update] ) {
+task protractorTests(type: NodeTask, dependsOn: yarn) {
     outputs.upToDateWhen { false }
     def environment = System.properties['protractor.env'] ?: "dev"
 
