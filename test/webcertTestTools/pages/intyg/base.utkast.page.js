@@ -85,7 +85,7 @@ var BaseUtkast = JClass._extend({
         return browser.wait(EC.elementToBeClickable(this.signeraButton), 5000);
     },
     signeraButtonClick: function() {
-        return pageHelpers.moveAndSendKeys(this.signeraButton.sendKeys, protractor.Key.SPACE);
+        return pageHelpers.moveAndSendKeys(this.signeraButton, protractor.Key.SPACE);
     },
     getMissingInfoMessagesCount: function() {
         return this.showMissingInfoList.all(by.tagName('a')).then(function(items) {
