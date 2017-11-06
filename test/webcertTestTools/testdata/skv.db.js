@@ -25,12 +25,12 @@ var fkValues = require('./testvalues.js').fk;
 
 
 
-function getDodsdatumSakertDatum(dodsdatumSakert){
+function getDodsdatumSakertDatum(datumSakert){
 	var today = new Date();
 	var date = new Date();
 	date.setDate(today.getDate() - Math.floor(Math.random() * 365));
 	
-	if (dodsdatumSakert) {
+	if (datumSakert) {
 		return testdataHelper.dateFormat(date);
 	} else {
 		var monthArr = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
@@ -41,6 +41,12 @@ function getDodsdatumSakertDatum(dodsdatumSakert){
 		}
 	}
 	
+}
+
+function getExplosivImplantat() {
+	obj1 = {false}
+	obj2 = {true, avlagsnat : testdataHelper.randomTrueFalse()}
+	return shuffle([obj1,obj2])[0];
 }
 
 module.exports = {
@@ -54,20 +60,17 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
 		
-		var dodsdatumSakert = testdataHelper.randomTrueFalse();
+		var datumSakert = testdataHelper.randomTrueFalse();
 		
 		return {
             id : intygsID,
-			typ : "Dödsbevis intyg",
-            identitetStyrkt : shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
-            dodsdatumSakert : dodsdatumSakert,
-			dodsdatumSakertDatum : getDodsdatumSakertDatum(),
-            dodsplatsKommun : testdataHelper.randomTextString(),
-            dodsplatsBoende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])
+			typ : "Dödsbevis",
+            identitetStyrktGenom : shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
+            dodsdatum : {datumSakert : datumSakert,	datum : getDodsdatumSakertDatum(datumSakert)}
+            dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])},
             barn : testdataHelper.randomTrueFalse(),
-            explosivImplantat : testdataHelper.randomTrueFalse(),
-			explosivImplantat.avlagsnat : testdataHelper.randomTrueFalse(),
-            undersokningYttre : shuffle(["Ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0],
+            explosivImplantat : getExplosivImplantat(),
+            yttreUndersokning : shuffle(["Ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0],
             polisanmalan : testdataHelper.randomTrueFalse();
 		};
 		
