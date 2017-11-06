@@ -1200,14 +1200,9 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"webcert-testtools@file:./webcertTestTools":
-  version "1.1.1"
-  dependencies:
-    common-testtools "0.1.15"
-    jclass "^1.2.1"
-    lodash "^4.17.4"
-    request "^2.79.0"
-    xml2js "^0.4.17"
+"webcert-testtools@link:./webcertTestTools":
+  version "0.0.0"
+  uid ""
 
 webdriver-js-extender@^1.0.0:
   version "1.0.0"
