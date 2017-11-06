@@ -81,11 +81,13 @@ module.exports = function() {
 
     this.When(/^jag klickar på knappen för SRS$/, () => fk7263utkast.srs.knapp().click());
 
-    this.When(/^jag klickar på pilen$/, () => fk7263utkast.srs.visamer().getAttribute('class')
-        .then((collapsed) => collapsed.includes('collapsed') ? true : false)
-        .then((isCollapsed) => isCollapsed ? fk7263utkast.srs.visamer().click() : undefined)
-        .then(() => browser.sleep(500))
-    );
+    this.When(/^jag klickar på pilen( för att minimera)?$/, action => {
+        fk7263utkast.srs.visamer().getAttribute('class')
+            .then((collapsed) => collapsed.includes('collapsed') ? true : false)
+            .then((isCollapsed) => isCollapsed ? fk7263utkast.srs.visamer().click() :
+                (action !== undefined && action.trim() === 'för att minimera') ? fk7263utkast.srs.visamer().click() : undefined)
+            .then(() => browser.sleep(500));
+    });
 
     this.Then(/^ska frågepanelen för SRS vara "(minimerad|maximerad)"$/,
         status => expect(fk7263utkast.getSRSQuestionnaireStatus()).to.eventually.equal(status)

@@ -65,7 +65,7 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     Och ska en frågepanel för SRS "visas"
     När jag klickar på pilen
     Så ska frågepanelen för SRS vara "maximerad"
-    När jag klickar på pilen
+    När jag klickar på pilen för att minimera
     Så ska frågepanelen för SRS vara "minimerad"
 
 @SRS-US-W02 @åtgärder @OBS-åtgärder @REK-åtgärder
