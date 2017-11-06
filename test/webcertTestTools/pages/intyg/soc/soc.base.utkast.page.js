@@ -17,20 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*globals element,by,Promise */
 'use strict';
 
-var BaseSvcSkvIntygPage = require('../soc-skv.base.intyg.page.js');
-//var pageHelpers = require('../../../../pageHelper.util.js');
+/**
+ * This is a base page for SOC SKV family of intyg (db, doi).
+ * Only things relevant to ALL such types should end up here.
+ */
 
-var DbIntyg = BaseSvcSkvIntygPage._extend({
+var BaseUtkast = require('../base.utkast.page.js');
+
+var SocBaseUtkast = BaseUtkast._extend({
     init: function init() {
         init._super.call(this);
-    },
 
-    get: function get(intygId) {
-        get._super.call(this, intygId);
-    },
+        this.at = element(by.css('.edit-form'));
 
-    verify: function(data) {}
+        this.element = element(by.id('some-element'));
+    },
+    somefunction: function(txt) {
+        return txt;
+    }
+
 });
-module.exports = new DbIntyg();
+module.exports = SocBaseUtkast;

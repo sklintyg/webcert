@@ -17,17 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise*/
+/*globals element, by, protractor */
 'use strict';
 
-var BaseSocSkvUtkast = require('../soc-skv.base.utkast.page.js');
-var pageHelpers = require('../../../../pageHelper.util.js');
+/**
+ * This is a base (view) page for fk SOC SKV family of intyg (db, doi).
+ * Only things relevant to ALL such types should end up here.
+ */
 
-var DoiUtkast = BaseSocSkvUtkast._extend({
+var BaseIntyg = require('../base.intyg.page.js');
+
+var SocBaseIntyg = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
-	}
- 
+
+        this.at = element(by.id('viewCertAndQA'));
+        this.enhetsAdress = {
+            postAdress: element(by.id('vardperson_postadress')),
+            postNummer: element(by.id('vardperson_postnummer')),
+            postOrt: element(by.id('vardperson_postort')),
+            enhetsTelefon: element(by.id('vardperson_telefonnummer'))
+        };
+    },
+    somefunction: function(txt) {
+        return txt;
+    }
 });
 
-module.exports = new DoiUtkast();
+module.exports = SocBaseIntyg;

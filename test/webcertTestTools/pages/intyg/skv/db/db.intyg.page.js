@@ -17,20 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise*/
 'use strict';
 
-var BaseSocSkvUtkast = require('../soc-skv.base.utkast.page.js');
-var pageHelpers = require('../../../../pageHelper.util.js');
+var BaseSkvIntygPage = require('../skv.base.intyg.page.js');
+//var pageHelpers = require('../../../../pageHelper.util.js');
 
-var DbUtkast = BaseSocSkvUtkast._extend({
+var DbIntyg = BaseSkvIntygPage._extend({
     init: function init() {
         init._super.call(this);
-    }
+    },
 
     get: function get(intygId) {
-        get._super.call(this, 'db', intygId);
-    }
-});
+        get._super.call(this, intygId);
+    },
 
-module.exports = new DbUtkast();
+    verify: function(data) {}
+});
+module.exports = new DbIntyg();

@@ -19,9 +19,9 @@
 
 'use strict';
 
-var BaseSocSkvIntygPage = require('../soc-skv.base.intyg.page.js');
+var BaseSocIntygPage = require('../soc.base.intyg.page.js');
 
-var DoiIntyg = BaseSocSkvIntygPage._extend({
+var DoiIntyg = BaseSocIntygPage._extend({
     init: function init() {
         init._super.call(this);
     },
