@@ -165,4 +165,16 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
                 .when().get("api/srs/codes")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-listofcodes-schema.json"));
     }
+    @Test
+    public void getSrsForDiagnosisCodeSimpleTest() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .pathParam("diagnosisCode", SUPPORTED_DIAGNOSIS_CODE)
+                .expect().statusCode(OK)
+                .when()
+                .get("api/srs/atgarder/{diagnosisCode}")
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-getfordiagnose-response-schema.json"));
+    }
 }

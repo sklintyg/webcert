@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Webcert response model for getSrsForDiagnose endpoint",
+  "properties": {
+    "atgarderObs": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "atgarderRek": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "statistikBild": {
+      "type": "string"
+    },
+    "diagnosisCode": {
+      "type": "string"
+    },
+    "atgarderStatusCode": {
+      "type": "string"
+    },
+    "statistikStatusCode": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "type": "object"
+}

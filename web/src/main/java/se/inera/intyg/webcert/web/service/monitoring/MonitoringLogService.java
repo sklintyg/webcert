@@ -118,4 +118,6 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logSrsStatistikClicked();
 
     void logSrsClicked();
+
+    void logGetSrsForDiagnose(String diagnosisCode);
 }

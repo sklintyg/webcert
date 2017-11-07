@@ -27,6 +27,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Utdatafilter;
+import se.inera.intyg.infra.integration.srs.model.SrsForDiagnosisResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsResponse;
@@ -179,6 +180,24 @@ public class SrsApiController extends AbstractApiController {
                 .features(WebcertFeature.SRS)
                 .orThrow();
         return Response.ok(srsService.getAllDiagnosisCodes()).build();
+    }
+
+    @GET
+    @Path("/atgarder/{diagnosisCode}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get SRS info for diagnosecode", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    public Response getSrsForDiagnosisCodes(@PathParam("diagnosisCode") String diagnosisCode) {
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .features(WebcertFeature.SRS)
+                .orThrow();
+        if (Strings.isNullOrEmpty(diagnosisCode)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        final SrsForDiagnosisResponse srsForDiagnose = srsService.getSrsForDiagnose(diagnosisCode);
+        monitoringLog.logGetSrsForDiagnose(diagnosisCode);
+
+        return Response.ok(srsForDiagnose).build();
     }
 
     private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean statistik) {
