@@ -22,12 +22,16 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
+import se.inera.intyg.webcert.integration.tak.model.TakResult;
+import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -36,7 +40,6 @@ import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.v3.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.v3.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -55,6 +58,7 @@ import java.util.Map;
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateDraftCertificateResponderImpl.class);
+    private static final String SCHEMAVERSION_V3 = "V3";
 
     @Autowired
     private UtkastService utkastService;
@@ -79,6 +83,10 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private WebcertFeatureService webcertFeatureService;
+
+    @Lazy
+    @Autowired
+    private TakService takService;
 
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
@@ -136,6 +144,15 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
                             ErrorIdType.APPLICATION_ERROR);
                 }
             }
+        }
+
+        // Check if invoking health care unit has required TAK
+        String intygsType = utkastsParams.getTypAvIntyg().getCode();
+
+        TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsType, SCHEMAVERSION_V3, user);
+        if (!takResult.isValid()) {
+            String error = takResult.getErrorMessages().stream().reduce((t, u) -> t + "; " + u).get();
+            return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
         }
 
         // Create the draft

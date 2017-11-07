@@ -1,0 +1,95 @@
+package se.inera.intyg.webcert.integration.tak.stub;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.integration.tak.model.ConnectionPoint;
+import se.inera.intyg.webcert.integration.tak.model.ServiceContract;
+import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.URL;
+
+@Service("takStub")
+@Path("/takstub")
+public class TakStub {
+    private static final Logger LOG = LoggerFactory.getLogger(TakStub.class);
+
+    private final String CERT_STATUS_FOR_CARE_V1_NS = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1";
+    private final String CERT_STATUS_FOR_CARE_V3_NS = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
+    private final String RECEIVE_MEDICAL_CERT_QUESTION_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
+    private final String RECEIVE_MEDICAL_CERT_ANSWER_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
+    private final String SEND_MESSAGE_TO_CARE_NS = "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:2";
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    @GET
+    @Path("connectionPoints")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public Response getConnectionPoint(@QueryParam("platform") String platform, @QueryParam("environment") String env)
+            throws IOException {
+        LOG.debug("Stub got getConnectionPoint request");
+        URL jsonUrl = getClass().getResource("/responses/connectionPointResponse.json");
+        ConnectionPoint[] cP = mapper.readValue(jsonUrl, ConnectionPoint[].class);
+        cP[0].setEnvironment(env);
+        cP[0].setPlatform(platform);
+        return Response.ok(mapper.writeValueAsString(cP)).build();
+    }
+
+    @GET
+    @Path("serviceContracts")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public Response getServiceContracts(@QueryParam("namespace") String ns) throws IOException {
+        LOG.debug("Stub got getServiceContracts request for {}", ns);
+        URL jsonUrl = getClass().getResource("/responses/serviceContractResponse.json");
+        ServiceContract[] sC = mapper.readValue(jsonUrl, ServiceContract[].class);
+        int dummyId = 10;
+        switch(ns) {
+            case CERT_STATUS_FOR_CARE_V1_NS:
+                dummyId = 10;
+                break;
+            case CERT_STATUS_FOR_CARE_V3_NS:
+                dummyId = 11;
+                break;
+            case RECEIVE_MEDICAL_CERT_ANSWER_NS:
+                dummyId = 12;
+                break;
+            case RECEIVE_MEDICAL_CERT_QUESTION_NS:
+                dummyId = 13;
+                break;
+            case SEND_MESSAGE_TO_CARE_NS:
+                dummyId = 14;
+                break;
+        }
+        sC[0].setId(String.valueOf(dummyId));
+        sC[0].setNamespace(ns);
+        return Response.ok(mapper.writeValueAsString(sC)).build();
+    }
+
+    // This is intentionally misspelled to mimic the actual API at NTJP...
+    @GET
+    @Path("logicalAddresss")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Consumes({ MediaType.APPLICATION_JSON })
+    public Response getLogicalAddress(@QueryParam("logicalAdress") String hsaId,
+                                      @QueryParam("connectionPointId") String connectionPointId,
+                                      @QueryParam("serviceContractId") String serviceContractId) throws IOException {
+        LOG.debug("Stub got getLogicalAddress request");
+        URL jsonUrl = getClass().getResource("/responses/takningar.json");
+        TakLogicalAddress[] takLogicalAddress = mapper.readValue(jsonUrl, TakLogicalAddress[].class);
+        takLogicalAddress[0].setLogicalAddress(hsaId);
+        takLogicalAddress[0].setDescription("Some description");
+        return Response.ok(mapper.writeValueAsString(takLogicalAddress)).build();
+    }
+}

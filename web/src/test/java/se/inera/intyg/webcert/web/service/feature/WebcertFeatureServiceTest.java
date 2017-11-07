@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.feature;
 
 import com.google.common.base.Joiner;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.common.service.PilotService;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +40,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -202,7 +203,7 @@ public class WebcertFeatureServiceTest {
 
         Set<String> res = featureService.getActiveFeatures();
 
-        assertThat(res, contains("hanteraFragor", "hanteraFragor.m2", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
+        assertThat(res, Matchers.contains("hanteraFragor", "hanteraFragor.m2", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
         // Invoked twice because initFeaturesMap uses this to log active features..
         verify(pilotService, times(2)).getFeatures(eq(Collections.emptyList()));
     }
@@ -229,7 +230,7 @@ public class WebcertFeatureServiceTest {
 
         Set<String> res = featureService.getActiveFeatures(hsaId1, hsaId2);
 
-        assertThat(res, contains("hanteraFragor", "hanteraFragor.m1", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
+        assertThat(res, Matchers.contains("hanteraFragor", "hanteraFragor.m1", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
         verify(pilotService).getFeatures(eq(Arrays.asList(hsaId1, hsaId2)));
     }
 }

@@ -117,6 +117,7 @@ configurations {
 dependencies {
     compile project(':fmb-integration')
     compile project(':pp-integration')
+    compile project(':tak-integration')
     compile project(':notification-sender')
     compile project(':fk-stub')
     compile project(':notification-stub')

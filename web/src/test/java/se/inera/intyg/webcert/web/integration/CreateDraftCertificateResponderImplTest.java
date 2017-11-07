@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration;
 
+import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,10 +29,13 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.integration.tak.model.TakResult;
+import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
@@ -59,6 +63,7 @@ import se.riv.infrastructure.directory.v1.CommissionType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -89,6 +94,9 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     @Mock
     private WebcertFeatureService webcertFeatureService;
 
+    @Mock
+    private TakService takService;
+
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
 
@@ -96,6 +104,8 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     public void setup() {
         super.setup();
         when(mockValidator.validateApplicationErrors(any(Utlatande.class), any(IntygUser.class))).thenReturn(ResultValidator.newInstance());
+        when(mockIntegreradeEnheterService.getSchemaVersion(any(String.class), any(String.class)))
+                .thenReturn(Optional.of(SchemaVersion.VERSION_1));
     }
 
     /**
@@ -125,12 +135,15 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class)))
+                .thenReturn(new TakResult(true, Lists.emptyList()));
 
         // Then
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
         verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(true), eq(false));
+        verify(takService).verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class));
 
         // Assert response content
         assertNotNull(response);
@@ -220,6 +233,36 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
         assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
         assertEquals("No valid MIU was found for person SE1234567890 on unit SE0987654321, can not create draft!", response.getResult().getResultText());
+    }
+
+    @Test
+    public void testCreateDraftCertificateTakningNotOk() {
+        // Given
+        ResultValidator resultsValidator = new ResultValidator();
+        Vardgivare vardgivare = createVardgivare();
+        Vardenhet vardenhet = createVardenhet(vardgivare);
+        CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(vardenhet);
+        CreateDraftCertificateType certificateType = createCertificateType();
+
+        VardpersonReferens vardperson = createVardpersonReferens(
+                certificateType.getUtlatande().getSkapadAv().getPersonalId().getRoot(),
+                certificateType.getUtlatande().getSkapadAv().getFullstandigtNamn());
+
+        // When
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class)))
+                .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
+        // Then
+        CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+
+        verifyZeroInteractions(mockUtkastService);
+        verify(takService).verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class));
+
+        // Assert response content
+        assertNotNull(response);
+        assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
+        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
+        assertEquals("Den angivna enheten går ej att adressera för ärendekommunikation.", response.getResult().getResultText());
     }
 
     private VardpersonReferens createVardpersonReferens(String hsaId, String name) {

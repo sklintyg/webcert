@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.feature;
+package se.inera.intyg.webcert.common.model;
 
 import se.inera.intyg.infra.security.common.service.Feature;
 

@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;

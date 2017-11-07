@@ -1,5 +1,6 @@
 dependencies {
     compile "se.inera.intyg.infra:log-messages:${infraVersion}"
+    compile "se.inera.intyg.infra:security-siths:${infraVersion}"
     compile "se.inera.intyg.common:fk7263:${commonVersion}"
     compile "se.inera.intyg.common:ts-parent:${commonVersion}"
     compile "se.inera.intyg.common:fk-parent:${commonVersion}"
