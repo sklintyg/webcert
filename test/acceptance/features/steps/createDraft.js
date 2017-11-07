@@ -141,9 +141,9 @@ module.exports = function() {
                     'Läkarintyg FK 7263',
                     'Transportstyrelsens läkarintyg',
                     'Transportstyrelsens läkarintyg, diabetes'
-					//TODO aktivera DB-DOI
-					//'Dödsbevis',
-					//'Dödsorsaksintyg'
+                    //TODO aktivera DB-DOI
+                    //'Dödsbevis',
+                    //'Dödsorsaksintyg'
                 );
             }
 

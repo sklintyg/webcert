@@ -21,7 +21,7 @@
 'use strict';
 
 var BaseSkvUtkast = require('../skv.base.utkast.page.js');
-var pageHelpers = require('../../../../pageHelper.util.js');
+var pageHelpers = require('../../../pageHelper.util.js');
 var ElementArrayFinder = $$('').constructor;
 
 //TODO flytta till common-testtools om funktionen gör det lättare att skriva mer lättlästa tester. Alternativt implementera protractor-helpers.
@@ -49,11 +49,15 @@ var DbUtkast = BaseSkvUtkast._extend({
 		}	   
 		this.dodsdatumSakert = {
 			container : element(by.id('form_dodsdatumSakert')),
-			ja : element(by.id('dodsdatumSakertYes')),
-			ja.datepicker : 'id missing',
-			nej : element(by.id('dodsdatumSakertNo')),
-			nej.dodsdatumMonth : element(by.id('dodsdatum-month')), //.ui-select-match.btn 
-			nej.dodsdatumYear : element(by.id('dodsdatum-year')), //.ui-select-match.btn 
+		}
+		this.dodsdatumSakert.ja = {
+			input : element(by.id('dodsdatumSakertYes')),
+			datepicker : 'id missing'
+		}
+		this.dodsdatumSakert.nej = {
+			input : element(by.id('dodsdatumSakertNo')),
+			dodsdatumMonth : element(by.id('dodsdatum-month')), //.ui-select-match.btn 
+			dodsdatumYear : element(by.id('dodsdatum-year')) //.ui-select-match.btn 
 		}
 		this.dodsplatsKommun = {
 			container : element(by.id('form_dodsplatsKommun')),
@@ -67,23 +71,25 @@ var DbUtkast = BaseSkvUtkast._extend({
 			annan : element(by.id('dodsplatsBoende-ANNAN'))
 		}
 		this.barn = {
-			container : element(by.id('form_barn'),
-			ja : element(by.id('barnYes'),
-			nej : element(by.id('barnNo')
+			container : element(by.id('form_barn')),
+			ja : element(by.id('barnYes')),
+			nej : element(by.id('barnNo'))
 		}
 		this.explosivImplantat = {
 			container : element(by.id('form_explosivImplantat')),
-			ja: element(by.id('explosivImplantatYes'),
-			avlagsnat.ja : element(by.id('explosivAvlagsnatYes')),
-			avlagsnat.nej : element(by.id('explosivAvlagsnatNo')),
-			nej: element(by.id('explosivImplantatNo')
+			ja: element(by.id('explosivImplantatYes')),
+			nej: element(by.id('explosivImplantatNo'))
+		}
+		this.explosivImplantat.avlagsnat = {
+			ja : element(by.id('explosivAvlagsnatYes')),
+			nej : element(by.id('explosivAvlagsnatNo'))
 		}
 		this.undersokningYttre = {
 			container : element(by.id('form_undersokningYttre')),
 			ja : element(by.id('undersokningYttre-JA')),
 			nejUndersokningSkaGoras : element(by.id('undersokningYttre-UNDERSOKNING_SKA_GORAS')),
 			nejUndersokningGjortKortFore : element(by.id('undersokningYttre-UNDERSOKNING_GJORT_KORT_FORE_DODEN')),
-			nejUndersokningGjortKortFore.datepicker : 'id missing',
+			nejUndersokningGjortKortForedatepicker : 'id missing'
 		}
 		this.polisanmalan = {
 			container : element(by.id('form_polisanmalan')),
@@ -91,12 +97,6 @@ var DbUtkast = BaseSkvUtkast._extend({
 			nej : element(by.id('polisanmalanNo'))
 		}
 	}
-	
-	
-	
-    get: function get(intygId) {
-        get._super.call(this, 'db', intygId);
-    }
 });
 
 module.exports = new DbUtkast();

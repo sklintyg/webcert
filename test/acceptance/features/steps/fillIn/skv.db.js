@@ -17,11 +17,11 @@
   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
 
- /* globals pages, logger, browser, Promise */
+ /* pages, logger, browser, Promise */
 
- 'use strict';
+ /*'use strict';
  var DbUtkastPage = pages.intyg.db.utkast;
- var helpers = require('../helpers');
+ //var helpers = require('../helpers');
 
  module.exports = {
      fillIn: function(intyg) {
@@ -32,9 +32,9 @@
                  browser.ignoreSynchronization = true;
                  resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
              })
-			 .then(function() {
-				 logger.info('Fyller i patient address det sista vi gör (common)');
-			 })
+             .then(function() {
+                 logger.info('Fyller i patient address det sista vi gör (common)');
+             })
              .then(function() {
                  //Kompletterande patientuppgifter
                  return DbUtkastPage.angeIdentitetenStyrktGenom(intyg.identitetStyrktGenom)
@@ -46,7 +46,7 @@
                      });
              })
              .then(function() {
-				 //Dödsdatum
+                 //Dödsdatum
                  return DbUtkastPage.angeDodsdatum(intyg.dodsdatum)
                      .then(function() {
                          logger.info('OK - angeDodsdatum');
@@ -56,7 +56,7 @@
                      });
 
              }).then(function() {
-				 //Dödsplats
+                 //Dödsplats
                  return DbUtkastPage.angeDodsPlats(intyg.dodsPlats)
                      .then(function() {
                          logger.info('OK - angeDodsPlats');
@@ -65,7 +65,7 @@
                          throw ('FEL, angeDodsPlats,' + reason);
                      });
              }).then(function() {
-				 //Dödsplats
+                 //Dödsplats
                  return DbUtkastPage.angeDodsPlats(intyg.dodsPlats)
                      .then(function() {
                          logger.info('OK - angeDodsPlats');
@@ -74,7 +74,7 @@
                          throw ('FEL, angeDodsPlats,' + reason);
                      });
              }).then(function() {
-				//Barn som avlidit senast 28 dygn efter födelsen
+                 //Barn som avlidit senast 28 dygn efter födelsen
                  return DbUtkastPage.angeBarn(intyg.barn)
                      .then(function() {
                          logger.info('OK - angeBarn');
@@ -83,7 +83,7 @@
                          throw ('FEL, angeBarn,' + reason);
                      });
              }).then(function() {
-				//Explosivt implantat
+                 //Explosivt implantat
                  return DbUtkastPage.angeExplosivImplantat(intyg.explosivImplantat)
                      .then(function() {
                          logger.info('OK - angeExplosivImplantat');
@@ -92,7 +92,7 @@
                          throw ('FEL, angeExplosivImplantat,' + reason);
                      });
              }).then(function() {
-				//Yttre undersokning
+                 //Yttre undersokning
                  return DbUtkastPage.angeYttreUndersokning(intyg.yttreUndersokning)
                      .then(function() {
                          logger.info('OK - angeYttreUndersokning');
@@ -101,7 +101,7 @@
                          throw ('FEL, angeYttreUndersokning,' + reason);
                      });
              }).then(function() {
-				//polisanmalan
+                 //polisanmalan
                  return DbUtkastPage.angePolisanmalan(intyg.polisanmalan)
                      .then(function() {
                          logger.info('OK - angePolisanmalan');
@@ -113,3 +113,4 @@
 
      }
  };
+*/

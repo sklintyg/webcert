@@ -21,7 +21,7 @@
 'use strict';
 
 var BaseSocUtkast = require('../soc.base.utkast.page.js');
-var pageHelpers = require('../../../../pageHelper.util.js');
+var pageHelpers = require('../../../pageHelper.util.js');
 
 var DoiUtkast = BaseSocUtkast._extend({
     init: function init() {

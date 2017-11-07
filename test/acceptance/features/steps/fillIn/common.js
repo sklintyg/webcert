@@ -71,7 +71,7 @@ module.exports = {
     },
     fillIn: function(intyg) {
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-		//TODO Syncronous
+        //TODO Syncronous
         return Promise.all([this.setPatientAdressIfNotGiven(), this.fillInEnhetAdress()]);
     }
 
