@@ -13,6 +13,7 @@
         "http-backend-proxy": "^1.4.3",
         "jasmine-reporters": "^2.0.7",
         "jclass": "^1.1.9",
+        "lodash": "^4.17.4",
         "protractor-jasmine2-screenshot-reporter": "^0.1.7",
         "webcert-testtools": "link:./webcertTestTools",
         "xml2js": "^0.4.4",
