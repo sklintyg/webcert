@@ -17,10 +17,10 @@
   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
 
- /* pages, logger, browser, Promise */
+ /*globals pages, logger, browser, Promise */
 
- /*'use strict';
- var DbUtkastPage = pages.intyg.db.utkast;
+ 'use strict';
+ var DbUtkastPage = pages.intyg.skv.db.utkast;
  //var helpers = require('../helpers');
 
  module.exports = {
@@ -37,12 +37,12 @@
              })
              .then(function() {
                  //Kompletterande patientuppgifter
-                 return DbUtkastPage.angeIdentitetenStyrktGenom(intyg.identitetStyrktGenom)
+                 return DbUtkastPage.angeIdentitetStyrktGenom(intyg.identitetStyrktGenom)
                      .then(function() {
-                         logger.info('OK - angeIdentitetenStyrktGenom');
+                         logger.info('OK - angeIdentitetStyrktGenom');
                      }, function(reason) {
                          console.trace(reason);
-                         throw ('FEL, angeIdentitetenStyrktGenom,' + reason);
+                         throw ('FEL, angeIdentitetStyrktGenom,' + reason);
                      });
              })
              .then(function() {
@@ -55,15 +55,6 @@
                          throw ('FEL, angeDodsdatum,' + reason);
                      });
 
-             }).then(function() {
-                 //Dödsplats
-                 return DbUtkastPage.angeDodsPlats(intyg.dodsPlats)
-                     .then(function() {
-                         logger.info('OK - angeDodsPlats');
-                     }, function(reason) {
-                         console.trace(reason);
-                         throw ('FEL, angeDodsPlats,' + reason);
-                     });
              }).then(function() {
                  //Dödsplats
                  return DbUtkastPage.angeDodsPlats(intyg.dodsPlats)
@@ -113,4 +104,3 @@
 
      }
  };
-*/

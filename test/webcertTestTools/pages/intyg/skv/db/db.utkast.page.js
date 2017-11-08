@@ -43,32 +43,34 @@ ElementArrayFinder.prototype.getByText = function (compareText) {
 var DbUtkast = BaseSkvUtkast._extend({
     init: function init() {
         init._super.call(this);
-	    this.identitetStyrkt = { //identitetStyrkt är inte samma element som i TS intyg
+	    this.identitetStyrktGenom = { //identitetStyrktGenom är inte samma element som i TS intyg
 			container : element(by.id('form_identitetStyrkt')),
-			textinput : element(by.id('identitetStyrkt'))
+			inputText : element(by.id('identitetStyrkt'))
 		}	   
-		this.dodsdatumSakert = {
+		this.dodsdatum = {
 			container : element(by.id('form_dodsdatumSakert')),
+			sakert : {
+				checkbox : element(by.id('dodsdatumSakertYes')),
+				datepicker : 'id missing'
+			},
+			inteSakert = {
+				checkbox : element(by.id('dodsdatumSakertNo')),
+				dodsdatumMonth : element(by.id('dodsdatum-month')), //.ui-select-match.btn 
+				dodsdatumYear : element(by.id('dodsdatum-year')) //.ui-select-match.btn 
+			}
 		}
-		this.dodsdatumSakert.ja = {
-			input : element(by.id('dodsdatumSakertYes')),
-			datepicker : 'id missing'
-		}
-		this.dodsdatumSakert.nej = {
-			input : element(by.id('dodsdatumSakertNo')),
-			dodsdatumMonth : element(by.id('dodsdatum-month')), //.ui-select-match.btn 
-			dodsdatumYear : element(by.id('dodsdatum-year')) //.ui-select-match.btn 
-		}
-		this.dodsplatsKommun = {
-			container : element(by.id('form_dodsplatsKommun')),
-			textinput : element(by.id('dodsplatsKommun'))
-		}
-		this.dodsplatsBoende = {
-			container : element(by.id('form_dodsplatsBoende')),
-			sjukhus : element(by.id('dodsplatsBoende-SJUKHUS')),
-			ordinartBoende : element(by.id('dodsplatsBoende-ORDINART_BOENDE')),
-			sarskiltBoende : element(by.id('dodsplatsBoende-SARSKILT_BOENDE')),
-			annan : element(by.id('dodsplatsBoende-ANNAN'))
+		this.dodsplats = {
+			kommun : {
+				container : element(by.id('form_dodsplatsKommun')),
+				inputText : element(by.id('dodsplatsKommun'))
+			},
+			boende : {
+				container : element(by.id('form_dodsplatsBoende')),
+				sjukhus : element(by.id('dodsplatsBoende-SJUKHUS')),
+				ordinartBoende : element(by.id('dodsplatsBoende-ORDINART_BOENDE')),
+				sarskiltBoende : element(by.id('dodsplatsBoende-SARSKILT_BOENDE')),
+				annan : element(by.id('dodsplatsBoende-ANNAN'))
+			}
 		}
 		this.barn = {
 			container : element(by.id('form_barn')),
@@ -78,25 +80,70 @@ var DbUtkast = BaseSkvUtkast._extend({
 		this.explosivImplantat = {
 			container : element(by.id('form_explosivImplantat')),
 			ja: element(by.id('explosivImplantatYes')),
-			nej: element(by.id('explosivImplantatNo'))
+			nej: element(by.id('explosivImplantatNo')),
+			avlagsnat = {
+				ja : element(by.id('explosivAvlagsnatYes')),
+				nej : element(by.id('explosivAvlagsnatNo'))
+			}
 		}
-		this.explosivImplantat.avlagsnat = {
-			ja : element(by.id('explosivAvlagsnatYes')),
-			nej : element(by.id('explosivAvlagsnatNo'))
-		}
-		this.undersokningYttre = {
+		this.yttreUndersokning = {
 			container : element(by.id('form_undersokningYttre')),
 			ja : element(by.id('undersokningYttre-JA')),
 			nejUndersokningSkaGoras : element(by.id('undersokningYttre-UNDERSOKNING_SKA_GORAS')),
-			nejUndersokningGjortKortFore : element(by.id('undersokningYttre-UNDERSOKNING_GJORT_KORT_FORE_DODEN')),
-			nejUndersokningGjortKortForedatepicker : 'id missing'
+			nejUndersokningGjortKortFore : {
+				checkbox :  element(by.id('undersokningYttre-UNDERSOKNING_GJORT_KORT_FORE_DODEN')),
+				datePicker : 'id missing'
+			}
 		}
 		this.polisanmalan = {
 			container : element(by.id('form_polisanmalan')),
 			ja : element(by.id('polisanmalanYes')),
 			nej : element(by.id('polisanmalanNo'))
 		}
+	},	
+	angeIdentitetStyrktGenom : function angeIdentitetStyrktGenom(identitetStyrktGenom){
+		var identitetStyrktGenomElm = this.identitetStyrktGenom;
+		
+		console.log(identitetStyrktGenomElm + ', ' + identitetStyrktGenom);
+		return new Promise.resolve();
+	},
+	angeDodsdatum : function angeDodsdatum(dodsdatum) {
+		var dodsdatumElm = this.dodsdatum;
+		
+		console.log(dodsdatumElm + ', ' + dodsdatum)
+		return new Promise.resolve();
+	},
+	angeDodsPlats : function angeDodsPlats(dodsPlats) {
+		var dodsPlatsElm = this.dodsPlats;
+		
+		console.log(dodsPlatsElm + ', ' + dodsPlats);
+		return new Promise.resolve();
+	},
+	angeBarn : function angeBarn(barn) {
+		var barnELm = this.barn;
+		
+		console.log(barnElm + ', ' + barn)
+		return new Promise.resolve();
+	},
+	angeExplosivImplantat : function angeExplosivImplantat(explosivImplantat){
+		var explosivImplantatElm = this.explosivImplantat;
+		
+		console.log(explosivImplantatElm + ', ' + explosivImplantat); 
+		return new Promise.resolve();
+	},
+	angeYttreUndersokning : function angeYttreUndersokning(yttreUndersokning){
+		var yttreUndersokningElm = this.yttreUndersokning;
+		
+		console.log(yttreUndersokningElm + ', ' + yttreUndersokning);
+		return new Promise.resolve();
+	},
+	angePolisanmalan : function angePolisanmalan(polisanmalan){
+		var polisanmalanElm = this.polisanmalan;
+		
+		console.log(polisanmalanElm + ',' + polisanmalan);
+		return new Promise.resolve();
 	}
+	
 });
 
 module.exports = new DbUtkast();
