@@ -35,6 +35,23 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
 public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
 
     @Test
+    public void testGetDiagnosisByCode() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        DiagnosParameter body = new DiagnosParameter();
+        body.setCodeFragment("A01");
+        body.setCodeSystem(Diagnoskodverk.ICD_10_SE.name());
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(body)
+                .expect().statusCode(200)
+                .when().post("moduleapi/diagnos/kod")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
+                .body("diagnoser", hasSize(1))
+                .body("moreResults", equalTo(false))
+                .body("resultat", equalTo("OK"));
+    }
+
+    @Test
     public void testSearchDiagnosisByCode() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
