@@ -66,7 +66,7 @@ knownPrivileges:
   - &kp005 SKRIVA_INTYG
   - &kp010 SIGNERA_INTYG
   - &kp020 MAKULERA_INTYG
-  - &kp030 KOPIERA_INTYG
+  - &kp030 FORNYA_INTYG
   - &kp031 ERSATTA_INTYG
   - &kp040 VIDAREBEFORDRA_UTKAST
   - &kp050 VIDAREBEFORDRA_FRAGASVAR
@@ -143,7 +143,7 @@ privileges:
       - *ro020 # DJUPINTEGRATION
   - &p030
     name: *kp030
-    desc: Kopiera intyg
+    desc: Förnya intyg
     intygstyper: # EJ ts-intyg
       - *ki010 # fk7263
       - *ki040 # lisjp
@@ -279,7 +279,7 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
-      - <<: *p030 # KOPIERA_INTYG
+      - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
@@ -344,7 +344,7 @@ roles:
       - <<: *p020 # MAKULERA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
-      - <<: *p030 # KOPIERA_INTYG
+      - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
       - <<: *p031 # ERSATTA_INTYG
@@ -436,7 +436,7 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-      - <<: *p030 # KOPIERA_INTYG
+      - <<: *p030 # FORNYA_INTYG
         intygstyper:
           - *ki010
           - *ki040
@@ -594,7 +594,7 @@ roles:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
-      - <<: *p030 # KOPIERA_INTYG
+      - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION

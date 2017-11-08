@@ -57,7 +57,7 @@ public class AuthoritiesValidatorTest {
         assertTrue(validator.given(user).
                 features(WebcertFeature.HANTERA_INTYGSUTKAST).
                 features(WebcertFeature.HANTERA_FRAGOR).
-                notFeatures(WebcertFeature.KOPIERA_INTYG).
+                notFeatures(WebcertFeature.FORNYA_INTYG).
                 isVerified());
     }
 
@@ -79,7 +79,7 @@ public class AuthoritiesValidatorTest {
                 WebcertFeature.HANTERA_FRAGOR.getName(), WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263"));
 
         assertTrue(validator.given(user).
-                notFeatures(WebcertFeature.ARBETSGIVARUTSKRIFT, WebcertFeature.KOPIERA_INTYG).
+                notFeatures(WebcertFeature.ARBETSGIVARUTSKRIFT, WebcertFeature.FORNYA_INTYG).
                 isVerified());
     }
 
@@ -91,12 +91,12 @@ public class AuthoritiesValidatorTest {
                 WebcertFeature.HANTERA_FRAGOR.getName(), WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263"));
 
         assertFalse(validator.given(user, "fk7263").
-                notFeatures(WebcertFeature.HANTERA_INTYGSUTKAST, WebcertFeature.KOPIERA_INTYG).isVerified());
+                notFeatures(WebcertFeature.HANTERA_INTYGSUTKAST, WebcertFeature.FORNYA_INTYG).isVerified());
 
         thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "fk7263").
-                notFeatures(WebcertFeature.HANTERA_INTYGSUTKAST, WebcertFeature.KOPIERA_INTYG).orThrow();
+                notFeatures(WebcertFeature.HANTERA_INTYGSUTKAST, WebcertFeature.FORNYA_INTYG).orThrow();
     }
 
     @Test

@@ -225,7 +225,7 @@ public class IntygModuleApiController extends AbstractApiController {
             @PathParam("meddelandeId") String meddelandeId) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.KOPIERA_INTYG)
+                .features(WebcertFeature.FORNYA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG)
                 .orThrow();
 
@@ -486,8 +486,8 @@ public class IntygModuleApiController extends AbstractApiController {
 
     private void validateCopyAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.KOPIERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG)
+                .features(WebcertFeature.FORNYA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
                 .orThrow();
     }
 

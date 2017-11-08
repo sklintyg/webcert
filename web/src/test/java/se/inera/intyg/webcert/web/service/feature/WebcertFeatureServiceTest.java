@@ -132,7 +132,7 @@ public class WebcertFeatureServiceTest {
         featuresMap.put(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), Boolean.FALSE);
         featuresMap.put(WebcertFeature.HANTERA_FRAGOR.getName(), Boolean.FALSE);
         featuresMap.put(WebcertFeature.MAKULERA_INTYG.getName(), Boolean.TRUE);
-        featuresMap.put(WebcertFeature.KOPIERA_INTYG.getName(), Boolean.FALSE);
+        featuresMap.put(WebcertFeature.FORNYA_INTYG.getName(), Boolean.FALSE);
 
         Properties featureProps = new Properties();
         featureProps.setProperty(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), "true");
@@ -144,7 +144,7 @@ public class WebcertFeatureServiceTest {
         assertTrue(featuresMap.get(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
         assertTrue(featuresMap.get(WebcertFeature.HANTERA_FRAGOR.getName()));
         assertFalse(featuresMap.get(WebcertFeature.MAKULERA_INTYG.getName()));
-        assertFalse(featuresMap.get(WebcertFeature.KOPIERA_INTYG.getName()));
+        assertFalse(featuresMap.get(WebcertFeature.FORNYA_INTYG.getName()));
     }
 
     @Test

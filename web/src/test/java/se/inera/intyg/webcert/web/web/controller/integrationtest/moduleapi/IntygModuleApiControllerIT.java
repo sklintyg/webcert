@@ -265,7 +265,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        // Lakare role has the KOPIERA_INTYG priviledge, but the privilege is restricted to origintype=NORMAL /
+        // Lakare role has the FORNYA_INTYG priviledge, but the privilege is restricted to origintype=NORMAL /
         // DJUPINTEGRERAD.
         // We change the current users origin to be uthop which should trigger an auth exception response.
         changeOriginTo(UserOriginType.UTHOPP.name());

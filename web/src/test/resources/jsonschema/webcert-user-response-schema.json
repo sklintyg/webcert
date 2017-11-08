@@ -233,7 +233,7 @@
           },
           "type": "object"
         },
-        "KOPIERA_INTYG": {
+        "FORNYA_INTYG": {
           "additionalProperties": false,
           "properties": {
             "desc": {

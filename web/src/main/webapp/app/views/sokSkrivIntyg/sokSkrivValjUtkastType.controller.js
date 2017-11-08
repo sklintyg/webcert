@@ -128,7 +128,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
                 var renewable = authorityService.isAuthorityActive(
                     { requestOrigin: UserModel.user.origin,
-                        authority: UserModel.privileges.KOPIERA_INTYG,
+                        authority: UserModel.privileges.FORNYA_INTYG,
                         intygstyp: intyg.intygType
                 });
                 var statusAllowed = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';

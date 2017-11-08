@@ -246,7 +246,7 @@ public class IntygModuleApiControllerTest {
         //Given
         final boolean copyOk = false;
         final String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG, intygsTyp, true, copyOk, WebcertFeature.KOPIERA_INTYG);
+        setupUser(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG, intygsTyp, true, copyOk, WebcertFeature.FORNYA_INTYG);
 
         //When
         try {
@@ -368,8 +368,8 @@ public class IntygModuleApiControllerTest {
         user.setParameters(new IntegrationParameters(null, null,
                 newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
                 false, false, false, true));
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
@@ -414,8 +414,8 @@ public class IntygModuleApiControllerTest {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newReservnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
                 postort, false, false, false, true));
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
@@ -443,7 +443,7 @@ public class IntygModuleApiControllerTest {
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
 
         WebCertUser user = new WebCertUser();
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
         when(webcertUserService.getUser()).thenReturn(user);
 
@@ -459,7 +459,7 @@ public class IntygModuleApiControllerTest {
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
 
         WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
         user.setOrigin("NORMAL");
         when(webcertUserService.getUser()).thenReturn(user);
 
@@ -475,8 +475,8 @@ public class IntygModuleApiControllerTest {
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
 
         WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         when(webcertUserService.getUser()).thenReturn(user);
@@ -497,7 +497,7 @@ public class IntygModuleApiControllerTest {
         copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
 
         WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
         user.setOrigin("NORMAL");
 
@@ -573,7 +573,7 @@ public class IntygModuleApiControllerTest {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
                 postort, false, false, false, true));
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG);
         user.setOrigin("NORMAL");
 
@@ -615,7 +615,7 @@ public class IntygModuleApiControllerTest {
     @Test(expected = AuthoritiesException.class)
     public void testCreateNewCompletionMissingPrivilege() {
         WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         when(webcertUserService.getUser()).thenReturn(user);
@@ -630,7 +630,7 @@ public class IntygModuleApiControllerTest {
     @Test(expected = WebCertServiceException.class)
     public void testCreateNewCompletionMissingRequest() {
         WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG);
         user.setOrigin("NORMAL");
 
@@ -661,8 +661,8 @@ public class IntygModuleApiControllerTest {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
                 postort, false, false, false, true));
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
@@ -688,7 +688,7 @@ public class IntygModuleApiControllerTest {
     @Test(expected = AuthoritiesException.class)
     public void testCreateRenewalMissingFeature() {
         WebCertUser user = new WebCertUser();
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         when(webcertUserService.getUser()).thenReturn(user);
@@ -703,7 +703,7 @@ public class IntygModuleApiControllerTest {
     @Test(expected = AuthoritiesException.class)
     public void testCreateRenewalMissingPrivilege() {
         WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         when(webcertUserService.getUser()).thenReturn(user);
@@ -718,8 +718,8 @@ public class IntygModuleApiControllerTest {
     @Test(expected = WebCertServiceException.class)
     public void testCreateRenewalInvalidRequest() {
         WebCertUser user = new WebCertUser();
-        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.KOPIERA_INTYG);
-        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_KOPIERA_INTYG);
+        addFeatures(user, CERTIFICATE_TYPE, WebcertFeature.FORNYA_INTYG);
+        addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         when(webcertUserService.getUser()).thenReturn(user);

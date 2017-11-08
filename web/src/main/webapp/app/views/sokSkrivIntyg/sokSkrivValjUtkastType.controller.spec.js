@@ -89,7 +89,7 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
                 origin: 'NORMAL'
             };
             UserModel.privileges = {
-                KOPIERA_INTYG: {}
+                FORNYA_INTYG: {}
             };
             $provide.value('common.UserModel', UserModel);
 
