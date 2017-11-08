@@ -28,7 +28,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var UnsignedIntygPage = wcTestTools.pages.unsignedPage;
 
-describe('Testa sekretessmarkering för läkare', function() {
+xdescribe('Testa sekretessmarkering för läkare', function() {
 
     var intygsId;
     var utkastId;
