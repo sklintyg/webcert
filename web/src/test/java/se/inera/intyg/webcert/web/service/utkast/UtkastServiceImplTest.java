@@ -44,6 +44,7 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -53,7 +54,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -126,8 +126,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private AuthoritiesHelper authoritiesHelper;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
-    @Mock
-    private WebcertFeatureService featureService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -659,7 +657,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
                 Arrays.asList("lisjp", "db", "doi").stream()
                         .map(a -> new IntygModule(a, null, null, null, null, null, null, null)).collect(
                         Collectors.toList()));
-        when(authoritiesHelper.getIntygstyperForModuleFeature(any(), any(), any())).thenReturn(activeModules);
+        when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer, activeModules))
                 .thenReturn(Arrays.asList(db1, db2, doi));
 
@@ -716,7 +714,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
 
         user.setHsaId("hsaId");
         user.setNamn("namn");

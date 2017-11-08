@@ -39,7 +39,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -65,7 +65,6 @@ import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -136,7 +135,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private WebCertUserService webCertUserService;
 
     @Autowired
-    private WebcertFeatureService webcertFeatureService;
+    private AuthoritiesHelper authoritiesHelper;
 
     @Autowired
     private NotificationService notificationService;
@@ -478,8 +477,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
      * Looks upp all questions related to a specific certificate and
      * sets a question's status to CLOSED if not already closed.
      *
-     * @param intygsId
-     *            the certificates unique identifier
+     * @param intygsId the certificates unique identifier
      */
     @Override
     public void closeAllNonClosedQuestions(String intygsId) {
@@ -667,7 +665,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private void validateAcceptsQuestions(FragaSvar fragaSvar) {
         String intygsTyp = fragaSvar.getIntygsReferens().getIntygsTyp();
-        if (!webcertFeatureService.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR.getName(), intygsTyp)) {
+        if (!authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, intygsTyp)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Intygstyp '" + intygsTyp
                     + "' stödjer ej fragasvar.");
         }

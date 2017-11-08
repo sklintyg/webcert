@@ -45,7 +45,6 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -54,7 +53,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -124,9 +122,6 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
-
-    @Autowired
-    private WebcertFeatureService featureService;
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -210,7 +205,8 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     public Map<String, Map<String, Boolean>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
         List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
-                authoritiesHelper.getIntygstyperForModuleFeature(user, WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG));
+                authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
+                        AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
 
         List<Utkast> signedList = toFilter.stream()
                 .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)

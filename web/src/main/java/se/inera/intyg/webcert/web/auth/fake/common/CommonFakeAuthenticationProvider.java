@@ -35,15 +35,16 @@ import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 
@@ -55,7 +56,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
     private SAMLUserDetailsService userDetails;
 
     @Autowired
-    private WebcertFeatureService webcertFeatureService;
+    private CommonAuthoritiesResolver authoritiesResolver;
 
     @Override
     public Authentication authenticate(Authentication token) throws AuthenticationException {
@@ -90,7 +91,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
             IntygUser user = (IntygUser) details;
             if (user.getValdVardenhet() != null && user.getValdVardgivare() != null) {
                 user.setFeatures(
-                        webcertFeatureService.getActiveFeatures(user.getValdVardenhet().getId(), user.getValdVardgivare().getId()));
+                        authoritiesResolver.getFeatures(Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
             }
         }
     }

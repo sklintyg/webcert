@@ -1396,7 +1396,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         user.setHsaId("testuser");
         user.setNamn("test userman");

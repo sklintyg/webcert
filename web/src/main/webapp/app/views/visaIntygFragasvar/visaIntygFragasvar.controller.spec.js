@@ -102,7 +102,7 @@ describe('VisaIntygFragasvarCtrl', function() {
 
         $provide.value('common.featureService', {
             features: {
-                'HANTERA_FRAGOR': 'hanteraFragor'
+                'HANTERA_FRAGOR': 'HANTERA_FRAGOR'
             },
             isFeatureActive: function() { return true; }
         });
@@ -401,7 +401,13 @@ describe('VisaIntygFragasvarCtrl', function() {
                 ]
             },
             'roles': role,
-            'features': ['hanteraFragor', 'hanteraFragor.fk7263'],
+            'features': {
+                'HANTERA_FRAGOR': {
+                    'name': 'HANTERA_FRAGOR',
+                    'global': true,
+                    'intygstyper': ['fk7263']
+                }
+            },
             'totaltAntalVardenheter': 6,
             'origin': origin
         };

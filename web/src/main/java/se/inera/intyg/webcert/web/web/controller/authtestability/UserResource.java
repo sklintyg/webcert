@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.authtestability;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -140,7 +141,7 @@ public class UserResource {
     @Path("/features")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFeaturesForUser() {
-        Set features = webCertUserService.getUser().getFeatures();
+        Map<String, Feature> features = webCertUserService.getUser().getFeatures();
         return Response.ok(features).build();
     }
 }

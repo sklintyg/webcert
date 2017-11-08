@@ -18,21 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
-import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -106,19 +103,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
     }
 
-    @Override
-    public void enableFeaturesOnUser(Feature... featuresToEnable) {
-        enableFeatures(getUser(), featuresToEnable);
-    }
-
-    @Override
-    public void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable) {
-        Assert.notNull(moduleName);
-        Assert.notEmpty(modulefeaturesToEnable);
-
-        enableModuleFeatures(getUser(), moduleName, modulefeaturesToEnable);
-    }
-
     // Return the privilege's intygstyper
     @Override
     public boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
@@ -178,36 +162,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
     }
 
-    void enableFeatures(WebCertUser user, Feature... featuresToEnable) {
-        LOG.debug("User {} had these features: {}", user.getHsaId(), Joiner.on(", ").join(user.getFeatures()));
-
-        for (Feature feature : featuresToEnable) {
-            user.getFeatures().add(feature.getName());
-        }
-
-        LOG.debug("User {} now has these features: {}", user.getHsaId(), Joiner.on(", ").join(user.getFeatures()));
-    }
-
-    void enableModuleFeatures(WebCertUser user, String moduleName, ModuleFeature... modulefeaturesToEnable) {
-        for (ModuleFeature moduleFeature : modulefeaturesToEnable) {
-
-            String moduleFeatureName = moduleFeature.getName();
-            String moduleFeatureStr = Joiner.on(".").join(moduleFeatureName, moduleName.toLowerCase());
-
-            if (!user.isFeatureActive(moduleFeatureName)) {
-                LOG.warn("Could not add module feature '{}' to user {} since corresponding webcert feature is not enabled",
-                        moduleFeatureStr,
-                        user.getHsaId());
-                continue;
-            }
-
-            user.getFeatures().add(moduleFeatureStr);
-            LOG.debug("Added module feature {} to user", moduleFeatureStr);
-        }
-    }
-
     private void updateUserRole(Role role) {
         getUser().setRoles(AuthoritiesResolverUtil.toMap(role));
-        getUser().setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        getUser().setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
     }
 }

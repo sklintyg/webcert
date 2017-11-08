@@ -28,13 +28,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -43,7 +40,6 @@ import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificat
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -78,26 +74,17 @@ import static org.mockito.Mockito.when;
 public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
     @Mock
+    PatientDetailsResolver patientDetailsResolver;
+    @Mock
     private UtkastService mockUtkastService;
-
     @Mock
     private CreateNewDraftRequestBuilder mockRequestBuilder;
-
     @Mock
     private CreateDraftCertificateValidator mockValidator;
-
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterService;
-
     @Mock
     private MonitoringLogService monitoringLogService;
-
-    @Mock
-    private WebcertFeatureService webcertFeatureService;
-
-    @Mock
-    PatientDetailsResolver patientDetailsResolver;
-
     @Mock
     private TakService takService;
 
@@ -116,11 +103,9 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
      * When a new certificate draft is being created the caller
      * should get a success response returned and any stakeholder
      * should be notified with a notification message.
-     *
-     * @throws ExternalServiceCallException
      */
     @Test
-    public void whenNewCertificateDraftSuccessResponse() throws HsaServiceCallException {
+    public void whenNewCertificateDraftSuccessResponse() {
 
         // Given
         ResultValidator resultsValidator = new ResultValidator();
@@ -137,7 +122,6 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
                 vardperson);
 
         // When
-        when(webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), UTKAST_TYPE)).thenReturn(true);
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
@@ -158,7 +142,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testCreateDraftCertificateValidationError() throws HsaServiceCallException {
+    public void testCreateDraftCertificateValidationError() {
         final String validationError = "error";
         ResultValidator resultsValidator = new ResultValidator();
         resultsValidator.addError(validationError);
@@ -178,7 +162,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testCreateDraftCertificateApplicationError() throws HsaServiceCallException {
+    public void testCreateDraftCertificateApplicationError() {
         final String validationError = "error";
         ResultValidator resultsValidator = new ResultValidator();
         resultsValidator.addError(validationError);
@@ -198,7 +182,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testCreateDraftCertificateHsaException() throws HsaServiceCallException {
+    public void testCreateDraftCertificateHsaException() {
         when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenThrow(new MissingMedarbetaruppdragException(USER_HSAID));
 
         ResultValidator resultsValidator = new ResultValidator();
@@ -220,7 +204,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testCreateDraftCertificateHsaReturnsNoMIUs() throws HsaServiceCallException {
+    public void testCreateDraftCertificateHsaReturnsNoMIUs() {
         WebCertUser userWithNoMiu = buildWebCertUser();
         userWithNoMiu.setVardgivare(new ArrayList<>());
         when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(userWithNoMiu);
@@ -250,7 +234,6 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         CreateDraftCertificateType certificateType = createCertificateType();
 
         // When
-        when(webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), UTKAST_TYPE)).thenReturn(true);
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));

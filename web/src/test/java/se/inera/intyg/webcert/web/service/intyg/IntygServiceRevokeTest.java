@@ -25,6 +25,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
@@ -150,7 +151,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         user.setNamn(person.getFullstandigtNamn());
         user.setHsaId(person.getPersonId());
 

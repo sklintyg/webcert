@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
@@ -62,7 +61,6 @@ public class FragaSvarModuleApiController extends AbstractApiController {
         return fragaSvarList;
     }
 
-
     @PUT
     @Path("/{intygsTyp}/{fragasvarId}/besvara")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -82,7 +80,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
             DispatchState dispatchState) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_FRAGOR)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
                 .orThrow();
 
@@ -99,7 +97,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
             CreateQuestionParameter parameter) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_FRAGOR, WebcertFeature.SKAPA_NYFRAGA)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA)
                 .orThrow();
 
         LOG.debug("New question for cert {} with subject {}", intygsId, parameter.getAmne());
@@ -136,7 +134,8 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     }
 
     private void abortIfFragaSvarNotActive(String intygsTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                .orThrow();
     }
 
 }

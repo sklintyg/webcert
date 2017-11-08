@@ -32,17 +32,17 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -116,10 +116,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private WebCertUserService userService;
 
     @Autowired
-    private WebcertFeatureService webcertFeatureService;
-
-    @Autowired
     private UtkastService utkastService;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     /*
      * (non-Javadoc)
@@ -253,11 +252,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
 
             String intygsTyp = copyRequest.getTyp();
-            if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
-                    || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
-                    intygsTyp)
-                    || webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_UTKAST_INOM_VG.getName(),
-                    intygsTyp))) {
+            if (authoritiesValidator.given(user, intygsTyp)
+                    .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
+                            AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
 
                 Personnummer personnummer = copyRequest.containsNyttPatientPersonnummer() ? copyRequest.getNyttPatientPersonnummer()
                         : copyRequest.getPatient().getPersonId();
@@ -269,19 +266,19 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 Boolean intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
 
                 if (utkastExists != null && utkastExists) {
-                    if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_UTKAST_INOM_VG.getName(),
-                            intygsTyp)) {
+                    if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
+                            .isVerified()) {
                         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                                 "Drafts of this type must be unique within this caregiver.");
                     }
                 }
 
                 if (intygExists != null) {
-                    if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                    if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
                         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                                 "Certificates of this type must be globally unique.");
-                    } else if (intygExists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
-                            .getName(), intygsTyp)) {
+                    } else if (intygExists && authoritiesValidator.given(user, intygsTyp)
+                            .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                                 "Certificates of this type must be unique within this caregiver.");
                     }

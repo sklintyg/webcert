@@ -18,21 +18,20 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Base UserDetailsService for both Siths and E-leg based authentication.
- *
+ * <p>
  * Created by eriklupander on 2015-06-16.
  */
 public abstract class BaseWebCertUserDetailsService {
@@ -42,10 +41,6 @@ public abstract class BaseWebCertUserDetailsService {
 
     private CommonAuthoritiesResolver authoritiesResolver;
 
-    private WebcertFeatureService webcertFeatureService;
-
-    // - - - - - Public scope - - - - -
-
     public CommonAuthoritiesResolver getAuthoritiesResolver() {
         return authoritiesResolver;
     }
@@ -54,13 +49,6 @@ public abstract class BaseWebCertUserDetailsService {
     public void setAuthoritiesResolver(CommonAuthoritiesResolver authoritiesResolver) {
         this.authoritiesResolver = authoritiesResolver;
     }
-
-    @Autowired
-    public void setWebcertFeatureService(WebcertFeatureService webcertFeatureService) {
-        this.webcertFeatureService = webcertFeatureService;
-    }
-
-    // - - - - - Protected scope - - - - -
 
     protected String compileName(String fornamn, String mellanOchEfterNamn) {
 
@@ -78,10 +66,10 @@ public abstract class BaseWebCertUserDetailsService {
 
     protected void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
         if (webcertUser.getValdVardenhet() != null && webcertUser.getValdVardgivare() != null) {
-            webcertUser.setFeatures(webcertFeatureService.getActiveFeatures(webcertUser.getValdVardenhet().getId(),
-                    webcertUser.getValdVardgivare().getId()));
+            webcertUser.setFeatures(authoritiesResolver
+                    .getFeatures(Arrays.asList(webcertUser.getValdVardenhet().getId(), webcertUser.getValdVardgivare().getId())));
         } else {
-            webcertUser.setFeatures(webcertFeatureService.getActiveFeatures());
+            webcertUser.setFeatures(authoritiesResolver.getFeatures(Collections.emptyList()));
         }
     }
 

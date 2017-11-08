@@ -18,33 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.SIGNERA_SKICKA_DIREKT;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.xml.ws.WebServiceException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeType;
@@ -85,7 +67,6 @@ import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.config.SendIntygConfiguration;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
@@ -112,6 +93,19 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+
+import javax.annotation.PostConstruct;
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -184,9 +178,6 @@ public class IntygServiceImpl implements IntygService {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
-    @Autowired
-    private WebcertFeatureService featureService;
-
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
@@ -209,13 +200,10 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Returns the IntygContentHolder. Used both externally to frontend and internally in the modules.
      *
-     * @param intygsId
-     *            the identifier of the intyg.
-     * @param intygsTyp
-     *            the typ of the intyg. Used to call the correct module.
-     * @param relations
-     *            If the relations between intyg should be populated. This can be expensive (several database
-     *            operations). Use sparsely.
+     * @param intygsId  the identifier of the intyg.
+     * @param intygsTyp the typ of the intyg. Used to call the correct module.
+     * @param relations If the relations between intyg should be populated. This can be expensive (several database
+     *                  operations). Use sparsely.
      */
     private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
@@ -299,7 +287,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList,
-                                                          SekretessStatus sekretessmarkering) {
+            SekretessStatus sekretessmarkering) {
         // Get intygstyper from the view privilege
         Set<String> base = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
                 AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
@@ -539,16 +527,17 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Check if signed certificate is a completion, in that case, send to recipient and close pending completion QA /
      * Arende as handled.
-     *
+     * <p>
      * Check if signed certificate should be sent directly to default recipient for this intygstyp.
-     *
+     * <p>
      * Note that the send operation uses the "delay" boolean to allow the signing operation some time to complete
      * in intygstjansten.
      */
     @Override
     public void handleAfterSigned(Utkast utkast) {
         boolean isKomplettering = RelationKod.KOMPLT == utkast.getRelationKod();
-        boolean isSigneraSkickaDirekt = featureService.isModuleFeatureActive(SIGNERA_SKICKA_DIREKT.getName(), utkast.getIntygsTyp());
+        boolean isSigneraSkickaDirekt = authoritiesHelper
+                .isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, utkast.getIntygsTyp());
 
         if (isKomplettering || isSigneraSkickaDirekt) {
             try {
@@ -731,7 +720,7 @@ public class IntygServiceImpl implements IntygService {
      * Builds a IntygContentHolder by first trying to get the Intyg from intygstjansten. If
      * not found or the Intygstjanst couldn't be reached, the local Utkast - if available -
      * will be used instead.
-     *
+     * <p>
      * Note that even when found, we check if we need to decorate the response with data from the utkast in order
      * to mitigate async send states. (E.g. a send may be in resend due to 3rd party issues, in that case decorate with
      * data about sent state from the Utkast)

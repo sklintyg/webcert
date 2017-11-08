@@ -25,9 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -50,9 +50,9 @@ import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -89,13 +89,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final String[] GRANTED_ROLES = new String[] {
             AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN
     };
-
-    private Optional<CommonFeatureService> commonFeatureService;
-
     private IntegrationService integrationService;
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
+
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
@@ -243,11 +243,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
     }
 
-    @Autowired(required = false)
-    public void setCommonFeatureService(Optional<CommonFeatureService> commonFeatureService) {
-        this.commonFeatureService = commonFeatureService;
-    }
-
     @Autowired
     @Qualifier("intygIntegrationServiceImpl")
     public void setIntegrationService(IntegrationService integrationService) {
@@ -281,7 +276,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         try {
             // Call service
             PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
-
 
             if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
 
@@ -409,9 +403,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private void updateUserWithActiveFeatures(WebCertUser webCertUser) {
-        commonFeatureService.ifPresent(commonFeatureService1 -> webCertUser
-                .setFeatures(commonFeatureService1.getActiveFeatures(webCertUser.getValdVardenhet().getId(),
-                        webCertUser.getValdVardgivare().getId())));
+        webCertUser.setFeatures(commonAuthoritiesResolver
+                .getFeatures(Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())));
     }
 
     private boolean userHasExactlyOneSelectableVardenhet(WebCertUser webCertUser) {

@@ -33,10 +33,6 @@ knownRoles:
   - &kr030 TANDLAKARE
   - &kr040 VARDADMINISTRATOR
 
-# Intygstyper som kan hanteras för sekretessmarkerad patient
-sekretessmarkeringAllowed:
-  - *ki010
-
 # Ingångar
 requestOrigins:
   - &ro010

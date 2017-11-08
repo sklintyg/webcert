@@ -27,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
@@ -149,7 +150,7 @@ public class TermsFilterTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser webCertUser = new WebCertUser();
         webCertUser.setRoles(AuthoritiesResolverUtil.toMap(role));
-        webCertUser.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        webCertUser.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         webCertUser.setAuthenticationScheme(authScheme);
 
         return webCertUser;

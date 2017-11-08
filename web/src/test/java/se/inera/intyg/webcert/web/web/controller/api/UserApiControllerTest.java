@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,16 +26,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
 
 public class UserApiControllerTest {
 
@@ -49,9 +48,6 @@ public class UserApiControllerTest {
 
     @Mock
     private AvtalService avtalService;
-
-    @Mock
-    private WebcertFeatureService featureService;
 
     @Mock
     private MonitoringLogServiceImpl monitoringService;
@@ -63,10 +59,10 @@ public class UserApiControllerTest {
     private WebCertUser webCertUser;
 
     @Captor
-    private ArgumentCaptor<Set<String>> stringSetCaptor;
+    private ArgumentCaptor<Map<String, Feature>> captor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(webCertUserService.getUser()).thenReturn(webCertUser);
     }
@@ -78,18 +74,16 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(true);
         webUserFeaturesRequest.setJsMinified(true);
 
-        final HashSet<String> features = new HashSet<>();
+        final HashMap<String, Feature> features = new HashMap<>();
         Mockito.when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setFeatures(stringSetCaptor.capture());
-        assertTrue(stringSetCaptor.getValue().contains(WebcertFeature.JS_LOGGNING.getName()));
-        assertTrue(stringSetCaptor.getValue().contains(WebcertFeature.JS_MINIFIED.getName()));
-
-        Mockito.verify(featureService, times(0)).setFeature(anyString(), anyString());
+        Mockito.verify(webCertUser, times(1)).setFeatures(captor.capture());
+        assertTrue(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
+        assertTrue(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_MINIFIED));
     }
 
     @Test
@@ -99,20 +93,22 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(false);
         webUserFeaturesRequest.setJsMinified(false);
 
-        final HashSet<String> features = new HashSet<>();
-        features.add(WebcertFeature.JS_LOGGNING.getName());
-        features.add(WebcertFeature.JS_MINIFIED.getName());
+        final HashMap<String, Feature> features = new HashMap<>();
+        Feature f1 = new Feature();
+        f1.setName(AuthoritiesConstants.FEATURE_JS_LOGGNING);
+        features.put(f1.getName(), f1);
+        Feature f2 = new Feature();
+        f2.setName(AuthoritiesConstants.FEATURE_JS_MINIFIED);
+        features.put(f2.getName(), f2);
         Mockito.when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setFeatures(stringSetCaptor.capture());
-        assertFalse(stringSetCaptor.getValue().contains(WebcertFeature.JS_LOGGNING.getName()));
-        assertFalse(stringSetCaptor.getValue().contains(WebcertFeature.JS_MINIFIED.getName()));
-
-        Mockito.verify(featureService, times(0)).setFeature(anyString(), anyString());
+        Mockito.verify(webCertUser, times(1)).setFeatures(captor.capture());
+        assertFalse(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
+        assertFalse(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_MINIFIED));
     }
 
     @Test
@@ -122,20 +118,22 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(true);
         webUserFeaturesRequest.setJsMinified(true);
 
-        final HashSet<String> features = new HashSet<>();
-        features.add(WebcertFeature.JS_LOGGNING.getName());
-        features.add(WebcertFeature.JS_MINIFIED.getName());
+        final HashMap<String, Feature> features = new HashMap<>();
+        Feature f1 = new Feature();
+        f1.setName(AuthoritiesConstants.FEATURE_JS_LOGGNING);
+        features.put(f1.getName(), f1);
+        Feature f2 = new Feature();
+        f2.setName(AuthoritiesConstants.FEATURE_JS_MINIFIED);
+        features.put(f2.getName(), f2);
         Mockito.when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setFeatures(stringSetCaptor.capture());
-        assertTrue(stringSetCaptor.getValue().contains(WebcertFeature.JS_LOGGNING.getName()));
-        assertTrue(stringSetCaptor.getValue().contains(WebcertFeature.JS_MINIFIED.getName()));
-
-        Mockito.verify(featureService, times(0)).setFeature(anyString(), anyString());
+        Mockito.verify(webCertUser, times(1)).setFeatures(captor.capture());
+        assertTrue(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
+        assertTrue(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_MINIFIED));
     }
 
     @Test
@@ -145,18 +143,16 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(false);
         webUserFeaturesRequest.setJsMinified(false);
 
-        final HashSet<String> features = new HashSet<>();
+        final HashMap<String, Feature> features = new HashMap<>();
         Mockito.when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setFeatures(stringSetCaptor.capture());
-        assertFalse(stringSetCaptor.getValue().contains(WebcertFeature.JS_LOGGNING.getName()));
-        assertFalse(stringSetCaptor.getValue().contains(WebcertFeature.JS_MINIFIED.getName()));
-
-        Mockito.verify(featureService, times(0)).setFeature(anyString(), anyString());
+        Mockito.verify(webCertUser, times(1)).setFeatures(captor.capture());
+        assertFalse(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
+        assertFalse(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_MINIFIED));
     }
 
 }

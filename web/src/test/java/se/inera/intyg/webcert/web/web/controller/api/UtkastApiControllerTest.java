@@ -33,15 +33,14 @@ import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -52,11 +51,11 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -98,14 +97,11 @@ public class UtkastApiControllerTest {
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
 
-    @Mock
-    private WebcertFeatureService featureService;
-
     @InjectMocks
     private UtkastApiController utkastController;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
@@ -118,9 +114,9 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testCreateUtkast() throws IOException {
+    public void testCreateUtkast() {
         String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
@@ -129,9 +125,9 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testCreateUtkastSetsPatientFullName() throws IOException {
+    public void testCreateUtkastSetsPatientFullName() {
         String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
@@ -146,9 +142,9 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testCreateUtkastSetsPatientFullNameWithoutMiddlename() throws IOException {
+    public void testCreateUtkastSetsPatientFullNameWithoutMiddlename() {
         String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
@@ -168,9 +164,9 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testCreateUtkastFornamnOk() throws IOException {
+    public void testCreateUtkastFornamnOk() {
         String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
@@ -181,9 +177,9 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testCreateUtkastFornamnTooLong() throws IOException {
+    public void testCreateUtkastFornamnTooLong() {
         String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
@@ -194,9 +190,9 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testCreateUtkastEfternamnOk() throws IOException {
+    public void testCreateUtkastEfternamnOk() {
         String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
@@ -207,9 +203,9 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testCreateUtkastEfternamnTooLong() throws IOException {
+    public void testCreateUtkastEfternamnTooLong() {
         String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
@@ -222,14 +218,14 @@ public class UtkastApiControllerTest {
     @Test(expected = AuthoritiesException.class)
     public void createUtkastWithoutPrivilegeSkrivIntygFails() {
         String intygsTyp = "fk7263";
-        setupUser("", intygsTyp, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser("", intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         utkastController.createUtkast(intygsTyp, buildRequest("fk7263"));
     }
 
     @Test
     public void testFilterDraftsForUnit() {
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, Fk7263EntryPoint.MODULE_ID,
-                WebcertFeature.HANTERA_INTYGSUTKAST);
+                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.filterIntyg(any()))
                 .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
@@ -243,7 +239,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testFilterDraftsForUnitSkipsSekretessIntygForUserWithoutAuthorithy() {
-        setupUser("", Fk7263EntryPoint.MODULE_ID, WebcertFeature.HANTERA_INTYGSUTKAST);
+        setupUser("", Fk7263EntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.filterIntyg(any()))
                 .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));
@@ -259,7 +255,7 @@ public class UtkastApiControllerTest {
     @Test
     public void testFilterDraftsForUnitSkipAllIntygWithUndefinedSekretessStatus() {
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, Fk7263EntryPoint.MODULE_ID,
-                WebcertFeature.HANTERA_INTYGSUTKAST);
+                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
 
@@ -305,11 +301,16 @@ public class UtkastApiControllerTest {
 
     }
 
-    private void setupUser(String privilegeString, String intygType, WebcertFeature... features) {
+    private void setupUser(String privilegeString, String intygType, String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
-        user.setFeatures(Stream.of(features).map(WebcertFeature::getName).collect(Collectors.toSet()));
-        user.getFeatures().addAll(Stream.of(features).map(f -> f.getName() + "." + intygType).collect(Collectors.toSet()));
+        user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
+            Feature feature = new Feature();
+            feature.setName(s);
+            feature.setIntygstyper(Arrays.asList(intygType));
+            feature.setGlobal(true);
+            return feature;
+        })));
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();

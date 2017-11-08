@@ -92,14 +92,6 @@ knownRoles:
 #   Definitioner av ingångar, roller, privilegier, yrkesroller och befattnings-/gruppförskrivarkoder
 # ====================================================================================================
 
-# Intygstyper som kan hanteras för sekretessmarkerad patient
-sekretessmarkeringAllowed:
-  - *ki010
-  - *ki040
-  - *ki050
-  - *ki060
-  - *ki070
-
 # Ingångar
 requestOrigins:
   - &ro010

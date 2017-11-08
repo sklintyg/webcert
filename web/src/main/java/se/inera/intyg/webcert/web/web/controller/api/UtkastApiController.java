@@ -27,7 +27,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -35,7 +34,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -85,9 +83,6 @@ public class UtkastApiController extends AbstractApiController {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
-    @Autowired
-    private WebcertFeatureService webcertFeatureService;
-
     /**
      * Create a new draft.
      */
@@ -98,7 +93,7 @@ public class UtkastApiController extends AbstractApiController {
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -122,11 +117,9 @@ public class UtkastApiController extends AbstractApiController {
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
-        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
-                || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
-                intygsTyp)
-                || webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_UTKAST_INOM_VG.getName(),
-                intygsTyp))) {
+        if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
+                        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
 
             Map<String, Map<String, Boolean>> intygstypToStringToBoolean = utkastService.checkIfPersonHasExistingIntyg(
                     request.getPatientPersonnummer(), getWebCertUserService().getUser());
@@ -135,17 +128,18 @@ public class UtkastApiController extends AbstractApiController {
             Boolean intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
 
             if (utkastExists != null && utkastExists) {
-                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_UTKAST_INOM_VG.getName(),
-                        intygsTyp)) {
+                if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                        .features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
                     return Response.status(Status.BAD_REQUEST).build();
                 }
             }
 
             if (intygExists != null) {
-                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
                     return Response.status(Status.BAD_REQUEST).build();
-                } else if (intygExists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
-                        .getName(), intygsTyp)) {
+                } else if (intygExists && authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                     return Response.status(Status.BAD_REQUEST).build();
                 }
             }
@@ -182,7 +176,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response filterDraftsForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
 
         UtkastFilter utkastFilter = createUtkastFilter(filterParameters);
         QueryIntygResponse queryResponse = performUtkastFilterQuery(utkastFilter);
@@ -200,7 +194,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getLakareWithDraftsByEnheter() {
 
-        authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
 
         WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();

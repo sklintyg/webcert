@@ -40,7 +40,6 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
 public class SrsApiControllerIT extends BaseRestIntegrationTest {
 
     private static final int OK = 200;
-    private static final int NO_CONTENT = 204;
     private static final int BAD_REQUEST = 400;
     private static final int INTERNAL_SERVER_ERROR = 500;
     private static final String SUPPORTED_DIAGNOSIS_CODE = "J20";

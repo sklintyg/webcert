@@ -28,17 +28,16 @@ import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -64,7 +63,6 @@ import java.util.stream.Collectors;
  * Controller for the API that serves WebCert.
  *
  * @author nikpet
- *
  */
 @Path("/intyg")
 @Api(value = "intyg", description = "REST API för intygshantering", produces = MediaType.APPLICATION_JSON)
@@ -100,8 +98,7 @@ public class IntygApiController extends AbstractApiController {
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
      * types of Intyg are converted and merged into one sorted list.
      *
-     * @param personNummerIn
-     *            personnummer
+     * @param personNummerIn personnummer
      * @return a Response carrying a list containing all Intyg for a person.
      */
     @GET
@@ -136,7 +133,8 @@ public class IntygApiController extends AbstractApiController {
 
         List<Utkast> utkastList;
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).isVerified()) {
+        if (authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .isVerified()) {
             Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(getWebCertUserService().getUser(),
                     AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
@@ -170,10 +168,8 @@ public class IntygApiController extends AbstractApiController {
     /**
      * Sets the notified flag on an Intyg.
      *
-     * @param intygsId
-     *            Id of the Intyg
-     * @param notifiedState
-     *            True or False
+     * @param intygsId      Id of the Intyg
+     * @param notifiedState True or False
      * @return Response
      */
     @PUT
@@ -183,7 +179,7 @@ public class IntygApiController extends AbstractApiController {
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, NotifiedState notifiedState) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
                 .orThrow();
 

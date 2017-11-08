@@ -21,9 +21,7 @@ package se.inera.intyg.webcert.web.integration.util;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 
@@ -36,7 +34,7 @@ public final class AuthoritiesHelperUtil {
     }
 
     public static boolean mayNotCreateUtkastForSekretessMarkerad(SekretessStatus sekretessStatus, IntygUser user,
-                                                                 String intygsTyp) {
+            String intygsTyp) {
 
         if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
@@ -49,24 +47,24 @@ public final class AuthoritiesHelperUtil {
 
     public static String validateMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
             Boolean>> intygstypToStringToBoolean) {
-        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG,
-                WebcertFeature.UNIKT_INTYG_INOM_VG).isVerified()) {
+        if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
 
             Boolean utkastExists = intygstypToStringToBoolean.get("utkast").get(intygsTyp);
             Boolean intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
 
             if (utkastExists != null && utkastExists) {
                 if (authoritiesValidator.given(user, intygsTyp).features(
-                        WebcertFeature.UNIKT_UTKAST_INOM_VG).isVerified()) {
+                        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
                     return "Draft of this type must be unique within caregiver";
                 }
             }
 
             if (intygExists != null) {
-                if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG).isVerified()) {
+                if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
                     return "Certificates of this type must be globally unique.";
                 } else if (intygExists && authoritiesValidator.given(user, intygsTyp).features(
-                        WebcertFeature.UNIKT_INTYG_INOM_VG).isVerified()) {
+                        AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                     return "Certificates of this type must be unique within this caregiver.";
                 }
             }

@@ -23,20 +23,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -61,32 +69,27 @@ public class ViewIntegrationController extends BaseIntegrationController {
             AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_ADMIN
     };
 
-    private Optional<CommonFeatureService> commonFeatureService;
-
     private IntegrationService integrationService;
 
     private String urlIntygFragmentTemplate;
+
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
-     * @param intygId
-     *            The id of the certificate to view.
+     * @param intygId The id of the certificate to view.
      */
     @GET
     @Path("/{intygId}/readonly")
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-                                       @PathParam("intygId") String intygId,
-                                       @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
+            @PathParam("intygId") String intygId,
+            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
         validateRequest(intygId, enhetId);
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, getWebCertUser());
-    }
-
-    @Autowired(required = false)
-    public void setCommonFeatureService(Optional<CommonFeatureService> commonFeatureService) {
-        this.commonFeatureService = commonFeatureService;
     }
 
     @Autowired
@@ -99,7 +102,6 @@ public class ViewIntegrationController extends BaseIntegrationController {
         this.urlIntygFragmentTemplate = urlIntygFragmentTemplate;
     }
 
-
     // protected scope
 
     @Override
@@ -111,7 +113,6 @@ public class ViewIntegrationController extends BaseIntegrationController {
     protected UserOriginType getGrantedRequestOrigin() {
         return GRANTED_ORIGIN;
     }
-
 
     // private stuff
 
@@ -172,10 +173,8 @@ public class ViewIntegrationController extends BaseIntegrationController {
     }
 
     private void updateUserWithActiveFeatures(WebCertUser webCertUser) {
-        if (commonFeatureService.isPresent()) {
-            webCertUser.setFeatures(commonFeatureService.get().getActiveFeatures(webCertUser.getValdVardenhet().getId(),
-                    webCertUser.getValdVardgivare().getId()));
-        }
+        webCertUser.setFeatures(commonAuthoritiesResolver
+                .getFeatures(Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())));
     }
 
     private void validateRequest(String intygId, String enhetId) {

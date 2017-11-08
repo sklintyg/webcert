@@ -90,8 +90,9 @@
     </bean>
 
     <!-- Read authorites configuration to setup user roles and privileges -->
-    <bean id="authoritiesConfigurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.AuthoritiesConfigurationLoader">
+    <bean id="securityConfigurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader">
       <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />
+      <constructor-arg name="featuresConfigurationFile" value="${features.configuration.file}" />
     </bean>
 
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
@@ -109,10 +110,6 @@
   </beans>
 
   <beans>
-    <util:properties id="webcertFeatures" location="${feature.global.file}"/>
-  </beans>
-
-  <beans>
     <context:property-placeholder
       location="classpath:webcert-notification-route-params.properties, classpath:webcert-certificate-route-params.properties, classpath:default.properties, classpath:version.properties"
       order="2" ignore-resource-not-found="false" />
@@ -123,7 +120,6 @@
 
     <bean id="intygTextsService" class="se.inera.intyg.common.services.texts.IntygTextsServiceImpl" />
     <bean id="intygTextsRepository" class="se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl" />
-    <bean id="webcertPilotService" class="se.inera.intyg.infra.security.common.service.PilotServiceImpl" />
 
     <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService" />
 

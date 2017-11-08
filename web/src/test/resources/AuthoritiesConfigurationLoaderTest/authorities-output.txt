@@ -77,4 +77,3 @@ Privilege { name='VISA_INTYG', desc='Visa intyg', intygstyper= [fk7263], request
 Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
 Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
 Privilege { name='FORNYA_INTYG', desc='Förnya intyg', intygstyper= [ts-bas], requestOrigins= []}]}}]
-SekretessmarkeringAllowed:[fk7263]

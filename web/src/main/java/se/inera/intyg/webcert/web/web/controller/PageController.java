@@ -29,8 +29,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -61,13 +62,15 @@ public class PageController {
     private WebCertUserService webCertUserService;
 
     @Autowired
-    private WebcertFeatureService webcertFeatureService;
+    private AuthoritiesHelper authoritiesHelper;
 
     @Autowired
     private MailLinkService mailLinkService;
 
     @Autowired
     private IntygService intygService;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
@@ -79,14 +82,13 @@ public class PageController {
     /**
      * Select Starting point view depending on user properties.
      *
-     * @param user
-     *            user
+     * @param user user
      * @return String
      */
     protected String resolveStartView(WebCertUser user) {
-        if (user.isLakare() && webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST)) {
+        if (user.isLakare() && authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).isVerified()) {
             return DASHBOARD_VIEW_REDIRECT;
-        } else if (webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_FRAGOR)) {
+        } else if (authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).isVerified()) {
             return ADMIN_VIEW_REDIRECT;
         } else {
             return ABOUT_VIEW_REDIRECT;
@@ -108,9 +110,9 @@ public class PageController {
     private void populateUseMinifiedJavaScript(ModelAndView model) {
         final WebCertUser user = webCertUserService.getUser();
         if (user != null) {
-            model.addObject("useMinifiedJavaScript", user.isFeatureActive(WebcertFeature.JS_MINIFIED.getName()));
+            model.addObject("useMinifiedJavaScript", user.isFeatureActive(AuthoritiesConstants.FEATURE_JS_MINIFIED));
         } else {
-            model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
+            model.addObject("useMinifiedJavaScript", authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_JS_MINIFIED));
         }
     }
 

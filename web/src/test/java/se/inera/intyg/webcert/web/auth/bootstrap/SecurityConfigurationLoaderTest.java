@@ -26,7 +26,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.intyg.infra.security.authorities.AuthoritiesConfiguration;
-import se.inera.intyg.infra.security.authorities.bootstrap.AuthoritiesConfigurationLoader;
+import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.Role;
@@ -45,21 +45,21 @@ import static org.junit.Assert.fail;
 /**
  * The AuthoritiesDataLoader is not very well suited for unit-testing, given that it has a single entry-point and then
  * creates roles, privileges and titleCodes using three different repositories with interdependent data.
- *
+ * <p>
  * A future refactoring may be to extract role, privilege and titleCode creation to separate components which then could
  * expose a domain-specific API much more suitable for unit testing than the AuthoritiesDataLoader.
- *
+ * <p>
  * Created by eriklupander on 2015-10-19.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class AuthoritiesConfigurationLoaderTest {
+public class SecurityConfigurationLoaderTest {
 
-    //private static final String authoritiesConfigurationFile = "security/authorities.yaml";
     private static final String authoritiesConfigurationFile = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
+    private static final String featuresConfigurationFile = "AuthoritiesConfigurationLoaderTest/features-test.yaml";
     private static final String authoritiesConfigurationOutputFile = "AuthoritiesConfigurationLoaderTest/authorities-output.txt";
 
     @InjectMocks
-    private AuthoritiesConfigurationLoader loader = new AuthoritiesConfigurationLoader(authoritiesConfigurationFile);
+    private SecurityConfigurationLoader loader = new SecurityConfigurationLoader(authoritiesConfigurationFile, featuresConfigurationFile);
 
     @Before
     public void setupAuthoritiesConfiguration() {
@@ -73,7 +73,7 @@ public class AuthoritiesConfigurationLoaderTest {
 
     @Test
     public void loadConfigurationAndAssertTypeOfObjects() {
-        AuthoritiesConfiguration configuration = loader.getConfiguration();
+        AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
         assertTrue(configuration.getRequestOrigins().size() == 4);
         assertTrue(configuration.getPrivileges().size() == 7);
@@ -95,14 +95,14 @@ public class AuthoritiesConfigurationLoaderTest {
 
     @Test
     public void loadConfigurationAndAssertString() {
-        AuthoritiesConfiguration configuration = loader.getConfiguration();
+        AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
-        String actual = configuration.toString().replaceAll("\\s","").trim();
+        String actual = configuration.toString().replaceAll("\\s", "").trim();
         String expected = "";
 
         try {
             Resource resource = getResource(authoritiesConfigurationOutputFile);
-            expected = new String(Files.readAllBytes(Paths.get(resource.getURI()))).replaceAll("\\s","").trim();
+            expected = new String(Files.readAllBytes(Paths.get(resource.getURI()))).replaceAll("\\s", "").trim();
         } catch (IOException e) {
             fail(e.getMessage());
         }
@@ -112,9 +112,8 @@ public class AuthoritiesConfigurationLoaderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void loadConfigurationWithBadLocation() {
-        AuthoritiesConfigurationLoader loader = new AuthoritiesConfigurationLoader(null);
+        new SecurityConfigurationLoader(null, null);
     }
-
 
     // ~ Private scope
     // ======================================================================================================

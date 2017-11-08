@@ -1,0 +1,250 @@
+---
+# De intygstyper som systemet har
+knownIntygstyper:
+  - &ki010 fk7263
+  - &ki020 ts-bas
+  - &ki030 ts-diabetes
+  - &ki040 luse
+  - &ki050 lisjp
+  - &ki060 luae_na
+  - &ki070 luae_fs
+  - &ki080 db
+  - &ki090 doi
+
+knownFeatures:
+  - &kf010 HANTERA_FRAGOR
+  - &kf020 HANTERA_INTYGSUTKAST
+  - &kf030 FORNYA_INTYG
+  - &kf040 MAKULERA_INTYG
+  - &kf050 MAKULERA_INTYG_KRAVER_ANLEDNING
+  - &kf060 SKAPA_NY_FRAGA
+  - &kf070 SKICKA_INTYG
+  - &kf080 SIGNERA_SKICKA_DIREKT
+  - &kf090 UTSKRIFT
+  - &kf100 ARBETSGIVARUTSKRIFT
+  - &kf110 JS_LOGGNING
+  - &kf120 JS_MINIFIED
+  - &kf130 SRS
+  - &kf140 HANTERA_INTYGSUTKAST_AVLIDEN
+  - &kf150 UNIKT_INTYG
+  - &kf160 UNIKT_INTYG_INOM_VG
+  - &kf170 UNIKT_UTKAST_INOM_VG
+  - &kf180 TAK_KONTROLL
+  - &kf190 TAK_KONTROLL_TRADKLATTRING
+  - &kf200 SEKRETESSMARKERING
+
+# Aktiverade features i Webcert
+features:
+  - &f010
+    name: *kf010
+    desc: Hantera frågor
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f020
+    name: *kf020
+    desc: Hantera intygsutkast
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f030
+    name: *kf030
+    desc: Förnya intyg
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f040
+    name: *kf040
+    desc: Makulera intyg
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f050
+    name: *kf050
+    desc: Makulera intyg kräver anledning
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f060
+    name: *kf060
+    desc: Skapa ny fråga
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f070
+    name: *kf070
+    desc: Skicka intyg
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f080
+    name: *kf080
+    desc: Signera skicka direkt
+    global: true
+    intygstyper:
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f090
+    name: *kf090
+    desc: Utskrift
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f100
+    name: *kf100
+    desc: Arbetsgivarutskrift
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki050 # LISJP
+  - &f110
+    name: *kf110
+    desc: JS loggning
+    global: true
+  - &f120
+    name: *kf120
+    desc: JS minifiering
+    global: true
+#  - &f130
+#    name: *kf130
+#    desc: SRS
+#    global: true
+#    intygstyper:
+#      - *ki010 # FK7263
+#      - *ki050 # LISJP
+  - &f140
+    name: *kf140
+    desc: Hantera utkast för avlidna patienter
+    global: true
+    intygstyper:
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f150
+    name: *kf150
+    desc: Unikt intyg
+    global: true
+    intygstyper:
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f160
+    name: *kf160
+    desc: Unikt intyg inom VG
+    global: true
+    intygstyper:
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f170
+    name: *kf170
+    desc: Unikt utkast inom VG
+    global: true
+    intygstyper:
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f180
+    name: *kf180
+    desc: Kontrollera TAK uppsättning
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f190
+    name: *kf190
+    desc: Använd trädklättring i HSA
+    global: true
+  - &f200
+    name: *kf200
+    desc: Sekretessmarkering tillåten
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+
+pilots:
+  - name: TEST_PILOT
+    desc: Pilot avsedd för testsyfte
+    hsaIds:
+      - IFV1239877878-1042
+    activated:
+      - &pf010
+        name: *kf130
+        desc: SRS-stöd i Webcert
+        global: true
+        intygstyper:
+          - *ki010 # FK7263
+          - *ki050 # LISJP

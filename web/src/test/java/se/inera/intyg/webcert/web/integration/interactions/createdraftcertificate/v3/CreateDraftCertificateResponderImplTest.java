@@ -29,12 +29,10 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -43,7 +41,6 @@ import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificat
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -84,31 +81,20 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     private static final String UTKAST_VERSION = "1";
     private static final String UTKAST_TYPE = "fk7263";
     private static final String UTKAST_JSON = "A bit of text representing json";
-
-    @Mock
-    private UtkastService mockUtkastService;
-
-    @Mock
-    private CreateNewDraftRequestBuilder mockRequestBuilder;
-
-    @Mock
-    private CreateDraftCertificateValidator mockValidator;
-
-    @Mock
-    private IntegreradeEnheterRegistry mockIntegreradeEnheterService;
-
-    @Mock
-    private MonitoringLogService mockMonitoringLogService;
-
-    @Mock
-    private WebcertFeatureService webcertFeatureService;
-
-    @Mock
-    private TakService takService;
-
     @Mock
     PatientDetailsResolver patientDetailsResolver;
-
+    @Mock
+    private UtkastService mockUtkastService;
+    @Mock
+    private CreateNewDraftRequestBuilder mockRequestBuilder;
+    @Mock
+    private CreateDraftCertificateValidator mockValidator;
+    @Mock
+    private IntegreradeEnheterRegistry mockIntegreradeEnheterService;
+    @Mock
+    private MonitoringLogService mockMonitoringLogService;
+    @Mock
+    private TakService takService;
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
 
@@ -121,7 +107,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testCreateDraftCertificateSuccess() throws HsaServiceCallException {
+    public void testCreateDraftCertificateSuccess() {
 
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
@@ -133,14 +119,12 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
                 vardperson);
 
-        when(webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), UTKAST_TYPE)).thenReturn(true);
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(eq(SekretessStatus.FALSE));
-
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
@@ -159,7 +143,6 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
 
-        when(webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), UTKAST_TYPE)).thenReturn(true);
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
@@ -191,7 +174,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testCreateDraftCertificateNoMIUs() throws HsaServiceCallException {
+    public void testCreateDraftCertificateNoMIUs() {
         WebCertUser userWithoutMiu = buildWebCertUser();
         userWithoutMiu.setVardgivare(new ArrayList<>());
         when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(userWithoutMiu);
@@ -210,7 +193,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testCreateDraftCertificateMultipleMIUs() throws HsaServiceCallException {
+    public void testCreateDraftCertificateMultipleMIUs() {
 
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
@@ -239,7 +222,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() throws HsaServiceCallException {
+    public void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() {
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
 

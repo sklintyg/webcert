@@ -23,7 +23,6 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.integration.converters.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
@@ -106,7 +105,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvIntyg.getCode());
 
         if (!authoritiesValidator.given(user, intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .isVerified()) {
             errors.addError("Du saknar behörighet att skapa intyg med denna typ.");

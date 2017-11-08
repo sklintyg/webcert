@@ -33,14 +33,12 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
@@ -73,7 +71,6 @@ import java.io.UnsupportedEncodingException;
  * Controller for module interaction with drafts.
  *
  * @author npet
- *
  */
 @Path("/utkast")
 @Api(value = "utkast", description = "REST API - moduleapi - utkast", produces = MediaType.APPLICATION_JSON)
@@ -102,9 +99,6 @@ public class UtkastModuleApiController extends AbstractApiController {
     private CertificateRelationService certificateRelationService;
 
     @Autowired
-    private WebCertUserService userService;
-
-    @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
     @Autowired
@@ -113,8 +107,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
-     * @param intygsId
-     *            The id of the certificate
+     * @param intygsId The id of the certificate
      * @return a JSON object
      */
     @GET
@@ -134,7 +127,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         }
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -203,10 +196,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Persists the supplied draft certificate using the intygId as key.
      *
-     * @param intygsId
-     *            The id of the certificate.
-     * @param payload
-     *            Object holding the certificate and its current status.
+     * @param intygsId The id of the certificate.
+     * @param payload  Object holding the certificate and its current status.
      */
     @PUT
     @Path("/{intygsTyp}/{intygsId}/{version}")
@@ -217,7 +208,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -248,10 +239,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Validate the supplied draft certificate.
      *
-     * @param intygsId
-     *            The id of the certificate.
-     * @param payload
-     *            Object holding the certificate and its current status.
+     * @param intygsId The id of the certificate.
+     * @param payload  Object holding the certificate and its current status.
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/validate")
@@ -261,7 +250,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             byte[] payload) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -288,8 +277,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Deletes a draft certificate identified by the certificateId.
      *
-     * @param intygsId
-     *            The id of the certificate
+     * @param intygsId The id of the certificate
      */
     @DELETE
     @Path("/{intygsTyp}/{intygsId}/{version}")
@@ -299,7 +287,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             @Context HttpServletRequest request) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -320,8 +308,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Signera utkast.
      *
-     * @param intygsId
-     *            intyg id
+     * @param intygsId intyg id
      * @return SignaturTicketResponse
      */
     @POST
@@ -345,7 +332,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     private void verifyIsAuthorizedToSignIntyg(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
                 .orThrow();
     }
@@ -353,8 +340,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Signera utkast mha Bank ID GRP API.
      *
-     * @param intygsId
-     *            intyg id
+     * @param intygsId intyg id
      * @return SignaturTicketResponse
      */
     @POST
@@ -382,8 +368,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Signera utkast.
      *
-     * @param biljettId
-     *            biljett id
+     * @param biljettId biljett id
      * @return BiljettResponse
      */
     @POST
@@ -420,8 +405,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Skapa signeringshash.
      *
-     * @param intygsId
-     *            intyg id
+     * @param intygsId intyg id
      * @return SignaturTicketResponse
      */
     @POST
@@ -429,7 +413,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .orThrow();
 
         SignaturTicket ticket;
         try {
@@ -444,15 +429,15 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Hamta signeringsstatus.
      *
-     * @param biljettId
-     *            biljett id
+     * @param biljettId biljett id
      * @return SignaturTicketResponse
      */
     @GET
     @Path("/{intygsTyp}/{biljettId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse biljettStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .orThrow();
 
         SignaturTicket ticket = signaturService.ticketStatus(biljettId);
         return new SignaturTicketResponse(ticket);

@@ -46,19 +46,21 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCertificateValidatorTest {
 
     @InjectMocks
     private CreateDraftCertificateValidatorImpl validator;
-
 
     @Test
     public void testValidate() {
@@ -177,10 +179,12 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Test
     public void testValidationOfPersonnummerDoesNotExistInPU() {
-        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
+                .thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
 
-        ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+        ResultValidator result = validator
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
 
         verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
@@ -190,34 +194,42 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testPuServiceLooksUpPatientForTsBas() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+        ResultValidator result = validator
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertFalse(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
 
     @Test
     public void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu() {
-        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
-        ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
+                .thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
+        ResultValidator result = validator
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
     }
 
     @Test
     public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
-        when(commonAuthoritiesResolver.getSekretessmarkeringAllowed()).thenReturn(Arrays.asList(Fk7263EntryPoint.MODULE_ID));
+        when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering())
+                .thenReturn(new HashSet<>(Arrays.asList(Fk7263EntryPoint.MODULE_ID)));
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
-        ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+        ResultValidator result = validator
+                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
+
     @Test
     public void testCreateDBAllowedWhenPatientIsDeceased() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.isAvliden(any(Personnummer.class))).thenReturn(true);
-        ResultValidator result = validator.validateApplicationErrors(buildIntyg(DbModuleEntryPoint.MODULE_ID, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), buildUserUnauthorized());
+        ResultValidator result = validator.validateApplicationErrors(
+                buildIntyg(DbModuleEntryPoint.MODULE_ID, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true),
+                buildUserUnauthorized());
         assertFalse(result.hasErrors());
         verify(patientDetailsResolver).isAvliden(any(Personnummer.class));
     }
@@ -227,7 +239,9 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.isAvliden(any(Personnummer.class))).thenReturn(true);
-        ResultValidator result = validator.validateApplicationErrors(buildIntyg(DoiModuleEntryPoint.MODULE_ID, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), buildUserUnauthorized());
+        ResultValidator result = validator.validateApplicationErrors(
+                buildIntyg(DoiModuleEntryPoint.MODULE_ID, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true),
+                buildUserUnauthorized());
         assertFalse(result.hasErrors());
         verify(patientDetailsResolver).isAvliden(any(Personnummer.class));
     }
@@ -242,10 +256,11 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.isAvliden(any(Personnummer.class))).thenReturn(true);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-       for(String type: typesToTest) {
-           ResultValidator result = validator.validateApplicationErrors(buildIntyg(type, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
-           assertTrue(result.hasErrors());
-       }
+        for (String type : typesToTest) {
+            ResultValidator result = validator
+                    .validateApplicationErrors(buildIntyg(type, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+            assertTrue(result.hasErrors());
+        }
 
         verify(patientDetailsResolver, times(typesToTest.size())).isAvliden(any(Personnummer.class));
     }
@@ -260,7 +275,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
             String enhetsnamn, boolean createUnit) {
 
         return buildIntyg(intygsKod, patientEfternamn, patientFornamn, "191212121212",
-                hosPersonalFullstandigtNamn, "hosHsaId", enhetsnamn,"enhetHsaId", createUnit);
+                hosPersonalFullstandigtNamn, "hosHsaId", enhetsnamn, "enhetHsaId", createUnit);
     }
 
     private Utlatande buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String patientPersonId,

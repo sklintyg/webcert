@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -40,9 +39,6 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
     @Autowired
     private UtkastService utkastService;
-
-
-    // default scope
 
     @Override
     void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user) {
@@ -65,9 +61,6 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
     }
 
-
-    // default scope
-
     /**
      * Updates Patient section of a draft with updated patient details for selected types.
      */
@@ -75,7 +68,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
         // To be allowed to update utkast, we need to have the same authority as when saving a draft..
         authoritiesValidator.given(user, intygsType)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -84,9 +77,6 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(personnummer, draftId, draftVersion);
         utkastService.updatePatientOnDraft(request);
     }
-
-
-    // private stuff
 
     private void logSammanhallenSjukforing(String intygsTyp, String intygsId, Utkast utkast, WebCertUser user) {
         if (user.getParameters().isSjf()) {

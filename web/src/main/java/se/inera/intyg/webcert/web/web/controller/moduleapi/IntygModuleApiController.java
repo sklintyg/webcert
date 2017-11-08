@@ -25,22 +25,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
@@ -54,6 +49,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRes
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
@@ -87,12 +83,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private WebCertUserService userService;
-
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
-
-    @Autowired
-    private WebcertFeatureService webcertFeatureService;
 
     /**
      * Retrieves a signed intyg from intygstjänst.
@@ -131,7 +121,7 @@ public class IntygModuleApiController extends AbstractApiController {
     public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .features(WebcertFeature.UTSKRIFT)
+                .features(AuthoritiesConstants.FEATURE_UTSKRIFT)
                 .orThrow();
 
         return getPdf(intygsTyp, intygsId, false);
@@ -151,7 +141,7 @@ public class IntygModuleApiController extends AbstractApiController {
             @PathParam(value = "intygsId") final String intygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .features(WebcertFeature.ARBETSGIVARUTSKRIFT)
+                .features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT)
                 .orThrow();
 
         return getPdf(intygsTyp, intygsId, true);
@@ -183,7 +173,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             SendSignedIntygParameter param) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.SKICKA_INTYG).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_SKICKA_INTYG)
+                .orThrow();
 
         IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient(), false);
         return Response.ok(sendResult).build();
@@ -203,8 +194,8 @@ public class IntygModuleApiController extends AbstractApiController {
             RevokeSignedIntygParameter param) {
         validateRevokeAuthority(intygsTyp);
 
-        if (webcertFeatureService.isModuleFeatureActive(ModuleFeature.MAKULERA_INTYG_KRAVER_ANLEDNING.getName(), intygsTyp)
-                && !param.isValid()) {
+        if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
             LOG.warn("Request to revoke '{}' is not valid", intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
@@ -225,7 +216,7 @@ public class IntygModuleApiController extends AbstractApiController {
             @PathParam("meddelandeId") String meddelandeId) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.FORNYA_INTYG)
+                .features(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG)
                 .orThrow();
 
@@ -481,7 +472,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
     private void validateRevokeAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.MAKULERA_INTYG)
+                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
                 .orThrow();
     }
@@ -494,14 +485,14 @@ public class IntygModuleApiController extends AbstractApiController {
 
     private void validateCopyAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.FORNYA_INTYG)
+                .features(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
                 .orThrow();
     }
 
     private void validateCreateUtkastFromTemplateAuthority(String newIntygTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), newIntygTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
     }

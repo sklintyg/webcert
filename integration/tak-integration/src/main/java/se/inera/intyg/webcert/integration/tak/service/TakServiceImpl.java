@@ -31,8 +31,8 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.consumer.TakConsumer;
 import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
@@ -145,7 +145,7 @@ public class TakServiceImpl implements TakService {
 
     private boolean isTakConfiguredCorrectly(String intygsTyp, IntygUser user, List<String> errors, String hsaId, SchemaVersion version) {
         boolean res = checkConfiguration(intygsTyp, user, errors, hsaId, version);
-        if (!res && authoritiesValidator.given(user).features(WebcertFeature.TAK_KONTROLL_TRADKLATTRING).isVerified()) {
+        if (!res && authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL_TRADKLATTRING).isVerified()) {
             String careUnitId;
             try {
                 careUnitId = hsaOrganizationsService.getParentUnit(hsaId);
@@ -174,7 +174,7 @@ public class TakServiceImpl implements TakService {
         }
 
         // Utilize authoritiesValidator to check arendehantering
-        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).isVerified()) {
+        if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).isVerified()) {
             if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp)) {
                 // yes? -> fk7263
                 if (!isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateAnswerId))) {

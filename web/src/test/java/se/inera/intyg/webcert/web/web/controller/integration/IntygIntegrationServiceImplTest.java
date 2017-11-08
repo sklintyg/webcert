@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,14 +26,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.infra.security.common.model.*;
-import se.inera.intyg.infra.security.common.service.CommonFeatureService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -44,14 +46,22 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.Stream.of;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Magnus Ekstrand on 2017-10-13.
@@ -72,7 +82,6 @@ public class IntygIntegrationServiceImplTest {
     private final String VARDGIVAREID_UTKAST = "vg2";
     private final String VARDGIVARENAMN_UTKAST = "Vardgivare2";
 
-
     @Mock
     private MonitoringLogService monitoringLog;
 
@@ -85,12 +94,8 @@ public class IntygIntegrationServiceImplTest {
     @Mock
     private UtkastService utkastService;
 
-    @Mock
-    private CommonFeatureService commonFeatureService;
-
     @InjectMocks
     private IntygIntegrationServiceImpl testee;
-
 
     @Before
     public void setupMock() {
@@ -99,7 +104,7 @@ public class IntygIntegrationServiceImplTest {
     }
 
     @Test
-    public void prepareRedirectToIntygSuccess() throws Exception {
+    public void prepareRedirectToIntygSuccess() {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
@@ -124,7 +129,7 @@ public class IntygIntegrationServiceImplTest {
     }
 
     @Test
-    public void userIsAuthorizedToHandleSekretessmarkeradPatient() throws Exception {
+    public void userIsAuthorizedToHandleSekretessmarkeradPatient() {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
@@ -156,7 +161,7 @@ public class IntygIntegrationServiceImplTest {
     }
 
     @Test
-    public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardgivare() throws Exception {
+    public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardgivare() {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
@@ -177,7 +182,7 @@ public class IntygIntegrationServiceImplTest {
     }
 
     @Test
-    public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardenhet() throws Exception {
+    public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardenhet() {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
@@ -199,7 +204,7 @@ public class IntygIntegrationServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void expectExceptionWhenSekretessStatusIsUndefined() throws Exception {
+    public void expectExceptionWhenSekretessStatusIsUndefined() {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
@@ -219,7 +224,7 @@ public class IntygIntegrationServiceImplTest {
     }
 
     @Test
-    public void ensureDraftPatientInfoUpdated() throws Exception {
+    public void ensureDraftPatientInfoUpdated() {
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
                 null, null, null, null, null, null,
@@ -272,7 +277,7 @@ public class IntygIntegrationServiceImplTest {
     }
 
     private Utkast createUtkast() {
-        Utkast utkast =  TestIntygFactory.createUtkast(INTYGSID, LocalDateTime.now());
+        Utkast utkast = TestIntygFactory.createUtkast(INTYGSID, LocalDateTime.now());
         utkast.setIntygsTyp(INTYGSTYP);
         utkast.setVardgivarId(VARDGIVAREID_UTKAST);
         utkast.setVardgivarNamn(VARDGIVARENAMN_UTKAST);
@@ -295,7 +300,7 @@ public class IntygIntegrationServiceImplTest {
         return p;
     }
 
-    private WebCertUser createUser(String roleName, Privilege p, Set<String> features, String origin) {
+    private WebCertUser createUser(String roleName, Privilege p, Map<String, Feature> features, String origin) {
         WebCertUser user = new WebCertUser();
 
         HashMap<String, Privilege> pMap = new HashMap<>();
@@ -321,19 +326,13 @@ public class IntygIntegrationServiceImplTest {
                         Arrays.asList(
                                 createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
                                 createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-                ImmutableSet.of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".lisjp",
-                        "base_feature"), UserOriginType.DJUPINTEGRATION.name());
-    }
-
-    private List<RequestOrigin> getOriginList(RequestOrigin... requestOrigin) {
-        return of(requestOrigin).collect(toCollection(ArrayList::new));
-    }
-
-    private List<String> getStringList(String... values) {
-        return of(values).collect(toCollection(ArrayList::new));
-    }
-
-    private Set<String> getStringSet(String... values) {
-        return of(values).collect(toCollection(HashSet::new));
+                Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
+                        .collect(Collectors.toMap(Function.identity(), s -> {
+                            Feature feature = new Feature();
+                            feature.setName(s);
+                            feature.setIntygstyper(Arrays.asList("lisjp"));
+                            return feature;
+                        })),
+                UserOriginType.DJUPINTEGRATION.name());
     }
 }

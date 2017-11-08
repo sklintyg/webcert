@@ -37,7 +37,7 @@ describe('UtkastProxy', function() {
     beforeEach(angular.mock.module('webcert', function($provide) {
         featureService = {
             features: {
-                HANTERA_INTYGSUTKAST: 'hanteraIntygsutkast'
+                HANTERA_INTYGSUTKAST: 'HANTERA_INTYGSUTKAST'
             },
             isFeatureActive: jasmine.createSpy('isFeatureActive')
         };

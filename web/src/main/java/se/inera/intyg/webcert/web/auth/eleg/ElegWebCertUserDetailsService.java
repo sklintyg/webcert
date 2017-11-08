@@ -38,6 +38,7 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -149,7 +150,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         WebCertUser user = new WebCertUser();
 
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
 
         // Set application mode / request origin
         user.setOrigin(getAuthoritiesResolver().getRequestOrigin(requestOrigin).getName());

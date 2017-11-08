@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.integration.tak.service;
 
-import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -30,21 +29,25 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsServiceImpl;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.consumer.TakConsumerImpl;
 import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -113,7 +116,7 @@ public class TakServiceImplTest {
     }
 
     @Test
-    public void testSuccess() throws HsaServiceCallException {
+    public void testSuccess() {
         when(consumer.doLookup(anyString(), anyString(), anyString())).thenReturn(buildTakLogicalAddress("29"));
 
         assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user).isValid());
@@ -140,7 +143,7 @@ public class TakServiceImplTest {
     }
 
     @Test
-    public void testSuccessEvenThoughTimeout() throws HsaServiceCallException {
+    public void testSuccessEvenThoughTimeout() {
         when(consumer.doLookup(anyString(), anyString(), anyString())).thenAnswer((Answer<TakLogicalAddress[]>) invocation -> {
             Thread.sleep(1500);
             return buildTakLogicalAddress("28");
@@ -256,11 +259,15 @@ public class TakServiceImplTest {
                         Arrays.asList("fk7263", "ts-bas", "luse"),
                         Arrays.asList(
                                 createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263", "ts-bas", "luse")),
-                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-                ImmutableSet.of(
-                        WebcertFeature.HANTERA_FRAGOR.getName(), WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263",
-                        WebcertFeature.HANTERA_FRAGOR.getName(), WebcertFeature.HANTERA_FRAGOR.getName() + ".luse",
-                        WebcertFeature.TAK_KONTROLL_TRADKLATTRING.getName()), UserOriginType.NORMAL.name());
+                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Collections.singletonList("ts-bas")))),
+                Stream.of(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, AuthoritiesConstants.FEATURE_TAK_KONTROLL_TRADKLATTRING)
+                        .collect(Collectors.toMap(Function.identity(), s -> {
+                            Feature feature = new Feature();
+                            feature.setName(s);
+                            feature.setGlobal(true);
+                            feature.setIntygstyper(Arrays.asList("fk7263", "luse"));
+                            return feature;
+                        })), UserOriginType.NORMAL.name());
     }
 
     private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
@@ -278,7 +285,7 @@ public class TakServiceImplTest {
         return p;
     }
 
-    private IntygUser createUser(String roleName, Privilege p, Set<String> features, String origin) {
+    private IntygUser createUser(String roleName, Privilege p, Map<String, Feature> features, String origin) {
         IntygUser user = new IntygUser(HSAID_OK);
 
         HashMap<String, Privilege> pMap = new HashMap<>();

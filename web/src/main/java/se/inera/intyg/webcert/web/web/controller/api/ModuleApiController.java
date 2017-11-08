@@ -23,13 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
@@ -55,13 +53,13 @@ public class ModuleApiController extends AbstractApiController {
     private IntygModuleRegistry moduleRegistry;
 
     @Autowired
-    private WebcertFeatureService featureService;
-
-    @Autowired
     private DynamicLinkService dynamicLinkService;
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private AuthoritiesHelper authoritiesHelper;
 
     /**
      * Serving module configuration for Angular bootstrapping.
@@ -109,7 +107,7 @@ public class ModuleApiController extends AbstractApiController {
         if (patientDetailsResolver.isAvliden(new Personnummer(patientId))) {
             intygModules = intygModules.stream()
                     .filter(module -> authoritiesValidator.given(getWebCertUserService().getUser(), module.getId())
-                            .features(WebcertFeature.HANTERA_INTYGSUTKAST_AVLIDEN).isVerified())
+                            .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN).isVerified())
                     .collect(Collectors.toList());
         }
 
@@ -120,8 +118,9 @@ public class ModuleApiController extends AbstractApiController {
     @Path("/active")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getActiveModules() {
+        // Cannot use user as this is used before login
         return Response.ok(moduleRegistry.listAllModules().stream()
-                .filter(i -> featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), i.getId()))
+                .filter(i -> authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, i.getId()))
                 .filter(m -> !m.getId().equals(Fk7263EntryPoint.MODULE_ID)) // Special case for fk7263
                 .collect(Collectors.toList())).build();
     }

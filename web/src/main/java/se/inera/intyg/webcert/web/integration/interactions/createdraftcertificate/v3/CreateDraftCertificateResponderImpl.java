@@ -29,10 +29,10 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
@@ -146,7 +146,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             return createErrorResponse(uniqueErrorString, ErrorIdType.APPLICATION_ERROR);
         }
 
-        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.TAK_KONTROLL).isVerified()) {
+        if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL).isVerified()) {
             // Check if invoking health care unit has required TAK
             TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsTyp, SchemaVersion.VERSION_3, user);
             if (!takResult.isValid()) {
@@ -160,7 +160,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId);
     }
-
 
     private Utkast createNewDraft(Intyg utkastRequest, IntygUser user) {
 
