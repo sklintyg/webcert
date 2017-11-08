@@ -124,7 +124,7 @@ public class TakServiceImpl implements TakService {
                         errors.add(initialResult.getError());
                     }
                     // Check user and intygstyp for arendekommunikation
-                    return (isTakForArendekommunikation(intygsTyp, user, errors, actualHsaId)) && isTakad;
+                    return (isTakad && isTakForArendekommunikation(intygsTyp, user, errors, actualHsaId));
 
                 } catch (ResourceAccessException  e) {
                     // This handles timeouts from the actual REST-calls in TakConsumer, log and allow creation.

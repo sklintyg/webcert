@@ -99,16 +99,10 @@ public class TakServiceImplTest {
         ReflectionTestUtils.setField(impl, "timeout", 1);
         MockitoAnnotations.initMocks(this);
         user = createDefaultUser();
-        user.setFeatures(ImmutableSet.of(WebcertFeature.HANTERA_FRAGOR.getName(),
-                WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263"));
-    }
-
-    private TakLogicalAddress[] buildTakLogicalAddress(String id) {
-        TakLogicalAddress logicalAddress = new TakLogicalAddress();
-        logicalAddress.setId(id);
-        logicalAddress.setDescription("A description");
-        logicalAddress.setLogicalAddress(HSAID_OK);
-        return new TakLogicalAddress[] {logicalAddress};
+        user.setFeatures(ImmutableSet.of(
+                WebcertFeature.HANTERA_FRAGOR.getName(),WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263",
+                WebcertFeature.HANTERA_FRAGOR.getName(),WebcertFeature.HANTERA_FRAGOR.getName() + ".luse"
+        ));
     }
 
     @Test
@@ -119,10 +113,15 @@ public class TakServiceImplTest {
     }
 
     @Test
+    public void testNoTakForArendehanteringRequiredForTsIntyg() {
+        setupIds();
+        when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("89"));
+        assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "ts-bas", "V1", user).isValid());
+    }
+
+    @Test
     public void testNoTakFoundUseParentHsaUnit() throws HsaServiceCallException {
         setupIds();
-        when(consumer.getConnectionPointId()).thenReturn("1");
-        when(consumer.getServiceContractId(anyString())).thenReturn("2");
 
         when(consumer.doLookup(eq(NTJP_ID), eq("NOTOK"), anyString())).thenReturn(new TakLogicalAddress[]{});
         when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), anyString())).thenReturn(buildTakLogicalAddress("29"));
@@ -148,8 +147,6 @@ public class TakServiceImplTest {
         setupIds();
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(buildTakLogicalAddress("15"));
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("16"));
-        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("16"));
-        when(consumer.doLookup(anyString(), anyString(), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(buildTakLogicalAddress("17"));
 
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(new TakLogicalAddress[]{});
 
@@ -161,6 +158,59 @@ public class TakServiceImplTest {
     }
 
 
+    @Test
+    public void testCorrectErrorMessageForReceiveQuestion() {
+        setupIds();
+        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("16"));
+        when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(buildTakLogicalAddress("18"));
+
+        when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(new TakLogicalAddress[]{});
+
+        String hsa = "SE2321000198-016965";
+        TakResult result = impl.verifyTakningForCareUnit(hsa, "fk7263", "V1", user);
+
+        assertTrue(!result.getErrorMessages().isEmpty());
+        assertEquals(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsa), result.getErrorMessages().get(0));
+    }
+
+    @Test
+    public void testCorrectErrorMessageForSendMessageToCare() {
+        setupIds();
+        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("16"));
+        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("16"));
+
+        when(consumer.doLookup(anyString(), anyString(), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(new TakLogicalAddress[]{});
+
+        String hsa = "SE2321000198-016965";
+        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", "V1", user);
+
+        assertTrue(!result.getErrorMessages().isEmpty());
+        assertEquals(String.format(ERROR_STRING, SEND_MESSAGE_TO_CARE_NS, hsa), result.getErrorMessages().get(0));
+    }
+
+    @Test
+    public void testCorrectErrorMessageForCertStatusUpdateForCareV3() {
+        setupIds();
+        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(new TakLogicalAddress[]{});
+
+        String hsa = "SE2321000198-016965";
+        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", "V3", user);
+
+        assertTrue(!result.getErrorMessages().isEmpty());
+        assertEquals(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V3_NS, hsa), result.getErrorMessages().get(0));
+    }
+
+    @Test
+    public void testCorrectErrorMessageForCertStatusUpdateForCareV1() {
+        setupIds();
+        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(new TakLogicalAddress[]{});
+
+        String hsa = "SE2321000198-016965";
+        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", "V1", user);
+
+        assertTrue(!result.getErrorMessages().isEmpty());
+        assertEquals(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V1_NS, hsa), result.getErrorMessages().get(0));
+    }
 
     private void setupIds() {
         ReflectionTestUtils.setField(impl, "ntjpId", NTJP_ID);
@@ -171,21 +221,23 @@ public class TakServiceImplTest {
         ReflectionTestUtils.setField(impl, "sendMessageToCareId", SEND_MESSAGE_TO_CARE_ID);
     }
 
+    private TakLogicalAddress[] buildTakLogicalAddress(String id) {
+        TakLogicalAddress logicalAddress = new TakLogicalAddress();
+        logicalAddress.setId(id);
+        logicalAddress.setDescription("A description");
+        logicalAddress.setLogicalAddress(HSAID_OK);
+        return new TakLogicalAddress[] {logicalAddress};
+    }
+
     private IntygUser createDefaultUser() {
         return createUser(AuthoritiesConstants.ROLE_LAKARE,
                 createPrivilege("p1",
-                        Arrays.asList("fk7263", "ts-bas"), // p1 is restricted to these intygstyper
+                        Arrays.asList("fk7263", "ts-bas", "luse"),
                         Arrays.asList(
-                                createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")), // Normal
-                                // restricted
-                                // to
-                                // fk7263
+                                createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263", "ts-bas", "luse")),
                                 createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
                 ImmutableSet.of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + ".fk7263",
-                        "base_feature"),// feature_a is active for
-                // intygscontext fk7263, base_feature
-                // is not.
-                UserOriginType.NORMAL.name());
+                        "base_feature"), UserOriginType.NORMAL.name());
     }
 
     private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
