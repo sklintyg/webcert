@@ -1,7 +1,24 @@
+/*
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.integration.tak.stub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,11 +41,16 @@ import java.net.URL;
 public class TakStub {
     private static final Logger LOG = LoggerFactory.getLogger(TakStub.class);
 
-    private final String CERT_STATUS_FOR_CARE_V1_NS = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1";
-    private final String CERT_STATUS_FOR_CARE_V3_NS = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
-    private final String RECEIVE_MEDICAL_CERT_QUESTION_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
-    private final String RECEIVE_MEDICAL_CERT_ANSWER_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
-    private final String SEND_MESSAGE_TO_CARE_NS = "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:2";
+    private static final String CERT_STATUS_FOR_CARE_V1_NS =
+            "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1";
+    private static final String CERT_STATUS_FOR_CARE_V3_NS =
+            "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
+    private static final String RECEIVE_MEDICAL_CERT_QUESTION_NS =
+            "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
+    private static final String RECEIVE_MEDICAL_CERT_ANSWER_NS =
+            "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
+    private static final String SEND_MESSAGE_TO_CARE_NS =
+            "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:2";
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -46,6 +68,7 @@ public class TakStub {
         return Response.ok(mapper.writeValueAsString(cP)).build();
     }
 
+    // CHECKSTYLE:OFF MagicNumber
     @GET
     @Path("serviceContracts")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -55,7 +78,7 @@ public class TakStub {
         URL jsonUrl = getClass().getResource("/responses/serviceContractResponse.json");
         ServiceContract[] sC = mapper.readValue(jsonUrl, ServiceContract[].class);
         int dummyId = 10;
-        switch(ns) {
+        switch (ns) {
             case CERT_STATUS_FOR_CARE_V1_NS:
                 dummyId = 10;
                 break;
@@ -76,6 +99,7 @@ public class TakStub {
         sC[0].setNamespace(ns);
         return Response.ok(mapper.writeValueAsString(sC)).build();
     }
+    // CHECKSTYLE:ON MagicNumber
 
     // This is intentionally misspelled to mimic the actual API at NTJP...
     @GET
