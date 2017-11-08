@@ -80,10 +80,9 @@ var LuseUtkast = BaseSmiUtkast._extend({
             }
         };
     },
-    angeAktivitetsbegransning: function(aktivitetsbegransning) {
-        return this.aktivitetsbegransning.sendKeys(aktivitetsbegransning);
+	angeAktivitetsbegransning: function(aktivitetsbegransning) {
+        return pageHelpers.moveAndSendKeys(this.aktivitetsbegransning, aktivitetsbegransning);
     },
-
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([
             pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid),
@@ -92,12 +91,17 @@ var LuseUtkast = BaseSmiUtkast._extend({
     },
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
-        return Promise.all([
-            pageHelpers.moveAndSendKeys(mb.avslutad.text, behandling.avslutad),
-            pageHelpers.moveAndSendKeys(mb.pagaende.text, behandling.pagaende),
-            pageHelpers.moveAndSendKeys(mb.planerad.text, behandling.planerad),
-            pageHelpers.moveAndSendKeys(mb.substansintag.text, behandling.substansintag)
-        ]);
+
+        return pageHelpers.moveAndSendKeys(mb.avslutad.text, behandling.avslutad)
+		.then(function(){
+			return pageHelpers.moveAndSendKeys(mb.pagaende.text, behandling.pagaende);
+		})
+		.then(function(){
+			return pageHelpers.moveAndSendKeys(mb.planerad.text, behandling.planerad)
+		})
+		.then(function(){
+			return pageHelpers.moveAndSendKeys(mb.substansintag.text, behandling.substansintag);
+		});
     },
 
     get: function get(intygId) {

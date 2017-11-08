@@ -272,15 +272,12 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         };
 
         if (utredningar) {
-            return utredningarElement.finns.JA.sendKeys(protractor.Key.SPACE)
+            return pageHelpers.moveAndSendKeys(utredningarElement.finns.JA, protractor.Key.SPACE)
                 .then(function() {
-                    return browser.sleep(2000)
-                        .then(function() {
-                            return utredningar.map(fillIn);
-                        });
+                    return utredningar.map(fillIn);
                 });
         } else {
-            return utredningarElement.finns.NEJ.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(utredningarElement.finns.NEJ, protractor.Key.SPACE);
         }
     },
     angeSjukdomsforlopp: function(forlopp) {
@@ -290,7 +287,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var promiseArr = [];
         for (var i = 0; i < diagnoser.length; i++) {
             var row = this.diagnos.diagnosRow(i);
-            promiseArr.push(row.kod.sendKeys(diagnoser[i].kod).then(sleep(2000)).then(sendEnterToElement(row.kod)));
+            promiseArr.push(pageHelpers.moveAndSendKeys(row.kod,diagnoser[i].kod).then(sendEnterToElement(row.kod)));
 
         }
         return Promise.all(promiseArr);
@@ -298,40 +295,45 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     },
     angeDiagnos: function(diagnosObj) {
         var diagnoser = diagnosObj.diagnoser;
-        var promiseArr = [];
+		var diagnosElm = this.diagnos;
 
 
         //Ange diagnoser
-        promiseArr.push(this.angeDiagnosKoder(diagnoser));
-
-        //Ange när och var diagnoser ställts
-        promiseArr.push(this.diagnos.narOchVarStalldesDiagnoser.sendKeys(diagnosObj.narOchVarStalldesDiagnoserna));
-
-        //Ange Finns skäl till ny bedömning
-        var nyBedomning = this.diagnos.skalTillNyBedomning.NEJ;
-        if (diagnosObj.nyBedomning) {
-            nyBedomning = this.diagnos.skalTillNyBedomning.JA;
-        }
-        var diagnosForNyBedomning = this.diagnos.diagnosForNyBedomning;
-        promiseArr.push(nyBedomning.sendKeys(protractor.Key.SPACE).then(function() {
-            if (diagnosObj.nyBedomning) {
-                //Ange diagnosForNyBedomning
-                return browser.sleep(1000).then(function() { //fix för nåt med animering
-                    return diagnosForNyBedomning.sendKeys(diagnosObj.diagnosForNyBedomning);
-                });
-            } else {
-                return Promise.resolve();
-            }
-        }));
-
-        return Promise.all(promiseArr);
+        return this.angeDiagnosKoder(diagnoser)
+		
+		.then(function(){
+			//Ange när och var diagnoser ställts
+			return pageHelpers.moveAndSendKeys(diagnosElm.narOchVarStalldesDiagnoser, diagnosObj.narOchVarStalldesDiagnoserna);
+			})
+		.then(function(){
+			//Ange Finns skäl till ny bedömning
+			var nyBedomning = diagnosElm.skalTillNyBedomning.NEJ;
+			if (diagnosObj.nyBedomning) {
+				nyBedomning = diagnosElm.skalTillNyBedomning.JA;
+			}
+			var diagnosForNyBedomning = diagnosElm.diagnosForNyBedomning;
+			
+			return pageHelpers.moveAndSendKeys(nyBedomning, protractor.Key.SPACE)
+			.then(function() {
+				if (diagnosObj.nyBedomning) {
+						//Ange diagnosForNyBedomning
+						return pageHelpers.moveAndSendKeys(diagnosForNyBedomning, diagnosObj.diagnosForNyBedomning);
+				} else {
+					return Promise.resolve();
+				}
+			});
+			
+		});
     },
-    angeOvrigaUpplysningar: function(ovrigt) {
-        return this.ovrigt.sendKeys(ovrigt);
+	angeOvrigaUpplysningar: function(ovrigt) {
+        var elm = this.ovrigt;
+        return elm.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(elm, ovrigt);
+        });
     },
     angeKontaktMedFK: function(kontakt) {
         if (kontakt) {
-            return this.kontaktMedFK.sendKeys(protractor.Key.SPACE);
+            return pageHelpers.moveAndSendKeys(this.kontaktMedFK, protractor.Key.SPACE);
         } else {
             return Promise.resolve();
         }
