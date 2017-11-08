@@ -53,7 +53,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 				checkbox : element(by.id('dodsdatumSakertYes')),
 				datepicker : 'id missing'
 			},
-			inteSakert = {
+			inteSakert : {
 				checkbox : element(by.id('dodsdatumSakertNo')),
 				dodsdatumMonth : element(by.id('dodsdatum-month')), //.ui-select-match.btn 
 				dodsdatumYear : element(by.id('dodsdatum-year')) //.ui-select-match.btn 
@@ -81,7 +81,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 			container : element(by.id('form_explosivImplantat')),
 			ja: element(by.id('explosivImplantatYes')),
 			nej: element(by.id('explosivImplantatNo')),
-			avlagsnat = {
+			avlagsnat : {
 				ja : element(by.id('explosivAvlagsnatYes')),
 				nej : element(by.id('explosivAvlagsnatNo'))
 			}
@@ -105,43 +105,57 @@ var DbUtkast = BaseSkvUtkast._extend({
 		var identitetStyrktGenomElm = this.identitetStyrktGenom;
 		
 		console.log(identitetStyrktGenomElm + ', ' + identitetStyrktGenom);
-		return new Promise.resolve();
+		return new Promise(function(resolve) {
+            resolve();
+        });
 	},
 	angeDodsdatum : function angeDodsdatum(dodsdatum) {
 		var dodsdatumElm = this.dodsdatum;
 		
 		console.log(dodsdatumElm + ', ' + dodsdatum)
-		return new Promise.resolve();
+		return new Promise(function(resolve) {
+            resolve();
+        });
 	},
 	angeDodsPlats : function angeDodsPlats(dodsPlats) {
 		var dodsPlatsElm = this.dodsPlats;
 		
 		console.log(dodsPlatsElm + ', ' + dodsPlats);
-		return new Promise.resolve();
+		return new Promise(function(resolve) {
+            resolve();
+        });
 	},
 	angeBarn : function angeBarn(barn) {
 		var barnELm = this.barn;
 		
 		console.log(barnElm + ', ' + barn)
-		return new Promise.resolve();
+		return new Promise(function(resolve) {
+            resolve();
+        });
 	},
 	angeExplosivImplantat : function angeExplosivImplantat(explosivImplantat){
 		var explosivImplantatElm = this.explosivImplantat;
 		
 		console.log(explosivImplantatElm + ', ' + explosivImplantat); 
-		return new Promise.resolve();
+		return new Promise(function(resolve) {
+            resolve();
+        });
 	},
 	angeYttreUndersokning : function angeYttreUndersokning(yttreUndersokning){
 		var yttreUndersokningElm = this.yttreUndersokning;
 		
 		console.log(yttreUndersokningElm + ', ' + yttreUndersokning);
-		return new Promise.resolve();
+		return new Promise(function(resolve) {
+            resolve();
+        });
 	},
 	angePolisanmalan : function angePolisanmalan(polisanmalan){
 		var polisanmalanElm = this.polisanmalan;
 		
 		console.log(polisanmalanElm + ',' + polisanmalan);
-		return new Promise.resolve();
+		return new Promise(function(resolve) {
+            resolve();
+        });
 	}
 	
 });

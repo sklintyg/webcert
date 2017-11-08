@@ -160,9 +160,10 @@ function isValid(intygShortcode) {
 
 module.exports = function() {
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function() {
-        if (!global.intyg.typ) {
+        if (!intyg.typ) {
             throw 'intyg.typ odefinierad.';
         } else {
+            console.log(intyg);
             global.intyg = generateIntygByType(intyg.typ, intyg.id);
             console.log(intyg);
             return fillIn(global.intyg);

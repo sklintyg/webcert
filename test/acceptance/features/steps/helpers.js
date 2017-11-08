@@ -73,6 +73,10 @@ module.exports = {
             return testdata.fk.LUAE_NA.getRandom(id);
         } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
             return testdata.fk.LUAE_FS.getRandom(id);
+        } else if (typ === 'Dödsbevis') {
+            return testdata.skv.db.getRandom(id);
+        } else if (typ === 'Dödsorsaksintyg') {
+            return testdata.soc.doi.getRandom(id);
         }
     },
     fetchMessageIds: function(intygtyp) {

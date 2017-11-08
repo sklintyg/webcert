@@ -43,6 +43,12 @@ module.exports = {
                 case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
                     logger.info('LUAE_FS - require fillIn/fk.LUAE_FS.js');
                     return require('./fk.LUAE_FS.js').fillIn(intyg);
+                case 'Dödsbevis':
+                    logger.info('SKV DB - require fillIn/skv.db.js');
+                    return require('./skv.db.js').fillIn(intyg);
+                case 'Dödsorsaksintyg':
+                    logger.info('SOC DOI - require fillIn/soc.doi.js');
+                    return require('./soc.doi.js').fillIn(intyg);
                 default:
                     throw 'Intyg.typ odefinierad.';
             }

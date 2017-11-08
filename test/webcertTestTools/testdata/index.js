@@ -31,6 +31,12 @@ module.exports = {
         bas: require('./ts.bas.js'),
         diabetes: require('./ts.diabetes.js')
     },
+	skv: {
+		db: require('./skv.db.js')
+	},
+	/*soc: {
+		doi: require('./soc.doi.js')
+	},*/
     values: require('./testvalues.js'),
     fmb: require('./diagnoskoderFMB.js'),
     diagnosKategorier: require('./diagnosKategorier_A-F.js')

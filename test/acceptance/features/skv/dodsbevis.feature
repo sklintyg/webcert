@@ -10,3 +10,4 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 Scenario: Kan signera dödsbevisintyg 
           När jag går in på en patient
 		  Och jag går in på att skapa ett "Dödsbevis" intyg
+		  Och jag fyller i alla nödvändiga fält för intyget

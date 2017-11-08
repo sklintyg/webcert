@@ -35,8 +35,8 @@ function getDodsdatumSakertDatum(datumSakert){
 	} else {
 		var monthArr = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
 		return {
-			year : shuffle(['2016', '2017', '0000 (ej känt)'][0]),
-			month : shuffle(monthArr.slice(0,today.getMonth() - 1)[0]),
+			year : shuffle(['2016', '2017', '0000 (ej känt)'])[0],
+			month : shuffle(monthArr.slice(0,today.getMonth() - 1))[0],
 			antraffadDod : testdataHelper.dateFormat(today)
 		}
 	}
@@ -44,8 +44,8 @@ function getDodsdatumSakertDatum(datumSakert){
 }
 
 function getExplosivImplantat() {
-	obj1 = {false}
-	obj2 = {true, avlagsnat : testdataHelper.randomTrueFalse()}
+	var obj1 = false;
+	var obj2 = {avlagsnat : testdataHelper.randomTrueFalse()};
 	return shuffle([obj1,obj2])[0];
 }
 
@@ -66,12 +66,12 @@ module.exports = {
             id : intygsID,
 			typ : "Dödsbevis",
             identitetStyrktGenom : shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
-            dodsdatum : {datumSakert : datumSakert,	datum : getDodsdatumSakertDatum(datumSakert)}
-            dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])},
+            dodsdatum : {datumSakert : datumSakert,	datum : getDodsdatumSakertDatum(datumSakert)},
+            dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]},
             barn : testdataHelper.randomTrueFalse(),
             explosivImplantat : getExplosivImplantat(),
             yttreUndersokning : shuffle(["Ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0],
-            polisanmalan : testdataHelper.randomTrueFalse();
+            polisanmalan : testdataHelper.randomTrueFalse()
 		};
 		
 	}
