@@ -25,6 +25,9 @@
     },
     "statistikStatusCode": {
       "type": "string"
+    },
+    "statistikDiagnosisCode": {
+      "type": "string"
     }
   },
   "additionalProperties": false,
