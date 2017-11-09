@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class ViewIntegrationServiceImpl extends IntegrationServiceImpl {
 
     @Override
-    void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user) {
+    protected void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user) {
 
         if (utkast != null) {
             // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.

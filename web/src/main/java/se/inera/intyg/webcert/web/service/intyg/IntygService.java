@@ -130,7 +130,8 @@ public interface IntygService {
     List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request);
 
     /**
-     * Gets the certificate's type from Intygstjanst.
+     * Gets the certificate's type from Intygstjanst. Method might return null
+     *
      *
      * @param intygsId
      *            the certificate identifier

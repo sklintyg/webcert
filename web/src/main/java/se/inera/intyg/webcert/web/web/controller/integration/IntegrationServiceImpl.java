@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -59,6 +60,10 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         // INTYG-4336: If intygTyp can't be established,
         // fetch certificate from IT and then get the type
         String typ = resolveIntygsTyp(intygTyp, intygId, utkast);
+        if (StringUtils.isEmpty(typ)) {
+            String msg = "Failed to decide on the type of certificate";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, msg);
+        }
 
         ensurePreparation(typ, intygId, utkast, user);
 
@@ -102,12 +107,18 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         return prepareRedirectToIntyg;
     }
 
-    private String resolveIntygsTyp(String intygTyp, String intygId, Utkast utkast) {
-        String typ = intygTyp;
-        if (typ == null) {
-            typ = utkast != null ? utkast.getIntygsTyp() : intygService.getIntygsTyp(intygId);
+    /*
+     * Resolve on type of certificate. Method will return null if both
+     * intygTyp and intygId is null or empty. Method might return null
+     * if call to intygService.getIntygsTyp(intygId) is made.
+     */
+    private String resolveIntygsTyp(final String intygTyp, final String intygId, final Utkast utkast) {
+        if (StringUtils.isEmpty(intygTyp) && StringUtils.isEmpty(intygId)) {
+            return null;
+        } else if (StringUtils.isEmpty(intygTyp)) {
+            return utkast != null ? utkast.getIntygsTyp() : intygService.getIntygsTyp(intygId);
         }
-        return typ;
+        return intygTyp;
     }
 
 }

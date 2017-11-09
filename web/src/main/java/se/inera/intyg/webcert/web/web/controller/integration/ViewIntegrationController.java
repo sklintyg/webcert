@@ -123,7 +123,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
         boolean isUpdated = user.changeValdVardenhet(enhetId);
         if (!isUpdated) {
             LOG.warn("Validation failed for request because user {} is not authorized for enhet {}", user.getHsaId(), enhetId);
-            return buildErroResponse(uriInfo);
+            return buildErrorResponse(uriInfo);
         }
 
         // Update user with current active features
@@ -133,7 +133,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
         return buildRedirectResponse(uriInfo, prepareRedirectToIntyg);
     }
 
-    private Response buildErroResponse(UriInfo uriInfo) {
+    private Response buildErrorResponse(UriInfo uriInfo) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<>();

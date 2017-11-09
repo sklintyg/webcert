@@ -96,10 +96,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
      *            The type of certificate
      */
     @GET
-    @Path("/{intygTyp}/{intygId}")
+    @Path("/{certType}/{certId}")
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam("intygTyp") String intygTyp,
-            @PathParam("intygId") String intygId,
+            @PathParam(PARAM_CERT_TYPE) String intygTyp,
+            @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
             @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
             @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
@@ -116,14 +116,14 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
         Map<String, Object> pathParameters = new HashMap<>();
-        pathParameters.put("intygTyp", intygTyp);
-        pathParameters.put("intygId", intygId);
+        pathParameters.put(PARAM_CERT_TYPE, intygTyp);
+        pathParameters.put(PARAM_CERT_ID, intygId);
 
         // validate the request
         validateRequest(pathParameters);
 
-        IntegrationParameters integrationParameters = getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn,
-                efternamn, mellannamn,
+        IntegrationParameters integrationParameters = getIntegrationParameters(
+                reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
                 postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
@@ -140,9 +140,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
      *            The id of the certificate to view.
      */
     @GET
-    @Path("/{intygId}")
+    @Path("/{certId}")
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam("intygId") String intygId,
+            @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
             @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
             @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
@@ -159,13 +159,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
         Map<String, Object> params = new HashMap<>();
-        params.put("intygId", intygId);
+        params.put(PARAM_CERT_ID, intygId);
 
         // validate the request
         validateRequest(params);
 
-        IntegrationParameters integrationParameters = getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn,
-                efternamn, mellannamn,
+        IntegrationParameters integrationParameters = getIntegrationParameters(
+                reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
                 postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
@@ -175,11 +175,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     @POST
-    @Path("/{intygTyp}/{intygId}")
+    @Path("/{certType}/{certId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response postRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam("intygTyp") String intygTyp,
-            @PathParam("intygId") String intygId,
+            @PathParam(PARAM_CERT_TYPE) String intygTyp,
+            @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
             @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
             @DefaultValue("") @FormParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
@@ -196,14 +196,14 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
 
         Map<String, Object> params = new HashMap<>();
-        params.put("intygTyp", intygTyp);
-        params.put("intygId", intygId);
+        params.put(PARAM_CERT_TYPE, intygTyp);
+        params.put(PARAM_CERT_ID, intygId);
 
         // validate the request
         validateRequest(params);
 
-        IntegrationParameters integrationParameters = getIntegrationParameters(reference, responsibleHospName, alternatePatientSSn, fornamn,
-                efternamn, mellannamn,
+        IntegrationParameters integrationParameters = getIntegrationParameters(
+                reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
                 postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
 
         WebCertUser user = getWebCertUser();
@@ -213,17 +213,17 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     @GET
-    @Path("/{intygTyp}/{intygId}/resume")
+    @Path("/{certType}/{certId}/resume")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response resumeRedirectToIntyg(
             @Context UriInfo uriInfo,
-            @PathParam("intygTyp") String intygTyp,
-            @PathParam("intygId") String intygId,
+            @PathParam(PARAM_CERT_TYPE) String intygTyp,
+            @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("intygTyp", intygTyp);
-        params.put("intygId", intygId);
+        params.put(PARAM_CERT_ID, intygId);
         params.put(PARAM_ENHET_ID, enhetId);
 
         // validate the request
@@ -271,10 +271,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
         // Call service
-        PrepareRedirectToIntyg prepareRedirect = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+        PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
 
         // If the type doesn't equals to FK7263 then verify the required query-parameters
-        if (!prepareRedirect.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
+        if (!prepareRedirectInfo.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
             verifyIntegrationParameters(user.getParameters());
         }
 
@@ -289,21 +289,21 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 updateUserWithActiveFeatures(user);
 
                 LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                return buildRedirectResponse(uriInfo, prepareRedirect);
+                return buildRedirectResponse(uriInfo, prepareRedirectInfo);
             }
 
             // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
             user.getParameters().getState().setRedirectToEnhetsval(true);
 
             LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
-            return buildChooseUnitResponse(uriInfo, prepareRedirect);
+            return buildChooseUnitResponse(uriInfo, prepareRedirectInfo);
 
         } else {
             if (user.changeValdVardenhet(enhetId)) {
                 updateUserWithActiveFeatures(user);
 
                 LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                return buildRedirectResponse(uriInfo, prepareRedirect);
+                return buildRedirectResponse(uriInfo, prepareRedirectInfo);
             }
 
             LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",

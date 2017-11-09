@@ -621,6 +621,7 @@ public class IntygServiceImpl implements IntygService {
             return responseType.getTyp().getCode();
 
         } catch (WebCertServiceException e) {
+            LOG.error("Failed to decide on the type of certificate");
             if (e.getErrorCode() == WebCertServiceErrorCodeEnum.DATA_NOT_FOUND) {
                 return null;
             }
