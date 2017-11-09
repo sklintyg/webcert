@@ -22,13 +22,28 @@
     "statistikBild": {
       "type": "string"
     },
-    "diagnosisCode": {
+    "predictionDiagnosisCode": {
+      "type": "string"
+    },
+    "predictionDiagnosisDescription": {
       "type": "string"
     },
     "predictionStatusCode": {
       "type": "string"
     },
+    "atgarderDiagnosisCode": {
+      "type": "string"
+    },
+    "atgarderDiagnosisDescription": {
+      "type": "string"
+    },
     "atgarderStatusCode": {
+      "type": "string"
+    },
+    "statistikDiagnosisCode": {
+      "type": "string"
+    },
+    "statistikDiagnosisDescription": {
       "type": "string"
     },
     "statistikStatusCode": {

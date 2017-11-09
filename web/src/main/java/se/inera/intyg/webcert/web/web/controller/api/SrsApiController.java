@@ -27,12 +27,16 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Utdatafilter;
+import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -74,6 +78,9 @@ public class SrsApiController extends AbstractApiController {
     @Autowired
     private MonitoringLogService monitoringLog;
 
+    @Autowired
+    private DiagnosService diagnosService;
+
     @POST
     @Path("/{intygId}/{personnummer}/{diagnosisCode}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -105,6 +112,7 @@ public class SrsApiController extends AbstractApiController {
                 logService.logShowPrediction(personnummer);
                 monitoringLog.logSrsInformationRetreived(diagnosisCode, intygId);
             }
+            decorateWithDiagnosisDescription(response);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException | IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -187,6 +195,33 @@ public class SrsApiController extends AbstractApiController {
         filter.setAtgardsrekommendation(atgard);
         filter.setStatistik(statistik);
         return filter;
+    }
+
+    private void decorateWithDiagnosisDescription(SrsResponse response) {
+        if (!Strings.isNullOrEmpty(response.getPredictionDiagnosisCode())) {
+            DiagnosResponse diagnosResponse = diagnosService
+                    .getDiagnosisByCode(response.getPredictionDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+            if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
+                    && !diagnosResponse.getDiagnoser().isEmpty()) {
+                response.setPredictionDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
+            }
+        }
+        if (!Strings.isNullOrEmpty(response.getAtgarderDiagnosisCode())) {
+            DiagnosResponse diagnosResponse = diagnosService
+                    .getDiagnosisByCode(response.getAtgarderDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+            if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
+                    && !diagnosResponse.getDiagnoser().isEmpty()) {
+                response.setAtgarderDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
+            }
+        }
+        if (!Strings.isNullOrEmpty(response.getStatistikDiagnosisCode())) {
+            DiagnosResponse diagnosResponse = diagnosService
+                    .getDiagnosisByCode(response.getStatistikDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+            if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
+                    && !diagnosResponse.getDiagnoser().isEmpty()) {
+                response.setStatistikDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
+            }
+        }
     }
 }
 //CHECKSTYLE:ON ParameterNumber
