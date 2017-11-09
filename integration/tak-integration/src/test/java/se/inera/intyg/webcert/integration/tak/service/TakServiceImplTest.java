@@ -19,37 +19,26 @@
 package se.inera.intyg.webcert.integration.tak.service;
 
 import com.google.common.collect.ImmutableSet;
-import org.apache.cxf.common.util.ReflectionUtil;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.junit.Before;
-import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.test.annotation.TestAnnotationUtils;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.ReflectionUtils;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsServiceImpl;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.consumer.TakConsumerImpl;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +72,7 @@ public class TakServiceImplTest {
             " (Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
 
     @Mock
-    private HsaOrganizationsServiceImpl hsa;
+    private HsaOrganizationsServiceImpl hsaService;
 
     @Mock
     private TakConsumerImpl consumer;
@@ -106,6 +95,23 @@ public class TakServiceImplTest {
     }
 
     @Test
+    public void testNoTak() throws HsaServiceCallException {
+        setupIds();
+
+        when(consumer.getConnectionPointId()).thenReturn(NTJP_ID);
+        when(consumer.getServiceContractId(anyString())).thenReturn("2");
+
+        when(consumer.doLookup(eq(NTJP_ID), eq("NOTOK"), anyString())).thenReturn(new TakLogicalAddress[]{});
+        when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), anyString())).thenReturn(new TakLogicalAddress[]{});
+        when(hsaService.getParentUnit("NOTOK")).thenReturn(HSAID_OK);
+
+        assertFalse(impl.verifyTakningForCareUnit("NOTOK", "fk7263", "V1", user).isValid());
+
+        verify(hsaService, times(2)).getParentUnit("NOTOK");
+
+    }
+
+    @Test
     public void testSuccess() throws HsaServiceCallException {
         when(consumer.doLookup(anyString(), anyString(), anyString())).thenReturn(buildTakLogicalAddress("29"));
 
@@ -125,11 +131,11 @@ public class TakServiceImplTest {
 
         when(consumer.doLookup(eq(NTJP_ID), eq("NOTOK"), anyString())).thenReturn(new TakLogicalAddress[]{});
         when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), anyString())).thenReturn(buildTakLogicalAddress("29"));
-        when(hsa.getParentUnit("NOTOK")).thenReturn(new Vardenhet(HSAID_OK, "Test"));
+        when(hsaService.getParentUnit("NOTOK")).thenReturn(HSAID_OK);
 
         assertTrue(impl.verifyTakningForCareUnit("NOTOK", "fk7263", "V1", user).isValid());
 
-        verify(hsa, times(1)).getParentUnit("NOTOK");
+        verify(hsaService, times(1)).getParentUnit("NOTOK");
     }
 
     @Test
@@ -150,11 +156,10 @@ public class TakServiceImplTest {
 
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(new TakLogicalAddress[]{});
 
-        String hsa = "SE2321000198-016965";
-        TakResult result = impl.verifyTakningForCareUnit(hsa, "fk7263", "V1", user);
+        TakResult result = impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", "V1", user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_ANSWER_NS, hsa), result.getErrorMessages().get(0));
+        assertEquals(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_ANSWER_NS, HSAID_OK), result.getErrorMessages().get(0));
     }
 
 

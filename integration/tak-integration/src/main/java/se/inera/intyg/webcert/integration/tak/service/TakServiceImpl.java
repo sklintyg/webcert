@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -199,12 +198,9 @@ public class TakServiceImpl implements TakService {
         if (response.length > 0) {
             return new InternalResult(careUnitId, response);
         } else {
-            Vardenhet parent = hsaOrganizationsService.getParentUnit(careUnitId);
-            if (parent == null) {
-                return new InternalResult(careUnitId, new TakLogicalAddress[]{});
-            }
-            LOG.info("Got nothing while checking TAK-status, trying with parent unit {}", parent.getId());
-            return new InternalResult(parent.getId(), consumer.doLookup(ntjpId, parent.getId(), contract));
+            String parentId = hsaOrganizationsService.getParentUnit(careUnitId);
+            LOG.info("Got nothing while checking TAK-status, trying with parent unit {}", parentId);
+            return new InternalResult(parentId, consumer.doLookup(ntjpId, parentId, contract));
         }
     }
 
