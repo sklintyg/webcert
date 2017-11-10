@@ -79,7 +79,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -198,10 +203,19 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
+    //
     @Override
-    public List<Utkast> getPrevious(Personnummer personnummer) {
+    public Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer) {
+        WebCertUser user = webCertUserService.getUser();
         return utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
-                authoritiesHelper.getIntygstyperForModuleFeature(webCertUserService.getUser(), WebcertFeature.WARN_ON_PREVIOUS));
+                authoritiesHelper.getIntygstyperForModuleFeature(webCertUserService.getUser(),
+                        WebcertFeature.UNIKT_INTYG_INOM_VG, WebcertFeature.UNIKT_INTYG))
+                .stream()
+                .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
+                .filter(utkast -> utkast.getAterkalladDatum() == null)
+                .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
+                        Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                                Collectors.reducing(false, (a, b) -> a || b))));
     }
 
     private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {

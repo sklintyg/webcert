@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -42,7 +43,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.PreviousCertificateWarningResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 
@@ -60,7 +60,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -86,6 +85,8 @@ public class UtkastApiController extends AbstractApiController {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
     /**
      * Create a new draft.
      */
@@ -119,6 +120,26 @@ public class UtkastApiController extends AbstractApiController {
             return Response.status(Status.BAD_REQUEST).build();
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
+
+
+        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp) ||
+                (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(), intygsTyp))) {
+
+            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(
+                    request.getPatientPersonnummer());
+
+            Boolean exists = intygstypToBoolean.get(intygsTyp);
+
+            if (exists != null) {
+                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                    return Response.status(Status.BAD_REQUEST).build();
+                } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
+                        .getName(), intygsTyp)) {
+                    return Response.status(Status.BAD_REQUEST).build();
+                }
+            }
+
+        }
 
         CreateNewDraftRequest serviceRequest = createServiceRequest(request);
 
@@ -182,21 +203,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/previousIntyg/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
-        WebCertUser user = getWebCertUserService().getUser();
-
-        Map<String, List<PreviousCertificateWarningResponse>> grouped = utkastService.getPrevious(new Personnummer(personnummer))
-                .stream()
-                .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
-                .filter(utkast -> utkast.getAterkalladDatum() == null)
-                .map(utkast -> new PreviousCertificateWarningResponse(utkast.getIntygsTyp(),
-                        Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId())))
-                .collect(Collectors.groupingBy(PreviousCertificateWarningResponse::getModuleId));
-
-        List<PreviousCertificateWarningResponse> res = grouped.entrySet().stream()
-                .map(entry -> new PreviousCertificateWarningResponse(entry.getKey(),
-                        entry.getValue().stream().anyMatch(PreviousCertificateWarningResponse::isWithinCareGiver)))
-                .collect(Collectors.toList());
-
+        Map<String, Boolean> res = utkastService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer));
         return Response.ok(res).build();
     }
 

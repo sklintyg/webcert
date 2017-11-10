@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -58,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -99,6 +101,9 @@ public class UtkastApiControllerTest {
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Mock
+    private WebcertFeatureService featureService;
+
     @InjectMocks
     private UtkastApiController utkastController;
 
@@ -107,6 +112,10 @@ public class UtkastApiControllerTest {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
+        Map<String, Boolean> hasPrevious = new HashMap<>();
+        hasPrevious.put("fk7263", true);
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER))).thenReturn(hasPrevious);
+
     }
 
     @Test
@@ -280,15 +289,13 @@ public class UtkastApiControllerTest {
         utkast4.setIntygsTyp("Fel typ 2");
         utkast4.setStatus(UtkastStatus.SIGNED);
         utkast4.setAterkalladDatum(LocalDateTime.of(2017, 1, 1, 1, 1));
-        when(utkastService.getPrevious(eq(PATIENT_PERSONNUMMER))).thenReturn(Arrays.asList(utkast1, utkast2, utkast3, utkast4));
 
         Response response = utkastController.getPreviousCertificateWarnings(PATIENT_PERSONNUMMER.getPersonnummer());
 
         assertNotNull(response);
-        List<PreviousCertificateWarningResponse> responseBody = (ArrayList<PreviousCertificateWarningResponse>) response.readEntity(ArrayList.class);
+        Map<String, Boolean> responseBody = (Map<String, Boolean>) response.readEntity(HashMap.class);
         assertEquals(1, responseBody.size());
-        assertEquals("fk7263", responseBody.get(0).getModuleId());
-        assertTrue(responseBody.get(0).isWithinCareGiver());
+        assertTrue(responseBody.get("fk7263"));
     }
 
     private QueryIntygParameter buildQueryIntygParameter() {
