@@ -26,7 +26,7 @@ var UtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var IntygPage = wcTestTools.pages.intyg.lisjp.intyg;
 var ValjIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-describe('Create and Sign lisjp utkast', function() {
+xdescribe('Create and Sign lisjp utkast', function() {
 
     var utkastId = null,
         data = null;

@@ -29,7 +29,7 @@ var LisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 
-describe('Lisjp attic tests', function() {
+xdescribe('Lisjp attic tests', function() {
 
     var intygsId;
 
