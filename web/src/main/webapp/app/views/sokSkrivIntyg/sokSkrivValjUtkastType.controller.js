@@ -22,12 +22,13 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
         'common.IntygCopyActions', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
         'common.messageService', 'common.UserModel', 'common.authorityService', 'common.featureService',
+        'common.UtkastProxy',
 
         function($window, $filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             CommonIntygCopyActions, IntygFornyaRequestModel, IntygCopyRequestModel,
             IntygProxy, UtkastProxy, Service, ObjectHelper, messageService, UserModel,
-            authorityService, featureService) {
+            authorityService, featureService, commonUtkastProxy) {
             'use strict';
 
             /**
@@ -102,7 +103,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 });
 
                 // load warnings of previous certificates
-                UtkastProxy.getWarningsExisting(PatientModel.personnummer, function(existing) {
+                commonUtkastProxy.getWarningsExisting(PatientModel.personnummer, function(existing) {
                     IntygTypeSelectorModel.previousIntygWarnings = existing;
                 });
 
