@@ -465,6 +465,9 @@ module.exports = function() {
             return row.all(by.css('td')).getText().then(function(text) {
                 console.log(text);
 
+                if (person.id.indexOf('-') === -1) {
+                    person.id = person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
+                }
                 var hasPersonnummer = (text.indexOf(person.id) > -1);
                 var hasAtgard = (text.indexOf(atgard) > -1);
                 return hasAtgard && hasPersonnummer;
