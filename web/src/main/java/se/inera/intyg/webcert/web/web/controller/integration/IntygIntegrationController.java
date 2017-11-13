@@ -214,7 +214,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @GET
     @Path("/{certType}/{certId}/resume")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response resumeRedirectToIntyg(
             @Context UriInfo uriInfo,
             @PathParam(PARAM_CERT_TYPE) String intygTyp,
