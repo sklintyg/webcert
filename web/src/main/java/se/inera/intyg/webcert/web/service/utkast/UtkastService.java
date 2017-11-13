@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;

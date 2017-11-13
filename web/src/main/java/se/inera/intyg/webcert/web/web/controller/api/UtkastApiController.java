@@ -122,8 +122,9 @@ public class UtkastApiController extends AbstractApiController {
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
 
-        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp) ||
-                (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(), intygsTyp))) {
+        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
+                || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
+                intygsTyp))) {
 
             Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(
                     request.getPatientPersonnummer());
