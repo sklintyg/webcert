@@ -21,13 +21,13 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'common.IntygCopyActions', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-        'common.messageService', 'common.UserModel', 'common.authorityService',
+        'common.messageService', 'common.UserModel', 'common.authorityService', 'common.featureService',
 
         function($window, $filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             CommonIntygCopyActions, IntygFornyaRequestModel, IntygCopyRequestModel,
             IntygProxy, UtkastProxy, Service, ObjectHelper, messageService, UserModel,
-            authorityService) {
+            authorityService, featureService) {
             'use strict';
 
             /**
@@ -103,9 +103,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
                 // load warnings of previous certificates
                 UtkastProxy.getWarningsExisting(PatientModel.personnummer, function(existing) {
-                    for (var i = 0; i < existing.length; i++) {
-                        IntygTypeSelectorModel.previousIntygWarnings[existing[i].moduleId] = existing[i];
-                    }
+                    IntygTypeSelectorModel.previousIntygWarnings = existing;
                 });
 
                 // Load intyg for person with specified pnr
@@ -121,11 +119,18 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                     Viewstate.intygListErrorMessageKey = errorCode;
                 });
             }
-            $scope.shouldWarnPreviousCertificate = function (intygType) {
-                return IntygTypeSelectorModel.previousIntygWarnings.some(function (element) { return element.moduleId === intygType; });
-            };
-            $scope.isRenewalAllowed = function(intyg) {
 
+            $scope.isUniqueWithinCareGiver = function (intygType) {
+                var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG_INOM_VG, intygType);
+                return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType];
+            };
+
+            $scope.isUniqueGlobal = function (intygType) {
+                var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG, intygType);
+                return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType] !== undefined;
+            };
+
+            $scope.isRenewalAllowed = function(intyg) {
                 var renewable = authorityService.isAuthorityActive(
                     { requestOrigin: UserModel.user.origin,
                         authority: UserModel.privileges.FORNYA_INTYG,
@@ -159,7 +164,9 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
             $scope.showCreateUtkast = function() {
                 return !(IntygTypeSelectorModel.intygType === 'default' ||
-                    ($scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()));
+                    ($scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()) ||
+                    $scope.isUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
+                    $scope.isUniqueGlobal(IntygTypeSelectorModel.intygType));
             };
 
             $scope.updateIntygList = function() {
