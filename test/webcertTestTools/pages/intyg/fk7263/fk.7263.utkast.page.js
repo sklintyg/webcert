@@ -168,8 +168,8 @@ var FkBaseUtkast = BaseUtkast._extend({
             knapp: () => element(by.buttonText('SRS')),
             panel: () => element(by.tagName('wc-srs-content')),
             samtycke: {
-                ja: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('ng-change').then(v => v === 'setConsent(true)')).first(),
-                nej: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('ng-change').then(v => v === 'setConsent(false)')).first()
+                ja: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'JA')).first(),
+                nej: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'NEJ')).first()
             },
             visamer: () => element.all(by.id('questionsCollapser')),
             visaKnapp: () => element(by.buttonText('Visa')),
