@@ -24,7 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
@@ -33,6 +37,8 @@ import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -43,6 +49,8 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
+
+import java.util.Map;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -65,6 +73,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private WebcertUserDetailsService webcertUserDetailsService;
+
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
 
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
@@ -100,7 +111,30 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
         user.changeValdVardenhet(invokingUnitHsaId);
 
-        // Create the draft
+        String intygsTyp = utkastsParams.getTypAvUtlatande().toString();
+        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
+                || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
+                intygsTyp))) {
+
+            Personnummer personnummer = new Personnummer(utkastsParams.getPatient().getPersonId().getExtension());
+
+            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(
+                    personnummer);
+
+            Boolean exists = intygstypToBoolean.get(intygsTyp);
+
+            if (exists != null) {
+                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                    return createErrorResponse("Certificates of this type must be globally unique.", ErrorIdType.APPLICATION_ERROR);
+                } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
+                        .getName(), intygsTyp)) {
+                    return createErrorResponse("Certificates of this type must be unique within this caregiver.", ErrorIdType.APPLICATION_ERROR);
+                }
+            }
+        }
+
+
+            // Create the draft
         Utkast utkast = createNewDraft(utkastsParams, user);
 
         return createSuccessResponse(utkast.getIntygsId());

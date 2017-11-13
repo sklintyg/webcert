@@ -41,6 +41,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -62,6 +64,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateReq
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -111,6 +114,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private WebCertUserService userService;
+
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
+
+    @Autowired
+    private UtkastService utkastService;
 
     /*
      * (non-Javadoc)
@@ -244,6 +253,30 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 LOG.debug("Cannot create utkast from template certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
+
+            String intygsTyp = copyRequest.getTyp();
+            if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
+                    || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
+                    intygsTyp))) {
+
+                Personnummer personnummer = copyRequest.containsNyttPatientPersonnummer() ? copyRequest.getNyttPatientPersonnummer()
+                        : copyRequest.getPatient().getPersonId();
+
+                Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(
+                        personnummer);
+
+                Boolean exists = intygstypToBoolean.get(intygsTyp);
+
+                if (exists != null) {
+                    if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificates of this type must be globally unique.");
+                    } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
+                            .getName(), intygsTyp)) {
+                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificates of this type must be unique within this caregiver.");
+                    }
+                }
+            }
+
             verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create utkast from template");
 
             CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, originalIntygId, true,
