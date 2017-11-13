@@ -38,6 +38,7 @@ import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.v3.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.v3.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -92,6 +93,9 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
     @Mock
     private MonitoringLogService mockMonitoringLogService;
+
+    @Mock
+    private WebcertFeatureService webcertFeatureService;
 
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
