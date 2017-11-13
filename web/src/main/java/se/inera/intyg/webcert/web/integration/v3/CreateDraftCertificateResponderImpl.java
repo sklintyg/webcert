@@ -132,7 +132,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
                     return createErrorResponse("Certificates of this type must be globally unique.", ErrorIdType.APPLICATION_ERROR);
                 } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
                         .getName(), intygsTyp)) {
-                    return createErrorResponse("Certificates of this type must be unique within this caregiver.", ErrorIdType.APPLICATION_ERROR);
+                    return createErrorResponse("Certificates of this type must be unique within this caregiver.",
+                            ErrorIdType.APPLICATION_ERROR);
                 }
             }
         }

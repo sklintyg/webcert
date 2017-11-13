@@ -24,11 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.builder.CreateNewDraftRequestBuilder;
@@ -128,13 +125,13 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
                     return createErrorResponse("Certificates of this type must be globally unique.", ErrorIdType.APPLICATION_ERROR);
                 } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
                         .getName(), intygsTyp)) {
-                    return createErrorResponse("Certificates of this type must be unique within this caregiver.", ErrorIdType.APPLICATION_ERROR);
+                    return createErrorResponse("Certificates of this type must be unique within this caregiver.",
+                            ErrorIdType.APPLICATION_ERROR);
                 }
             }
         }
 
-
-            // Create the draft
+        // Create the draft
         Utkast utkast = createNewDraft(utkastsParams, user);
 
         return createSuccessResponse(utkast.getIntygsId());

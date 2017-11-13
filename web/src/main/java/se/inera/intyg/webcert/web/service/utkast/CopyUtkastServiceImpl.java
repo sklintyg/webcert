@@ -150,7 +150,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
 
-
             return new CreateCompletionCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
@@ -193,7 +192,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse, user);
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
-
 
             return new CreateRenewalCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
 
@@ -269,10 +267,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
                 if (exists != null) {
                     if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
-                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificates of this type must be globally unique.");
+                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                                "Certificates of this type must be globally unique.");
                     } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
                             .getName(), intygsTyp)) {
-                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificates of this type must be unique within this caregiver.");
+                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                                "Certificates of this type must be unique within this caregiver.");
                     }
                 }
             }
