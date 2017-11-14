@@ -42,7 +42,7 @@ Scenario: Patienten har fått ett reservnummer
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
-@parametrar @intygsdelning-vårdenhet @notReady @Kristina(step: Så ska jag varnas om att "Patienten har avlidit")
+@parametrar @intygsdelning-vårdenhet
 Scenario: Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenheter
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
