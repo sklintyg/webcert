@@ -25,22 +25,28 @@ var fkValues = require('./testvalues.js').fk;
 
 
 
-function getDodsdatumSakertDatum(datumSakert){
+function getDodsdatum(datumSakert){
 	var today = new Date();
 	var date = new Date();
 	date.setDate(today.getDate() - Math.floor(Math.random() * 365));
 	
-	if (datumSakert) {
-		return testdataHelper.dateFormat(date);
-	} else {
-		var monthArr = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
-		return {
-			year : shuffle(['2016', '2017', '0000 (ej känt)'])[0],
-			month : shuffle(monthArr.slice(0,today.getMonth() - 1))[0],
-			antraffadDod : testdataHelper.dateFormat(today)
-		}
-	}
 	
+	if (datumSakert) {
+		return {
+			sakert : {
+				datum : testdataHelper.dateFormat(date)
+			}
+		}
+	} else {
+		var monthArr = ['00 (ej känt)', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+		return {
+			inteSakert : {
+				year : shuffle(['2016', '2017', '0000 (ej känt)'])[0],
+				month : shuffle(monthArr.slice(0,today.getMonth() - 1))[0],
+				antraffadDod : testdataHelper.dateFormat(today)
+			}
+		}
+	}	
 }
 
 function getExplosivImplantat() {
@@ -62,17 +68,28 @@ module.exports = {
 		
 		var datumSakert = testdataHelper.randomTrueFalse();
 		
-		return {
+		var obj = {
             id : intygsID,
 			typ : "Dödsbevis",
             identitetStyrktGenom : shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
-            dodsdatum : {datumSakert : datumSakert,	datum : getDodsdatumSakertDatum(datumSakert)},
+            dodsdatum : getDodsdatum(datumSakert),
             dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]},
-            barn : testdataHelper.randomTrueFalse(),
             explosivImplantat : getExplosivImplantat(),
-            yttreUndersokning : shuffle(["Ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0],
-            polisanmalan : testdataHelper.randomTrueFalse()
+            yttreUndersokning : {
+				value: shuffle(["Ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0],
+				datum: new Date()
+				}
 		};
+		if (datumSakert === false) {
+			obj.barn = testdataHelper.randomTrueFalse();
+		}
+		if (obj.yttreUndersokning.value !== 'nejUndersokningSkaGoras') {
+			obj.polisanmalan = testdataHelper.randomTrueFalse();
+		}
+		
+		
+		
+		return obj;
 		
 	}
 };

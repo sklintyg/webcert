@@ -17,19 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise*/
+/*globals element,by, Promise, protractor*/
 'use strict';
 
 var BaseSkvUtkast = require('../skv.base.utkast.page.js');
 var pageHelpers = require('../../../pageHelper.util.js');
-var ElementArrayFinder = $$('').constructor;
 
 //TODO flytta till common-testtools om funktionen gör det lättare att skriva mer lättlästa tester. Alternativt implementera protractor-helpers.
-ElementArrayFinder.prototype.getByText = function (compareText) {
+protractor.ElementArrayFinder.prototype.getByText = function (compareText) {
     var foundElement;
     return this.each(function (element) {
-        element.getWebElement().getText().then(function (elementText) {
-            if (elementText.trim() === compareText) {
+        element.getText().then(function (elementText) {
+			if (elementText.trim() === compareText) {
                 foundElement = element;
             }
         });
@@ -37,8 +36,6 @@ ElementArrayFinder.prototype.getByText = function (compareText) {
         return foundElement;
     });
 };
-
-
 
 var DbUtkast = BaseSkvUtkast._extend({
     init: function init() {
@@ -51,15 +48,16 @@ var DbUtkast = BaseSkvUtkast._extend({
 			container : element(by.id('form_dodsdatumSakert')),
 			sakert : {
 				checkbox : element(by.id('dodsdatumSakertYes')),
-				datepicker : 'id missing'
+				datePicker : element(by.id('datepicker_dodsdatum'))
 			},
 			inteSakert : {
 				checkbox : element(by.id('dodsdatumSakertNo')),
-				dodsdatumMonth : element(by.id('dodsdatum-month')), //.ui-select-match.btn 
-				dodsdatumYear : element(by.id('dodsdatum-year')) //.ui-select-match.btn 
+				month : element(by.css('#dodsdatum-month > div.ui-select-match > span.btn > span.ui-select-match-text > span.ng-binding')),
+				year : element(by.css('#dodsdatum-year > div.ui-select-match > span.btn > span.ui-select-match-text > span.ng-binding')),
+				options : element.all(by.css('.ui-select-choices-row-inner'))
 			}
 		}
-		this.dodsplats = {
+		this.dodsPlats = {
 			kommun : {
 				container : element(by.id('form_dodsplatsKommun')),
 				inputText : element(by.id('dodsplatsKommun'))
@@ -92,70 +90,142 @@ var DbUtkast = BaseSkvUtkast._extend({
 			nejUndersokningSkaGoras : element(by.id('undersokningYttre-UNDERSOKNING_SKA_GORAS')),
 			nejUndersokningGjortKortFore : {
 				checkbox :  element(by.id('undersokningYttre-UNDERSOKNING_GJORT_KORT_FORE_DODEN')),
-				datePicker : 'id missing'
+				datePicker : element(by.id('datepicker_undersokningDatum'))
 			}
 		}
 		this.polisanmalan = {
 			container : element(by.id('form_polisanmalan')),
 			ja : element(by.id('polisanmalanYes')),
 			nej : element(by.id('polisanmalanNo'))
-		}
+		},
+		this.enhetensAdress = {
+            postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
+            postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
+            postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
+            enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
+        }
 	},	
 	angeIdentitetStyrktGenom : function angeIdentitetStyrktGenom(identitetStyrktGenom){
-		var identitetStyrktGenomElm = this.identitetStyrktGenom;
+		var identitetStyrktGenomElm = this.identitetStyrktGenom.inputText;
 		
-		console.log(identitetStyrktGenomElm + ', ' + identitetStyrktGenom);
-		return new Promise(function(resolve) {
-            resolve();
-        });
+		return pageHelpers.moveAndSendKeys(identitetStyrktGenomElm, identitetStyrktGenom);
 	},
 	angeDodsdatum : function angeDodsdatum(dodsdatum) {
 		var dodsdatumElm = this.dodsdatum;
 		
-		console.log(dodsdatumElm + ', ' + dodsdatum)
-		return new Promise(function(resolve) {
-            resolve();
-        });
+		console.log(dodsdatum.sakert);
+
+        if (dodsdatum.sakert) {
+			return pageHelpers.moveAndSendKeys(dodsdatumElm.sakert.checkbox, protractor.Key.SPACE).then(function(){
+				return pageHelpers.moveAndSendKeys(dodsdatumElm.sakert.datePicker, dodsdatum.sakert.datum);
+			});
+		} else {
+			console.log(dodsdatum.inteSakert);
+			return pageHelpers.moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE)
+			.then(function(){
+				return dodsdatumElm.inteSakert.year.click().then(function(){			
+					return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.year)					
+					.then(function(elm){
+						return elm.click();
+					});
+				});
+			})
+			.then(function(){
+				if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
+					return dodsdatumElm.inteSakert.month.click()
+					.then(function(){
+						return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.month).then(function(elm){
+							return pageHelpers.moveAndSendKeys(elm, protractor.Key.SPACE);
+							//return elm.click();
+						});
+					});
+				} return;
+			});
+		}
 	},
 	angeDodsPlats : function angeDodsPlats(dodsPlats) {
 		var dodsPlatsElm = this.dodsPlats;
 		
-		console.log(dodsPlatsElm + ', ' + dodsPlats);
-		return new Promise(function(resolve) {
-            resolve();
-        });
+		return pageHelpers.moveAndSendKeys(dodsPlatsElm.kommun.inputText, dodsPlats.kommun)
+		.then(function(){
+			switch (dodsPlats.boende) {
+				case 'sjukhus':
+					return pageHelpers.moveAndSendKeys(dodsPlatsElm.boende.sjukhus, protractor.Key.SPACE);
+					break;
+				case 'ordinartBoende':
+					return pageHelpers.moveAndSendKeys(dodsPlatsElm.boende.ordinartBoende, protractor.Key.SPACE);
+					break;
+				case 'sarskiltBoende': 
+					return pageHelpers.moveAndSendKeys(dodsPlatsElm.boende.sarskiltBoende, protractor.Key.SPACE);
+					break;
+				case 'annan':
+					return pageHelpers.moveAndSendKeys(dodsPlatsElm.boende.annan, protractor.Key.SPACE);
+					break;
+				default:
+					throw('dodsPlats.boende hittades inte');
+			}	
+		});
 	},
 	angeBarn : function angeBarn(barn) {
-		var barnELm = this.barn;
+		var barnElm = this.barn;
 		
-		console.log(barnElm + ', ' + barn)
-		return new Promise(function(resolve) {
-            resolve();
-        });
+		if (barn) {
+			if (barn === true) {
+				return pageHelpers.moveAndSendKeys(barnElm.ja, protractor.Key.SPACE);
+			} else {
+				return pageHelpers.moveAndSendKeys(barnElm.nej, protractor.Key.SPACE);
+			}		
+		} else {
+			return Promise.resolve();
+		}
+		
 	},
 	angeExplosivImplantat : function angeExplosivImplantat(explosivImplantat){
 		var explosivImplantatElm = this.explosivImplantat;
-		
-		console.log(explosivImplantatElm + ', ' + explosivImplantat); 
-		return new Promise(function(resolve) {
-            resolve();
-        });
+		if (explosivImplantat !== false) {
+			return pageHelpers.moveAndSendKeys(explosivImplantatElm.ja, protractor.Key.SPACE)
+			.then(function(){
+				if (explosivImplantat.avlagsnat === true) {
+					return pageHelpers.moveAndSendKeys(explosivImplantatElm.avlagsnat.ja, protractor.Key.SPACE);
+				} else {
+					return pageHelpers.moveAndSendKeys(explosivImplantatElm.avlagsnat.nej, protractor.Key.SPACE);
+				}
+			});			
+		} else {
+			return pageHelpers.moveAndSendKeys(explosivImplantatElm.nej, protractor.Key.SPACE);
+		}
 	},
 	angeYttreUndersokning : function angeYttreUndersokning(yttreUndersokning){
 		var yttreUndersokningElm = this.yttreUndersokning;
 		
-		console.log(yttreUndersokningElm + ', ' + yttreUndersokning);
-		return new Promise(function(resolve) {
-            resolve();
-        });
+		switch (yttreUndersokning.value) {
+			case 'ja':
+				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.ja, protractor.Key.SPACE);
+				break;
+			case 'nejUndersokningSkaGoras':
+				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningSkaGoras, protractor.Key.SPACE);
+				break;
+			case 'nejUndersokningGjortKortFore':
+				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.checkbox).then(function(){
+					return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.datePicker, yttreUndersokning.datum);
+				});
+				break;
+			default:
+				throw('Ingen testdata för yttreUndersokning hittades');
+		}		
 	},
 	angePolisanmalan : function angePolisanmalan(polisanmalan){
 		var polisanmalanElm = this.polisanmalan;
 		
-		console.log(polisanmalanElm + ',' + polisanmalan);
-		return new Promise(function(resolve) {
-            resolve();
-        });
+		if (polisanmalan) {
+			if (polisanmalan === true) {
+				return pageHelpers.moveAndSendKeys(polisanmalanElm.ja, protractor.Key.SPACE);
+			} else {
+				return pageHelpers.moveAndSendKeys(polisanmalanElm.nej, protractor.Key.SPACE);
+			}
+		} else {
+			return Promise.resolve();
+		}
 	}
 	
 });

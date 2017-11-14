@@ -35,7 +35,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     global.user.enhetsAdress = {
         postnummer: '66130',
         postort: 'Karlstad',
-        postadress: 'Trumpsvängen 1',
+        postadress: 'Testsvängen 3',
         telefon: '072-9192811'
     };
 
