@@ -17,31 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element, by, protractor */
+/* globals logger, pages, Promise, wcTestTools */
+
 'use strict';
 
-/**
- * This is a base (view) page for fk SOC SKV family of intyg (db, doi).
- * Only things relevant to ALL such types should end up here.
- */
+var dbPage = pages.intyg.skv.db.intyg;
+var testdataHelper = wcTestTools.helpers.testdata;
+//var regExp = require('./common.js').regExp;
 
-var BaseIntyg = require('../base.intyg.page.js');
-
-var skvBaseIntyg = BaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
-
-        this.at = element(by.id('viewCertAndQA'));
-        this.enhetsAdress = {
-            postAdress: element(by.id('vardperson_postadress')),
-            postNummer: element(by.id('vardperson_postnummer')),
-            postOrt: element(by.id('vardperson_postort')),
-            enhetsTelefon: element(by.id('vardperson_telefonnummer'))
-        };
-    },
-    somefunction: function(txt) {
-        return txt;
+function checkBarn(barn) {
+    if (barn) {
+        return expect(dbPage.barn.value.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(barn));
+    } else {
+        return Promise.resolve();
     }
-});
+}
 
-module.exports = skvBaseIntyg;
+module.exports = {
+    checkValues: function(intyg) {
+        logger.info('-- Kontrollerar Dödsbevis --');
+
+        //Barn 
+        return checkBarn(intyg.barn)
+            .then(function(value) {
+                logger.info('OK - Barn');
+            }, function(reason) {
+                throw ('FEL, Barn: ' + reason);
+            });
+    }
+};

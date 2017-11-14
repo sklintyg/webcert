@@ -12,3 +12,4 @@ Scenario: Kan signera dödsbevisintyg
 		  Och jag går in på att skapa ett "Dödsbevis" intyg
 		  Och jag fyller i alla nödvändiga fält för intyget
 		  Och jag signerar intyget
+		  Och jag ska se den data jag angett för intyget

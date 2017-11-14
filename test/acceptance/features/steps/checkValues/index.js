@@ -30,6 +30,8 @@ var tsCommonCheckValues = require('./ts.common.js').checkValues;
 var tsBasCheckValues = require('./ts.bas.js').checkValues;
 var tsDiabetesCheckValues = require('./ts.diabetes.js').checkValues;
 
+var skvDBCheckValues = require('./skv.db.js').checkValues;
+
 module.exports = {
     fk: {
         '7263': fk7263CheckValues,
@@ -66,6 +68,8 @@ module.exports = {
             promiseArr.push(fkLUAENACheckValues(intyg));
         } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
             promiseArr.push(fkLUAEFSCheckValues(intyg));
+        } else if (intyg.typ === 'Dödsbevis') {
+            promiseArr.push(skvDBCheckValues(intyg));
         } else {
             throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
         }

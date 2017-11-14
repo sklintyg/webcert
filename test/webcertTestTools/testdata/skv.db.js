@@ -23,18 +23,18 @@ var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
 var fkValues = require('./testvalues.js').fk;
 
+var today = new Date();
+var deathDate = new Date();
+deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
 
+var dayBeforeDeath = new Date();
+dayBeforeDeath.setDate(deathDate.getDate() -1);
 
 function getDodsdatum(datumSakert){
-	var today = new Date();
-	var date = new Date();
-	date.setDate(today.getDate() - Math.floor(Math.random() * 365));
-	
-	
 	if (datumSakert) {
 		return {
 			sakert : {
-				datum : testdataHelper.dateFormat(date)
+				datum : testdataHelper.dateFormat(deathDate)
 			}
 		}
 	} else {
@@ -76,12 +76,14 @@ module.exports = {
             dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]},
             explosivImplantat : getExplosivImplantat(),
             yttreUndersokning : {
-				value: shuffle(["Ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0],
-				datum: new Date()
+				value: shuffle(["ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0]
 				}
 		};
 		if (datumSakert === false) {
 			obj.barn = testdataHelper.randomTrueFalse();
+		}
+		if (obj.yttreUndersokning.value === 'nejUndersokningGjortKortFore') {
+			obj.yttreUndersokning.datum = testdataHelper.dateFormat(dayBeforeDeath);
 		}
 		if (obj.yttreUndersokning.value !== 'nejUndersokningSkaGoras') {
 			obj.polisanmalan = testdataHelper.randomTrueFalse();

@@ -54,7 +54,8 @@ var DbUtkast = BaseSkvUtkast._extend({
 				checkbox : element(by.id('dodsdatumSakertNo')),
 				month : element(by.css('#dodsdatum-month > div.ui-select-match > span.btn > span.ui-select-match-text > span.ng-binding')),
 				year : element(by.css('#dodsdatum-year > div.ui-select-match > span.btn > span.ui-select-match-text > span.ng-binding')),
-				options : element.all(by.css('.ui-select-choices-row-inner'))
+				options : element.all(by.css('.ui-select-choices-row-inner')),
+				antraffadDod : element(by.id('datepicker_antraffatDodDatum'))
 			}
 		}
 		this.dodsPlats = {
@@ -134,10 +135,13 @@ var DbUtkast = BaseSkvUtkast._extend({
 				if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
 					return dodsdatumElm.inteSakert.month.click()
 					.then(function(){
-						return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.month).then(function(elm){
-							return pageHelpers.moveAndSendKeys(elm, protractor.Key.SPACE);
-							//return elm.click();
-						});
+						browser.ignoreSynchronization = false;
+						return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.month);
+					}).then(function(elm){
+						return pageHelpers.moveAndSendKeys(elm, protractor.Key.SPACE);		
+					}).then(function(){
+						browser.ignoreSynchronization = true;
+						return pageHelpers.moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
 					});
 				} return;
 			});
@@ -169,7 +173,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 	angeBarn : function angeBarn(barn) {
 		var barnElm = this.barn;
 		
-		if (barn) {
+		if (typeof barn !== 'undefined') {
 			if (barn === true) {
 				return pageHelpers.moveAndSendKeys(barnElm.ja, protractor.Key.SPACE);
 			} else {
@@ -206,7 +210,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningSkaGoras, protractor.Key.SPACE);
 				break;
 			case 'nejUndersokningGjortKortFore':
-				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.checkbox).then(function(){
+				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.checkbox, protractor.Key.SPACE).then(function(){
 					return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.datePicker, yttreUndersokning.datum);
 				});
 				break;
@@ -217,7 +221,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 	angePolisanmalan : function angePolisanmalan(polisanmalan){
 		var polisanmalanElm = this.polisanmalan;
 		
-		if (polisanmalan) {
+		if (typeof polisanmalan !== 'undefined') {
 			if (polisanmalan === true) {
 				return pageHelpers.moveAndSendKeys(polisanmalanElm.ja, protractor.Key.SPACE);
 			} else {
