@@ -25,6 +25,8 @@ import se.inera.intyg.webcert.integration.tak.model.ConnectionPoint;
 import se.inera.intyg.webcert.integration.tak.model.ServiceContract;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 
+import java.util.Optional;
+
 public class TakConsumerImpl implements TakConsumer {
 
     private static final String LOGICAL_ADDRESS_URL = "%s/logicalAddresss?logicalAddress=%s&connectionPointId=%s&serviceContractId=%s";
@@ -48,16 +50,22 @@ public class TakConsumerImpl implements TakConsumer {
     }
 
     @Override
-    public String getConnectionPointId() {
+    public String getConnectionPointId() throws TakServiceException{
         String url = String.format(CONNECTION_POINT_URL, baseUrl, PLATFORM, environment);
         ConnectionPoint[] tmp = customRestTemplate.getForEntity(url, ConnectionPoint[].class).getBody();
-        return tmp.length > 0 ? tmp[0].getId() : "-";
+        if (tmp.length > 0) {
+            return tmp[0].getId();
+        }
+        throw new TakServiceException("Failed to get ConnectionPointId");
     }
 
     @Override
-    public String getServiceContractId(String contract) {
+    public String getServiceContractId(String contract) throws TakServiceException{
         String url = String.format(SERVICE_CONTRACT_ID_URL, baseUrl, contract);
         ServiceContract[] tmp = customRestTemplate.getForEntity(url, ServiceContract[].class).getBody();
-        return tmp.length > 0 ? tmp[0].getId() : "-";
+        if (tmp.length > 0) {
+            return tmp[0].getId();
+        }
+        throw new TakServiceException("Failed to get ServiceContractId");
     }
 }

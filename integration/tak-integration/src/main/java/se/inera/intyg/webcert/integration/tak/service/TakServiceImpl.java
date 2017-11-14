@@ -35,6 +35,7 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.consumer.TakConsumer;
+import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 
@@ -82,12 +83,16 @@ public class TakServiceImpl implements TakService {
     @Value("${tak.timeout}")
     private int timeout;
 
-    public void init() {
-        update();
+    @Scheduled(cron = "${tak.update.cron}")
+    public void initUpdate() {
+        try {
+            update();
+        }  catch (TakServiceException e) {
+            LOG.error("Update failed, TAK-service  returned null values", e);
+        }
     }
 
-    @Scheduled(cron = "${tak.update.cron}")
-    public void update() {
+    public void update() throws TakServiceException {
         ntjpId = consumer.getConnectionPointId();
         certificateStatusUpdateForCareV1Id = consumer.getServiceContractId(CERT_STATUS_FOR_CARE_V1_NS);
         certificateStatusUpdateForCareV3Id = consumer.getServiceContractId(CERT_STATUS_FOR_CARE_V3_NS);
@@ -99,6 +104,7 @@ public class TakServiceImpl implements TakService {
                         + "receiveQuestion: {}, receiveAnswer: {}, sendMsgToCare: {}",
                 ntjpId, certificateStatusUpdateForCareV1Id, certificateStatusUpdateForCareV3Id,
                 receiveMedicalCertificateQuestionId, receiveMedicalCertificateAnswerId, sendMessageToCareId);
+
     }
 
     @Override
@@ -107,7 +113,8 @@ public class TakServiceImpl implements TakService {
 
         String certStatusUpdateId = SchemaVersion.VERSION_1.getVersion().equalsIgnoreCase(schemaVersion) ? certificateStatusUpdateForCareV1Id
                 : certificateStatusUpdateForCareV3Id;
-        String certStatusUpdateNs = SchemaVersion.VERSION_3.getVersion().equalsIgnoreCase(schemaVersion) ? CERT_STATUS_FOR_CARE_V1_NS
+
+        String certStatusUpdateNs = SchemaVersion.VERSION_1.getVersion().equalsIgnoreCase(schemaVersion) ? CERT_STATUS_FOR_CARE_V1_NS
                 : CERT_STATUS_FOR_CARE_V3_NS;
 
         List<String> errors = new ArrayList<>();
@@ -128,7 +135,7 @@ public class TakServiceImpl implements TakService {
                     // Check user and intygstyp for arendekommunikation
                     return (isTakad && isTakForArendekommunikation(intygsTyp, user, errors, actualHsaId));
 
-                } catch (ResourceAccessException  e) {
+                } catch (ResourceAccessException e) {
                     // This handles timeouts from the actual REST-calls in TakConsumer, log and allow creation.
                     LOG.warn("Connection to TAK-api timed out, draft creation allowed anyway.");
                     return true;
@@ -136,6 +143,9 @@ public class TakServiceImpl implements TakService {
                     LOG.error("Internal application error while looking up careUnit in TakService: {}",
                             he.getMessage());
                     return false;
+                } catch (TakServiceException e) {
+                    LOG.error("TAK-service returned null, something is wrong but allowing for draft creation.", e);
+                    return true;
                 }
             }).get(timeout, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
@@ -175,7 +185,7 @@ public class TakServiceImpl implements TakService {
     }
 
     private InternalResult isTakForCertificateStatusUpdateForCare(String careUnitId, String certStatusUpdateId,
-            String certStatusUpdateNs) throws HsaServiceCallException {
+            String certStatusUpdateNs) throws HsaServiceCallException, TakServiceException {
         InternalResult response = lookupCareUnitAndParent(careUnitId, certStatusUpdateId);
         boolean retried = false;
 

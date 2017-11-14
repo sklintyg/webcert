@@ -28,7 +28,7 @@
   <context:component-scan base-package="se.inera.intyg.webcert.integration.tak" />
 
   <bean id="takService" class="se.inera.intyg.webcert.integration.tak.service.TakServiceImpl"
-      init-method="init" lazy-init="true"/>
+      init-method="initUpdate" lazy-init="true"/>
 
   <bean id="takConsumer" class="se.inera.intyg.webcert.integration.tak.consumer.TakConsumerImpl"/>
 

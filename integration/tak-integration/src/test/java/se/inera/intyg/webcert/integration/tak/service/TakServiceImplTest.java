@@ -36,6 +36,7 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.consumer.TakConsumerImpl;
+import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 
@@ -95,7 +96,7 @@ public class TakServiceImplTest {
     }
 
     @Test
-    public void testNoTak() throws HsaServiceCallException {
+    public void testNoTak() throws HsaServiceCallException, TakServiceException {
         setupIds();
 
         when(consumer.getConnectionPointId()).thenReturn(NTJP_ID);
@@ -194,19 +195,21 @@ public class TakServiceImplTest {
     }
 
     @Test
-    public void testCorrectErrorMessageForCertStatusUpdateForCareV3() {
+    public void testCorrectErrorMessageForCertStatusUpdateForCareV3() throws TakServiceException {
         setupIds();
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(new TakLogicalAddress[]{});
 
         String hsa = "SE2321000198-016965";
         TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", "V3", user);
 
+        System.out.println(result.getErrorMessages().size());
+
         assertTrue(!result.getErrorMessages().isEmpty());
         assertEquals(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V3_NS, hsa), result.getErrorMessages().get(0));
     }
 
     @Test
-    public void testCorrectErrorMessageForCertStatusUpdateForCareV1() {
+    public void testCorrectErrorMessageForCertStatusUpdateForCareV1() throws TakServiceException {
         setupIds();
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(new TakLogicalAddress[]{});
 
