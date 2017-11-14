@@ -27,8 +27,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
@@ -102,9 +104,10 @@ public class TakServiceImpl implements TakService {
     @Override
     public TakResult verifyTakningForCareUnit(String careUnitId, String intygsTyp, String schemaVersion,
                                               IntygUser user) {
-        String certStatusUpdateId = "V1".equalsIgnoreCase(schemaVersion) ? certificateStatusUpdateForCareV1Id
+
+        String certStatusUpdateId = SchemaVersion.VERSION_1.getVersion().equalsIgnoreCase(schemaVersion) ? certificateStatusUpdateForCareV1Id
                 : certificateStatusUpdateForCareV3Id;
-        String certStatusUpdateNs = "V1".equalsIgnoreCase(schemaVersion) ? CERT_STATUS_FOR_CARE_V1_NS
+        String certStatusUpdateNs = SchemaVersion.VERSION_3.getVersion().equalsIgnoreCase(schemaVersion) ? CERT_STATUS_FOR_CARE_V1_NS
                 : CERT_STATUS_FOR_CARE_V3_NS;
 
         List<String> errors = new ArrayList<>();
@@ -150,7 +153,7 @@ public class TakServiceImpl implements TakService {
                                                 String actualHsaId) {
         // Utilize authoritiesValidator to check arendehantering
         if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).isVerified()) {
-            if (intygsTyp.equalsIgnoreCase(Fk7263EntryPoint.MODULE_ID)) {
+            if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp)) {
                 // yes? -> fk7263
                 if (consumer.doLookup(ntjpId, actualHsaId, receiveMedicalCertificateAnswerId).length < 1) {
                     errors.add(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_ANSWER_NS, actualHsaId));

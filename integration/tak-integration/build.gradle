@@ -4,9 +4,6 @@ dependencies {
   compile "org.springframework:spring-web:${springVersion}"
   compile "se.inera.intyg.infra:hsa-integration:${infraVersion}"
   compile "org.apache.httpcomponents:httpclient:${httpComponentsVersion}"
-  compile "se.inera.intyg.infra:security-siths:${infraVersion}"
-
-  compile "se.inera.intyg.common:fk7263:${commonVersion}"
 
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
