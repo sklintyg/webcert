@@ -124,8 +124,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
             Personnummer personnummer = new Personnummer(utkastsParams.getPatient().getPersonId().getExtension());
 
-            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(
-                    personnummer);
+            Map<String, Boolean> intygstypToBoolean = utkastService
+                    .checkIfPersonHasExistingIntyg(personnummer, user.getValdVardgivare().getId());
 
             Boolean exists = intygstypToBoolean.get(intygsTyp);
 

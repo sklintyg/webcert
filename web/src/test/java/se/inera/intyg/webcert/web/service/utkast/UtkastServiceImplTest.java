@@ -30,6 +30,7 @@ import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -47,11 +48,13 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -59,12 +62,12 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
@@ -72,6 +75,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -79,6 +85,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -120,6 +127,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private AuthoritiesHelper authoritiesHelper;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
+    @Mock
+    private WebcertFeatureService featureService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -595,19 +604,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
     }
 
-    private Patient getUpdatedPatient() {
-        Patient newPatient = new Patient();
-        newPatient.setEfternamn("updated lastName");
-        newPatient.setMellannamn("updated middle-name");
-        newPatient.setFornamn("updated firstName");
-        newPatient.setFullstandigtNamn("updated full name");
-        newPatient.setPersonId(new Personnummer("19121272-1212"));
-        newPatient.setPostadress("updated postal address");
-        newPatient.setPostnummer("1111111");
-        newPatient.setPostort("updated post city");
-        return newPatient;
-    }
-
     @Test
     public void testValidateValidDraftWithWarningsIncludesWarningsInResponse() throws ModuleException, ModuleNotFoundException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
@@ -646,6 +642,52 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
                 .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
+    }
+
+    @Test
+    public void testCheckIfPersonHasExistingIntyg() {
+        final String personnummer = "191212121212";
+        final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
+        final String vardgivareId = "vardgivareId";
+
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, "", null);
+        db1.setVardgivarId("other");
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, "", null);
+        db2.setVardgivarId(vardgivareId);
+        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, "", null);
+        doi.setVardgivarId("other");
+        when(moduleRegistry.listAllModules()).thenReturn(
+                Arrays.asList("lisjp", "db", "doi").stream()
+                        .map(a -> new IntygModule(a, null, null, null, null, null, null, null)).collect(
+                        Collectors.toList()));
+        when(featureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), "db")).thenReturn(true);
+        when(featureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(), "doi")).thenReturn(true);
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer, activeModules))
+                .thenReturn(Arrays.asList(db1, db2, doi));
+
+        Map<String, Boolean> res = draftService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer), vardgivareId);
+
+        assertNotNull(res);
+        assertTrue(res.get("db"));
+        assertFalse(res.get("doi"));
+
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(personnummer), eq(activeModules));
+        verify(featureService, times(3)).isModuleFeatureActive(eq(WebcertFeature.UNIKT_INTYG.getName()), anyString());
+        // For DB in this configuration the feature check will complete on UNIKT_INTYG, hence UNIKT_INTYG_INOM_VG will not be checked.
+        verify(featureService, times(2)).isModuleFeatureActive(eq(WebcertFeature.UNIKT_INTYG_INOM_VG.getName()), anyString());
+    }
+
+    private Patient getUpdatedPatient() {
+        Patient newPatient = new Patient();
+        newPatient.setEfternamn("updated lastName");
+        newPatient.setMellannamn("updated middle-name");
+        newPatient.setFornamn("updated firstName");
+        newPatient.setFullstandigtNamn("updated full name");
+        newPatient.setPersonId(new Personnummer("19121272-1212"));
+        newPatient.setPostadress("updated postal address");
+        newPatient.setPostnummer("1111111");
+        newPatient.setPostort("updated post city");
+        return newPatient;
     }
 
     private ValidateDraftResponse buildValidationResponse() {

@@ -126,8 +126,8 @@ public class UtkastApiController extends AbstractApiController {
                 || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
                 intygsTyp))) {
 
-            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(
-                    request.getPatientPersonnummer());
+            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(request.getPatientPersonnummer(),
+                    getWebCertUserService().getUser().getValdVardgivare().getId());
 
             Boolean exists = intygstypToBoolean.get(intygsTyp);
 
@@ -204,7 +204,8 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/previousIntyg/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
-        Map<String, Boolean> res = utkastService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer));
+        Map<String, Boolean> res = utkastService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer),
+                getWebCertUserService().getUser().getValdVardgivare().getId());
         return Response.ok(res).build();
     }
 

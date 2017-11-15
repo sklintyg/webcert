@@ -111,7 +111,7 @@ public class UtkastApiControllerTest {
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
         Map<String, Boolean> hasPrevious = new HashMap<>();
         hasPrevious.put("fk7263", true);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER))).thenReturn(hasPrevious);
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), anyString())).thenReturn(hasPrevious);
 
     }
 

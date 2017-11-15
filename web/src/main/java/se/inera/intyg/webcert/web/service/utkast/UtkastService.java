@@ -62,8 +62,9 @@ public interface UtkastService {
      * Fairly specialized method to check if a person has existing Intyg of the same type.
      * Returns a Map of IntygsTyp to Boolean, where Boolean indicates that a previous Intyg of the same type exists
      * within the same caregiver.
-     * @param personnummer
+     * @param personnummer the personnummer of the patient to check for existing intyg
+     * @param vardgivare the id of the vardgivare to determine the Boolean in the resulting map
      * @return
      */
-    Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer);
+    Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, String vardgivare);
 }
