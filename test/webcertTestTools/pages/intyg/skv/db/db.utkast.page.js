@@ -21,7 +21,10 @@
 'use strict';
 
 var BaseSkvUtkast = require('../skv.base.utkast.page.js');
-var pageHelpers = require('../../../pageHelper.util.js');
+var testTools = require('common-testtools');
+
+var moveAndSendKeys = testTools.uiHelpers.moveAndSendKeys;
+var scrollElm = testTools.uiHelpers.scrollElement;
 
 //TODO flytta till common-testtools om funktionen gör det lättare att skriva mer lättlästa tester. Alternativt implementera protractor-helpers.
 protractor.ElementArrayFinder.prototype.getByText = function (compareText) {
@@ -109,7 +112,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 	angeIdentitetStyrktGenom : function angeIdentitetStyrktGenom(identitetStyrktGenom){
 		var identitetStyrktGenomElm = this.identitetStyrktGenom.inputText;
 		
-		return pageHelpers.moveAndSendKeys(identitetStyrktGenomElm, identitetStyrktGenom);
+		return moveAndSendKeys(identitetStyrktGenomElm, identitetStyrktGenom);
 	},
 	angeDodsdatum : function angeDodsdatum(dodsdatum) {
 		var dodsdatumElm = this.dodsdatum;
@@ -117,12 +120,12 @@ var DbUtkast = BaseSkvUtkast._extend({
 		console.log(dodsdatum.sakert);
 
         if (dodsdatum.sakert) {
-			return pageHelpers.moveAndSendKeys(dodsdatumElm.sakert.checkbox, protractor.Key.SPACE).then(function(){
-				return pageHelpers.moveAndSendKeys(dodsdatumElm.sakert.datePicker, dodsdatum.sakert.datum);
+			return moveAndSendKeys(dodsdatumElm.sakert.checkbox, protractor.Key.SPACE).then(function(){
+				return moveAndSendKeys(dodsdatumElm.sakert.datePicker, dodsdatum.sakert.datum);
 			});
 		} else {
 			console.log(dodsdatum.inteSakert);
-			return pageHelpers.moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE)
+			return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE)
 			.then(function(){
 				return dodsdatumElm.inteSakert.year.click().then(function(){			
 					return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.year)					
@@ -134,14 +137,19 @@ var DbUtkast = BaseSkvUtkast._extend({
 			.then(function(){
 				if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
 					return dodsdatumElm.inteSakert.month.click()
-					.then(function(){
-						browser.ignoreSynchronization = false;
-						return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.month);
-					}).then(function(elm){
-						return pageHelpers.moveAndSendKeys(elm, protractor.Key.SPACE);		
-					}).then(function(){
-						browser.ignoreSynchronization = true;
-						return pageHelpers.moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
+					.then(function() {
+						return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.month).then(function(monthElm){
+							return monthElm.getLocation()
+							.then(function (location){
+								return scrollElm(monthElm, 2);
+							})	
+							.then(function(){
+								return monthElm.click();		
+							})
+							.then(function(){
+								return moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
+							});
+						});
 					});
 				} return;
 			});
@@ -150,20 +158,20 @@ var DbUtkast = BaseSkvUtkast._extend({
 	angeDodsPlats : function angeDodsPlats(dodsPlats) {
 		var dodsPlatsElm = this.dodsPlats;
 		
-		return pageHelpers.moveAndSendKeys(dodsPlatsElm.kommun.inputText, dodsPlats.kommun)
+		return moveAndSendKeys(dodsPlatsElm.kommun.inputText, dodsPlats.kommun)
 		.then(function(){
 			switch (dodsPlats.boende) {
 				case 'sjukhus':
-					return pageHelpers.moveAndSendKeys(dodsPlatsElm.boende.sjukhus, protractor.Key.SPACE);
+					return moveAndSendKeys(dodsPlatsElm.boende.sjukhus, protractor.Key.SPACE);
 					break;
 				case 'ordinartBoende':
-					return pageHelpers.moveAndSendKeys(dodsPlatsElm.boende.ordinartBoende, protractor.Key.SPACE);
+					return moveAndSendKeys(dodsPlatsElm.boende.ordinartBoende, protractor.Key.SPACE);
 					break;
 				case 'sarskiltBoende': 
-					return pageHelpers.moveAndSendKeys(dodsPlatsElm.boende.sarskiltBoende, protractor.Key.SPACE);
+					return moveAndSendKeys(dodsPlatsElm.boende.sarskiltBoende, protractor.Key.SPACE);
 					break;
 				case 'annan':
-					return pageHelpers.moveAndSendKeys(dodsPlatsElm.boende.annan, protractor.Key.SPACE);
+					return moveAndSendKeys(dodsPlatsElm.boende.annan, protractor.Key.SPACE);
 					break;
 				default:
 					throw('dodsPlats.boende hittades inte');
@@ -175,9 +183,9 @@ var DbUtkast = BaseSkvUtkast._extend({
 		
 		if (typeof barn !== 'undefined') {
 			if (barn === true) {
-				return pageHelpers.moveAndSendKeys(barnElm.ja, protractor.Key.SPACE);
+				return moveAndSendKeys(barnElm.ja, protractor.Key.SPACE);
 			} else {
-				return pageHelpers.moveAndSendKeys(barnElm.nej, protractor.Key.SPACE);
+				return moveAndSendKeys(barnElm.nej, protractor.Key.SPACE);
 			}		
 		} else {
 			return Promise.resolve();
@@ -187,16 +195,16 @@ var DbUtkast = BaseSkvUtkast._extend({
 	angeExplosivImplantat : function angeExplosivImplantat(explosivImplantat){
 		var explosivImplantatElm = this.explosivImplantat;
 		if (explosivImplantat !== false) {
-			return pageHelpers.moveAndSendKeys(explosivImplantatElm.ja, protractor.Key.SPACE)
+			return moveAndSendKeys(explosivImplantatElm.ja, protractor.Key.SPACE)
 			.then(function(){
 				if (explosivImplantat.avlagsnat === true) {
-					return pageHelpers.moveAndSendKeys(explosivImplantatElm.avlagsnat.ja, protractor.Key.SPACE);
+					return moveAndSendKeys(explosivImplantatElm.avlagsnat.ja, protractor.Key.SPACE);
 				} else {
-					return pageHelpers.moveAndSendKeys(explosivImplantatElm.avlagsnat.nej, protractor.Key.SPACE);
+					return moveAndSendKeys(explosivImplantatElm.avlagsnat.nej, protractor.Key.SPACE);
 				}
 			});			
 		} else {
-			return pageHelpers.moveAndSendKeys(explosivImplantatElm.nej, protractor.Key.SPACE);
+			return moveAndSendKeys(explosivImplantatElm.nej, protractor.Key.SPACE);
 		}
 	},
 	angeYttreUndersokning : function angeYttreUndersokning(yttreUndersokning){
@@ -204,14 +212,14 @@ var DbUtkast = BaseSkvUtkast._extend({
 		
 		switch (yttreUndersokning.value) {
 			case 'ja':
-				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.ja, protractor.Key.SPACE);
+				return moveAndSendKeys(yttreUndersokningElm.ja, protractor.Key.SPACE);
 				break;
 			case 'nejUndersokningSkaGoras':
-				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningSkaGoras, protractor.Key.SPACE);
+				return moveAndSendKeys(yttreUndersokningElm.nejUndersokningSkaGoras, protractor.Key.SPACE);
 				break;
 			case 'nejUndersokningGjortKortFore':
-				return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.checkbox, protractor.Key.SPACE).then(function(){
-					return pageHelpers.moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.datePicker, yttreUndersokning.datum);
+				return moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.checkbox, protractor.Key.SPACE).then(function(){
+					return moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.datePicker, yttreUndersokning.datum);
 				});
 				break;
 			default:
@@ -223,9 +231,9 @@ var DbUtkast = BaseSkvUtkast._extend({
 		
 		if (typeof polisanmalan !== 'undefined') {
 			if (polisanmalan === true) {
-				return pageHelpers.moveAndSendKeys(polisanmalanElm.ja, protractor.Key.SPACE);
+				return moveAndSendKeys(polisanmalanElm.ja, protractor.Key.SPACE);
 			} else {
-				return pageHelpers.moveAndSendKeys(polisanmalanElm.nej, protractor.Key.SPACE);
+				return moveAndSendKeys(polisanmalanElm.nej, protractor.Key.SPACE);
 			}
 		} else {
 			return Promise.resolve();
