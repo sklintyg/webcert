@@ -77,7 +77,6 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
     private static final String USER_HSAID = "SE1234567890";
     private static final String UNIT_HSAID = "SE0987654321";
-    private static final String CAREGIVER_HSAID = "SE0000112233";
 
     private static final String UTKAST_ID = "abc123";
     private static final String UTKAST_VERSION = "1";
@@ -132,7 +131,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class)))
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
 
 
@@ -140,7 +139,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
         verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
-        verify(takService).verifyTakningForCareUnit(any(String.class), eq(UTKAST_TYPE), eq("V3"), any(IntygUser.class));
+        verify(takService).verifyTakningForCareUnit(any(String.class), eq(UTKAST_TYPE), eq(SchemaVersion.VERSION_3), any(IntygUser.class));
 
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.OK);
@@ -153,18 +152,14 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
 
-        VardpersonReferens vardperson = createVardpersonReferens(
-                certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
-                certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
-
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class)))
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
-        verify(takService).verifyTakningForCareUnit(any(String.class), eq(UTKAST_TYPE), eq("V3"), any(IntygUser.class));
+        verify(takService).verifyTakningForCareUnit(any(String.class), eq(UTKAST_TYPE), eq(SchemaVersion.VERSION_3), any(IntygUser.class));
 
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
@@ -222,7 +217,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class)))
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
@@ -250,7 +245,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class)))
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
@@ -350,5 +345,4 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
         return utkast;
     }
-
 }

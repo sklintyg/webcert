@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.junit.Before;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsServiceImpl;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -84,11 +85,12 @@ public class TakServiceImplTest {
     private IntygUser user;
 
     @Before
-    public void setup() {
+    public void setup() throws HsaServiceCallException {
         impl = new TakServiceImpl();
         ReflectionTestUtils.setField(impl, "timeout", 1);
         MockitoAnnotations.initMocks(this);
         user = createDefaultUser();
+        when(hsaService.getParentUnit(HSAID_OK)).thenReturn(HSAID_OK);
         user.setFeatures(ImmutableSet.of(
                 WebcertFeature.HANTERA_FRAGOR.getName(),WebcertFeature.HANTERA_FRAGOR.getName() + ".fk7263",
                 WebcertFeature.HANTERA_FRAGOR.getName(),WebcertFeature.HANTERA_FRAGOR.getName() + ".luse"
@@ -106,7 +108,7 @@ public class TakServiceImplTest {
         when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), anyString())).thenReturn(new TakLogicalAddress[]{});
         when(hsaService.getParentUnit("NOTOK")).thenReturn(HSAID_OK);
 
-        assertFalse(impl.verifyTakningForCareUnit("NOTOK", "fk7263", "V1", user).isValid());
+        assertFalse(impl.verifyTakningForCareUnit("NOTOK", "fk7263", SchemaVersion.VERSION_1, user).isValid());
 
         verify(hsaService, times(2)).getParentUnit("NOTOK");
 
@@ -116,14 +118,14 @@ public class TakServiceImplTest {
     public void testSuccess() throws HsaServiceCallException {
         when(consumer.doLookup(anyString(), anyString(), anyString())).thenReturn(buildTakLogicalAddress("29"));
 
-        assertTrue(impl.verifyTakningForCareUnit("SE2321000198-016965", "fk7263", "V1", user).isValid());
+        assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user).isValid());
     }
 
     @Test
     public void testNoTakForArendehanteringRequiredForTsIntyg() {
         setupIds();
         when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("89"));
-        assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "ts-bas", "V1", user).isValid());
+        assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "ts-bas", SchemaVersion.VERSION_1, user).isValid());
     }
 
     @Test
@@ -134,7 +136,7 @@ public class TakServiceImplTest {
         when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), anyString())).thenReturn(buildTakLogicalAddress("29"));
         when(hsaService.getParentUnit("NOTOK")).thenReturn(HSAID_OK);
 
-        assertTrue(impl.verifyTakningForCareUnit("NOTOK", "fk7263", "V1", user).isValid());
+        assertTrue(impl.verifyTakningForCareUnit("NOTOK", "fk7263", SchemaVersion.VERSION_1, user).isValid());
 
         verify(hsaService, times(1)).getParentUnit("NOTOK");
     }
@@ -146,18 +148,19 @@ public class TakServiceImplTest {
             return buildTakLogicalAddress("28");
         });
 
-        assertTrue(impl.verifyTakningForCareUnit("SE2321000198-016965", "fk7263", "V1", user).isValid());
+        assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user).isValid());
     }
 
     @Test
     public void testCorrectErrorMessageForReceiveAnswer() {
         setupIds();
+        setupMockUpdate();
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(buildTakLogicalAddress("15"));
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("16"));
 
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(new TakLogicalAddress[]{});
 
-        TakResult result = impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", "V1", user);
+        TakResult result = impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
         assertEquals(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_ANSWER_NS, HSAID_OK), result.getErrorMessages().get(0));
@@ -167,13 +170,14 @@ public class TakServiceImplTest {
     @Test
     public void testCorrectErrorMessageForReceiveQuestion() {
         setupIds();
+        setupMockUpdate();
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("16"));
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(buildTakLogicalAddress("18"));
 
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(new TakLogicalAddress[]{});
 
-        String hsa = "SE2321000198-016965";
-        TakResult result = impl.verifyTakningForCareUnit(hsa, "fk7263", "V1", user);
+        String hsa = HSAID_OK;
+        TakResult result = impl.verifyTakningForCareUnit(hsa, "fk7263", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
         assertEquals(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsa), result.getErrorMessages().get(0));
@@ -182,13 +186,14 @@ public class TakServiceImplTest {
     @Test
     public void testCorrectErrorMessageForSendMessageToCare() {
         setupIds();
+        setupMockUpdate();
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("16"));
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("16"));
 
         when(consumer.doLookup(anyString(), anyString(), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(new TakLogicalAddress[]{});
 
-        String hsa = "SE2321000198-016965";
-        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", "V1", user);
+        String hsa = HSAID_OK;
+        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
         assertEquals(String.format(ERROR_STRING, SEND_MESSAGE_TO_CARE_NS, hsa), result.getErrorMessages().get(0));
@@ -197,10 +202,11 @@ public class TakServiceImplTest {
     @Test
     public void testCorrectErrorMessageForCertStatusUpdateForCareV3() throws TakServiceException {
         setupIds();
+        setupMockUpdate();
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(new TakLogicalAddress[]{});
 
-        String hsa = "SE2321000198-016965";
-        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", "V3", user);
+        String hsa = HSAID_OK;
+        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", SchemaVersion.VERSION_3, user);
 
         System.out.println(result.getErrorMessages().size());
 
@@ -211,10 +217,11 @@ public class TakServiceImplTest {
     @Test
     public void testCorrectErrorMessageForCertStatusUpdateForCareV1() throws TakServiceException {
         setupIds();
+        setupMockUpdate();
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(new TakLogicalAddress[]{});
 
-        String hsa = "SE2321000198-016965";
-        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", "V1", user);
+        String hsa = HSAID_OK;
+        TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
         assertEquals(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V1_NS, hsa), result.getErrorMessages().get(0));
@@ -227,6 +234,15 @@ public class TakServiceImplTest {
         ReflectionTestUtils.setField(impl, "receiveMedicalCertificateQuestionId", RECEIVE_CERT_QUESTION_ID);
         ReflectionTestUtils.setField(impl, "receiveMedicalCertificateAnswerId", RECEIVE_CERT_ANSWER_ID);
         ReflectionTestUtils.setField(impl, "sendMessageToCareId", SEND_MESSAGE_TO_CARE_ID);
+    }
+
+    private void setupMockUpdate() {
+        when(consumer.getConnectionPointId()).thenReturn(NTJP_ID);
+        when(consumer.getServiceContractId(CERT_STATUS_FOR_CARE_V1_NS)).thenReturn(CERT_STATUS_V1_ID);
+        when(consumer.getServiceContractId(CERT_STATUS_FOR_CARE_V3_NS)).thenReturn(CERT_STATUS_V3_ID);
+        when(consumer.getServiceContractId(RECEIVE_MEDICAL_CERT_QUESTION_NS)).thenReturn(RECEIVE_CERT_QUESTION_ID);
+        when(consumer.getServiceContractId(RECEIVE_MEDICAL_CERT_ANSWER_NS)).thenReturn(RECEIVE_CERT_ANSWER_ID);
+        when(consumer.getServiceContractId(SEND_MESSAGE_TO_CARE_NS)).thenReturn(SEND_MESSAGE_TO_CARE_ID);
     }
 
     private TakLogicalAddress[] buildTakLogicalAddress(String id) {
@@ -265,7 +281,7 @@ public class TakServiceImplTest {
 
 
     private IntygUser createUser(String roleName, Privilege p, Set<String> features, String origin) {
-        IntygUser user = new IntygUser("SE2321000198-016965");
+        IntygUser user = new IntygUser(HSAID_OK);
 
         HashMap<String, Privilege> pMap = new HashMap<>();
         pMap.put(p.getName(), p);

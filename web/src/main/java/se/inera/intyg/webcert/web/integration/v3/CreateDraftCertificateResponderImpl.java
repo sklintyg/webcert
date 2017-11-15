@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Lazy;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
@@ -58,13 +58,9 @@ import java.util.Map;
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateDraftCertificateResponderImpl.class);
-    private static final String SCHEMAVERSION_V3 = "V3";
 
     @Autowired
     private UtkastService utkastService;
-
-    @Autowired
-    private HsaPersonService hsaPersonService;
 
     @Autowired
     private CreateNewDraftRequestBuilder draftRequestBuilder;
@@ -149,7 +145,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         // Check if invoking health care unit has required TAK
         String intygsType = utkastsParams.getTypAvIntyg().getCode();
 
-        TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsType, SCHEMAVERSION_V3, user);
+        TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsType, SchemaVersion.VERSION_3, user);
         if (!takResult.isValid()) {
             String error = takResult.getErrorMessages().stream().reduce((t, u) -> t + "; " + u).get();
             return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
@@ -246,5 +242,4 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         integreradeEnheterRegistry.putIntegreradEnhet(integreradEnhet, false, true);
     }
-
 }

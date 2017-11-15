@@ -135,7 +135,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class)))
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
 
         // Then
@@ -143,7 +143,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
         verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(true), eq(false));
-        verify(takService).verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class));
+        verify(takService).verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class));
 
         // Assert response content
         assertNotNull(response);
@@ -250,13 +250,13 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
         // When
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class)))
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
         // Then
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verifyZeroInteractions(mockUtkastService);
-        verify(takService).verifyTakningForCareUnit(any(String.class), any(String.class), any(String.class), any(IntygUser.class));
+        verify(takService).verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class));
 
         // Assert response content
         assertNotNull(response);

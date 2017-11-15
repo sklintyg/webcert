@@ -144,7 +144,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         SchemaVersion schemaVersion = integreradeEnheterRegistry.getSchemaVersion(invokingUnitHsaId, intygsType)
                 .orElse(SchemaVersion.VERSION_1);
         TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsType,
-                schemaVersion.getVersion(), user);
+                schemaVersion, user);
         if (!takResult.isValid()) {
             String error = takResult.getErrorMessages().stream().reduce((t, u) -> t + "; " + u).get();
             return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);

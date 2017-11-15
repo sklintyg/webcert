@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.integration.tak.service;
 
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 
@@ -31,12 +32,12 @@ public interface TakService {
      * This method utilizes a timeout configured in webcert.properties, if a result is not found a warning is logged
      * and draft creation is allowed despite the lack of a valid TAKning.
      *
-     * @param careUnitId hsaId for the Careunit to check.
-     * @param intygsTyp the id for the certificate, as found in {@link Fk7263EntryPoint#getModuleId()} etc.
+     * @param careUnitId    hsaId for the Careunit to check.
+     * @param intygsTyp     the id for the certificate, as found in {@link Fk7263EntryPoint#getModuleId()} etc.
      * @param schemaVersion V1 or V3 of interaction
-     * @param user Implementor of {@link se.inera.intyg.infra.security.common.model.UserDetails} used to check if the
-     *            certificate is applicable for issue handling.
+     * @param user          Implementor of {@link se.inera.intyg.infra.security.common.model.UserDetails} used to check if the
+     *                      certificate is applicable for issue handling.
      * @return {@link TakResult} containing the actual result as boolean and any errorMessages.
      */
-    TakResult verifyTakningForCareUnit(String careUnitId, String intygsTyp, String schemaVersion, IntygUser user);
+    TakResult verifyTakningForCareUnit(String careUnitId, String intygsTyp, SchemaVersion schemaVersion, IntygUser user);
 }

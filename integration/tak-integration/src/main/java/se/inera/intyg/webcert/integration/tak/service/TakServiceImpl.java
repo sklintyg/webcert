@@ -30,7 +30,6 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
-import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
@@ -87,7 +86,7 @@ public class TakServiceImpl implements TakService {
     public void initUpdate() {
         try {
             update();
-        }  catch (TakServiceException e) {
+        } catch (TakServiceException e) {
             LOG.error("Update failed, TAK-service  returned null values", e);
         }
     }
@@ -108,45 +107,24 @@ public class TakServiceImpl implements TakService {
     }
 
     @Override
-    public TakResult verifyTakningForCareUnit(String careUnitId, String intygsTyp, String schemaVersion,
-                                              IntygUser user) {
-
-        String certStatusUpdateId = SchemaVersion.VERSION_1.getVersion().equalsIgnoreCase(schemaVersion) ? certificateStatusUpdateForCareV1Id
-                : certificateStatusUpdateForCareV3Id;
-
-        String certStatusUpdateNs = SchemaVersion.VERSION_1.getVersion().equalsIgnoreCase(schemaVersion) ? CERT_STATUS_FOR_CARE_V1_NS
-                : CERT_STATUS_FOR_CARE_V3_NS;
+    public TakResult verifyTakningForCareUnit(String hsaId, String intygsTyp, SchemaVersion schemaVersion, IntygUser user) {
 
         List<String> errors = new ArrayList<>();
         boolean ret;
 
-        // Snugly wrapped to implement a configurable timeout for the entire TAK-process
         try {
             ret = CompletableFuture.supplyAsync(() -> {
-                try {
-                    InternalResult initialResult = isTakForCertificateStatusUpdateForCare(careUnitId,
-                            certStatusUpdateId, certStatusUpdateNs);
-                    final boolean isTakad = initialResult.getResult().length > 0;
-                    final String actualHsaId = initialResult.getHsaId();
-
-                    if (!isTakad && initialResult.getError() != null) {
-                        errors.add(initialResult.getError());
-                    }
-                    // Check user and intygstyp for arendekommunikation
-                    return (isTakad && isTakForArendekommunikation(intygsTyp, user, errors, actualHsaId));
-
-                } catch (ResourceAccessException e) {
-                    // This handles timeouts from the actual REST-calls in TakConsumer, log and allow creation.
-                    LOG.warn("Connection to TAK-api timed out, draft creation allowed anyway.");
-                    return true;
-                } catch (HsaServiceCallException he) {
-                    LOG.error("Internal application error while looking up careUnit in TakService: {}",
-                            he.getMessage());
-                    return false;
-                } catch (TakServiceException e) {
-                    LOG.error("TAK-service returned null, something is wrong but allowing for draft creation.", e);
-                    return true;
+                /*
+                 * We do not know when NTJP updates their ids of schemas, consumers and producers.
+                 * Hence we need to make sure we have the latest configuration before rejecting the request.
+                 */
+                boolean res = isTakConfiguredCorrectly(intygsTyp, user, errors, hsaId, schemaVersion);
+                if (!res) {
+                    update();
+                    errors.clear();
+                    res = isTakConfiguredCorrectly(intygsTyp, user, errors, hsaId, schemaVersion);
                 }
+                return res;
             }).get(timeout, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             // If the time taken for entirety of this check exceeds the timeout, log a warning and allow creation.
@@ -155,28 +133,63 @@ public class TakServiceImpl implements TakService {
         } catch (InterruptedException | ExecutionException ee) {
             LOG.error("Internal application error in TakService: {}", ee.getMessage());
             ret = false;
+        } catch (TakServiceException e) {
+            LOG.error("Contacting TAK was unsuccessful", e);
+            ret = true;
+        } catch (ResourceAccessException e) {
+            // This handles timeouts from the actual REST-calls in TakConsumer, log and allow creation.
+            LOG.warn("Connection to TAK-api timed out, draft creation allowed anyway.");
+            ret = true;
         }
         return new TakResult(ret, errors);
     }
 
-    private boolean isTakForArendekommunikation(String intygsTyp, IntygUser user, List<String> errors,
-                                                String actualHsaId) {
+    private boolean isTakConfiguredCorrectly(String intygsTyp, IntygUser user, List<String> errors, String hsaId, SchemaVersion version) {
+        boolean res = checkConfiguration(intygsTyp, user, errors, hsaId, version);
+        if (!res) {
+            String careUnitId;
+            try {
+                careUnitId = hsaOrganizationsService.getParentUnit(hsaId);
+            } catch (HsaServiceCallException e) {
+                LOG.warn("Could not reach HSA to get HealthCareUnitId client will need to try again.");
+                return false;
+            }
+            if (!careUnitId.equals(hsaId)) {
+                res = checkConfiguration(intygsTyp, user, errors, careUnitId, version);
+            }
+        }
+        return res;
+    }
+
+    private boolean checkConfiguration(String intygsTyp, IntygUser user, List<String> errors, String hsaId, SchemaVersion version) {
+        if (!isValid(consumer.doLookup(ntjpId, hsaId, resolveContract(version)))) {
+            switch (version) {
+            case VERSION_1:
+                errors.add(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V1_NS, hsaId));
+                break;
+            case VERSION_3:
+                errors.add(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V3_NS, hsaId));
+                break;
+            }
+            return false;
+        }
+
         // Utilize authoritiesValidator to check arendehantering
         if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).isVerified()) {
             if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp)) {
                 // yes? -> fk7263
-                if (consumer.doLookup(ntjpId, actualHsaId, receiveMedicalCertificateAnswerId).length < 1) {
-                    errors.add(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_ANSWER_NS, actualHsaId));
+                if (!isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateAnswerId))) {
+                    errors.add(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_ANSWER_NS, hsaId));
                     return false;
                 }
-                if (consumer.doLookup(ntjpId, actualHsaId, receiveMedicalCertificateQuestionId).length < 1) {
-                    errors.add(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_QUESTION_NS, actualHsaId));
+                if (!isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateQuestionId))) {
+                    errors.add(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsaId));
                     return false;
                 }
             } else {
                 // yes? -> other
-                if (consumer.doLookup(ntjpId, actualHsaId, sendMessageToCareId).length < 1) {
-                    errors.add(String.format(ERROR_STRING, SEND_MESSAGE_TO_CARE_NS, actualHsaId));
+                if (!isValid(consumer.doLookup(ntjpId, hsaId, sendMessageToCareId))) {
+                    errors.add(String.format(ERROR_STRING, SEND_MESSAGE_TO_CARE_NS, hsaId));
                     return false;
                 }
             }
@@ -184,66 +197,17 @@ public class TakServiceImpl implements TakService {
         return true;
     }
 
-    private InternalResult isTakForCertificateStatusUpdateForCare(String careUnitId, String certStatusUpdateId,
-            String certStatusUpdateNs) throws HsaServiceCallException, TakServiceException {
-        InternalResult response = lookupCareUnitAndParent(careUnitId, certStatusUpdateId);
-        boolean retried = false;
-
-        while (response.getResult().length < 1  && !retried) {
-            update();
-            lookupCareUnitAndParent(careUnitId, certStatusUpdateId);
-            retried = true;
-        }
-
-        if (response.getResult().length < 1) {
-            LOG.error("CareUnit not addressable in TAK-register for the given service.");
-            response.setError(String.format(ERROR_STRING, certStatusUpdateNs, careUnitId));
-            return response;
-        } else {
-            LOG.info("TAK - id: {}, description: {}, logicalAddress: {}", response.getResult()[0].getId(),
-                    response.getResult()[0].getDescription(), response.getResult()[0].getLogicalAddress());
-            return response;
-        }
+    private boolean isValid(TakLogicalAddress[] takLogicalAddresses) {
+        return takLogicalAddresses.length > 0;
     }
 
-    private InternalResult lookupCareUnitAndParent(String careUnitId, String contract) throws HsaServiceCallException {
-        TakLogicalAddress[] response = consumer.doLookup(ntjpId, careUnitId, contract);
-        if (response.length > 0) {
-            return new InternalResult(careUnitId, response);
-        } else {
-            String parentId = hsaOrganizationsService.getParentUnit(careUnitId);
-            LOG.info("Got nothing while checking TAK-status, trying with parent unit {}", parentId);
-            return new InternalResult(parentId, consumer.doLookup(ntjpId, parentId, contract));
+    private String resolveContract(SchemaVersion version) {
+        switch (version) {
+        case VERSION_1:
+            return certificateStatusUpdateForCareV1Id;
+        case VERSION_3:
+            return certificateStatusUpdateForCareV3Id;
         }
-    }
-
-    private static class InternalResult {
-        private final String hsaId;
-        private final TakLogicalAddress[] result;
-        private String error;
-
-        InternalResult(String hsaId, TakLogicalAddress[] result) {
-            this(hsaId, result, null);
-        }
-
-        InternalResult(String hsaId, TakLogicalAddress[] result, String error) {
-            this.hsaId = hsaId;
-            this.result = result;
-            this.error = error;
-        }
-
-        String getHsaId() {
-            return this.hsaId;
-        }
-        TakLogicalAddress[] getResult() {
-            return this.result;
-        }
-        String getError() {
-            return this.error;
-        }
-
-        void setError(String error) {
-            this.error = error;
-        }
+        return "NO_SCHEMA_VERSION_AVAILABLE";
     }
 }
