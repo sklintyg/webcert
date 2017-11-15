@@ -32,6 +32,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -128,6 +129,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
                 vardperson);
 
+        when(webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), UTKAST_TYPE)).thenReturn(true);
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
@@ -152,6 +154,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
 
+        when(webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), UTKAST_TYPE)).thenReturn(true);
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))

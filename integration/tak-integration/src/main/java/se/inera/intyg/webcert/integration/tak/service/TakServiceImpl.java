@@ -108,7 +108,6 @@ public class TakServiceImpl implements TakService {
 
     @Override
     public TakResult verifyTakningForCareUnit(String hsaId, String intygsTyp, SchemaVersion schemaVersion, IntygUser user) {
-
         List<String> errors = new ArrayList<>();
         boolean ret;
 
@@ -146,7 +145,7 @@ public class TakServiceImpl implements TakService {
 
     private boolean isTakConfiguredCorrectly(String intygsTyp, IntygUser user, List<String> errors, String hsaId, SchemaVersion version) {
         boolean res = checkConfiguration(intygsTyp, user, errors, hsaId, version);
-        if (!res) {
+        if (!res && authoritiesValidator.given(user).features(WebcertFeature.TAK_KONTROLL_TRADKLATTRING).isVerified()) {
             String careUnitId;
             try {
                 careUnitId = hsaOrganizationsService.getParentUnit(hsaId);

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.v3;
 
+import com.google.common.base.Joiner;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,13 +143,13 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             }
         }
 
-        // Check if invoking health care unit has required TAK
-        String intygsType = utkastsParams.getTypAvIntyg().getCode();
-
-        TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsType, SchemaVersion.VERSION_3, user);
-        if (!takResult.isValid()) {
-            String error = takResult.getErrorMessages().stream().reduce((t, u) -> t + "; " + u).get();
-            return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
+        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), intygsTyp)) {
+            // Check if invoking health care unit has required TAK
+            TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsTyp, SchemaVersion.VERSION_3, user);
+            if (!takResult.isValid()) {
+                String error = Joiner.on("; ").join(takResult.getErrorMessages());
+                return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
+            }
         }
 
         // Create the draft

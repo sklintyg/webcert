@@ -34,6 +34,7 @@ import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -129,9 +130,11 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
                 certificateType.getUtlatande().getSkapadAv().getPersonalId().getRoot(),
                 certificateType.getUtlatande().getSkapadAv().getFullstandigtNamn());
 
-        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON, vardperson);
+        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
+                vardperson);
 
         // When
+        when(webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), UTKAST_TYPE)).thenReturn(true);
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
@@ -209,7 +212,8 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
         assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
-        assertEquals("No valid MIU was found for person SE1234567890 on unit SE0987654321, can not create draft!", response.getResult().getResultText());
+        assertEquals("No valid MIU was found for person SE1234567890 on unit SE0987654321, can not create draft!",
+                response.getResult().getResultText());
     }
 
     @Test
@@ -232,23 +236,18 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         assertNotNull(response);
         assertEquals(response.getResult().getResultCode(), ResultCodeType.ERROR);
         assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
-        assertEquals("No valid MIU was found for person SE1234567890 on unit SE0987654321, can not create draft!", response.getResult().getResultText());
+        assertEquals("No valid MIU was found for person SE1234567890 on unit SE0987654321, can not create draft!",
+                response.getResult().getResultText());
     }
 
     @Test
     public void testCreateDraftCertificateTakningNotOk() {
         // Given
         ResultValidator resultsValidator = new ResultValidator();
-        Vardgivare vardgivare = createVardgivare();
-        Vardenhet vardenhet = createVardenhet(vardgivare);
-        CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(vardenhet);
         CreateDraftCertificateType certificateType = createCertificateType();
 
-        VardpersonReferens vardperson = createVardpersonReferens(
-                certificateType.getUtlatande().getSkapadAv().getPersonalId().getRoot(),
-                certificateType.getUtlatande().getSkapadAv().getFullstandigtNamn());
-
         // When
+        when(webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), UTKAST_TYPE)).thenReturn(true);
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
@@ -353,7 +352,8 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         return miu;
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
+            VardpersonReferens vardperson) {
 
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);

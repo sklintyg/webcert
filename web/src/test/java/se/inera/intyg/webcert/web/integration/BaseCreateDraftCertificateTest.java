@@ -26,8 +26,8 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
+import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
@@ -41,28 +41,22 @@ import static org.mockito.Mockito.when;
  */
 public abstract class BaseCreateDraftCertificateTest {
 
-    protected static final String FK7263 = "fk7263";
-    protected static final String TSBAS = "ts-bas";
-
-    protected static final String LOGICAL_ADDR = "1234567890";
-
-    protected static final String USER_HSAID = "SE1234567890";
-    protected static final String UNIT_HSAID = "SE0987654321";
-    protected static final String CAREGIVER_HSAID = "SE0000112233";
-
-    protected static final String UTKAST_ID = "abc123";
-    protected static final String UTKAST_VERSION = "1";
-    protected static final String UTKAST_TYPE = "fk7263";
-    protected static final String UTKAST_JSON = "A bit of text representing json";
-
     public static final String FULLSTANDIGT_NAMN = "Abel Baker";
     public static final String INVARTES_MEDICIN = "Invärtes medicin";
     public static final String TITLE_CODE = "203010";
     public static final String TITLE_NAME = "Läkare";
     public static final String ALLMAN_MEDICIN = "Allmänmedicin";
     public static final String MEDARBETARUPPDRAG = "Vård och behandling";
-
-
+    protected static final String FK7263 = "fk7263";
+    protected static final String TSBAS = "ts-bas";
+    protected static final String LOGICAL_ADDR = "1234567890";
+    protected static final String USER_HSAID = "SE1234567890";
+    protected static final String UNIT_HSAID = "SE0987654321";
+    protected static final String CAREGIVER_HSAID = "SE0000112233";
+    protected static final String UTKAST_ID = "abc123";
+    protected static final String UTKAST_VERSION = "1";
+    protected static final String UTKAST_TYPE = "fk7263";
+    protected static final String UTKAST_JSON = "A bit of text representing json";
     @Mock
     protected WebcertUserDetailsService webcertUserDetailsService;
 
@@ -80,7 +74,8 @@ public abstract class BaseCreateDraftCertificateTest {
                 createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
         user.setFeatures(ImmutableSet
                 .of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + FK7263,
-                        WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + TSBAS));
+                        WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + TSBAS, WebcertFeature.TAK_KONTROLL.getName(),
+                        WebcertFeature.TAK_KONTROLL.getName() + "." + FK7263, WebcertFeature.TAK_KONTROLL.getName() + "." + TSBAS));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         user.setBefattningar(Arrays.asList(TITLE_CODE));
         user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));

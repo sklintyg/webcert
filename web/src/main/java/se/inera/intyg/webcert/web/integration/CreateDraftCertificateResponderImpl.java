@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration;
 
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +117,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
         user.changeValdVardenhet(invokingUnitHsaId);
 
-        String intygsTyp = utkastsParams.getTypAvUtlatande().toString();
+        String intygsTyp = utkastsParams.getTypAvUtlatande().getCode();
         if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
                 || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
                 intygsTyp))) {
@@ -139,15 +140,15 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             }
         }
 
-        // Check if invoking health care unit has required TAK
-        String intygsType = parameters.getUtlatande().getTypAvUtlatande().getCode();
-        SchemaVersion schemaVersion = integreradeEnheterRegistry.getSchemaVersion(invokingUnitHsaId, intygsType)
-                .orElse(SchemaVersion.VERSION_1);
-        TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsType,
-                schemaVersion, user);
-        if (!takResult.isValid()) {
-            String error = takResult.getErrorMessages().stream().reduce((t, u) -> t + "; " + u).get();
-            return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
+        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), intygsTyp)) {
+            // Check if invoking health care unit has required TAK
+            SchemaVersion schemaVersion = integreradeEnheterRegistry.getSchemaVersion(invokingUnitHsaId, intygsTyp)
+                    .orElse(SchemaVersion.VERSION_1);
+            TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsTyp, schemaVersion, user);
+            if (!takResult.isValid()) {
+                String error = Joiner.on("; ").join(takResult.getErrorMessages());
+                return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
+            }
         }
 
         // Create the draft

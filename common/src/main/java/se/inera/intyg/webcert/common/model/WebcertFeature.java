@@ -37,7 +37,9 @@ public enum WebcertFeature implements Feature {
     SRS("srs"),
     UNIKT_INTYG("uniktIntyg"),
     UNIKT_INTYG_INOM_VG("uniktIntygInomVg"),
-    HANTERA_INTYGSUTKAST_AVLIDEN("hanteraIntygsutkastAvliden");
+    HANTERA_INTYGSUTKAST_AVLIDEN("hanteraIntygsutkastAvliden"),
+    TAK_KONTROLL("takKontroll"),
+    TAK_KONTROLL_TRADKLATTRING("takKontrollTradklattring");
 
     private final String name;
     private final String envName;
