@@ -57,7 +57,10 @@ function getTextarea(el) {
 }
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
-    return pageHelpers.moveAndSendKeys(checkboxEL, protractor.Key.SPACE).then(function() {
+    return pageHelpers.moveAndSendKeys(checkboxEL, protractor.Key.SPACE).then(function(){
+		return browser.sleep(50); // Kort sleep för att försöka lösa intermidite problem med att mouseMove inte kan scrolla.
+	})
+	.then(function() {
         return pageHelpers.moveAndSendKeys(textEL, text);
     });
 }
@@ -238,7 +241,8 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     },
     angeFunktionsnedsattning: function(nedsattning) {
         var fn = this.funktionsnedsattning;
-        return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell).then(function() {
+        return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell)
+		.then(function() {
             return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);
         }).then(function() {
             return checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration);
@@ -352,12 +356,17 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     },
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
-        return Promise.all([
-            sendTextToForm(mb.avslutad.text, behandling.avslutad),
-            sendTextToForm(mb.pagaende.text, behandling.pagaende),
-            sendTextToForm(mb.planerad.text, behandling.planerad),
-            sendTextToForm(mb.substansintag.text, behandling.substansintag)
-        ]);
+		
+		return sendTextToForm(mb.avslutad.text, behandling.avslutad)
+		.then(function(){
+			return sendTextToForm(mb.pagaende.text, behandling.pagaende);
+		})
+		.then(function(){
+			return sendTextToForm(mb.planerad.text, behandling.planerad);
+		})
+		.then(function(){
+			return sendTextToForm(mb.substansintag.text, behandling.substansintag);
+		});
     },
     getTillaggsfraga: function(i) {
         return element(by.id('tillaggsfragor[' + i + '].svar'));
