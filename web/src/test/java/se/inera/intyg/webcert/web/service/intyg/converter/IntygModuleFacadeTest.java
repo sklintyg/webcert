@@ -18,21 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-
+import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -54,6 +39,22 @@ import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygModuleFacadeTest {
@@ -83,28 +84,32 @@ public class IntygModuleFacadeTest {
     public void testConvertFromInternalToPdfDocument() throws IntygModuleFacadeException, ModuleException {
         byte[] pdfData = "PDFDATA".getBytes();
         PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
-        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class))).thenReturn(pdfResp);
+        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(false))).thenReturn(pdfResp);
 
-        IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON, new ArrayList<Status>(), false);
+        IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
+                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), false);
         assertNotNull(intygPdf.getPdfData());
         assertEquals("file.pdf", intygPdf.getFilename());
 
-        verify(moduleApi).pdf(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT));
+        verify(moduleApi).pdf(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), eq(false));
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = IntygModuleFacadeException.class)
     public void testConvertFromInternalToPdfDocumentModuleException() throws IntygModuleFacadeException, ModuleException {
-        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class))).thenThrow(new ModuleException(""));
+        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(false))).thenThrow(new ModuleException(""));
 
-        moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON, new ArrayList<Status>(), false);
+        moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
+                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), false);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
-    public void testConvertFromInternalToPdfDocumentModuleNotFoundException() throws IntygModuleFacadeException, ModuleException, ModuleNotFoundException {
+    public void testConvertFromInternalToPdfDocumentModuleNotFoundException()
+            throws IntygModuleFacadeException, ModuleException, ModuleNotFoundException {
         when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenThrow(new ModuleNotFoundException());
 
-        moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON, new ArrayList<Status>(), false);
+        moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
+                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), false);
     }
 
     @SuppressWarnings("unchecked")
@@ -112,13 +117,14 @@ public class IntygModuleFacadeTest {
     public void testConvertFromInternalToPdfDocumentEmployer() throws IntygModuleFacadeException, ModuleException {
         byte[] pdfData = "PDFDATA".getBytes();
         PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
-        when(moduleApi.pdfEmployer(anyString(), anyList(), any(ApplicationOrigin.class), anyList())).thenReturn(pdfResp);
+        when(moduleApi.pdfEmployer(anyString(), anyList(), any(ApplicationOrigin.class), anyList(), eq(false))).thenReturn(pdfResp);
 
-        IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON, new ArrayList<Status>(), true);
+        IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
+                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), true);
         assertNotNull(intygPdf.getPdfData());
         assertEquals("file.pdf", intygPdf.getFilename());
 
-        verify(moduleApi).pdfEmployer(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), anyList());
+        verify(moduleApi).pdfEmployer(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), anyList(), eq(false));
     }
 
     @Test
@@ -126,7 +132,8 @@ public class IntygModuleFacadeTest {
         final String certificateId = "certificateId";
         final String logicalAddress = "logicalAddress";
         ReflectionTestUtils.setField(moduleFacade, "logicalAddress", logicalAddress);
-        when(moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID)).thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
+        when(moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID))
+                .thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
         CertificateResponse res = moduleFacade.getCertificate(certificateId, CERTIFICATE_TYPE);
 
         assertNotNull(res);
