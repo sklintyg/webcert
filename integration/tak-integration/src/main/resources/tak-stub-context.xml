@@ -24,7 +24,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
-  <beans profile="dev,wc-all-stubs">
+  <beans profile="dev,wc-tak-stub,wc-all-stubs">
 
     <jaxrs:server id="takStubService" address="/takstubs">
       <jaxrs:serviceBeans>
