@@ -24,12 +24,18 @@ var utkastPage;
 var helpers = require('../helpers');
 module.exports = {
     fillInEnhetAdress: function() {
-        return utkastPage.angeEnhetAdress(global.user.enhetsAdress)
-            .then(function() {
-                logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
-            }, function(reason) {
-                throw ('FEL, angeEnhetAdress,' + reason);
-            });
+        if (Math.random() > 0.95) { //5% chance
+            return utkastPage.angeEnhetAdress(global.user.enhetsAdress)
+                .then(function() {
+                    logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
+                }, function(reason) {
+                    throw ('FEL, angeEnhetAdress,' + reason);
+                });
+        } else {
+            return Promise.resolve();
+        }
+
+
     },
     setPatientAdressIfNotGiven: function() {
 
