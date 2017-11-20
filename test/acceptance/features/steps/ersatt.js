@@ -47,6 +47,22 @@ module.exports = function() {
                     }, function(reason) {
                         throw ('FEL, angeArbetsformaga,' + reason);
                     });
+                })
+                .then(function() {
+                    return pages.intyg.lisjp.utkast.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
+                        logger.info('OK - angeArbetstidsforlaggning');
+                    }, function(reason) {
+                        console.trace(reason);
+                        throw ('FEL, angeArbetstidsforlaggning,' + reason);
+                    });
+                })
+                .then(function() {
+                    return pages.intyg.lisjp.utkast.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
+                        logger.info('OK - prognosForArbetsformaga');
+                    }, function(reason) {
+                        console.trace(reason);
+                        throw ('FEL, prognosForArbetsformaga,' + reason);
+                    });
                 });
         }
     });
