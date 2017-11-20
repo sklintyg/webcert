@@ -260,8 +260,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 Personnummer personnummer = copyRequest.containsNyttPatientPersonnummer() ? copyRequest.getNyttPatientPersonnummer()
                         : copyRequest.getPatient().getPersonId();
 
-                Map<String, Boolean> intygstypToBoolean = utkastService
-                        .checkIfPersonHasExistingIntyg(personnummer, user.getValdVardgivare().getId());
+                Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
 
                 Boolean exists = intygstypToBoolean.get(intygsTyp);
 

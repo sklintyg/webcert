@@ -30,7 +30,6 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -42,9 +41,11 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -53,7 +54,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -84,7 +84,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -207,18 +206,14 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, String vardgivare) {
-        Set<String> moduleList = moduleRegistry.listAllModules().stream()
-                .map(IntygModule::getId)
-                .filter(module -> featureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), module)
-                        || featureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(), module))
-                .collect(Collectors.toSet());
-        return utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(), moduleList)
+    public Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
+        return utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
+                authoritiesHelper.getIntygstyperForModuleFeature(user, WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG))
                 .stream()
                 .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
                 .filter(utkast -> utkast.getAterkalladDatum() == null)
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                        Collectors.mapping(utkast -> Objects.equals(vardgivare, utkast.getVardgivarId()),
+                        Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
                                 Collectors.reducing(false, (a, b) -> a || b))));
     }
 

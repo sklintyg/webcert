@@ -28,6 +28,7 @@ import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
@@ -41,7 +42,6 @@ import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.v3.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.v3.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -78,12 +78,11 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     @Autowired
     private WebcertUserDetailsService webcertUserDetailsService;
 
-    @Autowired
-    private WebcertFeatureService webcertFeatureService;
-
     @Lazy
     @Autowired
     private TakService takService;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
@@ -121,29 +120,27 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         user.changeValdVardenhet(invokingUnitHsaId);
 
         String intygsTyp = utkastsParams.getTypAvIntyg().getCode();
-        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
-                || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
-                intygsTyp))) {
+        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG)
+                .isVerified()) {
 
             Personnummer personnummer = new Personnummer(utkastsParams.getPatient().getPersonId().getExtension());
 
-            Map<String, Boolean> intygstypToBoolean = utkastService
-                    .checkIfPersonHasExistingIntyg(personnummer, user.getValdVardgivare().getId());
+            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
 
             Boolean exists = intygstypToBoolean.get(intygsTyp);
 
             if (exists != null) {
-                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG).isVerified()) {
                     return createErrorResponse("Certificates of this type must be globally unique.", ErrorIdType.APPLICATION_ERROR);
-                } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
-                        .getName(), intygsTyp)) {
+                } else if (exists && authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG_INOM_VG)
+                        .isVerified()) {
                     return createErrorResponse("Certificates of this type must be unique within this caregiver.",
                             ErrorIdType.APPLICATION_ERROR);
                 }
             }
         }
 
-        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), intygsTyp)) {
+        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.TAK_KONTROLL).isVerified()) {
             // Check if invoking health care unit has required TAK
             TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsTyp, SchemaVersion.VERSION_3, user);
             if (!takResult.isValid()) {

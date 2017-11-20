@@ -48,7 +48,6 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -648,7 +647,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testCheckIfPersonHasExistingIntyg() {
         final String personnummer = "191212121212";
         final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
-        final String vardgivareId = "vardgivareId";
+        final String vardgivareId = "vardgivarid";
 
         Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, "", null);
         db1.setVardgivarId("other");
@@ -660,21 +659,17 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
                 Arrays.asList("lisjp", "db", "doi").stream()
                         .map(a -> new IntygModule(a, null, null, null, null, null, null, null)).collect(
                         Collectors.toList()));
-        when(featureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), "db")).thenReturn(true);
-        when(featureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(), "doi")).thenReturn(true);
+        when(authoritiesHelper.getIntygstyperForModuleFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer, activeModules))
                 .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Boolean> res = draftService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer), vardgivareId);
+        Map<String, Boolean> res = draftService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer), createUser());
 
         assertNotNull(res);
         assertTrue(res.get("db"));
         assertFalse(res.get("doi"));
 
         verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(personnummer), eq(activeModules));
-        verify(featureService, times(3)).isModuleFeatureActive(eq(WebcertFeature.UNIKT_INTYG.getName()), anyString());
-        // For DB in this configuration the feature check will complete on UNIKT_INTYG, hence UNIKT_INTYG_INOM_VG will not be checked.
-        verify(featureService, times(2)).isModuleFeatureActive(eq(WebcertFeature.UNIKT_INTYG_INOM_VG.getName()), anyString());
     }
 
     private Patient getUpdatedPatient() {

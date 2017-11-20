@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
@@ -62,9 +63,10 @@ public interface UtkastService {
      * Fairly specialized method to check if a person has existing Intyg of the same type.
      * Returns a Map of IntygsTyp to Boolean, where Boolean indicates that a previous Intyg of the same type exists
      * within the same caregiver.
+     *
      * @param personnummer the personnummer of the patient to check for existing intyg
-     * @param vardgivare the id of the vardgivare to determine the Boolean in the resulting map
+     * @param user         the intended creator of the certificate or the logged in user
      * @return
      */
-    Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, String vardgivare);
+    Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user);
 }
