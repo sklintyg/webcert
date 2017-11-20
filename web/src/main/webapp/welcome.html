@@ -158,12 +158,11 @@
 
       function _fetchHsaPersons() {
         $http.get('/services/hsa-api/person').
-        success(function(response) {
-          $scope.loginModel = _loginModel(response);
+        then(function(response) {
+          $scope.loginModel = _loginModel(response.data);
           $scope.loginOptions = _loginOptions();
           $scope.selectedIndex = '0';
-        }).
-        error(function(data, status) {
+        }, function(data, status) {
           $log.error('error ' + status);
         });
       }
