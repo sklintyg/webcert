@@ -95,8 +95,14 @@
         });
     }
 
-    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider',
-        function($httpProvider, http403ResponseInterceptorProvider, $logProvider) {
+    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider',
+        function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider) {
+
+            // START TEMP 1.6 migration compatibility flags
+            $compileProvider.preAssignBindingsEnabled(true);
+            $locationProvider.hashPrefix('');
+            // END
+
             // Add cache buster interceptor
             $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
 
@@ -107,6 +113,11 @@
             // Enable debug logging
             $logProvider.debugEnabled(false);
         }]);
+
+/*
+ // Workaround for bug #1404
+  // https://github.com/angular/angular.js/issues/1404
+  // Source: http://plnkr.co/edit/hSMzWC?p=preview
 
     // Decorators that update form input names and interpolates them. Needed for datepicker directives templates dynamic name attributes
     app.config(function($provide) {
@@ -138,7 +149,7 @@
             return $delegate;
         });
     });
-
+*/
     // Global config of default date picker config (individual attributes can be
     // overridden per directive usage)
     app.constant('uibDatepickerPopupConfig', {
