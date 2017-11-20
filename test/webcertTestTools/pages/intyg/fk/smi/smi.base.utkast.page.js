@@ -21,11 +21,16 @@
 'use strict';
 
 var FkBaseUtkast = require('../fk.base.utkast.page.js');
-var pageHelpers = require('../../../pageHelper.util.js');
+
+var testTools = require('common-testtools');
+var moveAndSendKeys = testTools.uiHelpers.moveAndSendKeys;
+
+testTools.protractorHelpers.init();
+
 
 function sendEnterToElement(el) {
     return function() {
-        return pageHelpers.moveAndSendKeys(el, protractor.Key.ENTER);
+        return moveAndSendKeys(el, protractor.Key.ENTER);
     };
 }
 
@@ -57,11 +62,11 @@ function getTextarea(el) {
 }
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
-    return pageHelpers.moveAndSendKeys(checkboxEL, protractor.Key.SPACE).then(function(){
+    return moveAndSendKeys(checkboxEL, protractor.Key.SPACE).then(function(){
 		return browser.sleep(50); // Kort sleep för att försöka lösa intermidite problem med att mouseMove inte kan scrolla.
 	})
 	.then(function() {
-        return pageHelpers.moveAndSendKeys(textEL, text);
+        return moveAndSendKeys(textEL, text);
     });
 }
 
@@ -201,40 +206,40 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             })
             .then(function() {
                 if (baseratPa.minUndersokningAvPatienten) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten);
+                    return moveAndSendKeys(baseratPaElmObj.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten);
                 }
                 return;
             })
             .then(function() {
                 if (baseratPa.journaluppgifter) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.journaluppgifter.datum, baseratPa.journaluppgifter);
+                    return moveAndSendKeys(baseratPaElmObj.journaluppgifter.datum, baseratPa.journaluppgifter);
                 }
                 return;
             })
             .then(function() {
                 if (baseratPa.telefonkontakt) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.telefonkontakt.datum, baseratPa.telefonkontakt);
+                    return moveAndSendKeys(baseratPaElmObj.telefonkontakt.datum, baseratPa.telefonkontakt);
                 }
                 return;
             })
             .then(function() {
                 if (baseratPa.anhorigsBeskrivning) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning);
+                    return moveAndSendKeys(baseratPaElmObj.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning);
                 }
                 return;
             })
             .then(function() {
                 if (baseratPa.annat) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.datum, baseratPa.annat)
+                    return moveAndSendKeys(baseratPaElmObj.annat.datum, baseratPa.annat)
                         .then(function() {
-                            return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.beskrivning, baseratPa.annatBeskrivning);
+                            return moveAndSendKeys(baseratPaElmObj.annat.beskrivning, baseratPa.annatBeskrivning);
                         });
                 }
                 return;
             })
             .then(function() {
                 if (baseratPa.personligKannedom) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.kannedomOmPatient.datum, baseratPa.personligKannedom);
+                    return moveAndSendKeys(baseratPaElmObj.kannedomOmPatient.datum, baseratPa.personligKannedom);
                 }
                 return;
             });
@@ -263,25 +268,27 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var fillIn = function fillInUtr(val, index) {
             var row = utredningarElement.underlagRow(index);
 
-            return pageHelpers.moveAndSendKeys(row.datum, val.datum)
+            return moveAndSendKeys(row.datum, val.datum)
                 .then(function() {
-                    return row.underlag.click()
+                    return moveAndSendKeys(row.underlag, protractor.Key.SPACE)
                         .then(function() {
-                            return row.underlag.element(by.cssContainingText('.ui-select-choices-row', val.underlag)).click();
+                            return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function (elm) {
+								return moveAndSendKeys(elm, protractor.Key.SPACE);
+							});
                         });
                 })
                 .then(function() {
-                    return row.information.sendKeys(val.infoOmUtredningen);
+                    return moveAndSendKeys(row.information, val.infoOmUtredningen);
                 });
         };
 
         if (utredningar) {
-            return pageHelpers.moveAndSendKeys(utredningarElement.finns.JA, protractor.Key.SPACE)
+            return moveAndSendKeys(utredningarElement.finns.JA, protractor.Key.SPACE)
                 .then(function() {
                     return utredningar.map(fillIn);
                 });
         } else {
-            return pageHelpers.moveAndSendKeys(utredningarElement.finns.NEJ, protractor.Key.SPACE);
+            return moveAndSendKeys(utredningarElement.finns.NEJ, protractor.Key.SPACE);
         }
     },
     angeSjukdomsforlopp: function(forlopp) {
@@ -291,7 +298,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var promiseArr = [];
         for (var i = 0; i < diagnoser.length; i++) {
             var row = this.diagnos.diagnosRow(i);
-            promiseArr.push(pageHelpers.moveAndSendKeys(row.kod,diagnoser[i].kod).then(sendEnterToElement(row.kod)));
+            promiseArr.push(moveAndSendKeys(row.kod,diagnoser[i].kod).then(sendEnterToElement(row.kod)));
 
         }
         return Promise.all(promiseArr);
@@ -307,7 +314,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 		
 		.then(function(){
 			//Ange när och var diagnoser ställts
-			return pageHelpers.moveAndSendKeys(diagnosElm.narOchVarStalldesDiagnoser, diagnosObj.narOchVarStalldesDiagnoserna);
+			return moveAndSendKeys(diagnosElm.narOchVarStalldesDiagnoser, diagnosObj.narOchVarStalldesDiagnoserna);
 			})
 		.then(function(){
 			//Ange Finns skäl till ny bedömning
@@ -317,11 +324,11 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 			}
 			var diagnosForNyBedomning = diagnosElm.diagnosForNyBedomning;
 			
-			return pageHelpers.moveAndSendKeys(nyBedomning, protractor.Key.SPACE)
+			return moveAndSendKeys(nyBedomning, protractor.Key.SPACE)
 			.then(function() {
 				if (diagnosObj.nyBedomning) {
 						//Ange diagnosForNyBedomning
-						return pageHelpers.moveAndSendKeys(diagnosForNyBedomning, diagnosObj.diagnosForNyBedomning);
+						return moveAndSendKeys(diagnosForNyBedomning, diagnosObj.diagnosForNyBedomning);
 				} else {
 					return Promise.resolve();
 				}
@@ -332,12 +339,12 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 	angeOvrigaUpplysningar: function(ovrigt) {
         var elm = this.ovrigt;
         return elm.clear().then(function() {
-            return pageHelpers.moveAndSendKeys(elm, ovrigt);
+            return moveAndSendKeys(elm, ovrigt);
         });
     },
     angeKontaktMedFK: function(kontakt) {
         if (kontakt) {
-            return pageHelpers.moveAndSendKeys(this.kontaktMedFK, protractor.Key.SPACE);
+            return moveAndSendKeys(this.kontaktMedFK, protractor.Key.SPACE);
         } else {
             return Promise.resolve();
         }
