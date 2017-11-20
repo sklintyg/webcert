@@ -89,8 +89,8 @@ angular.module('webcert.pub.login', ['ui.bootstrap', 'common.dynamiclink'])
 
         function loadIntygTypes() {
             $scope.intygTypes = [];
-            $http.get('/api/modules/active').success(function(data) {
-                $scope.intygTypes = data;
+            $http.get('/api/modules/active').then(function(response) {
+                $scope.intygTypes = response.data;
             });
         };
         loadIntygTypes();
