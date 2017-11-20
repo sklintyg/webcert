@@ -44,4 +44,4 @@ Scenario: Kan svara på komplettering med ett nytt intyg
     Och jag väljer att svara med ett nytt intyg
     Så ska jag se kompletteringsfrågan på utkast-sidan
     Och jag signerar intyget
-    Så ska intygets status vara "Intyget är signerat, skickat och mottaget av Försäkringskassans system"
+    Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system"
