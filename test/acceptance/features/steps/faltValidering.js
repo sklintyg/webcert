@@ -369,7 +369,9 @@ module.exports = function() {
             return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.underlag))[0].datum.sendKeys(date);
 
         } else if (isSMIIntyg && fieldtype === 'postnummer') {
-            return luseUtkastPage.enhetensAdress.postNummer.sendKeys(date);
+            return luseUtkastPage.enhetensAdress.postNummer.clear().then(function() {
+                return luseUtkastPage.enhetensAdress.postNummer.sendKeys('111111');
+            });
         } else if (isSMIIntyg && fieldtype === 'arbetsförmåga-datum') {
             var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
             return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].sendKeys(date);
