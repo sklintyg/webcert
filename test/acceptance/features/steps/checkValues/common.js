@@ -38,14 +38,15 @@ module.exports = {
     checkValues: function(intyg) {
         intygPage = pages.getIntygPageByType(intyg.typ);
 
-        return Promise.all([
-            checkEnhetAdress(global.user.enhetsAdress).then(function(value) {
+        if (global.user.enhetsAdress.checkValue === true) {
+            return checkEnhetAdress(global.user.enhetsAdress).then(function(value) {
                 logger.info('OK - checkEnhetAdress = ' + value);
             }, function(reason) {
                 throw ('FEL - checkEnhetAdress: ' + reason);
-            })
-        ]);
-
+            });
+        } else {
+            return Promise.resolve();
+        }
     },
 
     regExp: function(regexp) {

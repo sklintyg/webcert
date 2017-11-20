@@ -58,10 +58,12 @@ module.exports = {
 
             if (Math.random() > 0.95) { //5% chance
                 return require('./common.js').fillIn(intyg).then(function() {
+                    global.user.enhetsAdress.checkValue = true;
                     browser.ignoreSynchronization = false;
                 });
             } else {
                 return require('./common.js').setPatientAdressIfNotGiven().then(function() {
+                    global.user.enhetsAdress.checkValue = false;
                     browser.ignoreSynchronization = false;
                 });
             }
