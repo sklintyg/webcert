@@ -48,7 +48,6 @@
   </c:when>
   <c:otherwise>
     <!-- bower:js -->
-    <script type="text/javascript" src="/bower_components/jquery/jquery.js"></script>
     <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
     <script type="text/javascript" src="/bower_components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.js"></script>
@@ -59,6 +58,7 @@
     <script type="text/javascript" src="/bower_components/angular-formly/dist/formly.js"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-select/dist/select.js"></script>
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
     <!-- endbower -->
