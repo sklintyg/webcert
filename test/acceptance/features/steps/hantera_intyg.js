@@ -96,7 +96,9 @@ module.exports = function() {
         }).then(callback);
     });
 
-
+    this.Given(/^jag uppdaterar enhetsaddress$/, function() {
+        return require('./fillIn/common.js').fillInEnhetAdress();
+    });
 
     this.Given(/^jag makulerar intyget$/, function() {
 

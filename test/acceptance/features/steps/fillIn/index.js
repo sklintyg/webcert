@@ -55,9 +55,16 @@ module.exports = {
         }));
         //promiseArr.push(require('./common.js').fillIn(intyg));
         return Promise.all(promiseArr).then(function() {
-            return require('./common.js').fillIn(intyg).then(function() {
-                browser.ignoreSynchronization = false;
-            });
+
+            if (Math.random() > 0.95) { //5% chance
+                return require('./common.js').fillIn(intyg).then(function() {
+                    browser.ignoreSynchronization = false;
+                });
+            } else {
+                return require('./common.js').setPatientAdressIfNotGiven().then(function() {
+                    browser.ignoreSynchronization = false;
+                });
+            }
         });
     }
 };
