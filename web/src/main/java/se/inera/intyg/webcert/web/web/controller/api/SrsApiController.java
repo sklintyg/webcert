@@ -198,9 +198,6 @@ public class SrsApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser())
                 .features(WebcertFeature.SRS)
                 .orThrow();
-        if (Strings.isNullOrEmpty(diagnosisCode)) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
 
         final SrsForDiagnosisResponse srsForDiagnose = srsService.getSrsForDiagnose(diagnosisCode);
         monitoringLog.logGetSrsForDiagnose(diagnosisCode);

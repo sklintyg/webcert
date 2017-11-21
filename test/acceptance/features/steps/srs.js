@@ -181,10 +181,7 @@ module.exports = function() {
         clickReadMoreBtn(type).then(() => browser.sleep(500));
     });
 
-    this.When(/^jag trycker på knappen "Visa"$/, () => browser.actions().mouseMove(fk7263utkast.srs.visaKnapp()).perform()
-        .then(() => fk7263utkast.srs.visaKnapp().click())
-        .then(() => browser.sleep(500))
-    );
+    this.When(/^jag trycker på knappen "Visa"$/, () => helpers.moveAndSendKeys(fk7263utkast.srs.visaKnapp(), protractor.Key.SPACE));
 
     this.Then(/^ska prediktion från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.prediktion().isDisplayed()).to.eventually.equal(true));
 

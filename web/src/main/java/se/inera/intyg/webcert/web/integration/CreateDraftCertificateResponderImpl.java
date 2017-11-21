@@ -27,9 +27,12 @@ import se.inera.intyg.common.fk7263.schemas.clinicalprocess.healthcond.certifica
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -40,7 +43,6 @@ import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -76,12 +78,11 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     @Autowired
     private WebcertUserDetailsService webcertUserDetailsService;
 
-    @Autowired
-    private WebcertFeatureService webcertFeatureService;
-
     @Lazy
     @Autowired
     private TakService takService;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
@@ -115,32 +116,33 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         if (!checkMIU(user, invokingUnitHsaId)) {
             return createMIUErrorResponse(utkastsParams);
         }
+
         user.changeValdVardenhet(invokingUnitHsaId);
 
-        String intygsTyp = utkastsParams.getTypAvUtlatande().getCode();
-        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
-                || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
-                intygsTyp))) {
+        String intygsTyp = utkastsParams.getTypAvUtlatande().getCode().toLowerCase();
+        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG)
+                .isVerified()) {
+            Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(
+                    utkastsParams.getPatient().getPersonId().getExtension()).orElseThrow(() ->
+                    new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                            "Failed to create valid personnummer for createDraft reques"));
 
-            Personnummer personnummer = new Personnummer(utkastsParams.getPatient().getPersonId().getExtension());
-
-            Map<String, Boolean> intygstypToBoolean = utkastService
-                    .checkIfPersonHasExistingIntyg(personnummer, user.getValdVardgivare().getId());
+            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
 
             Boolean exists = intygstypToBoolean.get(intygsTyp);
 
             if (exists != null) {
-                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG).isVerified()) {
                     return createErrorResponse("Certificates of this type must be globally unique.", ErrorIdType.APPLICATION_ERROR);
-                } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
-                        .getName(), intygsTyp)) {
+                } else if (exists && authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG_INOM_VG)
+                        .isVerified()) {
                     return createErrorResponse("Certificates of this type must be unique within this caregiver.",
                             ErrorIdType.APPLICATION_ERROR);
                 }
             }
         }
 
-        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.TAK_KONTROLL.getName(), intygsTyp)) {
+        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.TAK_KONTROLL).isVerified()) {
             // Check if invoking health care unit has required TAK
             SchemaVersion schemaVersion = integreradeEnheterRegistry.getSchemaVersion(invokingUnitHsaId, intygsTyp)
                     .orElse(SchemaVersion.VERSION_1);

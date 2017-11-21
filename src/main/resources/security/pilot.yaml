@@ -22,6 +22,7 @@
 pilots:
   - hsaIds:
       - TSTNMT2321000156-1077
+      - TSTNMT2321000156-105N
     features:
       srs: true
       srs.fk7263: true

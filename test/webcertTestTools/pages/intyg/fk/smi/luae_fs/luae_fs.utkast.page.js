@@ -84,11 +84,10 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
     angeFunktionsnedsattning: function(funktionsnedsattning) {
         var fn = this.funktionsnedsattning;
 
-        var promisesArr = [];
-        promisesArr.push(pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut));
-        promisesArr.push(pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan));
-
-        return Promise.all(promisesArr);
+		return pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut)
+		.then(function(){
+			return pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan)
+		});
     },
 
     get: function get(intygId) {

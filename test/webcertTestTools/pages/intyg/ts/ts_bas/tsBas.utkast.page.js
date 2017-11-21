@@ -395,12 +395,17 @@ var TsBasUtkast = BaseTsUtkast._extend({
     fillInSjukhusvard: function(utkast) {
         return element.all(by.css('[name="sjukhusvarda"]')).then(function(elm) {
             if (utkast.sjukhusvard === 'Ja') {
-                var promiseArr = [];
-                promiseArr.push(pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE));
-                promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('tidpunkt')), utkast.sjukhusvardTidPunkt));
-                promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('vardinrattning')), utkast.sjukhusvardInrattning));
-                promiseArr.push(pageHelpers.moveAndSendKeys(element(by.id('anledning')), utkast.sjukhusvardAnledning));
-                return Promise.all(promiseArr);
+                
+				return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE)
+				.then(function(){
+					return pageHelpers.moveAndSendKeys(element(by.id('tidpunkt')), utkast.sjukhusvardTidPunkt);
+				})
+				.then(function(){
+					return pageHelpers.moveAndSendKeys(element(by.id('vardinrattning')), utkast.sjukhusvardInrattning);
+				})
+				.then(function(){
+					return pageHelpers.moveAndSendKeys(element(by.id('anledning')), utkast.sjukhusvardAnledning);
+				});
             } else {
                 return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }

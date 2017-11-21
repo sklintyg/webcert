@@ -38,14 +38,11 @@ module.exports = {
     checkValues: function(intyg) {
         intygPage = pages.getIntygPageByType(intyg.typ);
 
-        return Promise.all([
-            checkEnhetAdress(global.user.enhetsAdress).then(function(value) {
-                logger.info('OK - checkEnhetAdress = ' + value);
-            }, function(reason) {
-                throw ('FEL - checkEnhetAdress: ' + reason);
-            })
-        ]);
-
+        return checkEnhetAdress(global.user.enhetsAdress).then(function(value) {
+            logger.info('OK - checkEnhetAdress = ' + value);
+        }, function(reason) {
+            throw ('FEL - checkEnhetAdress: ' + reason);
+        });
     },
 
     regExp: function(regexp) {

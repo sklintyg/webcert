@@ -103,7 +103,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 });
 
                 // load warnings of previous certificates
-                commonUtkastProxy.getWarningsExisting(PatientModel.personnummer, function(existing) {
+                commonUtkastProxy.getPrevious(PatientModel.personnummer, function(existing) {
                     IntygTypeSelectorModel.previousIntygWarnings = existing;
                 });
 

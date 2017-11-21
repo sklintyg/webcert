@@ -139,10 +139,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 					return dodsdatumElm.inteSakert.month.click()
 					.then(function() {
 						return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.month).then(function(monthElm){
-							return monthElm.getLocation()
-							.then(function (location){
-								return scrollElm(monthElm, 2);
-							})	
+							return scrollElm(monthElm, 2)
 							.then(function(){
 								return monthElm.click();		
 							})

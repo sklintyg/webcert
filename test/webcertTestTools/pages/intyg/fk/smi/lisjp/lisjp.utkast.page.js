@@ -148,20 +148,15 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angeAktivitetsbegransning: function(text) {
         return pageHelpers.moveAndSendKeys(this.konsekvenser.aktivitetsbegransning, text, text);
-        //return this.konsekvenser.aktivitetsbegransning.sendKeys(text);
     },
     angeFunktionsnedsattning: function(text) {
         return pageHelpers.moveAndSendKeys(this.konsekvenser.funktionsnedsattning, text, text);
-        //return this.konsekvenser.funktionsnedsattning.sendKeys(text);
     },
     angeMedicinskBehandling: function(behandling) {
         var fn = this.medicinskbehandling;
-        return Promise.all([
-            pageHelpers.moveAndSendKeys(fn.pagaende, behandling.pagaende, behandling.pagaende),
-            pageHelpers.moveAndSendKeys(fn.planerad, behandling.planerad, behandling.planerad)
-            //fn.pagaende.sendKeys(behandling.pagaende),
-            //fn.planerad.sendKeys(behandling.planerad)
-        ]);
+        return pageHelpers.moveAndSendKeys(fn.pagaende, behandling.pagaende, behandling.pagaende).then(function(){
+			return pageHelpers.moveAndSendKeys(fn.planerad, behandling.planerad, behandling.planerad);
+		});
     },
     angeArbetsformaga: function(arbetsformaga) {
         var el25 = this.sjukskrivning['25'];
@@ -175,11 +170,9 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             promisesArr.push(el25.fran.clear());
             promisesArr.push(el25.till.clear());
             promisesArr.push(pageHelpers.moveAndSendKeys(el25.fran, arbetsformaga.nedsattMed25.from, arbetsformaga.nedsattMed25.from)
-                //promisesArr.push(el25.fran.sendKeys(arbetsformaga.nedsattMed25.from)
                 .then(function() {
                     return pageHelpers.moveAndSendKeys(el25.till, arbetsformaga.nedsattMed25.tom, arbetsformaga.nedsattMed25.tom);
-                    //return el25.till.sendKeys(arbetsformaga.nedsattMed25.tom);
-
+                
                 })
             );
         }
@@ -187,10 +180,8 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             promisesArr.push(el50.fran.clear());
             promisesArr.push(el50.till.clear());
             promisesArr.push(pageHelpers.moveAndSendKeys(el50.fran, arbetsformaga.nedsattMed50.from, arbetsformaga.nedsattMed50.from)
-                //promisesArr.push(el50.fran.sendKeys(arbetsformaga.nedsattMed50.from)
                 .then(function() {
                     return pageHelpers.moveAndSendKeys(el50.till, arbetsformaga.nedsattMed50.tom, arbetsformaga.nedsattMed50.tom);
-                    //return el50.till.sendKeys(arbetsformaga.nedsattMed50.tom);
                 })
             );
         }
@@ -198,20 +189,16 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             promisesArr.push(el75.fran.clear());
             promisesArr.push(el75.till.clear());
             promisesArr.push(pageHelpers.moveAndSendKeys(el75.fran, arbetsformaga.nedsattMed75.from, arbetsformaga.nedsattMed75.from)
-                //promisesArr.push(el75.fran.sendKeys(arbetsformaga.nedsattMed75.from)
                 .then(function() {
                     return pageHelpers.moveAndSendKeys(el75.till, arbetsformaga.nedsattMed75.tom, arbetsformaga.nedsattMed75.tom);
-                    //return el75.till.sendKeys(arbetsformaga.nedsattMed75.tom);
                 }));
         }
         if (arbetsformaga.nedsattMed100) {
             promisesArr.push(el100.fran.clear());
             promisesArr.push(el100.till.clear());
             promisesArr.push(pageHelpers.moveAndSendKeys(el100.fran, arbetsformaga.nedsattMed100.from, arbetsformaga.nedsattMed100.from)
-                //promisesArr.push(el100.fran.sendKeys(arbetsformaga.nedsattMed100.from)
                 .then(function() {
                     return pageHelpers.moveAndSendKeys(el100.till, arbetsformaga.nedsattMed100.tom, arbetsformaga.nedsattMed100.tom);
-                    //return el100.till.sendKeys(arbetsformaga.nedsattMed100.tom);
                 })
             );
         }
@@ -223,7 +210,6 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     angeResorTillArbete: function(resor) {
         if (resor) {
             return pageHelpers.moveAndSendKeys(this.sjukskrivning.arbetsresor, protractor.Key.SPACE);
-            //return this.sjukskrivning.arbetsresor.sendKeys(protractor.Key.SPACE);
         } else {
             return Promise.resolve();
         }
@@ -231,7 +217,6 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     angeSmittskydd: function(value) {
         if (value) {
             return pageHelpers.moveAndSendKeys(this.smittskydd, protractor.Key.SPACE);
-            //return this.smittskydd.sendKeys(protractor.Key.SPACE);
         } else {
             return Promise.resolve();
         }
@@ -239,9 +224,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     angeDiagnos: function(diagnos) {
         var el = this.diagnoseCode; //TODO diagnoseCode är felstavat? undef?
         return pageHelpers.moveAndSendKeys(el, diagnos.kod, diagnos.kod).then(function() {
-            //return el.sendKeys(diagnos.kod).then(function() {
             return pageHelpers.moveAndSendKeys(el, protractor.Key.TAB, 'TAB');
-            //return el.sendKeys(protractor.Key.TAB);
         });
 
     },
@@ -249,18 +232,15 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         var el = this.sjukskrivning.arbetstidsforlaggning;
         if (arbetstidsforlaggning.val === 'Ja') {
             return pageHelpers.moveAndSendKeys(el.ja, protractor.Key.SPACE)
-                //return el.ja.sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     var EC = protractor.ExpectedConditions;
                     return browser.wait(EC.visibilityOf(el.beskrivning), 2000).then(function() {
                         return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
-                        //return el.beskrivning.sendKeys(arbetstidsforlaggning.beskrivning);
                     });
 
                 });
         } else {
             return pageHelpers.moveAndSendKeys(el.nej, protractor.Key.SPACE);
-            //return el.nej.sendKeys(protractor.Key.SPACE);
         }
     },
     angeAtgarder: function(atgarder) {
@@ -270,8 +250,6 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         var atgarderNamn = atgarder.map(function(obj) {
             return obj.namn;
         });
-
-        //browser.ignoreSynchronization = false;
 
         return pageHelpers.clickAll(atgarderEL.labels, atgarderNamn).then(function() {
             var beskrivning = '';
@@ -296,11 +274,9 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         var sysselsattningEL = this.sysselsattning;
 
         return pageHelpers.moveAndSendKeys(sysselsattningEL.form.element(by.cssContainingText('label', sysselsattning.typ)), protractor.Key.SPACE)
-            //return sysselsattningEL.form.element(by.cssContainingText('label', sysselsattning.typ)).sendKeys(protractor.Key.SPACE)
             .then(function() {
                 if (sysselsattning.yrkesAktiviteter) {
                     return pageHelpers.moveAndSendKeys(sysselsattningEL.nuvarandeArbeteBeskrivning, sysselsattning.yrkesAktiviteter, sysselsattning.yrkesAktiviteter);
-                    //return sysselsattningEL.nuvarandeArbeteBeskrivning.sendKeys(sysselsattning.yrkesAktiviteter);
                 } else {
                     return Promise.resolve();
                 }
@@ -309,8 +285,6 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     angePrognosForArbetsformaga: function(prognos) {
         var prognosEL = this.sjukskrivning.prognos;
         return pageHelpers.moveAndSendKeys(prognosEL.form.element(by.cssContainingText('label', prognos.name)), protractor.Key.SPACE, 'angePrognosForArbetsformaga').then(function() {
-            //return prognosEL.form.element(by.cssContainingText('label', prognos.name)).sendKeys(protractor.Key.SPACE).then(function() {
-
             if (prognos.within) {
 
                 var frontEndJS = 'Element.prototype.documentOffsetTop = function () {';
