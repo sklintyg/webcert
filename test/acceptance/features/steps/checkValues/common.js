@@ -38,15 +38,11 @@ module.exports = {
     checkValues: function(intyg) {
         intygPage = pages.getIntygPageByType(intyg.typ);
 
-        if (global.user.enhetsAdress.checkValue === true) {
-            return checkEnhetAdress(global.user.enhetsAdress).then(function(value) {
-                logger.info('OK - checkEnhetAdress = ' + value);
-            }, function(reason) {
-                throw ('FEL - checkEnhetAdress: ' + reason);
-            });
-        } else {
-            return Promise.resolve();
-        }
+        return checkEnhetAdress(global.user.enhetsAdress).then(function(value) {
+            logger.info('OK - checkEnhetAdress = ' + value);
+        }, function(reason) {
+            throw ('FEL - checkEnhetAdress: ' + reason);
+        });
     },
 
     regExp: function(regexp) {
