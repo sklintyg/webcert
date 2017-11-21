@@ -34,10 +34,10 @@ angular.module('webcert').factory('webcert.IntygProxy',
                         onError(response.statusCode, 'info.intygload.offline');
                     }
                     onSuccess(response.data);
-                }, function(data, status) {
-                    $log.error('error ' + status);
+                }, function(response) {
+                    $log.error('error ' + response.status);
                     // Let calling code handle the error of no data response
-                    onError(status);
+                    onError(response.status);
                 });
             }
 
