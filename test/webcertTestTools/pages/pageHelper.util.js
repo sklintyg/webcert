@@ -73,5 +73,8 @@ module.exports = {
         var td = require('./../testdata/testvalues.js').ts;
         var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
         return foundHogreBehorigheter.length > 0;
-    }
+    },
+	smallDelay : function() { return browser.sleep(100); },
+	mediumDelay : function() { return browser.sleep(500); },
+	largeDelay : function() { return browser.sleep(1000); }
 };

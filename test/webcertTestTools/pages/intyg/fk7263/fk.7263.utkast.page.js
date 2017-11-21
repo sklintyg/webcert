@@ -460,7 +460,11 @@ var FkBaseUtkast = BaseUtkast._extend({
         } else if (prognos.val === 'Går inte att bedöma') {
             return this.prognos.GAR_EJ_ATT_BEDOMA.check().then(function() {
                 if (prognos.fortydligande) {
-                    return prognosFortydligande.clear().then(function() {
+                    return prognosFortydligande.clear()
+					.then(function() {
+						return pageHelpers.smallDelay();
+					})
+					.then(function() {
                         return pageHelpers.moveAndSendKeys(prognosFortydligande, prognos.fortydligande);
                     });
                 } else {
