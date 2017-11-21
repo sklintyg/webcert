@@ -46,6 +46,7 @@ import se.inera.intyg.webcert.web.integration.validator.CreateDraftCertificateVa
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -94,6 +95,9 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
     @Mock
     private WebcertFeatureService webcertFeatureService;
+
+    @Mock
+    PatientDetailsResolver patientDetailsResolver;
 
     @Mock
     private TakService takService;
@@ -251,10 +255,10 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockValidator.validate(any(Utlatande.class))).thenReturn(resultsValidator);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
+
         // Then
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
-        verifyZeroInteractions(mockUtkastService);
         verify(takService).verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class));
 
         // Assert response content

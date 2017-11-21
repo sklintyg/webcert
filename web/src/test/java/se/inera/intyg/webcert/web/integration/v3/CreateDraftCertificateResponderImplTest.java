@@ -31,6 +31,8 @@ import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
@@ -45,6 +47,7 @@ import se.inera.intyg.webcert.web.integration.v3.validator.CreateDraftCertificat
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -105,6 +108,9 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     @Mock
     private TakService takService;
 
+    @Mock
+    PatientDetailsResolver patientDetailsResolver;
+
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
 
@@ -135,6 +141,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(eq(SekretessStatus.FALSE));
 
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
