@@ -168,7 +168,7 @@ module.exports = function() {
             'Läkarutlåtande för sjukersättning',
             'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-            'Läkarintyg FK 7263',
+            //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
             'Transportstyrelsens läkarintyg',
             'Transportstyrelsens läkarintyg, diabetes'
         ])[0];
