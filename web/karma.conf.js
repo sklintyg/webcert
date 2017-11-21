@@ -51,6 +51,7 @@ module.exports = function(config) {
 
             // Dependencies
             // bower:js
+            'src/main/webapp/bower_components/jquery/dist/jquery.js',
             'src/main/webapp/bower_components/angular/angular.js',
             'src/main/webapp/bower_components/angular-animate/angular-animate.js',
             'src/main/webapp/bower_components/angular-cookies/angular-cookies.js',
@@ -61,7 +62,6 @@ module.exports = function(config) {
             'src/main/webapp/bower_components/angular-formly/dist/formly.js',
             'src/main/webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
             'src/main/webapp/bower_components/angular-ui-select/dist/select.js',
-            'src/main/webapp/bower_components/jquery/dist/jquery.js',
             'src/main/webapp/bower_components/bootstrap/dist/js/bootstrap.js',
             'src/main/webapp/bower_components/momentjs/moment.js',
             // endbower
