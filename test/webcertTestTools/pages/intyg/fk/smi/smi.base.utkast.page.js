@@ -63,7 +63,7 @@ function getTextarea(el) {
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
     return moveAndSendKeys(checkboxEL, protractor.Key.SPACE).then(function(){
-		return browser.sleep(50); // Kort sleep för att försöka lösa intermidite problem med att mouseMove inte kan scrolla.
+		return browser.sleep(150); // Kort sleep för att försöka lösa intermidite problem med att mouseMove inte kan scrolla.
 	})
 	.then(function() {
         return moveAndSendKeys(textEL, text);
