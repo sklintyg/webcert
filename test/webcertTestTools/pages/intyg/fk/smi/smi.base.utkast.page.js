@@ -34,12 +34,6 @@ function sendEnterToElement(el) {
     };
 }
 
-function sleep(time) {
-    return function() {
-        return browser.sleep(time);
-    };
-}
-
 var intellektuellForm = element(by.id('form_funktionsnedsattningIntellektuell'));
 var kommunikationForm = element(by.id('form_funktionsnedsattningKommunikation'));
 var koncentrationForm = element(by.id('form_funktionsnedsattningKoncentration'));
@@ -62,9 +56,7 @@ function getTextarea(el) {
 }
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
-    return moveAndSendKeys(checkboxEL, protractor.Key.SPACE).then(function(){
-		return browser.sleep(150); // Kort sleep för att försöka lösa intermidite problem med att mouseMove inte kan scrolla.
-	})
+    return moveAndSendKeys(checkboxEL, protractor.Key.SPACE)
 	.then(function() {
         return moveAndSendKeys(textEL, text);
     });

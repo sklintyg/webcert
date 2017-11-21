@@ -233,11 +233,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         if (arbetstidsforlaggning.val === 'Ja') {
             return pageHelpers.moveAndSendKeys(el.ja, protractor.Key.SPACE)
                 .then(function() {
-                    var EC = protractor.ExpectedConditions;
-                    return browser.wait(EC.visibilityOf(el.beskrivning), 2000).then(function() {
-                        return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
-                    });
-
+					return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
                 });
         } else {
             return pageHelpers.moveAndSendKeys(el.nej, protractor.Key.SPACE);
@@ -274,7 +270,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         var sysselsattningEL = this.sysselsattning;
 
         return pageHelpers.moveAndSendKeys(sysselsattningEL.form.element(by.cssContainingText('label', sysselsattning.typ)), protractor.Key.SPACE)
-            .then(function() {
+			.then(function() {
                 if (sysselsattning.yrkesAktiviteter) {
                     return pageHelpers.moveAndSendKeys(sysselsattningEL.nuvarandeArbeteBeskrivning, sysselsattning.yrkesAktiviteter, sysselsattning.yrkesAktiviteter);
                 } else {
