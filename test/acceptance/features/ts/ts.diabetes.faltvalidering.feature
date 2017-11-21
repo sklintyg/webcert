@@ -24,6 +24,9 @@ Scenario: Validerar alla fält i TS diabetes intyget
 	Och jag trycker på checkboxen med texten "Insulin"
 	Så ska alla utökade valideringsfel för "Transportstyrelsens läkarintyg, diabetes" visas
 
+	Så jag trycker på checkboxen med texten "Taxi"
+	#återställer tidigare steg
+	
 	När jag fyller i text i "diabetes-årtal" fältet
 	Så ska valideringsfelet "År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än år 1900." visas "1" gånger
 
