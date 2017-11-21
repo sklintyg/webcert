@@ -51,7 +51,6 @@ stage('restAssured') {
 stage('protractor') {
    node {
        try {
-           sh(script: /sed -i "s,\(e.code === 'ECONNRESET'\),\1 || e.code === 'ETIMEDOUT'," node_modules\/selenium-webdriver\/http\/index.js/)
 //           sh(script: 'sed -i -r "s,(e.code === \'ECONNRESET\'),e.code === \'ECONNRESET\' || e.code === \'ETIMEDOUT\'," test/node_modules/selenium-webdriver/http/index.js') // NMT magic
 //           sh(script: 'mkdir -p test/node_modules')
 //           sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
