@@ -270,10 +270,13 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
             return moveAndSendKeys(row.datum, val.datum)
                 .then(function() {
-                    return moveAndSendKeys(row.underlag, protractor.Key.SPACE)
+                    return row.underlag.click()   //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
+						.then(function() {
+							return browser.sleep(100); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
+						})
                         .then(function() {
                             return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function (elm) {
-								return moveAndSendKeys(elm, protractor.Key.SPACE);
+								return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
 							});
                         });
                 })
