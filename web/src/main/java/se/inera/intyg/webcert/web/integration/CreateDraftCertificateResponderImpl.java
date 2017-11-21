@@ -31,6 +31,8 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -114,13 +116,16 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         if (!checkMIU(user, invokingUnitHsaId)) {
             return createMIUErrorResponse(utkastsParams);
         }
+
         user.changeValdVardenhet(invokingUnitHsaId);
 
-        String intygsTyp = utkastsParams.getTypAvUtlatande().getCode();
+        String intygsTyp = utkastsParams.getTypAvUtlatande().getCode().toLowerCase();
         if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG)
                 .isVerified()) {
-
-            Personnummer personnummer = new Personnummer(utkastsParams.getPatient().getPersonId().getExtension());
+            Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(
+                    utkastsParams.getPatient().getPersonId().getExtension()).orElseThrow(() ->
+                    new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                            "Failed to create valid personnummer for createDraft reques"));
 
             Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
 

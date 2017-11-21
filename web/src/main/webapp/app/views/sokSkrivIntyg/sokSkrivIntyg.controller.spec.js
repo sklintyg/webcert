@@ -43,6 +43,13 @@ describe('SokSkrivIntygCtrl', function() {
                 }
             };
             $provide.value('$state', jasmine.createSpyObj('$state', ['go']));
+
+            var mockFilter = function(personnummer) {
+                return personnummer;
+            };
+
+            $provide.value('PersonIdFormatterFilter', mockFilter);
+
             $provide.value('webcert.SokSkrivValjUtkastService', SokSkrivValjUtkastService);
         });
 
