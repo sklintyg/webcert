@@ -328,6 +328,7 @@ roles:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
+          - <<: *ro040 # READONLY
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
