@@ -59,29 +59,32 @@ module.exports = function() {
     this.setDefaultTimeout(600 * 1000);
     global.externalPageLinks = [];
 
-    this.AfterStep(function(event, callback) {
+    this.AfterStep(function(event) {
         // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
         removeAlerts();
 
-        // Samla in alla externa länkar på aktuell sida
-        element.all(by.css('a')).each(function(link) {
-            link.getAttribute('href').then(function(href) {
-                if (href !== null &&
-                    href !== '' &&
-                    href.includes('javascript') !== true &&
-                    href.indexOf(process.env.WEBCERT_URL) === -1 &&
-                    href.indexOf(process.env.MINAINTYG_URL) === -1 &&
-                    href.indexOf(process.env.REHABSTOD_URL) === -1 &&
-                    href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
-                    global.externalPageLinks.indexOf(href) === -1) {
-                    console.log('Found one: ' + href);
-                    global.externalPageLinks.push(href);
-                }
+        return new Promise(function(resolve) {
+            //Kör promisekedja för AfterStep.
+            resolve();
+        }).then(function() {
+            // Samla in alla externa länkar på aktuell sida
+            return element.all(by.css('a')).each(function(link) {
+                return link.getAttribute('href').then(function(href) {
+                    if (href !== null &&
+                        href !== '' &&
+                        href.includes('javascript') !== true &&
+                        href.indexOf(process.env.WEBCERT_URL) === -1 &&
+                        href.indexOf(process.env.MINAINTYG_URL) === -1 &&
+                        href.indexOf(process.env.REHABSTOD_URL) === -1 &&
+                        href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
+                        global.externalPageLinks.indexOf(href) === -1) {
+                        console.log('Found one: ' + href);
+                        global.externalPageLinks.push(href);
+                    }
+                });
             });
         }).then(function() {
-
             //Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.
-
             var frontEndScript = '';
 
             frontEndScript += 'if (window.jQuery) {';
@@ -96,23 +99,28 @@ module.exports = function() {
             frontEndScript += 'console.error(arr.length + "st ID-dubletter Hittade, " + JSON.stringify(arr));'; //använder console.error så plockas det upp i nästa steg som kollar efter error.
             frontEndScript += '}}';
 
-            browser.executeScript(frontEndScript);
-
-
-        }).then(function() {
-
-            //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
-            browser.executeScript('return window.errs;').then(function(v) {
-                if (v && v.length > 0) {
-                    hasFoundConsoleErrors = JSON.stringify(v);
-
-
-                    logger.error(hasFoundConsoleErrors);
-
-                }
-
+            return browser.getCurrentUrl().then(function() {
+                //Browser is open
+                return browser.executeScript(frontEndScript);
+            }).catch(function() {
+                //Browser was closed
+                return;
             });
-            callback();
+        }).then(function() {
+            return browser.getCurrentUrl().then(function() {
+                //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
+                return browser.executeScript('return window.errs;').then(function(v) {
+                    if (v && v.length > 0) {
+                        hasFoundConsoleErrors = JSON.stringify(v);
+
+                        logger.error(hasFoundConsoleErrors);
+                        return;
+                    }
+                });
+            }).catch(function() {
+                //Browser was closed
+                return;
+            });
         });
 
     });
