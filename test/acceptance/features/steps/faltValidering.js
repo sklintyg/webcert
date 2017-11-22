@@ -68,7 +68,7 @@ function antalAvLoop(array, str1) {
 function synLoop(array, keyToSend) {
     var counter = 0;
     array.forEach(function(el) {
-        el.sendKeys(keyToSend);
+        helpers.moveAndSendKeys(el, keyToSend);
         counter++;
         if (counter === array.length) {
             return Promise.resolve();
@@ -382,8 +382,6 @@ module.exports = function() {
                     return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
                 });
             });
-
-
 
 
 
