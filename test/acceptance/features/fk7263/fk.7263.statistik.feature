@@ -1,6 +1,6 @@
 # language: sv
 
-@statistik @integration @fk7263
+@statistik @integration @fk7263 @waitingForFix @INTYG-5034
 Egenskap: FK7263-integration med Statistiktjänsten
 
 #Bakgrund: Jag befinner mig på Rehabstöds förstasida
