@@ -19,7 +19,7 @@ Scenario: Statusuppdateringar då TS diabetes intyg skickas till Transportstyrel
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
 
-@makulera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@makulera
 Scenario: Statusuppdateringar då TS diabetes intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -28,7 +28,7 @@ Scenario: Statusuppdateringar då TS diabetes intyg makuleras
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
-@radera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@radera
 Scenario: Statusuppdateringar då TS diabetes intyg raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar intyget

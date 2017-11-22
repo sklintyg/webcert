@@ -21,7 +21,7 @@ Scenario: Hämta en lista med intyg och utkast för en patient med samordningsnu
   Så ska svaret innehålla intyget jag var inne på
   Och ska svaret endast innehålla intyg för utvald patient
 
-@händelser @makulera @signera @forsakringskassan @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@händelser @makulera @signera @forsakringskassan
 Scenario: Hämta händelser för ett intyg
    När jag går in på intygsutkastet via djupintegrationslänk
    Och jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten

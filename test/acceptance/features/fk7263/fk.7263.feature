@@ -49,7 +49,7 @@ Scenario: Samtida användare ska generera felmeddelande (FK7263)
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
 
-@samtidaanvandare @skicka-makulera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@samtidaanvandare @skicka-makulera
 Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (FK7263)
 		Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 		Och jag går in på utkastet
@@ -61,7 +61,7 @@ Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas e
 		Och jag skickar en fråga till Försäkringskassan
 		Så ska varningen "Ett tekniskt problem inträffade" visas
 
-@samtidaanvandare @makulera-skicka @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@samtidaanvandare @makulera-skicka
 Scenario: Samtida användare ska generera felmeddelande om man skickar efter makulering (FK7263)
 		Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 		Och jag går in på utkastet
@@ -71,7 +71,7 @@ Scenario: Samtida användare ska generera felmeddelande om man skickar efter mak
 		Och jag makulerar intyget
 		Så ska varningen "Kunde inte skicka intyget" visas om man försöker skicka intyget i andra webbläsarinstansen
 
-@samtidaanvandare @fornya @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@samtidaanvandare @fornya
 Scenario: Samtida användare ska generera felmeddelande om man förnyar efter makulering (FK7263)
 		Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
 		Och jag går in på utkastet
