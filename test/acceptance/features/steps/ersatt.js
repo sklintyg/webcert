@@ -24,6 +24,7 @@
 var helpers = require('./helpers');
 var intygURL = helpers.intygURL;
 
+
 module.exports = function() {
 
     this.When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
@@ -34,6 +35,11 @@ module.exports = function() {
         } else {
             browser.ignoreSynchronization = true;
             console.log('Intygstyp är: ' + intyg.typ);
+            console.log(intyg);
+            if (typeof(intyg.baseratPa) === 'undefined') {
+                global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
+            }
+
             return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
                 .then(function() {
                     return logger.info('OK - angeBaseratPa');

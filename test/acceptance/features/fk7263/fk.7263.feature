@@ -29,7 +29,7 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	När jag går till Mina intyg för patienten
 	Så ska intygets status i Mina intyg visa "Skickat till Försäkringskassan"
 
-@smoke
+@smoke @makulera
 Scenario: Makulera ett skickat FK 7263 intyg
 	#När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
 	Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
