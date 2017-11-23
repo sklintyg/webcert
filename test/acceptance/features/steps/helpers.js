@@ -31,6 +31,15 @@ var moveAndSendKeys = require('common-testtools').uiHelpers.moveAndSendKeys;
 
 module.exports = {
     moveAndSendKeys: moveAndSendKeys,
+    smallDelay: function() {
+        return browser.sleep(100);
+    },
+    mediumDelay: function() {
+        return browser.sleep(500);
+    },
+    largeDelay: function() {
+        return browser.sleep(1000);
+    },
     insertDashInPnr: function(pnrString) {
         if (pnrString.indexOf('-') >= 0) {
             return pnrString;

@@ -70,6 +70,24 @@ function sendQuestionToFK(amne, cb) {
     }).then(cb);
 }
 
+function hamtaAllaTraffar() {
+    return element(by.id('hamtaFler')).isDisplayed().then(function(present) {
+        if (present) {
+            return helpers.moveAndSendKeys(element(by.id('hamtaFler')), protractor.Key.SPACE).then(function() {
+                return helpers.smallDelay();
+            });
+        } else {
+            return false;
+        }
+    }).then(function(loop) {
+        if (loop !== false) {
+            return hamtaAllaTraffar();
+        } else {
+            return;
+        }
+    });
+}
+
 module.exports = function() {
     this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
         sendQuestionToFK(amne, callback);
@@ -459,12 +477,10 @@ module.exports = function() {
 
     var matchingQARow;
     this.Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
-
         logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
         return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
             return row.all(by.css('td')).getText().then(function(text) {
                 console.log(text);
-
                 if (person.id.indexOf('-') === -1) {
                     person.id = person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
                 }
@@ -479,8 +495,6 @@ module.exports = function() {
             } else {
                 return expect(rows).to.have.length.above(0);
             }
-
-
         });
     });
 
@@ -537,7 +551,7 @@ module.exports = function() {
 
     this.Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
         var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
-        showFilter.isPresent().then(function(isPresent) {
+        return showFilter.isPresent().then(function(isPresent) {
             if (isPresent) {
                 return showFilter.sendKeys(protractor.Key.SPACE);
             } else {
@@ -546,8 +560,16 @@ module.exports = function() {
         }).then(function() {
             return pages.fragorOchSvar.atgardSelect.element(by.cssContainingText('option', atgard))
                 .sendKeys(protractor.Key.SPACE).then(function() {
-                    return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
+                    return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE).then(function() {
+                        return helpers.smallDelay;
+                    });
                 });
+        }).then(function() {
+            if (atgard === 'Visa alla ej hanterade') {
+                return hamtaAllaTraffar();
+            } else {
+                return;
+            }
         });
     });
 
