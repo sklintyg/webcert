@@ -22,23 +22,10 @@
 
 var BaseSkvUtkast = require('../skv.base.utkast.page.js');
 var testTools = require('common-testtools');
+testTools.protractorHelpers.init();
 
 var moveAndSendKeys = testTools.uiHelpers.moveAndSendKeys;
 var scrollElm = testTools.uiHelpers.scrollElement;
-
-//TODO flytta till common-testtools om funktionen gör det lättare att skriva mer lättlästa tester. Alternativt implementera protractor-helpers.
-protractor.ElementArrayFinder.prototype.getByText = function (compareText) {
-    var foundElement;
-    return this.each(function (element) {
-        element.getText().then(function (elementText) {
-			if (elementText.trim() === compareText) {
-                foundElement = element;
-            }
-        });
-    }).then(function () {
-        return foundElement;
-    });
-};
 
 var DbUtkast = BaseSkvUtkast._extend({
     init: function init() {

@@ -69,26 +69,14 @@ module.exports = {
 		
 		var obj = {
             id : intygsID,
-			typ : "Dödsbevis",
+			typ : "Dödsorsaksintyg",
             identitetStyrktGenom : shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
             dodsdatum : getDodsdatum(datumSakert),
-            dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]},
-            explosivImplantat : getExplosivImplantat(),
-            yttreUndersokning : {
-				value: shuffle(["ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0]
-				}
+            dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]}
 		};
 		if (datumSakert === false) {
 			obj.barn = testdataHelper.randomTrueFalse();
 		}
-		if (obj.yttreUndersokning.value === 'nejUndersokningGjortKortFore') {
-			obj.yttreUndersokning.datum = testdataHelper.dateFormat(dayBeforeDeath);
-		}
-		if (obj.yttreUndersokning.value !== 'nejUndersokningSkaGoras') {
-			obj.polisanmalan = testdataHelper.randomTrueFalse();
-		}
-		
-		
 		
 		return obj;
 		

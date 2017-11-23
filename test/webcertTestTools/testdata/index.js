@@ -34,9 +34,9 @@ module.exports = {
 	skv: {
 		db: require('./skv.db.js')
 	},
-	/*soc: {
+	soc: {
 		doi: require('./soc.doi.js')
-	},*/
+	},
     values: require('./testvalues.js'),
     fmb: require('./diagnoskoderFMB.js'),
     diagnosKategorier: require('./diagnosKategorier_A-F.js')
