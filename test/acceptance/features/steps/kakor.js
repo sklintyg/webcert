@@ -22,6 +22,7 @@
 'use strict';
 
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+var helpers = require('./helpers');
 
 module.exports = function() {
     this.Given(/^ska jag( inte)? se en varning om kakor$/, function(inte, callback) {
@@ -42,8 +43,10 @@ module.exports = function() {
             .then(callback());
     });
 
-    this.Given(/^laddar om sidan$/, function(callback) {
-        browser.refresh().then(callback());
+    this.Given(/^laddar om sidan$/, function() {
+        return browser.refresh().then(function(){
+			return helpers.mediumDelay();
+		});
     });
 
 };
