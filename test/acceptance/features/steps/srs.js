@@ -116,14 +116,19 @@ module.exports = function() {
     this.When(/^jag fyller i ytterligare svar för SRS$/, () => clickAnswerRadioButtons());
 
     this.When(/^ska en ny sida öppnas och urlen innehålla "([^"]*)"$/, (type) => {
-        getWindowHandles().then(function(handles) {
-            switchToWindow(handles[1], true).then(function() {
-                testTypeOfUrl(handles[0], type).then((urlPart) => {
-                    return expect(type).to.contain(urlPart);
+        return getWindowHandles().then(function(handles) {
+            console.log(handles);
+            if (handles.length < 2) {
+                throw ('bara 1 flik är öppen');
+            } else {
+                return switchToWindow(handles[1], true).then(function() {
+                    return testTypeOfUrl(handles[0], type).then((urlPart) => {
+                        return expect(type).to.contain(urlPart);
+
+                    });
 
                 });
-
-            });
+            }
         });
     });
 
@@ -131,14 +136,17 @@ module.exports = function() {
         if (srsdata.diagnoskoder[type] !== undefined) {
             type = srsdata.diagnoskoder[type].toLowerCase();
         }
-        getWindowHandles().then(function(handles) {
-            switchToWindow(handles[1], true).then(function() {
-                testTypeOfUrl(handles[0], type).then((urlPart) => {
-                    return expect(type).to.contain(urlPart);
+        return getWindowHandles().then(function(handles) {
+            if (handles.length < 2) {
+                throw ('bara 1 flik är öppen');
+            } else {
+                return switchToWindow(handles[1], true).then(function() {
+                    return testTypeOfUrl(handles[0], type).then((urlPart) => {
+                        return expect(type).to.contain(urlPart);
 
+                    });
                 });
-
-            });
+            }
         });
     });
 
@@ -146,14 +154,16 @@ module.exports = function() {
         if (srsdata.diagnoskoder[type] !== undefined) {
             type = srsdata.diagnoskoder[type].toLowerCase();
         }
-        getWindowHandles().then(function(handles) {
-            switchToWindow(handles[1], true).then(function() {
-                testTypeOfUrl(handles[0], type, postfix).then((urlPart) => {
-                    return expect(type).to.contain(urlPart);
-
+        return getWindowHandles().then(function(handles) {
+            if (handles.length < 2) {
+                throw ('bara 1 flik är öppen');
+            } else {
+                return switchToWindow(handles[1], true).then(function() {
+                    return testTypeOfUrl(handles[0], type, postfix).then((urlPart) => {
+                        return expect(type).to.contain(urlPart);
+                    });
                 });
-
-            });
+            }
         });
     });
 
@@ -350,7 +360,7 @@ function filterUrl(url, typeOfUrl, postfix, handle) {
 
 function clickQuestionmarkBtn(type) {
     let index = ('samtycke' === type) ? 0 : 1;
-    return element.all(by.css('.glyphicon-question-sign')).get(index).click();
+    return helpers.moveAndSendKeys(element.all(by.css('.glyphicon-question-sign')).get(index), protractor.Key.SPACE);
 }
 
 function clickReadMoreBtn(type) {
@@ -358,7 +368,7 @@ function clickReadMoreBtn(type) {
         case srsdata.position.SAMTYCKE:
             return element(by.css('[ng-click="readMoreConsent()"]')).click();
         case srsdata.position.PREDIKTIONSMEDDELANDET:
-            return element(by.css('[ng-click="readMoreRisk()"]')).click();
+            return element(by.css('[ng-click="readMoreRisk()"]')).click(); //TODO
         case srsdata.position.ATGARDER:
             return browser.actions().mouseMove(element(by.id('atgarderRek'))).perform()
                 .then(() => browser.sleep(500))
