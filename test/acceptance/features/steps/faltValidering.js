@@ -66,15 +66,13 @@ function antalAvLoop(array, str1) {
 }
 
 function synLoop(array, keyToSend) {
-    var counter = 0;
-    array.forEach(function(el) {
-        helpers.moveAndSendKeys(el, keyToSend);
-        counter++;
-        if (counter === array.length) {
-            return Promise.resolve();
-        }
+    var promiseArray = [];
 
+    array.forEach(function(el) {
+        promiseArray.push(helpers.moveAndSendKeys(el, keyToSend));
     });
+
+    return Promise.all(promiseArray);
     // synVar.binokulart.med.sendKeys(protractor.Key.TAB);
 }
 

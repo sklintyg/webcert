@@ -44,9 +44,9 @@ module.exports = function() {
     });
 
     this.Given(/^laddar om sidan$/, function() {
-        return browser.refresh().then(function(){
-			return helpers.mediumDelay();
-		});
+        return browser.refresh().then(function() {
+            return helpers.mediumDelay();
+        });
     });
 
 };
