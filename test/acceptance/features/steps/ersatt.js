@@ -99,6 +99,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag går tillbaka till det ersatta intyget$/, function() {
+        logger.warn('browser.sleep(4000)');
         return browser.sleep(4000).then(function() {
             var url = intygURL(global.ersattintyg.typ, global.ersattintyg.id);
             return browser.get(url).then(function() {
