@@ -56,7 +56,7 @@ stage('deploy') {
         util.run({
                 def itVersion = util.latestVersion("se/inera/intyg/webcert/webcert-web", baseVersion)
 
-                ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.106", deploy_from_repo: "true"],
+                ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.106", deploy_from_repo: "true", config_version: "WC-5.4"],
                                 installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/demo', playbook: 'ansible/deploy.yml')
 
                 util.waitForServer('https://demo.webcert.intygstjanster.se/version.jsp')
