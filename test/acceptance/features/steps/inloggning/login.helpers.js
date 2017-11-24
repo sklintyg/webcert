@@ -49,7 +49,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
         browser.ignoreSynchronization = false;
         browser.sleep(3000);
-
+        //TODO Async problem, ovan är lika med sleep(5000);
     } else {
         logger.info('Loggar in i andra webbläsaren >>');
         secondBrowser.ignoreSynchronization = true;

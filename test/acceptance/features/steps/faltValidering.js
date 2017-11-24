@@ -247,28 +247,18 @@ module.exports = function() {
     });
 
     this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(fel) {
-        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
+        element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
-        });
-        return alertTexts.then(function(result) {
-            console.log(result);
+        }).then(function(result) {
+            logger.silly(result);
             return expect(result.join('\n')).to.have.string(fel);
         });
     });
-    /*  this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
-        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
-            return elm.getText();
-        });
-        return alertTexts.then(function(result) {
-            // console.log(result);
-            return expect(result.join('\n')).to.not.have.string(fel);
-        });
-    });*/
     this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
         element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         }).then(function(result) {
-            // console.log(result);
+            logger.silly(result);
             return expect(result.join('\n')).to.not.have.string(fel);
         });
     });

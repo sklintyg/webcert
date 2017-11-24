@@ -47,15 +47,17 @@ function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänst
     logger.info('Går in på patient ' + person.id);
     //Patientuppgifter visas
     var patientUppgifter = sokSkrivIntygPage.sokSkrivIntygForm;
-    return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id));
+    return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id)).then(function() {
+        return helpers.smallDelay();
+    });
 }
 
-function gotoPerson(patient, callback) { //förutsätter inte att personen finns i PU-tjänsten
+function gotoPerson(patient) { //förutsätter inte att personen finns i PU-tjänsten
     global.person = patient;
 
-    sokSkrivIntygPage.selectPersonnummer(person.id);
     logger.info('Går in på patient ' + person.id);
-    callback();
+    return sokSkrivIntygPage.selectPersonnummer(person.id);
+
 }
 
 var forkedBrowser;
@@ -96,11 +98,11 @@ module.exports = function() {
     });
 
 
-    this.Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum, callback) {
+    this.Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum) {
         if (typAvNum === 'samordningsnummer') {
-            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0], callback); //personnummret finns inte med i PU-tjänsten
+            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0]); //personnummret finns inte med i PU-tjänsten
         } else {
-            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterEjPU)[0], callback);
+            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterEjPU)[0]);
         }
 
     });
