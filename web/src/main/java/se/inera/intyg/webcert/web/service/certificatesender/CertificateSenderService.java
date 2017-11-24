@@ -26,7 +26,20 @@ import se.inera.intyg.schemas.contract.Personnummer;
 public interface CertificateSenderService {
 
     void storeCertificate(String intygsId, String intygsTyp, String jsonBody) throws CertificateSenderException;
+
     void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) throws CertificateSenderException;
+
+    /**
+     * See {@link CertificateSenderService#sendCertificate(String, Personnummer, String, String)}
+     *
+     * This version adds the possiblity to specify that the processing of the message shall be delayed by the externally
+     * configured number of milliseconds. This is very useful when we're first calling storeCertificate and then
+     * sendCertificate in the same operation.
+     */
+    void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId, boolean delay)
+            throws CertificateSenderException;
+
     void revokeCertificate(String intygsId, String xmlBody, String intygsTyp) throws CertificateSenderException;
+
     void sendMessageToRecipient(String intygsId, String xmlBody) throws CertificateSenderException;
 }

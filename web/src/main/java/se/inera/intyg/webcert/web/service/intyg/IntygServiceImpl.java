@@ -24,7 +24,11 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -87,7 +91,11 @@ import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.IntygRelationHelper;
 import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
-import se.inera.intyg.webcert.web.service.intyg.dto.*;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -413,7 +421,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient) {
+    public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean delay) {
 
         Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
         verifyEnhetsAuth(intyg, true);
@@ -439,7 +447,7 @@ public class IntygServiceImpl implements IntygService {
 
         markUtkastWithSendDateAndRecipient(intygsId, recipient);
 
-        return sendIntygToCertificateSender(sendConfig, intyg);
+        return sendIntygToCertificateSender(sendConfig, intyg, delay);
     }
 
     // Kontrollera om det signerade intyget i intygstjänsten har namn- eller adressuppgifter. Om så är fallet,
@@ -509,7 +517,10 @@ public class IntygServiceImpl implements IntygService {
      * Check if signed certificate is a completion, in that case, send to recipient and close pending completion QA /
      * Arende as handled.
      *
-     * Check if signed certificate should be sent directly to default recipient for this intygstyp
+     * Check if signed certificate should be sent directly to default recipient for this intygstyp.
+     *
+     * Note that the send operation uses the "delay" boolean to allow the signing operation some time to complete
+     * in intygstjansten.
      */
     @Override
     public void handleAfterSigned(Utkast utkast) {
@@ -520,7 +531,7 @@ public class IntygServiceImpl implements IntygService {
             try {
                 LOG.info("Send intyg '{}' directly to recipient", utkast.getIntygsId());
                 sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), moduleRegistry.getModuleEntryPoint(
-                        utkast.getIntygsTyp()).getDefaultRecipient());
+                        utkast.getIntygsTyp()).getDefaultRecipient(), true);
 
                 if (isKomplettering) {
                     LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
@@ -638,10 +649,9 @@ public class IntygServiceImpl implements IntygService {
         this.sekretessmarkeringStartDatum = sekretessmarkeringStartDatum;
     }
 
-
     /* --------------------- Protected scope --------------------- */
 
-    protected IntygServiceResult sendIntygToCertificateSender(SendIntygConfiguration sendConfig, Utlatande intyg) {
+    protected IntygServiceResult sendIntygToCertificateSender(SendIntygConfiguration sendConfig, Utlatande intyg, boolean delay) {
 
         String intygsId = intyg.getId();
         String recipient = sendConfig.getRecipient();
@@ -653,7 +663,7 @@ public class IntygServiceImpl implements IntygService {
 
             // Ask the certificateSenderService to post a 'send' message onto the queue.
             certificateSenderService.sendCertificate(intygsId, intyg.getGrundData().getPatient().getPersonId(),
-                    objectMapper.writeValueAsString(skickatAv), recipient);
+                    objectMapper.writeValueAsString(skickatAv), recipient, delay);
 
             // Notify stakeholders when a certificate is sent
             notificationService.sendNotificationForIntygSent(intygsId, getUserReference());

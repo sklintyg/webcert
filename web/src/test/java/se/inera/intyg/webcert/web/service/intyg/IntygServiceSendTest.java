@@ -84,11 +84,11 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         assertEquals(IntygServiceResult.OK, res);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString());
+        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
         verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
@@ -108,7 +108,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
 
-        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         verifyZeroInteractions(logService);
     }
 
@@ -130,7 +130,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
 
-        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         verifyZeroInteractions(logService);
     }
 
@@ -152,11 +152,11 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED)))).thenReturn(Optional.empty());
 
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         assertEquals(IntygServiceResult.OK, res);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString());
+        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
         verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
@@ -173,11 +173,11 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         assertEquals(IntygServiceResult.OK, res);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString());
+        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
         verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
@@ -188,7 +188,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         doThrow(new RuntimeException("")).when(logService).logSendIntygToRecipient(any(LogRequest.class));
 
         try {
-            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
             fail("RuntimeException expected");
         } catch (RuntimeException e) {
             // Expected
@@ -205,7 +205,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
         try {
-            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         } catch (Exception e) {
             verifyZeroInteractions(logService);
             throw e;
@@ -223,7 +223,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
         try {
-            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA");
+            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         } catch (Exception e) {
             verifyZeroInteractions(logService);
             throw e;

@@ -267,13 +267,13 @@ public class IntygModuleApiControllerTest {
 
         setupUser("", intygType, false, true, WebcertFeature.SKICKA_INTYG);
 
-        when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient))).thenReturn(IntygServiceResult.OK);
+        when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient), eq(false))).thenReturn(IntygServiceResult.OK);
 
         SendSignedIntygParameter param = new SendSignedIntygParameter();
         param.setRecipient(recipient);
         Response response = moduleApiController.sendSignedIntyg(intygType, CERTIFICATE_ID, param);
 
-        verify(intygService).sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient));
+        verify(intygService).sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient), eq(false));
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(IntygServiceResult.OK, response.getEntity());
     }
