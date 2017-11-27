@@ -54,6 +54,8 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         }).then(function() {
             browser.ignoreSynchronization = false;
             return helpers.injectConsoleTracing();
+        }).then(function() {
+            return browser.wait(wcHeader.isDisplayed(), 10000);
         });
     } else {
         wcHeader = secondBrowser.findElement(by.id('wcHeader'));
@@ -66,6 +68,8 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         }).then(function() {
             browser.ignoreSynchronization = false;
             return helpers.injectConsoleTracing();
+        }).then(function() {
+            return browser.wait(wcHeader.isDisplayed(), 10000);
         });
     }
 };
@@ -81,7 +85,7 @@ module.exports = {
                 logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
                 var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
 
-                return element(by.id('wcHeader')).getText().then(function(txt) {
+                return wcHeader.getText().then(function(txt) {
                     logger.info('Webcert Header: ' + txt);
                 }).then(function() {
                     return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
