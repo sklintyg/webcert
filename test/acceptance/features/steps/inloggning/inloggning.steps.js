@@ -159,7 +159,7 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp, callback) {
+    this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
         intyg.typ = intygsTyp;
         gotoIntygUtkast(intyg.typ, callback);
 
@@ -179,7 +179,7 @@ module.exports = function() {
 
     });
 
-    this.Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function(callback) {
+    this.Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
         intyg.typ = testdataHelpers.shuffle([
             //'Läkarintyg för sjukpenning',
             'Läkarutlåtande för sjukersättning',
@@ -187,16 +187,14 @@ module.exports = function() {
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
         ])[0];
         console.log('intyg.typ: ' + intyg.typ);
-        Promise.all([
+        return Promise.all([
             sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
             sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
         ]).then(function() {
             // Spara intygsid för kommande steg
-            browser.getCurrentUrl().then(function(text) {
+            return browser.getCurrentUrl().then(function(text) {
                 intyg.id = text.split('/').slice(-2)[0];
-                logger.info('intyg.id: ' + intyg.id, function() {
-                    callback();
-                });
+                return logger.info('intyg.id: ' + intyg.id);
             });
         });
     });
