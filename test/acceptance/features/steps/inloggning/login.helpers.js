@@ -40,50 +40,53 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     };
 
     global.sessionUsed = false;
-    var wcHeader;
 
     if (!secondBrowser) {
-        wcHeader = element(by.id('wcHeader'));
         browser.ignoreSynchronization = true;
         return pages.welcome.get().then(function() {
             return helpers.smallDelay();
         }).then(function() {
             return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
         }).then(function() {
+            return helpers.smallDelay();
+        }).then(function() {
             logger.silly('browser.wait(wcHeader.isPresent()');
-            return browser.wait(wcHeader.isPresent(), 10000).then(function(present) {
+            return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
                 return logger.silly('wcHeader is present ' + present);
             });
         }).then(function() {
-            browser.ignoreSynchronization = false;
-            return browser.wait(wcHeader.isDisplayed(), 10000).then(function(displayed) {
+            return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
                 logger.silly('wcHeader is displayed ' + displayed);
+                console.log(displayed);
                 return helpers.smallDelay();
             });
         }).then(function() {
+            browser.ignoreSynchronization = false;
             logger.silly('helpers.injectConsoleTracing();');
             return helpers.injectConsoleTracing();
         });
     } else {
-        wcHeader = secondBrowser.findElement(by.id('wcHeader'));
         secondBrowser.ignoreSynchronization = true;
         logger.info('Loggar in i andra webbläsaren >>');
-        return secondBrowser.get('welcome.html').then(function() {
-            return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
-        }).then(function() {
-            logger.silly('secondBrowser.wait(wcHeader.isPresent()');
-            return secondBrowser.wait(wcHeader.isPresent(), 10000).then(function(present) {
-                return logger.silly('wcHeader is present' + present);
+        return secondBrowser.get('welcome.html').then(function(result) {
+            return secondBrowser.sleep(100).then(function() {
+                return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
+            }).then(function() {
+                return secondBrowser.sleep(100);
+            }).then(function() {
+                return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
+                    return logger.silly('wcHeader is present ' + present);
+                });
+            }).then(function() {
+                return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
+                    logger.silly('wcHeader is displayed ' + (displayed));
+                    return secondBrowser.sleep(100);
+                });
+            }).then(function() {
+                secondBrowser.ignoreSynchronization = false;
+                logger.silly('helpers.injectConsoleTracing();');
+                return helpers.injectConsoleTracing();
             });
-        }).then(function() {
-            secondBrowser.ignoreSynchronization = false;
-            return secondBrowser.wait(wcHeader.isDisplayed(), 10000).then(function(displayed) {
-                logger.silly('wcHeader is displayed ' + displayed);
-                return helpers.smallDelay();
-            });
-        }).then(function() {
-            logger.silly('helpers.injectConsoleTracing();');
-            return helpers.injectConsoleTracing();
         });
     }
 };
@@ -99,7 +102,7 @@ module.exports = {
                 logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
                 var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
 
-                return wcHeader.getText().then(function(txt) {
+                return element(by.id('wcHeader')).getText().then(function(txt) {
                     logger.info('Webcert Header: ' + txt);
                 }).then(function() {
                     return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
