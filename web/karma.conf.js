@@ -51,7 +51,7 @@ module.exports = function(config) {
 
             // Dependencies
             // bower:js
-            'src/main/webapp/bower_components/jquery/jquery.js',
+            'src/main/webapp/bower_components/jquery/dist/jquery.js',
             'src/main/webapp/bower_components/angular/angular.js',
             'src/main/webapp/bower_components/angular-animate/angular-animate.js',
             'src/main/webapp/bower_components/angular-cookies/angular-cookies.js',
