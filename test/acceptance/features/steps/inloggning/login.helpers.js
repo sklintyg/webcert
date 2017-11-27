@@ -50,12 +50,18 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         }).then(function() {
             return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
         }).then(function() {
-            return browser.wait(wcHeader.isPresent(), 10000);
+            logger.silly('browser.wait(wcHeader.isPresent()');
+            return browser.wait(wcHeader.isPresent(), 10000).then(function(present) {
+                return logger.silly('wcHeader is present' + present);
+            });
         }).then(function() {
             browser.ignoreSynchronization = false;
+            logger.silly('helpers.injectConsoleTracing();');
             return helpers.injectConsoleTracing();
         }).then(function() {
-            return browser.wait(wcHeader.isDisplayed(), 10000);
+            return browser.wait(wcHeader.isDisplayed(), 10000).then(function(dispayed) {
+                return logger.silly('wcHeader is dispayed' + dispayed);
+            });
         });
     } else {
         wcHeader = secondBrowser.findElement(by.id('wcHeader'));
@@ -64,12 +70,18 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         return secondBrowser.get('welcome.html').then(function() {
             return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
         }).then(function() {
-            return browser.wait(wcHeader.isPresent(), 10000);
+            logger.silly('secondBrowser.wait(wcHeader.isPresent()');
+            return secondBrowser.wait(wcHeader.isPresent(), 10000).then(function(present) {
+                return logger.silly('wcHeader is present' + present);
+            });
         }).then(function() {
-            browser.ignoreSynchronization = false;
+            secondBrowser.ignoreSynchronization = false;
+            logger.silly('helpers.injectConsoleTracing();');
             return helpers.injectConsoleTracing();
         }).then(function() {
-            return browser.wait(wcHeader.isDisplayed(), 10000);
+            return secondBrowser.wait(wcHeader.isDisplayed(), 10000).then(function(dispayed) {
+                return logger.silly('wcHeader is dispayed' + dispayed);
+            });
         });
     }
 };
