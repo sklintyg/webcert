@@ -39,9 +39,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.messageService = messageService;
             $scope.viewState = Viewstate.build();
 
-            $scope.intygReplacement = {
-                'fk7263':'lisjp'
-            };
+            $scope.intygReplacement = {};
 
             $scope.isNormalOrigin = function() {
                 //Closure needed, due to 'this' reference in UserModel.isNormalOrigin().

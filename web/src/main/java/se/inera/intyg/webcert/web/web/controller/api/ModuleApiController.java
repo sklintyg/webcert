@@ -113,7 +113,6 @@ public class ModuleApiController extends AbstractApiController {
     public Response getActiveModules() {
         return Response.ok(moduleRegistry.listAllModules().stream()
                 .filter(i -> featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), i.getId()))
-                .filter(m -> !m.getId().equals(Fk7263EntryPoint.MODULE_ID)) // Special case for fk7263
                 .collect(Collectors.toList())).build();
     }
 }
