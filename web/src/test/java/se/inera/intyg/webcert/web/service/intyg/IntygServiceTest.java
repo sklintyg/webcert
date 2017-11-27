@@ -226,7 +226,8 @@ public class IntygServiceTest {
 
         when(webCertUserService.getUser()).thenReturn(webcertUser);
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
-        when(webcertUser.getParameters()).thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
+        when(webcertUser.getParameters())
+                .thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
     }
@@ -254,7 +255,8 @@ public class IntygServiceTest {
 
     @Before
     public void setupPUService() {
-        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(getPersonSvar(false, PersonSvar.Status.FOUND));
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
+                .thenReturn(getPersonSvar(false, PersonSvar.Status.FOUND));
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
     }
 
@@ -749,7 +751,7 @@ public class IntygServiceTest {
 
         intygService.handleAfterSigned(utkast);
 
-        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient));
+        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient), eq(true));
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
@@ -783,13 +785,13 @@ public class IntygServiceTest {
         when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
         when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED))))
-                .thenReturn(Optional.empty());
+                        .thenReturn(Optional.empty());
         when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
         when(featureService.isModuleFeatureActive(SIGNERA_SKICKA_DIREKT.getName(), intygTyp)).thenReturn(true);
 
         intygService.handleAfterSigned(utkast);
 
-        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient));
+        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient), eq(true));
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService, never()).closeCompletionsAsHandled(relationIntygId, intygTyp);

@@ -185,7 +185,7 @@ public class IntygModuleApiController extends AbstractApiController {
             SendSignedIntygParameter param) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.SKICKA_INTYG).orThrow();
 
-        IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient());
+        IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient(), false);
         return Response.ok(sendResult).build();
     }
 

@@ -42,6 +42,8 @@ public final class Constants {
     public static final String JMSX_GROUP_SEQ = "JMSXGroupSeq";
     public static final String JMS_REDELIVERED = "JMSRedelivered";
 
+    public static final String DELAY_MESSAGE = "DELAY_MESSAGE";
+
     private Constants() {
     }
 

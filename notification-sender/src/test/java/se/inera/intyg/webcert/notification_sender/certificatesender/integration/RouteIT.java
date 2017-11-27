@@ -115,6 +115,7 @@ public class RouteIT {
                 TextMessage textMessage = session.createTextMessage("body");
                 textMessage.setStringProperty(Constants.INTYGS_ID, intygsId);
                 textMessage.setStringProperty(Constants.MESSAGE_TYPE, messageType);
+                textMessage.setStringProperty("DELAY_MESSAGE", "true");
                 return textMessage;
             } catch (Exception e) {
                 throw Throwables.propagate(e);
