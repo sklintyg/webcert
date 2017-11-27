@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
@@ -64,7 +63,7 @@ public class ModuleApiController extends AbstractApiController {
 
     /**
      * Serving module configuration for Angular bootstrapping.
-     *
+     * <p>
      * Note that IntygModule#setDetailedDescription may be invoked to replace dynamic link placeholders.
      *
      * @return a JSON object
