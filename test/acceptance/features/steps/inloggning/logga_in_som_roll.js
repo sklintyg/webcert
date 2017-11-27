@@ -16,13 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* globals browser,logger, wcTestTools,commonTools */
+/* globals browser,logger, wcTestTools,commonTools, pages */
 'use strict';
 var loginHelper = require('./login.helpers.js');
 var logInAsUserRole = loginHelper.logInAsUserRole;
 var logInAsUser = loginHelper.logInAsUser;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 var users = commonTools.HSAusers;
+var helpers = require('../helpers');
 
 module.exports = function() {
 
@@ -164,7 +165,17 @@ module.exports = function() {
             hsaId: 'TSTNMT2321000156-6789',
             enhetId: 'TSTNMT2321000156-107P'
         };
-        return logInAsUser(userObj);
+        browser.ignoreSynchronization = true;
+        return pages.welcome.get()
+            .then(function() {
+                return helpers.mediumDelay();
+            })
+            .then(function() {
+                return pages.welcome.loginByJSON(JSON.stringify(userObj));
+            })
+            .then(function() {
+                return helpers.mediumDelay();
+            });
     });
 
     this.Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vårdenhet) "([^"]*)" och inte har uppdrag på "([^"]*)"$/, function(selectedOrigin, typ, harEnhet, harInteEnhet) {
