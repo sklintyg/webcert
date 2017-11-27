@@ -52,16 +52,17 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         }).then(function() {
             logger.silly('browser.wait(wcHeader.isPresent()');
             return browser.wait(wcHeader.isPresent(), 10000).then(function(present) {
-                return logger.silly('wcHeader is present' + present);
+                return logger.silly('wcHeader is present ' + present);
             });
         }).then(function() {
             browser.ignoreSynchronization = false;
+            return browser.wait(wcHeader.isDisplayed(), 10000).then(function(displayed) {
+                logger.silly('wcHeader is displayed ' + displayed);
+                return helpers.smallDelay();
+            });
+        }).then(function() {
             logger.silly('helpers.injectConsoleTracing();');
             return helpers.injectConsoleTracing();
-        }).then(function() {
-            return browser.wait(wcHeader.isDisplayed(), 10000).then(function(dispayed) {
-                return logger.silly('wcHeader is dispayed' + dispayed);
-            });
         });
     } else {
         wcHeader = secondBrowser.findElement(by.id('wcHeader'));
@@ -76,12 +77,13 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
             });
         }).then(function() {
             secondBrowser.ignoreSynchronization = false;
+            return secondBrowser.wait(wcHeader.isDisplayed(), 10000).then(function(displayed) {
+                logger.silly('wcHeader is displayed ' + displayed);
+                return helpers.smallDelay();
+            });
+        }).then(function() {
             logger.silly('helpers.injectConsoleTracing();');
             return helpers.injectConsoleTracing();
-        }).then(function() {
-            return secondBrowser.wait(wcHeader.isDisplayed(), 10000).then(function(dispayed) {
-                return logger.silly('wcHeader is dispayed' + dispayed);
-            });
         });
     }
 };
