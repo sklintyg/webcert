@@ -37,13 +37,13 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             function _createUtkast(createDraftRequestPayload, onSuccess, onError) {
                 $log.debug('_createDraft');
                 var restPath = '/api/utkast/' + createDraftRequestPayload.intygType;
-                $http.post(restPath, createDraftRequestPayload).success(function(data) {
-                    $log.debug('got callback data: ' + data);
-                    onSuccess(data);
+                $http.post(restPath, createDraftRequestPayload).then(function(response) {
+                    $log.debug('got callback data: ' + response.data);
+                    onSuccess(response.data);
                     statService.refreshStat();
-                }).error(function(data, status) {
-                    $log.error('error ' + status);
-                    onError(data);
+                }, function(response) {
+                    $log.error('error ' + response.status);
+                    onError(response.data);
                 });
             }
 
@@ -56,12 +56,12 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                     onSuccess(cachedIntygTypes);
                 } else {
                     var restPath = '/api/modules/map';
-                    $http.get(restPath).success(function(data) {
-                        $log.debug('got data:', data);
-                        cachedIntygTypes = data;
-                        onSuccess(data);
-                    }).error(function(data, status) {
-                        $log.error('error ' + status);
+                    $http.get(restPath).then(function(response) {
+                        $log.debug('got data:', response.data);
+                        cachedIntygTypes = response.data;
+                        onSuccess(response.data);
+                    }, function(response) {
+                        $log.error('error ' + response.status);
                         if (onError) {
                             onError();
                         }
@@ -74,7 +74,8 @@ angular.module('webcert').factory('webcert.UtkastProxy',
              */
             function _getUtkastTypes(onSuccess, onError) {
                 var restPath = '/api/modules/map';
-                $http.get(restPath).success(function(data) {
+                $http.get(restPath).then(function(response) {
+                    var data = response.data;
                     $log.debug('got data:', data);
                     var sortValue = 0;
                     var types = [
@@ -95,8 +96,8 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                         }
                     }
                     onSuccess(types);
-                }).error(function(data, status) {
-                    $log.error('error ' + status);
+                }, function(response) {
+                    $log.error('error ' + response.status);
                     if (onError) {
                         onError();
                     }
@@ -108,14 +109,14 @@ angular.module('webcert').factory('webcert.UtkastProxy',
              */
             function _getUtkastTypesForPatient(patientId, onSuccess) {
                 var restPath = '/api/modules/map/' + patientId;
-                $http.get(restPath).success(function(data) {
-                    $log.debug('got data:', data);
+                $http.get(restPath).then(function(response) {
+                    $log.debug('got data:', response.data);
                     var sortValue = 0;
                     var types = [
                         { sortValue: sortValue++, id: 'default', label: messageService.getProperty('label.default-intyg-type') }
                     ];
-                    for (var i = 0; i < data.length; i++) {
-                        var m = data[i];
+                    for (var i = 0; i < response.data.length; i++) {
+                        var m = response.data[i];
 
                         var options = {
                             feature: featureService.features.HANTERA_INTYGSUTKAST,
@@ -129,8 +130,8 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                         }
                     }
                     onSuccess(types);
-                }).error(function(data, status) {
-                    $log.error('error ' + status);
+                }, function(response) {
+                    $log.error('error ' + response.status);
                     // if (onError) {
                     //     onError();
                     // }
@@ -162,11 +163,11 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             function _getUtkastList(onSuccess, onError) {
                 $log.debug('_getUtkastList:');
                 var restPath = '/api/utkast/'; // release version
-                $http.get(restPath).success(function(data) {
-                    $log.debug('got data:' + data);
-                    onSuccess(data);
-                }).error(function(data, status) {
-                    $log.error('error ' + status);
+                $http.get(restPath).then(function(response) {
+                    $log.debug('got data:' + response.data);
+                    onSuccess(response.data);
+                }, function(response) {
+                    $log.error('error ' + response.status);
                     // Let calling code handle the error of no data response
                     onError(null);
                 });
@@ -178,26 +179,26 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             function _getUtkastFetchMore(query, onSuccess, onError) {
                 $log.debug('_getUtkastFetchMore');
                 var restPath = '/api/utkast';
-                $http.get(restPath, { params: query }).success(function(data) {
-                    $log.debug('_getUtkastFetchMore got data:' + data);
-                    onSuccess(data);
-                }).error(function(data, status) {
-                    $log.error('_getUtkastFetchMore error ' + status);
+                $http.get(restPath, { params: query }).then(function(response) {
+                    $log.debug('_getUtkastFetchMore got data:' + response.data);
+                    onSuccess(response.data);
+                }, function(response) {
+                    $log.error('_getUtkastFetchMore error ' + response.status);
                     // Let calling code handle the error of no data response
-                    onError(data);
+                    onError(response.data);
                 });
             }
 
             function _getUtkastSavedByList(onSuccess, onError) {
                 $log.debug('_getUtkastSavedByList');
                 var restPath = '/api/utkast/lakare/';
-                $http.get(restPath).success(function(data) {
-                    $log.debug('_getUtkastSavedByList got data:' + data);
-                    onSuccess(data);
-                }).error(function(data, status) {
-                    $log.error('_getUtkastSavedByList error ' + status);
+                $http.get(restPath).then(function(response) {
+                    $log.debug('_getUtkastSavedByList got data:' + response.data);
+                    onSuccess(response.data);
+                }, function(response) {
+                    $log.error('_getUtkastSavedByList error ' + response.status);
                     // Let calling code handle the error of no data response
-                    onError(data);
+                    onError(response.data);
                 });
             }
 

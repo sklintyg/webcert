@@ -28,16 +28,16 @@ angular.module('webcert').factory('webcert.IntygProxy',
             function _getIntygForPatient(personId, onSuccess, onError) {
                 $log.debug('getIntygForPatient type:' + personId);
                 var restPath = '/api/intyg/person/' + personId;
-                $http.get(restPath).success(function(data, statusCode, headers) {
-                    $log.debug('got data:' + data);
-                    if (typeof headers('offline_mode') !== 'undefined' && headers('offline_mode') === 'true') {
-                        onError(statusCode, 'info.intygload.offline');
+                $http.get(restPath).then(function(response) {
+                    $log.debug('got data:' + response.data);
+                    if (typeof response.headers('offline_mode') !== 'undefined' && response.headers('offline_mode') === 'true') {
+                        onError(response.statusCode, 'info.intygload.offline');
                     }
-                    onSuccess(data);
-                }).error(function(data, status) {
-                    $log.error('error ' + status);
+                    onSuccess(response.data);
+                }, function(response) {
+                    $log.error('error ' + response.status);
                     // Let calling code handle the error of no data response
-                    onError(status);
+                    onError(response.status);
                 });
             }
 

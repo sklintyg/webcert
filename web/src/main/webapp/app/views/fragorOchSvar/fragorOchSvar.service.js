@@ -27,13 +27,13 @@ angular.module('webcert').factory('webcert.QuestionAnswer',
         function _getQA(query, onSuccess, onError) {
             $log.debug('_getQA');
             var restPath = '/api/fragasvar/sok';
-            $http.get(restPath, { params: query}).success(function(data) {
-                $log.debug('got data:' + data);
-                onSuccess(data);
-            }).error(function(data, status) {
-                $log.error('error ' + status);
+            $http.get(restPath, { params: query}).then(function(response) {
+                $log.debug('got data:' + response.data);
+                onSuccess(response.data);
+            }, function(response) {
+                $log.error('error ' + response.status);
                 // Let calling code handle the error of no data response
-                onError(data);
+                onError(response.data);
             });
         }
 
@@ -43,13 +43,13 @@ angular.module('webcert').factory('webcert.QuestionAnswer',
         function _getQALakareList(enhetsId, onSuccess, onError) {
             $log.debug('_getQALakareList: ' + enhetsId);
             var restPath = '/api/fragasvar/lakare';
-            $http.get(restPath, {params: { 'enhetsId': enhetsId}}).success(function(data) {
-                $log.debug('_getQALakareList got data:' + data);
-                onSuccess(data);
-            }).error(function(data, status) {
-                $log.error('_getQALakareList error ' + status);
+            $http.get(restPath, {params: { 'enhetsId': enhetsId}}).then(function(response) {
+                $log.debug('_getQALakareList got data:' + response.data);
+                onSuccess(response.data);
+            }, function(response) {
+                $log.error('_getQALakareList error ' + response.status);
                 // Let calling code handle the error of no data response
-                onError(data);
+                onError(response.data);
             });
         }
 
