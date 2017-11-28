@@ -48,7 +48,7 @@ describe('Validera sändning av luae_na Intyg', function() {
 
             expect(IntygPage.isAt()).toBeTruthy();
             expect(IntygPage.skicka.statusSendInprogress.isPresent()).toBeFalsy();
-            expect(IntygPage.skicka.statusSent.getText()).toEqual("");
+            expect(IntygPage.skicka.statusSent.isPresent()).toBeFalsy();
         });
 
         it('Skicka intyget', function() {
