@@ -44,11 +44,11 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     if (!secondBrowser) {
         browser.ignoreSynchronization = true;
         return pages.welcome.get().then(function() {
-            return helpers.smallDelay();
+            return helpers.mediumDelay();
         }).then(function() {
             return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
         }).then(function() {
-            return helpers.smallDelay();
+            return helpers.mediumDelay();
         }).then(function() {
             logger.silly('browser.wait(wcHeader.isPresent()');
             return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
@@ -58,7 +58,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
             return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
                 logger.silly('wcHeader is displayed ' + displayed);
                 console.log(displayed);
-                return helpers.smallDelay();
+                return helpers.mediumDelay();
             });
         }).then(function() {
             browser.ignoreSynchronization = false;
