@@ -57,7 +57,6 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         }).then(function() {
             return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
                 logger.silly('wcHeader is displayed ' + displayed);
-                console.log(displayed);
                 return helpers.mediumDelay();
             });
         }).then(function() {

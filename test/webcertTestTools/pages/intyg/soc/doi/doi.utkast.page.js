@@ -66,6 +66,53 @@ var doiUtkast = BaseSocUtkast._extend({
 			ja : element(by.id('barnYes')),
 			nej : element(by.id('barnNo'))
 		}
+		this.utlatandeOmDodsorsak = {
+			a : {
+				beskrivning : element(by.id('orsak--beskrivning')),
+				debut : element(by.id('orsak--datum')),
+				specifikation : element(by.id('orsak--specifikation'))
+			},
+			b : {
+				beskrivning : element(by.id('orsak-0-beskrivning')),
+				debut : element(by.id('orsak-0-datum')),
+				specifikation : element(by.id('orsak-0-specifikation'))
+			},
+			c : {
+				beskrivning : element(by.id('orsak-1-beskrivning')),
+				debut : element(by.id('orsak-1-datum')),
+				specifikation : element(by.id('orsak-1-specifikation'))
+			},
+			d : {
+				beskrivning : element(by.id('orsak-2-beskrivning')),
+				debut : element(by.id('orsak-2-datum')),
+				specifikation : element(by.id('orsak-2-specifikation'))
+			},
+			andraSjukdomarSkador : {
+				beskrivning : element(by.id('orsak-multi-0-beskrivning')),
+				debut : element(by.id('orsak-multi-0-datum')),
+				specifikation : element(by.id('orsak-multi-0-specifikation'))
+			}
+		}
+		this.operation = {
+			ja : {
+				checkbox : element(by.id('operation-JA')),
+				datePicker : element(by.id('datepicker_operationDatum')),
+				inputText : element(by.id('operationAnledning'))
+			},
+			nej : element(by.id('operation-NEJ')),
+			uppgiftSaknas : element(by.id('operation-UPPGIFT_SAKNAS'))
+		}
+		this.skadaForgiftning = {
+			ja : element(by.id('forgiftningYes')),
+			nej : element(by.id('forgiftningNo'))
+		}
+		this.dodsorsaksuppgifter = {
+			foreDoden : element(by.id('grunder-UNDERSOKNING_FORE_DODEN')),
+			efterDoden : element(by.id('grunder-UNDERSOKNING_EFTER_DODEN')),
+			kliniskObduktion : element(by.id('grunder-KLINISK_OBDUKTION')),
+			rattsmedicinskObduktion : element(by.id('grunder-RATTSMEDICINSK_OBDUKTION')),
+			rattsmedicinskBesiktning : element(by.id('grunder-RATTSMEDICINSK_BESIKTNING'))
+		}
 		this.enhetensAdress = {
             postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
             postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
@@ -152,6 +199,69 @@ var doiUtkast = BaseSocUtkast._extend({
 			return Promise.resolve();
 		}
 		
+	},
+	angeUtlatandeOmDodsorsak : function angeUtlatandeOmDodsorsak() {
+		
+	},
+	angeOperation : function angeOperation(operation) {
+		var operationElm = this.operation;
+		
+		if (operation.ja) {
+			return moveAndSendKeys(operationElm.ja.checkbox, protractor.Key.SPACE).then(function(){
+				return moveAndSendKeys(operationElm.ja.datePicker, operation.ja.datum);
+			}).then(function(){
+				return moveAndSendKeys(operationElm.ja.inputText, operation.ja.beskrivning);
+			});
+		} else if (operation === 'Nej') {
+			return moveAndSendKeys(operationElm.nej, protractor.Key.SPACE);
+		} else {
+			//'Uppgift om operation saknas'
+			return moveAndSendKeys(operationElm.uppgiftSaknas, protractor.Key.SPACE);
+		}
+	},
+	angeSkadaForgiftning : function angeSkadaForgiftning(skadaForgiftning) {
+		if (skadaForgiftning === true) {
+			return moveAndSendKeys(this.skadaForgiftning.ja, protractor.Key.SPACE);
+		} else {
+			return moveAndSendKeys(this.skadaForgiftning.nej, protractor.Key.SPACE);
+		}
+	},
+	angeDodsorsaksuppgifterna : function angeDodsorsaksuppgifterna(dodsorsaksuppgifter){
+		var dodsorsaksuppgifterElm = this.dodsorsaksuppgifter;
+		
+		return new Promise(function(resolve) {
+			resolve();
+		}).then(function(){
+			if (dodsorsaksuppgifter.foreDoden === true) {
+				return moveAndSendKeys(dodsorsaksuppgifterElm.foreDoden,protractor.Key.SPACE);
+			} else {
+				return;
+			}
+		}).then(function(){
+			if (dodsorsaksuppgifter.efterDoden === true) {
+				return moveAndSendKeys(dodsorsaksuppgifterElm.efterDoden,protractor.Key.SPACE);
+			} else {
+				return;
+			}
+		}).then(function(){
+			if (dodsorsaksuppgifter.kliniskObduktion === true) {
+				return moveAndSendKeys(dodsorsaksuppgifterElm.kliniskObduktion,protractor.Key.SPACE);
+			} else {
+				return;
+			}
+		}).then(function(){
+			if (dodsorsaksuppgifter.rattsmedicinskObduktion === true) {
+				return moveAndSendKeys(dodsorsaksuppgifterElm.rattsmedicinskObduktion,protractor.Key.SPACE);
+			} else {
+				return;
+			}
+		}).then(function(){
+			if (dodsorsaksuppgifter.rattsmedicinskBesiktning === true) {
+				return moveAndSendKeys(dodsorsaksuppgifterElm.rattsmedicinskBesiktning,protractor.Key.SPACE);
+			} else {
+				return;
+			}
+		});
 	}
 });
 

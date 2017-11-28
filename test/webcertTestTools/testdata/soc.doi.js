@@ -48,6 +48,17 @@ function getDodsdatum(datumSakert){
 	}	
 }
 
+function getOperation() {
+	var ja = { 
+		ja: {
+			datum : testdataHelper.dateFormat(dayBeforeDeath),
+			beskrivning : testdataHelper.randomTextString()
+			}
+		};
+	return shuffle([ja, 'Nej', 'Uppgift om operation saknas'])[0];
+}
+
+
 function getExplosivImplantat() {
 	var obj1 = false;
 	var obj2 = {avlagsnat : testdataHelper.randomTrueFalse()};
@@ -72,7 +83,16 @@ module.exports = {
 			typ : "Dödsorsaksintyg",
             identitetStyrktGenom : shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
             dodsdatum : getDodsdatum(datumSakert),
-            dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]}
+            dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]},
+			operation : getOperation(),
+			skadaForgiftning : testdataHelper.randomTrueFalse(),
+			dodsorsaksuppgifter : {
+				foreDoden : testdataHelper.randomTrueFalse(),
+				efterDoden : testdataHelper.randomTrueFalse(),
+				kliniskObduktion : testdataHelper.randomTrueFalse(),
+				rattsmedicinskObduktion : testdataHelper.randomTrueFalse(),
+				rattsmedicinskBesiktning : testdataHelper.randomTrueFalse()
+			}
 		};
 		if (datumSakert === false) {
 			obj.barn = testdataHelper.randomTrueFalse();

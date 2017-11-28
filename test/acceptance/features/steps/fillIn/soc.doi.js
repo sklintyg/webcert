@@ -73,6 +73,33 @@
                          console.trace(reason);
                          throw ('FEL, angeBarn,' + reason);
                      });
+             }).then(function() {
+                 //Opererad inom fyra veckor före döden
+                 return doiUtkastPage.angeOperation(intyg.operation)
+                     .then(function() {
+                         logger.info('OK - angeOperation');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeOperation,' + reason);
+                     });
+             }).then(function() {
+                 //SkadaForgiftning
+                 return doiUtkastPage.angeSkadaForgiftning(intyg.skadaForgiftning)
+                     .then(function() {
+                         logger.info('OK - angeSkadaForgiftning');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeSkadaForgiftning,' + reason);
+                     });
+             }).then(function() {
+                 //Dödsorsaksuppgifter
+                 return doiUtkastPage.angeDodsorsaksuppgifterna(intyg.dodsorsaksuppgifter)
+                     .then(function() {
+                         logger.info('OK - angeDodsorsaksuppgifterna');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeDodsorsaksuppgifterna,' + reason);
+                     });
              });
 
      }
