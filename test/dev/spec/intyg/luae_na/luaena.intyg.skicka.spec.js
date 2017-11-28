@@ -28,7 +28,7 @@ var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-xdescribe('Validera sändning av luae_na Intyg', function() {
+describe('Validera sändning av luae_na Intyg', function() {
 
     var intyg = intygFromJsonFactory.defaultLuaena();
     var intygsId = intyg.id;
