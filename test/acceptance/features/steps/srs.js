@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, browser, protractor, logger, Promise, intyg */
+/* globals pages, browser, protractor, logger, Promise */
 'use strict';
 let helpers = require('./helpers');
-let Soap = require('soap');
-let soapMessageBodies = require('./soap');
+//let Soap = require('soap');
+//let soapMessageBodies = require('./soap');
 let fk7263utkast = pages.intyg.fk['7263'].utkast;
 let srsdata = require('./srsdata.js');
 
@@ -34,30 +34,20 @@ module.exports = function() {
         return browser.sleep(500);
     });
 
-    this.Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet "(med SRS|utan SRS)"$/,
-        srsStatus => {
-            user = srsdata.inloggningar[srsStatus];
-            logger.info(`Loggar in som ${user.forNamn} ${user.efterNamn} på enhet ${user.enhetId}`);
-            return pages.welcome.get()
-                .then(() => pages.welcome.loginByJSON(JSON.stringify(user), true));
-        }
-
-    );
-
     this.Given(/^en patient som "(inte har givit samtycke|har givit samtycke)" till SRS$/,
         samtycke => setConsent(srsdata.patient, user, samtycke)
     );
 
-    this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263$/, () =>
+    /*this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263$/, () =>
         createDraftUsingSOAP(user, srsdata.patient.id)
         .then(intygsId => {
             intyg.id = intygsId;
             browser.get(buildLinkToIntyg(intygsId, srsdata.patient, user.enhetId));
         })
-        .then(() => browser.waitForAngular())
+        //.then(() => browser.waitForAngular())
         .then(() => browser.sleep(2000)) // Behövs för att waitForAngular tydligen inte räcker
         .then(() => expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true))
-    );
+    );*/
 
     this.Then(/^ska en frågepanel för SRS "(inte)? ?visas"$/,
         panelStatus => expect(fk7263utkast.srs.panel().isDisplayed()).to.eventually.equal(panelStatus !== 'inte')
@@ -110,9 +100,11 @@ module.exports = function() {
         findLabelContainingText('Patienten samtycker till att delta').isPresent()
     ).to.eventually.equal(true));
 
-    this.When(/^jag anger att patienten (inte)? ?samtycker till SRS$/,
-        samtycke => fk7263utkast.setSRSConsent(samtycke === 'inte' ? false : true)
-    );
+    this.When(/^jag anger att patienten (inte)? ?samtycker till SRS$/, function(samtycke) {
+        return fk7263utkast.setSRSConsent(samtycke === 'inte' ? false : true).then(function() {
+            return helpers.smallDelay();
+        });
+    });
 
     this.Then(/^frågan om samtycke ska (?:inte )?vara förifylld med "(Ja|Nej)"$/, samtycke => (('nej' === samtycke.toLowerCase()) ?
             expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(false) :
@@ -122,7 +114,9 @@ module.exports = function() {
 
     this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
 
-    this.When(/^jag fyller i ytterligare svar för SRS$/, () => clickAnswerRadioButtons());
+    this.When(/^jag fyller i ytterligare svar för SRS$/, function() {
+        return clickAnswerRadioButtons();
+    });
 
     this.When(/^ska en ny sida öppnas och urlen innehålla "([^"]*)"$/, (type) => {
         return getWindowHandles().then(function(handles) {
@@ -272,7 +266,7 @@ module.exports = function() {
 function clickAnswerRadioButtons() {
     return fk7263utkast.srs.fragor()
         .all(by.css('input[type=radio]'))
-        .each(el => el.click()).catch(() => logger.debug('Ignoring unclickable radio button.')); // Av någon anledning kastas ett fel trots att alla element går att klicka på
+        .each(el => helpers.moveAndSendKeys(el, protractor.Key.SPACE)).catch((err) => console.trace(err)); // Av någon anledning kastas ett fel trots att alla element går att klicka på
 }
 
 function setConsent(patient, user, consent) {
@@ -331,7 +325,7 @@ function findLabelContainingText(text) {
         .filter(ele => ele.getText().then(t => t.includes(text))).first();
 }
 
-function createDraftUsingSOAP(user, patientId) {
+/*function createDraftUsingSOAP(user, patientId) {
     let path = '/services/create-draft-certificate/v1.0/?wsdl';
     let body = soapMessageBodies.CreateDraftCertificate(
         user.hsaId,
@@ -359,17 +353,17 @@ function createDraftUsingSOAP(user, patientId) {
         })
     ).catch(err => logger.error(err));
 }
-
-function isNotOk(response) {
+*/
+/*function isNotOk(response) {
     return !response || !response.result || response.result.resultCode !== 'OK' || !response['utlatande-id'] || !response['utlatande-id'].attributes;
 }
-
-function buildLinkToIntyg(intygsId, patient, enhetsId) {
+*/
+/*function buildLinkToIntyg(intygsId, patient, enhetsId) {
     let uri = uriTemplate `visa/intyg/${intygsId}?fornamn=${patient.fornamn}&efternamn=${patient.efternamn}&postadress=${patient.adress.postadress}&postnummer=${patient.adress.postnummer}&postort=${patient.adress.postort}&enhet=${enhetsId}`;
     logger.info('IntygsURL: ' + process.env.WEBCERT_URL + uri);
     return process.env.WEBCERT_URL + uri;
 }
-
+*/
 function uriTemplate(strings, ...keys) {
     // Applicerar encodeURIComponent på varje variabel i templatet
     return strings.map((s, i) => [s, encodeURIComponent(keys[i])])

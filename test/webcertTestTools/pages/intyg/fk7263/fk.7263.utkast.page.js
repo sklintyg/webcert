@@ -168,16 +168,16 @@ var FkBaseUtkast = BaseUtkast._extend({
             knapp: () => element(by.buttonText('SRS')),
             panel: () => element(by.tagName('wc-srs-content')),
             samtycke: {
-                ja: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'JA')).first(),
-                nej: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'NEJ')).first()
+                ja: () => element(by.id('panel-wrapper-srs')).all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'JA')).first(),
+                nej: () => element(by.id('panel-wrapper-srs')).all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'NEJ')).first()
             },
             visamer: () => element.all(by.id('questionsCollapser')),
             visaKnapp: () => element(by.buttonText('Visa')),
             fragor: () => element(by.tagName('wc-srs-questionaire')),
             prediktion: () => element(by.id('predictionBox')),
             flik: linkText => element(by.linkText(linkText)),
-            atgarder: () => element(by.id('atgarder')),
-            statistik: () => element(by.id('statstics')),
+            atgarder: () => element(by.id('atgarder2')), //SRS rutan vid diagnos antas
+            statistik: () => element(by.id('statstics2')), //SRS rutan vid diagnos antas
             atgarderRek: () => element(by.id('atgarderRek')),
             atgarderObs: () => element(by.id('atgarderObs')),
             questionsCollapser: () => element(by.id('questionsCollapser')),
@@ -187,9 +187,9 @@ var FkBaseUtkast = BaseUtkast._extend({
 
     setSRSConsent: function(isConsent) {
         if (isConsent) {
-            this.srs.samtycke.ja().click();
+            return pageHelpers.moveAndSendKeys(this.srs.samtycke.ja(), protractor.Key.SPACE);
         } else {
-            this.srs.samtycke.nej().click();
+            return pageHelpers.moveAndSendKeys(this.srs.samtycke.nej(), protractor.Key.SPACE);
         }
     },
     getSRSQuestionnaireStatus: function() {

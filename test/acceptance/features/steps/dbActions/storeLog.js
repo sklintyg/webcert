@@ -75,9 +75,9 @@ function waitForCount(activity, count, intygsID, userHSA) {
                         logger.info(`Hittade färre än ${count} rader i databasen`);
                         console.log(`Ny kontroll sker efter ${interval} ms`);
                         connection.release();
-                        return setTimeout(() => waitForCount(activity, count, intygsID, userHSA).then(function(){
-							return resolve();
-							}), interval);
+                        return setTimeout(() => waitForCount(activity, count, intygsID, userHSA).then(function() {
+                            return resolve();
+                        }), interval);
                     }
                 })
                 .catch(err => {

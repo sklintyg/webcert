@@ -24,6 +24,7 @@ var logInAsUser = loginHelper.logInAsUser;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 var users = commonTools.HSAusers;
 var helpers = require('../helpers');
+let srsdata = require('../srsdata.js');
 
 module.exports = function() {
 
@@ -146,6 +147,12 @@ module.exports = function() {
         };
         return logInAsUserRole(userObj, 'Läkare');
     });
+
+    this.Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet "(med SRS|utan SRS)"$/, function(srsStatus) {
+        var userObj = srsdata.inloggningar[srsStatus];
+        return logInAsUserRole(userObj, 'Läkare');
+    });
+
 
     this.Given(/^att jag är inloggad som uthoppsläkare$/, function() {
         var userObj = {

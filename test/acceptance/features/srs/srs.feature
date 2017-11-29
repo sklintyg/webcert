@@ -5,7 +5,7 @@ Egenskap: Webcert visa information från SRS i form av prediktioner på sjukskri
 
 Bakgrund:
     Givet att jag är djupintegrerat inloggad som läkare på vårdenhet "med SRS"
-
+	Och jag går in på en patient
 
 @SRS-US-W01 @allmänt
 @SRS-US-W02 @åtgärder
@@ -13,12 +13,13 @@ Bakgrund:
 @SRS-US-W04 @prediktion
 Scenario: När samtycke är givet och ytterligare frågor besvarade ska information från SRS visas.
     Givet en patient som "inte har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+	Och jag går in på utkastet
     När jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
     När jag anger att patienten samtycker till SRS
-    Och jag fyller i ytterligare svar för SRS
+    #Och jag fyller i ytterligare svar för SRS
     Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
     Så ska prediktion från SRS-tjänsten visas
@@ -31,7 +32,8 @@ Scenario: När samtycke är givet och ytterligare frågor besvarade ska informat
 @SRS-US-W01 @allmänt
 Scenario: SRS-knappen ska bara visas när diagnos som har stöd för SRS är ifylld
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+	Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "finns i SRS"
     Så ska knappen för SRS vara i läge "stängd"
     När jag fyller i diagnoskod som "inte finns i SRS"
@@ -40,7 +42,8 @@ Scenario: SRS-knappen ska bara visas när diagnos som har stöd för SRS är ify
 @SRS-US-W01 @allmänt
 Scenario: Samtycken som patienter har givit ska lagras
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
@@ -49,7 +52,8 @@ Scenario: Samtycken som patienter har givit ska lagras
 @SRS-US-W01 @allmänt
 Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som "nej"
     Givet en patient som "inte har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
@@ -58,7 +62,8 @@ Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som
 @SRS-US-W01 @allmänt
 Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "finns i SRS"
     Så ska knappen för SRS vara i läge "stängd"
     När jag klickar på knappen för SRS
@@ -71,7 +76,8 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
 @SRS-US-W02 @åtgärder @OBS-åtgärder @REK-åtgärder
 Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "har åtgärder"
     Och jag klickar på knappen för SRS
     Så ska REK-åtgärder från "åtgärdslista 1" visas
@@ -81,7 +87,8 @@ Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
 @SRS-US-W02 @åtgärder
 Scenario: När åtgärdsförslag inte kan ges ska korrekt felmeddelande visas
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "saknar åtgärder"
     Och jag klickar på knappen för SRS
     Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas
@@ -89,7 +96,8 @@ Scenario: När åtgärdsförslag inte kan ges ska korrekt felmeddelande visas
 @SRS-US-W03 @statistik
 Scenario: När statistikbild för en viss diagnoskod saknas ska användaren informeras.
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "saknar statistik"
     Och jag klickar på knappen för SRS
     Och jag trycker på fliken "Statistik"
@@ -98,7 +106,8 @@ Scenario: När statistikbild för en viss diagnoskod saknas ska användaren info
 @SRS-US-W04 @prediktion
 Scenario: När prediktion inte kan ges ska korrekt felmeddelande visas
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "saknar prediktion"
     Och jag klickar på knappen för SRS
     Och jag klickar på pilen
@@ -108,7 +117,8 @@ Scenario: När prediktion inte kan ges ska korrekt felmeddelande visas
 @SRS-US-W04 @prediktion
 Scenario: Prediktion ska kunna visa ingen förhöjd risk
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "inte har förhöjd risk"
     Och jag klickar på knappen för SRS
     Och jag klickar på pilen
@@ -118,7 +128,8 @@ Scenario: Prediktion ska kunna visa ingen förhöjd risk
 @SRS-US-W04 @prediktion @highRisk
 Scenario: Prediktion ska kunna visa förhöjd risk
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "har förhöjd risk"
     Och jag klickar på knappen för SRS
     Och jag trycker på knappen "Visa"
@@ -127,7 +138,8 @@ Scenario: Prediktion ska kunna visa förhöjd risk
 @SRS-US-W06 @hjälpinformation @samtycke
 Scenario: Som användare vill jag få hjälpinformation (samtycke)
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
     Och jag klickar på knappen "?" vid samtycke
@@ -137,7 +149,8 @@ Scenario: Som användare vill jag få hjälpinformation (samtycke)
 @SRS-US-W06 @hjälpinformation @prediktionsmodell
 Scenario: Som användare vill jag få hjälpinformation (prediktionsmodell)
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
     Och jag klickar på pilen
@@ -149,7 +162,8 @@ Scenario: Som användare vill jag få hjälpinformation (prediktionsmodell)
 @SRS-US-W06 @hjälpinformation @åtgärder
 Scenario: Som användare vill jag få hjälpinformation (åtgärder)
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
     Och jag klickar på knappen "Läs mer" vid åtgärder
@@ -158,7 +172,8 @@ Scenario: Som användare vill jag få hjälpinformation (åtgärder)
 @SRS-US-W06 @hjälpinformation @statistik
 Scenario: Som användare vill jag få hjälpinformation (statistik)
     Givet en patient som "har givit samtycke" till SRS
-    Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+  	Och jag går in på utkastet
     När jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
     Och jag trycker på fliken "Statistik"
