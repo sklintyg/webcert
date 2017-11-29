@@ -422,27 +422,26 @@ module.exports = function() {
 
     this.Given(/^jag lägger till fältet "([^"]*)"$/, function(fieldtype) {
         var enter = browser.actions().sendKeys(protractor.Key.ENTER);
-
+		
         switch (fieldtype) {
             case 'Intyget baseras på':
 
-                return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2016-12-10').then(function() {
+                return helpers.moveAndSendKeys(fkUtkastPage.baserasPa.minUndersokning.datum, '2016-12-10').then(function() {
                     logger.info('Fyller i rätt datum: 2016-12-10 Intyget baseras på');
-                    enter = browser.actions().sendKeys(protractor.Key.ENTER);
                     return enter.perform();
                 });
 
             case 'Arbete':
                 logger.info('Arbete switch');
-                return fkUtkastPage.nuvarandeArbete.sendKeys('Testare');
+                return helpers.moveAndSendKeys(fkUtkastPage.nuvarandeArbete, 'Testare');
 
             case 'Aktivitetsbegransning':
                 logger.info('Ändrar Aktivitetsbegransning');
-                return fkUtkastPage.aktivitetsBegransning.sendKeys('Aktivitetsbegransning');
+                return helpers.moveAndSendKeys(fkUtkastPage.aktivitetsBegransning, 'Aktivitetsbegransning');
 
             case 'Funktionsnedsattning':
                 logger.info('Ändrar Funktionsnedsattning');
-                return fkUtkastPage.funktionsNedsattning.sendKeys('Funktionsnedsättning');
+                return helpers.moveAndSendKeys(fkUtkastPage.funktionsNedsattning, 'Funktionsnedsättning');
 
             case 'Går ej att bedöma':
                 logger.info('Ändrar Går ej att bedöma');
@@ -450,31 +449,30 @@ module.exports = function() {
 
             case 'Diagnoskod':
                 logger.info('Ändrar Diagnoskod');
-                return fkUtkastPage.diagnosKod.sendKeys('A00').then(function() {
-                    enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                return helpers.moveAndSendKeys(fkUtkastPage.diagnosKod, 'A00').then(function() {
+                    logger.silly('enter.perform();');
                     return enter.perform();
                 });
 
             case 'Arbetsförmåga':
                 logger.info('Ändrar arbetsförmåga');
-                return fkUtkastPage.nedsatt.med100.checkbox.sendKeys(protractor.Key.SPACE);
+                return helpers.moveAndSendKeys(fkUtkastPage.nedsatt.med100.checkbox, protractor.Key.SPACE);
 
             case 'Intyget baseras på Annat':
                 logger.info('Fyller i rätt datum: 2016-12-10 Annat ');
-                return fkUtkastPage.baserasPa.annat.datum.sendKeys('2016-12-10').then(function() {
-                    enter = browser.actions().sendKeys(protractor.Key.ENTER);
+                return helpers.moveAndSendKeys(fkUtkastPage.baserasPa.annat.datum, '2016-12-10').then(function() {
                     return enter.perform();
                 });
             case 'UndersökningsDatum':
                 return fkUtkastPage.baserasPa.minUndersokning.datum.clear().then(function() {
-                    return fkUtkastPage.baserasPa.minUndersokning.datum.sendKeys('2017-01-12').then(function() {
+                    return helpers.moveAndSendKeys(fkUtkastPage.baserasPa.minUndersokning.datum, '2017-01-12').then(function() {
                         logger.info('Ändrar undersökningsdatum: 2017-01-12 ');
                         //console.log('Ändrar datum');
                         return enter.perform();
                     });
                 });
             default:
-                logger.info('Felaktigt Fält valt');
+                logger.error('Felaktigt Fält valt');
                 break;
         }
 
