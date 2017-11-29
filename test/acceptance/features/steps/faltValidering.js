@@ -422,7 +422,7 @@ module.exports = function() {
 
     this.Given(/^jag lägger till fältet "([^"]*)"$/, function(fieldtype) {
         var enter = browser.actions().sendKeys(protractor.Key.ENTER);
-		
+
         switch (fieldtype) {
             case 'Intyget baseras på':
 

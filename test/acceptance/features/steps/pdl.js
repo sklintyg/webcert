@@ -23,11 +23,11 @@ var db = require('./dbActions');
 
 module.exports = function() {
 
-    this.Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten$/, function(activity, callback) {
-        db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId, callback);
+    this.Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten$/, function(activity) {
+        return db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId);
     });
 
-    this.Given(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity, callback) {
-        db.storeLog.waitForCount(activity, count, intyg.id, global.user.hsaId, callback);
+    this.Given(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity) {
+        return db.storeLog.waitForCount(activity, count, intyg.id, global.user.hsaId);
     });
 };

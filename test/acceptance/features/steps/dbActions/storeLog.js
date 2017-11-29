@@ -60,27 +60,39 @@ function getLogEntries(activity, intygsID, userHSA, connection) {
     return p1;
 }
 
-function waitForCount(activity, count, intygsID, userHSA, cb) {
-    dbPool.getConnection()
-        .then(connection => getLogEntries(activity, intygsID, userHSA, connection)
-            .then(result => {
-                var interval = 5000;
-                if (result.length >= count) {
-                    logger.info('Hittade rader: ' + JSON.stringify(result));
+function waitForCount(activity, count, intygsID, userHSA) {
+    return new Promise(function(resolve) {
+
+        dbPool.getConnection()
+            .then(connection => getLogEntries(activity, intygsID, userHSA, connection)
+                .then(result => {
+                    var interval = 5000;
+                    if (result.length >= count) {
+                        logger.info('Hittade rader: ' + JSON.stringify(result));
+                        connection.release();
+                        return resolve();
+                    } else {
+                        logger.info(`Hittade färre än ${count} rader i databasen`);
+                        console.log(`Ny kontroll sker efter ${interval} ms`);
+                        connection.release();
+                        return setTimeout(() => waitForCount(activity, count, intygsID, userHSA).then(function(){
+							return resolve();
+							}), interval);
+                    }
+                })
+                .catch(err => {
                     connection.release();
-                    cb();
-                } else {
-                    logger.info(`Hittade färre än ${count} rader i databasen`);
-                    console.log(`Ny kontroll sker efter ${interval} ms`);
-                    setTimeout(() => waitForCount(activity, count, intygsID, userHSA, cb), interval);
-                    connection.release();
-                }
-            })
-            .catch(err => {
-                connection.release();
-                cb(err);
-            })
-        );
+                    throw (err);
+                })
+            );
+
+
+
+
+
+
+    });
+
 }
 
 module.exports = {
