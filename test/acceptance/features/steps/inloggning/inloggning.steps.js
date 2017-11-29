@@ -335,7 +335,7 @@ module.exports = function() {
         });
     });
 
-    this.Then(/^ska jag varnas om (?:att )"([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
+    this.Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
         var promiseArr = [];
         var elementArray = [
             element(by.id('wc-avliden-text-' + person.id.replace(/(\d{8})(\d{4})/, '$1-$2'))), //.patient-alert? db/doi?

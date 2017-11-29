@@ -115,15 +115,14 @@ Scenario: Prediktion ska kunna visa ingen förhöjd risk
     Och jag trycker på knappen "Visa"
     Så ska jag få prediktion "Ingen förhöjd risk"
 
-@SRS-US-W04 @prediktion
-@notReady
+@SRS-US-W04 @prediktion @highRisk
 Scenario: Prediktion ska kunna visa förhöjd risk
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "har förhöjd risk"
     Och jag klickar på knappen för SRS
     Och jag trycker på knappen "Visa"
-    Så ska jag varnas om "Förhöjd risk"
+    Så ska jag varnas om att "Förhöjd risk"
 
 @SRS-US-W06 @hjälpinformation @samtycke
 Scenario: Som användare vill jag få hjälpinformation (samtycke)

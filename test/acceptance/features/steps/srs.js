@@ -79,7 +79,16 @@ module.exports = function() {
         srsButtonStatus => expect(fk7263utkast.getSRSButtonStatus()).to.eventually.equal(srsButtonStatus)
     );
 
-    this.When(/^jag klickar på knappen för SRS$/, () => fk7263utkast.srs.knapp().click());
+    this.When(/^jag klickar på knappen för SRS$/, () => {
+
+        return fk7263utkast.srs.knapp().click().then(function() {
+            logger.info('OK - klickat knappen för SRS');
+            return helpers.mediumDelay();
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, Kunde inte klicka knappen för SRS');
+        });
+    });
 
     this.When(/^jag klickar på pilen( för att minimera)?$/, action => {
         fk7263utkast.srs.visamer().getAttribute('class')
@@ -108,7 +117,7 @@ module.exports = function() {
     this.Then(/^frågan om samtycke ska (?:inte )?vara förifylld med "(Ja|Nej)"$/, samtycke => (('nej' === samtycke.toLowerCase()) ?
             expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(false) :
             expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(true))
-        .then(() => browser.sleep(500)));
+        .then(() => helpers.mediumDelay()));
 
 
     this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
@@ -169,26 +178,62 @@ module.exports = function() {
 
     this.When(/^jag klickar på knappen "([^"]*)" vid (samtycke)$/, (knappText, type) => {
         if (isQuestionmarkBtn(knappText)) {
-            clickQuestionmarkBtn(type).then(() => browser.sleep(500));
+            return clickQuestionmarkBtn(type).then(function() {
+                logger.info('OK - knappText: ' + knappText + ', ' + type);
+                return helpers.mediumDelay();
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, knappText: ' + knappText + ', ' + type);
+            });
         } else {
-            clickReadMoreBtn(type).then(() => browser.sleep(500));
+            return clickReadMoreBtn(type).then(function() {
+                logger.info('OK - knappText: ' + knappText + ', ' + type);
+                return helpers.mediumDelay();
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, knappText: ' + knappText + ', ' + type);
+            });
         }
     });
 
     this.When(/^jag klickar på knappen "([^"]*)" vid (prediktionsmeddelandet)$/, (knappText, type) => {
         if (isQuestionmarkBtn(knappText)) {
-            clickQuestionmarkBtn(type).then(() => browser.sleep(500));
+            return clickQuestionmarkBtn(type).then(function() {
+                logger.info('OK - knappText: ' + knappText + ', ' + type);
+                return helpers.mediumDelay();
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, knappText: ' + knappText + ', ' + type);
+            });
         } else {
-            clickReadMoreBtn(type).then(() => browser.sleep(500));
+            return clickReadMoreBtn(type).then(function() {
+                logger.info('OK - knappText: ' + knappText + ', ' + type);
+                return helpers.mediumDelay();
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, knappText: ' + knappText + ', ' + type);
+            });
         }
     });
 
     this.When(/^jag klickar på knappen "([^"]*)" vid (åtgärder)$/, (knappText, type) => {
-        clickReadMoreBtn(type).then(() => browser.sleep(500));
+        return clickReadMoreBtn(type).then(function() {
+            logger.info('OK - knappText: ' + knappText + ', ' + type);
+            return helpers.mediumDelay();
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, knappText: ' + knappText + ', ' + type);
+        });
     });
 
     this.When(/^jag klickar på knappen "([^"]*)" vid (statistik)$/, (knappText, type) => {
-        clickReadMoreBtn(type).then(() => browser.sleep(500));
+        return clickReadMoreBtn(type).then(function() {
+            logger.info('OK - knappText: ' + knappText + ', ' + type);
+            return helpers.mediumDelay();
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, knappText: ' + knappText + ', ' + type);
+        });
     });
 
     this.When(/^jag trycker på knappen "Visa"$/, () => helpers.moveAndSendKeys(fk7263utkast.srs.visaKnapp(), protractor.Key.SPACE));
