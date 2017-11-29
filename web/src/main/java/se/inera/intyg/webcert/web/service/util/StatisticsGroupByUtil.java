@@ -73,8 +73,10 @@ public class StatisticsGroupByUtil {
             return new HashMap<>();
         }
         WebCertUser user = webCertUserService.getUser();
+        Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(
+                results.stream().map(r -> r.getPersonnummer()).map(pnr -> new Personnummer(pnr)).collect(Collectors.toList()));
 
-        results.stream().forEach(item -> item.setSekretessStatus(getSekretessStatus(item.getPersonnummer())));
+        results.stream().forEach(item -> item.setSekretessStatus(sekretessStatusMap.get(new Personnummer(item.getPersonnummer()))));
 
         return results.stream()
                 .filter(item -> item.getSekretessStatus() != SekretessStatus.UNDEFINED)
@@ -83,26 +85,6 @@ public class StatisticsGroupByUtil {
                                 item.getSekretessStatus() == SekretessStatus.TRUE)
                         .isVerified())
                 .collect(Collectors.groupingBy(GroupableItem::getEnhetsId, Collectors.counting()));
-    }
-
-    private SekretessStatus getSekretessStatus(String personnummer) {
-        Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personnummer)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer"));
-        return patientDetailsResolver.getSekretessStatus(pnr);
-    }
-
-    private static final class QAItem {
-        private String enhetsId;
-        private String personnummer;
-        private String intygsTyp;
-        private SekretessStatus sekretessStatus;
-
-        private QAItem(String enhetsId, String personnummer, String intygsTyp) {
-            this.enhetsId = enhetsId;
-            this.personnummer = personnummer;
-            this.intygsTyp = intygsTyp;
-        }
-
     }
 
 }

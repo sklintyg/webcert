@@ -23,6 +23,9 @@ import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by eriklupander on 2017-08-14.
  */
@@ -39,4 +42,5 @@ public interface PatientDetailsResolver {
 
     boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient);
 
+    Map<Personnummer, SekretessStatus> getSekretessStatusForList(List<Personnummer> personnummerList);
 }

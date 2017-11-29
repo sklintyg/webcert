@@ -41,10 +41,12 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.when;
 
 /**
@@ -74,22 +76,20 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
     @Before
     public void setup() {
         Personnummer pnr1 = Personnummer.createValidatedPersonnummerWithDash(PNR1).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr1)).thenReturn(SekretessStatus.FALSE);
-
         Personnummer pnr2 = Personnummer.createValidatedPersonnummerWithDash(PNR2).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr2)).thenReturn(SekretessStatus.TRUE);
-
         Personnummer pnr3 = Personnummer.createValidatedPersonnummerWithDash(PNR3).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr3)).thenReturn(SekretessStatus.FALSE);
 
+        Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
+        sekrMap.put(pnr1, SekretessStatus.FALSE);
+        sekrMap.put(pnr2, SekretessStatus.TRUE);
+        sekrMap.put(pnr3, SekretessStatus.FALSE);
+        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
     }
 
     @Test
     public void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForLakare() {
 
         when(webCertUserService.getUser()).thenReturn(createUser());
-
-
 
         List<GroupableItem> queryResult = new ArrayList<>();
         queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
@@ -107,10 +107,12 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
         when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
 
         Personnummer pnr1 = Personnummer.createValidatedPersonnummerWithDash(PNR1).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr1)).thenReturn(SekretessStatus.FALSE);
-
         Personnummer pnr2 = Personnummer.createValidatedPersonnummerWithDash(PNR2).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr2)).thenReturn(SekretessStatus.TRUE);
+
+        Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
+        sekrMap.put(pnr1, SekretessStatus.FALSE);
+        sekrMap.put(pnr2, SekretessStatus.TRUE);
+        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
 
         List<GroupableItem> queryResult = new ArrayList<>();
         queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));

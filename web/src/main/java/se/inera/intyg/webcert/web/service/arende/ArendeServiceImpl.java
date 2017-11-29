@@ -376,15 +376,18 @@ public class ArendeServiceImpl implements ArendeService {
         results.sort(Comparator.comparing(ArendeListItem::getReceivedDate).reversed());
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
+        Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(results.stream()
+                .map(ali -> new Personnummer(ali.getPatientId()))
+                .collect(Collectors.toList()));
+
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
         results = results.stream()
-                .filter(ali -> this.passesSekretessCheck(new Personnummer(ali.getPatientId()), ali.getIntygTyp(), user))
+                .filter(ali -> this.passesSekretessCheck(ali.getPatientId(), ali.getIntygTyp(), user, sekretessStatusMap))
                 .collect(Collectors.toList());
-
 
         // We must mark all items having patient with sekretessmarkering
         results.stream()
-                .filter(ali -> hasSekretessStatus(ali, SekretessStatus.TRUE))
+                .filter(ali -> hasSekretessStatus(ali, SekretessStatus.TRUE, sekretessStatusMap))
                 .forEach(ali -> ali.setSekretessmarkering(true));
 
         response.setTotalCount(results.size());
@@ -397,8 +400,9 @@ public class ArendeServiceImpl implements ArendeService {
         return response;
     }
 
-    private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user) {
-        final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patientId);
+    private boolean passesSekretessCheck(String patientId, String intygsTyp, WebCertUser user,
+            Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        final SekretessStatus sekretessStatus = sekretessStatusMap.get(new Personnummer(patientId));
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
             return false;
@@ -410,9 +414,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     }
 
-    private boolean hasSekretessStatus(ArendeListItem ali, SekretessStatus sekretessStatus) {
-        Personnummer patientPersonnummer = new Personnummer(ali.getPatientId());
-        return patientDetailsResolver.getSekretessStatus(patientPersonnummer) == sekretessStatus;
+    private boolean hasSekretessStatus(ArendeListItem ali, SekretessStatus sekretessStatus,
+            Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        return sekretessStatusMap.get(new Personnummer(ali.getPatientId())) == sekretessStatus;
     }
 
     @Override

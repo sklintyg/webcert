@@ -144,6 +144,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         // always return the Arende that is saved
         when(arendeRepository.save(any(Arende.class))).thenAnswer(invocation -> (Arende) invocation.getArguments()[0]);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        Map<String, SekretessStatus> map = mock(Map.class);
+        when(map.get(anyString())).thenReturn(SekretessStatus.FALSE);
+        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(map);
     }
 
     @Test
@@ -1006,7 +1009,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testFilterArendeFiltersOutNonVerifiedSekretessPatients() {
         WebCertUser webCertUser = createUser();
 
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        // when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        Map<String, SekretessStatus> map = mock(Map.class);
+        when(map.get(anyString())).thenReturn(SekretessStatus.UNDEFINED);
+        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(map);
+
         when(webcertUserService.getUser()).thenReturn(webCertUser);
         when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
@@ -1028,7 +1035,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(patientDetailsResolver, times(2)).getSekretessStatus(any(Personnummer.class));
+        verify(patientDetailsResolver, times(1)).getSekretessStatusForList(anyList());
         verify(webcertUserService).isAuthorizedForUnit(anyString(), eq(true));
 
         verify(arendeRepository).filterArende(any(Filter.class));
