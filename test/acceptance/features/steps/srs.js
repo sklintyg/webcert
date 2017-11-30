@@ -95,12 +95,22 @@ module.exports = function() {
         });
     });
 
-    this.Then(/^frågan om samtycke ska (?:inte )?vara förifylld med "(Ja|Nej)"$/, samtycke => (('nej' === samtycke.toLowerCase()) ?
-            expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(false) :
-            expect(fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected()).to.eventually.equal(true))
-        .then(() => helpers.mediumDelay()));
+    this.Then(/^frågan om samtycke ska( inte)? vara förifylld med "(Ja|Nej)"$/, function(inte, samtycke) {
+        return fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected().then(function(selected) {
+            if (inte) {
+                logger.info('Förväntar oss att ' + samtycke + ' inte är aktiv');
+                logger.silly('selected = ' + selected);
+                return expect(selected).to.equal(false);
+            } else {
+                logger.info('Förväntar oss att ' + samtycke + ' är aktiv');
+                logger.silly('selected = ' + selected);
+                return expect(selected).to.equal(true);
+            }
+        }).then(function() {
+            return helpers.mediumDelay();
+        });
 
-
+    });
     this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
 
     this.When(/^jag fyller i ytterligare svar för SRS$/, function() {

@@ -5,6 +5,7 @@ Egenskap: PDL-loggning för SRS
 
 Bakgrund:
     Givet att jag är djupintegrerat inloggad som läkare på vårdenhet "med SRS"
+	Och jag går in på en patient
 
 # Log.activity.activityType = "Läsa"
 # Log.activity.activityArg = "Prediktion från SRS av risk för lång sjukskrivning"
@@ -17,5 +18,4 @@ Scenario: Loggning vid visning av prediktion
     Och jag klickar på knappen för SRS
     Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
-    Och spara användare till globaluser
     Så ska det nu finnas 1 loggaktivitet "Läsa" för intyget

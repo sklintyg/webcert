@@ -39,7 +39,7 @@ Scenario: SRS-knappen ska bara visas när diagnos som har stöd för SRS är ify
     När jag fyller i diagnoskod som "inte finns i SRS"
     Så ska knappen för SRS vara i läge "gömd"
 
-@SRS-US-W01 @allmänt @samtycke
+@SRS-US-W01 @allmänt @samtycke @notReady @INTYG-5158
 Scenario: Samtycken som patienter har givit ska lagras
     Givet en patient som "har givit samtycke" till SRS
     Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
@@ -47,9 +47,10 @@ Scenario: Samtycken som patienter har givit ska lagras
     Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
-    Och frågan om samtycke ska vara förifylld med "Ja"
-
-@SRS-US-W01 @allmänt @EjSamtycke
+    #Och frågan om samtycke ska vara förifylld med "Ja"
+	#Det finns ingen hook i webcert för att kolla om radio knapparna för consent är aktiva eller inte. isSelected() returnerar allt true
+	
+@SRS-US-W01 @allmänt @EjSamtycke @notReady @INTYG-5158
 Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som "nej"
     Givet en patient som "inte har givit samtycke" till SRS
     Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
@@ -57,7 +58,8 @@ Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som
     Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
-    Och frågan om samtycke ska inte vara förifylld med "Nej"
+    #Och frågan om samtycke ska inte vara förifylld med "Nej"
+	#Det finns ingen hook i webcert för att kolla om radio knapparna för consent är aktiva eller inte. isSelected() returnerar allt true
 
 @SRS-US-W01 @allmänt
 Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
