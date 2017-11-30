@@ -1,7 +1,7 @@
 #language: sv
 
 @SRS
-Egenskap: Webcert visa information från SRS i form av prediktioner på sjukskrivningslängd, statistikbilder och åtgärdsförslag
+Egenskap: SRS Feature - Webcert ska visa information från SRS i form av prediktioner på sjukskrivningslängd, statistikbilder och åtgärdsförslag
 
 Bakgrund:
     Givet att jag är djupintegrerat inloggad som läkare på vårdenhet "med SRS"
@@ -39,7 +39,7 @@ Scenario: SRS-knappen ska bara visas när diagnos som har stöd för SRS är ify
     När jag fyller i diagnoskod som "inte finns i SRS"
     Så ska knappen för SRS vara i läge "gömd"
 
-@SRS-US-W01 @allmänt
+@SRS-US-W01 @allmänt @samtycke
 Scenario: Samtycken som patienter har givit ska lagras
     Givet en patient som "har givit samtycke" till SRS
     Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
@@ -49,7 +49,7 @@ Scenario: Samtycken som patienter har givit ska lagras
     Så ska en fråga om samtycke visas
     Och frågan om samtycke ska vara förifylld med "Ja"
 
-@SRS-US-W01 @allmänt
+@SRS-US-W01 @allmänt @EjSamtycke
 Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som "nej"
     Givet en patient som "inte har givit samtycke" till SRS
     Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 

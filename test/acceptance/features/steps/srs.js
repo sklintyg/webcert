@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, browser, protractor, logger, Promise */
+/* globals pages, browser, protractor, logger, Promise, user, person */
 'use strict';
 let helpers = require('./helpers');
 //let Soap = require('soap');
@@ -26,28 +26,17 @@ let fk7263utkast = pages.intyg.fk['7263'].utkast;
 let srsdata = require('./srsdata.js');
 
 module.exports = function() {
-    let user = {};
+    //let user = {};
 
     this.Given(/^spara användare till globaluser$/, () => {
-        global.user = user;
+        //global.user = user;
         logger.info(`Användare ${global.user.forNamn} ${global.user.efterNamn} på enhet ${global.user.hsaId} sparad sparad till intygsobjekt`);
         return browser.sleep(500);
     });
 
     this.Given(/^en patient som "(inte har givit samtycke|har givit samtycke)" till SRS$/,
-        samtycke => setConsent(srsdata.patient, user, samtycke)
+        samtycke => setConsent(person, user, samtycke)
     );
-
-    /*this.Given(/^att jag befinner mig på ett nyskapat Läkarintyg FK 7263$/, () =>
-        createDraftUsingSOAP(user, srsdata.patient.id)
-        .then(intygsId => {
-            intyg.id = intygsId;
-            browser.get(buildLinkToIntyg(intygsId, srsdata.patient, user.enhetId));
-        })
-        //.then(() => browser.waitForAngular())
-        .then(() => browser.sleep(2000)) // Behövs för att waitForAngular tydligen inte räcker
-        .then(() => expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true))
-    );*/
 
     this.Then(/^ska en frågepanel för SRS "(inte)? ?visas"$/,
         panelStatus => expect(fk7263utkast.srs.panel().isDisplayed()).to.eventually.equal(panelStatus !== 'inte')
@@ -277,20 +266,25 @@ function setConsent(patient, user, consent) {
     const patientId = patient.id.slice(0, 8) + '-' + patient.id.slice(8 + 0);
     const link = buildLinkToSetConsent(patientId, user.enhetId);
     const payload = consent === 'har givit samtycke' ? 'true' : 'false';
-    logger.debug(`URL: ${link} PAYLOAD: ${payload}`);
-    return browser.executeAsyncScript(function(url, samtycke, body) {
-            var callback = arguments[arguments.length - 1];
-            var xhr = new XMLHttpRequest();
-            xhr.open('PUT', url, true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    callback(xhr.responseText);
-                }
-            };
-            xhr.send(body);
-        }, link, consent, payload)
-        .then(response => expect(response).to.equal('"OK"'));
+    logger.info(`URL: ${link} PAYLOAD: ${payload}`);
+    //https://webcert.ip30.nordicmedtest.sjunet.org/api/srs/consent/19520617-2339/TSTNMT2321000156-1077
+    return browser.sleep(1000).then(function() {
+        return browser.executeAsyncScript(function(url, samtycke, body) {
+                var callback = arguments[arguments.length - 1];
+                var xhr = new XMLHttpRequest();
+                xhr.open('PUT', url, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        callback(xhr.responseText);
+                    }
+                };
+                xhr.send(body);
+            }, link, consent, payload)
+            .then(response => expect(response).to.equal('"OK"')).catch((err) => console.trace(err)).then(function() {
+                return browser.sleep(1000); //väntar på att back-end ska spara consent.
+            });
+    });
 }
 
 function buildLinkToSetConsent(patientId, enhetId) {
@@ -325,45 +319,6 @@ function findLabelContainingText(text) {
         .filter(ele => ele.getText().then(t => t.includes(text))).first();
 }
 
-/*function createDraftUsingSOAP(user, patientId) {
-    let path = '/services/create-draft-certificate/v1.0/?wsdl';
-    let body = soapMessageBodies.CreateDraftCertificate(
-        user.hsaId,
-        `${user.forNamn} ${user.efterNamn}`,
-        user.enhetId,
-        'Enhetsnamn',
-        patientId
-    );
-
-    let url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
-    logger.debug('debug', url);
-    logger.debug('debug', body);
-
-    return new Promise((resolve, reject) =>
-        Soap.createClient(url, (err, client) => {
-            client.CreateDraftCertificate(body, (err, response, responseBody) => {
-                if (isNotOk(response)) {
-                    reject(`Felaktigt SOAP-svar: ${responseBody}`);
-                } else if (err) {
-                    reject(err);
-                } else {
-                    resolve(response['utlatande-id'].attributes.extension);
-                }
-            });
-        })
-    ).catch(err => logger.error(err));
-}
-*/
-/*function isNotOk(response) {
-    return !response || !response.result || response.result.resultCode !== 'OK' || !response['utlatande-id'] || !response['utlatande-id'].attributes;
-}
-*/
-/*function buildLinkToIntyg(intygsId, patient, enhetsId) {
-    let uri = uriTemplate `visa/intyg/${intygsId}?fornamn=${patient.fornamn}&efternamn=${patient.efternamn}&postadress=${patient.adress.postadress}&postnummer=${patient.adress.postnummer}&postort=${patient.adress.postort}&enhet=${enhetsId}`;
-    logger.info('IntygsURL: ' + process.env.WEBCERT_URL + uri);
-    return process.env.WEBCERT_URL + uri;
-}
-*/
 function uriTemplate(strings, ...keys) {
     // Applicerar encodeURIComponent på varje variabel i templatet
     return strings.map((s, i) => [s, encodeURIComponent(keys[i])])
