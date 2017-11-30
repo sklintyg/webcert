@@ -90,11 +90,5 @@
     "text": "Socialstyrelsens försäkringsmedicinska beslutsstöd <img src='/img/link_icon.png'/>",
     "target": "_blank",
     "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos"
-  },
-  {
-    "key": "fkNyaIntygstyper",
-    "url": "https://www.forsakringskassan.se/sjukvard/medicinska-underlag-och-blanketter/nya-medicinska-underlag-inom-sjukpenning-och-sjuk-och-aktivitetsersattning",
-    "text": "Försäkringskassans nya intygstyper <img src='/img/link_icon.png'/>",
-    "target": "_blank"
   }
 ]

@@ -81,9 +81,6 @@
           <p>
             Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och
             kommunicera med Försäkringskassan. För närvarande stödjer tjänsten följande intyg:
-          <div class="alert alert-warning">
-            <strong>Observera!</strong> För närvarande är det inte möjligt att utfärda <span dynamiclink key="fkNyaIntygstyper"></span>. Vi arbetar för att lösa detta så snart som möjligt.
-          </div>
           <ul style="margin-bottom:30px">
             <li ng-repeat="type in intygTypes">{{type.label}}</li>
           </ul>
