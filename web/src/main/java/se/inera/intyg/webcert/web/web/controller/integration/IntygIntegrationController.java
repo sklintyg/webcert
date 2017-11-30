@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.common.service.CommonFeatureService;
@@ -34,8 +33,19 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -90,10 +100,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
-     * @param intygId
-     *            The id of the certificate to view.
-     * @param intygTyp
-     *            The type of certificate
+     * @param intygId  The id of the certificate to view.
+     * @param intygTyp The type of certificate
      */
     @GET
     @Path("/{certType}/{certId}")
@@ -136,8 +144,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
      * the certificate.
      *
-     * @param intygId
-     *            The id of the certificate to view.
+     * @param intygId The id of the certificate to view.
      */
     @GET
     @Path("/{certId}")
@@ -272,17 +279,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
         // Call service
         PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
 
-        // If the type doesn't equals to FK7263 then verify the required query-parameters
-        if (!prepareRedirectInfo.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
-            verifyIntegrationParameters(user.getParameters());
-        }
-
         if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
 
             // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
             // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
             // the UserDetailsService that built the Principal, but better safe than sorry...
-
             if (userHasExactlyOneSelectableVardenhet(user)) {
                 user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
                 updateUserWithActiveFeatures(user);
@@ -388,10 +389,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private void updateUserWithActiveFeatures(WebCertUser webCertUser) {
-        if (commonFeatureService.isPresent()) {
-            webCertUser.setFeatures(commonFeatureService.get().getActiveFeatures(webCertUser.getValdVardenhet().getId(),
-                    webCertUser.getValdVardgivare().getId()));
-        }
+        commonFeatureService.ifPresent(commonFeatureService1 -> webCertUser
+                .setFeatures(commonFeatureService1.getActiveFeatures(webCertUser.getValdVardenhet().getId(),
+                        webCertUser.getValdVardgivare().getId())));
     }
 
     private boolean userHasExactlyOneSelectableVardenhet(WebCertUser webCertUser) {
@@ -405,26 +405,5 @@ public class IntygIntegrationController extends BaseIntegrationController {
         super.validateParameters(pathParameters);
         super.validateAuthorities();
     }
-
-    private void verifyIntegrationParameters(IntegrationParameters parameters) {
-        if (parameters == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "Missing required integration parameters");
-        }
-
-        verifyParameter(PARAM_PATIENT_FORNAMN, parameters.getFornamn());
-        verifyParameter(PARAM_PATIENT_EFTERNAMN, parameters.getEfternamn());
-        verifyParameter(PARAM_PATIENT_POSTADRESS, parameters.getPostadress());
-        verifyParameter(PARAM_PATIENT_POSTNUMMER, parameters.getPostnummer());
-        verifyParameter(PARAM_PATIENT_POSTORT, parameters.getPostort());
-    }
-
-    private void verifyParameter(String paramName, String paramValue) {
-        if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "Missing required parameter '" + paramName + "'");
-        }
-    }
-
 }
 // CHECKSTYLE:ON ParameterNumber

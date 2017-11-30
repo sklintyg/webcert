@@ -238,31 +238,26 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
         PersonSvar personSvar = puService.getPerson(personnummer);
         if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
+            Patient patient = toPatientFromPersonSvar(personnummer, personSvar);
 
             // Get address if djupintegration from params, fallback to PU for address if unavailable.
             if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-                Patient patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
                 IntegrationParameters parameters = user.getParameters();
 
                 // Update avliden with integrationparameters
                 patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
 
-                // All address fields needs to be present from integration parameters, otherwise use PU instead.
-                if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
-                        && isNotNullOrEmpty(parameters.getPostort())) {
+                if (isNotNullOrEmpty(parameters.getPostadress())) {
                     patient.setPostadress(parameters.getPostadress());
-                    patient.setPostnummer(parameters.getPostnummer());
-                    patient.setPostort(parameters.getPostort());
-                } else {
-                    patient.setPostadress(personSvar.getPerson().getPostadress());
-                    patient.setPostnummer(personSvar.getPerson().getPostnummer());
-                    patient.setPostort(personSvar.getPerson().getPostort());
                 }
-
-                return patient;
-            } else {
-                return toPatientFromPersonSvar(personnummer, personSvar);
+                if (isNotNullOrEmpty(parameters.getPostnummer())) {
+                    patient.setPostnummer(parameters.getPostnummer());
+                }
+                if (isNotNullOrEmpty(parameters.getPostort())) {
+                    patient.setPostort(parameters.getPostort());
+                }
             }
+            return patient;
         } else {
             // No PU means only use integration parameters
             if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
@@ -289,13 +284,16 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
                 patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
                 IntegrationParameters parameters = user.getParameters();
-                if (parameters != null && isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
-                        && isNotNullOrEmpty(parameters.getPostort())) {
-                    patient.setPostadress(parameters.getPostadress());
-                    patient.setPostnummer(parameters.getPostnummer());
-                    patient.setPostort(parameters.getPostort());
+                if (isNotNullOrEmpty(parameters.getPostadress())) {
+                    patient.setPostadress(user.getParameters().getPostadress());
                 }
-                patient.setAvliden(patient.isAvliden() || (parameters != null && parameters.isPatientDeceased()));
+                if (isNotNullOrEmpty(parameters.getPostnummer())) {
+                    patient.setPostnummer(user.getParameters().getPostnummer());
+                }
+                if (isNotNullOrEmpty(parameters.getPostort())) {
+                    patient.setPostort(user.getParameters().getPostort());
+                }
+                patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
 
             } else {
                 // use integration parameters if no answer from PU
@@ -375,14 +373,19 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
                 // Address from integration parameters
                 IntegrationParameters parameters = user.getParameters();
-                if (parameters != null && isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
-                        && isNotNullOrEmpty(parameters.getPostort())) {
+
+                // Hämta namn från PU
+                // Address från Integrationsparametrar
+                if (isNotNullOrEmpty(user.getParameters().getPostadress())) {
                     patient.setPostadress(user.getParameters().getPostadress());
+                }
+                if (isNotNullOrEmpty(user.getParameters().getPostnummer())) {
                     patient.setPostnummer(user.getParameters().getPostnummer());
+                }
+                if (isNotNullOrEmpty(user.getParameters().getPostort())) {
                     patient.setPostort(user.getParameters().getPostort());
                 }
                 patient.setAvliden(patient.isAvliden() || (parameters != null && parameters.isPatientDeceased()));
-
             } else {
                 // If PU is missing, use integration parameters
                 patient = toPatientFromParameters(personnummer, user.getParameters());
