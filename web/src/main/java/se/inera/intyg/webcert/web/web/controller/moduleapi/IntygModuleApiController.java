@@ -451,20 +451,28 @@ public class IntygModuleApiController extends AbstractApiController {
 
         Patient patient = new Patient();
         patient.setPersonId(copyRequest.getPatientPersonnummer());
-
-        if (parameters != null && !Strings.nullToEmpty(parameters.getFornamn()).trim().isEmpty()
-                && !Strings.nullToEmpty(parameters.getEfternamn()).trim().isEmpty()
-                && !Strings.nullToEmpty(parameters.getPostadress()).trim().isEmpty()
-                && !Strings.nullToEmpty(parameters.getPostnummer()).trim().isEmpty()
-                && !Strings.nullToEmpty(parameters.getPostort()).trim().isEmpty()) {
-            patient.setFornamn(parameters.getFornamn());
-            patient.setEfternamn(parameters.getEfternamn());
-            patient.setMellannamn(parameters.getMellannamn());
-            patient.setPostadress(parameters.getPostadress());
-            patient.setPostnummer(parameters.getPostnummer());
-            patient.setPostort(parameters.getPostort());
+        if (parameters != null) {
+            if (!Strings.nullToEmpty(parameters.getFornamn()).trim().isEmpty()) {
+                patient.setFornamn(parameters.getFornamn());
+            }
+            if (!Strings.nullToEmpty(parameters.getEfternamn()).trim().isEmpty()) {
+                patient.setEfternamn(parameters.getEfternamn());
+            }
+            if (!Strings.nullToEmpty(parameters.getMellannamn()).trim().isEmpty()) {
+                patient.setMellannamn(parameters.getMellannamn());
+            }
+            if (!Strings.nullToEmpty(parameters.getPostadress()).trim().isEmpty()) {
+                patient.setPostadress(parameters.getPostadress());
+            }
+            if (!Strings.nullToEmpty(parameters.getPostnummer()).trim().isEmpty()) {
+                patient.setPostnummer(parameters.getPostnummer());
+            }
+            if (!Strings.nullToEmpty(parameters.getPostort()).trim().isEmpty()) {
+                patient.setPostort(parameters.getPostort());
+            }
         }
         return patient;
+
     }
 
     private IntygServiceResult revokeIntyg(String intygsTyp, String intygsId, RevokeSignedIntygParameter param) {

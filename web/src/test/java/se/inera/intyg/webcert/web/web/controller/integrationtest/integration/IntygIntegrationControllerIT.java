@@ -31,8 +31,12 @@ import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
 
@@ -412,11 +416,8 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .body("parameters.postort", equalTo("patientpostort"));
     }
 
-    /**
-     * Verify that patientinformation is required for intygstyp luse
-     */
     @Test
-    public void testRedirectFailsForLuseWithMissingPatientInformation() {
+    public void testRedirectForLuseWithMissingPatientInformation() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -430,10 +431,18 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().pathParam("intygsId", utkastId)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042")
-                .then().header(HttpHeaders.LOCATION,
-                        endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
-    }
+                .then().header(HttpHeaders.LOCATION, endsWith("/luse/edit/" + utkastId + "/"));
 
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .prettyPeek()
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("parameters.alternateSsn", equalTo("x"))
+                .body("parameters.responsibleHospName", equalTo("x"))
+                .body("$", not(hasKey("parameters.fornamn")));
+    }
     /**
      * Verify that request without enhet is redirected to unit selection page.
      */

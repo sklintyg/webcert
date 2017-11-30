@@ -25,20 +25,29 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.infra.security.common.model.*;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -61,34 +70,32 @@ public class IntygIntegrationControllerTest {
     @InjectMocks
     private IntygIntegrationController testee;
 
+    @Test
+    public void invalidParametersShouldNotFailOnNullPatientInfo() {
 
-    @Test(expected = WebCertServiceException.class)
-    public void invalidParametersShouldThrowException() throws Exception {
-        String invalidParameter = null;
-
+        testee.setCommonFeatureService(Optional.empty());
         // given
         UriInfo uriInfo = mock(UriInfo.class);
-        when(uriInfo.getAbsolutePath()).thenReturn(URI.create("http://localhost:9088/view/intyg/" + INTYGSID));
+        UriBuilder uriBuilder = mock(UriBuilder.class);
+        when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+        when(uriBuilder.replacePath(anyString())).thenReturn(uriBuilder);
+        when(uriBuilder.fragment(anyString())).thenReturn(uriBuilder);
+        when(uriBuilder.buildFromMap(any())).thenReturn(URI.create(""));
 
         when(integrationService.prepareRedirectToIntyg(anyString(), anyString(), anyObject()))
                 .thenReturn(createPrepareRedirectToIntyg());
 
-        IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
-                invalidParameter, null, "Nollansson", "Nollgatan", "000000", "Nollby",
-                false, false, false, false);
+        IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null, null, null, false,
+                false, false, false);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
 
-        // when
-        testee.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
+        Response res = testee.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
 
-        // if code reaches this point we fail the test
-        fail();
+        assertEquals(Response.Status.TEMPORARY_REDIRECT.getStatusCode(), res.getStatus());
+
     }
-
-
-    // private stuff
 
     private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
         PrepareRedirectToIntyg redirect = new PrepareRedirectToIntyg();
@@ -129,6 +136,14 @@ public class IntygIntegrationControllerTest {
         rMap.put(roleName, role);
 
         user.setRoles(rMap);
+
+        Vardgivare vg = new Vardgivare();
+        vg.setId("vg1");
+        Vardenhet ve = new Vardenhet();
+        ve.setVardgivareHsaId("vg1");
+        ve.setId(ENHETSID);
+        vg.setVardenheter(Arrays.asList(ve));
+        user.setVardgivare(Arrays.asList(vg));
         return user;
     }
 
