@@ -13,7 +13,7 @@
     "angular-ui-router": "0.4.2",
     "angular-ui-select": "0.19.4",
     "api-check": "7.5.5",
-    "bootstrap": "3.3.7",
+    "bootstrap-sass": "^3.3.7",
     "momentjs": "2.19.2"
   },
   "devDependencies": {

@@ -4,20 +4,20 @@
        ng-repeat="unit in units">
     <!-- Index zero and one should always be shown. These are the 'all' and
          'current vardenhet' option -->
-      <div class="col-md-12 unit-table"
-           ng-if="$index < 2 || unit.fragaSvar > 0">
-        <button id="select-active-unit-{{unit.id}}"
-                type="button"
-                ng-click="selectUnit(unit)"
-                class="qa-unit"
-                ng-class="{selected : selectedUnit == unit}">
-          <span ng-class="$index < 2 ? 'qa-unit-strong' : 'qa-unit-weak'">{{unit.namn}}</span>
-          <span class="qa-circle"
-                ng-class="{'qa-circle-active': unit.fragaSvar>0}"
-                title="{{unit.tooltip}}">{{unit.fragaSvar}}
+    <div class="col-md-12 unit-table"
+         ng-if="$index < 2 || unit.fragaSvar > 0">
+      <button id="select-active-unit-{{unit.id}}"
+              type="button"
+              ng-click="selectUnit(unit)"
+              class="qa-unit"
+              ng-class="{selected : selectedUnit == unit}">
+        <span ng-class="$index < 2 ? 'qa-unit-strong' : 'qa-unit-weak'">{{unit.namn}}</span>
+        <span class="qa-circle"
+              ng-class="{'qa-circle-active': unit.fragaSvar>0}"
+              title="{{unit.tooltip}}">{{unit.fragaSvar}}
           </span>
-        </button>
-      </div>
+      </button>
+    </div>
   </div>
   <div class="row">
     <div class="col-md-12 unit-table">

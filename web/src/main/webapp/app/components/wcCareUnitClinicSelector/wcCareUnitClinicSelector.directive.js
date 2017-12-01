@@ -23,18 +23,16 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
             'use strict';
 
             return {
-                restrict: 'A',
-                transclude: false,
-                replace: true,
-                templateUrl: '/app/views/fragorOchSvar/wcVardenhetSelector.directive.html',
+                restrict: 'E',
+                templateUrl: '/app/components/wcCareUnitClinicSelector/wcCareUnitClinicSelector.directive.html',
                 controller: function($scope) {
 
                     $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
                     $scope.units = $scope.units.slice(0, 1)
                         .concat($scope.units.slice(1, $scope.units.length).sort(
-                                    function(a, b) {
-                                        return (a.namn > b.namn) - (a.namn < b.namn);
-                    }));
+                            function(a, b) {
+                                return (a.namn > b.namn) - (a.namn < b.namn);
+                            }));
                     $scope.units.unshift({id: 'wc-all', namn: 'Alla frågor och svar'});
                     $scope.selectedUnit = null;
 
@@ -78,8 +76,8 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                                         unit.tooltip =
                                             'Det totala antalet ej hanterade frågor och svar som finns registrerade på ' +
                                             'vårdenheten. Det kan finnas frågor och svar som gäller denna vårdenhet men ' +
-                                                'som inte visas här. För säkerhets skull bör du även kontrollera frågor ' +
-                                                'och svar för övriga vårdenheter och mottagningar.';
+                                            'som inte visas här. För säkerhets skull bör du även kontrollera frågor ' +
+                                            'och svar för övriga vårdenheter och mottagningar.';
                                     }
                                 });
                             }

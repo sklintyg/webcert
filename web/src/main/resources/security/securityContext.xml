@@ -40,8 +40,8 @@
   <security:http security="none" pattern="/api/modules/active"/>
   <security:http security="none" pattern="/api/config/links"/>
   <security:http security="none" pattern="/api/config/kommuner"/>
-  <security:http security="none" pattern="/css/**"/>
-  <security:http security="none" pattern="/js/**"/>
+  <!-- Everything under /app such as js, css, images etc is ok to access at any time -->
+  <security:http security="none" pattern="/app/**"/>
   <security:http security="none" pattern="/img/**"/>
 
   <security:http security="none" pattern="/"/>

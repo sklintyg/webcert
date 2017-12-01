@@ -35,13 +35,10 @@
 
 <!-- bower:css -->
 <link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
-<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
 <!-- endbower -->
+<link rel="stylesheet" href="/app/webcert.css?<spring:message code="buildNumber" />"
+      media="screen">
 <link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css?<spring:message code="buildNumber" />"
-      media="screen">
-<link rel="stylesheet" href="/web/webjars/common/css/animate.min.css?<spring:message code="buildNumber" />"
-      media="screen">
-<link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css?<spring:message code="buildNumber" />"
       media="screen">
 
 </head>
@@ -98,7 +95,7 @@
       <script type="text/javascript" src="/bower_components/angular-formly/dist/formly.js"></script>
       <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
       <script type="text/javascript" src="/bower_components/angular-ui-select/dist/select.js"></script>
-      <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+      <script type="text/javascript" src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
       <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
       <!-- endbower -->
       <script type="text/javascript" src="/vendor/polyfill.js"></script>

@@ -121,7 +121,10 @@ module.exports = function(grunt) {
     });
 
     grunt.initConfig({
-
+        config: {
+            // configurable paths
+            client: SRC_DIR
+        },
         sasslint: {
             options: {
                 //configFile: 'config/.sass-lint.yml' //For now we use the .sass-lint.yml that is packaged with sass-lint
@@ -217,6 +220,16 @@ module.exports = function(grunt) {
                     return __dirname + module.src + '/**/*.html';
                 }).concat([ SRC_DIR + '/**/*.html' ]),
                 tasks: ['ngtemplates']
+            },
+            injectSass: {
+                files: [
+                    '<%= config.client %>/**/*.{scss,sass}'],
+                tasks: ['injector:sass']
+            },
+            sass: {
+                files: [
+                    '<%= config.client %>/**/*.{scss,sass}'],
+                tasks: ['sass']
             }
         },
 
@@ -246,8 +259,34 @@ module.exports = function(grunt) {
                 ])
             },
             dist: {
-                //What we do when we build a distribution. Don't include intygstyper here or common.
-                //This place is reserved for any scss files within this very project
+                // Compiles Sass to CSS
+                files: {
+                    '<%= config.client %>/webcert.css': '<%= config.client %>/webcert.scss'
+                }
+            }
+        },
+
+        injector: {
+            options: {
+                lineEnding: grunt.util.linefeed
+            },
+
+            // Inject component scss into app.scss
+            sass: {
+                options: {
+                    transform: function(filePath) {
+                        filePath = filePath.replace('/src/main/webapp/app/', '');
+                        return '@import \'' + filePath + '\';';
+                    },
+                    starttag: '// injector',
+                    endtag: '// endinjector'
+                },
+                files: {
+                    '<%= config.client %>/webcert.scss': [
+                        '<%= config.client %>/!(mixins)/**/*.{scss,sass}',
+                        '!<%= config.client %>/webcert.{scss,sass}'
+                    ]
+                }
             }
         },
 
@@ -265,7 +304,7 @@ module.exports = function(grunt) {
             };
         }), { webcert: {
             cwd: __dirname + '/src/main/webapp',
-            src: ['welcome.html', 'app/views/**/**.html', 'app/partials/**/**.html'],
+            src: ['welcome.html', 'app/**/*.html'],
             dest: DEST_DIR + 'templates.js',
             options: {
                 module: 'webcert',
@@ -401,7 +440,7 @@ module.exports = function(grunt) {
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
      * that webcert depends on*/
-    grunt.registerTask('default', [ 'bower', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist' ]);
+    grunt.registerTask('default', [ 'bower', 'injector:sass', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist' ]);
     grunt.registerTask('lint', [ 'jshint' ]);
     grunt.registerTask('test', [ 'karma:ci' ]);
     grunt.registerTask('test:watch', [ 'karma:watch' ]);

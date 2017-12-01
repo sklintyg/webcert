@@ -1,0 +1,103 @@
+wc-care-unit-clinic-selector {
+
+
+  $qa-unit-color: #323232;
+  $qa-unit-background-color-gradient-start: #e5e5e5;
+  $qa-unit-background-color-gradient-end: #ccc;
+  $qa-unit-hover-background-color: #f0f0f0;
+  $qa-circle-color: #fff;
+  $qa-circle-background-color: #999;
+  $qa-circle-active-background-border-color: #ff4565;
+  $unit-table-button-selected-color: #fff;
+  $unit-table-button-selected-background-color: #666;
+
+  display: block;
+
+  .qa-unit {
+    color: $qa-unit-color;
+    text-align: left;
+    border: 0;
+    display: block;
+    width: 100%;
+    min-width: 400px;
+    max-width: 500px;
+    padding: 10px 50px 10px 15px;
+    position: relative;
+    -ms-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background: none;
+    background: $qa-unit-background-color-gradient-start;
+    /* Old browsers */
+    /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+    background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzY1NjU2NSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzZjNmM2YiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+");
+    background: -moz-linear-gradient(top, $qa-unit-background-color-gradient-start 0, $qa-unit-background-color-gradient-end 100%);
+    /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(100%, $qa-unit-background-color-gradient-start), color-stop(0%, $qa-unit-background-color-gradient-end));
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, $qa-unit-background-color-gradient-start 0, $qa-unit-background-color-gradient-end 100%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, $qa-unit-background-color-gradient-start 0, $qa-unit-background-color-gradient-end 100%);
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, $qa-unit-background-color-gradient-start 0, $qa-unit-background-color-gradient-end 100%);
+    /* IE10+ */
+    background: linear-gradient(to bottom, $qa-unit-background-color-gradient-start 0, $qa-unit-background-color-gradient-end 100%);
+    filter: progid:dximagetransform.microsoft.gradient(startcolorstr='#e5e5e5', endcolorstr='#cccccc', GradientType=0); //Keep colour values here. Didn't seem to be replaced by sass
+    /* IE6-8 */
+    transition: none;
+    &:focus {
+      outline: none;
+    }
+    &:hover {
+      background: none;
+      background-color: $qa-unit-hover-background-color;
+    }
+  }
+
+  .qa-unit-strong {
+    font-weight: bold;
+  }
+
+  .qa-unit-weak {
+    padding-left: 20px;
+  }
+
+  a.qa-unit {
+    color: $qa-unit-color;
+  }
+
+  .unit-table {
+    margin: 0;
+    padding-bottom: 5px;
+    button.selected {
+      color: $unit-table-button-selected-color;
+      font-weight: bold;
+      background: none;
+      filter: none;
+      background-color: $unit-table-button-selected-background-color;
+    }
+  }
+
+  .qa-circle {
+    background-color: $qa-circle-background-color;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    color: $qa-circle-color;
+    padding: 1px 6px;
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    position: absolute;
+    right: 15px;
+    top: 9px;
+  }
+
+  .qa-circle-active {
+    background-color: $qa-circle-active-background-border-color;
+    border-color: $qa-circle-active-background-border-color;
+    color: $qa-circle-color;
+  }
+
+}
