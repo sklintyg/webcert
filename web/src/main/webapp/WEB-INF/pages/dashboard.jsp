@@ -63,7 +63,7 @@
 
   <c:choose>
     <c:when test="${useMinifiedJavaScript == 'true'}">
-      <script type="text/javascript" src="/bower_components/jquery/jquery.min.js?<spring:message code="buildNumber" />"></script>
+      <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular/angular.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular-animate/angular-animate.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.min.js?<spring:message code="buildNumber" />"></script>
@@ -75,7 +75,7 @@
       <script type="text/javascript" src="/bower_components/angular-formly/dist/formly.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular-ui-select/dist/select.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js?<spring:message code="buildNumber" />"></script>
+      <script type="text/javascript" src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/momentjs/min/moment.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/vendor/polyfill.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/vendor/angular-shims-placeholder/angular-shims-placeholder.min.js?<spring:message code="buildNumber" />"></script>
