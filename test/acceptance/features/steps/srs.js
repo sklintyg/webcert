@@ -260,19 +260,27 @@ module.exports = function() {
         text => expect(findLabelContainingText(text).isDisplayed()).to.eventually.equal(true)
     );
 
-    this.Then(/^ska OBS-åtgärder från "(.*)" visas$/,
-        listNamn => {
-            logger.debug('Förväntade OBS-åtgärder: ' + srsdata.atgarder[listNamn]);
-            return expect(getAtgarderOBS()).to.eventually.have.same.members(srsdata.atgarder[listNamn]);
+    this.Then(/^ska (OBS-åtgärder|REK-åtgärder) från "(.*)" visas$/, function(typ, listNamn) {
+        logger.silly('Förväntade ' + typ + ': ' + srsdata.atgarder[listNamn]);
+        var promiseArr = [];
+        var elm;
+        if (typ === 'OBS-åtgärder') {
+            elm = fk7263utkast.srs.atgarderObs();
+        } else if (typ === 'REK-åtgärder') {
+            elm = fk7263utkast.srs.atgarderRek();
         }
-    );
-
-    this.Then(/^ska REK-åtgärder från "(.*)" visas$/,
-        listNamn => {
-            logger.debug('Förväntade REK-åtgärder: ' + srsdata.atgarder[listNamn]);
-            return expect(getAtgarderREK()).to.eventually.have.same.members(srsdata.atgarder[listNamn]);
-        }
-    );
+        srsdata.atgarder[listNamn].forEach(function(atgard, index) {
+            promiseArr.push(
+                expect(
+                    elm.getText().then(function(txt) {
+                        txt = txt.replace(/ \n/g, ' '); // Mellanrum innan radbrytning
+                        return txt.replace(/\n/g, ' '); // utan mellanrum
+                    })
+                ).to.eventually.contain(srsdata.atgarder[listNamn][index])
+            );
+        });
+        return Promise.all(promiseArr);
+    });
 
 };
 
@@ -314,27 +322,6 @@ function setConsent(patient, user, consent) {
 function buildLinkToSetConsent(patientId, enhetId) {
     let uri = uriTemplate `api/srs/consent/${patientId}/${enhetId}`;
     return process.env.WEBCERT_URL + uri;
-}
-
-function getAtgarderREK() {
-    return fk7263utkast.srs.atgarderRek().getText().then(t => {
-        const atgarder = t.replace('Läs mer', '') // Ta bort "Läs mer" som finns på slutet
-            .replace(/\n/g, '') // Ta bort alla radbrytningar
-            .split('• ')
-            .slice(1); // Första elementet blir alltid tomt
-        logger.info('Hittade REK-åtgärder: ' + atgarder);
-        return Promise.resolve(atgarder);
-    });
-}
-
-function getAtgarderOBS() {
-    return fk7263utkast.srs.atgarderObs().getText().then(t => {
-        const atgarder = t.replace(/\\n/g, '') // Ta bort alla radbrytningar
-            .replace('Tänk på att; ', '')
-            .split('. ');
-        logger.info('Hittade OBS-åtgärder: ' + atgarder);
-        return Promise.resolve(atgarder);
-    });
 }
 
 function findLabelContainingText(text) {

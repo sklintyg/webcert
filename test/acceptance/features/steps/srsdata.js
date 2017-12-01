@@ -62,13 +62,14 @@ module.exports = {
 
     atgarder: {
         'åtgärdslista 1': [
-            'partiell sjukskrivning',
-            'FaR med regelbunden styrketräning för att förebygger nya besvär'
+            'Rökstopp exempelvis genom sluta-röka-programmet Rökfri, via 1177 Vårdguiden',
+            'FaR med smärtlindring, rådgivning och träningsprogram, via fysioterapeut',
+            'Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård'
         ],
         'åtgärdslista 2': [
-            'borsta tänderna',
-            'inte vara uppe för länge',
-            'inte prata med främlingar.'
+            'Förebyggande sjukpenning för fysioterapi kan vara ett lämpligt alternativ till sjukskrivning',
+            'Diskutera bakomliggande faktorer som exempelvis övervikt, rökning, arbetsmiljö och livssituation',
+            'Uppmuntra till fortsatt arbete och lagom belastning då det i allmänhet inte är farligt att arbeta trots att det gör ont'
         ]
     },
 
