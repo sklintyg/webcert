@@ -61,22 +61,22 @@ public class SendMessageToRecipientProcessor {
                 switch (result.getErrorId()) {
                 case REVOKED:
                 case VALIDATION_ERROR:
-                    LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as PermanentException",
+                    LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as PermanentException",
                             intygsId, result.getResultText(), result.getErrorId());
                     throw new PermanentException(result.getResultText());
                 case APPLICATION_ERROR:
                 case TECHNICAL_ERROR:
-                    LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as TemporaryException",
+                    LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as TemporaryException",
                             intygsId, result.getResultText(), result.getErrorId());
                     throw new TemporaryException(result.getResultText());
                 }
             }
         } catch (JAXBException e) {
-            LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}. Rethrowing as PermanentException",
+            LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Rethrowing as PermanentException",
                     intygsId, e.getMessage());
             throw new PermanentException(e.getMessage());
         } catch (WebServiceException e) {
-            LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}. Will retry",
+            LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Will retry",
                     intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
         }
