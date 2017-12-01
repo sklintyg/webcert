@@ -69,17 +69,27 @@ module.exports = function() {
         });
     });
 
-    this.When(/^jag klickar på pilen( för att minimera)?$/, action => {
-        fk7263utkast.srs.visamer().getAttribute('class')
-            .then((collapsed) => collapsed.includes('collapsed') ? true : false)
-            .then((isCollapsed) => isCollapsed ? fk7263utkast.srs.visamer().click() :
-                (action !== undefined && action.trim() === 'för att minimera') ? fk7263utkast.srs.visamer().click() : undefined)
-            .then(() => browser.sleep(500));
+    this.When(/^jag klickar på pilen( för att minimera)?$/, function(action) {
+        return fk7263utkast.srs.visamer().getAttribute('class')
+            .then(function(collapsed) {
+                return collapsed.includes('collapsed') ? true : false;
+            })
+            .then(function(isCollapsed) {
+                logger.silly('isCollapsed :' + isCollapsed);
+                if (isCollapsed === true) {
+                    return fk7263utkast.srs.visamer().click();
+                } else if (action !== undefined && action.trim() === 'för att minimera') {
+                    return fk7263utkast.srs.visamer().click();
+                } else {
+                    return logger.info('Frågeformuläret är redan i önskat läge');
+                }
+            })
+            .then(() => browser.sleep(1500));
     });
 
-    this.Then(/^ska frågepanelen för SRS vara "(minimerad|maximerad)"$/,
-        status => expect(fk7263utkast.getSRSQuestionnaireStatus()).to.eventually.equal(status)
-    );
+    this.Then(/^ska frågepanelen för SRS vara "(minimerad|maximerad)"$/, function(status) {
+        return expect(fk7263utkast.getSRSQuestionnaireStatus()).to.eventually.equal(status);
+    });
 
     this.Then(/^ska jag få prediktion "([^"]*)"$/, predictionMsg =>
         expect(fk7263utkast.srs.prediktion().getText()).to.eventually.contain(predictionMsg)
@@ -95,6 +105,9 @@ module.exports = function() {
         });
     });
 
+
+    /*													
+	TODO .isSelected() på radio knappar returnerar alltid true
     this.Then(/^frågan om samtycke ska( inte)? vara förifylld med "(Ja|Nej)"$/, function(inte, samtycke) {
         return fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected().then(function(selected) {
             if (inte) {
@@ -111,6 +124,7 @@ module.exports = function() {
         });
 
     });
+	*/
     this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
 
     this.When(/^jag fyller i ytterligare svar för SRS$/, function() {

@@ -61,7 +61,7 @@ Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som
     #Och frågan om samtycke ska inte vara förifylld med "Nej"
 	#Det finns ingen hook i webcert för att kolla om radio knapparna för consent är aktiva eller inte. isSelected() returnerar allt true
 
-@SRS-US-W01 @allmänt
+@SRS-US-W01 @allmänt @Maximera @Minimera
 Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     Givet en patient som "har givit samtycke" till SRS
     Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 

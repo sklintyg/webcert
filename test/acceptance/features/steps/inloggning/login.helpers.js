@@ -60,6 +60,10 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
             return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
                 logger.silly('wcHeader is displayed ' + displayed);
                 return helpers.mediumDelay();
+            }).catch(function(err) {
+                logger.warn(err);
+                // Log error but continue. With more delay.
+                return browser.sleep(5000);
             });
         }).then(function() {
             browser.ignoreSynchronization = false;
