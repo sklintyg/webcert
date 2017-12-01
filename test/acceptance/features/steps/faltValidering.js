@@ -449,10 +449,12 @@ module.exports = function() {
 
             case 'Diagnoskod':
                 logger.info('Ändrar Diagnoskod');
-                return helpers.moveAndSendKeys(fkUtkastPage.diagnosKod, 'A00').then(function() {
+                return fkUtkastPage.angeDiagnosKod('A00');
+                /*return helpers.moveAndSendKeys(fkUtkastPage.diagnosKod, ).then(function() {
                     logger.silly('enter.perform();');
-                    return enter.perform();
-                });
+                    //return enter.perform();
+                    return element(by.id('typeahead-337-5918-option-0')).click();
+                });*/
 
             case 'Arbetsförmåga':
                 logger.info('Ändrar arbetsförmåga');
