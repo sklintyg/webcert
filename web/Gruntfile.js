@@ -407,6 +407,7 @@ module.exports = function(grunt) {
                 directory: 'src/main/webapp/bower_components',
                 src: [
                     SRC_DIR + '../pubapp/**/index.html',
+                    SRC_DIR + '../welcome.html',
                     SRC_DIR + '../**/*.jsp',
                     'karma.conf.js'
                 ],
