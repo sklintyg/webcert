@@ -40,12 +40,12 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceMockedTest {
@@ -54,7 +54,7 @@ public class MailNotificationServiceMockedTest {
     private JavaMailSender mailSender;
 
     @Mock
-    private OrganizationUnitService organizationUnitService;
+    private HsaOrganizationsService hsaOrganizationsService;
 
     @Mock
     private MonitoringLogService monitoringService;
@@ -87,10 +87,9 @@ public class MailNotificationServiceMockedTest {
     }
 
     private void mockOrganizationUnitServiceGetUnit() throws HsaServiceCallException {
-        UnitType unit = new UnitType();
-        unit.setMail("test@test.invalid");
-        unit.setUnitHsaId("enhetsid");
-        when(organizationUnitService.getUnit(anyString())).thenReturn(unit);
+        Vardenhet enhet = new Vardenhet("enhetsid", null, null, null);
+        enhet.setEpost("test@test.invalid");
+        when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(enhet);
     }
 
     @Test
@@ -98,7 +97,7 @@ public class MailNotificationServiceMockedTest {
         try {
             SOAPFault soapFault = SOAPFactory.newInstance().createFault();
             soapFault.setFaultString("Connection reset");
-            when(organizationUnitService.getUnit(anyString())).thenThrow(new SOAPFaultException(soapFault));
+            when(hsaOrganizationsService.getVardenhet(anyString())).thenThrow(new SOAPFaultException(soapFault));
         } catch (SOAPException e) {
             e.printStackTrace();
         }

@@ -52,8 +52,10 @@
 
 
   <bean class="se.inera.intyg.infra.integration.hsa.client.OrganizationUnitServiceBean" />
+  <bean class="se.inera.intyg.infra.integration.hsa.client.AuthorizationManagementServiceBean" />
+  <bean class="se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsServiceImpl" />
   <bean class="se.inera.intyg.infra.integration.hsa.stub.HsaServiceStub"/>
-  
+
   <bean class="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl" />
 
   <bean class="org.mockito.Mockito" factory-method="mock">

@@ -30,9 +30,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -59,7 +60,7 @@ public class MailNotificationServiceImplTest {
     private JavaMailSender mailSender;
 
     @Mock
-    private OrganizationUnitService organizationUnitService;
+    private HsaOrganizationsService hsaOrganizationUnitService;
 
     @Mock
     private MonitoringLogService monitoringService;
@@ -79,6 +80,9 @@ public class MailNotificationServiceImplTest {
         ReflectionTestUtils.setField(mailNotificationService, "ppLogicalAddress", "PpLogicalAddress");
         MimeMessage mimeMessage = new MimeMessage(Mockito.mock(MimeMessage.class));
         Mockito.doReturn(mimeMessage).when(mailSender).createMimeMessage();
+        Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "dsaflkj", null, null, "adsflkjasdflkjadfsjlk");
+        vardenhet.setEpost("epost@mockadress.net");
+        Mockito.doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
     }
 
     @Captor
@@ -97,7 +101,7 @@ public class MailNotificationServiceImplTest {
         }
 
         //Then
-        Mockito.verify(organizationUnitService, times(1)).getUnit(anyString());
+        Mockito.verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
     }
 
     @Test
@@ -116,7 +120,7 @@ public class MailNotificationServiceImplTest {
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
         //Then
-        Mockito.verify(organizationUnitService, times(0)).getUnit(anyString());
+        Mockito.verify(hsaOrganizationUnitService, times(0)).getVardenhet(anyString());
     }
 
     @Test
@@ -156,7 +160,7 @@ public class MailNotificationServiceImplTest {
         }
 
         //Then
-        Mockito.verify(organizationUnitService, times(1)).getUnit(anyString());
+        Mockito.verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
     }
 
     @Test
@@ -175,7 +179,7 @@ public class MailNotificationServiceImplTest {
         mailNotificationService.sendMailForIncomingAnswer(mailNotification);
 
         //Then
-        Mockito.verify(organizationUnitService, times(0)).getUnit(anyString());
+        Mockito.verify(hsaOrganizationUnitService, times(0)).getVardenhet(anyString());
     }
 
     @Test
