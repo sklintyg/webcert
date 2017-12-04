@@ -5,6 +5,6 @@ angular.module('webcert').directive('tidigareIntyg',
         return {
             restrict: 'E',
             templateUrl: '/app/views/sokSkrivIntyg/tidigareIntyg.directive.html'
-        }
+        };
     }
 );

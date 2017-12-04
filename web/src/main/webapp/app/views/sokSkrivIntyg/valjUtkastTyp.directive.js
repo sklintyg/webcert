@@ -5,6 +5,6 @@ angular.module('webcert').directive('valjUtkastTyp',
         return {
             restrict: 'E',
             templateUrl: '/app/views/sokSkrivIntyg/valjUtkastTyp.directive.html'
-        }
+        };
     }
 );
