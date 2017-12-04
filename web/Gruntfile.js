@@ -33,6 +33,7 @@ module.exports = function(grunt) {
     require('jit-grunt')(grunt, {
         bower: 'grunt-bower-task',
         configureProxies: 'grunt-connect-proxy',
+        postcss: 'grunt-postcss',
         ngtemplates: 'grunt-angular-templates'
     });
 
@@ -229,7 +230,7 @@ module.exports = function(grunt) {
             sass: {
                 files: [
                     '<%= config.client %>/**/*.{scss,sass}'],
-                tasks: ['sass']
+                tasks: ['sass', 'postcss']
             }
         },
 
@@ -263,6 +264,19 @@ module.exports = function(grunt) {
                 files: {
                     '<%= config.client %>/webcert.css': '<%= config.client %>/webcert.scss'
                 }
+            }
+        },
+
+        postcss: {
+            options: {
+                map: false,
+                processors: [
+                    require('autoprefixer')({browsers: ['last 2 versions', 'ie 9']}), // add vendor prefixes
+                    require('cssnano')({zindex: false}) // minify the result
+                ]
+            },
+            dist: {
+                src: '<%= config.client %>/*.css'
             }
         },
 
@@ -441,7 +455,7 @@ module.exports = function(grunt) {
 
     /*When we build the distribution we don't want to run sass:dev since that would rebuild the sass of projects
      * that webcert depends on*/
-    grunt.registerTask('default', [ 'bower', 'injector:sass', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist' ]);
+    grunt.registerTask('default', [ 'bower', 'injector:sass', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist', 'postcss' ]);
     grunt.registerTask('lint', [ 'jshint' ]);
     grunt.registerTask('test', [ 'karma:ci' ]);
     grunt.registerTask('test:watch', [ 'karma:watch' ]);
