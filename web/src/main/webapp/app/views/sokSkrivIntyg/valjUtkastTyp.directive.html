@@ -1,0 +1,39 @@
+<!-- New intyg -->
+<div class="bottom-padding-medium">
+  <div class="form-group">
+    <label for="intygType" class="control-label">Skriv nytt intyg</label>
+
+    <div>
+      <select id="intygType" class="form-control" name="intygType" ng-model="intygTypeModel.intygType"
+              ng-options="type.id as type.label for type in intygTypeModel.userIntygTypes"
+              wc-focus-me="viewState.focusFirstInput"
+              ng-disabled="intygTypeModel.userIntygTypes.length < 2"></select>
+      <span id="fortsattBtn">
+        <button id="intygTypeFortsatt" class="btn btn-success continue-btn" type="submit"
+                ng-disabled="!showCreateUtkast()">Skapa intyg</button>
+      </span>
+    </div>
+
+  </div>
+
+  <!-- error message -->
+  <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
+    <span message key="{{viewState.createErrorMessageKey}}"></span>
+  </div>
+
+  <div id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType] && isNormalOrigin()" class="alert alert-warning col-lg-7">
+    {{resolveIntygReplacedText(intygTypeModel.intygType)}}
+  </div>
+
+  <div id="intyg-exists-warning" ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] !== undefined" class="alert alert-warning col-lg-7">
+      <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] === true" message key="{{intygTypeModel.intygType}}.warn.previouscertificate.samevg"></span>
+      <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] === false" message key="{{intygTypeModel.intygType}}.warn.previouscertificate.differentvg"></span>
+  </div>
+
+  <div class="alert alert-info col-lg-7 text-8-lines"
+       ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
+       id="intygTypeWarning">
+    <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
+  </div>
+  <div class="clearfix"></div>
+</div>
