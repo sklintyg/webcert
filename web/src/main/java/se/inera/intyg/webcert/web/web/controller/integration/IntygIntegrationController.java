@@ -270,53 +270,54 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
 
-        // Call service
-        PrepareRedirectToIntyg prepareRedirectInfo = null;
         try {
-            prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+            // Call service
+            PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+
+            // If the type doesn't equals to FK7263 then verify the required query-parameters
+            if (!prepareRedirectInfo.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
+                verifyIntegrationParameters(user.getParameters());
+            }
+
+            if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
+
+                // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
+                // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
+                // the UserDetailsService that built the Principal, but better safe than sorry...
+
+                if (userHasExactlyOneSelectableVardenhet(user)) {
+                    user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
+                    updateUserWithActiveFeatures(user);
+
+                    LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
+                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                }
+
+                // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
+                user.getParameters().getState().setRedirectToEnhetsval(true);
+
+                LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
+                return buildChooseUnitResponse(uriInfo, prepareRedirectInfo);
+
+            } else {
+                if (user.changeValdVardenhet(enhetId)) {
+                    updateUserWithActiveFeatures(user);
+
+                    LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
+                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                }
+
+                LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
+                        user.getHsaId(), enhetId);
+                return buildAuthorizedErrorResponse(uriInfo);
+            }
         } catch (WebCertServiceException e) {
-            LOG.error("Failure in the preparatory step before the redirect to view intyg", e);
             if (e.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
+                LOG.error(e.getMessage());
                 return buildNoContentErrorResponse(uriInfo);
+            } else {
+                throw e;
             }
-        }
-
-        // If the type doesn't equals to FK7263 then verify the required query-parameters
-        if (!prepareRedirectInfo.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
-            verifyIntegrationParameters(user.getParameters());
-        }
-
-        if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
-
-            // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
-            // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
-            // the UserDetailsService that built the Principal, but better safe than sorry...
-
-            if (userHasExactlyOneSelectableVardenhet(user)) {
-                user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
-                updateUserWithActiveFeatures(user);
-
-                LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                return buildRedirectResponse(uriInfo, prepareRedirectInfo);
-            }
-
-            // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
-            user.getParameters().getState().setRedirectToEnhetsval(true);
-
-            LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
-            return buildChooseUnitResponse(uriInfo, prepareRedirectInfo);
-
-        } else {
-            if (user.changeValdVardenhet(enhetId)) {
-                updateUserWithActiveFeatures(user);
-
-                LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                return buildRedirectResponse(uriInfo, prepareRedirectInfo);
-            }
-
-            LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
-                    user.getHsaId(), enhetId);
-            return buildAuthorizedErrorResponse(uriInfo);
         }
     }
 
