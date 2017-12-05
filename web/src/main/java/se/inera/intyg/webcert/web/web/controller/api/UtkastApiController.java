@@ -124,17 +124,27 @@ public class UtkastApiController extends AbstractApiController {
 
         if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
                 || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
+                intygsTyp)
+                || webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_UTKAST_INOM_VG.getName(),
                 intygsTyp))) {
 
-            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(request.getPatientPersonnummer(),
-                    getWebCertUserService().getUser());
+            Map<String, Map<String, Boolean>> intygstypToStringToBoolean = utkastService.checkIfPersonHasExistingIntyg(
+                    request.getPatientPersonnummer(), getWebCertUserService().getUser());
 
-            Boolean exists = intygstypToBoolean.get(intygsTyp);
+            Boolean utkastExists = intygstypToStringToBoolean.get("utkast").get(intygsTyp);
+            Boolean intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
 
-            if (exists != null) {
+            if (utkastExists != null && utkastExists) {
+                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_UTKAST_INOM_VG.getName(),
+                        intygsTyp)) {
+                    return Response.status(Status.BAD_REQUEST).build();
+                }
+            }
+
+            if (intygExists != null) {
                 if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
                     return Response.status(Status.BAD_REQUEST).build();
-                } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
+                } else if (intygExists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
                         .getName(), intygsTyp)) {
                     return Response.status(Status.BAD_REQUEST).build();
                 }
@@ -204,7 +214,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/previousIntyg/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
-        Map<String, Boolean> res = utkastService
+        Map<String, Map<String, Boolean>> res = utkastService
                 .checkIfPersonHasExistingIntyg(new Personnummer(personnummer), getWebCertUserService().getUser());
         return Response.ok(res).build();
     }

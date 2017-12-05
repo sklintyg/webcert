@@ -141,8 +141,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
                     + " kan inte utfärdas för patienter med sekretessmarkering", ErrorIdType.APPLICATION_ERROR);
         }
 
-        Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
+        Map<String, Map<String, Boolean>> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
         String uniqueErrorString = AuthoritiesHelperUtil.validateMustBeUnique(user, intygsTyp, intygstypToBoolean);
+
         if (!uniqueErrorString.isEmpty()) {
             return createErrorResponse(uniqueErrorString, ErrorIdType.APPLICATION_ERROR);
         }

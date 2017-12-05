@@ -92,6 +92,8 @@ public class UtkastServiceImpl implements UtkastService {
             UtkastStatus.DRAFT_INCOMPLETE);
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
+    private static final String INTYG_INDICATOR = "intyg";
+    private static final String UTKAST_INDICATOR = "utkast";
 
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
@@ -206,15 +208,29 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
-        return utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
-                authoritiesHelper.getIntygstyperForModuleFeature(user, WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG))
-                .stream()
+    public Map<String, Map<String, Boolean>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
+        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
+                authoritiesHelper.getIntygstyperForModuleFeature(user, WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG));
+
+        List<Utkast> signedList = toFilter.stream()
                 .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
                 .filter(utkast -> utkast.getAterkalladDatum() == null)
+                .collect(Collectors.toList());
+
+        Map<String, Map<String, Boolean>> ret = new HashMap<>();
+
+        ret.put(INTYG_INDICATOR, signedList.stream()
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
                         Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                                Collectors.reducing(false, (a, b) -> a || b))));
+                                Collectors.reducing(false, (a, b) -> a || b)))));
+
+        ret.put(UTKAST_INDICATOR, toFilter.stream()
+                .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED)
+                .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
+                        Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                                Collectors.reducing(false, (a, b) -> a || b)))));
+
+        return ret;
     }
 
     private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {

@@ -109,8 +109,10 @@ public class UtkastApiControllerTest {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
-        Map<String, Boolean> hasPrevious = new HashMap<>();
-        hasPrevious.put("fk7263", true);
+        Map<String, Map<String, Boolean>> hasPrevious = new HashMap<>();
+        Map<String, Boolean> hasPreviousIntyg = new HashMap<>();
+        hasPreviousIntyg.put("fk7263", true);
+        hasPrevious.put("intyg", hasPreviousIntyg);
         when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any())).thenReturn(hasPrevious);
 
     }
@@ -290,9 +292,9 @@ public class UtkastApiControllerTest {
         Response response = utkastController.getPreviousCertificateWarnings(PATIENT_PERSONNUMMER.getPersonnummer());
 
         assertNotNull(response);
-        Map<String, Boolean> responseBody = (Map<String, Boolean>) response.readEntity(HashMap.class);
+        Map<String, Map<String, Boolean>> responseBody = (Map<String, Map<String, Boolean>>) response.readEntity(HashMap.class);
         assertEquals(1, responseBody.size());
-        assertTrue(responseBody.get("fk7263"));
+        assertTrue(responseBody.get("intyg").get("fk7263"));
     }
 
     private QueryIntygParameter buildQueryIntygParameter() {

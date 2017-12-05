@@ -104,7 +104,8 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
                 // load warnings of previous certificates
                 commonUtkastProxy.getPrevious(PatientModel.personnummer, function(existing) {
-                    IntygTypeSelectorModel.previousIntygWarnings = existing;
+                    IntygTypeSelectorModel.previousIntygWarnings = existing.intyg;
+                    IntygTypeSelectorModel.previousUtkastWarnings = existing.utkast;
                 });
 
                 // Load intyg for person with specified pnr
@@ -121,7 +122,12 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 });
             }
 
-            $scope.isUniqueWithinCareGiver = function (intygType) {
+            $scope.isDraftUniqueWithinCareGiver = function (intygType) {
+                var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_UTKAST_INOM_VG, intygType);
+                return featureActive && IntygTypeSelectorModel.previousUtkastWarnings[intygType];
+            };
+
+            $scope.isCertificateUniqueWithinCareGiver = function (intygType) {
                 var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG_INOM_VG, intygType);
                 return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType];
             };
@@ -166,7 +172,8 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
             $scope.showCreateUtkast = function() {
                 return !(IntygTypeSelectorModel.intygType === 'default' ||
                     ($scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()) ||
-                    $scope.isUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
+                    $scope.isCertificateUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
+                    $scope.isDraftUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
                     $scope.isUniqueGlobal(IntygTypeSelectorModel.intygType));
             };
 

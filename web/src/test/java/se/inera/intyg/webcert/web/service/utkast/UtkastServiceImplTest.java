@@ -663,11 +663,11 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer, activeModules))
                 .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Boolean> res = draftService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer), createUser());
+        Map<String, Map<String, Boolean>> res = draftService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer), createUser());
 
-        assertNotNull(res);
-        assertTrue(res.get("db"));
-        assertFalse(res.get("doi"));
+        assertNotNull(res.get("intyg"));
+        assertTrue(res.get("intyg").get("db"));
+        assertFalse(res.get("intyg").get("doi"));
 
         verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(personnummer), eq(activeModules));
     }
