@@ -19,6 +19,8 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -30,6 +32,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -38,6 +41,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  */
 @Service
 public abstract class IntegrationServiceImpl implements IntegrationService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
 
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -61,7 +66,7 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         // fetch certificate from IT and then get the type
         String typ = resolveIntygsTyp(intygTyp, intygId, utkast);
         if (StringUtils.isEmpty(typ)) {
-            String msg = "Failed to decide on the type of certificate";
+            String msg = "Failed resolving type of certificate";
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, msg);
         }
 
@@ -108,7 +113,7 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     }
 
     /*
-     * Resolve on type of certificate. Method will return null if both
+     * Resolve type of certificate. Method will return null if both
      * intygTyp and intygId is null or empty. Method might return null
      * if call to intygService.getIntygsTyp(intygId) is made.
      */
@@ -116,9 +121,19 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         if (StringUtils.isEmpty(intygTyp) && StringUtils.isEmpty(intygId)) {
             return null;
         } else if (StringUtils.isEmpty(intygTyp)) {
-            return utkast != null ? utkast.getIntygsTyp() : intygService.getIntygsTyp(intygId);
+            return getIntygsTyp(intygId, utkast);
         }
         return intygTyp;
     }
+
+    private String getIntygsTyp(String intygId, Utkast utkast) {
+        try {
+            return utkast != null ? utkast.getIntygsTyp() : intygService.getIntygsTyp(intygId);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+        return null;
+    }
+
 
 }

@@ -269,8 +269,17 @@ public class IntygIntegrationController extends BaseIntegrationController {
     // default scope
 
     Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
+
         // Call service
-        PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+        PrepareRedirectToIntyg prepareRedirectInfo = null;
+        try {
+            prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+        } catch (WebCertServiceException e) {
+            LOG.error("Failure in the preparatory step before the redirect to view intyg", e);
+            if (e.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
+                return buildNoContentErrorResponse(uriInfo);
+            }
+        }
 
         // If the type doesn't equals to FK7263 then verify the required query-parameters
         if (!prepareRedirectInfo.getIntygTyp().equals(Fk7263EntryPoint.MODULE_ID)) {
@@ -307,11 +316,28 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
             LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
                     user.getHsaId(), enhetId);
-            return buildErroResponse(uriInfo);
+            return buildAuthorizedErrorResponse(uriInfo);
         }
     }
 
     // private stuff
+
+    private Response buildNoContentErrorResponse(UriInfo uriInfo) {
+        return buildErrorResponse(uriInfo, "integration.nocontent");
+    }
+
+    private Response buildAuthorizedErrorResponse(UriInfo uriInfo) {
+        return buildErrorResponse(uriInfo, "login.medarbetaruppdrag");
+    }
+
+    private Response buildErrorResponse(UriInfo uriInfo, String errorReason) {
+        URI location = uriInfo.getBaseUriBuilder()
+                .replacePath("/error.jsp")
+                .queryParam("reason", errorReason)
+                .build();
+
+        return Response.temporaryRedirect(location).build();
+    }
 
     private Response buildChooseUnitResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
@@ -320,17 +346,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         String urlFragment = "/integration-enhetsval";
 
         URI location = uriBuilder.queryParam("destination", destinationUrl).fragment(urlFragment).build();
-        return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
-    }
-
-    private Response buildErroResponse(UriInfo uriInfo) {
-        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
-
-        Map<String, Object> urlParams = new HashMap<>();
-        urlParams.put("reason", "login.medarbetaruppdrag");
-
-        URI location = uriBuilder.path("error.jsp").buildFromMap(urlParams);
-        return Response.status(Response.Status.UNAUTHORIZED).location(location).build();
+        return Response.temporaryRedirect(location).build();
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
@@ -346,7 +362,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         urlParams.put(PARAM_CERT_ID, intygId);
 
         URI location = uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
-        return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
+        return Response.temporaryRedirect(location).build();
     }
 
     private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {

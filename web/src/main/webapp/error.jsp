@@ -110,7 +110,6 @@
               <jsp:include page="login.jsp" />
             </c:when>
 
-
             <c:when test="${param.reason eq 'login.medarbetaruppdrag'}">
               <h1><spring:message code="error.login.medarbetaruppdrag.title" /></h1>
               <div id="noAuth" class="alert alert-danger">
@@ -137,6 +136,12 @@
               <div id="missingParameter" class="alert alert-danger">
                 <spring:message code="error.missing-parameter.text" />
                 <div>${param.message}</div>
+              </div>
+            </c:when>
+            <c:when test="${param.reason eq 'integration.nocontent'}">
+              <h1><spring:message code="error.integration.nocontent.title" /></h1>
+              <div id="noContent" class="alert alert-danger">
+                <spring:message code="error.integration.nocontent.text" />
               </div>
             </c:when>
             <c:when test="${param.reason eq 'notfound'}">
