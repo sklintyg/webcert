@@ -18,13 +18,10 @@
  */
 package se.inera.intyg.webcert.web.integration.validator;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -32,6 +29,9 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by eriklupander on 2017-09-19.
@@ -47,8 +47,10 @@ public abstract class BaseCreateDraftCertificateValidator {
 
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
 
     protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors, String intygsTyp, String personnummer,
             IntygUser user) {
@@ -76,6 +78,27 @@ public abstract class BaseCreateDraftCertificateValidator {
             }
         } else {
             errors.addError("Cannot issue intyg type {0} for patient with invalid personnummer {1}", intygsTyp, personId);
+        }
+    }
+
+    protected void  validatePersonnummer(ResultValidator errors, String personId) {
+        Personnummer pnr = new Personnummer(personId);
+        PersonnummerChecksumValidator.validate(pnr, errors);
+    }
+
+    protected void  validatePersonnummerExists(ResultValidator errors, String personId) {
+        Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
+        PersonSvar personSvar = patientDetailsResolver.getPersonFromPUService(pnr);
+
+        switch (personSvar.getStatus()) {
+            case NOT_FOUND:
+                String msg = "Personnumret du har angivit finns inte i folkbokföringsregistret."
+                        + " Observera att det inte går att ange reservnummer."
+                        + " Webcert hanterar enbart person- och samordningsnummer.";
+                errors.addError(msg);
+                break;
+            default:
+                break; // Do nothing
         }
     }
 

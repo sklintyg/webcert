@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -64,15 +65,17 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
     @Override
     public ResultValidator validateApplicationErrors(Utlatande utlatande, IntygUser user) {
         ResultValidator errors = ResultValidator.newInstance();
-        validateSekretessmarkeringOchIntygsTyp(utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(),
-                utlatande.getPatient().getPersonId(), user, errors);
+
+        validatePersonnummerExists(errors, utlatande.getPatient().getPersonId().getExtension());
+        validateSekretessmarkeringOchIntygsTyp(errors, utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(),
+                utlatande.getPatient().getPersonId(), user);
         validateCreateForAvlidenPatientAllowed(errors, utlatande.getPatient().getPersonId().getExtension(),
                 utlatande.getTypAvUtlatande().getCode());
         return errors;
     }
 
-    private void validateSekretessmarkeringOchIntygsTyp(HosPersonal skapadAv, TypAvUtlatande typAvUtlatande,
-            PersonId personId, IntygUser user, ResultValidator errors) {
+    private void validateSekretessmarkeringOchIntygsTyp(ResultValidator errors, HosPersonal skapadAv, TypAvUtlatande typAvUtlatande,
+            PersonId personId, IntygUser user) {
 
         // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the
         // PU-service.
@@ -98,7 +101,8 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         }
     }
 
-    private void validatePatient(Patient patient, ResultValidator errors) {
+    private void  validatePatient(Patient patient, ResultValidator errors) {
+
         if (Strings.nullToEmpty(patient.getEfternamn()).trim().isEmpty()) {
             errors.addError("efternamn is required");
         }
@@ -110,7 +114,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         if (patient.getPersonId() == null || Strings.nullToEmpty(patient.getPersonId().getExtension()).trim().isEmpty()) {
             errors.addError("personId is required");
         } else {
-            PersonnummerChecksumValidator.validate(new Personnummer(patient.getPersonId().getExtension()), errors);
+            validatePersonnummer(errors, patient.getPersonId().getExtension());
         }
     }
 
