@@ -166,6 +166,15 @@ module.exports = function() {
 
     });
 
+
+    this.Given(/^ska jag inte kunna skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
+        return expect(sokSkrivIntygUtkastTypePage.intygTypeSelector.all(by.css('option[label="' + intygsTyp + '"]')).first().isPresent()).to.become(false).then(function() {
+            logger.info('OK - intygstypen finns i listan med valbara intygstyper');
+        }, function(reason) {
+            throw ('FEL : ' + reason);
+        });
+    });
+
     this.Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
         intyg.typ = testdataHelpers.shuffle([
             'Läkarutlåtande för sjukersättning',

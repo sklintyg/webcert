@@ -26,7 +26,7 @@ var today = new Date();
 var deathDate = new Date();
 deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
 
-var dayBeforeDeath = new Date();
+var dayBeforeDeath = new Date(deathDate);
 dayBeforeDeath.setDate(deathDate.getDate() -1);
 
 function getDodsdatum(datumSakert){
