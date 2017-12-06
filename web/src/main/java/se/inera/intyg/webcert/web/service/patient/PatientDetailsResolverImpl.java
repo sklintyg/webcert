@@ -77,7 +77,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      */
     @Override
     public PersonSvar getPersonFromPUService(Personnummer personnummer) {
-        return puService.getPerson(personnummer);
+        return getPersonSvar(personnummer);
     }
 
     @Override
@@ -205,11 +205,15 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return retPatient;
     }
 
+    private PersonSvar getPersonSvar(Personnummer personnummer) {
+        return puService.getPerson(personnummer);
+    }
+
     /*
      * I: Info om avliden från både PU-tjänst och journalsystem.
      */
     private Patient resolveFkPatient(Personnummer personnummer, WebCertUser user) {
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
         Patient patient = personSvar.getStatus() == PersonSvar.Status.FOUND
                 ? toPatientFromPersonSvarNameOnly(personnummer, personSvar)
                 : resolveFkPatientPuUnavailable(personnummer, user);
@@ -235,8 +239,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      * F: PU-tjänsten (alla uppgifter).
      */
     private Patient resolveTsPatient(Personnummer personnummer, WebCertUser user) {
-
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
         if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
             Patient patient = toPatientFromPersonSvar(personnummer, personSvar);
 
@@ -274,7 +277,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      * Free: PU-tjänsten (alla uppgifter)
      */
     private Patient resolveDbPatient(Personnummer personnummer, WebCertUser user) {
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
 
         Patient patient = null;
         // Djupintegration
@@ -315,7 +318,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      */
     private Patient resolveDoiPatient(Personnummer personnummer, WebCertUser user) {
 
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
 
         // Find ALL existing intyg for this patient, filter out so we only have DB left.
         List<Utkast> utkastList = new ArrayList<>();

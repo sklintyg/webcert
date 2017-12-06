@@ -123,17 +123,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void testValidatePersonnummerDoesNotExistInPU() {
-        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-
-        ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
-        assertTrue(result.hasErrors());
-
-        verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
-    }
-
-    @Test
     public void testValidateHoSPersonalFullstandigtnamnMissing() {
         ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "fornamn", null, "enhetsnamn", true));
         assertTrue(result.hasErrors());
@@ -184,6 +173,17 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     @Test
+    public void testValidationOfPersonnummerDoesNotExistInPU() {
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+
+        ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+        assertTrue(result.hasErrors());
+
+        verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
+    }
+
+    @Test
     public void testPuServiceLooksUpPatientForTsBas() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
@@ -194,17 +194,15 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Test
     public void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu() {
-        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
         ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
-        verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+        verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
     }
 
     @Test
     public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
-        when(commonAuthoritiesResolver.getSekretessmarkeringAllowed())
-                .thenReturn(Arrays.asList(Fk7263EntryPoint.MODULE_ID));
+        when(commonAuthoritiesResolver.getSekretessmarkeringAllowed()).thenReturn(Arrays.asList(Fk7263EntryPoint.MODULE_ID));
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);

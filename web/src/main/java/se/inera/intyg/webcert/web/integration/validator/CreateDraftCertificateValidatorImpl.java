@@ -55,9 +55,9 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
     public ResultValidator validate(Utlatande utlatande) {
         ResultValidator errors = ResultValidator.newInstance();
 
-        validateTypAvUtlatande(utlatande.getTypAvUtlatande(), errors);
-        validatePatient(utlatande.getPatient(), errors);
-        validateSkapadAv(utlatande.getSkapadAv(), errors);
+        validateTypAvUtlatande(errors, utlatande.getTypAvUtlatande());
+        validatePatient(errors, utlatande.getPatient());
+        validateSkapadAv(errors, utlatande.getSkapadAv());
 
         return errors;
     }
@@ -66,21 +66,30 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
     public ResultValidator validateApplicationErrors(Utlatande utlatande, IntygUser user) {
         ResultValidator errors = ResultValidator.newInstance();
 
-        validatePersonnummerExists(errors, utlatande.getPatient().getPersonId().getExtension());
-        validateSekretessmarkeringOchIntygsTyp(errors, utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(),
-                utlatande.getPatient().getPersonId(), user);
-        validateCreateForAvlidenPatientAllowed(errors, utlatande.getPatient().getPersonId().getExtension(),
-                utlatande.getTypAvUtlatande().getCode());
+        String personId = utlatande.getPatient().getPersonId().getExtension();
+        Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
+
+        // Check if PU-service is responding
+        validatePUServiceAvailibility(errors, personnummer);
+        if (errors.hasErrors()) {
+            return errors;
+        }
+
+        validateSekretessmarkeringOchIntygsTyp(errors, personnummer, utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(), user);
+        validateCreateForAvlidenPatientAllowed(errors, personnummer, utlatande.getTypAvUtlatande().getCode());
+
         return errors;
     }
 
-    private void validateSekretessmarkeringOchIntygsTyp(ResultValidator errors, HosPersonal skapadAv, TypAvUtlatande typAvUtlatande,
-            PersonId personId, IntygUser user) {
+    private void validateSekretessmarkeringOchIntygsTyp(ResultValidator errors,
+                                                        Personnummer personnummer,
+                                                        HosPersonal skapadAv,
+                                                        TypAvUtlatande typAvUtlatande,
+                                                        IntygUser user) {
 
-        // If intygstyp is NOT allowed to issue for sekretessmarkerad patient we check sekr state through the
-        // PU-service.
+        // If intygstyp is NOT allowed to issue for sekretessmarkerad patient
+        // we check sekretessmarkerad state through the PU-service.
         String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
-        String personnummer = personId.getExtension();
 
         AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         if (!authoritiesValidator.given(user, intygsTyp)
@@ -89,11 +98,11 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
                 .isVerified()) {
             errors.addError("Du saknar behörighet att skapa intyg med denna typ.");
         } else {
-            validateBusinessRulesForSekretessmarkeradPatient(errors, intygsTyp, personnummer, user);
+            validateBusinessRulesForSekretessmarkeradPatient(errors, personnummer, intygsTyp, user);
         }
     }
 
-    private void validateTypAvUtlatande(TypAvUtlatande typAvUtlatandeType, ResultValidator errors) {
+    private void validateTypAvUtlatande(ResultValidator errors, TypAvUtlatande typAvUtlatandeType) {
         String intygsTyp = typAvUtlatandeType.getCode();
 
         if (!moduleRegistry.moduleExists(intygsTyp)) {
@@ -101,7 +110,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         }
     }
 
-    private void  validatePatient(Patient patient, ResultValidator errors) {
+    private void  validatePatient(ResultValidator errors, Patient patient) {
 
         if (Strings.nullToEmpty(patient.getEfternamn()).trim().isEmpty()) {
             errors.addError("efternamn is required");
@@ -118,7 +127,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         }
     }
 
-    private void validateSkapadAv(HosPersonal skapadAv, ResultValidator errors) {
+    private void validateSkapadAv(ResultValidator errors, HosPersonal skapadAv) {
         if (Strings.nullToEmpty(skapadAv.getFullstandigtNamn()).trim().isEmpty()) {
             errors.addError("Physicians full name is required");
         }
@@ -127,10 +136,10 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
             errors.addError("Physicians hsaId is required");
         }
 
-        validateEnhet(skapadAv.getEnhet(), errors);
+        validateEnhet(errors, skapadAv.getEnhet());
     }
 
-    private void validateEnhet(Enhet enhet, ResultValidator errors) {
+    private void validateEnhet(ResultValidator errors, Enhet enhet) {
         if (enhet == null) {
             errors.addError("Enhet is missing");
         } else {

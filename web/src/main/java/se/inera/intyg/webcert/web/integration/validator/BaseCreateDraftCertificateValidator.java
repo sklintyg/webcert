@@ -52,45 +52,14 @@ public abstract class BaseCreateDraftCertificateValidator {
     private PatientDetailsResolver patientDetailsResolver;
 
 
-    protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors, String intygsTyp, String personnummer,
-            IntygUser user) {
+    protected void validatePUServiceAvailibility(ResultValidator errors,
+                                                 Personnummer personnummer) {
 
-        Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personnummer).orElse(null);
-
-        if (pnr != null) {
-            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
-            if (sekretessStatus != SekretessStatus.UNDEFINED) {
-                validateSekretess(errors, intygsTyp, sekretessStatus);
-                validateHsaUserMayCreateDraft(errors, user, sekretessStatus);
-            } else {
-                errors.addError("Cannot issue intyg. The PU-service was unreachable. Please try again later.");
-            }
-        }
-    }
-
-    protected void validateCreateForAvlidenPatientAllowed(ResultValidator errors, String personId, String typAvUtlatande) {
-        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande);
-        Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
-
-        if (pnr != null) {
-            if (patientDetailsResolver.isAvliden(pnr) && !AVLIDEN_PATIENT_ALLOWED_FOR_TYPES.contains(intygsTyp)) {
-                errors.addError("Cannot issue intyg type {0} for deceased patient", intygsTyp);
-            }
-        } else {
-            errors.addError("Cannot issue intyg type {0} for patient with invalid personnummer {1}", intygsTyp, personId);
-        }
-    }
-
-    protected void  validatePersonnummer(ResultValidator errors, String personId) {
-        Personnummer pnr = new Personnummer(personId);
-        PersonnummerChecksumValidator.validate(pnr, errors);
-    }
-
-    protected void  validatePersonnummerExists(ResultValidator errors, String personId) {
-        Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
-        PersonSvar personSvar = patientDetailsResolver.getPersonFromPUService(pnr);
+        PersonSvar personSvar = patientDetailsResolver.getPersonFromPUService(personnummer);
 
         switch (personSvar.getStatus()) {
+            case ERROR:
+                errors.addError("Cannot issue intyg. The PU-service was unreachable. Please try again later.");
             case NOT_FOUND:
                 String msg = "Personnumret du har angivit finns inte i folkbokföringsregistret."
                         + " Observera att det inte går att ange reservnummer."
@@ -100,6 +69,41 @@ public abstract class BaseCreateDraftCertificateValidator {
             default:
                 break; // Do nothing
         }
+    }
+
+    protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors,
+                                                                    Personnummer personnummer,
+                                                                    String intygsTyp,
+                                                                    IntygUser user) {
+        if (personnummer != null) {
+            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
+            if (sekretessStatus != SekretessStatus.UNDEFINED) {
+                validateSekretess(errors, intygsTyp, sekretessStatus);
+                validateHsaUserMayCreateDraft(errors, user, sekretessStatus);
+            }
+        }
+    }
+
+    protected void validateCreateForAvlidenPatientAllowed(ResultValidator errors,
+                                                          Personnummer personnummer,
+                                                          String typAvUtlatande) {
+
+        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande);
+
+        if (personnummer != null) {
+            if (patientDetailsResolver.isAvliden(personnummer) && !AVLIDEN_PATIENT_ALLOWED_FOR_TYPES.contains(intygsTyp)) {
+                errors.addError("Cannot issue intyg type {0} for deceased patient", intygsTyp);
+            }
+        } else {
+            errors.addError("Cannot issue intyg type {0} for patient with invalid personnummer {1}",
+                    intygsTyp, personnummer.getPersonnummer());
+        }
+
+    }
+
+    protected void  validatePersonnummer(ResultValidator errors, String personId) {
+        Personnummer pnr = new Personnummer(personId);
+        PersonnummerChecksumValidator.validate(pnr, errors);
     }
 
     private void validateHsaUserMayCreateDraft(ResultValidator errors, IntygUser user, SekretessStatus sekretessStatus) {

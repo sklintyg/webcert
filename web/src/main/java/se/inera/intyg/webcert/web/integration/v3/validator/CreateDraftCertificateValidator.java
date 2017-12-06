@@ -26,4 +26,5 @@ public interface CreateDraftCertificateValidator {
 
     ResultValidator validate(Intyg intyg);
     ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user);
+
 }

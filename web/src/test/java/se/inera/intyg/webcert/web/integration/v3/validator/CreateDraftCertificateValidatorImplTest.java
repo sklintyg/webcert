@@ -18,31 +18,22 @@
  */
 package se.inera.intyg.webcert.web.integration.v3.validator;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.validator.BaseCreateDraftCertificateValidatorImplTest;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;
@@ -51,6 +42,14 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCertificateValidatorImplTest {
@@ -160,7 +159,20 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     @Test
+    public void testValidationOfPersonnummerDoesNotExistInPU() {
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+
+        ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+        assertTrue(result.hasErrors());
+
+        verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
+    }
+
+
+    @Test
     public void testPuServiceLooksUpPatientForTsBas() {
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         ResultValidator result = validator
                 .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
@@ -170,17 +182,17 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Test
     public void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu() {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
         ResultValidator result = validator
                 .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
-        verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+        verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
     }
 
     @Test
     public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
-        when(commonAuthoritiesResolver.getSekretessmarkeringAllowed())
-                .thenReturn(Arrays.asList(Fk7263EntryPoint.MODULE_ID));
+        when(commonAuthoritiesResolver.getSekretessmarkeringAllowed()).thenReturn(Arrays.asList(Fk7263EntryPoint.MODULE_ID));
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         ResultValidator result = validator
                 .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
@@ -190,12 +202,21 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Test
     public void testValidateIntygstypPrivilege() {
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
+
         // We do the same validation as to view the utkast when CreateDraftCertificate.
         ResultValidator result = validator
                 .validateApplicationErrors(
                         buildIntyg(LisjpEntryPoint.MODULE_ID, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
+
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
+    }
+
+    private PersonSvar buildPersonSvar(PersonSvar.Status status) {
+        Personnummer personnummer = new Personnummer("19121212-1212");
+        return new PersonSvar(new PersonSvar(
+                new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), status));
     }
 
     private Intyg buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,
