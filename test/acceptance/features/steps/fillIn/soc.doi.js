@@ -74,6 +74,15 @@
                          throw ('FEL, angeBarn,' + reason);
                      });
              }).then(function() {
+                 //Läkarens utlåtande om dödsorsaken 
+                 return doiUtkastPage.angeUtlatandeOmDodsorsak(intyg.dodsorsak)
+                     .then(function() {
+                         logger.info('OK - angeUtlatandeOmDodsorsak');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
+                     });
+             }).then(function() {
                  //Opererad inom fyra veckor före döden
                  return doiUtkastPage.angeOperation(intyg.operation)
                      .then(function() {

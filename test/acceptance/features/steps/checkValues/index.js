@@ -31,6 +31,7 @@ var tsBasCheckValues = require('./ts.bas.js').checkValues;
 var tsDiabetesCheckValues = require('./ts.diabetes.js').checkValues;
 
 var skvDBCheckValues = require('./skv.db.js').checkValues;
+var socDOICheckValues = require('./soc.doi.js').checkValues;
 
 module.exports = {
     fk: {
@@ -70,6 +71,8 @@ module.exports = {
             promiseArr.push(fkLUAEFSCheckValues(intyg));
         } else if (intyg.typ === 'Dödsbevis') {
             promiseArr.push(skvDBCheckValues(intyg));
+        } else if (intyg.typ === 'Dödsorsaksintyg') {
+            promiseArr.push(socDOICheckValues(intyg));
         } else {
             throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
         }

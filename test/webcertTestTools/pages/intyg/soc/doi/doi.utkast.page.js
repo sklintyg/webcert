@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise, protractor*/
+/*globals element,by, Promise, protractor, browser*/
 'use strict';
 
 var BaseSocUtkast = require('../soc.base.utkast.page.js');
@@ -69,28 +69,53 @@ var doiUtkast = BaseSocUtkast._extend({
 		this.utlatandeOmDodsorsak = {
 			a : {
 				beskrivning : element(by.id('orsak--beskrivning')),
-				debut : element(by.id('orsak--datum')),
-				specifikation : element(by.id('orsak--specifikation'))
+				datum : element(by.id('orsak--datum')),
+				specifikation : {
+					dropDown : element(by.id('orsak--specifikation')),
+					akut : element(by.id('ui-select-choices-row-0-1')),
+					kronisk : element(by.id('ui-select-choices-row-0-2')),
+					uppgiftSaknas : element(by.id('ui-select-choices-row-0-3'))
+				}
 			},
 			b : {
 				beskrivning : element(by.id('orsak-0-beskrivning')),
-				debut : element(by.id('orsak-0-datum')),
-				specifikation : element(by.id('orsak-0-specifikation'))
+				datum : element(by.id('orsak-0-datum')),
+				specifikation : {
+					dropDown : element(by.id('orsak-0-specifikation')),
+					akut : element(by.id('ui-select-choices-row-2-1')),
+					kronisk : element(by.id('ui-select-choices-row-2-2')),
+					uppgiftSaknas : element(by.id('ui-select-choices-row-2-3'))
+				}
 			},
 			c : {
 				beskrivning : element(by.id('orsak-1-beskrivning')),
-				debut : element(by.id('orsak-1-datum')),
-				specifikation : element(by.id('orsak-1-specifikation'))
+				datum : element(by.id('orsak-1-datum')),
+				specifikation : {
+					dropDown : element(by.id('orsak-1-specifikation')),
+					akut : element(by.id('ui-select-choices-row-3-1')),
+					kronisk : element(by.id('ui-select-choices-row-3-2')),
+					uppgiftSaknas : element(by.id('ui-select-choices-row-3-3'))
+				}
 			},
 			d : {
 				beskrivning : element(by.id('orsak-2-beskrivning')),
-				debut : element(by.id('orsak-2-datum')),
-				specifikation : element(by.id('orsak-2-specifikation'))
+				datum : element(by.id('orsak-2-datum')),
+				specifikation : {
+					dropDown : element(by.id('orsak-2-specifikation')),
+					akut : element(by.id('ui-select-choices-row-4-1')),
+					kronisk : element(by.id('ui-select-choices-row-4-2')),
+					uppgiftSaknas : element(by.id('ui-select-choices-row-4-3'))
+				}
 			},
 			andraSjukdomarSkador : {
 				beskrivning : element(by.id('orsak-multi-0-beskrivning')),
-				debut : element(by.id('orsak-multi-0-datum')),
-				specifikation : element(by.id('orsak-multi-0-specifikation'))
+				datum : element(by.id('orsak-multi-0-datum')),
+				specifikation : {
+					dropDown : element(by.id('orsak-0-specifikation')),
+					akut : element(by.id('ui-select-choices-row-1-1')),
+					kronisk : element(by.id('ui-select-choices-row-1-2')),
+					uppgiftSaknas : element(by.id('ui-select-choices-row-1-3'))
+				}
 			}
 		}
 		this.operation = {
@@ -200,8 +225,31 @@ var doiUtkast = BaseSocUtkast._extend({
 		}
 		
 	},
-	angeUtlatandeOmDodsorsak : function angeUtlatandeOmDodsorsak() {
+	angeUtlatandeOmDodsorsak : function angeUtlatandeOmDodsorsak(dodsorsak) {
+		var utlatandeOmDodsorsakElm = this.utlatandeOmDodsorsak;
+		console.log(dodsorsak);
 		
+		return moveAndSendKeys(utlatandeOmDodsorsakElm.a.beskrivning, dodsorsak.a.beskrivning).then(function(){
+			return moveAndSendKeys(utlatandeOmDodsorsakElm.a.datum, dodsorsak.a.datum);
+		}).then(function(){
+			browser.ignoreSynchronization = false;
+			return utlatandeOmDodsorsakElm.a.specifikation.dropDown.click().then(function(){
+				
+				if (dodsorsak.a.tillstandSpec === 'Akut') {
+					return utlatandeOmDodsorsakElm.a.specifikation.akut.click();
+				} else if (dodsorsak.a.tillstandSpec === 'Kronisk') {
+					return utlatandeOmDodsorsakElm.a.specifikation.kronisk.click();
+				} else if (dodsorsak.a.tillstandSpec === 'Uppgift saknas') {
+					return utlatandeOmDodsorsakElm.a.specifikation.uppgiftSaknas.click();
+				} else {
+					throw('Klarade inte att matcha ' + dodsorsak.a.tillstandSpec);
+				}
+			}).then(function(){
+				//return browser.sleep(10000);
+			}).then(function(){
+				return browser.ignoreSynchronization = true;
+			});
+		});					
 	},
 	angeOperation : function angeOperation(operation) {
 		var operationElm = this.operation;

@@ -70,6 +70,7 @@ module.exports = {
 		var obj = {
             id : intygsID,
 			typ : "Dödsbevis",
+			deathDate : deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
             identitetStyrktGenom : shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
             dodsdatum : getDodsdatum(datumSakert),
             dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]},

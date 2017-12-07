@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, intyg, browser, logger, Promise, pages */
+/* globals protractor, intyg, browser, logger, Promise */
 
 'use strict';
 
@@ -27,51 +27,6 @@ var intygURL = helpers.intygURL;
 
 module.exports = function() {
 
-    this.When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
-
-        if (intygstyp !== intyg.typ) {
-            console.log('Intygstyp är inte ' + intygstyp);
-            return Promise.resolve();
-        } else {
-            browser.ignoreSynchronization = true;
-            console.log('Intygstyp är: ' + intyg.typ);
-            console.log(intyg);
-            if (typeof(intyg.baseratPa) === 'undefined') {
-                global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
-            }
-
-            return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
-                .then(function() {
-                    return logger.info('OK - angeBaseratPa');
-                }, function(reason) {
-                    throw ('FEL, angeBaseratPa,' + reason);
-                })
-                .then(function() {
-                    return pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
-                        browser.ignoreSynchronization = false;
-                        return logger.info('OK - angeArbetsformaga');
-                    }, function(reason) {
-                        throw ('FEL, angeArbetsformaga,' + reason);
-                    });
-                })
-                .then(function() {
-                    return pages.intyg.lisjp.utkast.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
-                        logger.info('OK - angeArbetstidsforlaggning');
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeArbetstidsforlaggning,' + reason);
-                    });
-                })
-                .then(function() {
-                    return pages.intyg.lisjp.utkast.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
-                        logger.info('OK - prognosForArbetsformaga');
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, prognosForArbetsformaga,' + reason);
-                    });
-                });
-        }
-    });
 
     this.Given(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
         return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);

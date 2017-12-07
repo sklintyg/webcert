@@ -17,17 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict';
+ /* globals intyg*/
+
+ 'use strict';
 
 var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
 
 var today = new Date();
-var deathDate = new Date();
-deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
 
-var dayBeforeDeath = new Date();
+var deathDate = new Date();
+
+if (typeof(global.intyg) !== 'undefined' && typeof(global.intyg.dbIntyg) !== 'undefined') {
+	deathDate = intyg.dbIntyg.deathDate;
+} else {
+	deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
+}
+
+var dayBeforeDeath = new Date(deathDate);
 dayBeforeDeath.setDate(deathDate.getDate() -1);
+
 
 function getDodsdatum(datumSakert){
 	if (datumSakert === true) {
@@ -47,7 +56,31 @@ function getDodsdatum(datumSakert){
 		}
 	}	
 }
-
+function getDodsOrsak() {
+	var n = Math.floor(Math.random() * 4);
+	var obj = {
+		a : getDodsOrsakObj(1)
+	};
+	if (n >= 1) {
+		obj.b = getDodsOrsakObj(2);
+	} else if (n >= 2) {
+		obj.c = getDodsOrsakObj(3);
+	} else if (n >= 3) {
+		obj.d = getDodsOrsakObj(4);
+	}
+	return obj;
+}
+function getDodsOrsakObj(n) {
+	var datum = new Date(dayBeforeDeath);
+	datum.setDate(deathDate.getDate() -n);
+	
+	var obj = {
+		beskrivning : testdataHelper.randomTextString(),
+		datum : testdataHelper.dateFormat(datum),
+		tillstandSpec : shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
+		};
+	return obj;
+}
 function getOperation() {
 	var ja = { 
 		ja: {
@@ -81,9 +114,11 @@ module.exports = {
 		var obj = {
             id : intygsID,
 			typ : "Dödsorsaksintyg",
+			deathDate : deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
             identitetStyrktGenom : shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
             dodsdatum : getDodsdatum(datumSakert),
             dodsPlats : {kommun : testdataHelper.randomTextString(), boende : shuffle(["sjukhus","ordinartBoende","sarskiltBoende","annan"])[0]},
+			dodsorsak : getDodsOrsak(),
 			operation : getOperation(),
 			skadaForgiftning : testdataHelper.randomTrueFalse(),
 			dodsorsaksuppgifter : {

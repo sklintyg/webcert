@@ -33,7 +33,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 	    this.identitetStyrktGenom = { //identitetStyrktGenom är inte samma element som i TS intyg
 			container : element(by.id('form_identitetStyrkt')),
 			inputText : element(by.id('identitetStyrkt'))
-		}	   
+		};
 		this.dodsdatum = {
 			container : element(by.id('form_dodsdatumSakert')),
 			sakert : {
@@ -47,7 +47,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 				options : element.all(by.css('.ui-select-choices-row-inner')),
 				antraffadDod : element(by.id('datepicker_antraffatDodDatum'))
 			}
-		}
+		};
 		this.dodsPlats = {
 			kommun : {
 				container : element(by.id('form_dodsplatsKommun')),
@@ -60,12 +60,12 @@ var DbUtkast = BaseSkvUtkast._extend({
 				sarskiltBoende : element(by.id('dodsplatsBoende-SARSKILT_BOENDE')),
 				annan : element(by.id('dodsplatsBoende-ANNAN'))
 			}
-		}
+		};
 		this.barn = {
 			container : element(by.id('form_barn')),
 			ja : element(by.id('barnYes')),
 			nej : element(by.id('barnNo'))
-		}
+		};
 		this.explosivImplantat = {
 			container : element(by.id('form_explosivImplantat')),
 			ja: element(by.id('explosivImplantatYes')),
@@ -74,7 +74,7 @@ var DbUtkast = BaseSkvUtkast._extend({
 				ja : element(by.id('explosivAvlagsnatYes')),
 				nej : element(by.id('explosivAvlagsnatNo'))
 			}
-		}
+		};
 		this.yttreUndersokning = {
 			container : element(by.id('form_undersokningYttre')),
 			ja : element(by.id('undersokningYttre-JA')),
@@ -83,18 +83,19 @@ var DbUtkast = BaseSkvUtkast._extend({
 				checkbox :  element(by.id('undersokningYttre-UNDERSOKNING_GJORT_KORT_FORE_DODEN')),
 				datePicker : element(by.id('datepicker_undersokningDatum'))
 			}
-		}
+		};
 		this.polisanmalan = {
 			container : element(by.id('form_polisanmalan')),
 			ja : element(by.id('polisanmalanYes')),
 			nej : element(by.id('polisanmalanNo'))
-		},
+		};
 		this.enhetensAdress = {
             postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
             postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
             postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
             enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
-        }
+        };
+		this.skrivDoiKnapp = element(by.id('createFromTemplateBtn'));
 	},	
 	angeIdentitetStyrktGenom : function angeIdentitetStyrktGenom(identitetStyrktGenom){
 		var identitetStyrktGenomElm = this.identitetStyrktGenom.inputText;

@@ -30,7 +30,7 @@ function signeraUtkast() {
 
     var uppdateraAdressOmErsattandeIntyg = function() {
         if (global.ersattintyg) {
-            console.log('Intyget ersätter ett annat intyg');
+            logger.info('Intyget ersätter ett annat intyg');
             return require('./fillIn/common.js').setPatientAdressIfNotGiven();
         }
 
@@ -70,6 +70,32 @@ function signeraUtkast() {
 module.exports = function() {
     this.Given(/^jag signerar intyget$/, function() {
         return signeraUtkast();
+    });
+
+    this.Then(/^klickar jag på knappen "([^"]*)"$/, function(knapp) {
+        if (knapp === 'Skriv dödsorsaksintyg') {
+            intyg.typ = 'Dödsorsaksintyg';
+
+            return pages.intyg.skv.db.utkast.skrivDoiKnapp.click().then(function() {
+                return browser.getCurrentUrl().then(function(text) {
+                    global.dbIntyg = intyg;
+
+                    logger.info('global.dbIntyg.id: ' + global.dbIntyg.id);
+
+                    intyg.id = text.split('/').slice(-2)[0];
+                    intyg.id = intyg.id.split('?')[0];
+
+                    global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
+                    logger.info('intyg.id: ' + intyg.id);
+
+                    return intyg;
+                });
+                //TODO: Uppdatera testdata så att den matchar med dödsdatum.
+            });
+
+        } else {
+            return;
+        }
     });
 
     this.Given(/^jag signerar och skickar kompletteringen$/, function() {
@@ -173,6 +199,98 @@ module.exports = function() {
             return expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false);
 
         });
+    });
+
+    this.When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
+
+        if (intygstyp !== intyg.typ) {
+            logger.info('Intygstyp är inte ' + intygstyp);
+            return Promise.resolve();
+        } else {
+            browser.ignoreSynchronization = true;
+            logger.info('Intygstyp är: ' + intyg.typ);
+            logger.info(intyg);
+
+            if (intyg.typ === 'Dödsorsaksintyg') {
+                var doiUtkastPage = pages.intyg.soc.doi.utkast;
+
+                //Läkarens utlåtande om dödsorsaken 
+                return doiUtkastPage.angeUtlatandeOmDodsorsak(intyg.dodsorsak)
+                    .then(function() {
+                        logger.info('OK - angeUtlatandeOmDodsorsak');
+                    }, function(reason) {
+                        console.trace(reason);
+                        throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
+                    }).then(function() {
+                        //Opererad inom fyra veckor före döden
+                        return doiUtkastPage.angeOperation(intyg.operation)
+                            .then(function() {
+                                logger.info('OK - angeOperation');
+                            }, function(reason) {
+                                console.trace(reason);
+                                throw ('FEL, angeOperation,' + reason);
+                            });
+                    }).then(function() {
+                        //SkadaForgiftning
+                        return doiUtkastPage.angeSkadaForgiftning(intyg.skadaForgiftning)
+                            .then(function() {
+                                logger.info('OK - angeSkadaForgiftning');
+                            }, function(reason) {
+                                console.trace(reason);
+                                throw ('FEL, angeSkadaForgiftning,' + reason);
+                            });
+                    }).then(function() {
+                        //Dödsorsaksuppgifter
+                        return doiUtkastPage.angeDodsorsaksuppgifterna(intyg.dodsorsaksuppgifter)
+                            .then(function() {
+                                logger.info('OK - angeDodsorsaksuppgifterna');
+                            }, function(reason) {
+                                console.trace(reason);
+                                throw ('FEL, angeDodsorsaksuppgifterna,' + reason);
+                            });
+                    });
+
+
+            } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
+
+                if (typeof(intyg.baseratPa) === 'undefined') {
+                    global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
+                }
+                return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
+                    .then(function() {
+                        return logger.info('OK - angeBaseratPa');
+                    }, function(reason) {
+                        throw ('FEL, angeBaseratPa,' + reason);
+                    })
+                    .then(function() {
+                        return pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
+                            browser.ignoreSynchronization = false;
+                            return logger.info('OK - angeArbetsformaga');
+                        }, function(reason) {
+                            throw ('FEL, angeArbetsformaga,' + reason);
+                        });
+                    })
+                    .then(function() {
+                        return pages.intyg.lisjp.utkast.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
+                            logger.info('OK - angeArbetstidsforlaggning');
+                        }, function(reason) {
+                            console.trace(reason);
+                            throw ('FEL, angeArbetstidsforlaggning,' + reason);
+                        });
+                    })
+                    .then(function() {
+                        return pages.intyg.lisjp.utkast.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
+                            logger.info('OK - prognosForArbetsformaga');
+                        }, function(reason) {
+                            console.trace(reason);
+                            throw ('FEL, prognosForArbetsformaga,' + reason);
+                        });
+                    });
+            } else {
+                console.trace(intygstyp);
+                logger.warn('Kunde inte matcha intygstyp.');
+            }
+        }
     });
 
 };
