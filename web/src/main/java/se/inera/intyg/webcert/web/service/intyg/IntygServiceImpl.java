@@ -266,6 +266,9 @@ public class IntygServiceImpl implements IntygService {
     public Pair<List<ListIntygEntry>, Boolean> listIntyg(List<String> enhetId, Personnummer personnummer) {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
         request.setPersonId(InternalConverterUtil.getPersonId(personnummer));
+
+        SekretessStatus sekretessmarkering = patientDetailsResolver.getSekretessStatus(personnummer);
+
         for (String id : enhetId) {
             request.getEnhetsId().add(InternalConverterUtil.getHsaId(id));
         }
@@ -278,7 +281,7 @@ public class IntygServiceImpl implements IntygService {
 
             intygRelationHelper.decorateIntygListWithRelations(fullIntygItemList);
 
-            fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList);
+            fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList, sekretessmarkering);
             addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
             return Pair.of(fullIntygItemList, Boolean.FALSE);
 
@@ -295,10 +298,16 @@ public class IntygServiceImpl implements IntygService {
         return Pair.of(intygItems, Boolean.TRUE);
     }
 
-    private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList) {
+    private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList,
+                                                          SekretessStatus sekretessmarkering) {
         // Get intygstyper from the view privilege
         Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
                 AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+
+        // Remove intygstyper that cannot be issued for a sekretessmarkerad patient
+        if (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED) {
+            intygsTyper.removeAll(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering());
+        }
 
         // The user is only granted access to view intyg of intygstyper that are in the set.
         return fullIntygItemList.stream().filter(i -> intygsTyper.contains(i.getIntygType())).collect(Collectors.toList());
