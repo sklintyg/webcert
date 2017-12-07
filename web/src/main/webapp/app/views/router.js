@@ -33,7 +33,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             },
             views: {
                 'header': {
-                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html',
                     controller: 'integration.EnhetsvalHeaderCtrl'
                 },
                 'content@': {
@@ -46,7 +46,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             url: '/integration-enhetsval',
             views: {
                 'header': {
-                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html',
                     controller: 'integration.EnhetsvalHeaderCtrl'
                 },
                 'content@': {
@@ -58,7 +58,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         state('webcert', {
             views: {
                 'header': {
-                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html',
                     controller: 'common.wcHeaderController'
                 }
             }

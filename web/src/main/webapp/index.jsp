@@ -65,7 +65,7 @@
 </c:choose>
 
 <script type="text/javascript" src="/public/login.controller.js"></script>
-<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamicLink.module.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/components/dynamiclink/dynamicLink.module.js"></script>
 
 </head>
 <body class="start jsp" id="indexPage" ng-controller="LoginController">
