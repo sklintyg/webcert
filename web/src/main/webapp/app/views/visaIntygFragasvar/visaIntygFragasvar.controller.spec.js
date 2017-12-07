@@ -24,7 +24,7 @@ describe('VisaIntygFragasvarCtrl', function() {
     var $state;
     var $stateParams;
     var dialogService;
-    var fragaSvarCommonService;
+    var enhetArendenCommonService;
     var $scope;
     var $q;
     var $rootScope;
@@ -80,8 +80,8 @@ describe('VisaIntygFragasvarCtrl', function() {
         });
         $provide.value('common.dialogService', dialogService);
 
-        fragaSvarCommonService  = jasmine.createSpyObj('common.fragaSvarCommonService', [ 'checkQAonlyDialog' ]);
-        $provide.value('common.fragaSvarCommonService', fragaSvarCommonService);
+        enhetArendenCommonService  = jasmine.createSpyObj('common.enhetArendenCommonService', [ 'checkQAonlyDialog' ]);
+        $provide.value('common.enhetArendenCommonService', enhetArendenCommonService);
 
         $provide.value('$window', {location:{href:currentUrl}});
 
@@ -177,7 +177,7 @@ describe('VisaIntygFragasvarCtrl', function() {
 
             // ------ assert
             // dialog should be opened
-            expect(fragaSvarCommonService.checkQAonlyDialog).toHaveBeenCalled();
+            expect(enhetArendenCommonService.checkQAonlyDialog).toHaveBeenCalled();
 
         });
 
@@ -285,7 +285,7 @@ describe('VisaIntygFragasvarCtrl', function() {
             it('handle button click', function(){
 
                 // This test is not QA only.
-                fragaSvarCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
+                enhetArendenCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
                     $window.location.href = newUrl;
                 });
 
@@ -314,7 +314,7 @@ describe('VisaIntygFragasvarCtrl', function() {
             it('un handled button click', function(){
 
                 // This test is not QA only.
-                fragaSvarCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
+                enhetArendenCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
                     $window.location.href = newUrl;
                 });
 

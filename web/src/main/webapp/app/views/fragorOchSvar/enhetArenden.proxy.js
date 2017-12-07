@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').factory('webcert.QuestionAnswer',
+angular.module('webcert').factory('webcert.enhetArendenProxy',
     function($http, $log) {
         'use strict';
 
         /*
-         * Load questions and answers data
+         * Load arenden data
          */
-        function _getQA(query, onSuccess, onError) {
+        function _getArenden(query, onSuccess, onError) {
             $log.debug('_getQA');
             var restPath = '/api/fragasvar/sok';
             $http.get(restPath, { params: query}).then(function(response) {
@@ -40,14 +40,14 @@ angular.module('webcert').factory('webcert.QuestionAnswer',
         /*
          * Get list of lakare for enhet
          */
-        function _getQALakareList(enhetsId, onSuccess, onError) {
-            $log.debug('_getQALakareList: ' + enhetsId);
+        function _getArendenLakareList(enhetsId, onSuccess, onError) {
+            $log.debug('_getArendenLakareList: ' + enhetsId);
             var restPath = '/api/fragasvar/lakare';
             $http.get(restPath, {params: { 'enhetsId': enhetsId}}).then(function(response) {
-                $log.debug('_getQALakareList got data:' + response.data);
+                $log.debug('_getArendenLakareList got data:' + response.data);
                 onSuccess(response.data);
             }, function(response) {
-                $log.error('_getQALakareList error ' + response.status);
+                $log.error('_getArendenLakareList error ' + response.status);
                 // Let calling code handle the error of no data response
                 onError(response.data);
             });
@@ -55,7 +55,7 @@ angular.module('webcert').factory('webcert.QuestionAnswer',
 
         // Return public API for the service
         return {
-            getQA: _getQA,
-            getQALakareList: _getQALakareList
+            getArenden: _getArenden,
+            getArendenLakareList: _getArendenLakareList
         };
     });

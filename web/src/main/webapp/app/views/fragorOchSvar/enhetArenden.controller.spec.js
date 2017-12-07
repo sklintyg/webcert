@@ -140,7 +140,7 @@ describe('FragorOchSvarCtrlSpec', function() {
 
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
             $provide.value('common.statService', statService);
-            $provide.value('common.fragaSvarCommonService', jasmine.createSpyObj('common.fragaSvarCommonService',
+            $provide.value('common.enhetArendenCommonService', jasmine.createSpyObj('common.enhetArendenCommonService',
                 [ 'handleVidareBefodradToggle', 'decorateSingleItemMeasure', 'setVidareBefordradState',
                     'buildMailToLink', 'checkQAonlyDialog' ]));
             $provide.value('common.User', {});
@@ -230,14 +230,14 @@ describe('FragorOchSvarCtrlSpec', function() {
             spyOn($location, 'url').and.callThrough();
         });
 
-        it('should update active unit and fetch QA when qa-filter-select-care-unit message is received', function() {
+        it('should update active unit and fetch QA when wcVardenhetFilter.unitSelected message is received', function() {
 
             var unit = {'namn': 'WebCert-Enhet2', 'id': 'IFV1239877878-1045', 'fragaSvar': 0, 'intyg': 0};
 
             $httpBackend.expectGET('/api/fragasvar/lakare?enhetsId=IFV1239877878-1045').respond(200, {});
             $httpBackend.expectGET('/api/fragasvar/sok?enhetId=IFV1239877878-1045&pageSize=10&questionFromFK=false&questionFromWC=false&startFrom=0&vantarPa=ALLA_OHANTERADE').respond(200,
                 {});
-            $scope.$broadcast('qa-filter-select-care-unit', unit);
+            $scope.$broadcast('wcVardenhetFilter.unitSelected', unit);
             $httpBackend.flush();
 
             expect($cookies.getObject('enhetsId')).toBe('IFV1239877878-1045');

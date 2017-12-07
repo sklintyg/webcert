@@ -1,0 +1,24 @@
+<div class="container-fluid" wc-authority feature="hanteraFragor">
+  <div class="row" id="enhet-arenden">
+    <div class="col-md-12 webcert-col webcert-col-single">
+      <h1 class="page-title">
+        <span message key="dashboard.unanswered.title"></span>
+      </h1>
+
+      <!-- load animation for entire page -->
+      <div wc-spinner label="info.loadingdata" show-spinner="!enhetArendenModel.doneLoading"
+           show-content="enhetArendenModel.doneLoading">
+        <wc-vardenhet-filter id="wc-vardenhet-filter"></wc-vardenhet-filter>
+
+        <div ng-if="vardenhetFilterModel.selectedUnit">
+          <h2 class="col-head" ng-class="{'less-top-padding' : vardenhetFilterModel.units.length < 3}">
+            {{vardenhetFilterModel.selectedUnit.namn}}
+          </h2>
+          <wc-enhet-arenden-filter></wc-enhet-arenden-filter>
+          <wc-enhet-arenden-list></wc-enhet-arenden-list>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

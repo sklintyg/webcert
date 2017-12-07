@@ -1,0 +1,90 @@
+<!-- search filter -->
+<div class="webcert-bottom-padding-section">
+    <span ng-show="!filterModel.filteredYet && units[0].fragaSvar">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
+    <span id="current-list-noResults-unit" ng-show="!filterModel.filteredYet && units[0].fragaSvar == 0">Du kan filtrera fram tidigare hanterade frågor och svar här nedan<br></span>
+  <button type="button" id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
+          ng-click="filterModel.filterFormCollapsed = !filterModel.filterFormCollapsed"
+          ng-switch="filterModel.filterFormCollapsed">
+    <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
+  </button>
+
+  <!-- Filter form -->
+  <div id="advanced-filter-form"
+       ng-show="!filterModel.filterFormCollapsed"
+       class="qa-filter-panel form-horizontal">
+
+    <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="form-group" id="filterFormVidarebefordrad">
+      <label class="col-sm-2 control-label">Frågor och svar som är</label>
+      <div class="col-sm-10">
+        <label class="radio-inline">
+          <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio" value="default"
+                 ng-model="filterForm.vidarebefordrad" checked="checked"> Alla frågor och svar
+        </label>
+        <label class="radio-inline">
+          <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="true"
+                 ng-model="filterForm.vidarebefordrad"> Vidarebefordrade
+        </label>
+        <label class="radio-inline">
+          <input id="vidarebefordradNej" name="vidarebefordrad" type="radio" value="false"
+                 ng-model="filterForm.vidarebefordrad"> Ej vidarebefordrade
+        </label>
+      </div>
+    </div>
+
+    <!-- åtgärd -->
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Åtgärd</label>
+      <div class="col-sm-10">
+        <select id="qp-showStatus" class="form-control" ng-model="filterForm.vantarPaSelector"
+                ng-options="s.label for s in statusList"></select>
+      </div>
+    </div>
+
+    <!-- Avsändare -->
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Avsändare</label>
+      <div class="col-sm-10">
+        <label class="radio-inline">
+          <input id="frageStallareAlla" name="frageStallare" type="radio" value="default"
+                 ng-model="filterForm.questionFrom" checked="checked"> Alla avsändare
+        </label>
+        <label class="radio-inline">
+          <input id="frageStallareFK" name="frageStallare" type="radio" value="FK"
+                 ng-model="filterForm.questionFrom"> Försäkringskassan
+        </label>
+        <label class="radio-inline">
+          <input id="frageStallareWC" name="frageStallare" type="radio" value="WC"
+                 ng-model="filterForm.questionFrom"> Vårdenheten</label>
+      </div>
+    </div>
+
+    <div wc-authority="FILTRERA_PA_LAKARE" class="form-group" id="filterFormSigneratAv">
+      <label class="col-sm-2 control-label">Signerat av</label>
+      <div class="col-sm-10">
+        <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"
+                ng-options="s.name for s in lakareList" ng-disabled="filterModel.loadingLakares"></select>
+      </div>
+    </div>
+
+    <!-- Skickat/mottaget -->
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Skickat/mottaget</label>
+      <div class="col-sm-10 form-inline">
+        Från
+        <span dom-id="filter-changedate-from" target-model="filterForm.changedFrom" wc-date-picker-field add-date-parser="strict"></span>
+        till
+        <span dom-id="filter-changedate-to" target-model="filterForm.changedTo" wc-date-picker-field add-date-parser="strict"></span>
+      </div>
+    </div>
+
+    <!-- buttons -->
+    <div class="form-group" style="margin-top:10px;">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="button" id="filter-qa-btn" class="btn btn-success" ng-click="filterList()">Sök</button>
+        <button type="button" class="btn btn-default" ng-click="resetFilterForm()" id="reset-search-form">
+          Återställ sökfilter
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

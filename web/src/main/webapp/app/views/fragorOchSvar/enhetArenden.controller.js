@@ -17,16 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.OmWebcertCtrl',
-    ['$rootScope', '$scope', '$log', 'common.enhetArendenCommonService', 'webcert.UtkastProxy', 'moduleConfig',
-        function($rootScope, $scope, $log, enhetArendenCommonService, UtkastProxy, moduleConfig) {
+/*
+ * Controller for logic related to listing questions and answers
+ */
+angular.module('webcert').controller('webcert.FragorOchSvarCtrl',
+    ['$rootScope', '$scope', 'common.enhetArendenCommonService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel',
+        function($rootScope, $scope, enhetArendenCommonService, vardenhetFilterModel, enhetArendenModel, enhetArendenFilterModel) {
             'use strict';
+
+            $scope.enhetArendenModel = enhetArendenModel;
+            $scope.vardenhetFilterModel = vardenhetFilterModel;
+
+            // Broadcast by statService on poll
+            $scope.$on('wc-stat-update', function(event, message) {
+                var unitStats = message;
+                if (!enhetArendenFilterModel.filteredYet && unitStats.fragaSvarValdEnhet === 0) {
+                    enhetArendenFilterModel.filterFormCollapsed = false;
+                }
+            });
 
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
                 enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
             });
             $scope.$on('$destroy', unbindLocationChange);
-
-            $scope.version = moduleConfig.VERSION;
-        }]
-);
+        }]);
