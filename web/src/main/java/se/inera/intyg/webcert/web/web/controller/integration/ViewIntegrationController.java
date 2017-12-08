@@ -29,6 +29,7 @@ import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;

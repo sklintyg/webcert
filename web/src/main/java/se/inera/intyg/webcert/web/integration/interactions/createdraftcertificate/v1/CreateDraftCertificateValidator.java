@@ -16,16 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.integration;
+package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v1;
 
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 
-/**
- * @author Magnus Ekstrand on 2017-10-09.
- */
-public interface IntegrationService {
+public interface CreateDraftCertificateValidator {
 
-    PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user);
+    ResultValidator validate(Utlatande utlatande);
+    ResultValidator validateApplicationErrors(Utlatande utlatande, IntygUser user);
 
 }

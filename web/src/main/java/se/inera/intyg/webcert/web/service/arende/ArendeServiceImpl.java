@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.web.converter.ArendeListItemConverter;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
-import se.inera.intyg.webcert.web.integration.builder.SendMessageToRecipientTypeBuilder;
+import se.inera.intyg.webcert.web.integration.builders.SendMessageToRecipientTypeBuilder;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;

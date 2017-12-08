@@ -56,10 +56,13 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
 
     private static final String DEFAULT_LAKARE_HSAID = "IFV1239877878-1049";
     private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";
+
     BodyExtractorFilter responseBodyExtractorFilter;
+
     private ST requestTemplate;
     private STGroup templateGroup;
     private InputStream xsdInputstream;
+
 
     @Before
     public void setup() throws IOException {

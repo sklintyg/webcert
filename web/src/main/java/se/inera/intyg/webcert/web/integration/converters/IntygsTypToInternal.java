@@ -16,16 +16,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.integration;
-
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
+package se.inera.intyg.webcert.web.integration.converters;
 
 /**
- * @author Magnus Ekstrand on 2017-10-09.
+ * Created by eriklupander on 2017-09-11.
  */
-public interface IntegrationService {
+public final class IntygsTypToInternal {
 
-    PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user);
+    private IntygsTypToInternal() {
+
+    }
+
+    public static String convertToInternalIntygsTyp(String code) {
+        if (code == null) {
+            throw new IllegalArgumentException("Cannot pass null code to internal intygstyp converter.");
+        }
+
+        switch (code.toLowerCase()) {
+            case "tstrk1007":
+                return "ts-bas";
+            case "tstrk1031":
+                return "ts-diabetes";
+            default:
+                return code.toLowerCase();
+        }
+    }
 
 }
