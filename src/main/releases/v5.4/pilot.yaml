@@ -1,0 +1,8 @@
+---
+pilots:
+  - hsaIds:
+      - x
+    features:
+      srs: true
+      srs.fk7263: true
+      srs.lisjp: true
