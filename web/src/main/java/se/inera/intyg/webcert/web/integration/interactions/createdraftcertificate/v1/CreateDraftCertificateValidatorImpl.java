@@ -40,9 +40,8 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
      * (non-Javadoc)
      *
      * @see
-     * se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v1.CreateDraftCertificateValidator#validate(se.inera.certificate.
-     * clinicalprocess
-     * .healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType)
+     * se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v1.CreateDraftCertificateValidator#validate(
+     *      se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType)
      */
     @Override
     public ResultValidator validate(Utlatande utlatande) {

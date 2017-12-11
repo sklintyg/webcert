@@ -75,6 +75,7 @@ public abstract class BaseCreateDraftCertificateValidator {
         switch (personSvar.getStatus()) {
             case ERROR:
                 errors.addError("Cannot issue intyg. The PU-service was unreachable. Please try again later.");
+                break;
             case NOT_FOUND:
                 String msg = "Personnumret du har angivit finns inte i folkbokföringsregistret."
                         + " Observera att det inte går att ange reservnummer."
