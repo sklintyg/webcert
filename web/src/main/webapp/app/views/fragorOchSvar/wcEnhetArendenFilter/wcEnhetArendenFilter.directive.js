@@ -19,10 +19,11 @@
 
 angular.module('webcert').directive('wcEnhetArendenFilter', [
     '$rootScope', '$log', '$cookies',
-    'common.ArendeProxy',
-    'webcert.enhetArendenService', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel',
+    'webcert.enhetArendenProxy',
+    'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel',
     function($rootScope, $log, $cookies,
-        enhetArendenProxy, enhetArendenService, enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel) {
+        enhetArendenProxy,
+        enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel) {
         'use strict';
 
         return {
@@ -32,13 +33,14 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             scope: {
 
             },
-            templateUrl: '/app/views/fragorOchSvar/wcFragorOchSvarFilter/wcFragorOchSvarFilter.directive.html',
+            templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenFilter/wcEnhetArendenFilter.directive.html',
             controller: function($scope) {
 
                 this.$onInit = function(){
 
                     // Load filter form (first page load)
                     enhetArendenFilterModel.reset();
+                    initLakareList(enhetArendenModel.enhetId);
 
                     $scope.enhetArendenFilterModel = enhetArendenFilterModel;
 
@@ -70,6 +72,26 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
                 };
 
+                function initLakareList(unitId) {
+                    enhetArendenFilterModel.viewState.loadingLakare = true;
+                    var lakareUnitId = unitId === enhetArendenModel.ALL_UNITS ? undefined : unitId;
+                    enhetArendenProxy.getArendenLakareList(lakareUnitId, function(list) {
+                        enhetArendenFilterModel.viewState.loadingLakare = false;
+                        enhetArendenFilterModel.lakareList = list;
+                        if (list && (list.length > 0)) {
+                            enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
+                            enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0];
+                        }
+                    }, function() {
+                        enhetArendenFilterModel.viewState.loadingLakare = false;
+                        enhetArendenFilterModel.lakareList = [];
+                        enhetArendenFilterModel.lakareList.push({
+                            hsaId: undefined,
+                            name: '<Kunde inte hämta lista>'
+                        });
+                    });
+                }
+
                 // Broadcast by statService on poll
                 $scope.$on('statService.stat-update', function(event, message) {
                     var unitStats = message;
@@ -80,26 +102,6 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
                 // Broadcast by vardenhet filter directive on load and selection
                 $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
-
-                    function initLakareList(unitId) {
-                        enhetArendenFilterModel.viewState.loadingLakare = true;
-                        var lakareUnitId = unitId === enhetArendenModel.ALL_UNITS ? undefined : unitId;
-                        enhetArendenProxy.getArendenLakareList(lakareUnitId, function(list) {
-                            enhetArendenFilterModel.viewState.loadingLakare = false;
-                            enhetArendenFilterModel.lakareList = list;
-                            if (list && (list.length > 0)) {
-                                enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
-                                enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0];
-                            }
-                        }, function() {
-                            enhetArendenFilterModel.viewState.loadingLakare = false;
-                            enhetArendenFilterModel.lakareList = [];
-                            enhetArendenFilterModel.lakareList.push({
-                                hsaId: undefined,
-                                name: '<Kunde inte hämta lista>'
-                            });
-                        });
-                    }
 
                     // If we change enhet then we probably don't want the same filter criterias
                     if ($cookies.getObject('enhetsId') && $cookies.getObject('enhetsId') !== unit.id) {

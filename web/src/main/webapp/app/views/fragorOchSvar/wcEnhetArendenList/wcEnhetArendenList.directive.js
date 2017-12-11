@@ -20,10 +20,10 @@
 angular.module('webcert').directive('wcEnhetArendenList', [
     '$location', '$log', '$timeout', '$window',
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
-    'webcert.enhetArendenService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
+    'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
-        enhetArendenService, enhetArendenModel, enhetArendenListModel) {
+        enhetArendenListService, enhetArendenModel, enhetArendenListModel) {
         'use strict';
 
         return {
@@ -37,12 +37,13 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             controller: function($scope) {
 
                 $scope.listModel = enhetArendenListModel;
+                updateArenden(null, {startFrom: 0});
 
                 // When other directives want to request list update
-                $scope.$on('enhetArendenList.requestListUpdate', function(event, data){
+                function updateArenden(event, data){
                     enhetArendenListModel.viewState.runningQuery = true;
                     enhetArendenListModel.viewState.activeErrorMessageKey = null;
-                    enhetArendenService.getArenden(data.startFrom).then(function(arendenListResult){
+                    enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult){
 
                         enhetArendenListModel.prevFilterQuery = arendenListResult.query;
                         enhetArendenListModel.totalCount = arendenListResult.totalCount;
@@ -55,19 +56,20 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                         enhetArendenListModel.viewState.runningQuery = false;
                         enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
                     });
-                });
+                }
+                $scope.$on('enhetArendenList.requestListUpdate', updateArenden);
 
                 $scope.fetchMore = function() {
                     enhetArendenListModel.viewState.fetchingMoreInProgress = true;
                     enhetArendenListModel.viewState.activeErrorMessageKey = null;
-                    enhetArendenService.getArenden(enhetArendenListModel.prevFilterQuery.startFrom + enhetArendenModel.PAGE_SIZE).then(function(arendenListResult){
+                    enhetArendenListService.getArenden(enhetArendenListModel.prevFilterQuery.startFrom + enhetArendenModel.PAGE_SIZE).then(function(arendenListResult){
 
                         // Add fetch more result to existing list
                         enhetArendenListModel.prevFilterQuery = arendenListResult.query;
                         enhetArendenListModel.totalCount = arendenListResult.totalCount;
                         var arendenList = enhetArendenListModel.arendenList;
-                        for (var i = 0; i < arendenListResult.arendeList.length; i++) {
-                            arendenList.push(arendenListResult.arendeList[i]);
+                        for (var i = 0; i < arendenListResult.arendenList.length; i++) {
+                            arendenList.push(arendenListResult.arendenList[i]);
                         }
                         enhetArendenListModel.fetchingMoreInProgress = false;
 

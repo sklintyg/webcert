@@ -72,9 +72,11 @@ angular.module('webcert').service('webcert.enhetArendenFilterModel', [
         this.filterForm = {};
 
         this.reset = function() {
+            var statusList = this.statusList;
+            var lakareList = this.lakareList;
             this.filterForm = {
-                vantarPaSelector: this.statusList[1],
-                lakareSelector: this.lakareList[0],
+                vantarPaSelector: statusList[1],
+                lakareSelector: lakareList[0],
                 questionFrom: 'default',
                 vidarebefordrad: 'default',
                 changedFrom: undefined,

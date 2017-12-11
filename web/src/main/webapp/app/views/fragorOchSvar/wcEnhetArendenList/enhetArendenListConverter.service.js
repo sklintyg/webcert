@@ -18,10 +18,8 @@
  */
 
 angular.module('webcert').factory('webcert.enhetArendenConverterService',
-    [ '$log', '$filter', '$q',
-        'common.enhetArendenCommonService',
-        'webcert.enhetArendenProxy', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel',
-    function($log, $filter, $q, enhetArendenProxy, enhetArendenModel, enhetArendenCommonService) {
+    [ '$filter', 'webcert.enhetArendenModel',
+    function($filter, enhetArendenModel) {
         'use strict';
 
         // Filter query request model. Actual model expected by backend proxy

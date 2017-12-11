@@ -58,7 +58,7 @@
                                       src="/img/ajax-loader-kit-16x16.gif"></span>
           </td>
           <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span message key="arende.measure.{{arende.measureResKey}}"></span></td>
-          <td><span message key="arende.fragestallare.{{arende.fragestallare}}"></span></td>
+          <td><span message key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
           <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="arende.meddelandeId" sekretessmarkering="arende.sekretessmarkering"></span></td>
           <td>{{arende.signeratAvNamn}}</td>
           <td class="unbreakable table-arende-last">{{arende.receivedDate | date:'short'}}

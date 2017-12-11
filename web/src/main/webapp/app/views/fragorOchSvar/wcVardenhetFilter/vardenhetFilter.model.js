@@ -39,9 +39,9 @@ angular.module('webcert').service('webcert.vardenhetFilterModel', [
 
             //initial selection, now handles cases when no enhetsId cookie has been set.
             if (this.units.length > 2 && $cookies.getObject('enhetsId')) {
-                this.selectUnit(selectUnitById(this.units, $cookies.getObject('enhetsId')));
+                this.selectedUnit = selectUnitById(this.units, $cookies.getObject('enhetsId'));
             } else {
-                this.selectUnit(selectFirstUnit(this.units));
+                this.selectedUnit = selectFirstUnit(this.units);
             }
         };
 

@@ -21,7 +21,9 @@ angular.module('webcert').factory('webcert.enhetArendenListService',
     [ '$log', '$filter', '$q',
         'common.enhetArendenCommonService',
         'webcert.enhetArendenProxy', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenConverterService',
-    function($log, $filter, $q, enhetArendenProxy, enhetArendenModel, enhetArendenCommonService, enhetArendenFilterModel, enhetArendenConverterService) {
+    function($log, $filter, $q,
+        enhetArendenCommonService,
+        enhetArendenProxy, enhetArendenModel, enhetArendenFilterModel, enhetArendenConverterService) {
         'use strict';
 
         function _getArenden(startFrom) {
@@ -29,6 +31,7 @@ angular.module('webcert').factory('webcert.enhetArendenListService',
             var deferred = $q.defer();
 
             var filterQuery = enhetArendenConverterService.convertFormModelToFilterQuery(enhetArendenFilterModel.filterForm, enhetArendenModel.enhetId);
+            filterQuery.startFrom = startFrom;
             enhetArendenProxy.getArenden(filterQuery, function(successData) {
 
                 var arendenList = successData.results;
