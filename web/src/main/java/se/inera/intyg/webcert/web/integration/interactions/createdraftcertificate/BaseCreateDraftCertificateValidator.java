@@ -67,6 +67,14 @@ public abstract class BaseCreateDraftCertificateValidator {
     private PatientDetailsResolver patientDetailsResolver;
 
 
+    protected Personnummer createPersonnummer(ResultValidator errors, String personId) {
+        Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
+        if (personnummer == null) {
+            errors.addError("Cannot create Personnummer object with invalid personId {1}", personId);
+        }
+        return personnummer;
+    }
+
     protected void validatePUServiceResponse(ResultValidator errors,
                                              Personnummer personnummer) {
 
@@ -100,21 +108,21 @@ public abstract class BaseCreateDraftCertificateValidator {
         }
     }
 
+
     protected void validateCreateForAvlidenPatientAllowed(ResultValidator errors,
                                                           Personnummer personnummer,
-                                                          String typAvUtlatande) {
+                                                          String typAvIntyg) {
 
-        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande);
+        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvIntyg);
 
-        if (personnummer != null) {
-            if (patientDetailsResolver.isAvliden(personnummer) && !AVLIDEN_PATIENT_ALLOWED_FOR_TYPES.contains(intygsTyp)) {
-                errors.addError("Cannot issue intyg type {0} for deceased patient", intygsTyp);
-            }
-        } else {
-            errors.addError("Cannot issue intyg type {0} for patient with invalid personnummer {1}",
-                    intygsTyp, personnummer.getPersonnummer());
+        if (personnummer == null) {
+            errors.addError("Cannot issue intyg type {0} for personnummer that is null", intygsTyp);
+            return;
         }
 
+        if (patientDetailsResolver.isAvliden(personnummer) && !AVLIDEN_PATIENT_ALLOWED_FOR_TYPES.contains(intygsTyp)) {
+            errors.addError("Cannot issue intyg type {0} for deceased patient {1}", intygsTyp, personnummer.getPersonnummer());
+        }
     }
 
     protected void validateModuleSupport(ResultValidator errors, String moduleId) {
@@ -155,7 +163,7 @@ public abstract class BaseCreateDraftCertificateValidator {
         }
     }
 
-    private void  validatePersonnummer(ResultValidator errors, String personId) {
+    private void validatePersonnummer(ResultValidator errors, String personId) {
         Personnummer pnr = new Personnummer(personId);
         PersonnummerChecksumValidator.validate(pnr, errors);
     }

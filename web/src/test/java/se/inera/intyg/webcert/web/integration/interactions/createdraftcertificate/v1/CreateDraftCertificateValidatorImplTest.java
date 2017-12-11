@@ -257,11 +257,10 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     private Utlatande buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,
-            String enhetsnamn,
-            boolean createUnit) {
-        return buildIntyg(intygsKod, patientEfternamn, patientFornamn, "19121212-1212", hosPersonalFullstandigtNamn, "hosHsaId", enhetsnamn,
-                "enhetHsaId",
-                createUnit);
+            String enhetsnamn, boolean createUnit) {
+
+        return buildIntyg(intygsKod, patientEfternamn, patientFornamn, "191212121212",
+                hosPersonalFullstandigtNamn, "hosHsaId", enhetsnamn,"enhetHsaId", createUnit);
     }
 
     private Utlatande buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String patientPersonId,

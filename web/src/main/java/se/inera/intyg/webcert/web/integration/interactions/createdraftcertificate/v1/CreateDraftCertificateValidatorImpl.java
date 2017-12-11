@@ -59,7 +59,10 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         ResultValidator errors = ResultValidator.newInstance();
 
         String personId = utlatande.getPatient().getPersonId().getExtension();
-        Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
+        Personnummer personnummer = createPersonnummer(errors, personId);
+        if (errors.hasErrors()) {
+            return errors;
+        }
 
         // Check if PU-service is responding
         validatePUServiceResponse(errors, personnummer);
@@ -67,7 +70,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
             return errors;
         }
 
-        validateSekretessmarkeringOchIntygsTyp(errors, personnummer, utlatande.getSkapadAv(), utlatande.getTypAvUtlatande(), user);
+        validateSekretessmarkeringOchIntygsTyp(errors, personnummer, utlatande.getTypAvUtlatande(), user);
         validateCreateForAvlidenPatientAllowed(errors, personnummer, utlatande.getTypAvUtlatande().getCode());
 
         return errors;
@@ -75,7 +78,6 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
 
     private void validateSekretessmarkeringOchIntygsTyp(ResultValidator errors,
                                                         Personnummer personnummer,
-                                                        HosPersonal skapadAv,
                                                         TypAvUtlatande typAvUtlatande,
                                                         IntygUser user) {
 

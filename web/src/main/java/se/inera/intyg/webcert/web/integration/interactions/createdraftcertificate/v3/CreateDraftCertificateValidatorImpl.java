@@ -54,7 +54,10 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         ResultValidator errors = ResultValidator.newInstance();
 
         String personId = intyg.getPatient().getPersonId().getExtension();
-        Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
+        Personnummer personnummer = createPersonnummer(errors, personId);
+        if (errors.hasErrors()) {
+            return errors;
+        }
 
         // Check if PU-service is responding
         validatePUServiceResponse(errors, personnummer);
@@ -96,11 +99,11 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
 
     private void validateSekretessmarkeringOchIntygsTyp(ResultValidator errors,
                                                         Personnummer personnummer,
-                                                        TypAvIntyg typAvUtlatande,
+                                                        TypAvIntyg typAvIntyg,
                                                         IntygUser user) {
 
         AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvUtlatande.getCode());
+        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvIntyg.getCode());
 
         if (!authoritiesValidator.given(user, intygsTyp)
                 .features(WebcertFeature.HANTERA_INTYGSUTKAST)
