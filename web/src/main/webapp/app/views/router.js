@@ -95,8 +95,8 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             url:'/enhet-arenden',
             views: {
                 'content@': {
-                    templateUrl: '/app/views/fragorOchSvar/fragorOchSvar.html',
-                    controller: 'webcert.FragorOchSvarCtrl'
+                    templateUrl: '/app/views/fragorOchSvar/enhetArenden.html',
+                    controller: 'webcert.enhetArendenCtrl'
                 }
             }
         }).

@@ -17,15 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').service('webcert.enhetArendenModel',
-    [
-    function() {
+angular.module('webcert').service('webcert.enhetArendenListModel', [
+    'webcert.enhetArendenModel',
+    function(enhetArendenModel) {
         'use strict';
 
-        this.doneLoading = true;
+        this.reset = function() {
+            // General directive viewstate
+            this.viewState = {
+                runningQuery: false,
+                activeErrorMessageKey: null,
+                fetchingMoreInProgress: false
+            };
 
-        this.PAGE_SIZE = 10;
-        this.ALL_UNITS = 'wc-all';
-        this.enhetId = this.ALL_UNITS;
+            // same as filter query above, stores previous request
+            this.prevFilterQuery = {};
 
+            // The actual list of arenden fetched from backend
+            this.arendenList = [];
+            this.totalCount = 0;
+        };
+
+        this.reset();
     }]);

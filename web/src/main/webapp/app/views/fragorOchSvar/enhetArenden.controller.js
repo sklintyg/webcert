@@ -20,24 +20,27 @@
 /*
  * Controller for logic related to listing questions and answers
  */
-angular.module('webcert').controller('webcert.FragorOchSvarCtrl',
-    ['$rootScope', '$scope', 'common.enhetArendenCommonService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel',
-        function($rootScope, $scope, enhetArendenCommonService, vardenhetFilterModel, enhetArendenModel, enhetArendenFilterModel) {
+angular.module('webcert').controller('webcert.enhetArendenCtrl',
+    ['$rootScope', '$scope', '$cookies',
+        'common.enhetArendenCommonService',
+        'webcert.enhetArendenModel',
+        function($rootScope, $scope, $cookies,
+            enhetArendenCommonService,
+            enhetArendenModel) {
             'use strict';
 
             $scope.enhetArendenModel = enhetArendenModel;
-            $scope.vardenhetFilterModel = vardenhetFilterModel;
 
-            // Broadcast by statService on poll
-            $scope.$on('wc-stat-update', function(event, message) {
-                var unitStats = message;
-                if (!enhetArendenFilterModel.filteredYet && unitStats.fragaSvarValdEnhet === 0) {
-                    enhetArendenFilterModel.filterFormCollapsed = false;
-                }
+            // Broadcast by vardenhet filter directive on load and selection
+            $cookies.putObject('enhetsId', enhetArendenModel.enhetId);
+            $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
+                $cookies.putObject('enhetsId', unit.id);
+                enhetArendenModel.enhetId = unit.id;
             });
 
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
                 enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
             });
             $scope.$on('$destroy', unbindLocationChange);
-        }]);
+
+       }]);

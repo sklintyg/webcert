@@ -17,9 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcFragorOchSvarFilter', [
-    '$log', '$cookies', 'common.ArendeProxy', 'webcert.enhetArendenService', 'webcert.enhetArendenModel', 'webcert.wcFragorOchSvarFilterModel',
-    function($log, $cookies, enhetArendenProxy, enhetArendenService, enhetArendenModel, filterModel) {
+angular.module('webcert').directive('wcEnhetArendenFilter', [
+    '$rootScope', '$log', '$cookies',
+    'common.ArendeProxy',
+    'webcert.enhetArendenService', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel',
+    function($rootScope, $log, $cookies,
+        enhetArendenProxy, enhetArendenService, enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel) {
         'use strict';
 
         return {
@@ -32,150 +35,83 @@ angular.module('webcert').directive('wcFragorOchSvarFilter', [
             templateUrl: '/app/views/fragorOchSvar/wcFragorOchSvarFilter/wcFragorOchSvarFilter.directive.html',
             controller: function($scope) {
 
-                $scope.filterModel = filterModel;
+                this.$onInit = function(){
 
-                $scope.lakareListEmptyChoice = {
-                    hsaId: undefined,
-                    name: 'Alla'
+                    // Load filter form (first page load)
+                    enhetArendenFilterModel.reset();
+
+                    $scope.enhetArendenFilterModel = enhetArendenFilterModel;
+
+                    $scope.hasUnhandledArenden = function(){
+                        return vardenhetFilterModel.units[0].fragaSvar;
+                    };
+
+                    $scope.hasNoArenden = function(){
+                        return vardenhetFilterModel.units[0].fragaSvar === 0;
+                    };
+
+                    $scope.toggleFilter = function(){
+                        enhetArendenFilterModel.viewState.filterFormCollapsed = !enhetArendenFilterModel.viewState.filterFormCollapsed;
+                    };
+
+                    function updateArendenList(){
+                        $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0});
+                    }
+
+                    $scope.resetFilterForm = function() {
+                        enhetArendenFilterModel.reset();
+                        updateArendenList();
+                    };
+
+                    $scope.filterList = function() {
+                        enhetArendenFilterModel.filteredYet = true;
+                        updateArendenList();
+                    };
+
                 };
-                $scope.lakareList = [];
-                $scope.lakareList.push($scope.lakareListEmptyChoice);
 
-                $scope.filterForm = {
-                    questionFrom: 'default',
-                    vidarebefordrad: 'default',
-                    vantarPaSelector: filterModel.statusList[1],
-                    lakareSelector: $scope.lakareList[0]
-                };
-
-                var defaultQuery = {
-                    enhetId: undefined,
-                    startFrom: 0,
-                    pageSize: enhetArendenModel.PAGE_SIZE,
-
-                    questionFromFK: false,
-                    questionFromWC: false,
-                    hsaId: undefined, // läkare
-                    vidarebefordrad: undefined, // 3-state
-
-                    changedFrom: undefined,
-                    changedTo: undefined,
-
-                    vantarPa: undefined
-                };
-                $scope.filterQuery = {};
-
-                function resetFilterForm() {
-                    $scope.filterQuery = angular.copy(defaultQuery);
-                    $scope.filterForm.vantarPaSelector = filterModel.statusList[1];
-                    $scope.filterForm.lakareSelector = $scope.lakareList[0];
-                    $scope.filterForm.questionFrom = 'default';
-                    $scope.filterForm.vidarebefordrad = 'default';
-                    $scope.filterForm.changedFrom = undefined;
-                    $scope.filterForm.changedTo = undefined;
-                }
-
-                function loadSearchForm() {
-                    resetFilterForm(); // Set default state for filter form
-
-                    // If we saved an old query where we had fetched more load everything up to that page
-                    if ($scope.filterQuery.startFrom > 0) {
-                        $scope.filterQuery.pageSize = $scope.filterQuery.startFrom + $scope.filterQuery.pageSize;
-                        $scope.filterQuery.savedStartFrom = $scope.filterQuery.startFrom;
-                        $scope.filterQuery.startFrom = 0;
+                // Broadcast by statService on poll
+                $scope.$on('statService.stat-update', function(event, message) {
+                    var unitStats = message;
+                    if (!enhetArendenFilterModel.viewState.filteredYet && unitStats.fragaSvarValdEnhet === 0) {
+                        enhetArendenFilterModel.viewState.filterFormCollapsed = false;
                     }
+                });
 
-                    if ($scope.filterQuery.questionFromFK === false && $scope.filterQuery.questionFromWC === false) {
-                        $scope.filterForm.questionFrom = 'default';
-                    } else if ($scope.filterQuery.questionFromFK) {
-                        $scope.filterForm.questionFrom = 'FK';
-                    } else {
-                        $scope.filterForm.questionFrom = 'WC';
-                    }
-
-                    if ($scope.filterQuery.vidarebefordrad === undefined) {
-                        $scope.filterForm.vidarebefordrad = 'default';
-                    } else {
-                        $scope.filterForm.vidarebefordrad = $scope.filterQuery.vidarebefordrad;
-                    }
-
-                    if ($scope.filterQuery.changedFrom === undefined) {
-                        $scope.filterForm.changedFrom = undefined;
-                    } else {
-                        $scope.filterForm.changedFrom = $scope.filterQuery.changedFrom;
-                    }
-                    if ($scope.filterQuery.changedTo === undefined) {
-                        $scope.filterForm.changedTo = undefined;
-                    } else {
-                        $scope.filterForm.changedTo = $scope.filterQuery.changedTo;
-                    }
-                }
-
-                function initLakareList(unitId) {
-                    $scope.widgetState.loadingLakares = true;
-                    enhetArendenProxy.getArendenLakareList(unitId === 'wc-all' ? undefined : unitId, function(list) {
-
-                        $scope.widgetState.loadingLakares = false;
-
-                        $scope.lakareList = list;
-                        if (list && (list.length > 0)) {
-                            $scope.lakareList.unshift($scope.lakareListEmptyChoice);
-                            $scope.lakareSelector = $scope.lakareList[0];
-                        }
-                    }, function() {
-                        $scope.widgetState.loadingLakares = false;
-                        $scope.lakareList = [];
-                        $scope.lakareList.push({
-                            hsaId: undefined,
-                            name: '<Kunde inte hämta lista>'
-                        });
-                    });
-                }
-
-                // Broadcast by wcCareUnitClinicSelector directive on load and selection
+                // Broadcast by vardenhet filter directive on load and selection
                 $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
 
-                    $log.debug('on wcVardenhetFilter.unitSelected ++++++++++++++++');
-
-                    $log.debug('ActiveUnit is now:' + unit.id);
-                    $scope.activeUnit = unit;
+                    function initLakareList(unitId) {
+                        enhetArendenFilterModel.viewState.loadingLakare = true;
+                        var lakareUnitId = unitId === enhetArendenModel.ALL_UNITS ? undefined : unitId;
+                        enhetArendenProxy.getArendenLakareList(lakareUnitId, function(list) {
+                            enhetArendenFilterModel.viewState.loadingLakare = false;
+                            enhetArendenFilterModel.lakareList = list;
+                            if (list && (list.length > 0)) {
+                                enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
+                                enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0];
+                            }
+                        }, function() {
+                            enhetArendenFilterModel.viewState.loadingLakare = false;
+                            enhetArendenFilterModel.lakareList = [];
+                            enhetArendenFilterModel.lakareList.push({
+                                hsaId: undefined,
+                                name: '<Kunde inte hämta lista>'
+                            });
+                        });
+                    }
 
                     // If we change enhet then we probably don't want the same filter criterias
                     if ($cookies.getObject('enhetsId') && $cookies.getObject('enhetsId') !== unit.id) {
-                        resetFilterForm();
+                        enhetArendenFilterModel.reset();
                     }
-
-                    // Set unit id (reset search form resets it)
-                    $cookies.putObject('enhetsId', unit.id);
-                    enhetArendenModel.enhetId = unit.id;
-
-                    filterModel.filteredYet = false; // so proper info message is displayed if no items are found
-                    filterModel.filterFormCollapsed = true; // collapse filter form so it isn't in the way
+                    enhetArendenFilterModel.viewState.filteredYet = false; // so proper info message is displayed if no items are found
+                    enhetArendenFilterModel.viewState.filterFormCollapsed = true; // collapse filter form so it isn't in the way
 
                     initLakareList(unit.id); // Update lakare list for filter form
-                    $scope.widgetState.runningQuery = true;
-                    enhetArendenService.getArenden($scope);
-
-                    $log.debug('on wcVardenhetFilter.unitSelected ---------------');
                 });
 
-                // Load filter form (first page load)
-                loadSearchForm();
-
-                $scope.resetFilterForm = function() {
-                    resetFilterForm();
-                    $scope.widgetState.runningQuery = true;
-                    enhetArendenService.getArenden($scope);
-                };
-
-                $scope.filterList = function() {
-                    $log.debug('filterList');
-                    $scope.filterQuery.startFrom = 0;
-                    filterModel.filteredYet = true;
-                    $scope.widgetState.runningQuery = true;
-                    enhetArendenService.getArenden($scope);
-                };
-
+                this.$onInit();
             }
         };
     }]);

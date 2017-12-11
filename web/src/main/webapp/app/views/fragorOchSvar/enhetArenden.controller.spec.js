@@ -241,7 +241,6 @@ describe('FragorOchSvarCtrlSpec', function() {
             $httpBackend.flush();
 
             expect($cookies.getObject('enhetsId')).toBe('IFV1239877878-1045');
-            expect($scope.activeUnit).toEqual(unit);
         });
     });
 

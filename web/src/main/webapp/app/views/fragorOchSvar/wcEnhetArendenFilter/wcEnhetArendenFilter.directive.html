@@ -1,9 +1,11 @@
 <!-- search filter -->
 <div class="webcert-bottom-padding-section">
-    <span ng-show="!filterModel.filteredYet && units[0].fragaSvar">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
-    <span id="current-list-noResults-unit" ng-show="!filterModel.filteredYet && units[0].fragaSvar == 0">Du kan filtrera fram tidigare hanterade frågor och svar här nedan<br></span>
+  <div ng-show="!filterModel.filteredYet">
+    <span ng-show="hasUnhandledArenden()">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
+    <span id="current-list-noResults-unit" ng-show="hasNoArenden()">Du kan filtrera fram tidigare hanterade frågor och svar här nedan<br></span>
+  </div>
   <button type="button" id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
-          ng-click="filterModel.filterFormCollapsed = !filterModel.filterFormCollapsed"
+          ng-click="toggleFilter()"
           ng-switch="filterModel.filterFormCollapsed">
     <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
   </button>
@@ -18,15 +20,15 @@
       <div class="col-sm-10">
         <label class="radio-inline">
           <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio" value="default"
-                 ng-model="filterForm.vidarebefordrad" checked="checked"> Alla frågor och svar
+                 ng-model="filterModel.filterForm.vidarebefordrad" checked="checked"> Alla frågor och svar
         </label>
         <label class="radio-inline">
           <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="true"
-                 ng-model="filterForm.vidarebefordrad"> Vidarebefordrade
+                 ng-model="filterModel.filterForm.vidarebefordrad"> Vidarebefordrade
         </label>
         <label class="radio-inline">
           <input id="vidarebefordradNej" name="vidarebefordrad" type="radio" value="false"
-                 ng-model="filterForm.vidarebefordrad"> Ej vidarebefordrade
+                 ng-model="filterModel.filterForm.vidarebefordrad"> Ej vidarebefordrade
         </label>
       </div>
     </div>
@@ -35,7 +37,7 @@
     <div class="form-group">
       <label class="col-sm-2 control-label">Åtgärd</label>
       <div class="col-sm-10">
-        <select id="qp-showStatus" class="form-control" ng-model="filterForm.vantarPaSelector"
+        <select id="qp-showStatus" class="form-control" ng-model="filterModel.filterForm.vantarPaSelector"
                 ng-options="s.label for s in statusList"></select>
       </div>
     </div>
@@ -46,22 +48,22 @@
       <div class="col-sm-10">
         <label class="radio-inline">
           <input id="frageStallareAlla" name="frageStallare" type="radio" value="default"
-                 ng-model="filterForm.questionFrom" checked="checked"> Alla avsändare
+                 ng-model="filterModel.filterForm.questionFrom" checked="checked"> Alla avsändare
         </label>
         <label class="radio-inline">
           <input id="frageStallareFK" name="frageStallare" type="radio" value="FK"
-                 ng-model="filterForm.questionFrom"> Försäkringskassan
+                 ng-model="filterModel.filterForm.questionFrom"> Försäkringskassan
         </label>
         <label class="radio-inline">
           <input id="frageStallareWC" name="frageStallare" type="radio" value="WC"
-                 ng-model="filterForm.questionFrom"> Vårdenheten</label>
+                 ng-model="filterModel.filterForm.questionFrom"> Vårdenheten</label>
       </div>
     </div>
 
     <div wc-authority="FILTRERA_PA_LAKARE" class="form-group" id="filterFormSigneratAv">
       <label class="col-sm-2 control-label">Signerat av</label>
       <div class="col-sm-10">
-        <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"
+        <select id="qp-lakareSelector" class="form-control" ng-model="filterModel.filterForm.lakareSelector"
                 ng-options="s.name for s in lakareList" ng-disabled="filterModel.loadingLakares"></select>
       </div>
     </div>
@@ -71,9 +73,9 @@
       <label class="col-sm-2 control-label">Skickat/mottaget</label>
       <div class="col-sm-10 form-inline">
         Från
-        <span dom-id="filter-changedate-from" target-model="filterForm.changedFrom" wc-date-picker-field add-date-parser="strict"></span>
+        <span dom-id="filter-changedate-from" target-model="filterModel.filterForm.changedFrom" wc-date-picker-field add-date-parser="strict"></span>
         till
-        <span dom-id="filter-changedate-to" target-model="filterForm.changedTo" wc-date-picker-field add-date-parser="strict"></span>
+        <span dom-id="filter-changedate-to" target-model="filterModel.filterForm.changedTo" wc-date-picker-field add-date-parser="strict"></span>
       </div>
     </div>
 

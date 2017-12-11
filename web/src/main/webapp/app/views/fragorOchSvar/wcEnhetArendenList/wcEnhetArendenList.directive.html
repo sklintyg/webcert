@@ -1,78 +1,78 @@
 <!-- loading animation table result -->
-<div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery"
-     show-content="!widgetState.runningQuery">
+<div wc-spinner label="info.running.query" show-spinner="listModel.viewState.runningQuery"
+     show-content="!listModel.viewState.runningQuery">
 
-  <div class="webcert-col-section qa-table-section">
+  <div class="webcert-col-section arende-table-section">
 
     <!-- No results message for query -->
     <div id="current-list-noResults-query"
-         ng-show="widgetState.doneLoading && widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey && widgetState.filteredYet"
+         ng-show="listModel.totalCount < 1 && listModel.viewState.runningQuery && !listModel.viewState.activeErrorMessageKey"
          class="alert alert-info">
       <span message key="info.query.noresults"></span>
     </div>
 
     <!-- error message -->
-    <div id="current-list-noResults-error" ng-show="widgetState.activeErrorMessageKey"
+    <div id="current-list-noResults-error" ng-show="listModel.viewState.activeErrorMessageKey"
          class="alert alert-danger">
-      <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+      <span message key="{{listModel.viewState.activeErrorMessageKey}}"></span>
     </div>
 
     <!-- Search hits -->
-    <div id="query-count" ng-show="widgetState.totalCount > 0">
-      Sökresultat - {{widgetState.totalCount}} träffar
+    <div id="query-count" ng-show="listModel.totalCount > 0">
+      Sökresultat - {{listModel.totalCount}} träffar
     </div>
 
-    <!-- qa table - Frågor och svar-tabell -->
-    <div class="row" ng-show="widgetState.currentList.length > 0" id="qaTable">
-      <table class="col-md-12 table table-striped table-qa">
+    <!-- arende table - Frågor och svar-tabell -->
+    <div class="row" ng-show="listModel.arendenList.length > 0" id="qaTable">
+      <table class="col-md-12 table table-striped table-arende">
         <tr>
           <th></th>
           <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
-          <th wc-table-head label-key="th.label.qa-forwarded" help-key="th.help.qa-forwarded" wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center"></th>
-          <th wc-table-head label-key="th.label.qa-action" help-key="th.help.qa-action"></th>
-          <th wc-table-head label-key="th.label.qa-sender" help-key="th.help.qa-sender"></th>
-          <th wc-table-head label-key="th.label.qa-patient" help-key="th.help.qa-patient"></th>
-          <th wc-table-head label-key="th.label.qa-signed-by" help-key="th.help.qa-signed-by"></th>
-          <th wc-table-head label-key="th.label.qa-sent-recv-date" help-key="th.help.qa-sent-recv-date"></th>
+          <th wc-table-head label-key="th.label.arende-forwarded" help-key="th.help.arende-forwarded" wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center"></th>
+          <th wc-table-head label-key="th.label.arende-action" help-key="th.help.arende-action"></th>
+          <th wc-table-head label-key="th.label.arende-sender" help-key="th.help.arende-sender"></th>
+          <th wc-table-head label-key="th.label.arende-patient" help-key="th.help.arende-patient"></th>
+          <th wc-table-head label-key="th.label.arende-signed-by" help-key="th.help.arende-signed-by"></th>
+          <th wc-table-head label-key="th.label.arende-sent-recv-date" help-key="th.help.arende-sent-recv-date"></th>
         </tr>
-        <tr ng-repeat="qa in widgetState.currentList">
+        <tr ng-repeat="arende in listModel.arendenList">
           <td>
             <button type="button" class="btn btn-info" title="Visar intyget och fråga-svar."
-                    ng-click="openIntyg(qa.intygId, qa.intygTyp)" id="showqaBtn-{{qa.meddelandeId}}">Visa
+                    ng-click="openIntyg(arende.intygId, arende.intygTyp)" id="showqaBtn-{{arende.meddelandeId}}">Visa
             </button>
           </td>
           <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
             <button type="button"
                     class="btn vidarebefordra-btn"
-                    ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-secondary' : qa.vidarebefordrad}"
+                    ng-class="{'btn-info': !arende.vidarebefordrad, 'btn-secondary' : arende.vidarebefordrad}"
                     title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
-                    ng-click="openMailDialog(qa)">
+                    ng-click="openMailDialog(arende)">
               <span class="glyphicon glyphicon-share-alt"
-                    ng-class="{'forward-active': !qa.vidarebefordrad, 'forward-inactive': qa.vidarebefordrad}"></span>
+                    ng-class="{'forward-active': !arende.vidarebefordrad, 'forward-inactive': arende.vidarebefordrad}"></span>
             </button>
           </td>
           <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
-            <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="qa.updateInProgress"
-                   ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" />
-                                  <span ng-if="qa.updateInProgress"> <img
+            <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="arende.updateInProgress"
+                   ng-model="arende.vidarebefordrad" ng-change="onVidareBefordradChange(arende)" />
+                                  <span ng-if="arende.updateInProgress"> <img
                                       src="/img/ajax-loader-kit-16x16.gif"></span>
           </td>
-          <td><span ng-show="qa.paminnelse">Påminnelse:</span> <span message key="qa.measure.{{qa.measureResKey}}"></span></td>
-          <td><span message key="qa.fragestallare.{{qa.fragestallare}}"></span></td>
-          <td id="patientId-{{qa.meddelandeId}}" class="unbreakable">{{qa.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="qa.meddelandeId" sekretessmarkering="qa.sekretessmarkering"></span></td>
-          <td>{{qa.signeratAvNamn}}</td>
-          <td class="unbreakable table-qa-last">{{qa.receivedDate | date:'short'}}
+          <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span message key="arende.measure.{{arende.measureResKey}}"></span></td>
+          <td><span message key="arende.fragestallare.{{arende.fragestallare}}"></span></td>
+          <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="arende.meddelandeId" sekretessmarkering="arende.sekretessmarkering"></span></td>
+          <td>{{arende.signeratAvNamn}}</td>
+          <td class="unbreakable table-arende-last">{{arende.receivedDate | date:'short'}}
           </td>
       </table>
     </div>
-    <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
-      träff 1 - {{widgetState.currentList.length}} av
-      {{widgetState.totalCount}}
+    <div id="showing-nr-hits" ng-show="listModel.totalCount > 0">Visar
+      träff 1 - {{listModel.arendenList.length}} av
+      {{listModel.totalCount}}
     </div>
-    <div ng-show="widgetState.currentList.length < widgetState.totalCount">
+    <div ng-show="listModel.arendenList.length < listModel.totalCount">
       <button type="button" id="hamtaFler" class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
-              ng-disabled="widgetState.fetchingMoreInProgress">
-        <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
+              ng-disabled="listModel.fetchingMoreInProgress">
+        <img src="/img/loader-small.gif" ng-show="listModel.viewState.fetchingMoreInProgress"> Hämta
         fler träffar
       </button>
     </div>

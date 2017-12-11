@@ -17,11 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcFragorOchSvarList', [
-    '$rootScope', '$cookies', '$filter', '$location', '$log', '$scope', '$timeout', '$window',
-    'common.enhetArendenCommonService', 'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
-    'webcert.enhetArendenService',
-    function($cookies, $filter, $location, $log, $timeout, $window, enhetArendenCommonService, ArendeVidarebefordraHelper, ArendeProxy, dialogService, enhetArendenService) {
+angular.module('webcert').directive('wcEnhetArendenList', [
+    '$location', '$log', '$timeout', '$window',
+    'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
+    'webcert.enhetArendenService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
+    function($location, $log, $timeout, $window,
+        ArendeVidarebefordraHelper, ArendeProxy, dialogService,
+        enhetArendenService, enhetArendenModel, enhetArendenListModel) {
         'use strict';
 
         return {
@@ -34,20 +36,46 @@ angular.module('webcert').directive('wcFragorOchSvarList', [
             templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcEnhetArendenList.directive.html',
             controller: function($scope) {
 
-                $scope.widgetState = {
-                    doneLoading: true,
-                    runningQuery: false,
-                    activeErrorMessageKey: null,
-                    totalCount: 0,
-                    fetchingMoreInProgress: false,
-                    currentList: []
-                };
+                $scope.listModel = enhetArendenListModel;
+
+                // When other directives want to request list update
+                $scope.$on('enhetArendenList.requestListUpdate', function(event, data){
+                    enhetArendenListModel.viewState.runningQuery = true;
+                    enhetArendenListModel.viewState.activeErrorMessageKey = null;
+                    enhetArendenService.getArenden(data.startFrom).then(function(arendenListResult){
+
+                        enhetArendenListModel.prevFilterQuery = arendenListResult.query;
+                        enhetArendenListModel.totalCount = arendenListResult.totalCount;
+                        enhetArendenListModel.arendenList = arendenListResult.arendenList;
+
+                        enhetArendenListModel.viewState.runningQuery = false;
+
+                    }, function(errorData){
+                        $log.debug('Query Error: ' + errorData);
+                        enhetArendenListModel.viewState.runningQuery = false;
+                        enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
+                    });
+                });
 
                 $scope.fetchMore = function() {
-                    $log.debug('fetchMore');
-                    $scope.filterQuery.startFrom += $scope.filterQuery.pageSize;
-                    $scope.widgetState.fetchingMoreInProgress = true;
-                    enhetArendenService.getArenden($scope);
+                    enhetArendenListModel.viewState.fetchingMoreInProgress = true;
+                    enhetArendenListModel.viewState.activeErrorMessageKey = null;
+                    enhetArendenService.getArenden(enhetArendenListModel.prevFilterQuery.startFrom + enhetArendenModel.PAGE_SIZE).then(function(arendenListResult){
+
+                        // Add fetch more result to existing list
+                        enhetArendenListModel.prevFilterQuery = arendenListResult.query;
+                        enhetArendenListModel.totalCount = arendenListResult.totalCount;
+                        var arendenList = enhetArendenListModel.arendenList;
+                        for (var i = 0; i < arendenListResult.arendeList.length; i++) {
+                            arendenList.push(arendenListResult.arendeList[i]);
+                        }
+                        enhetArendenListModel.fetchingMoreInProgress = false;
+
+                    }, function(errorData){
+                        $log.debug('Query Error: ' + errorData);
+                        enhetArendenListModel.fetchingMoreInProgress = false;
+                        enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
+                    });
                 };
 
                 $scope.openIntyg = function(intygId, intygTyp) {
