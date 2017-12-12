@@ -26,12 +26,12 @@ var WebcertBasePage = require('./webcert.base.page.js');
 var FragorOchSvarPage = WebcertBasePage._extend({
     init: function init() {
         init._super.call(this);
-        this.qaTable = element(by.css('table.table-qa'));
+        this.qaTable = element(by.css('table.wc-table-striped'));
         this.atgardSelect = element(by.id('qp-showStatus'));
-        this.searchBtn = element(by.id('filter-qa-btn'));
+        this.searchBtn = element(by.id('filter-arende-btn'));
     },
     get: function() {
-        return browser.get('/web/dashboard#/unhandled-qa');
+        return browser.get('/web/dashboard#/enhet-arenden');
     }
 });
 
