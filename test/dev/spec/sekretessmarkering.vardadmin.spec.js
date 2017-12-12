@@ -70,7 +70,7 @@ xdescribe('Testa sekretessmarkering för vårdadmin', function() {
     describe('Gå till listan över fråga/svar', function() {
 
         it('Räkna antal obesvarade frågor i headern innan vi sekretessmarkerat', function() {
-            element(by.css('a[ng-href="/web/dashboard#/unhandled-qa"]')).click();
+            element(by.css('a[ng-href="/web/dashboard#/enhet-arenden"]')).click();
             expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
         });
 
@@ -95,7 +95,7 @@ xdescribe('Testa sekretessmarkering för vårdadmin', function() {
         });
 
         it('Räkna antal obesvarade frågor i headern innan vi sekretessmarkerat', function() {
-            element(by.css('a[ng-href="/web/dashboard#/unhandled-qa"]')).click();
+            element(by.css('a[ng-href="/web/dashboard#/enhet-arenden"]')).click();
             expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
         });
 

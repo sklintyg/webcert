@@ -91,12 +91,12 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
-        state('webcert.unhandled-qa', {
-            url:'/unhandled-qa',
+        state('webcert.enhet-arenden', {
+            url:'/enhet-arenden',
             views: {
                 'content@': {
-                    templateUrl: '/app/views/fragorOchSvar/fragorOchSvar.html',
-                    controller: 'webcert.FragorOchSvarCtrl'
+                    templateUrl: '/app/views/fragorOchSvar/enhetArenden.html',
+                    controller: 'webcert.enhetArendenCtrl'
                 }
             }
         }).

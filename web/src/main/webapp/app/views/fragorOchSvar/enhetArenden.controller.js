@@ -17,16 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.OmWebcertCtrl',
-    ['$rootScope', '$scope', '$log', 'common.enhetArendenCommonService', 'webcert.UtkastProxy', 'moduleConfig',
-        function($rootScope, $scope, $log, enhetArendenCommonService, UtkastProxy, moduleConfig) {
+/*
+ * Controller for logic related to listing questions and answers
+ */
+angular.module('webcert').controller('webcert.enhetArendenCtrl',
+    ['$rootScope', '$scope', '$cookies',
+        'common.enhetArendenCommonService',
+        'webcert.enhetArendenModel', 'webcert.vardenhetFilterModel',
+        function($rootScope, $scope, $cookies,
+            enhetArendenCommonService,
+            enhetArendenModel, vardenhetFilterModel) {
             'use strict';
+
+            $scope.enhetArendenModel = enhetArendenModel;
+            $scope.vardenhetFilterModel = vardenhetFilterModel;
 
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
                 enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
             });
             $scope.$on('$destroy', unbindLocationChange);
 
-            $scope.version = moduleConfig.VERSION;
-        }]
-);
+       }]);

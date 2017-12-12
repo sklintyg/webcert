@@ -1,4 +1,3 @@
-@CHARSET "UTF-8";
 /*
  * Copyright (C) 2017 Inera AB (http://www.inera.se)
  *
@@ -18,12 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "mixins/variables";
-@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss';
-@import "mixins/bootstrap-override";
+angular.module('webcert').service('webcert.enhetArendenListModel', [
+    'webcert.enhetArendenModel',
+    function(enhetArendenModel) {
+        'use strict';
 
-// Component styles are injected through grunt
-// injector
-@import 'views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.scss';
-@import 'views/views.scss';
-// endinjector
+        this.reset = function() {
+            // General directive viewstate
+            this.viewState = {
+                runningQuery: false,
+                activeErrorMessageKey: null,
+                fetchingMoreInProgress: false
+            };
+
+            // same as filter query above, stores previous request
+            this.prevFilterQuery = {};
+
+            // The actual list of arenden fetched from backend
+            this.arendenList = [];
+            this.totalCount = 0;
+        };
+
+        this.reset();
+    }]);

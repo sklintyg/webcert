@@ -200,9 +200,9 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
         });
 
         it('Klicka på tabben för Fråga/svar', function() {
-            element(by.css('a[ng-href="/web/dashboard#/unhandled-qa"]')).click();
+            element(by.css('a[ng-href="/web/dashboard#/enhet-arenden"]')).click();
             expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('1');
-            expect(element.all(by.css('.table-qa tr td button')).first().getText()).toBe('Visa');
+            expect(element.all(by.css('.wc-table-striped tr td button')).first().getText()).toBe('Visa');
         });
 
         it('Verifiera s-markeringsikon bredvid frågan i listan', function() {

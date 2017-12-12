@@ -22,10 +22,10 @@
  */
 angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
     ['$rootScope', '$state', '$stateParams', '$scope', '$location', '$q', 'common.dialogService',
-        'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
+        'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.enhetArendenCommonService',
         'common.featureService', 'common.moduleService',
         function($rootScope, $state, $stateParams, $scope, $location, $q, dialogService, UtkastProxy,
-            UserPreferencesService, fragaSvarCommonService, featureService, moduleService) {
+            UserPreferencesService, enhetArendenCommonService, featureService, moduleService) {
             'use strict';
 
             var certificateType = $state.current.data.intygType;
@@ -78,13 +78,13 @@ angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
                                             deferred.promise.then(function() {
 
                                                 modal.close('hantera');
-                                                fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl,
+                                                enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl,
                                                     currentUrl, unbindCheckHandledEvent);
                                             });
                                         },
                                         button2click: function() {
                                             modal.close('ejhantera');
-                                            fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl,
+                                            enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl,
                                                 currentUrl, unbindCheckHandledEvent);
                                         },
                                         button3click: function() {
@@ -103,12 +103,12 @@ angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
                                         }
                                     });
                                 } else {
-                                    fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl,
+                                    enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl,
                                         unbindCheckHandledEvent);
                                 }
                             });
                         } else {
-                            fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl,
+                            enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl,
                                 unbindCheckHandledEvent);
                         }
                     }

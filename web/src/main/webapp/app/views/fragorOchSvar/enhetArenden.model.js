@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,22 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser*/
+angular.module('webcert').service('webcert.enhetArendenModel',
+    [
+    function() {
+        'use strict';
 
-'use strict';
+        this.doneLoading = true;
 
-var WebcertBasePage = require('./webcert.base.page.js');
+        this.PAGE_SIZE = 10;
+        this.ALL_UNITS = 'wc-all';
+        this.enhetId = this.ALL_UNITS;
 
-var FragorOchSvarPage = WebcertBasePage._extend({
-    init: function init() {
-        init._super.call(this);
-        this.qaTable = element(by.css('table.wc-table-striped'));
-        this.atgardSelect = element(by.id('qp-showStatus'));
-        this.searchBtn = element(by.id('filter-arende-btn'));
-    },
-    get: function() {
-        return browser.get('/web/dashboard#/enhet-arenden');
-    }
-});
-
-module.exports = new FragorOchSvarPage();
+    }]);

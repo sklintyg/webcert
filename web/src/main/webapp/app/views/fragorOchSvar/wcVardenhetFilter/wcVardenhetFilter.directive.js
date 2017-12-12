@@ -17,34 +17,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcCareUnitClinicSelector',
-    [ '$cookies', '$rootScope', '$timeout', 'common.User', 'common.statService',
-        function($cookies, $rootScope, $timeout, User, statService) {
+angular.module('webcert').directive('wcVardenhetFilter',
+    [ '$cookies', '$rootScope', '$timeout',
+        'common.User', 'common.statService',
+        'webcert.vardenhetFilterModel', 'webcert.enhetArendenModel',
+        function($cookies, $rootScope, $timeout, User, statService, vardenhetFilterModel, enhetArendenModel) {
             'use strict';
 
             return {
                 restrict: 'E',
-                templateUrl: '/app/components/wcCareUnitClinicSelector/wcCareUnitClinicSelector.directive.html',
+                scope: {},
+                templateUrl: '/app/views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.html',
                 controller: function($scope) {
 
-                    $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
-                    $scope.units = $scope.units.slice(0, 1)
-                        .concat($scope.units.slice(1, $scope.units.length).sort(
-                            function(a, b) {
-                                return (a.namn > b.namn) - (a.namn < b.namn);
-                            }));
-                    $scope.units.unshift({id: 'wc-all', namn: 'Alla frågor och svar'});
-                    $scope.selectedUnit = null;
+                    this.$onInit = function(){
+                        vardenhetFilterModel.initialize(User.getVardenhetFilterList(User.getValdVardenhet()));
 
-                    /**
-                     * Toggles if the enheter without an active question should
-                     * be shown
-                     */
-                    $scope.toggleShowInactive = function() {
-                        $scope.showInactive = !$scope.showInactive;
+                        $scope.vardenhetFilterModel = vardenhetFilterModel;
+
+                        if (statService.getLatestData()) {
+                            updateStats(null, statService.getLatestData());
+                        }
+                        $scope.$on('statService.stat-update', updateStats);
+
+                        /**
+                         * Toggles if the enheter without an active question should
+                         * be shown
+                         */
+                        $scope.toggleShowInactive = function() {
+                            vardenhetFilterModel.showInactive = !vardenhetFilterModel.showInactive;
+                        };
+
+                        $scope.selectUnit = function(unit) {
+                            vardenhetFilterModel.selectedUnit = unit;
+                            $rootScope.$broadcast('wcVardenhetFilter.unitSelected', vardenhetFilterModel.selectedUnit);
+                        };
                     };
 
-                    function _updateStats(event, message) {
+                    function updateStats(event, message) {
                         // Get the latest stats
                         var unitStats = message;
 
@@ -60,10 +70,10 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                         });
 
                         // Set stats for each unit available for the filter
-                        angular.forEach($scope.units, function(unit) {
+                        angular.forEach(vardenhetFilterModel.units, function(unit) {
 
                             // If it's the all choice, we know we want the total of everything
-                            if (unit.id === 'wc-all') {
+                            if (unit.id === enhetArendenModel.ALL_UNITS) {
                                 unit.fragaSvar = unitStats.fragaSvarValdEnhet;
                                 unit.tooltip =
                                     'Totalt antal ej hanterade frågor och svar för den vårdenhet där du är inloggad. ' +
@@ -84,40 +94,6 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                         });
                     }
 
-                    if (statService.getLatestData()) {
-                        _updateStats(null, statService.getLatestData());
-                    }
-                    $scope.$on('wc-stat-update', _updateStats);
-
-                    $scope.selectUnit = function(unit) {
-                        $scope.selectedUnit = unit;
-                        $rootScope.$broadcast('qa-filter-select-care-unit', $scope.selectedUnit);
-                    };
-
-                    // Local function getting the first care unit's hsa id in the data struct.
-                    function selectFirstUnit(units) {
-                        if (typeof units === 'undefined' || units.length === 0) {
-                            return null;
-                        } else {
-                            return units[0];
-                        }
-                    }
-
-                    function selectUnitById(units, unitName) {
-                        for (var count = 0; count < units.length; count++) {
-                            if (units[count].id === unitName) {
-                                return units[count];
-                            }
-                        }
-                        return selectFirstUnit(units);
-                    }
-
-                    //initial selection, now handles cases when no enhetsId cookie has been set.
-                    if ($scope.units.length > 2 && $cookies.getObject('enhetsId')) {
-                        $scope.selectUnit(selectUnitById($scope.units, $cookies.getObject('enhetsId')));
-                    } else {
-                        $scope.selectUnit(selectFirstUnit($scope.units));
-                    }
                 }
             };
         }]);
