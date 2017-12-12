@@ -26,6 +26,7 @@ angular.module('webcert').directive('wcVardenhetFilter',
 
             return {
                 restrict: 'E',
+                scope: {},
                 templateUrl: '/app/views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.html',
                 controller: function($scope) {
 
@@ -93,8 +94,6 @@ angular.module('webcert').directive('wcVardenhetFilter',
                         });
                     }
 
-                    // we have to init it ourselves since this isn't a component controller yet
-                    this.$onInit();
                 }
             };
         }]);

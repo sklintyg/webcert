@@ -30,18 +30,20 @@ angular.module('webcert').service('webcert.vardenhetFilterModel', [
 
         this.initialize = function(vardEnheter) {
             this.units = vardEnheter;
-            this.units = this.units.slice(0, 1)
-                .concat(this.units.slice(1, this.units.length).sort(
-                    function(a, b) {
-                        return (a.namn > b.namn) - (a.namn < b.namn);
-                    }));
-            this.units.unshift({id: this.ALL_ARENDEN, namn: 'Alla frågor och svar'});
+            if(this.units){
+                this.units = this.units.slice(0, 1)
+                    .concat(this.units.slice(1, this.units.length).sort(
+                        function(a, b) {
+                            return (a.namn > b.namn) - (a.namn < b.namn);
+                        }));
+                this.units.unshift({id: this.ALL_ARENDEN, namn: 'Alla frågor och svar'});
 
-            //initial selection, now handles cases when no enhetsId cookie has been set.
-            if (this.units.length > 2 && $cookies.getObject('enhetsId')) {
-                this.selectedUnit = selectUnitById(this.units, $cookies.getObject('enhetsId'));
-            } else {
-                this.selectedUnit = selectFirstUnit(this.units);
+                //initial selection, now handles cases when no enhetsId cookie has been set.
+                if (this.units.length > 2 && $cookies.getObject('enhetsId')) {
+                    this.selectedUnit = selectUnitById(this.units, $cookies.getObject('enhetsId'));
+                } else {
+                    this.selectedUnit = selectFirstUnit(this.units);
+                }
             }
         };
 

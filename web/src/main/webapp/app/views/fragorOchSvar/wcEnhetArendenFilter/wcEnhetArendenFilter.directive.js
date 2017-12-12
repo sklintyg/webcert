@@ -20,10 +20,10 @@
 angular.module('webcert').directive('wcEnhetArendenFilter', [
     '$rootScope', '$log', '$cookies',
     'webcert.enhetArendenProxy',
-    'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel',
+    'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterService',
     function($rootScope, $log, $cookies,
         enhetArendenProxy,
-        enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel) {
+        enhetArendenModel, enhetArendenFilterModel, vardenhetFilterModel, enhetArendenFilterService) {
         'use strict';
 
         return {
@@ -40,16 +40,16 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
                     // Load filter form (first page load)
                     enhetArendenFilterModel.reset();
-                    initLakareList(enhetArendenModel.enhetId);
+                    enhetArendenFilterService.initLakareList(enhetArendenModel.enhetId);
 
                     $scope.enhetArendenFilterModel = enhetArendenFilterModel;
 
                     $scope.hasUnhandledArenden = function(){
-                        return vardenhetFilterModel.units[0].fragaSvar;
+                        return vardenhetFilterModel.units ? vardenhetFilterModel.units[0].fragaSvar : false;
                     };
 
                     $scope.hasNoArenden = function(){
-                        return vardenhetFilterModel.units[0].fragaSvar === 0;
+                        return vardenhetFilterModel.units ? vardenhetFilterModel.units[0].fragaSvar === 0 : true;
                     };
 
                     $scope.toggleFilter = function(){
@@ -72,26 +72,6 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
                 };
 
-                function initLakareList(unitId) {
-                    enhetArendenFilterModel.viewState.loadingLakare = true;
-                    var lakareUnitId = unitId === enhetArendenModel.ALL_UNITS ? undefined : unitId;
-                    enhetArendenProxy.getArendenLakareList(lakareUnitId, function(list) {
-                        enhetArendenFilterModel.viewState.loadingLakare = false;
-                        enhetArendenFilterModel.lakareList = list;
-                        if (list && (list.length > 0)) {
-                            enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
-                            enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0];
-                        }
-                    }, function() {
-                        enhetArendenFilterModel.viewState.loadingLakare = false;
-                        enhetArendenFilterModel.lakareList = [];
-                        enhetArendenFilterModel.lakareList.push({
-                            hsaId: undefined,
-                            name: '<Kunde inte hämta lista>'
-                        });
-                    });
-                }
-
                 // Broadcast by statService on poll
                 $scope.$on('statService.stat-update', function(event, message) {
                     var unitStats = message;
@@ -104,16 +84,14 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                 $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
 
                     // If we change enhet then we probably don't want the same filter criterias
-                    if ($cookies.getObject('enhetsId') && $cookies.getObject('enhetsId') !== unit.id) {
+                    if (unit.id !== enhetArendenModel.enhetId) {
                         enhetArendenFilterModel.reset();
                     }
                     enhetArendenFilterModel.viewState.filteredYet = false; // so proper info message is displayed if no items are found
                     enhetArendenFilterModel.viewState.filterFormCollapsed = true; // collapse filter form so it isn't in the way
 
-                    initLakareList(unit.id); // Update lakare list for filter form
+                    enhetArendenFilterService.initLakareList(unit.id); // Update lakare list for filter form
                 });
-
-                this.$onInit();
             }
         };
     }]);

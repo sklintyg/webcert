@@ -83,42 +83,6 @@ angular.module('webcert').service('webcert.enhetArendenFilterModel', [
                 changedTo: undefined
             };
         };
-/*
-        this.loadSearchForm = function() {
-            this.reset(); // Set default state for filter form
 
-            // If we saved an old query where we had fetched more load everything up to that page
-            if (this.filterQuery.startFrom > 0) {
-                this.filterQuery.pageSize = this.filterQuery.startFrom + this.filterQuery.pageSize;
-                this.filterQuery.savedStartFrom = this.filterQuery.startFrom;
-                this.filterQuery.startFrom = 0;
-            }
-
-            if (this.filterQuery.questionFromFK === false && this.filterQuery.questionFromWC === false) {
-                this.filterForm.questionFrom = 'default';
-            } else if (this.filterQuery.questionFromFK) {
-                this.filterForm.questionFrom = 'FK';
-            } else {
-                this.filterForm.questionFrom = 'WC';
-            }
-
-            if (this.filterQuery.vidarebefordrad === undefined) {
-                this.filterForm.vidarebefordrad = 'default';
-            } else {
-                this.filterForm.vidarebefordrad = this.filterQuery.vidarebefordrad;
-            }
-
-            if (this.filterQuery.changedFrom === undefined) {
-                this.filterForm.changedFrom = undefined;
-            } else {
-                this.filterForm.changedFrom = this.filterQuery.changedFrom;
-            }
-            if (this.filterQuery.changedTo === undefined) {
-                this.filterForm.changedTo = undefined;
-            } else {
-                this.filterForm.changedTo = this.filterQuery.changedTo;
-            }
-        };
-*/
         this.reset();
     }]);
