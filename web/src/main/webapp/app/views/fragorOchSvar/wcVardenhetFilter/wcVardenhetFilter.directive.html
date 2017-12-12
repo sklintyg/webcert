@@ -12,11 +12,11 @@
             <button id="select-active-unit-{{unit.id}}"
                     type="button"
                     ng-click="selectUnit(unit)"
-                    class="qa-unit"
+                    class="arende-unit"
                     ng-class="{selected : vardenhetFilterModel.selectedUnit == unit}">
-              <span ng-class="$index < 2 ? 'qa-unit-strong' : 'qa-unit-weak'">{{unit.namn}}</span>
-              <span class="qa-circle"
-                    ng-class="{'qa-circle-active': unit.fragaSvar>0}"
+              <span ng-class="$index < 2 ? 'arende-unit-strong' : 'arende-unit-weak'">{{unit.namn}}</span>
+              <span class="arende-circle"
+                    ng-class="{'arende-circle-active': unit.fragaSvar>0}"
                     title="{{unit.tooltip}}">{{unit.fragaSvar}}
                 </span>
             </button>
@@ -27,11 +27,11 @@
             <button id="ovriga"
                     type="button"
                     ng-click="toggleShowInactive()"
-                    class="qa-unit">
+                    class="arende-unit">
               <strong>
                 <span class="glyphicon"
                       ng-class="vardenhetFilterModel.showInactive ? 'glyphicon-minus-sign' : 'glyphicon-plus-sign'" >
-                </span> Övriga arbetsplatser <span class="qa-circle">0</span>
+                </span> Övriga arbetsplatser <span class="arende-circle">0</span>
               </strong>
             </button>
           </div>
@@ -44,10 +44,10 @@
             <button id="select-active-unit-{{unit.id}}"
                     type="button"
                     ng-click="selectUnit(unit)"
-                    class="qa-unit"
+                    class="arende-unit"
                     ng-class="{selected : vardenhetFilterModel.selectedUnit == unit}">
               <span>{{unit.namn}}</span>
-              <span class="qa-circle"
+              <span class="arende-circle"
                     title="{{unit.tooltip}}">0
               </span>
             </button>
@@ -56,6 +56,6 @@
       </div>
   </div>
   <div ng-show="vardenhetFilterModel.units[0].fragaSvar == 0">
-    <span message key="info.nounanswered.qa.for.unit"></span>
+    <span message key="info.nounanswered.arende.for.unit"></span>
   </div>
 </div>

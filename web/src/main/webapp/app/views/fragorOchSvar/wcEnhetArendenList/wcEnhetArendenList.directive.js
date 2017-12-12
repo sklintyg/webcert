@@ -30,9 +30,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             restrict: 'E',
             transclude: false,
             replace: false,
-            scope: {
-
-            },
+            scope: {},
             templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcEnhetArendenList.directive.html',
             controller: function($scope) {
 

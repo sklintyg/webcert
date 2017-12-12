@@ -23,8 +23,8 @@
     </div>
 
     <!-- arende table - Frågor och svar-tabell -->
-    <div class="row" ng-show="listModel.arendenList.length > 0" id="qaTable">
-      <table class="col-md-12 table table-striped table-arende">
+    <div class="row" ng-show="listModel.arendenList.length > 0" id="arendeTable">
+      <table class="col-md-12 table table-striped wc-table-striped">
         <tr>
           <th></th>
           <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
@@ -38,12 +38,12 @@
         <tr ng-repeat="arende in listModel.arendenList">
           <td>
             <button type="button" class="btn btn-info" title="Visar intyget och fråga-svar."
-                    ng-click="openIntyg(arende.intygId, arende.intygTyp)" id="showqaBtn-{{arende.meddelandeId}}">Visa
+                    ng-click="openIntyg(arende.intygId, arende.intygTyp)" id="showarendeBtn-{{arende.meddelandeId}}">Visa
             </button>
           </td>
           <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
             <button type="button"
-                    class="btn vidarebefordra-btn"
+                    class="btn"
                     ng-class="{'btn-info': !arende.vidarebefordrad, 'btn-secondary' : arende.vidarebefordrad}"
                     title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
                     ng-click="openMailDialog(arende)">
@@ -52,7 +52,7 @@
             </button>
           </td>
           <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
-            <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="arende.updateInProgress"
+            <input id="selected" type="checkbox" ng-disabled="arende.updateInProgress"
                    ng-model="arende.vidarebefordrad" ng-change="onVidareBefordradChange(arende)" />
                                   <span ng-if="arende.updateInProgress"> <img
                                       src="/img/ajax-loader-kit-16x16.gif"></span>
@@ -61,7 +61,7 @@
           <td><span message key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
           <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="arende.meddelandeId" sekretessmarkering="arende.sekretessmarkering"></span></td>
           <td>{{arende.signeratAvNamn}}</td>
-          <td class="unbreakable table-arende-last">{{arende.receivedDate | date:'short'}}
+          <td class="unbreakable wc-table-striped-last">{{arende.receivedDate | date:'short'}}
           </td>
       </table>
     </div>

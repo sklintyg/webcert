@@ -23,20 +23,14 @@
 angular.module('webcert').controller('webcert.enhetArendenCtrl',
     ['$rootScope', '$scope', '$cookies',
         'common.enhetArendenCommonService',
-        'webcert.enhetArendenModel',
+        'webcert.enhetArendenModel', 'webcert.vardenhetFilterModel',
         function($rootScope, $scope, $cookies,
             enhetArendenCommonService,
-            enhetArendenModel) {
+            enhetArendenModel, vardenhetFilterModel) {
             'use strict';
 
             $scope.enhetArendenModel = enhetArendenModel;
-
-            // Broadcast by vardenhet filter directive on load and selection
-            $cookies.putObject('enhetsId', enhetArendenModel.enhetId);
-            $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
-                $cookies.putObject('enhetsId', unit.id);
-                enhetArendenModel.enhetId = unit.id;
-            });
+            $scope.vardenhetFilterModel = vardenhetFilterModel;
 
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
                 enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);

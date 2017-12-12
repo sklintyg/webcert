@@ -1,4 +1,4 @@
-<table class="col-md-12 table table-striped table-qa">
+<table class="col-md-12 table table-striped wc-table-striped">
   <tr>
     <th></th>
     <th wc-authority="VIDAREBEFORDRA_UTKAST"></th>
@@ -34,6 +34,6 @@
     <td><span message key="intyg.status.{{intyg.status}}"></span></td>
     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
     <td class="unbreakable">{{intyg.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering" uuid="intyg.patientId"></span></td>
-    <td class="table-qa-last">{{intyg.updatedSignedBy}}</td>
+    <td class="wc-table-striped-last">{{intyg.updatedSignedBy}}</td>
   </tr>
 </table>

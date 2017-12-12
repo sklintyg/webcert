@@ -1,0 +1,117 @@
+/*!
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+Common styles for this view and its child directives
+*/
+
+/*
+ used on enhetArenden and ejSigneradeUtkast
+*/
+.wc-filter-panel {
+  border-radius: 0 5px 5px 5px;
+  background-color: $color_wild_sand_approx;
+  font-size: 12px;
+  max-width: 800px;
+  padding: 10px;
+}
+
+.arende-table-section {
+  padding-top: 20px;
+}
+
+td.center {
+  text-align: center;
+}
+
+/*
+vidarebefordra buttons
+*/
+
+.forward-active {
+  color: white;
+}
+
+.forward-inactive {
+  color: black;
+}
+
+/*
+utils
+*/
+
+h2 {
+  &.less-top-padding {
+    /* useful if h2 is placed immediately after h1 */
+    padding-top: 10px;
+  }
+}
+
+/* table striped style for all webcert */
+.wc-table-striped {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  display: block;
+
+  .btn-info {
+    padding: 7px 15px;
+    min-width: 50px;
+  }
+
+  .btn-secondary {
+    padding: 7px 15px;
+    min-width: 50px;
+  }
+
+  .btn-success {
+    padding: 7px 15px;
+    min-width: 50px;
+  }
+
+  > thead > tr > th {
+    border: 0;
+    padding: 0 15px 0 0;
+  }
+
+  > tbody > tr {
+    > th {
+      border: 0;
+      padding: 0 15px 0 0;
+    }
+    > td {
+      padding: 0 20px 0 0;
+      background-color: $mercury;
+      &:first-child {
+        border-radius: 3px 0 0 3px;
+      }
+
+      &.wc-table-striped-last {
+        border-radius: 0 3px 3px 0;
+      }
+
+      &:only-child {
+        border-radius: 3px 3px 0 0;
+      }
+
+      &.nopadding {
+        padding: 0;
+      }
+    }
+  }
+}

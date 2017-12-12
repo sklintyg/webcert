@@ -30,9 +30,7 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             restrict: 'E',
             transclude: false,
             replace: false,
-            scope: {
-
-            },
+            scope: {},
             templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenFilter/wcEnhetArendenFilter.directive.html',
             controller: function($scope) {
 
@@ -90,8 +88,11 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                     enhetArendenFilterModel.viewState.filteredYet = false; // so proper info message is displayed if no items are found
                     enhetArendenFilterModel.viewState.filterFormCollapsed = true; // collapse filter form so it isn't in the way
 
+                    enhetArendenModel.enhetId = unit.id;
+
                     enhetArendenFilterService.initLakareList(unit.id); // Update lakare list for filter form
                 });
+
             }
         };
     }]);
