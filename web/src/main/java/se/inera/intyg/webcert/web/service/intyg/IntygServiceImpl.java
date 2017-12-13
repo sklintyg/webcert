@@ -301,13 +301,15 @@ public class IntygServiceImpl implements IntygService {
     private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList,
                                                           SekretessStatus sekretessmarkering) {
         // Get intygstyper from the view privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+        Set<String> base = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
                 AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
         // Remove intygstyper that cannot be issued for a sekretessmarkerad patient
-        if (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED) {
-            intygsTyper.removeAll(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering());
-        }
+        Set<String> intygsTyper =
+                (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED)
+                        ? filterAllowedForSekretessMarkering(base) : base;
+
+        LOG.info("Intygstyper (FilterTypForUser): {}", intygsTyper);
 
         // The user is only granted access to view intyg of intygstyper that are in the set.
         return fullIntygItemList.stream().filter(i -> intygsTyper.contains(i.getIntygType())).collect(Collectors.toList());
@@ -327,14 +329,30 @@ public class IntygServiceImpl implements IntygService {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
 
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
+        SekretessStatus sekretessmarkering = patientDetailsResolver.getSekretessStatus(personnummer);
+
+        Set<String> base = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
                 AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+
+        // Remove intygstyper that cannot be issued for a sekretessmarkerad patient
+        Set<String> intygsTyper =
+                (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED)
+                        ? filterAllowedForSekretessMarkering(base) : base;
+
+        LOG.info("Intygstyper (IntygFromDrafts): {}", intygsTyper);
 
         List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer), enhetId,
                 statuses,
                 intygsTyper);
 
         return IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
+    }
+
+    private Set<String> filterAllowedForSekretessMarkering(Set<String> base) {
+        Set<String> allowedForSekretess = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering();
+        return base.stream()
+                .filter(allowedForSekretess::contains)
+                .collect(Collectors.toSet());
     }
 
     @Override
