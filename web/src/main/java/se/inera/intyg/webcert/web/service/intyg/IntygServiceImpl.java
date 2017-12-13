@@ -309,8 +309,6 @@ public class IntygServiceImpl implements IntygService {
                 (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED)
                         ? filterAllowedForSekretessMarkering(base) : base;
 
-        LOG.info("Intygstyper (FilterTypForUser): {}", intygsTyper);
-
         // The user is only granted access to view intyg of intygstyper that are in the set.
         return fullIntygItemList.stream().filter(i -> intygsTyper.contains(i.getIntygType())).collect(Collectors.toList());
     }
@@ -338,8 +336,6 @@ public class IntygServiceImpl implements IntygService {
         Set<String> intygsTyper =
                 (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED)
                         ? filterAllowedForSekretessMarkering(base) : base;
-
-        LOG.info("Intygstyper (IntygFromDrafts): {}", intygsTyper);
 
         List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer), enhetId,
                 statuses,
