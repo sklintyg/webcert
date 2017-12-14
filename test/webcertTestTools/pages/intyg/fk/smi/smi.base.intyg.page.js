@@ -286,7 +286,6 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
 			browser.getCurrentUrl().then(function(url){
 				logger.warn('url: ' + url);
 				console.trace(e);
-			}).then(function(){
 				throw (e.message);
 			});
 		});
