@@ -275,8 +275,20 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
     whenCertificateLoaded: function() {
         var that = this;
 
-		return browser.wait(that.certficate.isPresent()).then(function(){
-			return browser.wait(that.certficate.isDisplayed());
+		return browser.sleep(1000).then(function(){
+			//1 sec sleep för GET request och page/angular reload
+			return browser.wait(that.certficate.isPresent(), 15000).then(function(){
+				//15sec är timeout
+				return browser.wait(that.certficate.isDisplayed(), 15000);
+			});
+		}).catch(function(e){
+			//Debug
+			browser.getCurrentUrl().then(function(url){
+				logger.warn('url: ' + url);
+				console.trace(e);
+			}).then(function(){
+				throw (e.message);
+			});
 		});
     }
 
