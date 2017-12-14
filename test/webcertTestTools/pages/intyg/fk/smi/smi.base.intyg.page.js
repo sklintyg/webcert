@@ -273,8 +273,10 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
     },
 
     whenCertificateLoaded: function() {
-		return browser.wait(this.certficate.isPresent()).then(function(){
-			return browser.wait(this.certficate.isDisplayed());
+        var that = this;
+
+		return browser.wait(that.certficate.isPresent()).then(function(){
+			return browser.wait(that.certficate.isDisplayed());
 		});
     }
 
