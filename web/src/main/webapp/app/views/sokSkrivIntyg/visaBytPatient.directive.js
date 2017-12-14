@@ -5,6 +5,6 @@ angular.module('webcert').directive('visaBytPatient',
         return {
             restrict: 'E',
             templateUrl: '/app/views/sokSkrivIntyg/visaBytPatient.directive.html'
-        };
+        }
     }
 );
