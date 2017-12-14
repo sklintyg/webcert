@@ -95,13 +95,15 @@ describe('Create and Sign luae_fs utkast', function() {
             expect(IntygPage.isAt()).toBeTruthy();
         });
 
-        it('Verifiera intyg', function() {
+        it('Wait on intug in IT', function() {
             // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
             // upplysningar ännu.
             // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
             IntygPage.waitUntilIntygInIT(utkastId);
             browser.refresh();
+        });
 
+        it('Verifiera intyg', function() {
             IntygPage.whenCertificateLoaded();
 
             IntygPage.verify(data);
