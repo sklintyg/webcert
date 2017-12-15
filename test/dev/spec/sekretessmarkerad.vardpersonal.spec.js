@@ -71,7 +71,7 @@ describe('Testa enkelt flöde för sekretessmarkerad vårdpersonal', function() 
     });
 
     it('Klicka på sekretessinfo länken, så skall sekretessinfo modalen visas', function() {
-        sekretessInfoDialogLink.sendKeys(protractor.Key.SPACE);
+        sekretessInfoDialogLink.sendKeys(protractor.Key.ENTER);
         expect(sekretessInfoDialogOkBtn.isPresent()).toBe(true);
     });
 
