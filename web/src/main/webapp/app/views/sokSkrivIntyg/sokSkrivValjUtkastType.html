@@ -19,15 +19,15 @@
               <div ng-if="!viewState.loadErrorMessageKey">
 
                 <visa-byt-patient></visa-byt-patient>
-                <valj-utkast-typ></valj-utkast-typ>
-
+                <valj-utkast-typ view-state="viewState"></valj-utkast-typ>
               </div>
 
             </form>
           </div>
         </div>
-
-        <tidigare-intyg></tidigare-intyg>
+        <div ng-if="viewState">
+          <tidigare-intyg view-state="viewState"></tidigare-intyg>
+      </div>
 
       </div>
     </div>

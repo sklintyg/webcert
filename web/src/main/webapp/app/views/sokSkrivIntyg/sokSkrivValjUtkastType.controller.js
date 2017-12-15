@@ -1,12 +1,12 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright(C) 2016 Inera AB(http://www.inera.se)
  *
- * This file is part of sklintyg (https://github.com/sklintyg).
+ * This file is part of sklintyg(https://github.com/sklintyg).
  *
  * sklintyg is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *(at your option) any later version.
  *
  * sklintyg is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,18 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
-    ['$window', '$filter', '$log', '$scope', '$stateParams', '$state', '$location',
+    ['$filter', '$log', '$scope', '$stateParams', '$state', '$location',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
-        'common.IntygCopyActions', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-        'common.messageService', 'common.UserModel', 'common.authorityService', 'common.featureService',
         'common.UtkastProxy',
 
-        function($window, $filter, $log, $scope, $stateParams, $state, $location,
+        function($filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
-            CommonIntygCopyActions, IntygFornyaRequestModel, IntygCopyRequestModel,
-            IntygProxy, UtkastProxy, Service, ObjectHelper, messageService, UserModel,
-            authorityService, featureService, commonUtkastProxy) {
+            IntygProxy, UtkastProxy, Service, ObjectHelper, 
+            commonUtkastProxy) {
             'use strict';
 
             /**
@@ -37,18 +34,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
             var choosePatientStateName = 'webcert.create-choosepatient-index';
 
-            $scope.intygTypeModel = IntygTypeSelectorModel.build();
-            $scope.messageService = messageService;
             $scope.viewState = Viewstate.build();
-
-            $scope.intygReplacement = {
-                'fk7263':'lisjp'
-            };
-
-            $scope.isNormalOrigin = function() {
-                //Closure needed, due to 'this' reference in UserModel.isNormalOrigin().
-                return UserModel.isNormalOrigin();
-            };
 
             // In case callers do not know the patientId they can use 'default' in which case the controller
             // will use what's currently in PatientModel, or, if that's not available, redirect user to enter a
@@ -122,35 +108,6 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 });
             }
 
-            $scope.isDraftUniqueWithinCareGiver = function (intygType) {
-                var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_UTKAST_INOM_VG, intygType);
-                return featureActive && IntygTypeSelectorModel.previousUtkastWarnings[intygType];
-            };
-
-            $scope.isCertificateUniqueWithinCareGiver = function (intygType) {
-                var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG_INOM_VG, intygType);
-                return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType];
-            };
-
-            $scope.isUniqueGlobal = function (intygType) {
-                var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG, intygType);
-                return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType] !== undefined;
-            };
-
-            $scope.isRenewalAllowed = function(intyg) {
-                var renewable = authorityService.isAuthorityActive(
-                    { requestOrigin: UserModel.user.origin,
-                        authority: UserModel.privileges.FORNYA_INTYG,
-                        intygstyp: intyg.intygType
-                });
-                var statusAllowed = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';
-
-                return renewable &&
-                    statusAllowed &&
-                    !(intyg.relations.latestChildRelations.replacedByIntyg ||
-                    intyg.relations.latestChildRelations.complementedByIntyg);
-            };
-
             /**
              * Watches
              */
@@ -158,42 +115,9 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 $scope.updateIntygList();
             });
 
-            /*
-            $scope.$watch('current.selected', function(newValue, oldValue) {
-                if (newValue !== oldValue) {
-                    $scope.intygType = newValue;
-                }
-            });*/
-
-            /**
-             * Exposed to scope
-             */
-
-            $scope.showCreateUtkast = function() {
-                return !(IntygTypeSelectorModel.intygType === 'default' ||
-                    ($scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()) ||
-                    $scope.isCertificateUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
-                    $scope.isDraftUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
-                    $scope.isUniqueGlobal(IntygTypeSelectorModel.intygType));
-            };
-
             $scope.updateIntygList = function() {
                 Viewstate.currentList =
                     $filter('TidigareIntygFilter')(Viewstate.intygListUnhandled, Viewstate.intygFilter);
-            };
-
-            $scope.changePatient = function() {
-                $state.go(choosePatientStateName);
-            };
-
-            //Use loaded module metadata to look up detailed description for a intygsType
-            $scope.getDetailedDescription = function(intygsType) {
-                var intygTypes = IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
-                    return (intygType.id === intygsType);
-                });
-                if (intygTypes && intygTypes.length > 0) {
-                    return intygTypes[0].detailedDescription;
-                }
             };
 
             //Use loaded module metadata to look up name for a intygsType
@@ -221,7 +145,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
                 UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
                     Viewstate.createErrorMessageKey = undefined;
-                    $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId +  '/', true);
+                    $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId + '/', true);
                 }, function(error) {
                     $log.debug('Create draft failed: ' + error.message);
                     if (error.errorCode === 'PU_PROBLEM') {
@@ -230,46 +154,5 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                         Viewstate.createErrorMessageKey = 'error.failedtocreateintyg';
                     }
                 });
-            };
-
-            $scope.openIntyg = function(intyg) {
-                if (intyg.status === 'DRAFT_INCOMPLETE' || intyg.status === 'DRAFT_COMPLETE') {
-                    $location.path('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
-                } else {
-                    $location.path('/intyg/' + intyg.intygType + '/' + intyg.intygId + '/');
-                }
-            };
-
-            $scope.fornyaIntyg = function(intyg) {
-                Viewstate.createErrorMessageKey = null;
-
-                // We don't have the required info about issuing unit in the supplied 'intyg' object, always set to true.
-                // It only affects a piece of text in the Kopiera-dialog anyway.
-                var isOtherCareUnit = true;
-
-                CommonIntygCopyActions.fornya(Viewstate,
-                    IntygFornyaRequestModel.build({
-                        intygId: intyg.intygId,
-                        intygType: intyg.intygType,
-                        patientPersonnummer: PatientModel.personnummer,
-                        nyttPatientPersonnummer: null
-                    }),
-                    isOtherCareUnit
-                );
-            };
-
-            $scope.resolveTooltipText = function(intyg) {
-                return messageService.getProperty(intyg.intygType + '.fornya.tooltip');
-            };
-
-            $scope.resolveIntygReplacedText = function(selectedIntygType) {
-                var selectedIntyg = IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
-                    return (intygType.id === selectedIntygType);
-                })[0];
-                var replacedIntygsType = $scope.intygReplacement[selectedIntygType];
-                var replacedIntyg = IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
-                    return (intygType.id === replacedIntygsType);
-                })[0];
-                return messageService.getProperty('info.intygstyp.replaced', {oldIntygstyp: selectedIntyg.label, newIntygstyp: replacedIntyg.label });
             };
         }]);

@@ -23,14 +23,14 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
     var $controller;
     var UtkastProxy;
     var IntygProxy;
+    var viewState;
     var $scope;
+    var element;
     var $location;
-    var CommonIntygHelperSpy;
     var CommonIntygCopyActionsSpy;
     var IntygFornyaRequestModelSpy;
     var IntygFornyaRequestInstanceMock;
     var PatientModelMock;
-    var $stateParamsMock;
     var CommonMessageServiceSpy;
     var SokSkrivValjUtkastService = {};
     var AuthorityService = {};
@@ -38,15 +38,12 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
     var $q;
 
     beforeEach(function() {
-
+        module('htmlTemplates');
         module('webcert', function($provide) {
             var statService = jasmine.createSpyObj('common.statService', ['refreshStat']);
             IntygFornyaRequestModelSpy = jasmine.createSpyObj('common.IntygFornyaRequestModel', ['build']);
             CommonMessageServiceSpy = jasmine.createSpyObj('common.messageService', ['getProperty']);
             IntygFornyaRequestInstanceMock = {};
-            $stateParamsMock = {
-                patientId: 'PAT-ID-TEST'
-            };
             PatientModelMock = {
                 sekretessmarkering: '',
                 fornamn: 'Kalle',
@@ -68,6 +65,10 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             IntygFornyaRequestModelSpy.build.and.returnValue(IntygFornyaRequestInstanceMock);
             $provide.value('common.statService', statService);
 
+            //$provide.value('webcert.SokSkrivIntygViewstate', {});
+            viewState = jasmine.createSpyObj('webcert.SokSkrivIntygViewstate', ['build']);
+            viewState.build();
+
             UtkastProxy = jasmine.createSpyObj('webcert.UtkastProxy', ['getUtkastTypes', 'initCopyDialog']);
             $provide.value('webcert.UtkastProxy', UtkastProxy);
 
@@ -78,13 +79,11 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             $provide.value('common.IntygCopyActions', CommonIntygCopyActionsSpy);
             $provide.value('common.IntygCopyRequestModel', {});
             $provide.value('common.IntygFornyaRequestModel', IntygFornyaRequestModelSpy);
-            $provide.value('common.IntygHelper', CommonIntygHelperSpy);
             $provide.value('common.PatientModel', PatientModelMock);
             $provide.value('common.PatientProxy', {});
             $provide.value('common.messageService', CommonMessageServiceSpy);
             $provide.value('common.featureService', {});
             $provide.value('common.UtkastProxy', {});
-            $provide.value('$stateParams', $stateParamsMock);
             $provide.value('common.ObjectHelper', jasmine.createSpyObj('common.ObjectHelper', ['isEmpty']));
             UserModel = jasmine.createSpyObj('common.UserModel', ['isNormalOrigin']);
             UserModel.user = {
@@ -116,11 +115,17 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             $provide.value('common.authorityService', AuthorityService);
         });
 
-        inject(function($rootScope, _$location_, _$controller_, _$q_) {
+        inject(function($rootScope, _$location_, _$controller_, _$q_, _$compile_) {
             $scope = $rootScope.$new();
             $location = _$location_;
             $controller = _$controller_;
             $q = _$q_;
+            $scope.viewState = viewState;
+            var tpl = angular.element(
+                '<tidigare-intyg view-state="viewState"></tidigare-intyg>'
+            );
+            element = _$compile_(tpl)($scope);
+            element.scope().$digest();
         });
     });
 
@@ -146,34 +151,34 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
         it('is förnya allowed', function() {
 
             intyg.intygType = 'ts-bas';
-            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
             intyg.intygType = 'fk7263';
-            expect($scope.isRenewalAllowed(intyg)).toBeTruthy();
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
 
-            expect($scope.isRenewalAllowed(intyg)).toBeTruthy();
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
 
             intyg.status = 'DRAFT_INCOMPLETE';
-            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
             intyg.status = 'CANCELLED';
-            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
 
             $scope.patientModel.sekretessmarkering = true;
-            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
             $scope.patientModel.sekretessmarkering = false;
             intyg.relations.latestChildRelations.replacedByIntyg = true;
-            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
             intyg.relations.latestChildRelations.replacedByIntyg = false;
             intyg.relations.latestChildRelations.complementedByIntyg = true;
-            expect($scope.isRenewalAllowed(intyg)).toBeFalsy();
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
         });
 
         it('should förnya intyg', function() {
-            $scope.fornyaIntyg(intyg);
+            element.isolateScope().fornyaIntyg(intyg);
             expect(IntygFornyaRequestModelSpy.build).toHaveBeenCalledWith({
                 intygType: 'fk7263',
                 intygId: 'abc123',
@@ -181,13 +186,12 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
                 nyttPatientPersonnummer: null
             });
             expect(CommonIntygCopyActionsSpy.fornya).toHaveBeenCalledWith(
-                $scope.viewState,
+                viewState,
                 IntygFornyaRequestInstanceMock,
                 true
             );
         });
     });
-
 
     describe('openIntyg', function() {
 
@@ -204,20 +208,21 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
 
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_COMPLETE';
-            $scope.openIntyg(intyg);
+            element.isolateScope().openIntyg(intyg);
             expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_INCOMPLETE';
-            $scope.openIntyg(intyg);
+            element.isolateScope().openIntyg(intyg);
             expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set signed path', function() {
             intyg.status = 'RECEIVED';
-            $scope.openIntyg(intyg);
+            element.isolateScope().openIntyg(intyg);
             expect($location.path()).toBe('/intyg/' + intyg.intygType + '/' + intyg.intygId + '/');
         });
     });
+
 });
