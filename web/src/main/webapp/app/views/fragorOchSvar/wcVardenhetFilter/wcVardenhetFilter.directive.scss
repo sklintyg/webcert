@@ -1,14 +1,14 @@
 wc-vardenhet-filter {
 
-  $arende-unit-color: #323232;
-  $arende-unit-background-color-gradient-start: #e5e5e5;
-  $arende-unit-background-color-gradient-end: #ccc;
-  $arende-unit-hover-background-color: #f0f0f0;
-  $arende-circle-color: #fff;
-  $arende-circle-background-color: #999;
-  $arende-circle-active-background-border-color: #ff4565;
-  $unit-table-button-selected-color: #fff;
-  $unit-table-button-selected-background-color: #666;
+  $arende-unit-color: $wc-color-08;
+  $arende-unit-background-color-gradient-start: $wc-color-13;
+  $arende-unit-background-color-gradient-end: $wc-color-15;
+  $arende-unit-hover-background-color: $wc-color-20;
+  $arende-circle-color: $wc-color-00;
+  $arende-circle-background-color: $wc-color-22;
+  $arende-circle-active-background-border-color: $wc-color-11;
+  $unit-table-button-selected-color: $wc-color-00;
+  $unit-table-button-selected-background-color: $wc-color-09;
 
   display: block;
 

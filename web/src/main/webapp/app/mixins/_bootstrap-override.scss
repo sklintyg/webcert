@@ -18,35 +18,39 @@
  */
 
 /* All overrides of bootstrap specific stuff goes into this partial file */
+
+//shadows
+$black_30: rgba(0, 0, 0, 0.3);
+
 // Colors
-$btn-secondary-background-color: #f0f0f0;
-$btn-secondary-background-hover-color: #f6f6f6;
-$btn-success-background-color: #42a341;
-$btn-success-hover-background-color: #52b351;
-$btn-info-common-background-color: #28b4c4;
-$btn-info-hover-background-color: #38c4d4;
-$btn-link-color: #008391;
-$btn-link-hover-color: #31b2be;
-$btn-inverse-color: #fff;
-$btn-inverse-background-color: #3f3f3f;
-$btn-inverse-background-focus-and-hover-color: #656565;
-$btn-default-color: #e0e0e0;
-$btn-danger-color: #ac2925;
-$btn-danger-color-hover: #c12e2a;
-$alert-warning-color: #8a6d3b;
-$alert-danger-color: #a94442;
-$alert-info-color: #306e8d;
-$alert-info-border-color: #9cd7e3;
-$table-striped-background-color: #f9f9f9;
-$nav-pills-color: #fff;
-$nav-pills-a-border-color: #ddd;
-$nav-pills-background-color: #008391;
-$nav-pills-text-shadow-color: rgba(0, 0, 0, 0.2);
-$nav-pills-active-chevron-right-color: #fff;
-$nav-stacked-chevron-right-color: #333;
-$dropdown-menu-box-shadow-color: rgba(0, 0, 0, 0.3);
-$glyphicon-question-sign-color: #008391;
-$glyphicon-question-sign-hover-color: #28b4c4;
+$btn-secondary-background-color: $wc-color-20;
+$btn-secondary-background-hover-color: $wc-color-00;
+$btn-success-background-color: $wc-color-16;
+$btn-success-hover-background-color: $wc-color-10;
+$btn-info-common-background-color: $wc-color-16;
+$btn-info-hover-background-color: $wc-color-10;
+$btn-link-color: $wc-color-16;
+$btn-link-hover-color: $wc-color-10;
+$btn-inverse-color: $wc-color-00;
+$btn-inverse-background-color: $wc-color-08;
+$btn-inverse-background-focus-and-hover-color: $wc-color-09;
+$btn-default-color: $wc-color-13;
+$btn-danger-color: $wc-color-04;
+$btn-danger-color-hover: $wc-color-11;
+$alert-warning-color: $wc-color-05;
+$alert-info-color: $wc-color-16;
+$alert-info-border-color: $wc-color-10;
+$table-striped-background-color: $wc-color-20;
+$nav-pills-color: $wc-color-00;
+$nav-pills-a-border-color: $wc-color-13;
+$nav-pills-background-color: $wc-color-16;
+$nav-pills-text-shadow-color: $black_30;
+$nav-pills-active-chevron-right-color: $wc-color-00;
+$nav-stacked-chevron-right-color: $wc-color-08;
+$dropdown-menu-box-shadow-color: $black_30;
+$glyphicon-question-sign-color: $wc-color-16;
+$glyphicon-question-sign-hover-color: $wc-color-10;
+
 
 //fonts
 $font-0: 'Roboto';
@@ -282,11 +286,11 @@ $font-3: sans-serif;
 }
 
 .alert-danger {
-  color: $alert-danger-color;
+  color: $wc-color-01;
   /* WCAG AA compliant */
   background-image: none;
   a {
-    color: $alert-danger-color;
+    color: $wc-color-01;
     text-decoration: underline;
   }
 }

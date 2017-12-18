@@ -26,7 +26,7 @@ Common styles for this view and its child directives
 */
 .wc-filter-panel {
   border-radius: 0 5px 5px 5px;
-  background-color: $color_wild_sand_approx;
+  background-color: $wc-color-20;
   font-size: 12px;
   max-width: 800px;
   padding: 10px;
@@ -96,7 +96,7 @@ h2 {
     }
     > td {
       padding: 0 20px 0 0;
-      background-color: $mercury;
+      background-color: $wc-color-13;;
       &:first-child {
         border-radius: 3px 0 0 3px;
       }
