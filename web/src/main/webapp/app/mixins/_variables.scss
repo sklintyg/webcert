@@ -21,7 +21,7 @@ $wc-color-10: #41BFA0;
 $wc-color-05: #7A5F24;
 $wc-color-12: #E8AD0E;
 $wc-color-18: #FFC794;
-$wc-color-02: #FEECBB;
+$wc-color-02: #ffebba;
 
 $wc-color-19: #292F4F;
 $wc-color-17: #3D4260;
@@ -29,3 +29,10 @@ $wc-color-06: #003C75;
 $wc-color-14: #70748A;
 $wc-color-21: #496CEC;
 $wc-color-03: #B3E5FC;
+
+$alert-info-bg: $wc-color-03;
+$alert-info-text: $wc-color-06;
+$alert-warning-bg: $wc-color-02;
+$alert-warning-text: $wc-color-05;
+$alert-danger-bg: $wc-color-01;
+$alert-danger-text: $wc-color-04;

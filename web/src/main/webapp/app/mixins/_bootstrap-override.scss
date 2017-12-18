@@ -23,6 +23,13 @@
 $black_30: rgba(0, 0, 0, 0.3);
 
 // Colors
+$state-info-text:                $wc-color-01;
+$state-info-bg:                  $wc-color-06;
+$state-warning-text:             $wc-color-02;
+$state-warning-bg:               $wc-color-05;
+$state-danger-text:              $wc-color-03;
+$state-danger-bg:                $wc-color-04;
+
 $btn-secondary-background-color: $wc-color-20;
 $btn-secondary-background-hover-color: $wc-color-00;
 $btn-success-background-color: $wc-color-16;
@@ -37,9 +44,12 @@ $btn-inverse-background-focus-and-hover-color: $wc-color-09;
 $btn-default-color: $wc-color-13;
 $btn-danger-color: $wc-color-04;
 $btn-danger-color-hover: $wc-color-11;
-$alert-warning-color: $wc-color-05;
-$alert-info-color: $wc-color-16;
-$alert-info-border-color: $wc-color-10;
+$alert-info-bg: $wc-color-01;
+$alert-info-text: $wc-color-06;
+$alert-warning-bg: $wc-color-02;
+$alert-warning-text: $wc-color-05;
+$alert-danger-bg: $wc-color-03;
+$alert-danger-text: $wc-color-04;
 $table-striped-background-color: $wc-color-20;
 $nav-pills-color: $wc-color-00;
 $nav-pills-a-border-color: $wc-color-13;
@@ -50,7 +60,6 @@ $nav-stacked-chevron-right-color: $wc-color-08;
 $dropdown-menu-box-shadow-color: $black_30;
 $glyphicon-question-sign-color: $wc-color-16;
 $glyphicon-question-sign-hover-color: $wc-color-10;
-
 
 //fonts
 $font-0: 'Roboto';
@@ -270,36 +279,14 @@ $font-3: sans-serif;
  * Alert overrides
  * --------------------------------------- */
 
+/* WCAG AA compliant */
 .alert {
-  padding-right: 22px;
-  max-width: 993px;
+  border: none;
+  background-image: none;
 }
 
 .alert-bottom {
   margin: 10px 0 0 0;
-}
-
-.alert-warning {
-  color: $alert-warning-color;
-  /* WCAG AA compliant */
-  background-image: none;
-}
-
-.alert-danger {
-  color: $wc-color-01;
-  /* WCAG AA compliant */
-  background-image: none;
-  a {
-    color: $wc-color-01;
-    text-decoration: underline;
-  }
-}
-
-.alert-info {
-  color: $alert-info-color;
-  /* WCAG AA compliant */
-  border: 1px solid $alert-info-border-color;
-  background-image: none;
 }
 
 .alert-dismissable .close, .alert-dismissible .close {
