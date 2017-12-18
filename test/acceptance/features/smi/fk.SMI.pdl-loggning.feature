@@ -1,6 +1,6 @@
 # language: sv
 
-@pdl @smi
+@pdl @smi @GE-005
 Egenskap: PDL-loggning för SMI-intyg
 
 Bakgrund: Jag är inloggad
@@ -8,7 +8,7 @@ Bakgrund: Jag är inloggad
 	Och jag går in på en patient
 
 # Första ändring per ändringssession ska loggas
-@skapa @skriva
+@skapa @skriva @läsa
 Scenario: Skapa SMI intyg
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
@@ -18,7 +18,7 @@ Scenario: Skapa SMI intyg
 	Och jag ändrar diagnoskod
 	Så ska det nu finnas 2 loggaktivitet "Skriva" för intyget
 
-@öppna
+@öppna @läsa
 Scenario: Öppna SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
@@ -36,7 +36,7 @@ Scenario: Skicka SMI intyg till mottagare
   Och jag skickar intyget till Försäkringskassan
   Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
 
-@skriv-ut @utskrift @notReady
+@skriv-ut @utskrift
 Scenario: Skriv ut SMI intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Och jag skriver ut intyget
@@ -54,7 +54,7 @@ Scenario: Makulera SMI intyg
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
-@fornya
+@fornya @läsa
 Scenario: Förnya SMI intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Och jag förnyar intyget
@@ -62,3 +62,19 @@ Scenario: Förnya SMI intyg
     Och jag signerar intyget
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
+	
+	
+@olika-vårdgivare @skriv-ut @utskrift @läsa
+Scenario: Händelser på intyg utfärdat på annan vårdgivare ska PDL-loggas
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+    När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
+	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
+	
+	Och jag skriver ut intyget
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
