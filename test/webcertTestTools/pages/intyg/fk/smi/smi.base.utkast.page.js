@@ -265,15 +265,17 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 					browser.ignoreSynchronization = false;
 					logger.silly('Klickar på element med id: underlag-' + index + '-typ');
 					
-                    return row.underlag.all(by.css('.ui-select-match > .btn')).first().click()   //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
-					.then(function() {
-							return browser.sleep(1500); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
-						})
-                        .then(function() {
-                            return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function (elm) {
-								return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
+					return browser.sleep(1500).then(function(){
+						return row.underlag.all(by.css('.ui-select-match > .btn')).first().click()   //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
+							.then(function() {
+								return browser.sleep(1500); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
+							})
+							.then(function() {
+								return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function (elm) {
+									return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
 							});
-                        });
+						});
+					});
                 })
                 .then(function() {
 					browser.ignoreSynchronization = true;
