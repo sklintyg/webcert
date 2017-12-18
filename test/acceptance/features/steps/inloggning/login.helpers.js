@@ -110,7 +110,11 @@ module.exports = {
                 return element(by.id('wcHeader')).getText().then(function(txt) {
                     logger.info('Webcert Header: ' + txt);
                 }).then(function() {
-                    return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
+                    var promiseArr = [];
+                    promiseArr.push(expect(wcHeader.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn));
+                    promiseArr.push(expect(wcHeader.getText()).to.eventually.contain(roleName));
+
+                    return promiseArr;
                 });
             });
     }
