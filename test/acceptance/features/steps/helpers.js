@@ -142,7 +142,7 @@ module.exports = {
         return str;
     },
     getIntygElementRow: function(intygstyp, status, cb) {
-        var qaTable = element(by.css('table.table-qa'));
+        var qaTable = element(by.css('.wc-table-striped'));
 
         pool.getConnection().then(function(connection) {
             qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {

@@ -172,7 +172,7 @@ module.exports = function() {
         }
 
         function checkRowForBtnWithText(rowText, buttonText, shouldBePresent) {
-            var qaTable = element(by.css('table.table-qa'));
+            var qaTable = element(by.css('.wc-table-striped'));
             return qaTable.all(by.cssContainingText('tr', rowText)).filter(function(elem, index) {
                 return elem.all(by.css('td')).get(2).getText().then(function(text) {
                     return (text === intygstyp);
