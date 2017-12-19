@@ -336,9 +336,9 @@ public class PatientDetailsResolverTest {
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
         assertEquals(LNAMN, patient.getEfternamn());
-        assertEquals(null, patient.getPostadress());
-        assertEquals(null, patient.getPostnummer());
-        assertEquals(null, patient.getPostort());
+        assertEquals(POST_ADDR, patient.getPostadress());
+        assertEquals(POST_NR, patient.getPostnummer());
+        assertEquals(POST_ORT, patient.getPostort());
         assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }

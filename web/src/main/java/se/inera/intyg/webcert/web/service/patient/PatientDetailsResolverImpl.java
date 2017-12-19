@@ -282,7 +282,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
             // Use PU for name och s-mark and address from integration parameters
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
+                patient = toPatientFromPersonSvar(personnummer, personSvar);
                 IntegrationParameters parameters = user.getParameters();
                 if (isNotNullOrEmpty(parameters.getPostadress())) {
                     patient.setPostadress(user.getParameters().getPostadress());
@@ -369,7 +369,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
             // Prioritize PU
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                patient = toPatientFromPersonSvarNameOnly(personnummer, personSvar);
+                patient = toPatientFromPersonSvar(personnummer, personSvar);
 
                 // Address from integration parameters
                 IntegrationParameters parameters = user.getParameters();
