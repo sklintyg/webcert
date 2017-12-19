@@ -1,5 +1,4 @@
-@CHARSET "UTF-8";
-/*
+/*!
  * Copyright (C) 2017 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -18,14 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "mixins/_wc-variables";
-@import "mixins/_bootstrap-variables-override"; // Bootstrap override variables must be loaded before bootstrap due to its !default flags
-@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss'; // Load bootstrap defaults
-@import "mixins/_bootstrap-css-override"; // CSS Override only, no bootstrap variables
-@import "mixins/fonts";
+// OFFICIAL BOOTSTRAP VARIABLES ONLY - see http://getbootstrap.com/docs/3.3/customize/#less-variables
 
-// Component styles are injected through grunt
-// injector
-@import 'views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.scss';
-@import 'views/views.scss';
-// endinjector
+// Alerts
+$alert-info-bg: $wc-color-03;
+$alert-info-text: $wc-color-06;
+$alert-warning-bg: $wc-color-02;
+$alert-warning-text: $wc-color-05;
+$alert-danger-bg: $wc-color-01;
+$alert-danger-text: $wc-color-04;
+
+// Buttons
+$btn-default-bg: $wc-color-00;
+$btn-default-border: $wc-color-00;
+$btn-default-color: $wc-color-17;
+
+$btn-success-bg: $wc-color-16;
+$btn-success-border: $wc-color-16;
+$btn-success-color: $wc-color-00;
+$btn-primary-bg: $wc-color-14;
+$btn-primary-border: $wc-color-14;
+$btn-primary-color: $wc-color-00;
+$btn-secondary-bg: $wc-color-15;
+$btn-secondary-border: $wc-color-15;
+$btn-secondary-color: $wc-color-08;

@@ -14,11 +14,11 @@
     <label id="dontShowAgain" class="checkbox"><input type="checkbox" ng-model="model.dontShowInfo"> Visa inte denna information igen</label>
   </div>
   <div class="webcert-top-padding-section form-inline">
-    <button type="button" id="{{button1id}}" class="btn btn-success" ng-disabled="!model.acceptprogressdone" ng-click="button1click()">
+    <button type="button" id="{{button1id}}" class="btn btn-primary" ng-disabled="!model.acceptprogressdone" ng-click="button1click()">
       <img ng-hide="model.acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif"/>
       <span message key="{{button1text}}"></span>
     </button>
-    <button type="button" id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
+    <button type="button" id="{{button2id}}" class="btn btn-secondary" ng-click="button2click()">
       <span message key="{{button2text}}"></span>
     </button>
     <div class="webcert-top-padding-section" ng-show="model.showerror">

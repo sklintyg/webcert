@@ -17,61 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* All overrides of bootstrap specific stuff goes into this partial file */
-
-//shadows
-$black_30: rgba(0, 0, 0, 0.3);
-
-// Colors
-$state-info-text:                $wc-color-01;
-$state-info-bg:                  $wc-color-06;
-$state-warning-text:             $wc-color-02;
-$state-warning-bg:               $wc-color-05;
-$state-danger-text:              $wc-color-03;
-$state-danger-bg:                $wc-color-04;
-
-$btn-secondary-background-color: $wc-color-20;
-$btn-secondary-background-hover-color: $wc-color-00;
-$btn-success-background-color: $wc-color-16;
-$btn-success-hover-background-color: $wc-color-10;
-$btn-info-common-background-color: $wc-color-16;
-$btn-info-hover-background-color: $wc-color-10;
-$btn-link-color: $wc-color-16;
-$btn-link-hover-color: $wc-color-10;
-$btn-inverse-color: $wc-color-00;
-$btn-inverse-background-color: $wc-color-08;
-$btn-inverse-background-focus-and-hover-color: $wc-color-09;
-$btn-default-color: $wc-color-13;
-$btn-danger-color: $wc-color-04;
-$btn-danger-color-hover: $wc-color-11;
-$alert-info-bg: $wc-color-01;
-$alert-info-text: $wc-color-06;
-$alert-warning-bg: $wc-color-02;
-$alert-warning-text: $wc-color-05;
-$alert-danger-bg: $wc-color-03;
-$alert-danger-text: $wc-color-04;
-$table-striped-background-color: $wc-color-20;
-$nav-pills-color: $wc-color-00;
-$nav-pills-a-border-color: $wc-color-13;
-$nav-pills-background-color: $wc-color-16;
-$nav-pills-text-shadow-color: $black_30;
-$nav-pills-active-chevron-right-color: $wc-color-00;
-$nav-stacked-chevron-right-color: $wc-color-08;
-$dropdown-menu-box-shadow-color: $black_30;
-$glyphicon-question-sign-color: $wc-color-16;
-$glyphicon-question-sign-hover-color: $wc-color-10;
-
-//fonts
-$font-0: 'Roboto';
-$font-1: helvetica;
-$font-2: arial;
-$font-3: sans-serif;
-
-%fonts {
-  font-size: 14px;
-  font-family: $font-0, $font-1, $font-2, $font-3;
-  text-align: left;
-}
+/* NO VARIABLE OVERRIDES HERE - All CSS overrides of bootstrap specific stuff goes into this partial file
+ - see bootstrap-variables-override.scss for variable declarations */
 
 .container-fluid {
   @extend %fonts;
@@ -83,9 +30,18 @@ $font-3: sans-serif;
  * --------------------------------------- */
 %btn-common {
   font-weight: normal;
-  background: none;
-  border: none;
   padding: 7px 15px;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover, &:focus, &:active, &.active {
+    background-color: $btn-common-hover-background-color;
+    border-color: $btn-common-hover-background-color;
+    color: $wc-color-00;
+    box-shadow: 0 0 8px 0 $black_24;
+  }
+
+  transition: all 0.3s;
 }
 
 .btn {
@@ -94,69 +50,14 @@ $font-3: sans-serif;
   text-overflow: ellipsis;
 }
 
-.btn-secondary {
+.btn-primary, .btn-secondary, .btn-default {
   @extend %btn-common;
-  background-color: $btn-secondary-background-color;
-  &:hover {
-    background-color: $btn-secondary-background-hover-color;
-  }
-}
-
-.btn-success {
-  @extend %btn-common;
-  background-color: $btn-success-background-color;
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover, &:focus, &:active, &.active {
-    background-color: $btn-success-hover-background-color;
-  }
-}
-
-.open .dropdown-toggle.btn-success {
-  background-color: $btn-success-hover-background-color;
-}
-
-.btn-danger {
-  @extend %btn-common;
-  background-color: $btn-danger-color;
-  &:hover {
-    background-color: $btn-danger-color-hover;
-  }
-}
-
-%btn-info-common {
-  @extend %btn-common;
-  background-color: $btn-info-common-background-color;
-}
-
-.btn-default {
-  background-color: $btn-default-color;
-}
-
-.btn-info {
-  @extend %btn-info-common;
-  &:hover, &:focus, &:active, &.active {
-    background-color: $btn-info-hover-background-color;
-  }
-}
-
-.open .dropdown-toggle.btn-info {
-  background-color: $btn-info-hover-background-color;
-}
-
-.btn-info[disabled] {
-  @extend %btn-info-common;
-  &:hover {
-    cursor: auto;
-    background-color: $btn-info-common-background-color;
-  }
 }
 
 .btn-link {
-  color: $btn-link-color;
+  color: inherit;
   &:hover {
-    color: $btn-link-hover-color;
+    color: $wc-color-21;
   }
 
   &__purelink {
@@ -165,13 +66,17 @@ $font-3: sans-serif;
   }
 }
 
-.btn-inverse {
-  @extend %btn-info-common;
-  background-color: $btn-inverse-background-color;
-  color: $btn-inverse-color;
-  &:focus, &:hover {
-    background-color: $btn-inverse-background-focus-and-hover-color;
-    color: $btn-inverse-color;
+.dark {
+  .btn-link {
+    color: $wc-color-00;
+    &:hover {
+      color: $wc-color-03;
+    }
+
+    &__purelink {
+      padding: 0;
+      margin: -1px;
+    }
   }
 }
 
@@ -204,9 +109,17 @@ $font-3: sans-serif;
   -ms-shadow: 0 5px 20px $dropdown-menu-box-shadow-color;
   -o-shadow: 0 5px 20px $dropdown-menu-box-shadow-color;
   box-shadow: 0 5px 20px $dropdown-menu-box-shadow-color;
-  button.btn-success {
+  button.btn-primary {
     padding: 5px 10px;
   }
+}
+
+.open .dropdown-toggle.btn-primary {
+  background-color: $btn-common-hover-background-color;
+}
+
+.open .dropdown-toggle.btn-secondary {
+  background-color: $btn-common-hover-background-color;
 }
 
 /* ---------------------------------------
@@ -214,7 +127,7 @@ $font-3: sans-serif;
  * --------------------------------------- */
 .modal-footer {
   text-align: left;
-  .btn-info, .btn-danger, btn-success {
+  .btn-primary, .btn-secondary {
     padding: 7px 15px;
   }
 }

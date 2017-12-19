@@ -5,25 +5,25 @@
   </h3>
 </div>
 <div class="modal-body">
-
-  <div class="alert alert-info alert-column" id="ersattUtkastPaborjat" ng-if="model.ersattningsUtkastFinns">
-    <span message key="intyg.status.replacement.utkast.exists"></span>
-  </div>
+  <wc-alert-message ng-if="model.ersattningsUtkastFinns"
+                    alert-id="ersattUtkastPaborjat"
+                    alert-severity="info"
+                    alert-message-id="intyg.status.replacement.utkast.exists"></wc-alert-message>
   <p>
     <span message key="{{bodyText}}"></span>
   </p>
 </div>
 <div class="modal-footer">
   <div class="webcert-top-padding-section form-inline">
-    <button type="button" id="{{button1id}}" class="btn btn-success" ng-disabled="!model.acceptprogressdone" ng-click="button1click()"  ng-if="!model.ersattningsUtkastFinns">
+    <button type="button" id="{{button1id}}" class="btn btn-primary" ng-disabled="!model.acceptprogressdone" ng-click="button1click()"  ng-if="!model.ersattningsUtkastFinns">
       <img ng-hide="model.acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif"/>
       <span message key="{{button1text}}"></span>
     </button>
-    <button type="button" id="{{button2id}}" class="btn btn-success" ng-disabled="!model.acceptprogressdone" ng-click="button2click()"  ng-if="model.ersattningsUtkastFinns">
+    <button type="button" id="{{button2id}}" class="btn btn-primary" ng-disabled="!model.acceptprogressdone" ng-click="button2click()"  ng-if="model.ersattningsUtkastFinns">
       <img ng-hide="model.acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif"/>
       <span message key="{{button2text}}"></span>
     </button>
-    <button type="button" id="{{button3id}}" class="btn btn-info" ng-click="button3click()">
+    <button type="button" id="{{button3id}}" class="btn btn-secondary" ng-click="button3click()">
       <span message key="{{button3text}}"></span>
     </button>
     <div class="webcert-top-padding-section" ng-show="model.showerror">

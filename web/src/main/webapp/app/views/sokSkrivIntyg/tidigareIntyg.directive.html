@@ -51,7 +51,7 @@
             <td>
               <button type="button"
                       id="showBtn-{{intyg.intygId}}"
-                      class="btn btn-info"
+                      class="btn btn-secondary"
                       ng-click="openIntyg(intyg)"
                       uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
                       popover-trigger="mouseenter"
@@ -67,7 +67,7 @@
                       feature="FORNYA_INTYG"
                       intygstyp="{{intyg.intygType}}"
                       id="fornyaBtn-{{intyg.intygId}}"
-                      class="btn btn-info"
+                      class="btn btn-secondary"
                       ng-if="isRenewalAllowed(intyg)"
                       ng-click="fornyaIntyg(intyg)"
                       uib-popover="{{ resolveTooltipText(intyg) }}"

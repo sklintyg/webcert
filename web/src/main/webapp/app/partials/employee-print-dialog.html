@@ -6,7 +6,7 @@
     </h3>
 </div>
 <div class="modal-body">
-    <div class="alert alert-warning alert-column" id="ersattUtkastPaborjat" ng-if="model.patient.sekretessmarkering">
+    <div class="alert alert-warning" id="ersattUtkastPaborjat" ng-if="model.patient.sekretessmarkering">
         <span message key="common.alert.sekretessmarkering.print"></span>
     </div>
     <p>
@@ -15,10 +15,10 @@
 </div>
 <div class="modal-footer">
     <div class="webcert-top-padding-section form-inline">
-        <button type="button" id="{{button1id}}" class="btn btn-success" ng-click="button1click()">
+        <button type="button" id="{{button1id}}" class="btn btn-primary" ng-click="button1click()">
             <span message key="{{button1text}}"></span>
         </button>
-        <button type="button" id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
+        <button type="button" id="{{button2id}}" class="btn btn-secondary" ng-click="button2click()">
             <span message key="{{button2text}}"></span>
         </button>
     </div>

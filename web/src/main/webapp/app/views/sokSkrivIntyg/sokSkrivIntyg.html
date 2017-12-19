@@ -23,7 +23,7 @@
           <div class="form-group">
             <div class="form-group">
               <button id="skapapersonnummerfortsatt" name="skapapersonnummerfortsatt"
-                      class="btn btn-success" type="submit" ng-disabled="viewState.loading">
+                      class="btn btn-primary" type="submit" ng-disabled="viewState.loading">
                 <img ng-show="viewState.loading" ng-src="/img/ajax-loader-small-green.gif"/> Fortsätt
               </button>
             </div>
@@ -31,7 +31,19 @@
               <span message key="{{viewState.errorid}}"></span>
             </div>
           </div>
+
+          <!-- TEMP TEST -->
+          <div class="row">
+            <div class="col-md-7">
+              <wc-alert-message ng-if="model.test" alert-message-id="webcert.description" alert-severity="info"></wc-alert-message>
+              <wc-alert-message alert-message-id="label.qaonlywarning.body" alert-severity="warning"></wc-alert-message>
+              <wc-alert-message alert-message-id="webcert.description" alert-severity="warning"></wc-alert-message>
+              <wc-alert-message alert-message-id="webcert.description" alert-severity="sekretess"></wc-alert-message>
+              <wc-alert-message alert-message-id="webcert.description" alert-severity="danger"></wc-alert-message>
+            </div>
+          </div>
         </form>
+
       </div>
     </div>
 </div>

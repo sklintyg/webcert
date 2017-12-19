@@ -6,8 +6,7 @@
 
     <!-- No results message for query -->
     <div id="current-list-noResults-query"
-         ng-show="listModel.totalCount < 1 && listModel.viewState.runningQuery && !listModel.viewState.activeErrorMessageKey"
-         class="alert alert-info">
+         ng-show="listModel.totalCount < 1 && listModel.viewState.runningQuery && !listModel.viewState.activeErrorMessageKey">
       <span message key="info.query.noresults"></span>
     </div>
 
@@ -37,14 +36,14 @@
         </tr>
         <tr ng-repeat="arende in listModel.arendenList">
           <td>
-            <button type="button" class="btn btn-info" title="Visar intyget och fråga-svar."
+            <button type="button" class="btn btn-secondary" title="Visar intyget och fråga-svar."
                     ng-click="openIntyg(arende.intygId, arende.intygTyp)" id="showarendeBtn-{{arende.meddelandeId}}">Visa
             </button>
           </td>
           <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
             <button type="button"
                     class="btn"
-                    ng-class="{'btn-info': !arende.vidarebefordrad, 'btn-secondary' : arende.vidarebefordrad}"
+                    ng-class="{'btn-secondary': !arende.vidarebefordrad, 'btn-secondary' : arende.vidarebefordrad}"
                     title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
                     ng-click="openMailDialog(arende)">
               <span class="glyphicon glyphicon-share-alt"

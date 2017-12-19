@@ -11,14 +11,14 @@
   </tr>
   <tr ng-repeat="intyg in utkastList">
     <td>
-      <button type="button" class="btn btn-info" title="Visar intyget." ng-click="openIntyg(intyg)"
+      <button type="button" class="btn btn-secondary" title="Visar intyget." ng-click="openIntyg(intyg)"
               id="showBtn-{{intyg.intygId}}"> Visa
       </button>
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST">
       <button type="button"
               class="btn vidarebefordra-btn"
-              ng-class="{'btn-info': !intyg.vidarebefordrad, 'btn-secondary' : intyg.vidarebefordrad}"
+              ng-class="{'btn-secondary': !intyg.vidarebefordrad, 'btn-secondary' : intyg.vidarebefordrad}"
               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
               ng-click="openMailDialog(intyg)">
           <span class="glyphicon glyphicon-share-alt"

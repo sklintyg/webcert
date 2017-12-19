@@ -26,6 +26,10 @@ angular.module('webcert').controller('webcert.SokSkrivIntygCtrl',
                 errorid: null
             };
 
+            $scope.model = {
+                test: false
+            };
+
             $scope.viewState = angular.copy(viewState);
 
             // Clear errormessage when user starts typing a new personnummer
