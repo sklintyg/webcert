@@ -18,10 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "mixins/_wc-variables";
-@import "mixins/_bootstrap-variables-override"; // Bootstrap override variables must be loaded before bootstrap due to its !default flags
+@import "mixins/wc-variables";
+@import "mixins/bootstrap-variables-override"; // Bootstrap override variables must be loaded before bootstrap due to its !default flags
 @import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss'; // Load bootstrap defaults
-@import "mixins/_bootstrap-css-override"; // CSS Override only, no bootstrap variables
+@import "mixins/bootstrap-css-override"; // CSS Override only, no bootstrap variables
 @import "mixins/fonts";
 
 // Component styles are injected through grunt
