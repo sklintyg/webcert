@@ -177,6 +177,7 @@ module.exports = function() {
 
     this.Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
         intyg.typ = testdataHelpers.shuffle([
+            'Läkarintyg för sjukpenning',
             'Läkarutlåtande för sjukersättning',
             'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
@@ -191,7 +192,7 @@ module.exports = function() {
 
     this.Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
         intyg.typ = testdataHelpers.shuffle([
-            //'Läkarintyg för sjukpenning',
+            'Läkarintyg för sjukpenning',
             'Läkarutlåtande för sjukersättning',
             'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'

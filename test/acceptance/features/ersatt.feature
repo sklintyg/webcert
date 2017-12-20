@@ -16,6 +16,7 @@ Scenario: När man ersatt intyg så ska informationstext på ett ersatt intyg fi
 	Så ska meddelandet som visas innehålla texten "Ett intyg kan ersättas om det innehåller felaktiga uppgifter eller om ny information tillkommit efter att intyget utfärdades."
 
 	När jag klickar på ersätt-knappen i dialogen
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
 	Och jag signerar intyget
 	#Och jag skickar intyget till Försäkringskassan
 

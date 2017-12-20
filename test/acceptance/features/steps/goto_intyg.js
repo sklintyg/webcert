@@ -88,5 +88,21 @@ module.exports = function() {
         getIER(randomIntyg, status, callback);
     });
 
+    this.Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
+        timeout: 700 * 1000
+    }, function(status, callback) {
+        var randomIntyg = shuffle([
+            'Läkarutlåtande för sjukersättning',
+            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+            //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
+            'Transportstyrelsens läkarintyg',
+            'Transportstyrelsens läkarintyg, diabetes'
+        ])[0];
+        logger.info('Intyg type: ' + randomIntyg);
+        intyg.typ = randomIntyg;
+        getIER(randomIntyg, status, callback);
+    });
+
 
 };

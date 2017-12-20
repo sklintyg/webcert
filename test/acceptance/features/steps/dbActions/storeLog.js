@@ -33,7 +33,7 @@ function formatDate(date) {
     return testdataHelper.dateFormat(date) + 'T' + time;
 }
 
-function getLogEntries(activity, intygsID, userHSA, connection) {
+function getLogEntries(activity, intygsID, userHSA, connection, activityArg) {
     var dbTable = 'webcert_requests.storelog__mock_requests';
     var now = new Date();
     var oneMinuteSinceNow = new Date(now.getTime() + (-2) * 60000);
@@ -44,6 +44,10 @@ function getLogEntries(activity, intygsID, userHSA, connection) {
         AND activitytype = "${activity}"
         AND userid = "${userHSA}"
         AND logtime>="${oneMinuteSinceNow}"`;
+
+    if (activityArg) {
+        query += ` AND activityarg = "${activityArg}"`;
+    }
 
     console.log('query: ' + query);
     var p1 = new Promise(function(resolve, reject) {
@@ -60,24 +64,34 @@ function getLogEntries(activity, intygsID, userHSA, connection) {
     return p1;
 }
 
-function waitForCount(activity, count, intygsID, userHSA) {
+function waitForCount(activity, count, intygsID, userHSA, activityArg, counter) {
     return new Promise(function(resolve) {
+        if (!counter) {
+            counter = 0;
+        }
 
         dbPool.getConnection()
-            .then(connection => getLogEntries(activity, intygsID, userHSA, connection)
+            .then(connection => getLogEntries(activity, intygsID, userHSA, connection, activityArg)
                 .then(result => {
                     var interval = 5000;
                     if (result.length >= count) {
                         logger.info('Hittade rader: ' + JSON.stringify(result));
                         connection.release();
-                        return resolve();
+                        resolve();
+                        return;
                     } else {
                         logger.info(`Hittade färre än ${count} rader i databasen`);
-                        console.log(`Ny kontroll sker efter ${interval} ms`);
-                        connection.release();
-                        return setTimeout(() => waitForCount(activity, count, intygsID, userHSA).then(function() {
-                            return resolve();
-                        }), interval);
+                        if (counter > 2) {
+                            throw ('Stoppat efter ' + counter + ' försök');
+                        } else {
+                            counter++;
+                            console.log(`Ny kontroll sker efter ${interval} ms`);
+                            connection.release();
+                            return setTimeout(() => waitForCount(activity, count, intygsID, userHSA, activityArg, counter).then(function() {
+                                resolve();
+                                return;
+                            }), interval);
+                        }
                     }
                 })
                 .catch(err => {
@@ -91,6 +105,9 @@ function waitForCount(activity, count, intygsID, userHSA) {
 
 
 
+    }).catch(err => {
+        logger.error(err);
+        return;
     });
 
 }
