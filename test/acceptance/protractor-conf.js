@@ -152,7 +152,7 @@ exports.config = {
                 }
             ]);
         };
-        browser.addMockModule('disableNgAnimate', disableNgAnimate);
+       // browser.addMockModule('disableNgAnimate', disableNgAnimate);
 
         var overrideLogging = function() {
             angular.module('overrideLogging', [])
