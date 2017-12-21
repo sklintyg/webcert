@@ -65,12 +65,12 @@ function getLogEntries(activity, intygsID, userHSA, connection, activityArg) {
 }
 
 function waitForCount(activity, count, intygsID, userHSA, activityArg, counter) {
-    return new Promise(function(resolve) {
+    return new Promise(function(resolve, reject) {
         if (!counter) {
             counter = 0;
         }
 
-        dbPool.getConnection()
+        return dbPool.getConnection()
             .then(connection => getLogEntries(activity, intygsID, userHSA, connection, activityArg)
                 .then(result => {
                     var interval = 5000;
@@ -78,36 +78,40 @@ function waitForCount(activity, count, intygsID, userHSA, activityArg, counter) 
                         logger.info('Hittade rader: ' + JSON.stringify(result));
                         connection.release();
                         resolve();
-                        return;
+                        return result;
                     } else {
                         logger.info(`Hittade färre än ${count} rader i databasen`);
-                        if (counter > 2) {
-                            throw ('Stoppat efter ' + counter + ' försök');
+                        if (counter >= 9) {
+                            counter++;
+                            return reject(new Error('Hittade inte ' + activity + ', ' + activityArg + '. Databas Query stoppades efter ' + counter + ' försök')).then(function(error) {
+                                // not called
+                            }, function(error) {
+                                return console.trace(error); // Stacktrace
+                            });
                         } else {
                             counter++;
-                            console.log(`Ny kontroll sker efter ${interval} ms`);
+                            logger.info(`Ny kontroll sker efter ${interval} ms`);
                             connection.release();
-                            return setTimeout(() => waitForCount(activity, count, intygsID, userHSA, activityArg, counter).then(function() {
-                                resolve();
-                                return;
-                            }), interval);
+                            return setTimeout(function() {
+                                return waitForCount(activity, count, intygsID, userHSA, activityArg, counter).then(function() {
+                                    resolve();
+                                    return;
+                                }, function(err) {
+                                    reject(err);
+                                    return;
+                                });
+                            }, interval);
                         }
                     }
-                })
-                .catch(err => {
-                    connection.release();
-                    throw (err);
-                })
-            );
-
-
-
-
-
-
-    }).catch(err => {
-        logger.error(err);
+                }).then(function(fulfilled) {
+                    return logger.silly('promise fulfilled');
+                }, function(rejected) {
+                    return logger.silly('promise rejected');
+                }));
+    }).then(function() {
         return;
+    }, function(err) {
+        throw (err);
     });
 
 }

@@ -66,11 +66,11 @@ Scenario: GE-005 - Skriv ut SMI-intyg
 
 
 #6
-@skicka @utskrift
+@skicka @utskrift @waitingForFix @INTYG-5274
 Scenario: GE-005 - PDL - Skicka SMI-intyg till Försäkringskassan
     När jag går in på ett slumpat SMI-intyg med status "Signerat"
     Och jag skickar intyget till Försäkringskassan
-    Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyget skickat till FKASSA"
+    Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg skickat till mottagare FKASSA"
 
 #9
 @radera
