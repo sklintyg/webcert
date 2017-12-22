@@ -27,7 +27,7 @@ module.exports = {
             generellInfo: 'arbetsförmågan är ofta inte nedsatt någon längre tid ',
             funktionsnedsattning: 'Skadorna minskar förmågan att gå och stå',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'I arbeten som kan utföras mestadels stillasittande'
+            beslutsunderlag: 'luxation och distorsion i höftled och höftligament'
 
         }, {
             kod: 'S832',
@@ -35,7 +35,7 @@ module.exports = {
             generellInfo: 'Akuta besvär efter en meniskskada',
             funktionsnedsattning: 'upphakningar i knäleden',
             aktivitetsbegransning: 'Påverkad gångförmåga',
-            beslutsunderlag: 'I akutskede efter knädistorsionsskada'
+            beslutsunderlag: 'meniskruptur, aktuell med degeneration av brosk och/eller menisk i knä'
 
         }, {
             kod: 'S835',
@@ -43,7 +43,7 @@ module.exports = {
             generellInfo: 'Akuta besvär efter en meniskskada',
             funktionsnedsattning: 'Meniskskador kan ge upphakningar',
             aktivitetsbegransning: 'Påverkad gångförmåga',
-            beslutsunderlag: 'I akutskede'
+            beslutsunderlag: 'distorsion engagerande knäets korsband och utförd åtgärd operation av korsband i knä med artroskopi'
 
         }, {
             kod: 'S90',
@@ -51,7 +51,7 @@ module.exports = {
             generellInfo: 'arbetsförmågan är ofta',
             funktionsnedsattning: 'Skadorna minskar förmågan',
             aktivitetsbegransning: null,
-            beslutsunderlag: null
+            beslutsunderlag: 'skador på nedre extremiteten (frakturer, luxationer, distorsioner, sårskador)'
 
         }, {
             kod: 'S92',
@@ -59,7 +59,7 @@ module.exports = {
             generellInfo: 'arbetsförmågan är ofta inte nedsatt',
             funktionsnedsattning: 'Skadorna minskar förmågan',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'I arbeten som kan utföras'
+            beslutsunderlag: 'lindrig fraktur på ländkotpelaren och bäckene, lårben, underben'
 
         }, {
             kod: 'S93',
@@ -67,7 +67,7 @@ module.exports = {
             generellInfo: 'arbetsförmågan är ofta ',
             funktionsnedsattning: 'Skadorna minskar förmågan ',
             aktivitetsbegransning: null,
-            beslutsunderlag: null
+            beslutsunderlag: 'luxation och distorsion i höftled och höftligament, knäets leder och ligament'
 
         }, {
             kod: 'R09',
@@ -75,42 +75,42 @@ module.exports = {
             generellInfo: 'Sjukskrivning enbart',
             funktionsnedsattning: null,
             aktivitetsbegransning: null,
-            beslutsunderlag: null
+            beslutsunderlag: 'Sjukskrivning enbart utifrån symtom ska undvikas'
         }, {
             kod: 'O267',
             symptomPrognosBehandling: 'Smärtor i bäckenet och',
             generellInfo: 'Observandum',
             funktionsnedsattning: 'begränsas förmågan att lyfta',
-            aktivitetsbegransning: 'Gå, stå sitta',
-            beslutsunderlag: 'Flertalet gravida'
+            aktivitetsbegransning: 'Gå, stå, sitta',
+            beslutsunderlag: 'medelsvår graviditetsrelaterad rygg- och bäckensmärta (inklusive symfyseolys)'
         }, {
             kod: 'N850',
             symptomPrognosBehandling: 'Rekommendationen omfattar operation',
             generellInfo: 'Komplikationer kan',
             funktionsnedsattning: 'Bukväggskirurgi',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'Vid kombinerad laparoskopisk'
+            beslutsunderlag: 'Vid kombinerad laparoskopisk/vaginal hysterektomi och fysiskt tyngre arbeten'
         }, {
             kod: 'M753',
             symptomPrognosBehandling: 'Kortvariga besvär',
             generellInfo: 'De akuta besvären',
             funktionsnedsattning: 'axelbesvär ger ofta så akuta smärtor',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'Kalkaxel och impingementsyndrom'
+            beslutsunderlag: 'tendinit med förkalkning i skulderled där arbetsbelastningen innefattar arbete som huvudsakligen görs med armarna'
         }, {
             kod: 'M751',
             symptomPrognosBehandling: 'drabbade axelleden',
             generellInfo: 'rotatorcuffsyndrom',
             funktionsnedsattning: 'axelbesvär ger ofta',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'Kalkaxel och impingementsyndrom'
+            beslutsunderlag: 'cuff-syndrom i skulderled och utförd åtgärd rekonstruktion av rotatorkuff med sutur'
         }, {
             kod: 'R40',
             symptomPrognosBehandling: null,
             generellInfo: 'Sjukskrivning enbart utifrån symtom ska undvikas',
             funktionsnedsattning: null,
             aktivitetsbegransning: null,
-            beslutsunderlag: null
+            beslutsunderlag: 'Sjukskrivning enbart utifrån symtom ska undvikas'
         }]
     },
     utanEgenFMBInfo: {
@@ -120,7 +120,7 @@ module.exports = {
             generellInfo: 'arbetsförmågan är ofta inte',
             funktionsnedsattning: 'Skadorna minskar förmågan',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'I arbeten som kan utföras mestadels stillasittande',
+            beslutsunderlag: 'knäets leder och ligament eller leder och ligament på fotleds- och fotnivå där arbetsbelastningen innefattar krav på kroppslig rörlighet och belastning rekommenderas sjukskrivning upp till',
             overliggande: 'Det FMB-stöd som visas är för koden S83'
 
         }, {
@@ -129,7 +129,7 @@ module.exports = {
             generellInfo: 'arbetsförmågan är ofta inte',
             funktionsnedsattning: 'Skadorna minskar förmågan',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'I arbeten som kan utföras mestadels stillasittande',
+            beslutsunderlag: 'knäets leder och ligament eller leder och ligament på fotleds- och fotnivå där arbetsbelastningen innefattar krav på kroppslig rörlighet och belastning rekommenderas sjukskrivning upp till',
             overliggande: 'Det FMB-stöd som visas är för koden S83'
 
         }, {
@@ -154,7 +154,7 @@ module.exports = {
             generellInfo: 'Efter akuta pyelonefrit',
             funktionsnedsattning: 'Vid akuta njurstensanfall',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'Vid akut njurstensanfall',
+            beslutsunderlag: 'Vid njursten och utförd åtgärd avlägsnande av urinvägssten rekommenderas sjukskrivning upp till ',
             overliggande: 'Det FMB-stöd som visas är för koden N21'
 
         }, {
@@ -163,16 +163,16 @@ module.exports = {
             generellInfo: 'arbetsförmågan är ofta inte',
             funktionsnedsattning: 'Skadorna minskar förmågan att gå och stå',
             aktivitetsbegransning: null,
-            beslutsunderlag: null,
+            beslutsunderlag: 'Vid skador på nedre extremiteten (frakturer, luxationer, distorsioner, sårskador)',
             overliggande: 'Det FMB-stöd som visas är för koden S30'
 
         }, {
             kod: 'F420',
             symptomPrognosBehandling: 'Tvångssyndrom kännetecknas',
-            generellInfo: 'Sjukskrivning kan i',
+            generellInfo: 'Det finns en spännvidd för hur en given sjukdom påverkar olika individers arbetsförmåga och förmåga att utföra olika aktiviteter',
             funktionsnedsattning: 'Tvångssyndrom kan medföra',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'Sjukskrivning kan i många fall undvikas',
+            beslutsunderlag: 'Vid lindrigt till medelsvårt tvångssyndrom kan sjukskrivning i många fall undvikas',
             overliggande: 'Det FMB-stöd som visas är för koden F42'
 
         }, {
@@ -181,7 +181,7 @@ module.exports = {
             generellInfo: 'Vid sjukdomsdebut',
             funktionsnedsattning: 'Hur MS påverkar',
             aktivitetsbegransning: null,
-            beslutsunderlag: 'Vid sjukdomsdebut',
+            beslutsunderlag: 'Vid primär progressiv multipel skleros eller sekundär progressiv multipel skleros krävs ofta en längre tids sjukskrivning',
             overliggande: 'Det FMB-stöd som visas är för koden G35'
 
         }]

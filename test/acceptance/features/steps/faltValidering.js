@@ -178,7 +178,7 @@ function checkFMB(fmbDiagnos) {
 
 
 function fillInDiagnoskod(diagnos) {
-    logger.info('Anger diagnos:', diagnos);
+    logger.info('Anger diagnos:', diagnos.kod);
     global.tmpDiagnos = diagnos;
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     if (isSMIIntyg) {
@@ -236,10 +236,10 @@ module.exports = function() {
 
         }
 
-        promiseArray.push(expect(page.fmbButtons.falt2.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt4.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt5.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt8.isDisplayed()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt2.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt4.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt5.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt8.isPresent()).to.become(false));
 
 
         return Promise.all(promiseArray);

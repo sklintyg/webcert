@@ -1,5 +1,5 @@
 # language: sv
-@visning @fmb @waitingForFix
+@visning @fmb
 Egenskap: Visning av FMB information
 
 Bakgrund: Jag befinner mig på webcerts förstasida
