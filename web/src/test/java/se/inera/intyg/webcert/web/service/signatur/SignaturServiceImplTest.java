@@ -75,6 +75,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
@@ -156,12 +157,18 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         setTypedField(intygSignatureService, new SignaturTicketTracker());
 
-        pagaendeSignering = new PagaendeSignering();
-        pagaendeSignering.setInternReferens(PAGAENDE_SIGN_ID);
-        pagaendeSignering.setIntygData(INTYG_JSON);
-        pagaendeSignering.setIntygsId(INTYG_ID);
-        pagaendeSignering.setSigneradAvHsaId(hoSPerson.getPersonId());
-        pagaendeSignering.setSigneradAvNamn(hoSPerson.getFullstandigtNamn());
+        pagaendeSignering = mock(PagaendeSignering.class);
+        when(pagaendeSignering.getInternReferens()).thenReturn(PAGAENDE_SIGN_ID);
+        when(pagaendeSignering.getIntygData()).thenReturn(INTYG_JSON);
+        when(pagaendeSignering.getIntygsId()).thenReturn(INTYG_ID);
+        when(pagaendeSignering.getSigneradAvHsaId()).thenReturn(hoSPerson.getPersonId());
+        when(pagaendeSignering.getSigneradAvNamn()).thenReturn(hoSPerson.getFullstandigtNamn());
+
+        // pagaendeSignering.setInternReferens(PAGAENDE_SIGN_ID);
+        // pagaendeSignering.setIntygData(INTYG_JSON);
+        // pagaendeSignering.setIntygsId(INTYG_ID);
+        // pagaendeSignering.setSigneradAvHsaId(hoSPerson.getPersonId());
+        // pagaendeSignering.setSigneradAvNamn(hoSPerson.getFullstandigtNamn());
 
         when(pagaendeSigneringRepository.findOne(anyLong())).thenReturn(pagaendeSignering);
         when(pagaendeSigneringRepository.save(any(PagaendeSignering.class))).thenReturn(pagaendeSignering);
@@ -237,7 +244,6 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void clientSignatureSuccess() throws IOException {
-
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
@@ -419,6 +425,52 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test(expected = WebCertServiceException.class)
+    public void signeraServerIntygIdDiffers() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
+
+        when(pagaendeSignering.getIntygsId()).thenReturn("something-else");
+
+        // Do the call
+        try {
+            intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
+        } finally {
+            verify(mockUtkastRepository, times(0)).save(any(Utkast.class));
+        }
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void signeraServerHashDiffers() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
+
+        when(pagaendeSignering.getIntygData()).thenReturn(INTYG_JSON + "-invalid");
+
+        // Do the call
+        try {
+            intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
+        } finally {
+            verify(mockUtkastRepository, times(0)).save(any(Utkast.class));
+        }
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void signeraServerNoPagaendeSignaturFound() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
+
+        when(pagaendeSigneringRepository.findOne(anyLong())).thenReturn(null);
+
+        // Do the call
+        try {
+            intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
+        } finally {
+            verify(mockUtkastRepository, times(0)).save(any(Utkast.class));
+        }
+    }
+
+
+    @Test(expected = WebCertServiceException.class)
     public void userNotAuthorizedDraft() throws IOException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         user.setVardgivare(Collections.<Vardgivare> emptyList());
@@ -516,7 +568,8 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         intygSignatureService.clientSignature(ticket.getId(), signature);
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson, String enhetsId) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson,
+            String enhetsId) {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);

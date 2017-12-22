@@ -114,6 +114,28 @@ public class SignaturServiceImpl implements SignaturService {
         }
     }
 
+    /**
+     * Called from the Controller when initiating a client (e.g. NetID) signature. Rewritten in INTYG-5048 so
+     * <i>starting</i> a signature process does NOT mutate the Utkast in any way. Instead, a temporary intyg JSON model
+     * including the signatureDate and signing identity is stored in a {@link PagaendeSignering} entity.
+     *
+     * Once the signing has been completed
+     * (see {@link SignaturServiceImpl#createAndPersistSignature(Utkast, SignaturTicket, String, WebCertUser)}) the
+     * hash, intygsId and version from the JSON model in the PagaendeSignatur is validated and if everything works out,
+     * the final state is written to the Utkast table.
+     *
+     * If the user for some reason failed to finish the signing (cancelled in NetID etc.), the Utkast table won't be
+     * affected or contain a signingDate even though it wasn't signed. A stale entry may remain in PAGAENDE_SIGNERING
+     * but since those cannot be reused such entries can remain there indefinitely or until cleaned up by a janitor
+     * task.
+     *
+     * @param intygId
+     *            The id of the draft to generate signing ticket for
+     * @param version
+     *            version
+     *
+     * @return
+     */
     @Override
     @Transactional("jpaTransactionManager")
     public SignaturTicket createDraftHash(String intygId, long version) {
@@ -151,16 +173,6 @@ public class SignaturServiceImpl implements SignaturService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "Unable to sign certificate: " + e.getMessage());
         }
-
-        // Update certificate with user information
-        // utkast = updateUtkastForSignering(utkast, user, signeringstid);
-
-        // Save the certificate draft
-        // utkast = utkastRepository.save(utkast);
-
-        // Flush JPA changes, to make sure the version attribute is updated
-        // utkastRepository.flush();
-
     }
 
     private WebCertUser getWebcertUserForSignering() {
@@ -302,15 +314,16 @@ public class SignaturServiceImpl implements SignaturService {
     private SignaturTicket createAndPersistSignature(Utkast utkast, SignaturTicket ticket, String rawSignature, WebCertUser user) {
         PagaendeSignering pagaendeSignering = pagaendeSigneringRepository.findOne(ticket.getPagaendeSigneringId());
         if (pagaendeSignering == null) {
-            throw new IllegalStateException("Can't complete signing of certificate, no PagaendeSignering found for interreferens "
-                    + ticket.getPagaendeSigneringId());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Can't complete signing of certificate, no PagaendeSignering found for interreferens "
+                            + ticket.getPagaendeSigneringId());
         }
         String payload = pagaendeSignering.getIntygData();
 
         if (!pagaendeSignering.getIntygsId().equals(utkast.getIntygsId())) {
             LOG.error(
                     "Signing of utkast '{}' failed since the intygsId ({}) on the Utkast is different from the one "
-                           + "on the signing operation ({})",
+                            + "on the signing operation ({})",
                     utkast.getIntygsId(), pagaendeSignering.getIntygsId());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "Internal error signing utkast, the payload of utkast "
@@ -411,30 +424,6 @@ public class SignaturServiceImpl implements SignaturService {
 
         return utkast;
     }
-
-    /**
-     * Update utkast with "senast sparad av" information.
-     */
-    // private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
-    // VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
-    //
-    // utkast.setSenastSparadAv(vardpersonReferens);
-    //
-    // try {
-    // ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-    // Vardenhet vardenhetFromJson =
-    // moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
-    // String updatedInternal = moduleApi
-    // .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),
-    // signeringstid);
-    // utkast.setModel(updatedInternal);
-    // } catch (ModuleException | ModuleNotFoundException | IOException e) {
-    // throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal",
-    // e);
-    // }
-    //
-    // return utkast;
-    // }
 
     private SignaturTicket createSignaturTicket(String intygId, long pagaendeSigneringInternreferens, long version, String payload,
             LocalDateTime signeringstid) {
