@@ -27,7 +27,7 @@ Scenario: Statusuppdateringar då SMI-intyg makuleras
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
-@radera @waitingForFix @INTYG-5105
+@radera
 Scenario: Statusuppdateringar då SMI-intyg raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar intyget

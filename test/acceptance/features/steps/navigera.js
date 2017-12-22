@@ -130,7 +130,7 @@ module.exports = function() {
                 intygShortCode = intygShortCode.toLowerCase();
                 console.log(intygShortCode);
                 url = process.env.WEBCERT_URL + 'visa/intyg/';
-                //url += intygShortCode +'/';
+                url += intygShortCode + '/';
                 url += global.intyg.id;
                 url += '?';
                 url += 'fornamn=' + encodeURIComponent(person.forNamn) + '&';
