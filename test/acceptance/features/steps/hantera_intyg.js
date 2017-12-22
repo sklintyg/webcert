@@ -166,7 +166,9 @@ module.exports = function() {
     });
 
     this.Given(/^jag skriver ut utkastet$/, function() {
-        return utkastPage.skrivUtBtn.sendKeys(protractor.Key.SPACE);
+        return browser.sleep(5000).then(function(){
+			return utkastPage.skrivUtBtn.sendKeys(protractor.Key.SPACE);
+		});
     });
 
     this.Given(/^ska det finnas en referens till gamla intyget$/, function() {

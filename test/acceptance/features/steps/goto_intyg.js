@@ -104,5 +104,17 @@ module.exports = function() {
         getIER(randomIntyg, status, callback);
     });
 
+    this.Given(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
+        timeout: 700 * 1000
+    }, function(status, callback) {
+        var randomIntyg = shuffle([
+            'Transportstyrelsens läkarintyg',
+            'Transportstyrelsens läkarintyg, diabetes'
+        ])[0];
+        logger.info('Intyg type: ' + randomIntyg);
+        intyg.typ = randomIntyg;
+        getIER(randomIntyg, status, callback);
+    });
+
 
 };

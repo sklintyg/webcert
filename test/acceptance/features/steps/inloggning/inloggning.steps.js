@@ -210,6 +210,24 @@ module.exports = function() {
         });
     });
 
+    this.Given(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
+        intyg.typ = testdataHelpers.shuffle([
+            'Transportstyrelsens läkarintyg',
+            'Transportstyrelsens läkarintyg, diabetes'
+        ])[0];
+        console.log('intyg.typ: ' + intyg.typ);
+        return Promise.all([
+            sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
+            sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
+        ]).then(function() {
+            // Spara intygsid för kommande steg
+            return browser.getCurrentUrl().then(function(text) {
+                intyg.id = text.split('/').slice(-2)[0];
+                return logger.info('intyg.id: ' + intyg.id);
+            });
+        });
+    });
+
 
     this.Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
         // var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
