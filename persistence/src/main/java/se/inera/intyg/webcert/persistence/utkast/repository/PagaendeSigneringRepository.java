@@ -16,41 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.persistence.utkast.model;
+package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
 
-@Embeddable
-public class VardpersonReferens {
-    @Column(name = "HSAID")
-    private String hsaId;
-
-    @Column(name = "NAMN")
-    private String namn;
-
-    public VardpersonReferens() {
-        // no-args
-    }
-
-    public VardpersonReferens(String hsaId, String namn) {
-        this.hsaId = hsaId;
-        this.namn = namn;
-    }
-
-    public String getHsaId() {
-        return hsaId;
-    }
-
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
-
-    public String getNamn() {
-        return namn;
-    }
-
-    public void setNamn(String namn) {
-        this.namn = namn;
-    }
+/**
+ * Provides a CRUD interface for the {@link PagaendeSignering} entity.
+ */
+public interface PagaendeSigneringRepository extends JpaRepository<PagaendeSignering, Long> {
 }

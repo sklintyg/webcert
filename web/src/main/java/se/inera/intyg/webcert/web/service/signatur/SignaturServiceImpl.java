@@ -38,9 +38,11 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.PagaendeSigneringRepository;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -75,6 +77,9 @@ public class SignaturServiceImpl implements SignaturService {
     private UtkastRepository utkastRepository;
 
     @Autowired
+    private PagaendeSigneringRepository pagaendeSigneringRepository;
+
+    @Autowired
     private WebCertUserService webCertUserService;
 
     @Autowired
@@ -104,7 +109,8 @@ public class SignaturServiceImpl implements SignaturService {
         if (ticket != null && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
-            return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, 0, null, null, LocalDateTime.now());
+            return new SignaturTicket(ticketId, -1L, SignaturTicket.Status.OKAND, null, 0, null, null,
+                    LocalDateTime.now());
         }
     }
 
@@ -121,16 +127,40 @@ public class SignaturServiceImpl implements SignaturService {
 
         LocalDateTime signeringstid = LocalDateTime.now();
 
+        try {
+            VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+            Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
+            String updatedInternal = moduleApi
+                    .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),
+                            signeringstid);
+
+            // Skapa ny PagaendeSignering
+            PagaendeSignering pagaendeSignering = new PagaendeSignering();
+            pagaendeSignering.setIntygData(updatedInternal);
+            pagaendeSignering.setIntygsId(utkast.getIntygsId());
+            pagaendeSignering.setSigneradAvHsaId(vardpersonReferens.getHsaId());
+            pagaendeSignering.setSigneradAvNamn(vardpersonReferens.getNamn());
+            pagaendeSignering.setSigneringsDatum(signeringstid);
+
+            pagaendeSignering = pagaendeSigneringRepository.save(pagaendeSignering);
+
+            return createSignaturTicket(utkast.getIntygsId(), pagaendeSignering.getInternReferens(), utkast.getVersion(), updatedInternal,
+                    signeringstid);
+        } catch (ModuleNotFoundException | IOException | ModuleException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Unable to sign certificate: " + e.getMessage());
+        }
+
         // Update certificate with user information
-        utkast = updateUtkastForSignering(utkast, user, signeringstid);
+        // utkast = updateUtkastForSignering(utkast, user, signeringstid);
 
         // Save the certificate draft
-        utkast = utkastRepository.save(utkast);
+        // utkast = utkastRepository.save(utkast);
 
         // Flush JPA changes, to make sure the version attribute is updated
-        utkastRepository.flush();
+        // utkastRepository.flush();
 
-        return createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), signeringstid);
     }
 
     private WebCertUser getWebcertUserForSignering() {
@@ -270,8 +300,22 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     private SignaturTicket createAndPersistSignature(Utkast utkast, SignaturTicket ticket, String rawSignature, WebCertUser user) {
+        PagaendeSignering pagaendeSignering = pagaendeSigneringRepository.findOne(ticket.getPagaendeSigneringId());
+        if (pagaendeSignering == null) {
+            throw new IllegalStateException("Can't complete signing of certificate, no PagaendeSignering found for interreferens "
+                    + ticket.getPagaendeSigneringId());
+        }
+        String payload = pagaendeSignering.getIntygData();
 
-        String payload = utkast.getModel();
+        if (!pagaendeSignering.getIntygsId().equals(utkast.getIntygsId())) {
+            LOG.error(
+                    "Signing of utkast '{}' failed since the intygsId ({}) on the Utkast is different from the one "
+                           + "on the signing operation ({})",
+                    utkast.getIntygsId(), pagaendeSignering.getIntygsId());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Internal error signing utkast, the payload of utkast "
+                            + utkast.getIntygsId() + " has been modified since signing was initialized");
+        }
 
         if (!ticket.getHash().equals(createHash(payload))) {
             LOG.error("Signing of utkast '{}' failed since the payload has been modified since signing was initialized",
@@ -281,11 +325,21 @@ public class SignaturServiceImpl implements SignaturService {
                             + utkast.getIntygsId() + " has been modified since signing was initialized");
         }
 
+        if (utkast.getVersion() != ticket.getVersion()) {
+            LOG.error(
+                    "Signing of utkast '{}' failed since the version on the utkast ({}) differs from when the signing was initialized ({})",
+                    utkast.getIntygsId(), utkast.getVersion(), ticket.getVersion());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION,
+                    "Cannot complete signing, Utkast version differs from signature ticket version.");
+        }
+
         Signatur signatur = new Signatur(ticket.getSigneringstid(), user.getHsaId(), ticket.getIntygsId(), payload, ticket.getHash(),
                 rawSignature);
 
         // Update user information ("senast sparat av")
         // Add signature to the utkast and set status as signed
+        utkast.setSenastSparadAv(new VardpersonReferens(pagaendeSignering.getSigneradAvHsaId(), pagaendeSignering.getSigneradAvNamn()));
+        utkast.setModel(payload);
         utkast.setSignatur(signatur);
         utkast.setStatus(UtkastStatus.SIGNED);
 
@@ -294,6 +348,9 @@ public class SignaturServiceImpl implements SignaturService {
 
         // Send to Intygstjanst
         intygService.storeIntyg(savedUtkast);
+
+        // Remove PagaendeSignering
+        pagaendeSigneringRepository.delete(ticket.getPagaendeSigneringId());
 
         return ticket;
     }
@@ -358,30 +415,34 @@ public class SignaturServiceImpl implements SignaturService {
     /**
      * Update utkast with "senast sparad av" information.
      */
-    private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
-        VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
+    // private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
+    // VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
+    //
+    // utkast.setSenastSparadAv(vardpersonReferens);
+    //
+    // try {
+    // ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+    // Vardenhet vardenhetFromJson =
+    // moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
+    // String updatedInternal = moduleApi
+    // .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),
+    // signeringstid);
+    // utkast.setModel(updatedInternal);
+    // } catch (ModuleException | ModuleNotFoundException | IOException e) {
+    // throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal",
+    // e);
+    // }
+    //
+    // return utkast;
+    // }
 
-        utkast.setSenastSparadAv(vardpersonReferens);
-
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-            Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
-            String updatedInternal = moduleApi
-                    .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),
-                            signeringstid);
-            utkast.setModel(updatedInternal);
-        } catch (ModuleException | ModuleNotFoundException | IOException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
-        }
-
-        return utkast;
-    }
-
-    private SignaturTicket createSignaturTicket(String intygId, long version, String payload, LocalDateTime signeringstid) {
+    private SignaturTicket createSignaturTicket(String intygId, long pagaendeSigneringInternreferens, long version, String payload,
+            LocalDateTime signeringstid) {
         try {
             String hash = createHash(payload);
             String id = UUID.randomUUID().toString();
-            SignaturTicket statusTicket = new SignaturTicket(id, SignaturTicket.Status.BEARBETAR, intygId, version, signeringstid, hash,
+            SignaturTicket statusTicket = new SignaturTicket(id, pagaendeSigneringInternreferens, SignaturTicket.Status.BEARBETAR, intygId,
+                    version, signeringstid, hash,
                     LocalDateTime.now());
             ticketTracker.trackTicket(statusTicket);
             return statusTicket;

@@ -75,6 +75,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
@@ -103,6 +105,9 @@ public class IntygResource {
 
     @Autowired
     private ResourceLoader resourceLoader;
+
+    @Autowired
+    private SignaturTicketTracker signaturTicketTracker;
 
     /**
      * This method is not very safe nor accurate - it parses the [intygsTyp].sch file using XPath and tries
@@ -176,6 +181,21 @@ public class IntygResource {
         return Response.ok(all.stream()
                 .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null && utkast.getSignatur() != null)
                 .sorted((u1, u2) -> u2.getSignatur().getSigneringsDatum().compareTo(u1.getSignatur().getSigneringsDatum()))
+                .collect(Collectors.toList())).build();
+    }
+
+    /**
+     * Returns all complete drafts for the specified enhetsId.
+     *
+     * @param enhetsId
+     * @return
+     */
+    @GET
+    @Path("/{enhetsId}/drafts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllCompleteDradtsOnUnit(@PathParam("enhetsId") String enhetsId) {
+        List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
+        return Response.ok(all.stream()
                 .collect(Collectors.toList())).build();
     }
 
@@ -347,6 +367,14 @@ public class IntygResource {
     public Response sendDraft(@PathParam("id") String id) {
         updateUtkastForSend(id);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/ticket/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSigningTicket(@PathParam("id") String id) {
+        SignaturTicket ticket = signaturTicketTracker.getTicket(id);
+        return Response.ok(ticket).build();
     }
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {

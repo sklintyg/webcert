@@ -306,7 +306,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Signera utkast.
+     * Signera utkast. Endast fejkinloggning.
      *
      * @param intygsId intyg id
      * @return SignaturTicketResponse

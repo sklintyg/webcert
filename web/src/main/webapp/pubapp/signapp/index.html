@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="sv" id="ng-app" ng-app="rhsIndexApp">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width">
+
+<base href="/">
+<title>Signeringsverktyget</title>
+
+<!-- bower:css -->
+<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
+<!-- endbower -->
+<link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css" />
+<link rel="stylesheet" href="/app/webcert.css" />
+
+</head>
+<style>
+  html, body {
+    height: 100%;
+    margin: 4px;
+    padding: 0px;
+  }
+
+</style>
+
+<body class="index-page" ng-controller="IndexController">
+
+  <div class="index-content-container">
+
+    <!-- header part -->
+    <div class="index-header-section">
+
+      <div class="row">
+        <div class="col-sm-6">
+          <h1 class="page-title">Välkommen till Signeringsverktyget</h1>
+          <p class="well">Välj först en vårdenhet och sedan det utkast du vill signera.<br> <br>
+
+            För att en vårdenhet skall gå att välja i drop-down menyn nedan så måste det finnas minst ett
+            utkast redo att signera på enheten. </p>
+          <label for="enhet">Välj vårdenhet</label><br />
+          <div class="row">
+            <div class="col-sm-6">
+
+              <select class="form-control" style="max-width:500px;" id="enhet" ng-model="selectedEnhet"
+                      ng-change="loadUtkastReadyToSign()">
+                <option ng-repeat="unit in units" value="{{ unit.enhetsId}}">{{ unit.enhetsNamn }} - {{ unit.enhetsId
+                  }}
+                </option>
+              </select>
+              <div ng-if="units.length == 0">Ingen enhet med något utkast redo att signera finns i din databas. Fixa
+                detta för hand inne i Webcert.
+              </div>
+            </div>
+          </div>
+          <br />
+          <label ng-if="data.length > 0" for="intygTable">Visar utkast på enhet {{ selectedEnhet }}</label>
+
+          <table id="intygTable" class="col-md-12 table table-striped wc-table-striped" ng-if="data.length > 0">
+            <tr>
+              <th>Patient</th>
+              <th>IntygsId</th>
+              <th>Typ</th>
+              <th>Skapad av</th>
+            </tr>
+            <tr ng-repeat="d in data">
+              <td>{{ d.patientFornamn }} {{ d.patientEfternamn}} - {{ d.patientPersonnummer}}</td>
+              <td>{{ d.intygsId }}</td>
+              <td>{{ d.intygsTyp }}</td>
+              <td>{{ d.skapadAv.namn }}</td>
+              <td>
+                <button type="button" class="btn btn-success" ng-click="openForm(d)">Välj</button>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="col-sm-6">
+          <h1 class="page-title" ng-if="q.intygsId != ''">Signeringsformulär</h1>
+
+          <!-- Begin default form -->
+          <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="q.intygsId != ''">
+
+            <div class="form-group well">
+              <div class="row">
+                <label class="col-sm-12">Signering NetID (SITHS)</label>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <button class="btn btn-success" ng-click="startNetIDSign()">Signera med NetID (SITHS)</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row"><hr/></div>
+
+
+            <div class="form-group well">
+              <div class="row">
+                <label class="col-sm-12">Signering BankID (CGI)</label>
+              </div>
+              <div class="row">
+                <label class="col-sm-3">Personnummer för signerande läkare</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="text" ng-model="personId">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <button class="btn btn-primary" ng-click="startBankIDSign()">Signera med BankID (CGI)</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+
+          <h3>Stuff</h3>
+          <div ng-if="isNetID">
+            <p class="well">
+              Fejksignering med NetID startad. Välj slutför eller avbryt nedan.
+              <button class="btn btn-success" ng-click="signeraKlient()">Slutför</button>
+              <button class="btn btn-error" ng-click="signeraAvbryt()">Avbryt</button>
+            </p>
+
+            <span>Status: {{ statusMessage }}</span>
+
+          </div>
+
+
+          <div ng-if="isBankID">
+            <p class="well">
+              Fejksignering med isBankID startad. Välj slutför eller avbryt nedan.
+              <button class="btn btn-success" ng-click="bekraftaSigneringGrp()">Slutför</button>
+              <button class="btn btn-error" ng-click="signeraAvbrytGrp()">Avbryt</button>
+              <span>Status: {{ statusMessage }}</span>
+              <span>GRP status: {{ grpStatusMessage }}</span>
+            </p>
+          </div>
+
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- bower:js -->
+  <script type="text/javascript" src="/bower_components/jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-animate/angular-animate.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-sanitize/angular-sanitize.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script type="text/javascript" src="/bower_components/api-check/dist/api-check.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-formly/dist/formly.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-ui-select/dist/select.js"></script>
+  <script type="text/javascript" src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
+  <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
+  <!-- endbower -->
+
+  <script type="text/javascript" src="/pubapp/signapp/index-app.main.js"></script>
+</body>
+</html>

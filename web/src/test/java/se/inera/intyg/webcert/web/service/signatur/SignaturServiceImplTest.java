@@ -45,8 +45,10 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.PagaendeSigneringRepository;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -70,10 +72,9 @@ import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setTypedField;
@@ -86,9 +87,12 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
     private static final String PERSON_ID = "191212121212";
+    private static final Long PAGAENDE_SIGN_ID = 1L;
 
     @Mock
     private UtkastRepository mockUtkastRepository;
+    @Mock
+    private PagaendeSigneringRepository pagaendeSigneringRepository;
     @Mock
     private IntygService intygService;
     @Mock
@@ -118,6 +122,8 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private Vardgivare vardgivare;
     private WebCertUser user;
 
+    private PagaendeSignering pagaendeSignering;
+
     @Before
     public void setup() throws Exception {
         hoSPerson = new HoSPersonal();
@@ -141,7 +147,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(anyString(), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(INTYG_JSON);
-        
+
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
@@ -149,6 +155,17 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
 
         setTypedField(intygSignatureService, new SignaturTicketTracker());
+
+        pagaendeSignering = new PagaendeSignering();
+        pagaendeSignering.setInternReferens(PAGAENDE_SIGN_ID);
+        pagaendeSignering.setIntygData(INTYG_JSON);
+        pagaendeSignering.setIntygsId(INTYG_ID);
+        pagaendeSignering.setSigneradAvHsaId(hoSPerson.getPersonId());
+        pagaendeSignering.setSigneradAvNamn(hoSPerson.getFullstandigtNamn());
+
+        when(pagaendeSigneringRepository.findOne(anyLong())).thenReturn(pagaendeSignering);
+        when(pagaendeSigneringRepository.save(any(PagaendeSignering.class))).thenReturn(pagaendeSignering);
+
     }
 
     private WebCertUser createWebCertUser(boolean doctor) {
@@ -221,6 +238,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void clientSignatureSuccess() throws IOException {
 
+
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
         user.setHsaId("TSTNMT2321000156-1025");
@@ -249,7 +267,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
     }
-    
+
     private String buildSignature() throws IOException {
         InputStream is = new ClassPathResource("netid-siths-sig2.txt").getInputStream();
         return "{\"signatur\":\"" + IOUtils.toString(is) + "\"}";
@@ -263,6 +281,9 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void clientSignatureKOMPLTSuccess() throws IOException, ModuleNotFoundException {
+
+        when(pagaendeSigneringRepository.findOne(anyLong())).thenReturn(pagaendeSignering);
+
         completedUtkast.setRelationKod(RelationKod.KOMPLT);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
@@ -467,7 +488,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user = createWebCertUser(true);
         user.setAuthenticationMethod(AuthenticationMethod.SITHS);
         when(webcertUserService.getUser()).thenReturn(user);
-        
+
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
 
         String signature = buildSignature();

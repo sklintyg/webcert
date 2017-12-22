@@ -20,15 +20,18 @@ package se.inera.intyg.webcert.web.web.controller.authtestability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -44,6 +47,8 @@ import java.util.Set;
 @Api(value = "user service", description = "REST API för testbarhet av användare", produces = MediaType.APPLICATION_JSON)
 @Path("/")
 public class UserResource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -143,5 +148,15 @@ public class UserResource {
     public Response getFeaturesForUser() {
         Map<String, Feature> features = webCertUserService.getUser().getFeatures();
         return Response.ok(features).build();
+    }
+
+    @PUT
+    @Path("/personid")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFeaturesForUser(String personId) {
+        String oldPersonId = webCertUserService.getUser().getPersonId();
+        webCertUserService.getUser().setPersonId(personId);
+        LOG.info("Changed user 'personId' to '{}', was '{}'.", personId, oldPersonId);
+        return Response.ok().build();
     }
 }

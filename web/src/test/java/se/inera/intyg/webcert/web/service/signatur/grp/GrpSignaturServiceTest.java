@@ -18,13 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.signatur.grp;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,18 +25,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
 import se.funktionstjanster.grp.v1.AuthenticateRequestType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.OrderResponseType;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
@@ -51,6 +43,14 @@ import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.time.LocalDateTime;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -63,6 +63,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final String PERSON_ID = "19121212-1212";
     private static final String TX_ID = "webcert-tx-1";
     private static final String ORDER_REF = "order-ref-1";
+    private static final Long PAGAENDE_SIG_ID  = 1L;
 
     @Mock
     WebCertUserService webCertUserService;
@@ -165,7 +166,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private SignaturTicket buildSignaturTicket() {
-        SignaturTicket ticket = new SignaturTicket(TX_ID, SignaturTicket.Status.OKAND, INTYG_ID, VERSION, null, "hash", LocalDateTime.now());
+        SignaturTicket ticket = new SignaturTicket(TX_ID, PAGAENDE_SIG_ID, SignaturTicket.Status.OKAND, INTYG_ID, VERSION, null, "hash", LocalDateTime.now());
         return ticket;
     }
 
