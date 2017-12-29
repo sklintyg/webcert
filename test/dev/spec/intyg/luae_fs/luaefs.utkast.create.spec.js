@@ -104,9 +104,9 @@ describe('Create and Sign luae_fs utkast', function() {
         });
 
         it('Verifiera intyg', function() {
-            IntygPage.whenCertificateLoaded();
-
-            IntygPage.verify(data);
+            IntygPage.whenCertificateLoaded().then(function() {
+                IntygPage.verify(data);
+            });
         });
     });
 

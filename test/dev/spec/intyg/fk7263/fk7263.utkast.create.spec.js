@@ -176,9 +176,9 @@ describe('Create and Sign FK utkast', function() {
         });
 
         it('Verifiera intyg', function() {
-            IntygPage.whenCertificateLoaded();
-
-            IntygPage.verify(data);
+            IntygPage.whenCertificateLoaded().then(function() {
+		        IntygPage.verify(data);
+		    });
         });
     });
 

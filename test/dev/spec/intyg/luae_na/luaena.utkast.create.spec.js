@@ -100,9 +100,11 @@ describe('Create and Sign luae_na utkast', function() {
         });
 
         it('Verifiera intyg', function() {
-            IntygPage.whenCertificateLoaded();
+            IntygPage.whenCertificateLoaded().then(function() {
+                IntygPage.verify(data);
+            });
 
-            IntygPage.verify(data);
+            
         });
     });
 

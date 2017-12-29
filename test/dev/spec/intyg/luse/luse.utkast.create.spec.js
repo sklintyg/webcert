@@ -98,9 +98,9 @@ describe('Create and Sign luse utkast', function() {
     });
 
     it('Verifiera intyg', function() {
-        IntygPage.whenCertificateLoaded();
-
-        IntygPage.verify(data);
+        IntygPage.whenCertificateLoaded().then(function() {
+            IntygPage.verify(data);
+        });
     });
 
     afterAll(function() {

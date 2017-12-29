@@ -82,9 +82,9 @@ describe('Create and Sign lisjp utkast', function() {
             IntygPage.waitUntilIntygInIT(utkastId);
             browser.refresh();
 
-            IntygPage.whenCertificateLoaded();
-
-            IntygPage.verify(data);
+            IntygPage.whenCertificateLoaded().then(function() {
+		        IntygPage.verify(data);
+		    });
         });
 
         afterAll(function() {
@@ -179,9 +179,9 @@ describe('Create and Sign lisjp utkast', function() {
         });
 
         it('Verifiera intyg', function() {
-            IntygPage.whenCertificateLoaded();
-
-            IntygPage.verify(data);
+            IntygPage.whenCertificateLoaded().then(function() {
+		        IntygPage.verify(data);
+		    });
         });
 
         afterAll(function() {
