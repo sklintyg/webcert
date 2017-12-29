@@ -130,11 +130,6 @@ Scenario: Referens skickas med statusuppdateringar
     Så ska svaret innehålla intyget jag var inne på
     Och ska svaret innehålla ref med värdet "testref-X"
 
-
-	
-	
-	
-	
 	
 @fornya @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
 Scenario: Testa att statusuppdateringar fungerar efter intyget är förnyat
@@ -210,5 +205,4 @@ Scenario: Testa att statusuppdateringar fungerar efter intyget är ersatt
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "2"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
-
 	

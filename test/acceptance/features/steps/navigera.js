@@ -105,7 +105,7 @@ module.exports = function() {
     });
 
 
-    this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk)*$/, function(intygstyp, origin) {
+    this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk| utan integrations parametrar)*$/, function(intygstyp, origin) {
         return gotoIntyg(intygstyp, origin);
     });
 
@@ -146,7 +146,28 @@ module.exports = function() {
                 url = url + '?';
                 // url += 'enhet=' + global.user.enhetId + '&';
             }
-        } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
+        } else if (intygstyp === 'intyget' && origin === ' utan integrations parametrar') {
+			if (usingCreateDraft2) {
+
+                if (!person.adress) {
+                    person.adress = {
+                        postadress: 'Norra storgatan 30',
+                        postort: 'Katthult',
+                        postnummer: '10000'
+
+                    };
+                }
+                var intygShortCode = helpers.getAbbrev(intyg.typ);
+                intygShortCode = intygShortCode.toLowerCase();
+                console.log(intygShortCode);
+                url = process.env.WEBCERT_URL + 'visa/intyg/';
+                url += intygShortCode + '/';
+                url += global.intyg.id;
+            } else {
+                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
+                url = url + '?';
+            }
+		} else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
             url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';
 
         } else if (intygstyp === 'intyget' && origin === undefined) {

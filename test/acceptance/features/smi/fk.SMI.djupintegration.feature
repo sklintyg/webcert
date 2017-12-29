@@ -71,3 +71,14 @@ Scenario: Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenhe
 	När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "false"
 	Så ska det inte finnas knappar för "ersätta,makulera,fråga/svar"
 	Så ska det finnas knappar för "förnya" om intygstyp är "Läkarintyg för sjukpenning"
+	
+Scenario: Det ska vara möjligt att gå in på utkast och intyg utan integrationsparametrar.
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+    När jag går in på intygsutkastet utan integrations parametrar
+    Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	När jag går in på intyget utan integrations parametrar
+	Så ska det finnas knappar för "förnya,ersätta,makulera,fråga/svar"
+	
