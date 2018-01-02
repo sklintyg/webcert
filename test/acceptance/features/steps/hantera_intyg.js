@@ -139,6 +139,12 @@ module.exports = function() {
         }
     });
 
+    this.Given(/^jag skriver ut utkastet$/, function() {
+        return browser.sleep(5000).then(function() {
+            return utkastPage.skrivUtBtn.sendKeys(protractor.Key.SPACE);
+        });
+    });
+
     this.Given(/^ska det finnas en referens till gamla intyget$/, function() {
         return browser.sleep(3000).then(function() {
             return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
