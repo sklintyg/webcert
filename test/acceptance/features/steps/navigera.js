@@ -110,7 +110,7 @@ module.exports = function() {
     });
 
     function gotoIntyg(intygstyp, origin, addToUrl) {
-        var url;
+        var url = getIntegrationUrl(origin);
         var usingCreateDraft2;
         if (intyg && intyg.typ) {
             usingCreateDraft2 = helpers.isSMIIntyg(intyg.typ) || helpers.isTSIntyg(intyg.typ);
@@ -122,13 +122,6 @@ module.exports = function() {
                 postort: 'Katthult',
                 postnummer: '10000'
             };
-        }
-
-        if (usingCreateDraft2) {
-            url = getIntegrationUrl(origin);
-        } else {
-            url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
-            url = url + '?';
         }
 
         if (addToUrl) {
@@ -218,6 +211,7 @@ module.exports = function() {
                 url = intygURL(intyg.typ, intyg.id);
                 break;
             default:
+                url = intygURL(intyg.typ, intyg.id);
                 logger.error('Okänd parameter origin: ' + origin);
         }
         return url;
