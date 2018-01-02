@@ -47,7 +47,7 @@ module.exports = {
         return pnrString.slice(0, 8) + '-' + pnrString.slice(8);
     },
     intygShortcode: commonTools.helpers.intygShortcode,
-
+    intygUrlShortcode: commonTools.helpers.intygUrlShortcode,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
@@ -188,7 +188,14 @@ module.exports = {
         }
         return null;
     },
-
+    getPathShortcode: function(value) {
+        for (var key in this.intygUrlShortcode) {
+            if (this.intygUrlShortcode[key] === value) {
+                return key.toString();
+            }
+        }
+        return null;
+    },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
