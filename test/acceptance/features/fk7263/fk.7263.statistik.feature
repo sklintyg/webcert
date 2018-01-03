@@ -3,14 +3,15 @@
 @statistik @integration @fk7263 @waitingForFix @INTYG-5034
 Egenskap: FK7263-integration med Statistiktjänsten
 
-#Bakgrund: Jag befinner mig på Rehabstöds förstasida
+Bakgrund: Jag befinner mig på webcerts förstasida
 
 @skapa @databas
 Scenario: Ett nyskapat FK7263 intyg ska finnas i Statistiktjänstens databas
     När att jag är inloggad som läkare
 	Och jag går in på en patient
+	
     Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
- Och jag går in på utkastet
+    Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
     Så ska jag se intyget i databasen
