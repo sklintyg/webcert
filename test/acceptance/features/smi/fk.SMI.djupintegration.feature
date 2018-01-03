@@ -12,7 +12,7 @@ Scenario: Informera om patienten har bytt namn
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag går in på intygsutkastet via djupintegrationslänk med annat namn
-    Så ska ett info-meddelande visa "Observera att patientens namn har ändrats sedan det här intyget utfärdades."
+    Så ska ett info-meddelande visa "Observera att namnet som visas i intyget har hämtats från den nationella personuppgiftstjänsten och skiljer sig åt från det som är lagrat i journalsystemet"
 
 @nytt-personnummer
 Scenario: Patienten har fått ett nytt personnummer

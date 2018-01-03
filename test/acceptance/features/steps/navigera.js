@@ -110,7 +110,6 @@ module.exports = function() {
     });
 
     function gotoIntyg(intygstyp, origin, addToUrl) {
-        var url = getIntegrationUrl(origin);
         var usingCreateDraft2;
         if (intyg && intyg.typ) {
             usingCreateDraft2 = helpers.isSMIIntyg(intyg.typ) || helpers.isTSIntyg(intyg.typ);
@@ -123,6 +122,8 @@ module.exports = function() {
                 postnummer: '10000'
             };
         }
+
+        var url = getIntegrationUrl(origin);
 
         if (addToUrl) {
             url += addToUrl;

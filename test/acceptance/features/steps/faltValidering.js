@@ -247,7 +247,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(fel) {
-        element.all(by.css('.alert-danger')).map(function(elm) {
+        return element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         }).then(function(result) {
             logger.silly(result);
@@ -255,7 +255,7 @@ module.exports = function() {
         });
     });
     this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
-        element.all(by.css('.alert-danger')).map(function(elm) {
+        return element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         }).then(function(result) {
             logger.silly(result);
@@ -434,15 +434,15 @@ module.exports = function() {
 
             case 'Arbete':
                 logger.info('Arbete switch');
-                return fkUtkastPage.nuvarandeArbete.sendKeys('Testare');
+                return helpers.moveAndSendKeys(fkUtkastPage.nuvarandeArbete, 'Testare');
 
             case 'Aktivitetsbegransning':
                 logger.info('Ändrar Aktivitetsbegransning');
-                return fkUtkastPage.aktivitetsBegransning.sendKeys('Aktivitetsbegransning');
+                return helpers.moveAndSendKeys(fkUtkastPage.aktivitetsBegransning, 'Aktivitetsbegransning');
 
             case 'Funktionsnedsattning':
                 logger.info('Ändrar Funktionsnedsattning');
-                return fkUtkastPage.funktionsNedsattning.sendKeys('Funktionsnedsättning');
+                return helpers.moveAndSendKeys(fkUtkastPage.funktionsNedsattning, 'Funktionsnedsättning');
 
             case 'Går ej att bedöma':
                 logger.info('Ändrar Går ej att bedöma');
@@ -450,18 +450,18 @@ module.exports = function() {
 
             case 'Diagnoskod':
                 logger.info('Ändrar Diagnoskod');
-                return fkUtkastPage.diagnosKod.sendKeys('A00').then(function() {
+                return helpers.moveAndSendKeys(fkUtkastPage.diagnosKod, 'A00').then(function() {
                     enter = browser.actions().sendKeys(protractor.Key.ENTER);
                     return enter.perform();
                 });
 
             case 'Arbetsförmåga':
                 logger.info('Ändrar arbetsförmåga');
-                return fkUtkastPage.nedsatt.med100.checkbox.sendKeys(protractor.Key.SPACE);
+                return helpers.moveAndSendKeys(fkUtkastPage.nedsatt.med100.checkbox, protractor.Key.SPACE);
 
             case 'Intyget baseras på Annat':
                 logger.info('Fyller i rätt datum: 2016-12-10 Annat ');
-                return fkUtkastPage.baserasPa.annat.datum.sendKeys('2016-12-10').then(function() {
+                return helpers.moveAndSendKeys(fkUtkastPage.baserasPa.annat.datum, '2016-12-10').then(function() {
                     enter = browser.actions().sendKeys(protractor.Key.ENTER);
                     return enter.perform();
                 });
