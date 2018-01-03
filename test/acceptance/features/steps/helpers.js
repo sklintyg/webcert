@@ -203,6 +203,9 @@ module.exports = {
     isTSIntyg: function(intygsType) {
         return intygsType.indexOf('Transportstyrelsen') > -1;
     },
+    isFK7263: function(intygsType) {
+        return intygsType.indexOf('7263') > -1;
+    },
     subjectCodes: {
         'Komplettering': 'KOMPLT',
         'Paminnelse': 'PAMINN',
@@ -258,6 +261,8 @@ module.exports = {
             }
         } else if (intygAbbrev === 'TSTRK1007') {
             return this.pageField.TSTRK1007[index];
+        } else if (intygAbbrev === 'TSTRK1031') {
+            return this.pageField.TSTRK1031[index];
         } else {
             return this.pageField.FK7263[index];
         }
@@ -269,7 +274,8 @@ module.exports = {
         'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'ovrigt'],
         'LUAE_FS': ['funktionsnedsattningDebut', 'funktionsnedsattningPaverkan', 'ovrigt'],
         'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod'],
-        'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion']
+        'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion'],
+        'TSTRK1031': ['hypoglykemier', 'diabetesBehandling', 'specialist']
 
     },
     getUserObj: function(userKey) {

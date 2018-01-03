@@ -1,7 +1,7 @@
 # language: sv
 
 @pdl @GE-005 @TS
-Egenskap: PDL-loggning för TS-intyg
+Egenskap: GE-005 - PDL-loggning för TS-intyg
 
 Bakgrund: Jag är inloggad
 	Givet att jag är inloggad som läkare
@@ -74,7 +74,7 @@ Scenario: GE-005 - PDL - Skicka TS-intyg till Transportstyrelsen
 
 #9
 @radera
-Scenario: GE-005 - PDL - Radera utkast
+Scenario: GE-005 - PDL - Radera TS-utkast
   När jag går in på att skapa ett slumpat TS-intyg
 	Och jag raderar utkastet
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten

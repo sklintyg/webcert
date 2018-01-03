@@ -40,15 +40,15 @@ module.exports = function() {
     });
 
     this.Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, function(arg1) {
-        var intygShortcode = helpers.getAbbrev(intyg.typ).toLowerCase();
-        var link = '/web/dashboard#/' + intygShortcode + '/edit/' + intyg.id + '/';
+        var intygUrlShortcode = helpers.getPathShortcode(intyg.typ).toLowerCase();
+        var link = '/web/dashboard#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
         logger.info('Går till ' + link);
         return browser.get(link);
     });
 
     this.Given(/^ska jag komma till intygssidan$/, function() {
-        var intygShortcode = helpers.getAbbrev(intyg.typ).toLowerCase();
-        var link = '/web/dashboard#/intyg/' + intygShortcode + '/' + intyg.id;
+        var intygUrlShortcode = helpers.getPathShortcode(intyg.typ).toLowerCase();
+        var link = '/web/dashboard#/intyg/' + intygUrlShortcode + '/' + intyg.id;
         return browser.getCurrentUrl().then(function(currentUrl) {
             expect(currentUrl).to.contain(link);
             logger.info('Sida som verifieras: ' + currentUrl);

@@ -1,7 +1,7 @@
 # language: sv
 
 @pdl @GE-005 @SMI
-Egenskap: PDL-loggning för SMI-intyg
+Egenskap: GE-005 - PDL-loggning för SMI-intyg
 
 Bakgrund: Jag är inloggad
 	Givet att jag är inloggad som läkare

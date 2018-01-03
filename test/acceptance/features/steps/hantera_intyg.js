@@ -157,9 +157,9 @@ module.exports = function() {
 
 
     this.Given(/^jag skriver ut intyget$/, function() {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var isFK7263Intyg = helpers.isFK7263Intyg(intyg.typ);
 
-        if (isSMIIntyg) {
+        if (isFK7263Intyg === false) {
             return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
         } else {
             return fkIntygPage.skrivUtFullstandigtIntyg();

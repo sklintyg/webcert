@@ -1,7 +1,7 @@
 # language: sv
 
-@pdl @srs
-Egenskap: PDL-loggning för SRS
+@pdl @srs @GE-005
+Egenskap: GE-005 - PDL-loggning för SRS
 
 Bakgrund:
     Givet att jag är djupintegrerat inloggad som läkare på vårdenhet "med SRS"
@@ -10,7 +10,7 @@ Bakgrund:
 # Log.activity.activityType = "Läsa"
 # Log.activity.activityArg = "Prediktion från SRS av risk för lång sjukskrivning"
 @SRS-US-W07 @prediktion
-Scenario: Loggning vid visning av prediktion
+Scenario: GE-005 - Loggning vid visning av prediktion
     Givet en patient som "har givit samtycke" till SRS
     Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
   	Och jag går in på utkastet
