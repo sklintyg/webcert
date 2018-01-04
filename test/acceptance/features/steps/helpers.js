@@ -40,6 +40,9 @@ module.exports = {
     largeDelay: function() {
         return browser.sleep(1000);
     },
+    hugeDelay: function() {
+        return browser.sleep(5000);
+    },
     insertDashInPnr: function(pnrString) {
         if (pnrString.indexOf('-') >= 0) {
             return pnrString;
@@ -203,7 +206,7 @@ module.exports = {
     isTSIntyg: function(intygsType) {
         return intygsType.indexOf('Transportstyrelsen') > -1;
     },
-    isFK7263: function(intygsType) {
+    isFK7263Intyg: function(intygsType) {
         return intygsType.indexOf('7263') > -1;
     },
     subjectCodes: {
