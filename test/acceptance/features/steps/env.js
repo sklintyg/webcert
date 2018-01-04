@@ -110,7 +110,8 @@ module.exports = function() {
                 return;
             });
         }).then(function() {
-            return browser.getCurrentUrl().then(function() {
+            return browser.getCurrentUrl().then(function(url) {
+                logger.silly('current URL ' + url);
                 //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
                 return browser.executeScript('return window.errs;').then(function(v) {
                     if (v && v.length > 0) {
@@ -121,7 +122,7 @@ module.exports = function() {
                     }
                 });
             }).catch(function() {
-                //Browser was closed
+                logger.warn('Browser is closed.');
                 return;
             });
         });
@@ -142,45 +143,42 @@ module.exports = function() {
     //After scenario
     this.After(function(scenario) {
 
-        console.log('Rensar session-storage');
-        return browser.executeScript('window.sessionStorage.clear();').then(function() {
-            console.log('Rensar local-storage');
-            return browser.executeScript('window.localStorage.clear();');
-        }).then(function() {
+        if (scenario.isFailed()) {
 
-            if (scenario.isFailed()) {
+            var frontEndJS = 'var div = document.createElement("DIV"); ';
+            frontEndJS += 'div.style.position = "fixed";';
+            frontEndJS += 'div.style.height = (window.innerHeight - 2) + "px";';
+            frontEndJS += 'div.style.width = (window.innerWidth - 2) + "px";';
+            frontEndJS += 'div.style.border = "1px solid red";';
+            frontEndJS += 'div.style.top = "1px";';
+            frontEndJS += 'div.style.zIndex = "10000";';
+            frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
+            frontEndJS += 'body.appendChild(div);';
 
-                var frontEndJS = 'var div = document.createElement("DIV"); ';
-                frontEndJS += 'div.style.position = "fixed";';
-                frontEndJS += 'div.style.height = (window.innerHeight - 2) + "px";';
-                frontEndJS += 'div.style.width = (window.innerWidth - 2) + "px";';
-                frontEndJS += 'div.style.border = "1px solid red";';
-                frontEndJS += 'div.style.top = "1px";';
-                frontEndJS += 'div.style.zIndex = "10000";';
-                frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
-                frontEndJS += 'body.appendChild(div);';
-
-                return browser.executeScript(frontEndJS).then(function() {
-                    return browser.takeScreenshot().then(function(png) {
-                        var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-                        var filename = 'screenshots/' + new Date().getTime() + '.png';
-                        return writeScreenShot(png, ssPath + filename, function() {
-                            return scenario.attach(filename, 'image/png', function(err) {
-                                if (err) {
-                                    throw err;
-                                }
-                                console.log('Skärmbild tagen: ' + filename);
-                                return checkConsoleErrors();
-                            });
+            return browser.executeScript(frontEndJS).then(function() {
+                return browser.takeScreenshot().then(function(png) {
+                    var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+                    var filename = 'screenshots/' + new Date().getTime() + '.png';
+                    return writeScreenShot(png, ssPath + filename, function() {
+                        return scenario.attach(filename, 'image/png', function(err) {
+                            if (err) {
+                                throw err;
+                            }
+                            console.log('Skärmbild tagen: ' + filename);
+                            return checkConsoleErrors();
                         });
                     });
                 });
-
-            } else {
-                return checkConsoleErrors();
-            }
-
-        });
+            }).then(function() {
+                logger.silly('Rensar session-storage');
+                return browser.executeScript('window.sessionStorage.clear();');
+            }).then(function() {
+                logger.silly('Rensar local-storage');
+                return browser.executeScript('window.localStorage.clear();');
+            });
+        } else {
+            return checkConsoleErrors();
+        }
 
 
         //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
@@ -200,8 +198,10 @@ module.exports = function() {
 
 
     logger.on('logging', function(transport, level, msg, meta) {
+        var date = new Date();
+        var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
         if (global.scenario) {
-            global.scenario.attach(level + ': ' + msg);
+            global.scenario.attach(dateString + ' - ' +  level + ': ' + msg);
         }
     });
 
