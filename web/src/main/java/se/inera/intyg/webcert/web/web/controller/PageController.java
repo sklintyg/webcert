@@ -47,7 +47,7 @@ import java.net.URI;
 @RequestMapping(value = "")
 public class PageController {
 
-    public static final String ADMIN_VIEW = "dashboard#/unhandled-qa";
+    public static final String ADMIN_VIEW = "dashboard#/enhet-arenden";
     public static final String ADMIN_VIEW_REDIRECT = "redirect:/web/" + ADMIN_VIEW;
 
     public static final String DASHBOARD_VIEW = "dashboard";
