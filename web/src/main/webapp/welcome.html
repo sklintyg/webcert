@@ -349,6 +349,14 @@
               kopieringOk: true,
               ref: '',
               enhet: undefined
+          },
+          excludedFields: {
+              fornamn: false,
+              mellannamn: false,
+              efternamn: false,
+              postadress: false,
+              postnummer: false,
+              postort: false
           }
       };
 
@@ -392,6 +400,11 @@
           try {
               var url = getLoginDjupintegrationUrl(method),
                   data = $scope.deeplink.formData;
+                  angular.forEach($scope.deeplink.excludedFields, function(value, key) {
+                      if(value === true) {
+                          delete data[key];
+                      }
+                  });
               // submit data
               sendData(url, data , method);
           } catch(e) {
@@ -569,11 +582,11 @@
             <label for="intygId" class="control-label">intygId:</label> <input type="text" class="form-control" size="40" id="intygId" ng-model="deeplink.certId" placeholder="utkast/intygsid"><br>
             <label for="intygTyp" class="control-label">intygTyp:</label> <input type="text" class="form-control" size="20" id="intygTyp" ng-model="deeplink.certType" placeholder="Intygstyp"><br>
             <label for="alternatePatientSSn" class="control-label">nytt personnummer</label> <input type="text" class="form-control" size="20" id="alternatePatientSSn" ng-model="deeplink.formData.alternatePatientSSn" placeholder="alternatePatientSSn"><br>
-            <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="deeplink.formData.fornamn" placeholder="Förnamn"><br>
-            <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="deeplink.formData.mellannamn" placeholder="Mellannamn"><br>
-            <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="deeplink.formData.efternamn" placeholder="Efternamn"><br>
-            <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="deeplink.formData.postadress" placeholder="Postadress"><br>
-            <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="deeplink.formData.postnummer" placeholder="Postnr"> <input type="text" class="form-control" size="20" ng-model="deeplink.formData.postort" placeholder="Postort"><br>
+            <label for="fornamn" class="control-label">fornamn:</label> <input type="text" class="form-control" size="20" id="fornamn" ng-model="deeplink.formData.fornamn" placeholder="Förnamn" ng-disabled="deeplink.excludedFields.fornamn">exclude?<input type="checkbox" id="fornamn-disable-box" ng-model="deeplink.excludedFields.fornamn"><br><br>
+            <label for="mellannamn" class="control-label">mellannamn:</label> <input type="text" class="form-control" size="20" id="mellannamn" ng-model="deeplink.formData.mellannamn" placeholder="Mellannamn" ng-disabled="deeplink.excludedFields.mellannamn">exclude?<input type="checkbox" id="mellannamn-disable-box" ng-model="deeplink.excludedFields.mellannamn"><br><br>
+            <label for="efternamn" class="control-label">efternamn:</label> <input type="text" class="form-control" size="20" id="efternamn" ng-model="deeplink.formData.efternamn" placeholder="Efternamn" ng-disabled="deeplink.excludedFields.efternamn">exclude?<input type="checkbox" id="efternamn-disable-box" ng-model="deeplink.excludedFields.efternamn"><br><br>
+            <label for="postadress" class="control-label">postadress:</label> <input type="text" class="form-control" size="20" id="postadress" ng-model="deeplink.formData.postadress" placeholder="Postadress" ng-disabled="deeplink.excludedFields.postadress">exclude?<input type="checkbox" id="postadress-disable-box" ng-model="deeplink.excludedFields.postadress"><br><br>
+            <label for="postnr-ort" class="control-label">Postnr/ort:</label> <input type="text" class="form-control" size="6" id="postnr-ort" ng-model="deeplink.formData.postnummer" placeholder="Postnr" ng-disabled="deeplink.excludedFields.postnummer">exclude?<input type="checkbox" id="postnummer-disable-box" ng-model="deeplink.excludedFields.postnummer"><input type="text" class="form-control" size="20" ng-model="deeplink.formData.postort" placeholder="Postort" ng-disabled="deeplink.excludedFields.postort">exclude?<input type="checkbox" id="postort-disable-box" ng-model="deeplink.excludedFields.postort"><br><br>
             <label for="ref" class="control-label">ref:</label> <input type="text" class="form-control" size="20" id="ref" ng-model="deeplink.formData.ref" placeholder="Ref"><br>
             <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="deeplink.formData.enhet" placeholder="enhetsid"><br>
             <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="deeplink.formData.sjf"> <br>
