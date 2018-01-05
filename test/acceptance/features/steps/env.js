@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -164,17 +164,17 @@ module.exports = function() {
                             if (err) {
                                 throw err;
                             }
-                            console.log('Skärmbild tagen: ' + filename);
-                            return checkConsoleErrors();
+                            logger.silly('Skärmbild tagen: ' + filename);
+                            return checkConsoleErrors().then(function() {
+                                logger.silly('Rensar session-storage');
+                                return browser.executeScript('window.sessionStorage.clear();');
+                            }).then(function() {
+                                logger.silly('Rensar local-storage');
+                                return browser.executeScript('window.localStorage.clear();');
+                            });
                         });
                     });
                 });
-            }).then(function() {
-                logger.silly('Rensar session-storage');
-                return browser.executeScript('window.sessionStorage.clear();');
-            }).then(function() {
-                logger.silly('Rensar local-storage');
-                return browser.executeScript('window.localStorage.clear();');
             });
         } else {
             return checkConsoleErrors();
@@ -201,7 +201,7 @@ module.exports = function() {
         var date = new Date();
         var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
         if (global.scenario) {
-            global.scenario.attach(dateString + ' - ' +  level + ': ' + msg);
+            global.scenario.attach(dateString + ' - ' + level + ': ' + msg);
         }
     });
 
