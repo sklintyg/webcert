@@ -38,17 +38,15 @@ function checkConsoleErrors() {
 
         // 500-error är ett godkänt fel i detta test, se INTYG-3524
         if (global.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
-            logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
-            return;
+            return logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
         } else if (hasFoundConsoleErrors.indexOf('ID-dubletter') > -1) {
-            logger.warn(hasFoundConsoleErrors);
-            return;
+            return logger.warn(hasFoundConsoleErrors);
         } else {
             logger.error(hasFoundConsoleErrors);
             throw ('Hittade script-fel under körning');
         }
     } else {
-        return;
+        return logger.info('OK - Inga scriptfel hittades');
     }
 }
 
@@ -156,25 +154,25 @@ module.exports = function() {
             frontEndJS += 'body.appendChild(div);';
 
             return browser.executeScript(frontEndJS).then(function() {
-                return browser.takeScreenshot().then(function(png) {
-                    var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-                    var filename = 'screenshots/' + new Date().getTime() + '.png';
-                    return writeScreenShot(png, ssPath + filename, function() {
-                        return scenario.attach(filename, 'image/png', function(err) {
-                            if (err) {
-                                throw err;
-                            }
-                            logger.silly('Skärmbild tagen: ' + filename);
-                            return checkConsoleErrors();
-                        }).then(function() {
-                            logger.silly('Rensar session-storage');
-                            return browser.executeScript('window.sessionStorage.clear();');
-                        }).then(function() {
-                            logger.silly('Rensar local-storage');
-                            return browser.executeScript('window.localStorage.clear();');
-                        });
+                return browser.takeScreenshot();
+            }).then(function(png) {
+                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+                var filename = 'screenshots/' + new Date().getTime() + '.png';
+                return writeScreenShot(png, ssPath + filename, function() {
+                    return scenario.attach(filename, 'image/png', function(err) {
+                        if (err) {
+                            throw err;
+                        }
+                        logger.silly('Skärmbild tagen: ' + filename);
+                        return checkConsoleErrors();
                     });
                 });
+            }).then(function() {
+                logger.silly('Rensar session-storage');
+                return browser.executeScript('window.sessionStorage.clear();');
+            }).then(function() {
+                logger.silly('Rensar local-storage');
+                return browser.executeScript('window.localStorage.clear();');
             });
         } else {
             return checkConsoleErrors();
