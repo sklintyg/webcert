@@ -165,13 +165,13 @@ module.exports = function() {
                                 throw err;
                             }
                             logger.silly('Skärmbild tagen: ' + filename);
-                            return checkConsoleErrors().then(function() {
-                                logger.silly('Rensar session-storage');
-                                return browser.executeScript('window.sessionStorage.clear();');
-                            }).then(function() {
-                                logger.silly('Rensar local-storage');
-                                return browser.executeScript('window.localStorage.clear();');
-                            });
+                            return checkConsoleErrors();
+                        }).then(function() {
+                            logger.silly('Rensar session-storage');
+                            return browser.executeScript('window.sessionStorage.clear();');
+                        }).then(function() {
+                            logger.silly('Rensar local-storage');
+                            return browser.executeScript('window.localStorage.clear();');
                         });
                     });
                 });
