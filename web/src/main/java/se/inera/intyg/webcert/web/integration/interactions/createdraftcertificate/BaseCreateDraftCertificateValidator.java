@@ -53,7 +53,7 @@ public abstract class BaseCreateDraftCertificateValidator {
     protected Personnummer createPersonnummer(ResultValidator errors, String personId) {
         Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(personId).orElse(null);
         if (personnummer == null) {
-            errors.addError("Cannot create Personnummer object with invalid personId {1}", personId);
+            errors.addError("Cannot create Personnummer object with invalid personId {0}", personId);
         }
         return personnummer;
     }
