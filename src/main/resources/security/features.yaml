@@ -1,3 +1,36 @@
+# ====================================================================================================
+#   Konfiguration för Webcerts feature-hantering
+#
+#   YAML specifikation: http://www.yaml.org/spec/1.2/spec.html
+#
+#   Kort förklaring till vissa konstruktioner i filen:
+#
+#   '-'   används för att skapa listor av värden
+#   '&'   används för att skapa ett ankare (unik nyckel)
+#   '*'   används för att peka på ett ankare, kallas också alias
+#   '<<:' används för att slå ihop och skriva över värden
+#
+#   '&' och '*' används för att undvika duplikat i en YAML-fil
+#
+#   Överskådligt exempel:
+#
+#  defaults: &defaults
+#     adapter:  postgres
+#     host:     localhost
+#
+#   development:
+#     database: myapp_development
+#     <<: *defaults
+#
+#   test:
+#     database: myapp_test
+#     <<: *defaults
+#
+#   & sets up the name of the anchor (“defaults”),
+#   << means “merge the given hash into the current one”, and
+#   * includes the named anchor (“defaults” again).
+#
+# ====================================================================================================
 ---
 # De intygstyper som systemet har
 knownIntygstyper:

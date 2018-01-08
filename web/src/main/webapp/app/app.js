@@ -81,8 +81,8 @@
         return $.get(restPath).then(function(data) {
             user = data;
             // set jsMinified
-            if (user !== undefined && user.features !== undefined && user.features.length > 0) {
-                if (user.features.indexOf('jsMinified') >= 0) {
+            if (user !== undefined && user.features !== undefined) {
+                if (user.features.JS_MINIFIED !== undefined && user.features.JS_MINIFIED.global === true) {
                     user.jsMinified = true;
                 } else {
                     user.jsMinified = false;
