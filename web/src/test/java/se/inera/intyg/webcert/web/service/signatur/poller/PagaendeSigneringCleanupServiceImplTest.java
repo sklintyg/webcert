@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -64,6 +64,21 @@ public class PagaendeSigneringCleanupServiceImplTest {
 
         testee.cleanup();
         verify(pagaendeSigneringRepository, times(1)).delete(anyLong());
+    }
+
+    @Test
+    public void testCleanupKeepAll() {
+        List<PagaendeSignering> list = new ArrayList<>();
+        PagaendeSignering ps1 = buildOngoingSignature("1", 1L, LocalDateTime.now().minusMinutes(7));
+        PagaendeSignering ps2 = buildOngoingSignature("2", 2L, LocalDateTime.now().minusMinutes(5));
+
+        list.add(ps1);
+        list.add(ps2);
+
+        when(pagaendeSigneringRepository.findAll()).thenReturn(list);
+
+        testee.cleanup();
+        verify(pagaendeSigneringRepository, times(0)).delete(anyLong());
     }
 
     private PagaendeSignering buildOngoingSignature(String intygsId, long internReferens, LocalDateTime signeringsDatum) {
