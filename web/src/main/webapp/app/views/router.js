@@ -33,8 +33,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             },
             views: {
                 'header': {
-                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html',
-                    controller: 'integration.EnhetsvalHeaderCtrl'
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
                 },
                 'content@': {
                     templateUrl: '/app/views/appStartEnhetsval/normal-enhetsval.page.html',
@@ -46,8 +45,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             url: '/integration-enhetsval',
             views: {
                 'header': {
-                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html',
-                    controller: 'integration.EnhetsvalHeaderCtrl'
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
                 },
                 'content@': {
                     templateUrl: '/app/views/appStartEnhetsval/integration-enhetsval.page.html',
@@ -58,8 +56,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         state('webcert', {
             views: {
                 'header': {
-                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html',
-                    controller: 'common.wcHeaderController'
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
                 }
             }
         }).
@@ -139,51 +136,6 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.VisaIntygFragasvarCtrl'
-                }
-            }
-        }).
-        state('webcert.webcert-about', {
-            url: '/webcert/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.webcert.html',
-                    controller: 'webcert.OmWebcertCtrl'
-                }
-            }
-        }).
-        state('webcert.terms-about', {
-            url: '/terms/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.terms.html',
-                    controller: 'webcert.OmWebcertTermsCtrl'
-                }
-            }
-        }).
-        state('webcert.support-about', {
-            url: '/support/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.support.html',
-                    controller: 'webcert.OmWebcertCtrl'
-                }
-            }
-        }).
-        state('webcert.faq-about', {
-            url: '/faq/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.faq.html',
-                    controller: 'webcert.OmWebcertCtrl'
-                }
-            }
-        }).
-        state('webcert.cookies-about', {
-            url: '/cookies/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.cookies.html',
-                    controller: 'webcert.OmWebcertCtrl'
                 }
             }
         }).
