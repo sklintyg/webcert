@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -226,7 +226,8 @@ module.exports = {
         efternamn: ''
     }],
     patienterMedSamordningsnummerEjPU: [{
-        id: '194401831674',
+        //id: '194401831674', <-- gammalt nummer, finns numer i PU.
+		id: '194412602387',
         namn: '',
         efternamn: ''
     }],

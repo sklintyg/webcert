@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -98,9 +98,9 @@ describe('Create and Sign luse utkast', function() {
     });
 
     it('Verifiera intyg', function() {
-        IntygPage.whenCertificateLoaded();
-
-        IntygPage.verify(data);
+        IntygPage.whenCertificateLoaded().then(function() {
+            IntygPage.verify(data);
+        });
     });
 
     afterAll(function() {

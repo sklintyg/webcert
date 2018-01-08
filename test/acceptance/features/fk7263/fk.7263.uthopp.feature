@@ -23,7 +23,7 @@ Scenario: Skicka fråga till Försäkringskassan
 	Så ska ett info-meddelande visa "Frågan är skickad till Försäkringskassan"
 	Och ska jag se min fråga under ohanterade frågor
 
-@byt-flik
+@byt-flik @waitingForFix @INTYG-5261
 Scenario:Varning när jag lämnar fråga/svar vy
 	Givet att jag är inloggad i uthoppsläge
 	När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten

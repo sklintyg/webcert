@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,6 +40,9 @@ module.exports = {
     largeDelay: function() {
         return browser.sleep(1000);
     },
+    hugeDelay: function() {
+        return browser.sleep(5000);
+    },
     insertDashInPnr: function(pnrString) {
         if (pnrString.indexOf('-') >= 0) {
             return pnrString;
@@ -47,7 +50,7 @@ module.exports = {
         return pnrString.slice(0, 8) + '-' + pnrString.slice(8);
     },
     intygShortcode: commonTools.helpers.intygShortcode,
-
+    intygUrlShortcode: commonTools.helpers.intygUrlShortcode,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
@@ -188,13 +191,23 @@ module.exports = {
         }
         return null;
     },
-
+    getPathShortcode: function(value) {
+        for (var key in this.intygUrlShortcode) {
+            if (this.intygUrlShortcode[key] === value) {
+                return key.toString();
+            }
+        }
+        return null;
+    },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
     },
     isTSIntyg: function(intygsType) {
         return intygsType.indexOf('Transportstyrelsen') > -1;
+    },
+    isFK7263Intyg: function(intygsType) {
+        return intygsType.indexOf('7263') > -1;
     },
     subjectCodes: {
         'Komplettering': 'KOMPLT',
@@ -251,6 +264,8 @@ module.exports = {
             }
         } else if (intygAbbrev === 'TSTRK1007') {
             return this.pageField.TSTRK1007[index];
+        } else if (intygAbbrev === 'TSTRK1031') {
+            return this.pageField.TSTRK1031[index];
         } else {
             return this.pageField.FK7263[index];
         }
@@ -262,7 +277,8 @@ module.exports = {
         'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'ovrigt'],
         'LUAE_FS': ['funktionsnedsattningDebut', 'funktionsnedsattningPaverkan', 'ovrigt'],
         'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod'],
-        'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion']
+        'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion'],
+        'TSTRK1031': ['hypoglykemier', 'diabetesBehandling', 'specialist']
 
     },
     getUserObj: function(userKey) {

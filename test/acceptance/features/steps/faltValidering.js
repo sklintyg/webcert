@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -178,7 +178,7 @@ function checkFMB(fmbDiagnos) {
 
 
 function fillInDiagnoskod(diagnos) {
-    logger.info('Anger diagnos:', diagnos);
+    logger.info('Anger diagnos:', diagnos.kod);
     global.tmpDiagnos = diagnos;
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     if (isSMIIntyg) {
@@ -236,10 +236,10 @@ module.exports = function() {
 
         }
 
-        promiseArray.push(expect(page.fmbButtons.falt2.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt4.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt5.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt8.isDisplayed()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt2.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt4.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt5.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt8.isPresent()).to.become(false));
 
 
         return Promise.all(promiseArray);
@@ -247,7 +247,7 @@ module.exports = function() {
     });
 
     this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(fel) {
-        element.all(by.css('.alert-danger')).map(function(elm) {
+        return element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         }).then(function(result) {
             logger.silly(result);
@@ -255,7 +255,7 @@ module.exports = function() {
         });
     });
     this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
-        element.all(by.css('.alert-danger')).map(function(elm) {
+        return element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         }).then(function(result) {
             logger.silly(result);

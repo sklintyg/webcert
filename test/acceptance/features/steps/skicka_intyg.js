@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,10 +18,11 @@
  */
 
 /* globals pages */
-/* globals browser, intyg, logger, protractor, Promise */
+/* globals browser, intyg, logger, protractor */
 
 'use strict';
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var helpers = require('./helpers');
 
 module.exports = function() {
 
@@ -37,11 +38,9 @@ module.exports = function() {
         } else {
             logger.info('Följande intygs id skickas till Transportstyrelsen: ' + intyg.id);
         }
-
-        Promise.all([
-            fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE),
-            fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE)
-        ]);
+        return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
+            helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
+        });
     });
 
     this.Given(/^jag skickar intyget till Försäkringskassan$/, function() {
@@ -59,8 +58,8 @@ module.exports = function() {
 
 
 
-        return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE).then(function() {
-            return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
+        return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
+            return helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
         });
 
         // callback();

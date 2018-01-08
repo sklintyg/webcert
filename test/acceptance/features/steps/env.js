@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,20 +33,21 @@ function writeScreenShot(data, filename, cb) {
     stream.on('finish', cb);
 }
 
-function checkConsoleErrors(cb) {
+function checkConsoleErrors() {
     if (hasFoundConsoleErrors) {
 
         // 500-error är ett godkänt fel i detta test, se INTYG-3524
         if (global.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
-            logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
+            return logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
         } else if (hasFoundConsoleErrors.indexOf('ID-dubletter') > -1) {
-            logger.warn(hasFoundConsoleErrors);
+            return logger.warn(hasFoundConsoleErrors);
         } else {
             logger.error(hasFoundConsoleErrors);
             throw ('Hittade script-fel under körning');
         }
+    } else {
+        return logger.info('OK - Inga scriptfel hittades');
     }
-    cb();
 }
 
 function removeAlerts() {
@@ -107,7 +108,8 @@ module.exports = function() {
                 return;
             });
         }).then(function() {
-            return browser.getCurrentUrl().then(function() {
+            return browser.getCurrentUrl().then(function(url) {
+                logger.silly('current URL ' + url);
                 //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
                 return browser.executeScript('return window.errs;').then(function(v) {
                     if (v && v.length > 0) {
@@ -118,7 +120,7 @@ module.exports = function() {
                     }
                 });
             }).catch(function() {
-                //Browser was closed
+                logger.warn('Browser is closed.');
                 return;
             });
         });
@@ -137,20 +139,7 @@ module.exports = function() {
         duplicateIds = [];
     });
     //After scenario
-    this.After(function(scenario, callback) {
-
-        console.log('Rensar local-storage');
-        browser.executeScript('window.sessionStorage.clear();');
-        browser.executeScript('window.localStorage.clear();');
-
-        //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
-        /*var rensaBortIntyg = true;
-        var tagArr = scenario.getTags();
-        for (var i = 0; i < tagArr.length; i++) {
-            if (tagArr[i].getName() === '@keepIntyg') {
-                rensaBortIntyg = false;
-            }
-        }*/
+    this.After(function(scenario) {
 
         if (scenario.isFailed()) {
 
@@ -164,27 +153,40 @@ module.exports = function() {
             frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
             frontEndJS += 'body.appendChild(div);';
 
-            browser.executeScript(frontEndJS).then(function() {
-                return browser.takeScreenshot().then(function(png) {
-                    var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-                    var filename = 'screenshots/' + new Date().getTime() + '.png';
-                    writeScreenShot(png, ssPath + filename, function() {
-                        scenario.attach(filename, 'image/png', function(err) {
-                            if (err) {
-                                throw err;
-                            }
-                            console.log('Skärmbild tagen: ' + filename);
-                            checkConsoleErrors(callback);
-                        });
+            return browser.executeScript(frontEndJS).then(function() {
+                return browser.takeScreenshot();
+            }).then(function(png) {
+                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+                var filename = 'screenshots/' + new Date().getTime() + '.png';
+                return writeScreenShot(png, ssPath + filename, function() {
+                    return scenario.attach(filename, 'image/png', function(err) {
+                        if (err) {
+                            throw err;
+                        }
+                        logger.silly('Skärmbild tagen: ' + filename);
+                        return checkConsoleErrors();
                     });
                 });
+            }).then(function() {
+                logger.silly('Rensar session-storage');
+                return browser.executeScript('window.sessionStorage.clear();');
+            }).then(function() {
+                logger.silly('Rensar local-storage');
+                return browser.executeScript('window.localStorage.clear();');
             });
-
-
-
         } else {
-            checkConsoleErrors(callback);
+            return checkConsoleErrors();
         }
+
+
+        //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
+        /*var rensaBortIntyg = true;
+        var tagArr = scenario.getTags();
+        for (var i = 0; i < tagArr.length; i++) {
+            if (tagArr[i].getName() === '@keepIntyg') {
+                rensaBortIntyg = false;
+            }
+        }*/
 
 
 
@@ -194,8 +196,10 @@ module.exports = function() {
 
 
     logger.on('logging', function(transport, level, msg, meta) {
+        var date = new Date();
+        var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
         if (global.scenario) {
-            global.scenario.attach(level + ': ' + msg);
+            global.scenario.attach(dateString + ' - ' + level + ': ' + msg);
         }
     });
 

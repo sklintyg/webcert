@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,22 +48,20 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         }).then(function() {
             return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
         }).then(function() {
-            return helpers.mediumDelay();
+            return helpers.hugeDelay();
         }).then(function() {
             logger.silly('browser.wait(wcHeader.isPresent()');
             return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
                 return logger.silly('wcHeader is present ' + present);
             });
         }).then(function() {
-            return helpers.smallDelay();
-        }).then(function(x) {
             return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
                 logger.silly('wcHeader is displayed ' + displayed);
-                return helpers.mediumDelay();
-            }).catch(function(err) {
-                logger.warn(err);
+                return helpers.smallDelay();
+            }, function(err) {
                 // Log error but continue. With more delay.
-                return browser.sleep(5000);
+                logger.warn(err);
+                return helpers.hugeDelay();
             });
         }).then(function() {
             browser.ignoreSynchronization = false;

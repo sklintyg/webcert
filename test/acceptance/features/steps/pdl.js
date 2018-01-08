@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,8 +23,10 @@ var db = require('./dbActions');
 
 module.exports = function() {
 
-    this.Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten$/, function(activity) {
-        return db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId);
+    this.Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten( med argument "([^"]*)")?$/, function(activity, medArgument, activityarg) {
+        console.log(activity);
+        console.log(activityarg);
+        return db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId, activityarg);
     });
 
     this.Given(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity) {

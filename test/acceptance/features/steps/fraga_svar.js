@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -463,7 +463,9 @@ module.exports = function() {
 
 
     this.Given(/^jag går till sidan Frågor och svar$/, function() {
-        return pages.fragorOchSvar.get();
+        return pages.fragorOchSvar.get().then(function() {
+            return browser.sleep(1000); // En liten sleep p.g.a page-reload.
+        });
     });
 
     this.Given(/^ska frågan inte finnas i listan$/, function() {

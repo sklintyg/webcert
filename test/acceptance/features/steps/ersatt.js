@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,6 +50,13 @@ module.exports = function() {
 
         return element(by.id('button1ersatt-dialog')).sendKeys(protractor.Key.SPACE).then(function() {
             logger.info('Clicked ersätt button');
+            return browser.sleep(4000).then(function() {
+                return browser.getCurrentUrl().then(function(text) {
+                    intyg.id = text.split('/').slice(-2)[0];
+                    intyg.id = intyg.id.split('?')[0];
+                    logger.info('intyg.id:' + intyg.id);
+                });
+            });
         });
     });
 

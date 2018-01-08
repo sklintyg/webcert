@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -260,27 +260,29 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var fillIn = function fillInUtr(val, index) {
             var row = utredningarElement.underlagRow(index);
 
-            return moveAndSendKeys(row.datum, val.datum)
-                .then(function() {
-					browser.ignoreSynchronization = false;
-					logger.silly('Klickar på element med id: underlag-' + index + '-typ');
-					
-					return browser.sleep(1500).then(function(){
-						return row.underlag.all(by.css('.ui-select-match > .btn')).first().click()   //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
-							.then(function() {
-								return browser.sleep(1500); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
-							})
-							.then(function() {
-								return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function (elm) {
-									return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
-							});
+
+				browser.ignoreSynchronization = false;
+				logger.silly('Klickar på element med id: underlag-' + index + '-typ');
+				
+				return browser.sleep(1500).then(function(){
+					return row.underlag.element(by.css('.ui-select-match')).click()	//sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
+						.then(function() {
+							return browser.sleep(1500); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
+						})
+						.then(function() {
+							return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function (elm) {
+								return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
 						});
 					});
-                })
+				})
+				.then(function() {
+					return moveAndSendKeys(row.datum, val.datum)
+				})
                 .then(function() {
 					browser.ignoreSynchronization = true;
                     return moveAndSendKeys(row.information, val.infoOmUtredningen);
                 });
+
         };
 
         if (utredningar) {

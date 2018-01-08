@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -135,7 +135,7 @@ exports.config = {
 		// Winston Logger level. Logging levels are prioritized from 0 to 5 (highest to lowest):
 		// error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5
 		
-		logger.transports.console.level = 'silly';
+		logger.transports.console.level = 'debug';
 		
 
         //Set window size
@@ -152,7 +152,7 @@ exports.config = {
                 }
             ]);
         };
-        browser.addMockModule('disableNgAnimate', disableNgAnimate);
+       // browser.addMockModule('disableNgAnimate', disableNgAnimate);
 
         var overrideLogging = function() {
             angular.module('overrideLogging', [])

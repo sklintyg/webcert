@@ -1,7 +1,7 @@
 # language: sv
 
-@pdl @GE-005 @SMI
-Egenskap: GE-005 - PDL-loggning för SMI-intyg
+@pdl @GE-005 @TS
+Egenskap: GE-005 - PDL-loggning för TS-intyg
 
 Bakgrund: Jag är inloggad
 	Givet att jag är inloggad som läkare
@@ -10,26 +10,26 @@ Bakgrund: Jag är inloggad
 #1 #4
 # Första ändring per ändringssession ska loggas
 @skapa @skriva @läsa
-Scenario: GE-005 - Skapa SMI-intyg
-	När jag går in på att skapa ett slumpat SMI-intyg
+Scenario: GE-005 - Skapa TS-intyg
+	När jag går in på att skapa ett slumpat TS-intyg
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
 	Och jag går tillbaka
 	Och jag går in på utkastet
 	Så ska det nu finnas 1 loggaktivitet "Läsa" för intyget
-	Och jag ändrar diagnoskod
+	Och jag ändrar i slumpat fält
 	Så ska det nu finnas 2 loggaktivitet "Skriva" för intyget
 
 #2
 @öppna @läsa
-Scenario: GE-005 - Öppna SMI-intyg
-	När jag går in på ett slumpat SMI-intyg med status "Signerat"
+Scenario: GE-005 - Öppna TS-intyg
+	När jag går in på ett slumpat TS-intyg med status "Signerat"
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 
 #3 #8
 @olika-vårdgivare @skriv-ut @utskrift @läsa
-Scenario: GE-005 - Händelser på SMI-intyg utfärdat på annan vårdgivare ska PDL-loggas
+Scenario: GE-005 - Händelser på TS-intyg utfärdat på annan vårdgivare ska PDL-loggas
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
-	Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	Och att vårdsystemet skapat ett intygsutkast för slumpat TS-intyg
     Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
@@ -47,8 +47,8 @@ Scenario: GE-005 - Händelser på SMI-intyg utfärdat på annan vårdgivare ska 
 
 #5 #7
 @skriv-ut @utskrift
-Scenario: GE-005 - Skriv ut SMI-intyg
-	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+Scenario: GE-005 - Skriv ut TS-intyg
+	När att vårdsystemet skapat ett intygsutkast för slumpat TS-intyg
 	Och jag går in på utkastet
 	Och jag skriver ut utkastet
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Utkastet utskrivet"
@@ -67,39 +67,32 @@ Scenario: GE-005 - Skriv ut SMI-intyg
 
 #6
 @skicka @utskrift @waitingForFix @INTYG-5274
-Scenario: GE-005 - PDL - Skicka SMI-intyg till Försäkringskassan
-    När jag går in på ett slumpat SMI-intyg med status "Signerat"
-    Och jag skickar intyget till Försäkringskassan
-    Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg skickat till mottagare FKASSA"
+Scenario: GE-005 - PDL - Skicka TS-intyg till Transportstyrelsen
+    När jag går in på ett slumpat TS-intyg med status "Signerat"
+    Och jag skickar intyget till Transportstyrelsen
+    Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg skickat till mottagare TRANSP"
 
 #9
 @radera
-Scenario: GE-005 - PDL - Radera utkast
-  När jag går in på att skapa ett slumpat SMI-intyg
+Scenario: GE-005 - PDL - Radera TS-utkast
+  När jag går in på att skapa ett slumpat TS-intyg
 	Och jag raderar utkastet
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 #10
 @makulera
-Scenario: GE-005 - Makulera SMI-intyg
-	När  jag går in på ett slumpat SMI-intyg med status "Skickat"
+Scenario: GE-005 - Makulera TS-intyg
+	När  jag går in på ett slumpat TS-intyg med status "Skickat"
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 #11
-@fornya @läsa @skriva
-Scenario: GE-005 - Förnya SMI-intyg
-	När jag går in på ett slumpat SMI-intyg med status "Signerat"
-	Och jag förnyar intyget
-	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
-    Och jag signerar intyget
-	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
-	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
+#Förnya finns inte på TS.
 
 #11
 @ersatt @läsa @skriva
-Scenario: GE-005 - Ersätta SMI-intyg
-	När jag går in på ett slumpat SMI-intyg med status "Signerat"
+Scenario: GE-005 - Ersätta TS-intyg
+	När jag går in på ett slumpat TS-intyg med status "Signerat"
 	Och jag klickar på ersätta knappen
 	Och jag klickar på ersätt-knappen i dialogen
 	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -177,6 +177,7 @@ module.exports = function() {
 
     this.Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
         intyg.typ = testdataHelpers.shuffle([
+            'Läkarintyg för sjukpenning',
             'Läkarutlåtande för sjukersättning',
             'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
@@ -191,10 +192,28 @@ module.exports = function() {
 
     this.Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
         intyg.typ = testdataHelpers.shuffle([
-            //'Läkarintyg för sjukpenning',
+            'Läkarintyg för sjukpenning',
             'Läkarutlåtande för sjukersättning',
             'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+        ])[0];
+        console.log('intyg.typ: ' + intyg.typ);
+        return Promise.all([
+            sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
+            sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
+        ]).then(function() {
+            // Spara intygsid för kommande steg
+            return browser.getCurrentUrl().then(function(text) {
+                intyg.id = text.split('/').slice(-2)[0];
+                return logger.info('intyg.id: ' + intyg.id);
+            });
+        });
+    });
+
+    this.Given(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
+        intyg.typ = testdataHelpers.shuffle([
+            'Transportstyrelsens läkarintyg',
+            'Transportstyrelsens läkarintyg, diabetes'
         ])[0];
         console.log('intyg.typ: ' + intyg.typ);
         return Promise.all([

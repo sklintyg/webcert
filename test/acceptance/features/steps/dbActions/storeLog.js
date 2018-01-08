@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,7 +33,7 @@ function formatDate(date) {
     return testdataHelper.dateFormat(date) + 'T' + time;
 }
 
-function getLogEntries(activity, intygsID, userHSA, connection) {
+function getLogEntries(activity, intygsID, userHSA, connection, activityArg) {
     var dbTable = 'webcert_requests.storelog__mock_requests';
     var now = new Date();
     var oneMinuteSinceNow = new Date(now.getTime() + (-2) * 60000);
@@ -44,6 +44,10 @@ function getLogEntries(activity, intygsID, userHSA, connection) {
         AND activitytype = "${activity}"
         AND userid = "${userHSA}"
         AND logtime>="${oneMinuteSinceNow}"`;
+
+    if (activityArg) {
+        query += ` AND activityarg = "${activityArg}"`;
+    }
 
     console.log('query: ' + query);
     var p1 = new Promise(function(resolve, reject) {
@@ -60,37 +64,54 @@ function getLogEntries(activity, intygsID, userHSA, connection) {
     return p1;
 }
 
-function waitForCount(activity, count, intygsID, userHSA) {
-    return new Promise(function(resolve) {
+function waitForCount(activity, count, intygsID, userHSA, activityArg, counter) {
+    return new Promise(function(resolve, reject) {
+        if (!counter) {
+            counter = 0;
+        }
 
-        dbPool.getConnection()
-            .then(connection => getLogEntries(activity, intygsID, userHSA, connection)
+        return dbPool.getConnection()
+            .then(connection => getLogEntries(activity, intygsID, userHSA, connection, activityArg)
                 .then(result => {
                     var interval = 5000;
                     if (result.length >= count) {
                         logger.info('Hittade rader: ' + JSON.stringify(result));
                         connection.release();
-                        return resolve();
+                        resolve();
+                        return result;
                     } else {
                         logger.info(`Hittade färre än ${count} rader i databasen`);
-                        console.log(`Ny kontroll sker efter ${interval} ms`);
-                        connection.release();
-                        return setTimeout(() => waitForCount(activity, count, intygsID, userHSA).then(function() {
-                            return resolve();
-                        }), interval);
+                        if (counter >= 9) {
+                            counter++;
+                            return reject(new Error('Hittade inte ' + activity + ', ' + activityArg + '. Databas Query stoppades efter ' + counter + ' försök')).then(function(error) {
+                                // not called
+                            }, function(error) {
+                                return console.trace(error); // Stacktrace
+                            });
+                        } else {
+                            counter++;
+                            logger.info(`Ny kontroll sker efter ${interval} ms`);
+                            connection.release();
+                            return setTimeout(function() {
+                                return waitForCount(activity, count, intygsID, userHSA, activityArg, counter).then(function() {
+                                    resolve();
+                                    return;
+                                }, function(err) {
+                                    reject(err);
+                                    return;
+                                });
+                            }, interval);
+                        }
                     }
-                })
-                .catch(err => {
-                    connection.release();
-                    throw (err);
-                })
-            );
-
-
-
-
-
-
+                }).then(function(fulfilled) {
+                    return logger.silly('promise fulfilled');
+                }, function(rejected) {
+                    return logger.silly('promise rejected');
+                }));
+    }).then(function() {
+        return;
+    }, function(err) {
+        throw (err);
     });
 
 }

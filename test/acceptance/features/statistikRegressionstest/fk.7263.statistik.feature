@@ -4,9 +4,11 @@
 Egenskap: Regressionstest på Statistiktjänsten med ökad test teckning.
 
 Bakgrund: Jag befinner mig på webcerts förstasida
+    
 
 @nätverk @smoke @statitisk-APIet @processIntyg
 Scenario: Testa att anropa statitisk-APIet
+	Givet att jag är inloggad som läkare
     När jag anropar statitisk-APIet processIntyg
 
 @makulera @verksamhetsStatistik

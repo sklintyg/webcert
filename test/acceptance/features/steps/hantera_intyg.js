@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,6 +25,7 @@ var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var utkastPage = pages.intyg.base.utkast;
 var helpers = require('./helpers.js');
+var moveAndSendKeys = helpers.moveAndSendKeys;
 
 function signeraUtkast() {
 
@@ -42,7 +43,7 @@ function signeraUtkast() {
 
             return expect(fkUtkastPage.sparatOchKomplettMeddelande.isDisplayed()).to.eventually.equal(true)
                 .then(function() {
-                    return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+                    return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
                 })
                 .then(function() {
                     // Verifiera att det inte finns valideringsfel
@@ -107,7 +108,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag klickar på signera\-knappen$/, function() {
-        return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+        return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
     });
 
 
@@ -134,7 +135,7 @@ module.exports = function() {
                 intyg.id = intyg.id.split('?')[0];
             })
             .then(function() {
-                return fkIntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+                return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
             })
             .then(function() {
                 return browser.sleep(2000); // fix för animering
@@ -143,26 +144,32 @@ module.exports = function() {
                 return fkIntygPage.pickMakuleraOrsak();
             })
             .then(function() {
-                return fkIntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
+                return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
             });
     });
 
 
-    this.Given(/^jag raderar utkastet$/, function(callback) {
-        fkUtkastPage.radera.knapp.sendKeys(protractor.Key.SPACE);
-        fkUtkastPage.radera.bekrafta.sendKeys(protractor.Key.SPACE)
-            .then(callback);
+    this.Given(/^jag raderar utkastet$/, function() {
+        return moveAndSendKeys(fkUtkastPage.radera.knapp, protractor.Key.SPACE).then(function() {
+            return moveAndSendKeys(fkUtkastPage.radera.bekrafta, protractor.Key.SPACE);
+        });
     });
 
 
     this.Given(/^jag skriver ut intyget$/, function() {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var isFK7263Intyg = helpers.isFK7263Intyg(intyg.typ);
 
-        if (isSMIIntyg) {
-            return element(by.id('downloadprint')).sendKeys(protractor.Key.SPACE);
+        if (isFK7263Intyg === false) {
+            return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
         } else {
             return fkIntygPage.skrivUtFullstandigtIntyg();
         }
+    });
+
+    this.Given(/^jag skriver ut utkastet$/, function() {
+        return browser.sleep(5000).then(function() {
+            return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE);
+        });
     });
 
     this.Given(/^ska det finnas en referens till gamla intyget$/, function() {
@@ -185,7 +192,7 @@ module.exports = function() {
     });
 
     this.When(/^jag markerar intyget som klart för signering$/, function() {
-        return element(by.id('markeraKlartForSigneringButton')).sendKeys(protractor.Key.SPACE);
+        return moveAndSendKeys(element(by.id('markeraKlartForSigneringButton')), protractor.Key.SPACE);
     });
 
     this.When(/^ska jag se texten "([^"]*)"$/, function(msg) {
