@@ -187,7 +187,7 @@ module.exports = function() {
                 intygUrlShortCode = intygUrlShortCode.toLowerCase();
                 console.log(intygUrlShortCode);
                 url = process.env.WEBCERT_URL + 'visa/intyg/';
-                url += intygUrlShortCode + '/';
+                //url += intygUrlShortCode + '/';  //Integrerade journalsystem använder inte intygstyp i URL
                 url += global.intyg.id;
                 url += '?';
                 url += 'fornamn=' + encodeURIComponent(person.forNamn) + '&';
@@ -201,7 +201,7 @@ module.exports = function() {
                 intygUrlShortCode = intygUrlShortCode.toLowerCase();
                 console.log(intygUrlShortCode);
                 url = process.env.WEBCERT_URL + 'visa/intyg/';
-                url += intygUrlShortCode + '/';
+                //url += intygUrlShortCode + '/'; //Integrerade journalsystem använder inte intygstyp i URL
                 url += global.intyg.id;
                 break;
 
