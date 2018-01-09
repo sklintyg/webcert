@@ -32,7 +32,8 @@ ext {
     jaxrsVersion = "1.5.4"
     jsonSchemaValidatorVersion = "2.8.0"
     liquibaseVersion = "3.3.5"
-    luceneAnalyzersCommonVersion = "4.10.2"
+    // Note that Apache Ignite will pull in its own version of lucene, we're using exclude in /infra to prevent that.
+    luceneAnalyzersCommonVersion = "5.5.2"
     openWsVersion = "1.4.2-1"
     opensamlVersion = "2.5.3"
     restassuredVersion = "2.8.0"
