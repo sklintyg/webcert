@@ -60,7 +60,6 @@
   angular.module('WcWelcomeApp.controllers', []).controller('welcomeController',
     ['$scope', '$http', '$log', function($scope, $http, $log) {
 
-
       // PU stub operations ============================================
         $scope.PU = {
             latestResult: 'Inget',
@@ -156,16 +155,48 @@
         })[0];
       }
 
+        function _findPrivatlakare(personId) {
+            return $scope.loginModel.filter(function(item) {
+                return item.personId === personId;
+            })[0];
+        }
+
       function _fetchHsaPersons() {
         $http.get('/services/hsa-api/person').
         then(function(response) {
           $scope.loginModel = _loginModel(response.data);
           $scope.loginOptions = _loginOptions();
           $scope.selectedIndex = '0';
+
+          _fetchPrivatlakare();
         }, function(data, status) {
           $log.error('error ' + status);
         });
       }
+
+        function _fetchPrivatlakare() {
+            $http.get('/services/pp-api/medarbetaruppdrag').
+            then(function(response) {
+              var data = response.data;
+              for (var a = 0; a < data.length; a++) {
+                  console.log(JSON.stringify(data[a]));
+                  var item = {
+                      'index': $scope.loginOptions.length,
+                      'hsaId': data[a].hsaId.extension,
+                      'forNamn': data[a].fullstandigtNamn,
+                      'efterNamn': '',
+                      'personId': data[a].personId.extension,
+                      'privatLakare': true,
+                      'beskrivning': data[a].fullstandigtNamn + ' (Privatläkare, ' + (data[a].godkandAnvandare ? 'Godkänd' : 'Ej godkänd') + ')'
+                  };
+                  $scope.loginOptions.push(item);
+                  $scope.loginModel.push(item);
+              }
+
+            }, function(data, status) {
+                $log.error('error ' + status);
+            });
+        }
 
       function _isArray(obj) {
         return Object.prototype.toString.call(obj) == "[object Array]";
@@ -287,7 +318,8 @@
             'legitimeradeYrkesgrupper',
             'befattningsKod',
             'forskrivarKod',
-            'origin'];
+            'origin',
+        'privatLakare','personId'];
 
         var string = JSON.stringify(hsaPerson, validProperties, 1);
         var object = JSON.parse(string);
@@ -438,15 +470,27 @@
         // Catch user login option
         var login = $scope.loginOptions[newSelected];
 
-        // Get the HSA person from model
-        var hsaPerson = _findHsaPerson(login.hsaId);
+        if (typeof login !== 'undefined') {
 
-        // Add properties to HSA person
-        _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
-        _updateObject(hsaPerson, 'origin', $scope.environment.origin);
+            // Hantera som privatlakare.
+            if (typeof login.privatLakare !== 'undefined' && login.privatLakare) {
+                var ppPerson = _findPrivatlakare(login.personId);
+                var loginJson = _stringify(ppPerson);
+                $scope.jsonModel = loginJson;
+            } else {
+                // Get the HSA person from model
+                var hsaPerson = _findHsaPerson(login.hsaId);
 
-        var loginJson = _stringify(hsaPerson);
-        $scope.jsonModel = loginJson;
+                // Add properties to HSA person
+                _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
+                _updateObject(hsaPerson, 'origin', $scope.environment.origin);
+
+                var loginJson = _stringify(hsaPerson);
+                $scope.jsonModel = loginJson;
+            }
+        }
+
+
       };
 
       $scope.whichEnv = function(env) {

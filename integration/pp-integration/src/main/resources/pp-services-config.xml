@@ -26,13 +26,6 @@
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
         http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
 
-  <!--
-  <jaxws:client id="ppClient"
-    serviceClass="se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface"
-    address="${putjanst.endpoint.url}">
-  </jaxws:client>
-  -->
-
   <jaxws:client id="getPrivatePractitionerResponderInterface"
       serviceClass="se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface"
       address="${privatepractitioner.getprivatepractitioner.endpoint.url}" />
@@ -60,8 +53,8 @@
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>
-          <!-- these filters ensure that a cipher suite with export-suitable 
-            or null encryption is used, but exclude anonymous Diffie-Hellman key change 
+          <!-- these filters ensure that a cipher suite with export-suitable
+            or null encryption is used, but exclude anonymous Diffie-Hellman key change
             as this is vulnerable to man-in-the-middle attacks -->
           <sec:include>.*_EXPORT_.*</sec:include>
           <sec:include>.*_EXPORT1024_.*</sec:include>

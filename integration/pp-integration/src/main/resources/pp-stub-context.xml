@@ -18,11 +18,14 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
+
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jaxws="http://cxf.apache.org/jaxws"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+                            http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
        profile="dev,wc-all-stubs,wc-pp-stub">
 
     <jaxws:endpoint address="/pp/get-private-practitioner" implementor="se.inera.intyg.webcert.integration.pp.stub.GetPrivatePractitionerResponderStub" />
@@ -30,5 +33,21 @@
 
     <bean class="se.inera.intyg.webcert.integration.pp.stub.PPBootstrapBean" lazy-init="false" />
     <bean class="se.inera.intyg.webcert.integration.pp.stub.HoSPersonStub" />
+
+    <beans profile="dev,testability-api">
+        <jaxrs:server address="/pp-api">
+            <jaxrs:serviceBeans>
+                <ref bean="ppStubRestApi"/>
+            </jaxrs:serviceBeans>
+            <jaxrs:providers>
+                <ref bean="jacksonJsonProvider"/>
+            </jaxrs:providers>
+            <jaxrs:extensionMappings>
+                <entry key="json" value="application/json"/>
+            </jaxrs:extensionMappings>
+        </jaxrs:server>
+
+        <bean id="ppStubRestApi" class="se.inera.intyg.webcert.integration.pp.stub.PPStubRestApi"/>
+    </beans>
 
 </beans>

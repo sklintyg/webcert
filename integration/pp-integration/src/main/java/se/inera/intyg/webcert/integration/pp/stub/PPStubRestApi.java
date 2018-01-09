@@ -18,41 +18,29 @@
  */
 package se.inera.intyg.webcert.integration.pp.stub;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
-import java.util.HashMap;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
- * Created by Magnus Ekstrand on 18/06/15.
+ * Testability API for accessing identities from the PP (Privatlakare) stub.
+ *
+ * @author eriklupander
  */
-public class HoSPersonStub {
+public class PPStubRestApi {
 
-    private Map<String, HoSPersonType> personer = new HashMap<>();
+    @Autowired
+    private HoSPersonStub hoSPersonStub;
 
-    public void add(HoSPersonType person) {
-        personer.put(person.getPersonId().getExtension(), person);
+    @GET
+    @Path("/medarbetaruppdrag")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<HoSPersonType> getAllHoSPersonType() {
+        return hoSPersonStub.getAll();
     }
-
-    public HoSPersonType get(String id) {
-        return personer.get(id);
-    }
-
-    public HoSPersonType getByHsaId(String hsaId) {
-        if (hsaId != null) {
-            for (HoSPersonType person : personer.values()) {
-                if (hsaId.equalsIgnoreCase(person.getHsaId().getExtension())) {
-                    return person;
-                }
-            }
-        }
-        return null;
-    }
-
-    public List<HoSPersonType> getAll() {
-        return personer.values().stream().collect(Collectors.toList());
-    }
-
 }
