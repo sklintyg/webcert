@@ -80,17 +80,6 @@
         var restPath = '/api/anvandare';
         return $.get(restPath).then(function(data) {
             user = data;
-            // set jsMinified
-            if (user !== undefined && user.features !== undefined) {
-                if (user.features.JS_MINIFIED !== undefined && user.features.JS_MINIFIED.global === true) {
-                    user.jsMinified = true;
-                } else {
-                    user.jsMinified = false;
-                }
-            }
-            if (window.console) {
-                console.log('---- user.jsMinified : ' + user.jsMinified);
-            }
             return data;
         });
     }
@@ -288,7 +277,7 @@
                 getModules().then(function(modules) {
                     var modulePromises = [];
 
-                    if (user.jsMinified) {
+                    if (moduleConfig.JS_MINIFIED) {
                         modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.min.js?' +
                             moduleConfig.BUILD_NUMBER));
                         // All dependencies in module-deps.json are included in module.min.js
@@ -311,7 +300,7 @@
 
                         loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
 
-                        if (user.jsMinified) {
+                        if (moduleConfig.JS_MINIFIED) {
 
                             if (window.console) {
                                 console.log('use mini is true! loading compressed modules');
@@ -330,7 +319,7 @@
                         var dependencyPromises = [];
 
                         // Only needed for development since all dependencies are included in other files.
-                        if (!user.jsMinified) {
+                        if (!moduleConfig.JS_MINIFIED) {
                             if (window.console) {
                                 console.log('use mini is false! loading modules');
                             }

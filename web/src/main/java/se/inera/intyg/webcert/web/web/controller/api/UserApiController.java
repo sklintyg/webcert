@@ -85,7 +85,6 @@ public class UserApiController extends AbstractApiController {
         WebCertUser user = getWebCertUserService().getUser();
         Map<String, Feature> mutFeatures = new HashMap<>(user.getFeatures());
         updateFeatures(webUserFeaturesRequest.isJsLoggning(), AuthoritiesConstants.FEATURE_JS_LOGGNING, mutFeatures);
-        updateFeatures(webUserFeaturesRequest.isJsMinified(), AuthoritiesConstants.FEATURE_JS_MINIFIED, mutFeatures);
         user.setFeatures(mutFeatures);
         return Response.ok(mutFeatures).build();
     }

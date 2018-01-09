@@ -54,6 +54,9 @@ public class ConfigApiController extends AbstractApiController {
     @Value("${certificate.view.url.base}")
     private String dashboardUrl;
 
+    @Value("${webcert.useMinifiedJavaScript}")
+    private String useMinifiedJavascript;
+
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
@@ -65,7 +68,7 @@ public class ConfigApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get module configuration for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     public Response getConfig() {
-        return Response.ok(new ConfigResponse(version, build, ppHost, dashboardUrl)).build();
+        return Response.ok(new ConfigResponse(version, build, ppHost, dashboardUrl, Boolean.parseBoolean(useMinifiedJavascript))).build();
     }
 
     @GET

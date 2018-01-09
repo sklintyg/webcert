@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,6 +71,9 @@ public class PageController {
     @Autowired
     private IntygService intygService;
 
+    @Value("${webcert.useMinifiedJavaScript}")
+    private String useMinifiedJavascript;
+
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
@@ -98,22 +102,13 @@ public class PageController {
     @RequestMapping(value = "/dashboard", method = { RequestMethod.GET, RequestMethod.POST })
     public ModelAndView displayDashBoard() {
         ModelAndView modelAndView = new ModelAndView(DASHBOARD_VIEW);
-        populateUseMinifiedJavaScript(modelAndView);
+        modelAndView.addObject("useMinifiedJavaScript", useMinifiedJavascript);
         return modelAndView;
     }
 
     @RequestMapping(value = "/adminview", method = RequestMethod.GET)
     public ModelAndView displayAdminView() {
         return new ModelAndView(ADMIN_VIEW);
-    }
-
-    private void populateUseMinifiedJavaScript(ModelAndView model) {
-        final WebCertUser user = webCertUserService.getUser();
-        if (user != null) {
-            model.addObject("useMinifiedJavaScript", user.isFeatureActive(AuthoritiesConstants.FEATURE_JS_MINIFIED));
-        } else {
-            model.addObject("useMinifiedJavaScript", authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_JS_MINIFIED));
-        }
     }
 
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
