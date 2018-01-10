@@ -171,6 +171,13 @@ module.exports = function() {
 
     });
 
+    this.Given(/^ska svara med textmeddelande vara tillgängligt i dialogen/, function() {
+        var svaraMedMeddelande = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
+
+        return expect(svaraMedMeddelande.isDisplayed()).to.become(true);
+
+    });
+
     this.Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text) {
         return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(text);
     });

@@ -68,7 +68,16 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
    
    ###### TODO ändra till att testa med lisjp intyg ##########################
    #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   #När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   
+   Givet att jag är inloggad som läkare
+   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+   Och jag går in på utkastet
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan 
+   
+   Givet att jag är inloggad som uthoppsläkare
    ###########################################################################
    
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
@@ -81,14 +90,16 @@ Scenario: Ska få varning vid svar med nytt intyg
    
    ###### TODO ändra till att testa med lisjp intyg ##########################
    #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
+   #När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   Givet att jag är inloggad som läkare
+   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+   Och jag går in på utkastet
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan 
    
-   #Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
-   #Och jag går in på utkastet
-   #Och jag fyller i alla nödvändiga fält för intyget
-   #Och jag signerar intyget
-   #Och jag skickar intyget till Försäkringskassan 
+   Givet att jag är inloggad som uthoppsläkare
    ###########################################################################
    
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
@@ -98,22 +109,27 @@ Scenario: Ska få varning vid svar med nytt intyg
    När jag klickar på svara knappen, fortfarande i uthoppsläge
    Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
 
-@komplettera @fk7263 @waitingForFix
+@komplettera @fk7263
 Scenario: Ska kunna besvara komplettering med textmeddelande via uthoppslänk
    När jag går in på en patient
    
    ###### TODO ändra till att testa med lisjp intyg ##########################
-   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
+   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"    
+   #När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
    
-   När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
+   Givet att jag är inloggad som läkare
+   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+   Och jag går in på utkastet
+   Och jag fyller i alla nödvändiga fält för intyget
+   Och jag signerar intyget
+   Och jag skickar intyget till Försäkringskassan 
    
-   #Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
-   #Och jag går in på utkastet
-   #Och jag fyller i alla nödvändiga fält för intyget
-   #Och jag signerar intyget
-   #Och jag skickar intyget till Försäkringskassan 
+   Givet att jag är inloggad som uthoppsläkare
    ###########################################################################
+   
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk
    Så ska jag se kompletteringsfrågan på intygs-sidan
-   Och jag ska kunna svara med textmeddelande
+   Och jag klickar på svara knappen, fortfarande i uthoppsläge
+   Så jag ska inte kunna komplettera med nytt intyg från webcert
+   Så ska svara med textmeddelande vara tillgängligt i dialogen
