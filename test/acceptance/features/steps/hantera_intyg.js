@@ -149,6 +149,38 @@ module.exports = function() {
     });
 
 
+    function makuleraLoop(intygsTyp) {
+        return helpers.getIntygElementRow(intygsTyp, intygsTyp, function(intygRadElement) {
+            if (!intygRadElement) {
+                return logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
+            } else {
+                return intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE)
+                    .then(function() {
+                        return browser.sleep(4000); // Laddar in intyget
+                    })
+                    .then(function() {
+                        return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
+                    })
+                    .then(function() {
+                        return browser.sleep(2000); // fix för animering
+                    }).then(function() {
+                        return fkIntygPage.pickMakuleraOrsak();
+                    }).then(function() {
+                        return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
+                    }).then(function() {
+                        return makuleraLoop(intygsTyp);
+                    });
+            }
+
+
+        });
+    }
+
+    this.Given(/^jag makulerar tidigare "([^"]*)" intyg$/, function(intygsTyp) {
+        return makuleraLoop(intygsTyp);
+    });
+
+
     this.Given(/^jag raderar utkastet$/, function() {
         return moveAndSendKeys(fkUtkastPage.radera.knapp, protractor.Key.SPACE).then(function() {
             return moveAndSendKeys(fkUtkastPage.radera.bekrafta, protractor.Key.SPACE);

@@ -9,6 +9,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 @signera
 Scenario: Kan signera Dödsorsaksintyg 
           När jag går in på en patient
+  		  Och jag makulerar tidigare "Dödsbevis" intyg
 		  Och jag går in på att skapa ett "Dödsorsaksintyg" intyg
 		  Och jag fyller i alla nödvändiga fält för intyget
 		  Och jag signerar intyget
@@ -18,4 +19,5 @@ Scenario: Kan signera Dödsorsaksintyg
 @sekretessmarkering
 Scenario: Ska inte kunna utfärda DOI på patienter med sekretessmarkering
 	När jag går in på en patient med sekretessmarkering
+	Och jag makulerar tidigare "Dödsbevis" intyg
 	Så ska jag inte kunna skapa ett "Dödsorsaksintyg" intyg
