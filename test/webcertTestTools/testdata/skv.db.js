@@ -40,7 +40,7 @@ function getDodsdatum(datumSakert){
 		var monthArr = ['00 (ej känt)', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 		return {
 			inteSakert : {
-				year : shuffle(['2016', '2017', '0000 (ej känt)'])[0],
+				year : shuffle(['2017', '2018', '0000 (ej känt)'])[0],
 				month : shuffle(monthArr.slice(0,today.getMonth() - 1))[0],
 				antraffadDod : testdataHelper.dateFormat(today)
 			}
