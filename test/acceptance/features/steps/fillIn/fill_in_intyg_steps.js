@@ -118,18 +118,22 @@ function changeField(intygShortcode, field, clearFlag) {
             }
         }
     } else if (intygShortcode === 'TSTRK1007') {
-        if (clearFlag) {
-            if (field === 'funktionsnedsattning') {
-                return moveAndSendKeys(tsBasUtkastPage.funktionsnedsattning.aYes, protractor.Key.SPACE).then(function() {
-                    return tsBasUtkastPage.funktionsnedsattning.aText.clear();
+        if (field === 'funktionsnedsattning') {
+            return moveAndSendKeys(tsBasUtkastPage.funktionsnedsattning.aYes, protractor.Key.SPACE).then(function() {
+                return tsBasUtkastPage.funktionsnedsattning.aText.clear().then(function() {
+                    return moveAndSendKeys(tsBasUtkastPage.funktionsnedsattning.aText, helpers.randomTextString());
                 });
-            } else if (field === 'hjartKarlsjukdom') {
-                return moveAndSendKeys(tsBasUtkastPage.hjartKarl.cYes, protractor.Key.SPACE).then(function() {
-                    return tsBasUtkastPage.hjartKarl.cText.clear();
+            });
+        } else if (field === 'hjartKarlsjukdom') {
+            return moveAndSendKeys(tsBasUtkastPage.hjartKarl.cYes, protractor.Key.SPACE).then(function() {
+                return tsBasUtkastPage.hjartKarl.cText.clear().then(function() {
+                    return moveAndSendKeys(tsBasUtkastPage.hjartKarl.cText, helpers.randomTextString());
                 });
-            } else if (field === 'utanKorrektion') {
-                return tsBasUtkastPage.syn.hoger.utan.clear();
-            }
+            });
+        } else if (field === 'utanKorrektion') {
+            return tsBasUtkastPage.syn.hoger.utan.clear().then(function() {
+                return moveAndSendKeys(tsBasUtkastPage.syn.hoger.utan, '1.0');
+            });
         }
     } else if (intygShortcode === 'TSTRK1031') {
         if (field === 'hypoglykemier') {
@@ -172,11 +176,13 @@ module.exports = function() {
 
     this.Given(/^jag ändrar diagnoskod$/, function() {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        var kod = td.values.fk.getRandomDiagnoskod();
+        var diagnos = {
+            kod: td.values.fk.getRandomDiagnoskod()
+        };
         if (isSMIIntyg) {
-            return moveAndSendKeys(luseUtkastPage.diagnoseCode, kod);
+            return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
         } else {
-            return moveAndSendKeys(fkUtkastPage.angeDiagnosKod, kod);
+            return fkUtkastPage.angeDiagnosKod(diagnos.kod);
         }
 
     });
