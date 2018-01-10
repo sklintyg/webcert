@@ -145,6 +145,8 @@ module.exports = function() {
             })
             .then(function() {
                 return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
+            }).then(function() {
+                return browser.sleep(1000); // Sleep p.g.a. page reload.
             });
     });
 
