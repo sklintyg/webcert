@@ -1,5 +1,5 @@
 #language: sv
-@luse @fråga-från-fk @vårdadmin @waitingForFix @INTYG-5261
+@luse @fråga-från-fk @vårdadmin
 Egenskap: Försäkringskassan kan skicka frågor på sjukintyg LUSE
 
 Bakgrund: Jag befinner mig på webcerts förstasida

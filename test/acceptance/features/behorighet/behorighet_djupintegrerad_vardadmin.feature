@@ -1,5 +1,5 @@
 # language: sv
-@behorighet @djupintegration @vårdadmin @waitingForFix @INTYG-5261
+@behorighet @djupintegration @vårdadmin
 Egenskap: Behörigheter för en djupintegrerad vårdadministratör
 
 Bakgrund: Logga in

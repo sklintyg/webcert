@@ -1,5 +1,5 @@
 # language: sv
-@behorighet @vårdadmin @waitingForFix @INTYG-5261 
+@behorighet @vårdadmin 
 Egenskap: Behörigheter för en vårdadministratör
 
 Bakgrund: Logga in och gå in på en patient

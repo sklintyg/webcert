@@ -6,7 +6,7 @@ Bakgrund:
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient med sekretessmarkering
 	
-@vårdadmin @waitingForFix @INTYG-5261 @utkast
+@vårdadmin @utkast
 Scenario: Kontrollera att vårdadmin inte kan se eller öppna något intygsutkast på s-markerad patient
 	När jag går in på att skapa ett slumpat SMI-intyg
 	
@@ -20,7 +20,7 @@ Scenario: Kontrollera att vårdadmin inte kan se eller öppna något intygsutkas
 	Så ska intyget inte finnas i listan
 
 	
-@vårdadmin @waitingForFix @INTYG-5261 @signeratintyg @frågasvar
+@vårdadmin @signeratintyg @frågasvar
 Scenario: Kontrollera att vårdadmin inte kan se eller öppna något signerat intyg eller fråga på s-markerad patient
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget

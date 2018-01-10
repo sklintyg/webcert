@@ -1,6 +1,6 @@
 # language: sv
 
-@statistik @integration @fk7263 @waitingForFix @INTYG-5034
+@statistik @integration @fk7263
 Egenskap: FK7263-integration med Statistiktjänsten
 
 Bakgrund: Jag befinner mig på webcerts förstasida

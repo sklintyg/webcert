@@ -1,6 +1,6 @@
 # language: sv
 
-@Regressionstest @RegressionsTestStatistik @Statistik @waitingForFix @INTYG-5034
+@Regressionstest @RegressionsTestStatistik @Statistik
 Egenskap: Regressionstest på Statistiktjänsten med ökad test teckning.
 
 Bakgrund: Jag befinner mig på webcerts förstasida
