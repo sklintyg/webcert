@@ -139,7 +139,7 @@ exports.config = {
 		
 
         //Set window size
-        browser.manage().window().setSize(1600, 1000);
+        //browser.manage().window().setSize(1600, 1000); Size är redan satt
 
         //Strunta i om servern inte kan bekräfta dess identitet
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
