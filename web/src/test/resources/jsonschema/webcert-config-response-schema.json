@@ -14,12 +14,16 @@
     },
     "DASHBOARD_URL": {
       "type": "string"
+    },
+    "JS_MINIFIED": {
+      "type": "boolean"
     }
   },
   "required": [
     "VERSION",
     "BUILD_NUMBER",
     "PP_HOST",
-    "DASHBOARD_URL"
+    "DASHBOARD_URL",
+    "JS_MINIFIED"
   ]
 }
