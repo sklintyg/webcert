@@ -205,8 +205,8 @@ module.exports = function() {
     this.Given(/^jag skriver ut utkastet$/, function() {
         return browser.sleep(5000).then(function() {
             return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE).then(function() {
-				return helpers.smallDelay(); // Page reload
-			});
+                return helpers.smallDelay(); // Page reload
+            });
         });
     });
 

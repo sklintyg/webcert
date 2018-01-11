@@ -26,7 +26,7 @@ var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var basePage = pages.webcertBase;
 var utkastPage = pages.intyg.base.utkast;
 var unsignedPage = pages.unsignedPage;
-
+var helpers = require('./helpers');
 
 module.exports = function() {
 
@@ -247,7 +247,7 @@ module.exports = function() {
     });
 
     this.Given(/^vårdenhet ska vara "([^"]*)"$/, function(arg1, callback) {
-        expect(basePage.careUnit.getText()).to.eventually.contain(arg1).then(function(value) {
+        expect(basePage.header.getText()).to.eventually.contain(arg1).then(function(value) {
             logger.info('OK - vårdenhet = ' + value);
         }, function(reason) {
             callback('FEL - vårdenhet: ' + reason);
@@ -312,14 +312,20 @@ module.exports = function() {
             }
         }).then(callback);
     });
-    this.Given(/^jag byter vårdenhet till "([^"]*)"$/, function(id, callback) {
-        //basePage.changeUnit.sendKeys(protractor.Key.SPACE).then(function() 
-        basePage.changeUnit.click().then(function() {
-            var enhetId = 'select-active-unit-' + id + '-modal';
-            console.log(enhetId);
-            element(by.id(enhetId)).click().then(callback); //sendKeys(protractor.Key.SPACE).then(callback);
+    this.Given(/^jag byter vårdenhet till "([^"]*)"$/, function(id) {
+        return helpers.moveAndSendKeys(basePage.expandUnitMenu, protractor.Key.SPACE)
+            .then(function() {
+                return helpers.mediumDelay();
+            })
+            .then(function() {
+                return basePage.changeUnit.click();
+            })
+            .then(function() {
+                var enhetId = 'select-active-unit-' + id + '-modal';
+                console.log(enhetId);
+                return helpers.moveAndSendKeys(element(by.id(enhetId)), protractor.Key.SPACE);
 
-        });
+            });
 
 
     });
