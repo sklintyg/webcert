@@ -65,7 +65,7 @@ Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts di
 	
 @rehabstod @rehabKoordinator
 Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
-	Givet vårdenhet ska vara "VG_TestAutomation - TestEnhet2"
+	Givet vårdenhet ska vara "TestEnhet2"
 	#TSTNMT2321000156-107Q
 	
 	#Säkerställer att det finns ett lisjp intyg på patienten.

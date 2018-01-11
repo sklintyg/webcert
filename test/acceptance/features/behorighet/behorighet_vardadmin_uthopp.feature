@@ -11,4 +11,4 @@ Bakgrund: Logga in och gå in på en patient
 Scenario: Kan byta vårdenhet 
    När jag går in på intyget via uthoppslänk
    Och jag byter vårdenhet till "TSTNMT2321000156-106N"
-   Så vårdenhet ska vara "nmt_vg1 - Smultronet"
+   Så vårdenhet ska vara "Smultronet"
