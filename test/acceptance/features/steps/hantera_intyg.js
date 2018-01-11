@@ -138,7 +138,7 @@ module.exports = function() {
                 return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
             })
             .then(function() {
-                return browser.sleep(2000); // fix för animering
+                return helpers.largeDelay(); // fix för animering
             })
             .then(function() {
                 return fkIntygPage.pickMakuleraOrsak();
@@ -146,7 +146,7 @@ module.exports = function() {
             .then(function() {
                 return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
             }).then(function() {
-                return browser.sleep(1000); // Sleep p.g.a. page reload.
+                return helpers.largeDelay(); // Sleep p.g.a. page reload.
             });
     });
 
@@ -186,6 +186,8 @@ module.exports = function() {
     this.Given(/^jag raderar utkastet$/, function() {
         return moveAndSendKeys(fkUtkastPage.radera.knapp, protractor.Key.SPACE).then(function() {
             return moveAndSendKeys(fkUtkastPage.radera.bekrafta, protractor.Key.SPACE);
+        }).then(function() {
+            return helpers.largeDelay(); // Page reload
         });
     });
 
@@ -202,7 +204,9 @@ module.exports = function() {
 
     this.Given(/^jag skriver ut utkastet$/, function() {
         return browser.sleep(5000).then(function() {
-            return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE);
+            return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE).then(function() {
+				return helpers.smallDelay(); // Page reload
+			});
         });
     });
 

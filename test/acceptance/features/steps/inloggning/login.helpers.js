@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global logger, JSON, browser, pages*/
+/*global logger, JSON, browser, pages, Promise*/
 'use strict';
 var helpers = require('../helpers');
 
@@ -108,11 +108,10 @@ module.exports = {
                 return element(by.id('wcHeader')).getText().then(function(txt) {
                     logger.info('Webcert Header: ' + txt);
                 }).then(function() {
-                    var promiseArr = [];
-                    promiseArr.push(expect(wcHeader.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn));
-                    promiseArr.push(expect(wcHeader.getText()).to.eventually.contain(roleName));
-
-                    return promiseArr;
+                    return Promise.all([
+                        expect(wcHeader.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn),
+                        expect(wcHeader.getText()).to.eventually.contain(roleName)
+                    ]);
                 });
             });
     }
