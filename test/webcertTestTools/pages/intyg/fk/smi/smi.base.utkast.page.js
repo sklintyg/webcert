@@ -301,12 +301,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var promiseArr = [];
         for (var i = 0; i < diagnoser.length; i++) {
             var row = this.diagnos.diagnosRow(i);
-            promiseArr.push(
-			moveAndSendKeys(row.kod,diagnoser[i].kod)
-			.then(browser.wait(1000)) //Litet delay för drop-down listan att öppnas
-			.then(sendEnterToElement(row.kod))
-			);
-
+			promiseArr.push(moveAndSendKeys(row.kod,diagnoser[i].kod).then(browser.sleep(1000)).then(sendEnterToElement(row.kod)))
         }
         return Promise.all(promiseArr);
 
