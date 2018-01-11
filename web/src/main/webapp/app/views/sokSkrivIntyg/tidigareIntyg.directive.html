@@ -22,19 +22,18 @@
 
       <!-- No intyg for person -->
       <div id="current-list-noResults-unit"
-           ng-show="!viewState.intygListErrorMessageKey && viewState.currentList.length < 1"
-           class="alert alert-info">
+           ng-show="!viewState.intygListErrorMessageKey && viewState.currentList.length < 1">
         <span message key="info.nointygfound"></span>
       </div>
 
       <!-- error message -->
-      <div id="current-list-noResults-error" ng-show="viewState.intygListErrorMessageKey"
-           class="alert alert-danger">
-        <span message key="{{viewState.intygListErrorMessageKey}}"></span>
-      </div>
-      <div ng-show="viewState.inlineErrorMessageKey" class="alert alert-danger">
-        <span message key="{{viewState.inlineErrorMessageKey}}"></span>
-      </div>
+      <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
+                        alert-message-id="{{viewState.intygListErrorMessageKey}}"
+                        alert-severity="danger"
+                        id="current-list-noResults-error"></wc-alert-message>
+      <wc-alert-message ng-show="viewState.inlineErrorMessageKey"
+                        alert-message-id="{{viewState.inlineErrorMessageKey}}"
+                        alert-severity="danger"></wc-alert-message>
 
       <!-- Previous intyg table -->
       <div class="row" ng-show="viewState.currentList.length>0" id="prevIntygTable">

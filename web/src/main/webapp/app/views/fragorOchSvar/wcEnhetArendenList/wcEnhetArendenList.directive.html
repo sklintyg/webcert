@@ -11,10 +11,9 @@
     </div>
 
     <!-- error message -->
-    <div id="current-list-noResults-error" ng-show="listModel.viewState.activeErrorMessageKey"
-         class="alert alert-danger">
-      <span message key="{{listModel.viewState.activeErrorMessageKey}}"></span>
-    </div>
+    <wc-alert-message id="current-list-noResults-error" ng-show="listModel.viewState.activeErrorMessageKey"
+                      alert-severity="danger"
+                      alert-message-id="{{listModel.viewState.activeErrorMessageKey}}"></wc-alert-message>
 
     <!-- Search hits -->
     <div id="query-count" ng-show="listModel.totalCount > 0">

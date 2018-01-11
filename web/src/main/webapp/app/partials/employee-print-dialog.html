@@ -6,9 +6,10 @@
     </h3>
 </div>
 <div class="modal-body">
-    <div class="alert alert-warning" id="ersattUtkastPaborjat" ng-if="model.patient.sekretessmarkering">
-        <span message key="common.alert.sekretessmarkering.print"></span>
-    </div>
+    <wc-alert-message id="ersattUtkastPaborjat" ng-if="model.patient.sekretessmarkering"
+                      alert-severity="warning"
+                      alert-message-id="common.alert.sekretessmarkering.print">
+    </wc-alert-message>
     <p>
     <span message key="{{bodyText}}"></span>
     </p>
