@@ -23,9 +23,8 @@
       <span message key="{{button3text}}"></span>
     </button>
     <div class="webcert-top-padding-section" ng-show="dialog.showerror">
-      <div class="alert alert-danger alert-dialog-error">
-        <span message key="{{dialog.errormessageid}}"></span>
-      </div>
+      <wc-alert-message alert-severity="danger" class="alert-dialog-error" alert-message-id="{{dialog.errormessageid}}">
+      </wc-alert-message>
     </div>
   </div>
 </div>

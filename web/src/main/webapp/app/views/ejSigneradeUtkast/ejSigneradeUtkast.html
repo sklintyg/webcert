@@ -38,10 +38,10 @@
               </div>
 
               <!-- error message -->
-              <div id="current-list-noResults-error"
-                   ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-danger">
+              <wc-alert-message id="current-list-noResults-error"
+                   ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" alert-severity="danger">
                 <span message key="{{widgetState.activeErrorMessageKey}}"></span>
-              </div>
+              </wc-alert-message>
 
               <div id="query-count" ng-show="widgetState.totalCount>0">
                 Sökresultat - {{widgetState.totalCount}} träffar

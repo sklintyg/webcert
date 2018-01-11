@@ -12,12 +12,12 @@
               <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
               <h1 class="page-title">Sök/skriv intyg</h1>
 
-              <div id="load-error" ng-show="viewState.loadErrorMessageKey != null" class="alert alert-danger">
-                <span message key="{{viewState.loadErrorMessageKey}}"></span>
-              </div>
+              <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"
+                                alert-severity="danger"
+                                alert-message-id="{{viewState.loadErrorMessageKey}}">
+              </wc-alert-message>
 
               <div ng-if="!viewState.loadErrorMessageKey">
-
                 <visa-byt-patient></visa-byt-patient>
                 <valj-utkast-typ view-state="viewState"></valj-utkast-typ>
               </div>

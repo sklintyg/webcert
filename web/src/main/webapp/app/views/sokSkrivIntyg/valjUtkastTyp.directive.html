@@ -17,26 +17,30 @@
   </div>
 
   <!-- error message -->
-  <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
-    <span message key="{{viewState.createErrorMessageKey}}"></span>
-  </div>
+  <wc-alert-message id="create-error" ng-show="viewState.createErrorMessageKey"
+                    alert-severity="danger"
+                    alert-message-id="{{viewState.createErrorMessageKey}}">
+  </wc-alert-message>
 
-  <div id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType] && isNormalOrigin()" class="alert alert-warning col-lg-7">
+  <wc-alert-message id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType] && isNormalOrigin()"
+                    alert-severity="warning"
+                    class="col-lg-7">
     {{resolveIntygReplacedText(intygTypeModel.intygType)}}
-  </div>
+  </wc-alert-message>
 
   <div id="intyg-exists-warning" ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] !== undefined || intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType] !== undefined" class="alert alert-warning col-lg-7">
       <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] === true" message key="{{intygTypeModel.intygType}}.warn.previouscertificate.samevg"></span>
       <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] === false" message key="{{intygTypeModel.intygType}}.warn.previouscertificate.differentvg"></span>
       <span ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType] === true" message key="{{intygTypeModel.intygType}}.warn.previousdraft.samevg"></span>
       <span ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType] === false" message key="{{intygTypeModel.intygType}}.warn.previousdraft.differentvg"></span>
-
   </div>
 
-  <div class="alert alert-info col-lg-7 text-8-lines"
-       ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
-       id="intygTypeWarning">
-    <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
+  <div class="row">
+    <wc-alert-message alert-severity="info" class="col-lg-7"
+         ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
+         id="intygTypeWarning">
+      <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
+    </wc-alert-message>
   </div>
   <div class="clearfix"></div>
 </div>
