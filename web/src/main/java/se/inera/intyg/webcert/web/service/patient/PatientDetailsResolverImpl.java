@@ -277,34 +277,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         PersonSvar personSvar = puService.getPerson(personnummer);
 
         Patient patient = null;
-        // Djupintegration
-        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-
-            // Use PU for name och s-mark and address from integration parameters
-            if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                patient = toPatientFromPersonSvar(personnummer, personSvar);
-                IntegrationParameters parameters = user.getParameters();
-                if (isNotNullOrEmpty(parameters.getPostadress())) {
-                    patient.setPostadress(user.getParameters().getPostadress());
-                }
-                if (isNotNullOrEmpty(parameters.getPostnummer())) {
-                    patient.setPostnummer(user.getParameters().getPostnummer());
-                }
-                if (isNotNullOrEmpty(parameters.getPostort())) {
-                    patient.setPostort(user.getParameters().getPostort());
-                }
-                patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
-
-            } else {
-                // use integration parameters if no answer from PU
-                patient = toPatientFromParameters(personnummer, user.getParameters());
-            }
-
-        } else {
-            // NORMAL uses only PU
-            if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                patient = toPatientFromPersonSvar(personnummer, personSvar);
-            }
+        // NORMAL and DJUPINTEGRATION uses only PU for db
+        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
+            patient = toPatientFromPersonSvar(personnummer, personSvar);
         }
         return patient;
     }
@@ -362,39 +337,10 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     private Patient handleDoiNoExistingDb(Personnummer personnummer, PersonSvar personSvar, WebCertUser user) {
-
         Patient patient = null;
-        // Handle DJUPINTEGRATION
-        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-
-            // Prioritize PU
-            if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                patient = toPatientFromPersonSvar(personnummer, personSvar);
-
-                // Address from integration parameters
-                IntegrationParameters parameters = user.getParameters();
-
-                // Hämta namn från PU
-                // Address från Integrationsparametrar
-                if (isNotNullOrEmpty(user.getParameters().getPostadress())) {
-                    patient.setPostadress(user.getParameters().getPostadress());
-                }
-                if (isNotNullOrEmpty(user.getParameters().getPostnummer())) {
-                    patient.setPostnummer(user.getParameters().getPostnummer());
-                }
-                if (isNotNullOrEmpty(user.getParameters().getPostort())) {
-                    patient.setPostort(user.getParameters().getPostort());
-                }
-                patient.setAvliden(patient.isAvliden() || (parameters != null && parameters.isPatientDeceased()));
-            } else {
-                // If PU is missing, use integration parameters
-                patient = toPatientFromParameters(personnummer, user.getParameters());
-            }
-        } else {
-            // HANDLE FRISTÅENDE
-            if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                return toPatientFromPersonSvar(personnummer, personSvar);
-            }
+        // NORMAL and DJUPINTEGRATION uses only PU for doi
+        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
+            patient = toPatientFromPersonSvar(personnummer, personSvar);
         }
         return patient;
     }

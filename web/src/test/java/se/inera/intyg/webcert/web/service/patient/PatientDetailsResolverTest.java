@@ -303,33 +303,12 @@ public class PatientDetailsResolverTest {
     // (DB har nästan exakt samma regler som TS)
 
     /**
-     * Dödsbevis - integration - PU: Namn + meta från PU, adress från INTEGR
+     * Dödsbevis - integration - PU: Namn + meta från PU == allt hämtas från PU
      */
     @Test
-    public void testSOSDBIntygIntegrationWithPuOk() {
+    public void testSOSDBIntygIntegrationWithPuOkShouldIgnoreIntegrationParameters() {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
-
-        Patient patient = testee.resolvePatient(PNR, "db");
-        assertEquals(PNR, patient.getPersonId());
-        assertEquals(FNAMN, patient.getFornamn());
-        assertEquals(MNAMN, patient.getMellannamn());
-        assertEquals(LNAMN, patient.getEfternamn());
-        assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
-        assertEquals(INTEGR_POST_NR, patient.getPostnummer());
-        assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
-        assertEquals(false, patient.isSekretessmarkering());
-    }
-
-    /**
-     * Dödsbevis - integration - PU: Namn + meta från PU, adress från PU
-     */
-    @Test
-    public void testSOSDBIntygIntegrationWithPuOkButAddressMissingFromIntegration() {
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
-        when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
-        when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParametersWithNullAddress());
 
         Patient patient = testee.resolvePatient(PNR, "db");
         assertEquals(PNR, patient.getPersonId());
@@ -339,12 +318,12 @@ public class PatientDetailsResolverTest {
         assertEquals(POST_ADDR, patient.getPostadress());
         assertEquals(POST_NR, patient.getPostnummer());
         assertEquals(POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
     /**
-     * Dödsbevis + integration + EJ PU, allt som går skall hämtas från parametrar.
+     * Dödsbevis + integration + EJ PU, inget kan hämtas
      */
     @Test
     public void testSOSDBIntygIntegrationWithPuUnavailable() {
@@ -352,15 +331,7 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
         Patient patient = testee.resolvePatient(PNR, "db");
-        assertEquals(PNR, patient.getPersonId());
-        assertEquals(INTEGR_FNAMN, patient.getFornamn());
-        assertEquals(INTEGR_MNAMN, patient.getMellannamn());
-        assertEquals(INTEGR_LNAMN, patient.getEfternamn());
-        assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
-        assertEquals(INTEGR_POST_NR, patient.getPostnummer());
-        assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(INTEGR_AVLIDEN, patient.isAvliden());
-        assertEquals(false, patient.isSekretessmarkering());
+        assertNull(patient);
     }
 
     /**
@@ -461,7 +432,7 @@ public class PatientDetailsResolverTest {
 
 
     /**
-     * DOI - Integration. DB saknas, PU finns. Namn och adress från PU.
+     * DOI - Integration. DB saknas, PU finns == allt från PU
      */
     @Test
     public void testSosDoiIntygIntegrationWithNoDBIntygAndPuOk() throws ModuleNotFoundException, IOException {
@@ -480,15 +451,15 @@ public class PatientDetailsResolverTest {
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
         assertEquals(LNAMN, patient.getEfternamn());
-        assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
-        assertEquals(INTEGR_POST_NR, patient.getPostnummer());
-        assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(POST_ADDR, patient.getPostadress());
+        assertEquals(POST_NR, patient.getPostnummer());
+        assertEquals(POST_ORT, patient.getPostort());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
     /**
-     * DOI - Integration. DB saknas, PU saknas. Rubbet från Integration
+     * DOI - Integration. DB saknas, PU saknas == Ingen info
      */
     @Test
     public void testSosDoiIntygIntegrationWithNoDBIntygAndPuUnavailable() throws ModuleNotFoundException, IOException {
@@ -501,15 +472,7 @@ public class PatientDetailsResolverTest {
                 anySet())).thenReturn(drafts);
 
         Patient patient = testee.resolvePatient(PNR, "doi");
-        assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
-        assertEquals(INTEGR_FNAMN, patient.getFornamn());
-        assertEquals(INTEGR_MNAMN, patient.getMellannamn());
-        assertEquals(INTEGR_LNAMN, patient.getEfternamn());
-        assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
-        assertEquals(INTEGR_POST_NR, patient.getPostnummer());
-        assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(INTEGR_AVLIDEN, patient.isAvliden());
-        assertEquals(false, patient.isSekretessmarkering());
+        assertNull(patient);
     }
 
 
