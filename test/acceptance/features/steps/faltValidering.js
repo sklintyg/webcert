@@ -391,7 +391,7 @@ module.exports = function() {
                     return populateSyn(fieldtype);
                 default:
                     //return fkUtkastPage.diagnosKod.sendKeys(date); //TODO default borde vara felhantering
-					return logger.warn('Klarade inte att matcha fieldtype');
+                    return logger.warn('Klarade inte att matcha fieldtype');
             }
         }
     });
