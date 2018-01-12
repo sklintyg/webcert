@@ -61,8 +61,6 @@ module.exports = function() {
     global.externalPageLinks = [];
 
     this.AfterStep(function(event) {
-        // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
-        removeAlerts();
 
         return new Promise(function(resolve) {
             //Kör promisekedja för AfterStep.
@@ -79,10 +77,14 @@ module.exports = function() {
                         href.indexOf(process.env.REHABSTOD_URL) === -1 &&
                         href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
                         global.externalPageLinks.indexOf(href) === -1) {
-                        console.log('Found one: ' + href);
+                        logger.info('Found external link: ' + href);
                         global.externalPageLinks.push(href);
                     }
                 });
+            }).catch(function(err) {
+                logger.warn('fel vid insamling av externa länkar');
+                logger.debug(err);
+                return;
             });
         }).then(function() {
             //Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.
@@ -123,6 +125,9 @@ module.exports = function() {
                 logger.warn('Browser is closed.');
                 return;
             });
+        }).then(function() {
+            // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
+            return removeAlerts();
         });
 
     });
