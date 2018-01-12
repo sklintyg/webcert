@@ -116,7 +116,11 @@ module.exports = function() {
     this.When(/^jag fyller i ytterligare svar för SRS$/, () => clickAnswerRadioButtons());
 
     this.When(/^ska en ny sida öppnas och urlen innehålla "([^"]*)"$/, (type) => {
-        return getWindowHandles().then(function(handles) {
+        browser.ignoreSynchronization = true;
+        //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
+        return helpers.hugeDelay().then(function() {
+            return getWindowHandles();
+        }).then(function(handles) {
             console.log(handles);
             if (handles.length < 2) {
                 throw ('bara 1 flik är öppen');
@@ -136,7 +140,13 @@ module.exports = function() {
         if (srsdata.diagnoskoder[type] !== undefined) {
             type = srsdata.diagnoskoder[type].toLowerCase();
         }
-        return getWindowHandles().then(function(handles) {
+
+        browser.ignoreSynchronization = true;
+        //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
+
+        return helpers.hugeDelay().then(function() {
+            return getWindowHandles();
+        }).then(function(handles) {
             if (handles.length < 2) {
                 throw ('bara 1 flik är öppen');
             } else {
@@ -154,7 +164,12 @@ module.exports = function() {
         if (srsdata.diagnoskoder[type] !== undefined) {
             type = srsdata.diagnoskoder[type].toLowerCase();
         }
-        return getWindowHandles().then(function(handles) {
+
+        browser.ignoreSynchronization = true;
+        //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
+        return helpers.hugeDelay().then(function() {
+            return getWindowHandles();
+        }).then(function(handles) {
             if (handles.length < 2) {
                 throw ('bara 1 flik är öppen');
             } else {
@@ -371,15 +386,15 @@ function clickReadMoreBtn(type) {
             return element(by.css('[ng-click="readMoreRisk()"]')).click(); //TODO
         case srsdata.position.ATGARDER:
             return browser.actions().mouseMove(element(by.id('atgarderRek'))).perform()
-                .then(() => browser.sleep(500))
+                .then(() => helpers.mediumDelay())
                 .then(() => {
-                    return element(by.id('atgarderRek')).element(by.buttonText('Läs mer')).click();
+                    return helpers.moveAndSendKeys(element(by.id('atgarderRek')).element(by.buttonText('Läs mer')), protractor.Key.SPACE);
                 });
         case srsdata.position.STATISTIK:
             return browser.actions().mouseMove(element(by.id('statstics'))).perform()
-                .then(() => browser.sleep(500))
+                .then(() => helpers.mediumDelay())
                 .then(() => {
-                    return element(by.id('statstics')).element(by.buttonText('Läs mer')).click();
+                    return helpers.moveAndSendKeys(element(by.id('statstics')).element(by.buttonText('Läs mer')), protractor.Key.SPACE);
                 });
         default:
             return Promise.reject();

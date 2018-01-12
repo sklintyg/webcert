@@ -40,6 +40,9 @@ module.exports = {
     largeDelay: function() {
         return browser.sleep(1000);
     },
+    hugeDelay: function() {
+        return browser.sleep(5000);
+    },
     insertDashInPnr: function(pnrString) {
         if (pnrString.indexOf('-') >= 0) {
             return pnrString;
