@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata,intyg,logger,pages,Promise,browser,commonTools, person*/
+/*global testdata,intyg,logger,pages,Promise,browser,commonTools, person, protractor*/
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
@@ -43,6 +43,7 @@ module.exports = {
     hugeDelay: function() {
         return browser.sleep(5000);
     },
+    enter: browser.actions().sendKeys(protractor.Key.ENTER),
     insertDashInPnr: function(pnrString) {
         if (pnrString.indexOf('-') >= 0) {
             return pnrString;
