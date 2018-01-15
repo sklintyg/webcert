@@ -68,6 +68,31 @@ function signeraUtkast() {
     });
 }
 
+function makuleraLoop(intygsTyp) {
+    return helpers.getIntygElementRow(intygsTyp, intygsTyp, function(intygRadElement) {
+        if (!intygRadElement) {
+            return logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
+        } else {
+            return intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    return helpers.pageReloadDelay(); // Laddar in intyget
+                })
+                .then(function() {
+                    return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
+                })
+                .then(function() {
+                    return helpers.largeDelay(); // fix för animering
+                }).then(function() {
+                    return fkIntygPage.pickMakuleraOrsak();
+                }).then(function() {
+                    return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
+                }).then(function() {
+                    return makuleraLoop(intygsTyp);
+                });
+        }
+    });
+}
+
 module.exports = function() {
     this.Given(/^jag signerar intyget$/, function() {
         return signeraUtkast();
@@ -151,32 +176,7 @@ module.exports = function() {
     });
 
 
-    function makuleraLoop(intygsTyp) {
-        return helpers.getIntygElementRow(intygsTyp, intygsTyp, function(intygRadElement) {
-            if (!intygRadElement) {
-                return logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
-            } else {
-                return intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE)
-                    .then(function() {
-                        return helpers.pageReloadDelay(); // Laddar in intyget
-                    })
-                    .then(function() {
-                        return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
-                    })
-                    .then(function() {
-                        return helpers.largeDelay(); // fix för animering
-                    }).then(function() {
-                        return fkIntygPage.pickMakuleraOrsak();
-                    }).then(function() {
-                        return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
-                    }).then(function() {
-                        return makuleraLoop(intygsTyp);
-                    });
-            }
 
-
-        });
-    }
 
     this.Given(/^jag makulerar tidigare "([^"]*)" intyg$/, function(intygsTyp) {
         return makuleraLoop(intygsTyp);

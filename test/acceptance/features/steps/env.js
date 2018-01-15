@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, logger, JSON */
+/* globals browser, logger */
 'use strict';
 
 
@@ -63,9 +63,12 @@ module.exports = function() {
     this.AfterStep(function(event) {
 
         return new Promise(function(resolve) {
-            //Kör promisekedja för AfterStep.
-            resolve();
-        }).then(function() {
+                //Kör promisekedja för AfterStep.
+                resolve();
+            })
+
+            /* avaktiverar AfterStep tills det att TI-442 är löst.
+		.then(function() {
             // Samla in alla externa länkar på aktuell sida
             return element.all(by.css('a')).each(function(link) {
                 return link.getAttribute('href').then(function(href) {
@@ -80,9 +83,13 @@ module.exports = function() {
                         logger.info('Found external link: ' + href);
                         global.externalPageLinks.push(href);
                     }
-                });
+                }).catch(function(err) {
+                logger.warn('Fel vid insamling av externa länkar');
+                logger.debug(err);
+                return;
+				});
             }).catch(function(err) {
-                logger.warn('fel vid insamling av externa länkar');
+                logger.warn('Fel vid insamling av externa länkar');
                 logger.debug(err);
                 return;
             });
@@ -125,10 +132,13 @@ module.exports = function() {
                 logger.warn('Browser is closed.');
                 return;
             });
-        }).then(function() {
-            // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
-            return removeAlerts();
-        });
+        })
+		
+		*/
+            .then(function() {
+                // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
+                return removeAlerts();
+            });
 
     });
 
@@ -178,6 +188,10 @@ module.exports = function() {
             }).then(function() {
                 logger.silly('Rensar local-storage');
                 return browser.executeScript('window.localStorage.clear();');
+            }).catch(function(err) {
+                logger.warn('Fel i afterScenario');
+                logger.debug(err);
+                return;
             });
         } else {
             return checkConsoleErrors();
