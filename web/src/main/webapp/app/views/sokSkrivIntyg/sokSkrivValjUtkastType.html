@@ -1,37 +1,25 @@
-<div class="container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST">
+<wc-content class="wc-body-background" wc-authority feature="HANTERA_INTYGSUTKAST">
 
   <div wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading"
        show-content="!viewState.patientLoading">
 
-    <div class="row">
-      <div id="valj-intyg-typ" class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
-        <div class="row">
-          <div class="col-xs-12">
+    <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
+      <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"
+                        alert-severity="danger"
+                        alert-message-id="{{viewState.loadErrorMessageKey}}">
+      </wc-alert-message>
 
-            <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
-              <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
-              <h1 class="page-title">Sök/skriv intyg</h1>
-
-              <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"
-                                alert-severity="danger"
-                                alert-message-id="{{viewState.loadErrorMessageKey}}">
-              </wc-alert-message>
-
-              <div ng-if="!viewState.loadErrorMessageKey">
-                <visa-byt-patient></visa-byt-patient>
-                <valj-utkast-typ view-state="viewState"></valj-utkast-typ>
-              </div>
-
-            </form>
-          </div>
-        </div>
-        <div ng-if="viewState">
-          <tidigare-intyg view-state="viewState"></tidigare-intyg>
+      <div ng-if="!viewState.loadErrorMessageKey">
+        <wc-visa-byt-patient></wc-visa-byt-patient>
+        <wc-valj-utkast-typ view-state="viewState"></wc-valj-utkast-typ>
       </div>
 
-      </div>
+    </form>
+
+    <div ng-if="viewState">
+      <wc-tidigare-intyg view-state="viewState"></wc-tidigare-intyg>
     </div>
   </div>
   <!-- load spinner end -->
 
-</div>
+</wc-content>

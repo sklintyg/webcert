@@ -1,4 +1,4 @@
-angular.module('webcert').directive('visaBytPatient',
+angular.module('webcert').directive('wcVisaBytPatient',
     ['$state', 'common.PatientModel',
     function($state, PatientModel) {
         'use strict';

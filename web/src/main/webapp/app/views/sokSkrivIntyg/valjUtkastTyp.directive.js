@@ -1,4 +1,4 @@
-angular.module('webcert').directive('valjUtkastTyp',
+angular.module('webcert').directive('wcValjUtkastTyp',
     ['webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.UserModel', 'common.messageService', 'common.featureService',
     function(ViewState, IntygTypeSelectorModel, UserModel, messageService, featureService) {
         'use strict';

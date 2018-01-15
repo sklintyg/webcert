@@ -1,4 +1,4 @@
-angular.module('webcert').directive('tidigareIntyg',
+angular.module('webcert').directive('wcTidigareIntyg',
     ['common.PatientModel', 'common.messageService', 'common.authorityService', 'common.UserModel',
     'webcert.IntygTypeSelectorModel', '$location', 'common.IntygCopyActions',
     'common.IntygFornyaRequestModel',

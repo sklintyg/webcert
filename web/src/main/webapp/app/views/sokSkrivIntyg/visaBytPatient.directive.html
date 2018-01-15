@@ -1,12 +1,13 @@
-<div class="bottom-padding-big">
-    <label class="control-label">Patientuppgifter</label>
-    <div class="form-group row">
-      <div class="col-md-8">
-        <span id="patientNamn">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}}</span>
-        <span wc-sekretess-avliden uuid="patientModel.personnummer" printlabel="true" avliden="patientModel.avliden" sekretessmarkering="patientModel.sekretessmarkering"></span><br>
-        {{patientModel.personnummer | PersonIdFormatter}}
-      </div>
-    </div>
+<div>
+  <div class="wc-patient-icon-gutter patient-header-data">
+    <i class="material-icons gutter-icon icon-wc-32">person</i>
+    <h2 class="patient-heading">Patientuppgifter</h2>
+    <h3 class="patient-personal-data" id="patientNamn">
+      {{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}} - {{patientModel.personnummer | PersonIdFormatter}}
 
-    <button class="btn btn-primary" type="button" ng-click="changePatient()">Byt patient</button>
+      <button class="btn btn-primary patient-button" type="button" ng-click="changePatient()"><i class="material-icons">swap_horiz</i> Byt patient</button>
+    </h3>
+
+  </div>
+  <span wc-sekretess-avliden uuid="patientModel.personnummer" printlabel="true" avliden="patientModel.avliden" sekretessmarkering="patientModel.sekretessmarkering"></span><br>
 </div>

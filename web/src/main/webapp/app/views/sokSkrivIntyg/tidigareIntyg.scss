@@ -17,9 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-wc-content {
-  display: flex;
-  align-content: center;
-  max-width: 1440px;
-  margin: auto;
+wc-tidigare-intyg {
+  display: block;
+  padding-top: 15px;
+
+  .gutter-icon {
+    top: -10px;
+  }
 }

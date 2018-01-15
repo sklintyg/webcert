@@ -1,7 +1,30 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url('/web/webjars/common/webcert/fonts/Roboto-Regular.ttf')  format('truetype');
+}
+
+@font-face {
+  font-family: 'RobotoLight';
+  src: url('/web/webjars/common/webcert/fonts/Roboto-Light.ttf')  format('truetype');
+}
+
 $font-0: 'Roboto';
+$font-01: 'RobotoLight';
 $font-1: helvetica;
 $font-2: arial;
 $font-3: sans-serif;
+
+@mixin font-variant($font-size: 14px, $font-weight: 400) {
+  font-family: $font-0, $font-1, $font-2, $font-3;
+  font-size: $font-size;
+  font-weight: $font-weight;
+}
+
+@mixin font-variant-light($font-size: 14px, $font-weight: 300) {
+  font-family: $font-01, $font-1, $font-2, $font-3;
+  font-size: $font-size;
+  font-weight: $font-weight;
+}
 
 %fonts {
   font-size: 14px;
@@ -20,6 +43,51 @@ $font-3: sans-serif;
   url(/fonts/MaterialIcons-Regular.woff) format('woff'),
   url(/fonts/MaterialIcons-Regular.ttf) format('truetype');
 }
+
+
+%wc-typo-01 {
+  @include font-variant-light(25px, 400);
+}
+
+%wc-typo-02 {
+  @include font-variant(18px, 400);
+}
+
+%wc-typo-03 {
+  @include font-variant-light(18px, 400);
+}
+
+%wc-typo-04 {
+  @include font-variant(18px, 800);
+}
+
+%wc-typo-05 {
+  @include font-variant(16px, 600);
+}
+
+%wc-typo-06 {
+  @include font-variant(14px, 600);
+}
+
+%wc-typo-07 {
+  @include font-variant(14px, 400);
+}
+
+%wc-typo-08 {
+  @include font-variant(14px, 400);
+  //specify underline here? seems to always be used in link context, so we get underline from that anyway..
+}
+
+%wc-typo-09 {
+  @include font-variant(12px, 400);
+}
+
+%wc-typo-10 {
+  @include font-variant(16px, 400);
+}
+
+
+
 
 .material-icons {
   font-family: 'Material Icons';
