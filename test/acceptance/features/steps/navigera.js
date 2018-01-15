@@ -43,7 +43,9 @@ module.exports = function() {
         var intygUrlShortcode = helpers.getPathShortcode(intyg.typ).toLowerCase();
         var link = '/web/dashboard#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
         logger.info('Går till ' + link);
-        return browser.get(link);
+        return browser.get(link).then(function() {
+            return helpers.pageReloadDelay();
+        });
     });
 
     this.Given(/^ska jag komma till intygssidan$/, function() {
@@ -52,10 +54,7 @@ module.exports = function() {
         return browser.getCurrentUrl().then(function(currentUrl) {
             expect(currentUrl).to.contain(link);
             logger.info('Sida som verifieras: ' + currentUrl);
-
-
         });
-
     });
 
     this.Given(/^jag väljer vårdenheten "([^"]*)"$/, function(enhetHSA) {
@@ -63,7 +62,7 @@ module.exports = function() {
         global.user.enhetId = enhetHSA;
 
         return enhetSelectorLink.click().then(function() {
-            return browser.sleep(3000);
+            return helpers.pageReloadDelay();
         });
         //return element.all(by.cssContainingText('.enhet', ve)).sendKeys(protractor.Key.ENTER);
     });
@@ -159,12 +158,12 @@ module.exports = function() {
                         enhetSelectorLink.isPresent().then(function(isPresent) {
                             if (isPresent) {
                                 return enhetSelectorLink.click().then(function() {
-                                    return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                                    return helpers.pageReloadDelay().then(function() { //sleep eftersom vi directas via säkerhetstjänsten
                                         return helpers.fetchMessageIds(intyg.typ);
                                     });
                                 });
                             } else {
-                                return browser.sleep(3000).then(function() { //sleep eftersom vi directas via säkerhetstjänsten
+                                return helpers.pageReloadDelay().then(function() { //sleep eftersom vi directas via säkerhetstjänsten
                                     return helpers.fetchMessageIds(intyg.typ);
                                 });
                             }

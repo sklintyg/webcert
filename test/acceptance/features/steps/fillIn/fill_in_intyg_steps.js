@@ -56,7 +56,7 @@ function changeField(intygShortcode, field, clearFlag) {
             intyg.funktionsnedsattning.intellektuell = helpers.randomTextString();
 
             return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.checkbox, protractor.Key.SPACE).then(function() {
-                return browser.sleep(1000).then(function() {
+                return helpers.largeDelay().then(function() {
                     return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.text, intyg.funktionsnedsattning.intellektuell)
                         .then(function() {
                             logger.info('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);

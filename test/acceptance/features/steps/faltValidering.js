@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals pages,intyg,protractor,wcTestTools,Promise,browser,logger*/
+/*globals pages,intyg,protractor,wcTestTools,Promise,logger*/
 
 
 'use strict';
@@ -114,7 +114,7 @@ function checkFMB(fmbDiagnos) {
     }
     var elm = page.fmbButtons.falt2;
     return elm.sendKeys(protractor.Key.SPACE).then(function() {
-            return browser.sleep(2000);
+            return helpers.largeDelay();
         })
         .then(function() {
 
@@ -141,7 +141,7 @@ function checkFMB(fmbDiagnos) {
 
                     page.fmbButtons.falt4.sendKeys(protractor.Key.SPACE)
                     .then(function() {
-                        return browser.sleep(2000);
+                        return helpers.largeDelay();
                     })
                     .then(function() {
                         return expect(page.fmbDialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning);
@@ -152,7 +152,7 @@ function checkFMB(fmbDiagnos) {
                 promiseArray.push(
                     page.fmbButtons.falt5.sendKeys(protractor.Key.SPACE)
                     .then(function() {
-                        return browser.sleep(2000);
+                        return helpers.largeDelay();
                     })
                     .then(function() {
                         return expect(page.fmbDialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning);
@@ -164,7 +164,7 @@ function checkFMB(fmbDiagnos) {
 
                 promiseArray.push(page.fmbButtons.falt8.sendKeys(protractor.Key.SPACE)
                     .then(function() {
-                        return browser.sleep(2000);
+                        return helpers.largeDelay();
                     })
                     .then(function() {
                         return expect(page.fmbDialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag);

@@ -26,6 +26,7 @@ var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var helpers = require('./helpers');
 
 
 function writeNewIntyg(typ, status) {
@@ -58,7 +59,7 @@ function writeNewIntyg(typ, status) {
                         return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
                     })
                     .then(function() {
-                        return browser.sleep(6000);
+                        return helpers.pageReloadDelay();
                     })
                     .then(function() { // Spara intygsid för kommande steg
                         return browser.getCurrentUrl().then(function(text) {
@@ -69,7 +70,7 @@ function writeNewIntyg(typ, status) {
                     })
                     .then(function() { // Ange intygsdata
                         console.log('Anger intygsdata..');
-                        global.intyg = require('./helpers').generateIntygByType(typ, intyg.id);
+                        global.intyg = helpers.generateIntygByType(typ, intyg.id);
                         console.log(global.intyg);
                         return require('./fillIn').fillIn(intyg);
                     })
@@ -78,7 +79,7 @@ function writeNewIntyg(typ, status) {
                         return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
                     })
                     .then(function() {
-                        return browser.sleep(2000);
+                        return helpers.largeDelay();
                     })
                     .then(function() { // Skicka till mottagare om intyget ska vara Skickat
                         if (status === 'Skickat') {

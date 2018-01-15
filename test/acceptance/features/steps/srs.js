@@ -134,7 +134,7 @@ module.exports = function() {
     this.When(/^ska en ny sida öppnas och urlen innehålla "([^"]*)"$/, (type) => {
         browser.ignoreSynchronization = true;
         //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
-        return helpers.hugeDelay().then(function() {
+        return helpers.pageReloadDelay().then(function() {
             return getWindowHandles();
         }).then(function(handles) {
             console.log(handles);
@@ -160,7 +160,7 @@ module.exports = function() {
         browser.ignoreSynchronization = true;
         //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
 
-        return helpers.hugeDelay().then(function() {
+        return helpers.pageReloadDelay().then(function() {
             return getWindowHandles();
         }).then(function(handles) {
             if (handles.length < 2) {
@@ -183,7 +183,7 @@ module.exports = function() {
 
         browser.ignoreSynchronization = true;
         //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
-        return helpers.hugeDelay().then(function() {
+        return helpers.pageReloadDelay().then(function() {
             return getWindowHandles();
         }).then(function(handles) {
             if (handles.length < 2) {

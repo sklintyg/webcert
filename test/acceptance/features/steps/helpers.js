@@ -40,7 +40,7 @@ module.exports = {
     largeDelay: function() {
         return browser.sleep(1000);
     },
-    hugeDelay: function() {
+    pageReloadDelay: function() {
         return browser.sleep(5000);
     },
     enter: browser.actions().sendKeys(protractor.Key.ENTER),

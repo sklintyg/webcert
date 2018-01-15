@@ -158,13 +158,13 @@ module.exports = function() {
             } else {
                 return intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE)
                     .then(function() {
-                        return browser.sleep(4000); // Laddar in intyget
+                        return helpers.pageReloadDelay(); // Laddar in intyget
                     })
                     .then(function() {
                         return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
                     })
                     .then(function() {
-                        return browser.sleep(2000); // fix för animering
+                        return helpers.largeDelay(); // fix för animering
                     }).then(function() {
                         return fkIntygPage.pickMakuleraOrsak();
                     }).then(function() {
@@ -203,23 +203,18 @@ module.exports = function() {
     });
 
     this.Given(/^jag skriver ut utkastet$/, function() {
-        return browser.sleep(5000).then(function() {
-            return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE).then(function() {
-                return helpers.smallDelay(); // Page reload
-            });
+        return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE).then(function() {
+            return helpers.pageReloadDelay(); // Page reload
         });
     });
 
     this.Given(/^ska det finnas en referens till gamla intyget$/, function() {
-        return browser.sleep(3000).then(function() {
-            return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
-                return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
-                    return browser.getCurrentUrl().then(function(text) {
-                        logger.info('(%s contain %s) => %s', text, intyg.id, (text.indexOf(intyg.id) !== -1 ? true : false));
-                        return expect(text).to.contain(intyg.id);
-                    });
+        return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
+            return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
+                return browser.getCurrentUrl().then(function(text) {
+                    logger.info('(%s contain %s) => %s', text, intyg.id, (text.indexOf(intyg.id) !== -1 ? true : false));
+                    return expect(text).to.contain(intyg.id);
                 });
-
             });
         });
     });

@@ -419,20 +419,4 @@ module.exports = function() {
         var wcHeader = element(by.id('wcHeader'));
         return expect(wcHeader.getText()).to.eventually.contain(arg1);
     });
-
-    this.Given(/^jag loggar in med SITHS$/, function() {
-
-        return browser.get('').then(function() {
-            return browser.sleep(5000).then(function() {
-                return pages.welcome.loginButton.click()
-                    .then(function() {
-                        return browser.sleep(5000);
-                        // return pages.welcome.loginButton.sendKeys(protractor.Key.SPACE);
-                    });
-            });
-        });
-    });
-
-
-
 };

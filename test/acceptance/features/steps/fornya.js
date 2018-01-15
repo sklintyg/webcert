@@ -34,7 +34,7 @@ module.exports = function() {
 
             return fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE)
                 .then(function() {
-                    return browser.sleep(4000);
+                    return helpers.pageReloadDelay();
                 })
                 .then(function() {
                     return browser.getCurrentUrl()

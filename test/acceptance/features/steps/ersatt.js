@@ -50,7 +50,7 @@ module.exports = function() {
 
         return element(by.id('button1ersatt-dialog')).sendKeys(protractor.Key.SPACE).then(function() {
             logger.info('Clicked ersätt button');
-            return browser.sleep(4000).then(function() {
+            return helpers.pageReloadDelay().then(function() {
                 return browser.getCurrentUrl().then(function(text) {
                     intyg.id = text.split('/').slice(-2)[0];
                     intyg.id = intyg.id.split('?')[0];
@@ -61,8 +61,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag går tillbaka till det ersatta intyget$/, function() {
-        logger.warn('browser.sleep(4000)');
-        return browser.sleep(4000).then(function() {
+        return helpers.pageReloadDelay().then(function() {
             var url = intygURL(global.ersattintyg.typ, global.ersattintyg.id);
             return browser.get(url).then(function() {
                 logger.info('Går till url: ' + url);

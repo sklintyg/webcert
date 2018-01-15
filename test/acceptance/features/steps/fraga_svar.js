@@ -185,7 +185,7 @@ module.exports = function() {
     this.Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() {
         return element(by.id('uthopp-svara-med-meddelande-' + global.intyg.messages[0].id)).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return browser.sleep(3000);
+                return helpers.pageReloadDelay();
             });
     });
 
@@ -197,27 +197,27 @@ module.exports = function() {
 
         var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-default', 'Kan inte komplettera')).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return browser.sleep(2000); // Sleep pga animation
+                return helpers.largeDelay();
             })
             .then(function() {
                 return fkIntygPage.komplettera.dialog.svaraMedMeddelandeButton.sendKeys(protractor.Key.SPACE);
             })
             .then(function() {
-                return browser.sleep(2000); // Sleep pga animation
+                return helpers.largeDelay();
             })
             .then(function() {
                 return kompletteringsFraga.element(by.model('arendeSvar.meddelande')).sendKeys(textSvar);
 
             })
             .then(function() {
-                return browser.sleep(1000); // Sleep pga animation
+                return helpers.largeDelay();
             })
             .then(function() {
                 return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
 
             })
             .then(function() {
-                return browser.sleep(1000); // Sleep pga animation
+                return helpers.largeDelay();
             });
 
         return svaraPaKomplettering
@@ -471,7 +471,7 @@ module.exports = function() {
 
     this.Given(/^jag går till sidan Frågor och svar$/, function() {
         return pages.fragorOchSvar.get().then(function() {
-            return browser.sleep(1000); // En liten sleep p.g.a page-reload.
+            return helpers.pageReloadDelay();
         });
     });
 

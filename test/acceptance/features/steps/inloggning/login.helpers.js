@@ -48,7 +48,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         }).then(function() {
             return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
         }).then(function() {
-            return helpers.hugeDelay();
+            return helpers.pageReloadDelay();
         }).then(function() {
             logger.silly('browser.wait(wcHeader.isPresent()');
             return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
@@ -61,7 +61,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
             }, function(err) {
                 // Log error but continue. With more delay.
                 logger.warn(err);
-                return helpers.hugeDelay();
+                return helpers.pageReloadDelay();
             });
         }).then(function() {
             browser.ignoreSynchronization = false;
