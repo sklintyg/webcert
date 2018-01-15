@@ -1,8 +1,26 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 angular.module('webcert').directive('wcTidigareIntyg',
     ['common.PatientModel', 'common.messageService', 'common.authorityService', 'common.UserModel',
     'webcert.IntygTypeSelectorModel', '$location', 'common.IntygCopyActions',
     'common.IntygFornyaRequestModel',
-    function(PatientModel, messageService, authorityService, UserModel, IntygTypeSelectorModel, 
+    function(PatientModel, messageService, authorityService, UserModel, IntygTypeSelectorModel,
         $location, CommonIntygCopyActions, IntygFornyaRequestModel) {
         'use strict';
 
@@ -29,20 +47,20 @@ angular.module('webcert').directive('wcTidigareIntyg',
                             intygstyp: intyg.intygType
                         });
                     var statusAllowed = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';
-    
+
                     return renewable &&
                         statusAllowed &&
                         !(intyg.relations.latestChildRelations.replacedByIntyg ||
                             intyg.relations.latestChildRelations.complementedByIntyg);
                 };
                 scope.fornyaIntyg = function (intyg) {
-                    
+
                     scope.viewState.createErrorMessageKey = null;
-    
+
                     // We don't have the required info about issuing unit in the supplied 'intyg' object, always set to true.
                     // It only affects a piece of text in the Kopiera-dialog anyway.
                     var isOtherCareUnit = true;
-    
+
                     CommonIntygCopyActions.fornya(scope.viewState,
                         IntygFornyaRequestModel.build({
                             intygId: intyg.intygId,
