@@ -1,4 +1,4 @@
-<div class="container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST">
+<div class="container" wc-authority feature="HANTERA_INTYGSUTKAST">
     <div class="row">
       <div id="skapa-valj-patient" class="col-xs-7 webcert-col webcert-col-single">
 
@@ -8,25 +8,23 @@
             <h1 class="error">DJUPINTEGRERAD testläge</h1>
             <span class="error">OBS! Dashboard i djupintegrerat läge är EJ tillgängligt i prod-miljö, den finns endast för att vid behov underlätta utveckling/testning.</span>
           </wc-alert-message>
-          <h1 class="page-title">Sök/skriv intyg</h1>
           <div class="form-group">
             <label for="pnr" class="control-label">Patientens personnummer</label>
-            <input id="pnr" class="form-control" name="pnr" type="text"
-                   placeholder="Exempel: ååååmmdd-nnnn"
-                   ng-model="personnummer"
-                   wc-person-number
-                   required maxlength="13"
-                   wc-focus-me="focusPnr" />
-            <div ng-show="pnrForm.pnr.$invalid && pnrForm.pnr.$touched && pnrForm.pnr.$viewValue != ''">
-              <span class="error">Du måste ange ett giltigt personnummer</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-group">
+
+            <div class="form-inline">
+              <input id="pnr" class="form-control" name="pnr" type="text"
+                     placeholder="ååååmmdd-nnnn"
+                     ng-model="personnummer"
+                     wc-person-number
+                     required maxlength="13"
+                     wc-focus-me="focusPnr" />
               <button id="skapapersonnummerfortsatt" name="skapapersonnummerfortsatt"
                       class="btn btn-primary" type="submit" ng-disabled="viewState.loading">
                 <img ng-show="viewState.loading" ng-src="/img/ajax-loader-small-green.gif"/> Fortsätt
               </button>
+            </div>
+            <div ng-show="pnrForm.pnr.$invalid && pnrForm.pnr.$touched && pnrForm.pnr.$viewValue != ''">
+              <span class="error">Du måste ange ett giltigt personnummer</span>
             </div>
             <wc-alert-message id="puerror" ng-if="viewState.errorId" alert-message-id="{{viewState.errorid}}" alert-severity="danger"></wc-alert-message>
           </div>
