@@ -1,6 +1,5 @@
-@CHARSET "UTF-8";
-/*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+/*!
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,15 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "mixins/wc-variables";
-@import "mixins/bootstrap-variables-override"; // Bootstrap override variables must be loaded before bootstrap due to its !default flags
-@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss'; // Load bootstrap defaults
-@import "mixins/bootstrap-css-override"; // CSS Override only, no bootstrap variables
-@import "mixins/fonts";
-
-// Component styles are injected through grunt
-// injector
-@import 'views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.scss';
-@import 'views/sokSkrivIntyg/wcContent.directive.scss';
-@import 'views/views.scss';
-// endinjector
+wc-content {
+  display: flex;
+  align-content: center;
+  max-width: 1440px;
+  margin: auto;
+}
