@@ -119,7 +119,7 @@ function getRandomUtredning() {
             'Övrigt'
         ])[0],
         datum: '2016-04-09',
-        infoOmUtredningen: testdataHelper.randomTextString()
+        infoOmUtredningen: testdataHelper.randomTextString(53)
     };
 }
 

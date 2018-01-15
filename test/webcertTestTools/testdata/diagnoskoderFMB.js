@@ -170,7 +170,7 @@ module.exports = {
             kod: 'F420',
             symptomPrognosBehandling: 'Tvångssyndrom kännetecknas',
             generellInfo: 'Det finns en spännvidd för hur en given sjukdom påverkar olika individers arbetsförmåga och förmåga att utföra olika aktiviteter',
-            funktionsnedsattning: 'Tvångssyndrom kan medföra',
+            funktionsnedsattning: 'Tvångssyndrom karakteriseras av problem med tvångstankar',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Vid lindrigt till medelsvårt tvångssyndrom kan sjukskrivning i många fall undvikas',
             overliggande: 'Det FMB-stöd som visas är för koden F42'
