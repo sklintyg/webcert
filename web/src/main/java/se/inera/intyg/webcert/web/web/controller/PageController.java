@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.web.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,8 +71,8 @@ public class PageController {
     @Autowired
     private IntygService intygService;
 
-    @Value("${webcert.useMinifiedJavaScript}")
-    private String useMinifiedJavascript;
+    @Autowired
+    private Environment environment;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -102,7 +102,7 @@ public class PageController {
     @RequestMapping(value = "/dashboard", method = { RequestMethod.GET, RequestMethod.POST })
     public ModelAndView displayDashBoard() {
         ModelAndView modelAndView = new ModelAndView(DASHBOARD_VIEW);
-        modelAndView.addObject("useMinifiedJavaScript", useMinifiedJavascript);
+        modelAndView.addObject("useMinifiedJavaScript", environment.getProperty("webcert.useMinifiedJavaScript", "true"));
         return modelAndView;
     }
 

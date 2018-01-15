@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
@@ -54,8 +55,8 @@ public class ConfigApiController extends AbstractApiController {
     @Value("${certificate.view.url.base}")
     private String dashboardUrl;
 
-    @Value("${webcert.useMinifiedJavaScript}")
-    private String useMinifiedJavascript;
+    @Autowired
+    private Environment environment;
 
     @Autowired
     private DynamicLinkService dynamicLinkService;
@@ -68,7 +69,8 @@ public class ConfigApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get module configuration for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     public Response getConfig() {
-        return Response.ok(new ConfigResponse(version, build, ppHost, dashboardUrl, Boolean.parseBoolean(useMinifiedJavascript))).build();
+        return Response.ok(new ConfigResponse(version, build, ppHost, dashboardUrl,
+                Boolean.parseBoolean(environment.getProperty("webcert.useMinifiedJavaScript", "true")))).build();
     }
 
     @GET
