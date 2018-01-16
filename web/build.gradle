@@ -114,16 +114,6 @@ configurations {
     }
 }
 
-license {
-    sourceSets {
-        main {
-            resources {
-                srcDirs  = ["src/main/webapp/app", "src/main/webapp/pubapp"]
-            }
-        }
-    }
-}
-
 dependencies {
     compile project(':fmb-integration')
     compile project(':pp-integration')
