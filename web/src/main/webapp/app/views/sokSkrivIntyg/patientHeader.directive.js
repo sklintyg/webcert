@@ -1,11 +1,11 @@
-angular.module('webcert').directive('wcVisaBytPatient',
+angular.module('webcert').directive('wcPatientHeader',
     ['$state', 'common.PatientModel',
     function($state, PatientModel) {
         'use strict';
 
         return {
             restrict: 'E',
-            templateUrl: '/app/views/sokSkrivIntyg/visaBytPatient.directive.html',
+            templateUrl: '/app/views/sokSkrivIntyg/patientHeader.directive.html',
             scope: {},
             link: function(scope, element, attrs) {
 
