@@ -1,0 +1,22 @@
+<div class="container-fluid">
+  <div class="content-container">
+    <div class="row">
+      <div class="col-xs-6">
+        <img class="pull-right webcert-logo" src="/img/webcert_big.png" />
+      </div>
+      <div class="col-xs-6">
+        <h1>Välkommen till Webcert</h1>
+        <p>
+          Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och
+          kommunicera med Försäkringskassan. För närvarande stödjer tjänsten följande intyg:
+        <ul style="margin-bottom:30px">
+          <li ng-repeat="type in intygTypes">{{type.label}}</li>
+        </ul>
+        </p>
+
+        <wc-login-metoder></wc-login-metoder>
+
+      </div>
+    </div>
+  </div>
+</div>

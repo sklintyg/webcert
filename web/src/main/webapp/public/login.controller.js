@@ -21,15 +21,7 @@
  * Created by stephenwhite on 31/08/15.
  */
 
-// deferredBootstrapper.bootstrap({
-//     element: document.body,
-//     module: 'webcert.pub.login',
-//     resolve: {
-//         LINKS: ['$http', function($http) {
-//             'use strict';
-//             return $http.get('/api/config/links');
-//         }]
-//     }});
+// TODO: Används nu endast av error.jsp, ta bort om denna refaktoreras bort.
 
 angular.module('webcert.pub.login', ['ui.bootstrap', 'common.dynamiclink'])
     .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', 'dynamicLinkService', function($scope, $sce, $uibModal, $window, $http, dynamicLinkService) {

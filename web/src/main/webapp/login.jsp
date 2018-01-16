@@ -51,7 +51,7 @@
   <p>Du som arbetar i en organisation som är ansluten till HSA-katalogen samt har medarbetaruppdrag ”Vård och behandling” loggar in med SITHS-kort.</p>
 
   <p>Problem med inloggning med SITHS-kort?</p>
-  <p><a href="#" ng-click="open('public/siths.help.html')">Läs mer om hur du kan felsöka</a></p>
+  <p><a href="#" ng-click="open('/app/views/index/loginMetoder/loginMetoderSithsHelp.html')">Läs mer om hur du kan felsöka</a></p>
 
   <h4>E-legitimation</h4>
 
@@ -59,6 +59,6 @@
     men inte arbetar inom en organisation som är ansluten till HSA-katalogen loggar in med e-legitimation.</p>
 
   <p>Problem med inloggning med e-legitimation?</p>
-  <p><a href="#" ng-click="open('public/e-leg.help.html')">Läs mer om hur du kan felsöka</a></p>
+  <p><a href="#" ng-click="open('/app/views/index/loginMetoder/loginMetoderElegHelp.html')">Läs mer om hur du kan felsöka</a></p>
 
 </div>
