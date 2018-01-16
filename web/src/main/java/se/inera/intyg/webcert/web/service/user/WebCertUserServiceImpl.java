@@ -51,6 +51,9 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
+    @Autowired
+    private WebCertUserService webCertUserService;
+
     @Override
     public boolean hasAuthenticationContext() {
         return SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null
@@ -173,6 +176,8 @@ public class WebCertUserServiceImpl implements WebCertUserService {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
+        } else if (origin.equals(UserOriginType.READONLY.name())) {
+            return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, enhetsHsaId);
         } else {
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
         }

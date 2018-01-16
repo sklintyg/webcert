@@ -210,6 +210,33 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         assertUserHasExpectedAccess();
     }
 
+    @Test
+    public void testUserHasNoReadOnlyAccessToParentVardEnhetWhenNORMAL() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.changeValdVardenhet(MOTTAGNING_1);
+        user.setOrigin(UserOriginType.NORMAL.name());
+
+        assertFalse(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+    }
+
+    @Test
+    public void testUserHasNoReadOnlyAccessToParentVardEnhetWhenDJUPINTEGRATION() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.changeValdVardenhet(MOTTAGNING_1);
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        assertFalse(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+    }
+
+    @Test
+    public void testUserHasReadOnlyAccessToParentVardEnhetWhenREADONLY() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.changeValdVardenhet(MOTTAGNING_1);
+        user.setOrigin(UserOriginType.READONLY.name());
+
+        assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+    }
+
     private WebCertUser setupUserMottagningAccessTest() {
         WebCertUser user = createWebCertUser(true);
         ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning1());
