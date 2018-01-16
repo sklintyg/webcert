@@ -16,7 +16,7 @@
 
     </form>
 
-    <div ng-if="viewState">
+    <div ng-if="viewState && !viewState.loadErrorMessageKey">
       <wc-tidigare-intyg view-state="viewState"></wc-tidigare-intyg>
     </div>
   </div>

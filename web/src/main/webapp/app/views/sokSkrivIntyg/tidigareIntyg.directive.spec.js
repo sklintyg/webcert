@@ -122,14 +122,14 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             $q = _$q_;
             $scope.viewState = viewState;
             var tpl = angular.element(
-                '<tidigare-intyg view-state="viewState"></tidigare-intyg>'
+                '<wc-tidigare-intyg view-state="viewState"></wc-tidigare-intyg>'
             );
             element = _$compile_(tpl)($scope);
             element.scope().$digest();
         });
     });
 
-    xdescribe('förnya intyg', function() {
+    describe('förnya intyg', function() {
         var intyg;
 
         beforeEach(function() {
@@ -193,7 +193,7 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
         });
     });
 
-    xdescribe('openIntyg', function() {
+    describe('openIntyg', function() {
 
         var intyg;
 
