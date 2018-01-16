@@ -129,7 +129,7 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
         });
     });
 
-    describe('förnya intyg', function() {
+    xdescribe('förnya intyg', function() {
         var intyg;
 
         beforeEach(function() {
@@ -193,7 +193,7 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
         });
     });
 
-    describe('openIntyg', function() {
+    xdescribe('openIntyg', function() {
 
         var intyg;
 
