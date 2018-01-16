@@ -4,28 +4,22 @@
 Egenskap: Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida
-		  Givet att jag är inloggad som läkare
+		  Givet jag har makulerat tidigare "Dödsbevis" intyg för "första" testpatienten
+		  Givet jag har makulerat tidigare "Dödsorsaksintyg" intyg för "första" testpatienten
+		  Och att jag är inloggad som läkare
+		  När jag går in på "första" testpatienten
+		  
 
 @signera
 Scenario: Kan signera dödsbevisintyg 
-          När jag går in på en patient
-		  Och jag makulerar tidigare "Dödsbevis" intyg
 		  Och jag går in på att skapa ett "Dödsbevis" intyg
 		  Och jag fyller i alla nödvändiga fält för intyget
 		  Och jag signerar intyget
 		  Så ska jag se den data jag angett för intyget
-		  
-@sekretessmarkering
-Scenario: Ska inte kunna utfärda DOI på patienter med sekretessmarkering
-	När jag går in på en patient med sekretessmarkering
-	Och jag makulerar tidigare "Dödsbevis" intyg
-	Så ska jag inte kunna skapa ett "Dödsorsaksintyg" intyg
 	
 	
 @doi @notReady
 Scenario: Ska kunna skapa Dödsorsaksintyg utifrån ett Dödsbevis
-          När jag går in på en patient
-		  Och jag makulerar tidigare "Dödsbevis" intyg
 		  Och jag går in på att skapa ett "Dödsbevis" intyg
 		  Och jag fyller i alla nödvändiga fält för intyget
 		  Och jag signerar intyget

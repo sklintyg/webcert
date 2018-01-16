@@ -55,14 +55,6 @@ function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänst
 
 }
 
-function gotoPerson(patient) { //förutsätter inte att personen finns i PU-tjänsten
-    global.person = patient;
-
-    logger.info('Går in på patient ' + person.id);
-    return sokSkrivIntygPage.selectPersonnummer(person.id);
-
-}
-
 var forkedBrowser;
 
 function setForkedBrowser(forkedBrowser2) {
@@ -101,11 +93,16 @@ module.exports = function() {
 
     this.Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum) {
         if (typAvNum === 'samordningsnummer') {
-            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0]); //personnummret finns inte med i PU-tjänsten
+            return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0]); //personnummret finns inte med i PU-tjänsten
         } else {
-            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterEjPU)[0]);
+            return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterEjPU)[0]);
         }
 
+    });
+
+    this.Then(/^jag går in på "([^"]*)" testpatienten$/, function(nummer) {
+        var patient = testpatienter[helpers.getIntFromTxt(nummer)];
+        return gotoPatient(patient);
     });
 
 

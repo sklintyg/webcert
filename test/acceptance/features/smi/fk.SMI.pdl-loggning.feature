@@ -74,7 +74,7 @@ Scenario: GE-005 - PDL - Skicka SMI-intyg till Försäkringskassan
 
 #9
 @radera
-Scenario: GE-005 - PDL - Radera utkast
+Scenario: GE-005 - PDL - Radera SMI utkast
   När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag raderar utkastet
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
@@ -82,7 +82,7 @@ Scenario: GE-005 - PDL - Radera utkast
 #10
 @makulera
 Scenario: GE-005 - Makulera SMI-intyg
-	När  jag går in på ett slumpat SMI-intyg med status "Skickat"
+	När jag går in på ett slumpat SMI-intyg med status "Skickat"
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 

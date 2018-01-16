@@ -145,6 +145,68 @@ module.exports = {
         }
         return str;
     },
+    getIntFromTxt: function(txt) {
+        var n;
+        switch (txt) {
+            case 'första':
+                n = 0;
+                break;
+            case 'andra':
+                n = 1;
+                break;
+            case 'tredje':
+                n = 2;
+                break;
+            case 'fjärde':
+                n = 3;
+                break;
+            case 'femte':
+                n = 4;
+                break;
+            case 'sjätte':
+                n = 5;
+                break;
+            case 'sjunde':
+                n = 6;
+                break;
+            default:
+                throw ('Lägg till fler getIntFromTxt alternativ');
+        }
+        return n;
+    },
+    getIntyg: function(intygsTyp, patient) {
+        var intygShortCode = this.getPathShortcode(intygsTyp);
+
+        return new Promise(function(resolve, reject) {
+            return pool.getConnection().then(function(connection) {
+
+                console.log(patient);
+
+                if (patient.id.indexOf('-') === -1) {
+                    patient.id = patient.id.substring(0, 8) + '-' + patient.id.substring(8, 12);
+                    //yyyymmdd-nnnn format.
+                }
+
+                var query = 'SELECT INTYGS_ID, ENHETS_ID, SKAPAD_AV_HSAID, STATUS';
+                query += ' FROM ' + process.env.DATABASE_NAME + '.INTYG WHERE INTYGS_TYP = "' + intygShortCode + '"';
+                query += ' AND PATIENT_PERSONNUMMER = "' + patient.id + '"';
+                query += ' LIMIT 100';
+
+                console.log(query);
+
+                connection.query(query,
+                    function(err, rows, fields) {
+                        connection.release();
+                        if (err) {
+                            throw (err);
+                        }
+                        console.log(fields);
+                        console.log(rows);
+                        resolve(rows);
+                    });
+            });
+        });
+    },
     getIntygElementRow: function(intygstyp, status, cb) {
         var qaTable = element(by.css('.wc-table-striped'));
 
