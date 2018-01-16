@@ -247,14 +247,17 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 // Update avliden with integrationparameters
                 patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
 
-                if (isNotNullOrEmpty(parameters.getPostadress())) {
+                // All address fields needs to be present from integration parameters, otherwise use PU instead.
+                if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
+                        && isNotNullOrEmpty(parameters.getPostort())) {
                     patient.setPostadress(parameters.getPostadress());
-                }
-                if (isNotNullOrEmpty(parameters.getPostnummer())) {
                     patient.setPostnummer(parameters.getPostnummer());
-                }
-                if (isNotNullOrEmpty(parameters.getPostort())) {
                     patient.setPostort(parameters.getPostort());
+                } else {
+                    // TODO: Set some flag here, to tell frontend that PU information was used for address.
+                    patient.setPostadress(personSvar.getPerson().getPostadress());
+                    patient.setPostnummer(personSvar.getPerson().getPostnummer());
+                    patient.setPostort(personSvar.getPerson().getPostort());
                 }
             }
             return patient;
