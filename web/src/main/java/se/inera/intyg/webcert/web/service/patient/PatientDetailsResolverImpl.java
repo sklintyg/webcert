@@ -254,7 +254,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                     patient.setPostnummer(parameters.getPostnummer());
                     patient.setPostort(parameters.getPostort());
                 } else {
-                    // TODO: Set some flag here, to tell frontend that PU information was used for address.
                     patient.setPostadress(personSvar.getPerson().getPostadress());
                     patient.setPostnummer(personSvar.getPerson().getPostnummer());
                     patient.setPostort(personSvar.getPerson().getPostort());
