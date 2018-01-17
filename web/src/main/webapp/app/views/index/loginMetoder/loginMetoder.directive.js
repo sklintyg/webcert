@@ -17,36 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Created by stephenwhite on 31/08/15.
- */
-angular.module('webcert').directive('wcLoginMetoder', ['$sce', '$uibModal', '$window', '$http', 'moduleConfig',
-    function($sce, $uibModal, $window, $http, moduleConfig) {
+angular.module('webcert').directive('wcLoginMetoder', ['$window', '$http', 'moduleConfig',
+    function($window, $http, moduleConfig) {
         'use strict';
 
         return {
             restrict: 'E',
             scope: {
             },
-            link: function(scope, element, attrs) {
-                scope.config = moduleConfig;
-
-                var expand = $sce.trustAsHtml(
-                    'Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
-                var collapse = $sce.trustAsHtml(
-                    'Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
-
-                scope.collapseLoginDesc = true;
-                scope.loginDescText = expand;
-                scope.toggleLoginDesc = function(evt) {
-                    evt.preventDefault();
-                    scope.collapseLoginDesc = !scope.collapseLoginDesc;
-                    if (scope.collapseLoginDesc) {
-                        scope.loginDescText = expand;
-                    } else {
-                        scope.loginDescText = collapse;
-                    }
-                };
+            link: function(scope) {
 
                 scope.showELegWarning = (function() {
                     var re = /(?:Chrome\/\d+)|(?:Edge\/\d+)/;
@@ -54,33 +33,13 @@ angular.module('webcert').directive('wcLoginMetoder', ['$sce', '$uibModal', '$wi
                     return re.test(userAgent);
                 }());
 
-                scope.open = function(which) {
-
-                    scope.modalInstance = $uibModal.open({
-                        templateUrl: which,
-                        scope: scope,
-                        size: 'lg'
-                    });
-
-                    scope.modalInstance.result.then(function(selectedItem) {
-                        scope.selected = selectedItem;
-                    }, function() {
-                        // closed the modal
-                    });
-                };
-
-                scope.ok = function() {
-                    scope.modalInstance.close();
-                };
-
-                scope.toggleCookie = function(evt) {
-                    evt.preventDefault();
-                    scope.showCookieText = !scope.showCookieText;
-                };
-
-                scope.afterExpand = function() {
-                    $window.scrollTo(0, document.body.scrollHeight);
-                };
+                scope.loginMethods = [{
+                    url:'/saml/login/alias/defaultAlias?idp=' + moduleConfig.SAKERHETSTJANST_IDP_URL,
+                    name:'SITHS-kort'
+                },{
+                    url:'/saml/login/alias/defaultAlias?idp=' + moduleConfig.CGI_FUNKTIONSTJANSTER_IDP_URL,
+                    name:'E-legitimation'
+                }];
 
                 function loadIntygTypes() {
                     scope.intygTypes = [];

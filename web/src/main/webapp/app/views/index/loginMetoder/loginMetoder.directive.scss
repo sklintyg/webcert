@@ -17,33 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.index-vy {
+wc-login-metoder {
+  display: block;
 
-  @extend %wc-typo-07;
-  color: $wc-color-07;
-
-  h1 {
-    @extend %wc-typo-02;
-    color: $wc-color-07;
-  }
-
-  h2 {
-    @extend %wc-typo-05;
-    color: $wc-color-08;
-  }
-
-  @media (min-width: 1200px) {
-    padding-top: 148px;
-  }
-
-  .webcert-logo {
-    @media (min-width: 1200px) {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    img {
-      margin-top: 20px;
-    }
+  .btn-login {
+    @extend .btn-default;
+    width: 185px;
+    height: 38px;
+    margin-bottom: 5px;
+    padding: 9px 14px;
+    text-align: left;
+    text-decoration: none;
   }
 }
