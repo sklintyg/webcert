@@ -27,7 +27,7 @@ angular.module('webcert').controller('webcert.IndexCtrl', [ '$scope', '$http', '
         $http.get('/api/modules/active').then(function(response) {
             $scope.intygTypes = response.data;
         });
-    };
+    }
     loadIntygTypes();
 
 } ]);

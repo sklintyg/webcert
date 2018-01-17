@@ -102,7 +102,7 @@
             $httpProvider.interceptors.push('common.http403ResponseInterceptor');
 
             // Enable debug logging
-            $logProvider.debugEnabled(true);
+            $logProvider.debugEnabled(false);
         }]);
 
 /*
@@ -211,9 +211,8 @@
 
                     // if we dont have a user
                     if (!UserModel.user) {
-                        console.log(toState);
                         // Make sure we send user to login state
-                        if (toState.name != 'webcert.index') {
+                        if (toState.name !== 'webcert.index') {
                             event.preventDefault();
                             $state.go('webcert.index');
                         }

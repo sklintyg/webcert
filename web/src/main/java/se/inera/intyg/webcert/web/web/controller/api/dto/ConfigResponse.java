@@ -47,7 +47,8 @@ public class ConfigResponse {
     @ApiModelProperty(name = "CGI_FUNKTIONSTJANSTER_IDP_URL", dataType = "String")
     private String cgiFunktionstjansterIdpUrl;
 
-    public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl, Boolean jsMinified, String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
+    public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl, Boolean jsMinified,
+                          String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
         this.version = version;
         this.buildNumber = buildNumber;
         this.ppHost = ppHost;

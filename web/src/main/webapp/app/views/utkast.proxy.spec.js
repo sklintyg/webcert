@@ -41,10 +41,12 @@ describe('UtkastProxy', function() {
             },
             isFeatureActive: jasmine.createSpy('isFeatureActive')
         };
+        featureService.isFeatureActive.and.returnValue(true);
 
         authorityService = {
             isAuthorityActive: jasmine.createSpy('isAuthorityActive')
         };
+        authorityService.isAuthorityActive.and.returnValue(true);
 
         var User = {
             getValdVardenhet: function() {
@@ -75,7 +77,8 @@ describe('UtkastProxy', function() {
             privileges: {SKRIVA_INTYG: {}},
             getActiveFeatures: function() {
             },
-            hasIntygsTyp: function() {return true;} });
+            hasIntygsTyp: function() {return true;},
+            isLakare: function() {return true;}});
 
     }));
 
@@ -136,9 +139,6 @@ describe('UtkastProxy', function() {
         it('should call onSuccess callback with list of intyg types from the server', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
-
-            featureService.isFeatureActive.and.returnValue(true);
-            authorityService.isAuthorityActive.and.returnValue(true);
 
             $httpBackend.expectGET('/api/modules/map').respond([
                 {

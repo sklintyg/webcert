@@ -22,13 +22,13 @@
  */
 angular.module('webcert').directive('wcLoginMetoder', ['$sce', '$uibModal', '$window', '$http', 'moduleConfig',
     function($sce, $uibModal, $window, $http, moduleConfig) {
+        'use strict';
+
         return {
             restrict: 'E',
             scope: {
             },
             link: function(scope, element, attrs) {
-                'use strict';
-
                 scope.config = moduleConfig;
 
                 var expand = $sce.trustAsHtml(
@@ -87,9 +87,9 @@ angular.module('webcert').directive('wcLoginMetoder', ['$sce', '$uibModal', '$wi
                     $http.get('/api/modules/active').then(function(response) {
                         scope.intygTypes = response.data;
                     });
-                };
+                }
                 loadIntygTypes();
             },
             templateUrl: '/app/views/index/loginMetoder/loginMetoder.directive.html'
-        }
+        };
     }]);
