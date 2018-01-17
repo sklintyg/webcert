@@ -48,9 +48,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
-    @Autowired
-    private WebCertUserService webCertUserService;
-
     @Override
     public boolean hasAuthenticationContext() {
         return SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null
