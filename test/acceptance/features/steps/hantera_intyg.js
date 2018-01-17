@@ -69,13 +69,44 @@ function signeraUtkast() {
     });
 }
 
+function makuleraIntyget() {
+    return browser.getCurrentUrl()
+        .then(function(text) {
+            intyg.id = text.split('/').slice(-2)[0];
+            intyg.id = intyg.id.split('?')[0];
+        })
+        .then(function() {
+            return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
+        })
+        .then(function() {
+            return helpers.largeDelay(); // fix för animering
+        })
+        .then(function() {
+            return fkIntygPage.pickMakuleraOrsak();
+        })
+        .then(function() {
+            return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
+        }).then(function() {
+            return helpers.largeDelay(); // Sleep p.g.a. page reload.
+        });
+}
+
+function raderaUtkastet() {
+    return moveAndSendKeys(fkUtkastPage.radera.knapp, protractor.Key.SPACE).then(function() {
+        return moveAndSendKeys(fkUtkastPage.radera.bekrafta, protractor.Key.SPACE);
+    }).then(function() {
+        return helpers.largeDelay(); // Page reload
+    });
+}
+
+
 function makuleraIntygLoop(intygsTyp) {
-    console.log('makuleraIntygLoop');
+    logger.info('Startar makuleraIntygLoop');
     return new Promise(function(resolve, reject) {
         return helpers.getIntygElementRow(intygsTyp, intygsTyp, function(intygRadElement) {
             if (!intygRadElement) {
-                logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
-                return resolve('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
+                logger.info('OK - Inget intyg med intygstyp ' + intygsTyp + ' finns');
+                return resolve('OK - Inget intyg med intygstyp ' + intygsTyp + ' finns');
             } else {
                 return intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE)
                     .then(function() {
@@ -101,12 +132,12 @@ function makuleraIntygLoop(intygsTyp) {
 }
 
 function raderaUtkastLoop(intygsTyp) {
-    console.log('raderaUtkastLoop');
+    logger.info('Startar raderaUtkastLoop');
     return new Promise(function(resolve, reject) {
         return helpers.getIntygElementRow(intygsTyp, intygsTyp, function(intygRadElement) {
             if (!intygRadElement) {
-                logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
-                return resolve('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
+                logger.info('OK - Inget intyg med intygstyp ' + intygsTyp + ' finns');
+                return resolve('OK - Inget intyg med intygstyp ' + intygsTyp + ' finns');
             } else {
                 return intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE)
                     .then(function() {
@@ -193,25 +224,7 @@ module.exports = function() {
 
     this.Given(/^jag makulerar intyget$/, function() {
 
-        return browser.getCurrentUrl()
-            .then(function(text) {
-                intyg.id = text.split('/').slice(-2)[0];
-                intyg.id = intyg.id.split('?')[0];
-            })
-            .then(function() {
-                return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
-            })
-            .then(function() {
-                return helpers.largeDelay(); // fix för animering
-            })
-            .then(function() {
-                return fkIntygPage.pickMakuleraOrsak();
-            })
-            .then(function() {
-                return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
-            }).then(function() {
-                return helpers.largeDelay(); // Sleep p.g.a. page reload.
-            });
+        return makuleraIntyget();
     });
 
     this.Given(/^jag makulerar tidigare "([^"]*)" intyg$/, function(intygsTyp, txt) {
@@ -226,11 +239,21 @@ module.exports = function() {
 
         var testpatienter = wcTestTools.testdata.values.patienter;
 
-        var patient = testpatienter[helpers.getIntFromTxt(txt)];
+        var patient;
+        if (txt === 'sekretessmarkering') {
+            patient = wcTestTools.testdata.values.patienterMedSekretessmarkering[0];
+        } else {
+            patient = testpatienter[helpers.getIntFromTxt(txt)];
+        }
+
 
         //return new Promise(function(resolve, reject) {
         return helpers.getIntyg(intygsTyp, patient).then(function(data) {
-            console.log(data);
+            if (typeof(data[0]) === 'undefined') {
+                logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
+                return;
+            }
+            intyg.id = data[0].INTYGS_ID;
 
             //Logga in på vårdenhet som skapat intyget:
             var userObj = {
@@ -240,22 +263,35 @@ module.exports = function() {
                 enhetId: data[0].ENHETS_ID
             };
             return loginHelpers.logInAsUserRole(userObj, '').then(function() {
-                return helpers.pageReloadDelay();
-            }).then(function() {
+                    return helpers.pageReloadDelay();
+                })
+
+                /*.then(function() {
                 return pages.sokSkrivIntyg.pickPatient.selectPersonnummer(patient.id);
-            }).then(function() {
-                logger.info('Går in på patient ' + patient.id);
-                return helpers.pageReloadDelay();
+            })*/
 
-            }).then(function() {
-                console.log('intygsstatus från DB: ' + data[0].STATUS);
-                if (data[0].STATUS.indexOf('DRAFT') === -1) {
-                    return makuleraIntygLoop(intygsTyp);
+                .then(function() {
+                    var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
+                    var link = '/web/dashboard#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
+                    logger.info('Går till ' + link);
+                    return browser.get(link);
+                })
 
-                } else {
-                    return raderaUtkastLoop(intygsTyp);
-                }
-            });
+                .then(function() {
+                    //logger.info('Går in på patient ' + patient.id);
+                    return helpers.pageReloadDelay();
+
+                })
+
+                .then(function() {
+                    console.log('intygsstatus från DB: ' + data[0].STATUS);
+                    if (data[0].STATUS.indexOf('DRAFT') === -1) {
+                        return makuleraIntyget();
+
+                    } else {
+                        return raderaUtkastet();
+                    }
+                });
         });
         //});
 
@@ -265,11 +301,7 @@ module.exports = function() {
 
 
     this.Given(/^jag raderar utkastet$/, function() {
-        return moveAndSendKeys(fkUtkastPage.radera.knapp, protractor.Key.SPACE).then(function() {
-            return moveAndSendKeys(fkUtkastPage.radera.bekrafta, protractor.Key.SPACE);
-        }).then(function() {
-            return helpers.largeDelay(); // Page reload
-        });
+        return raderaUtkastet();
     });
 
 

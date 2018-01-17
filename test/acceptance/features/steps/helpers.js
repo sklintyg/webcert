@@ -169,6 +169,7 @@ module.exports = {
             case 'sjunde':
                 n = 6;
                 break;
+
             default:
                 throw ('Lägg till fler getIntFromTxt alternativ');
         }
