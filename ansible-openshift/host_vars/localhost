@@ -1,0 +1,9 @@
+---
+
+# Configuration repository
+environment_name: "openshift"
+s
+# Spring profiles
+profiles: test,wc-security-test
+
+tomcat_http_port: 9088

@@ -1,0 +1,34 @@
+---
+# Tomcat installation
+inera_tomcat_folder: "/tomcat"
+
+tomcat_conf: "{{ inera_tomcat_folder }}/conf"
+tomcat_bin:  "{{ inera_tomcat_folder }}/bin"
+tomcat_lib:  "{{ inera_tomcat_folder }}/lib"
+webapps_folder: "{{ inera_tomcat_folder }}/webapps"
+
+environment_name: openshift
+
+# Database configuration
+database_server: localhost
+database_port: 3306
+database_name: webcert
+database_username: webcert
+database_password: webcert
+database_driver: com.mysql.jdbc.Driver
+database_url: "jdbc:mysql://{{ database_server }}:{{ database_port }}/{{ database_name }}?useCompression=true"
+database_pool_maxActive: 20
+database_pool_maxIdle: 20
+database_pool_minIdle: 10
+database_pool_initialSize: 10
+
+# ActiveMQ configuration
+activemq_version : 5.13.0
+activemq_broker_url: "tcp://localhost:61616"
+activemq_username: ""
+activemq_password: ""
+async_maximumRedeliveries: 30
+async_maximumRedeliveryDelay: 300000
+async_initialRedeliveryDelay: 60000
+async_activemq_broker_url: "tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2&amp;jms.redeliveryPolicy.maximumRedeliveries={{ async_maximumRedeliveries }}&amp;jms.redeliveryPolicy.maximumRedeliveryDelay={{ async_maximumRedeliveryDelay }}&amp;jms.redeliveryPolicy.initialRedeliveryDelay={{ async_initialRedeliveryDelay }}"
+activemq_conf: "{{ inera_root }}/activemq/conf"
