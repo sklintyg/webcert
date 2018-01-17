@@ -99,7 +99,7 @@ var BaseIntyg = JClass._extend({
 
     },
     get: function(intygId) {
-        browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId + '/');
+        browser.get('/#/intyg/' + this.intygType + '/' + intygId + '/');
     },
     getReason: function(reasonBth) {
         for (var key in this.makulera) {

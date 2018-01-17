@@ -45,7 +45,7 @@ class FragaSvar extends Simulation {
           session
         })
         .exec(http("Dashboard")
-          .get("/web/dashboard#/unhandled-qa.html")
+          .get("/#/unhandled-qa.html")
           .headers(Headers.default))
         .exec(http("Get statistics")
           .get("/moduleapi/stat/")

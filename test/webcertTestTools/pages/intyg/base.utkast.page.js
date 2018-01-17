@@ -70,7 +70,7 @@ var BaseUtkast = JClass._extend({
         };
     },
     get: function(intygType, intygId) {
-        browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId + '/');
+        browser.get('/#/' + intygType + '/edit/' + intygId + '/');
     },
     isAt: function() {
         var at = this.at;

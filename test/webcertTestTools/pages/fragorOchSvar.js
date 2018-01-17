@@ -31,7 +31,7 @@ var FragorOchSvarPage = WebcertBasePage._extend({
         this.searchBtn = element(by.id('filter-arende-btn'));
     },
     get: function() {
-        return browser.get('/web/dashboard#/enhet-arenden');
+        return browser.get('/#/enhet-arenden');
     }
 });
 
