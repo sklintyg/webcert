@@ -17,22 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser*/
+wc-login-metoder {
+  display: block;
 
-'use strict';
-
-var WebcertBasePage = require('./webcert.base.page.js');
-
-var FragorOchSvarPage = WebcertBasePage._extend({
-    init: function init() {
-        init._super.call(this);
-        this.qaTable = element(by.css('table.wc-table-striped'));
-        this.atgardSelect = element(by.id('qp-showStatus'));
-        this.searchBtn = element(by.id('filter-arende-btn'));
-    },
-    get: function() {
-        return browser.get('/#/enhet-arenden');
-    }
-});
-
-module.exports = new FragorOchSvarPage();
+  .btn-login {
+    @extend .btn-default;
+    width: 185px;
+    height: 38px;
+    margin-bottom: 5px;
+    padding: 9px 14px;
+    text-align: left;
+    text-decoration: none;
+  }
+}

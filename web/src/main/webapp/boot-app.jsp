@@ -62,7 +62,7 @@
   </noscript>
 
   <c:choose>
-    <c:when test="${useMinifiedJavaScript == 'true'}">
+    <c:when test="${pageAttributes.useMinifiedJavaScript == 'true'}">
       <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular/angular.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular-animate/angular-animate.min.js?<spring:message code="buildNumber" />"></script>

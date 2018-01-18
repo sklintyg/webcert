@@ -49,10 +49,12 @@ describe('IntygProxy', function() {
             }
         };
 
+        $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', ['isAuthorityActive']));
         $provide.value('common.featureService', featureService);
         $provide.value('common.dialogService', dialogService);
         $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat']));
         $provide.value('common.User', User);
+        $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare']));
         $provide.value('common.messageService', {});
 
     }));

@@ -40,7 +40,7 @@
 <link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css?<spring:message code="buildNumber" />">
 
 <c:choose>
-  <c:when test="${useMinifiedJavaScript == 'true'}">
+  <c:when test="${pageAttributes.useMinifiedJavaScript == 'true'}">
     <script type="text/javascript" src="/bower_components/angular/angular.min.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js?<spring:message code="buildNumber" />"></script>

@@ -16,7 +16,7 @@ class SkrivSigneraSkickaIntyg extends Simulation {
     .repeat(10) {
       feed(testpersonnummer)
         .exec(http("Dashboard")
-          .get("/web/dashboard#/unhandled-qa.html")
+          .get("/#/unhandled-qa.html")
           .headers(Headers.default))
         .exec(http("Get statistics")
           .get("/moduleapi/stat/")

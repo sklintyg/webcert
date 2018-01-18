@@ -70,32 +70,6 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testStartViewForDoctor() {
-        when(webCertUserService.getUser()).thenReturn(createMockUser(true, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
-        ModelAndView result = controller.displayStart();
-        assertEquals(PageController.DASHBOARD_VIEW_REDIRECT, result.getViewName());
-    }
-
-    @Test
-    public void testStartViewForNonDoctor() {
-        when(webCertUserService.getUser()).thenReturn(createMockUser(false, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR));
-        ModelAndView result = controller.displayStart();
-        assertEquals(PageController.ADMIN_VIEW_REDIRECT, result.getViewName());
-    }
-
-    @Test
-    public void testResolveStartViewDoctor() {
-        String result = controller.resolveStartView(createMockUser(true, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
-        assertEquals(PageController.DASHBOARD_VIEW_REDIRECT, result);
-    }
-
-    @Test
-    public void testResolveStartViewNonDoctor() {
-        String result = controller.resolveStartView(createMockUser(false, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR));
-        assertEquals(PageController.ADMIN_VIEW_REDIRECT, result);
-    }
-
-    @Test
     public void testRedirectToIntygUserHasAccess() {
         when(webCertUserService.getUser()).thenReturn(createMockUser(false));
         when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");

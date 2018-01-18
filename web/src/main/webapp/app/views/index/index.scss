@@ -17,22 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser*/
+.index-vy {
 
-'use strict';
+  @extend %wc-typo-07;
+  color: $wc-color-07;
 
-var WebcertBasePage = require('./webcert.base.page.js');
+  h1 {
+    @extend %wc-typo-02;
+    color: $wc-color-07;
+  }
 
-var FragorOchSvarPage = WebcertBasePage._extend({
-    init: function init() {
-        init._super.call(this);
-        this.qaTable = element(by.css('table.wc-table-striped'));
-        this.atgardSelect = element(by.id('qp-showStatus'));
-        this.searchBtn = element(by.id('filter-arende-btn'));
-    },
-    get: function() {
-        return browser.get('/#/enhet-arenden');
+  h2 {
+    @extend %wc-typo-05;
+    color: $wc-color-08;
+  }
+
+  @media (min-width: 1200px) {
+    padding-top: 148px;
+  }
+
+  .webcert-logo {
+    @media (min-width: 1200px) {
+      display: flex;
+      justify-content: flex-end;
     }
-});
 
-module.exports = new FragorOchSvarPage();
+    img {
+      margin-top: 20px;
+    }
+  }
+}

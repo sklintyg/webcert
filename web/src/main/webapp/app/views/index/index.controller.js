@@ -17,22 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser*/
+angular.module('webcert').controller('webcert.IndexCtrl', [ '$scope', '$http', 'moduleConfig', function($scope, $http, moduleConfig) {
+    'use strict';
 
-'use strict';
+    $scope.config = moduleConfig;
 
-var WebcertBasePage = require('./webcert.base.page.js');
-
-var FragorOchSvarPage = WebcertBasePage._extend({
-    init: function init() {
-        init._super.call(this);
-        this.qaTable = element(by.css('table.wc-table-striped'));
-        this.atgardSelect = element(by.id('qp-showStatus'));
-        this.searchBtn = element(by.id('filter-arende-btn'));
-    },
-    get: function() {
-        return browser.get('/#/enhet-arenden');
+    function loadIntygTypes() {
+        $scope.intygTypes = [];
+        $http.get('/api/modules/active').then(function(response) {
+            $scope.intygTypes = response.data;
+        });
     }
-});
+    loadIntygTypes();
 
-module.exports = new FragorOchSvarPage();
+} ]);

@@ -105,7 +105,7 @@ public class TermsFilter extends OncePerRequestFilter {
                             // REDIRECT. Note that we have gotten IllegalStateExceptions after redirect due to response
                             // already have been commited. Hopefully the return (breaking the filter chain) can mitigate
                             // this.
-                            response.sendRedirect("/web/dashboard#/terms");
+                            response.sendRedirect("/#/terms");
                             return;
                         }
 

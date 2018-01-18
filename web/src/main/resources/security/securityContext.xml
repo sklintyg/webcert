@@ -38,8 +38,7 @@
   <security:http security="none" pattern="/web/eleglogin"/>
   <security:http security="none" pattern="/api/modules/map"/>
   <security:http security="none" pattern="/api/modules/active"/>
-  <security:http security="none" pattern="/api/config/links"/>
-  <security:http security="none" pattern="/api/config/kommuner"/>
+  <security:http security="none" pattern="/api/config/**"/>
   <!-- Everything under /app such as js, css, images etc is ok to access at any time -->
   <security:http security="none" pattern="/app/**"/>
   <security:http security="none" pattern="/img/**"/>
@@ -290,7 +289,7 @@
     </bean>
     <bean id="fakeSuccessHandler"
         class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
-      <property name="defaultTargetUrl" value="/web/start"/>
+      <property name="defaultTargetUrl" value="/"/>
     </bean>
     <!--
     <bean id="fakeAuthenticationProvider"
@@ -335,7 +334,7 @@
     <!-- Handler deciding where to redirect user after successful login -->
     <bean id="successRedirectHandler"
         class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
-      <property name="defaultTargetUrl" value="/web/start"/>
+      <property name="defaultTargetUrl" value="/"/>
       <property name="requestCache" ref="httpSessionRequestCache"/>
     </bean>
 

@@ -70,7 +70,7 @@ class Arende extends Simulation {
         })
         .pause(50 milliseconds)
         .exec(http("Dashboard")
-          .get("/web/dashboard#/unhandled-qa.html")
+          .get("/#/unhandled-qa.html")
           .headers(Headers.default))
         .exec(http("Get statistics")
           .get("/moduleapi/stat/")

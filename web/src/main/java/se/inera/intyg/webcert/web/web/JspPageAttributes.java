@@ -16,23 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.web;
 
-/* globals browser*/
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
-'use strict';
+public class JspPageAttributes {
 
-var WebcertBasePage = require('./webcert.base.page.js');
+    private static final String USE_MINIFIED_JAVA_SCRIPT = "webcert.useMinifiedJavaScript";
 
-var FragorOchSvarPage = WebcertBasePage._extend({
-    init: function init() {
-        init._super.call(this);
-        this.qaTable = element(by.css('table.wc-table-striped'));
-        this.atgardSelect = element(by.id('qp-showStatus'));
-        this.searchBtn = element(by.id('filter-arende-btn'));
-    },
-    get: function() {
-        return browser.get('/#/enhet-arenden');
+    @Autowired
+    private Environment environment;
+
+    public String getUseMinifiedJavaScript() {
+        return environment.getProperty(USE_MINIFIED_JAVA_SCRIPT, "true");
     }
-});
 
-module.exports = new FragorOchSvarPage();
+}

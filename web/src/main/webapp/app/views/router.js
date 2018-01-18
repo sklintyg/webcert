@@ -60,7 +60,15 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
-
+        state('webcert.index', {
+            url: '/',
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/index/index.html',
+                    controller: 'webcert.IndexCtrl'
+                }
+            }
+        }).
         state('webcert.create-index', {
             url: '/create/index',
             views: {
@@ -149,6 +157,21 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             }
         });
 
-        $urlRouterProvider.when('', '/create/index');
+    $urlRouterProvider.when('', ['$window', 'common.UserModel', 'common.authorityService', 'common.featureService',
+        function($window, UserModel, authorityService, featureService) {
+            if (UserModel.isLakare() &&
+                authorityService.isAuthorityActive({feature: featureService.features.HANTERA_INTYGSUTKAST})) {
+                return '/create/index';
+            } else if (authorityService.isAuthorityActive({feature: featureService.features.HANTERA_FRAGOR})) {
+                return '/enhet-arenden';
+            } else {
+                if (!UserModel.user) {
+                    return '/';
+                }
+                else {
+                    $window.location.href = '/error.jsp?reason=denied';
+                }
+            }
+        }]);
 
 });

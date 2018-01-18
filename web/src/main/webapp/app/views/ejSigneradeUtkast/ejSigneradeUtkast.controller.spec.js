@@ -44,12 +44,14 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
             var User = mockFactory.buildUserMinimal();
             $provide.value('common.User', User);
             $provide.value('common.UserModel', { userContext: { authenticationScheme: null }, getActiveFeatures: function() {},
-                hasIntygsTyp: function() {return true;} });
+                hasIntygsTyp: function() {return true;}, isLakare: function() {return true;} });
             $provide.value('common.dialogService', mockFactory.buildDialogService());
             utkastNotifyService = jasmine.createSpyObj('common.UtkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
             $provide.value('common.UtkastNotifyService', utkastNotifyService);
-            $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
-            $provide.value('common.authorityService', {});
+            var featureService = jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]);
+            featureService.features = {};
+            $provide.value('common.featureService', featureService);
+            $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', [ 'isAuthorityActive' ]));
             $provide.value('common.messageService', {});
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
