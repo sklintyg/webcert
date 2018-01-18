@@ -48,9 +48,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
-    @Autowired
-    private WebCertUserService webCertUserService;
-
     @Override
     public boolean hasAuthenticationContext() {
         return SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null
@@ -134,18 +131,18 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     /**
-     * Note - this is just a proxy for accessing {@link CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet(IntygUser, String)}.
+     * Note - this is just a proxy for accessing
+     * {@link CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet(IntygUser, String)}.
      *
      * @param enhetId
-     *      HSA-id of a vardenhet or mottagning.
+     *            HSA-id of a vardenhet or mottagning.
      * @return
-     *      True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
+     *         True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
      */
     @Override
     public boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetId) {
         return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(getUser(), enhetId);
     }
-
 
     // - - - - - Package scope - - - - -
 
