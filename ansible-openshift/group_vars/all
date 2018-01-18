@@ -1,4 +1,11 @@
 ---
+# General
+inera_root: /opt/inera
+
+app_resources_src: "{{ playbook_dir }}/../src/main/resources/"
+app_resources_folder: "{{ inera_root }}/resources"
+
+
 # Tomcat installation
 inera_tomcat_folder: "/tomcat"
 
