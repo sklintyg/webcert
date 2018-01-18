@@ -17,6 +17,12 @@
     },
     "JS_MINIFIED": {
       "type": "boolean"
+    },
+    "CGI_FUNKTIONSTJANSTER_IDP_URL": {
+      "type": "string"
+    },
+    "SAKERHETSTJANST_IDP_URL": {
+      "type": "string"
     }
   },
   "required": [
@@ -24,6 +30,8 @@
     "BUILD_NUMBER",
     "PP_HOST",
     "DASHBOARD_URL",
-    "JS_MINIFIED"
+    "JS_MINIFIED",
+    "CGI_FUNKTIONSTJANSTER_IDP_URL",
+    "SAKERHETSTJANST_IDP_URL"
   ]
 }
