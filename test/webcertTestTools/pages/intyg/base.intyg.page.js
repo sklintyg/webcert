@@ -244,20 +244,26 @@ var BaseIntyg = JClass._extend({
     },
     waitUntilIntygInIT: function(intygsId) {
         return browser.wait(function() {
+			var start = new Date();
+			
             var innerDefer = protractor.promise.defer();
             restUtil.getIntyg(intygsId).then(function(intygBody) {
                 if (intygBody.body) {
+					var end = new Date();
+					logger.warn('Time passed for intyg to be delivered to intygstjänsten: ' + (end - start) / 1000 + ' seconds')
                     innerDefer.fulfill(true);
 					logger.info('Intyg har kommit till Intygstjänsten');
                 } else {
-                    innerDefer.fulfill(false);
 					logger.warn('Intyg har INTE kommit till Intygstjänsten');
+					setTimeout(function() {
+						innerDefer.fulfill(false);
+					}, 1000);
                 }
             }, function(error) {
                 innerDefer.reject(error);
             });
             return innerDefer.promise;
-        }, 10000);
+        }, 60000);
     }
 });
 
