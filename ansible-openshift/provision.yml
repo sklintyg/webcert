@@ -6,3 +6,4 @@
   roles:
     - webcert-resurser
     - webcert-jarfiler
+    - app-resources
