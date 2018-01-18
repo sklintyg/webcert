@@ -30,10 +30,12 @@ public class TakConsumerImpl implements TakConsumer {
     private static final String LOGICAL_ADDRESS_URL = "%s/logicalAddresss?logicalAddress=%s&connectionPointId=%s&serviceContractId=%s";
     private static final String CONNECTION_POINT_URL = "%s/connectionPoints?platform=%s&environment=%s";
     private static final String SERVICE_CONTRACT_ID_URL = "%s/serviceContracts?namespace=%s";
-    private static final String PLATFORM = "NTJP";
 
     @Autowired
     private RestTemplate customRestTemplate;
+
+    @Value("${tak.platform}")
+    private String platform;
 
     @Value("${tak.environment}")
     private String environment;
@@ -49,7 +51,7 @@ public class TakConsumerImpl implements TakConsumer {
 
     @Override
     public String getConnectionPointId() throws TakServiceException {
-        String url = String.format(CONNECTION_POINT_URL, baseUrl, PLATFORM, environment);
+        String url = String.format(CONNECTION_POINT_URL, baseUrl, platform, environment);
         ConnectionPoint[] tmp = customRestTemplate.getForEntity(url, ConnectionPoint[].class).getBody();
         if (tmp.length > 0) {
             return tmp[0].getId();
