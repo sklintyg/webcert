@@ -319,73 +319,76 @@ module.exports = function() {
         if (intyg && intyg.typ) {
             isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         }
+        pages.intyg.luse.intyg.waitUntilIntygInIT(intyg.id).then(function() {
+            logger.info('FK skickar ' + amne);
+            if (isSMIIntyg) {
+                body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
+                console.log(body);
+                var path = '/send-message-to-care/v2.0?wsdl';
+                url = process.env.INTYGTJANST_URL + path;
+                url = url.replace('https', 'http');
 
-        if (isSMIIntyg) {
-            body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
-            console.log(body);
-            var path = '/send-message-to-care/v2.0?wsdl';
-            url = process.env.INTYGTJANST_URL + path;
-            url = url.replace('https', 'http');
+                soap.createClient(url, function(err, client) {
+                    logger.info(url);
+                    if (err) {
+                        callback(err);
+                    } else {
+                        client.SendMessageToCare(body, function(err, result, resBody) {
+                            console.log(resBody);
+                            var resultcode = result.result.resultCode;
+                            logger.info('ResultCode: ' + resultcode);
+                            console.log(result);
+                            if (resultcode !== 'OK') {
+                                logger.info(result);
+                                callback('ResultCode: ' + resultcode + '\n' + resBody);
+                            } else {
+                                logger.info('ResultCode: ' + resultcode);
+                                console.log(JSON.stringify(result));
 
-            soap.createClient(url, function(err, client) {
-                logger.info(url);
-                if (err) {
-                    callback(err);
-                } else {
-                    client.SendMessageToCare(body, function(err, result, resBody) {
-                        console.log(resBody);
+                                browser.refresh().then(function() {
+                                    callback(err);
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                amneCode = amne; //helpers.subjectCodesFK7263[amne];
+                url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
+                url = url.replace('https', 'http');
+
+                body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
+                    global.person.id,
+                    global.user,
+                    'Enhetsnamn',
+                    global.intyg.id,
+                    amneCode,
+                    'nytt meddelande: ' + global.intyg.guidcheck);
+                console.log(body);
+                soap.createClient(url, function(err, client) {
+                    if (err) {
+                        callback(err);
+                    }
+
+                    client.ReceiveMedicalCertificateQuestion(body, function(err, result, resBody) {
+                        global.meddelanden.push({
+                            typ: 'Fråga',
+                            amne: amne
+                        });
                         var resultcode = result.result.resultCode;
-                        logger.info('ResultCode: ' + resultcode);
-                        console.log(result);
                         if (resultcode !== 'OK') {
                             logger.info(result);
                             callback('ResultCode: ' + resultcode + '\n' + resBody);
                         } else {
-                            logger.info('ResultCode: ' + resultcode);
-                            console.log(JSON.stringify(result));
-
                             browser.refresh().then(function() {
                                 callback(err);
                             });
                         }
                     });
-                }
-            });
-        } else {
-            amneCode = amne; //helpers.subjectCodesFK7263[amne];
-            url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
-            url = url.replace('https', 'http');
-
-            body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
-                global.person.id,
-                global.user,
-                'Enhetsnamn',
-                global.intyg.id,
-                amneCode,
-                'nytt meddelande: ' + global.intyg.guidcheck);
-            console.log(body);
-            soap.createClient(url, function(err, client) {
-                if (err) {
-                    callback(err);
-                }
-
-                client.ReceiveMedicalCertificateQuestion(body, function(err, result, resBody) {
-                    global.meddelanden.push({
-                        typ: 'Fråga',
-                        amne: amne
-                    });
-                    var resultcode = result.result.resultCode;
-                    if (resultcode !== 'OK') {
-                        logger.info(result);
-                        callback('ResultCode: ' + resultcode + '\n' + resBody);
-                    } else {
-                        browser.refresh().then(function() {
-                            callback(err);
-                        });
-                    }
                 });
-            });
-        }
+            }
+        });
+
     });
 
     this.Given(/^Försäkringskassan skickar ett svar$/, function(callback) {

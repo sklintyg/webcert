@@ -1,5 +1,5 @@
 # language: sv
-@djupintegration @SMI
+@djupintegration @smi
 Egenskap: Djupintegration SMI intyg
 
 Bakgrund: Jag är inloggad som djupintegrerad läkare
