@@ -272,7 +272,7 @@ module.exports = function() {
 
                 .then(function() {
                     var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
-                    var link = '/web/dashboard#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
+                    var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
                     logger.info('Går till ' + link);
                     return browser.get(link);
                 })
