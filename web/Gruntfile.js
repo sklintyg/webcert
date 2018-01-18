@@ -457,7 +457,7 @@ module.exports = function(grunt) {
      * that webcert depends on*/
     grunt.registerTask('default', [ 'bower', 'injector:sass', 'wiredep', 'ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify', 'sass:dist', 'postcss' ]);
     grunt.registerTask('lint', [ 'jshint' ]);
-    grunt.registerTask('test', [ 'karma:ci' ]);
+    grunt.registerTask('test', [ 'bower', 'karma:ci' ]);
     grunt.registerTask('test:watch', [ 'karma:watch' ]);
     // frontend only dev ===============================================================================================
     grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'generateModuleDeps', 'watch' ]);
