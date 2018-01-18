@@ -243,13 +243,15 @@ var BaseIntyg = JClass._extend({
         return element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
     },
     waitUntilIntygInIT: function(intygsId) {
-        browser.wait(function() {
+        return browser.wait(function() {
             var innerDefer = protractor.promise.defer();
             restUtil.getIntyg(intygsId).then(function(intygBody) {
                 if (intygBody.body) {
                     innerDefer.fulfill(true);
+					logger.info('Intyg har kommit till Intygstjänsten');
                 } else {
                     innerDefer.fulfill(false);
+					logger.warn('Intyg har INTE kommit till Intygstjänsten');
                 }
             }, function(error) {
                 innerDefer.reject(error);
