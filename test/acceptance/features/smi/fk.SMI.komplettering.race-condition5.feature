@@ -1,14 +1,14 @@
 # language: sv
 @race-condition-komplettering @notReady
  # kompletteringsfråga saknas på utkast-sida
-Egenskap: Komplettering av SMI-intyg - Temorära test-scenarion Instans 1
+Egenskap: Komplettering av SMI-intyg - Temorära test-scenarion Instans 5
 
 
 Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare
    När jag går in på en patient
    
-Scenariomall: Ska kunna besvara komplettering med nytt SMI-intyg #<Number> Instans 1
+Scenariomall: Ska kunna besvara komplettering med nytt SMI-intyg #<Number> Instans 5
    När jag går in på att skapa ett slumpat SMI-intyg
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
