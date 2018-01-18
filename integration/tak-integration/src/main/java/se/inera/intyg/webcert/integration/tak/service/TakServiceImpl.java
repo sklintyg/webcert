@@ -59,7 +59,7 @@ public class TakServiceImpl implements TakService {
     private static final String RECEIVE_MEDICAL_CERT_ANSWER_NS =
             "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
     private static final String SEND_MESSAGE_TO_CARE_NS =
-            "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:2";
+            "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
 
     private static final String ERROR_STRING = "Den angivna enheten går ej att adressera för ärendekommunikation."
             + " (Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
