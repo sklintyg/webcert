@@ -333,7 +333,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
-            LOGGER.error("Failed to send answer to FK, result was " + response.getResult().toString());
+            LOGGER.error("Failed to send answer to FK, result was " + response.getResult().getErrorText());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
                     .getErrorText());
         }
