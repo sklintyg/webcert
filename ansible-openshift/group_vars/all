@@ -17,11 +17,11 @@ webapps_folder: "{{ inera_tomcat_folder }}/webapps"
 environment_name: openshift
 
 # Database configuration
-database_server: ${db.server}
-database_port: ${db.password}
-database_name: ${db.name}
-database_username: ${db.username}
-database_password: ${db.username}
+database_server: ${db_server}
+database_port: ${db_password}
+database_name: ${db_name}
+database_username: ${db_username}
+database_password: ${db_password}
 database_driver: com.mysql.jdbc.Driver
 database_url: "jdbc:mysql://{{ database_server }}:{{ database_port }}/{{ database_name }}?useCompression=true"
 database_pool_maxActive: 20
