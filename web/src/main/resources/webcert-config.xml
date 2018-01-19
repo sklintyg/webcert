@@ -154,6 +154,9 @@
           <entry key="healthcheck" value-ref="healthCheckService" />
           <!-- AvtalService not required anymore? -->
           <entry key="avtalservice" value-ref="avtalService" />
+          <entry key="pageAttributes">
+            <bean class="se.inera.intyg.webcert.web.web.JspPageAttributes"/>
+          </entry>
         </map>
       </property>
     </bean>

@@ -81,6 +81,8 @@
         return $.get(restPath).then(function(data) {
             user = data;
             return data;
+        }, function() {
+            return null;
         });
     }
 
@@ -176,7 +178,7 @@
             $rootScope.testModeActive = false;
 
             UserModel.setUser(user);
-            UserModel.termsAccepted = user.privatLakareAvtalGodkand;
+            UserModel.termsAccepted = user && user.privatLakareAvtalGodkand;
 
             messageService.addResources(wcMessages);
             messageService.addLinks(_links);
@@ -207,23 +209,27 @@
                         }
                     };
 
-                    // if we dont have a user then we need to defer until we do ..
+                    // if we dont have a user
                     if (!UserModel.user) {
-                        event.preventDefault();
-                        // gets resolved when a user is loaded
-                        $state.transitionTo(toState.name, toParams);
+                        // Make sure we send user to login state
+                        if (toState.name !== 'webcert.index') {
+                            event.preventDefault();
+                            $state.go('webcert.index');
+                        }
                     } else {
                         if (!redirectToUnitSelection()) {
                             termsCheck();
 
-                            // INTYG-4465: prevent state change when user press 'backwards' if modal is open, but close modal.
-                            if($uibModalStack.getTop()) {
-                                $uibModalStack.dismissAll();
-                                // Check if any dialog could not be dismissed
-                                if(!$uibModalStack.getTop()) {
-                                    event.preventDefault();
-                                    // Restore original state in order to make it work for DJUPINTEGRATION and avoid messing up the history.
-                                    $state.go(fromState, fromParams);
+                            if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
+                                // INTYG-4465: prevent state change when user press 'backwards' if modal is open, but close modal.
+                                if ($uibModalStack.getTop()) {
+                                    $uibModalStack.dismissAll();
+                                    // Check if any dialog could not be dismissed
+                                    if (!$uibModalStack.getTop()) {
+                                        event.preventDefault();
+                                        // Restore original state in order to make it work for DJUPINTEGRATION and avoid messing up the history.
+                                        $state.go(fromState, fromParams);
+                                    }
                                 }
                             }
                         }
@@ -258,7 +264,9 @@
             // INTYG-3069
             // Once per session we want to log relevant information about the users environment.
             // As of now this is limited to screen resolution.
-            MonitoringLogService.screenResolution($window.innerWidth, $window.innerHeight);
+            if (user) {
+                MonitoringLogService.screenResolution($window.innerWidth, $window.innerHeight);
+            }
         }]);
 
 
@@ -342,7 +350,7 @@
                                     }), 0));
 
                                 // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
-                                if (user.jsLoggning) {
+                                if (user && user.jsLoggning) {
                                     addExceptionHandler();
                                 }
 

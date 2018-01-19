@@ -238,7 +238,7 @@ module.exports = function() {
 
         //     // Browser & URL
         //     forkedBrowser = browser.forkNewDriverInstance(true);
-        //     intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id + '/';
+        //     intygEditUrl = process.env.WEBCERT_URL + '#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id + '/';
 
         //     parallell.login({
         //         userObj: userObj,
@@ -263,7 +263,7 @@ module.exports = function() {
 
         // Browser & URL
         forkedBrowser = browser.forkNewDriverInstance(true);
-        intygEditUrl = process.env.WEBCERT_URL + 'web/dashboard#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id + '/';
+        intygEditUrl = process.env.WEBCERT_URL + '#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id + '/';
 
         parallell.login({
             userObj: userObj,

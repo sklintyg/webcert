@@ -50,7 +50,7 @@ var UnsignedIntygPage = WebcertBasePage._extend({
         };
     },
     get: function() {
-        return browser.get('/web/dashboard#/unsigned');
+        return browser.get('/#/unsigned');
     },
     showSearchFilters: function() {
         return this.visasokfilter.sendKeys(protractor.Key.SPACE);

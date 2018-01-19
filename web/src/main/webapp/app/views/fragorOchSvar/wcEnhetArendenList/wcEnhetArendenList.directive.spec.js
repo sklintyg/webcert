@@ -114,6 +114,12 @@ describe('wcEnhetArendenList', function() {
             // Because of filter used in template
             $provide.value('PersonIdFormatterFilter', function(){});
 
+            $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', ['isAuthorityActive']));
+            var featureService = jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]);
+            featureService.features = {};
+            $provide.value('common.featureService', featureService);
+            $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare']));
+
             // To prevent $window.location from reloading the page
             var $window = {};
             $window.location = {};

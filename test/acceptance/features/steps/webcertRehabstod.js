@@ -289,9 +289,9 @@ module.exports = function() {
     this.Given(/^jag går in på intyget som tidigare skapats$/, function() {
         var url;
         if (global.rehabstod) {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.rehabstod.user.intygId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + global.rehabstod.user.intygId + '/';
         } else if (global.statistik) {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.statistik.intygsId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + global.statistik.intygsId + '/';
         }
 
         return browser.get(url).then(function() {

@@ -28,7 +28,7 @@ var intygTypeSelector = element(by.id('intygType'));
 module.exports = {
 
     get: function() {
-        browser.get('web/dashboard#/create/choose-intyg-type/default/index');
+        browser.get('#/create/choose-intyg-type/default/index');
     },
     isAt: function() {
         return intygTypeSelector.isDisplayed();

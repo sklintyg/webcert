@@ -50,7 +50,7 @@ public class TakStub {
     private static final String RECEIVE_MEDICAL_CERT_ANSWER_NS =
             "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
     private static final String SEND_MESSAGE_TO_CARE_NS =
-            "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCare:2";
+            "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
 
     private ObjectMapper mapper = new ObjectMapper();
 

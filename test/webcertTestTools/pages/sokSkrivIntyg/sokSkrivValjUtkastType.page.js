@@ -31,7 +31,7 @@ module.exports = {
     namnFortsatt: element(by.id('namnFortsatt')),
 
     get: function() {
-        browser.get('web/dashboard#/create/choose-intyg-type/default/index');
+        browser.get('#/create/choose-intyg-type/default/index');
     },
     isAt: function() {
         return intygTypeSelector.isDisplayed();
