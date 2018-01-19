@@ -47,7 +47,7 @@ public class SendMedicalCertificateAnswerValidator {
         if (answerType.getFraga() == null) {
             validationErrors.add("No Answer fraga element found!");
         } else {
-            if (Strings.isNullOrEmpty(answerType.getFraga().getMeddelandeText())) {
+            if (answerType.getFraga().getMeddelandeText() == null) {
                 validationErrors.add("No Answer fraga meddelandeText elements found or set!");
             }
             if (answerType.getFraga().getSigneringsTidpunkt() == null) {
