@@ -108,9 +108,9 @@ public class TakServiceImpl implements TakService {
 
     @Override
     public TakResult verifyTakningForCareUnit(String hsaId, String intygsTyp, SchemaVersion schemaVersion, IntygUser user) {
+        LOG.info("Checking TAK-status for {}", intygsTyp);
         List<String> errors = new ArrayList<>();
         boolean ret;
-
         try {
             ret = CompletableFuture.supplyAsync(() -> {
                 /*
@@ -161,6 +161,7 @@ public class TakServiceImpl implements TakService {
     }
 
     private boolean checkConfiguration(String intygsTyp, IntygUser user, List<String> errors, String hsaId, SchemaVersion version) {
+        LOG.debug("Checking configuration for {}", intygsTyp);
         if (!isValid(consumer.doLookup(ntjpId, hsaId, resolveContract(version)))) {
             switch (version) {
             case VERSION_1:
