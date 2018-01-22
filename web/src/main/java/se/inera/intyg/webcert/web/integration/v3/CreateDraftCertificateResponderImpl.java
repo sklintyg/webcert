@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Lazy;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -86,6 +87,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     @Lazy
     @Autowired
     private TakService takService;
@@ -129,7 +133,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         user.changeValdVardenhet(invokingUnitHsaId);
 
-        String intygsTyp = utkastsParams.getTypAvIntyg().getCode().toLowerCase();
+        String intygsTyp =
+                moduleRegistry.getModuleIdFromExternalId(utkastsParams.getTypAvIntyg().getCode());
+
         Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(
                 utkastsParams.getPatient().getPersonId().getExtension()).orElseThrow(() ->
                 new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
