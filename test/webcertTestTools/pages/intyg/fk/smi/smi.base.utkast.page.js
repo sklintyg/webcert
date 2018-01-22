@@ -21,9 +21,9 @@
 'use strict';
 
 var FkBaseUtkast = require('../fk.base.utkast.page.js');
-
+var pageHelpers = require('../../../pageHelper.util');
 var testTools = require('common-testtools');
-var moveAndSendKeys = testTools.uiHelpers.moveAndSendKeys;
+var moveAndSendKeys = pageHelpers.moveAndSendKeys;
 
 testTools.protractorHelpers.init();
 

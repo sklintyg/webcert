@@ -26,7 +26,7 @@ var UtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var IntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 var ValjIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-describe('Create and Sign FK utkast', function() {
+xdescribe('Create and Sign FK utkast', function() {
 
     var utkastId = null,
         utkastIdSmittSkydd = null,

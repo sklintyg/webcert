@@ -26,20 +26,15 @@
 
 var testtools = require('common-testtools');
 
-var moveAndSendKeys;
-
-if (testtools.uiHelpers) {
-    moveAndSendKeys = testtools.uiHelpers.moveAndSendKeys;
-} else {
-    moveAndSendKeys = function(elm, keys, description) {
-        return elm.sendKeys(keys).then(function() {
-            return logger.silly('sendKeys OK - ' + description);
-        }, function(reason) {
-            console.trace(reason);
-            throw ('FEL, ' + description + ', ' + reason);
-        });
-    };
-}
+logger.info('NOT using uiHelper.moveAndSendKeys!');
+var moveAndSendKeys = function(elm, keys, description) {
+    return elm.sendKeys(keys).then(function() {
+        return logger.silly('sendKeys OK - ' + description);
+    }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, ' + description + ', ' + reason);
+    });
+};
 
 module.exports = {
     moveAndSendKeys: moveAndSendKeys,
