@@ -46,6 +46,7 @@ knownRequestOrigins:
   - &kro010 NORMAL # Inloggning via SITHS / BankID
   - &kro020 DJUPINTEGRATION # Inloggning via länk från journalsystem
   - &kro030 UTHOPP # Inloggning via uthoppslänk från journalsystem
+  - &kro040 READONLY # Inloggning via länk från annat system men ges endast läsrättigheter
 
 # De intygstyper som systemet har
 knownIntygstyper:
@@ -57,7 +58,7 @@ knownIntygstyper:
   - &ki060 luae_na
   - &ki070 luae_fs
   - &ki080 db
-  - &ki090 DOI
+  - &ki090 doi
 
 # De rättigheter som systemet har
 knownPrivileges:
@@ -65,7 +66,7 @@ knownPrivileges:
   - &kp005 SKRIVA_INTYG
   - &kp010 SIGNERA_INTYG
   - &kp020 MAKULERA_INTYG
-  - &kp030 KOPIERA_INTYG
+  - &kp030 FORNYA_INTYG
   - &kp031 ERSATTA_INTYG
   - &kp040 VIDAREBEFORDRA_UTKAST
   - &kp050 VIDAREBEFORDRA_FRAGASVAR
@@ -110,6 +111,9 @@ requestOrigins:
   - &ro030
     name: *kro030
     intygstyper: # Implicit alla
+  - &ro040
+    name: *kro040
+    intygstyper: # Implicit alla
 
 # Rättigheter
 privileges:
@@ -137,7 +141,7 @@ privileges:
       - *ro020 # DJUPINTEGRATION
   - &p030
     name: *kp030
-    desc: Kopiera intyg
+    desc: Förnya intyg
     intygstyper: # EJ ts-intyg
       - *ki010 # fk7263
       - *ki040 # lisjp
@@ -228,12 +232,14 @@ privileges:
     name: *kp130
     desc: Notifiera utkast klart för signering
     intygstyper:
+      - *ki020 # ts-bas
+      - *ki030 # ts-diabetes
       - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
-      - *ki020 # ts-bas
-      - *ki030 # ts-diabetes
+      - *ki080 # db
+      - *ki090 # doi
     requestOrigins:
       - *ro020 # DJUPINTEGRATION
   - &p140
@@ -245,8 +251,6 @@ privileges:
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
-      - *ki080 # db
-      - *ki090 # DOI
     requestOrigins: # Implicit alla
 
 # Roller
@@ -260,6 +264,7 @@ roles:
           - *ro010 # NORMAL
           - *ro020 # DJUPINTEGRATION
           - *ro030 # UTHOPP
+          - *ro040 # READONLY
       - <<: *p005 # SKRIVA_INTYG
         requestOrigins:
           - *ro010 # NORMAL
@@ -274,7 +279,7 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
-      - <<: *p030 # KOPIERA_INTYG
+      - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
@@ -323,6 +328,7 @@ roles:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
+          - <<: *ro040 # READONLY
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -339,7 +345,7 @@ roles:
       - <<: *p020 # MAKULERA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
-      - <<: *p030 # KOPIERA_INTYG
+      - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
       - <<: *p031 # ERSATTA_INTYG
@@ -431,7 +437,7 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
-      - <<: *p030 # KOPIERA_INTYG
+      - <<: *p030 # FORNYA_INTYG
         intygstyper:
           - *ki010
           - *ki040
@@ -583,12 +589,13 @@ roles:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
+          - <<: *ro040 # READONLY
       - <<: *p005 # SKRIVA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
-      - <<: *p030 # KOPIERA_INTYG
+      - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
