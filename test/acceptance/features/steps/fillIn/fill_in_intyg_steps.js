@@ -228,7 +228,9 @@ module.exports = function() {
         fkUtkastPage.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
             fkUtkastPage.funktionsNedsattning.sendKeys('Halt och lytt').then(function() {
                 fkUtkastPage.aktivitetsBegransning.sendKeys('Orkar inget').then(function() {
-                    fkUtkastPage.nuvarandeArbete.sendKeys('Stuveriarbetare').then(callback);
+                    fkUtkastPage.arbete.nuvarandeArbete.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
+                        fkUtkastPage.arbete.nuvarandeArbete.text.sendKeys('Stuveriarbetare').then(callback);
+                    });
                 });
             });
         });
