@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.intyg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.helpers.FileUtils;
@@ -86,6 +87,7 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
@@ -460,6 +462,36 @@ public class IntygServiceTest {
     public void testListIntygFiltersMatch() {
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
                 .thenReturn(listResponse);
+
+        Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
+                new Personnummer("19121212-1212"));
+
+        assertEquals(2, intygItemListResponse.getLeft().size());
+    }
+
+    @Test
+    public void testListIntygFiltersSekretessmarkering() throws JAXBException, IOException {
+        Set<String> set = new HashSet<>();
+        set.add("fk7263");
+        set.add("ts-bas");
+        set.add("doi");
+
+        ClassPathResource response = new ClassPathResource("IntygServiceTest/response-list-certificates-with-sekretess.xml");
+
+        JAXBContext context = JAXBContext.newInstance(ListCertificatesForCareResponseType.class);
+        ListCertificatesForCareResponseType listResponse2 = context.createUnmarshaller()
+                .unmarshal(new StreamSource(response.getInputStream()), ListCertificatesForCareResponseType.class)
+                .getValue();
+
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(true, false));
+        when(patientDetailsResolver.getSekretessStatus(any())).thenReturn(SekretessStatus.TRUE);
+
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
+
+        when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(Sets.newHashSet("fk7263"));
+
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
+                .thenReturn(listResponse2);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
                 new Personnummer("19121212-1212"));

@@ -1,0 +1,767 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<ns2:ListCertificatesForCareResponse xmlns:ns4="urn:riv:itintegration:registry:1" xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:ns2="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:3" xmlns="urn:riv:clinicalprocess:healthcond:certificate:types:3">
+   <ns2:intygsLista>
+      <ns2:intyg>
+         <ns3:intygs-id>
+            <root>VardenhetY</root>
+            <extension>1</extension>
+         </ns3:intygs-id>
+         <ns3:typ>
+            <code>FK7263</code>
+            <codeSystem>f6fb361a-e31d-48b8-8657-99b63912dd9b</codeSystem>
+            <displayName>Läkarintyg FK 7263</displayName>
+         </ns3:typ>
+         <ns3:version/>
+         <ns3:signeringstidpunkt>2012-01-01T00:00:00</ns3:signeringstidpunkt>
+         <ns3:skickatTidpunkt>2012-12-23T21:00:00</ns3:skickatTidpunkt>
+         <ns3:patient>
+            <ns3:person-id>
+               <root>1.2.752.129.2.1.3.1</root>
+               <extension>191212121212</extension>
+            </ns3:person-id>
+            <ns3:fornamn/>
+            <ns3:efternamn>Test Testorsson</ns3:efternamn>
+            <ns3:postadress/>
+            <ns3:postnummer/>
+            <ns3:postort/>
+         </ns3:patient>
+         <ns3:skapadAv>
+            <ns3:personal-id>
+               <root>1.2.752.129.2.1.4.1</root>
+               <extension>Personal HSA-ID</extension>
+            </ns3:personal-id>
+            <ns3:fullstandigtNamn>Dr. Who</ns3:fullstandigtNamn>
+            <ns3:enhet>
+               <ns3:enhets-id>
+                  <root>1.2.752.129.2.1.4.1</root>
+                  <extension>VardenhetY</extension>
+               </ns3:enhets-id>
+               <ns3:arbetsplatskod>
+                  <root>1.2.752.29.4.71</root>
+                  <extension>123456789011</extension>
+               </ns3:arbetsplatskod>
+               <ns3:enhetsnamn>Kir mott</ns3:enhetsnamn>
+               <ns3:postadress>Lasarettsvägen 13</ns3:postadress>
+               <ns3:postnummer>85150</ns3:postnummer>
+               <ns3:postort>Sundsvall</ns3:postort>
+               <ns3:telefonnummer>060-1818000</ns3:telefonnummer>
+               <ns3:epost>kirmott@vardenhet.se</ns3:epost>
+               <ns3:vardgivare>
+                  <ns3:vardgivare-id>
+                     <root>1.2.752.129.2.1.4.1</root>
+                     <extension>VardgivarId</extension>
+                  </ns3:vardgivare-id>
+                  <ns3:vardgivarnamn>Landstinget Norrland</ns3:vardgivarnamn>
+               </ns3:vardgivare>
+            </ns3:enhet>
+         </ns3:skapadAv>
+         <ns3:status>
+            <ns3:part>
+               <code>FKASSA</code>
+               <codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</codeSystem>
+               <displayName>Försäkringskassan</displayName>
+            </ns3:part>
+            <ns3:status>
+               <code>SENTTO</code>
+               <codeSystem>9871cd17-8755-4ed9-b894-ff3729e775a4</codeSystem>
+               <displayName>SENT</displayName>
+            </ns3:status>
+            <ns3:tidpunkt>2013-08-05T14:31:03</ns3:tidpunkt>
+         </ns3:status>
+         <ns3:status>
+            <ns3:part>
+               <code>HSVARD</code>
+               <codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</codeSystem>
+               <displayName>Hälso- och sjukvården</displayName>
+            </ns3:part>
+            <ns3:status>
+               <code>RECEIV</code>
+               <codeSystem>9871cd17-8755-4ed9-b894-ff3729e775a4</codeSystem>
+               <displayName>RECEIVED</displayName>
+            </ns3:status>
+            <ns3:tidpunkt>2013-08-05T14:30:03</ns3:tidpunkt>
+         </ns3:status>
+         <ns3:svar id="32">
+            <ns3:instans>1</ns3:instans>
+            <ns3:delsvar id="32.1">
+               <cv>
+                  <code>HELT_NEDSATT</code>
+                  <codeSystem>KV_FKMU_0003</codeSystem>
+                  <displayName>100%</displayName>
+               </cv>
+            </ns3:delsvar>
+            <ns3:delsvar id="32.2">
+               <datePeriod>
+                  <start>2011-01-26</start>
+                  <end>2011-02-13</end>
+               </datePeriod>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="32">
+            <ns3:instans>2</ns3:instans>
+            <ns3:delsvar id="32.1">
+               <cv>
+                  <code>TRE_FJARDEDEL</code>
+                  <codeSystem>KV_FKMU_0003</codeSystem>
+                  <displayName>75%</displayName>
+               </cv>
+            </ns3:delsvar>
+            <ns3:delsvar id="32.2">
+               <datePeriod>
+                  <start>2011-02-14</start>
+                  <end>2011-03-06</end>
+               </datePeriod>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="32">
+            <ns3:instans>3</ns3:instans>
+            <ns3:delsvar id="32.1">
+               <cv>
+                  <code>HALFTEN</code>
+                  <codeSystem>KV_FKMU_0003</codeSystem>
+                  <displayName>50%</displayName>
+               </cv>
+            </ns3:delsvar>
+            <ns3:delsvar id="32.2">
+               <datePeriod>
+                  <start>2011-03-07</start>
+                  <end>2011-03-31</end>
+               </datePeriod>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="32">
+            <ns3:instans>4</ns3:instans>
+            <ns3:delsvar id="32.1">
+               <cv>
+                  <code>EN_FJARDEDEL</code>
+                  <codeSystem>KV_FKMU_0003</codeSystem>
+                  <displayName>25%</displayName>
+               </cv>
+            </ns3:delsvar>
+            <ns3:delsvar id="32.2">
+               <datePeriod>
+                  <start>2011-04-01</start>
+                  <end>2011-05-31</end>
+               </datePeriod>
+            </ns3:delsvar>
+         </ns3:svar>
+      </ns2:intyg>
+      <ns2:intyg>
+         <ns3:intygs-id>
+            <root>dialys</root>
+            <extension>2</extension>
+         </ns3:intygs-id>
+         <ns3:typ>
+            <code>FK7263</code>
+            <codeSystem>f6fb361a-e31d-48b8-8657-99b63912dd9b</codeSystem>
+            <displayName>Läkarintyg FK 7263</displayName>
+         </ns3:typ>
+         <ns3:version/>
+         <ns3:signeringstidpunkt>2012-01-01T00:00:00</ns3:signeringstidpunkt>
+         <ns3:skickatTidpunkt>2015-12-23T21:00:00</ns3:skickatTidpunkt>
+         <ns3:patient>
+            <ns3:person-id>
+               <root>1.2.752.129.2.1.3.1</root>
+               <extension>191212121212</extension>
+            </ns3:person-id>
+            <ns3:fornamn/>
+            <ns3:efternamn>Test Testorsson</ns3:efternamn>
+            <ns3:postadress/>
+            <ns3:postnummer/>
+            <ns3:postort/>
+         </ns3:patient>
+         <ns3:skapadAv>
+            <ns3:personal-id>
+               <root>1.2.752.129.2.1.4.1</root>
+               <extension>hans</extension>
+            </ns3:personal-id>
+            <ns3:fullstandigtNamn>Dr. Who</ns3:fullstandigtNamn>
+            <ns3:enhet>
+               <ns3:enhets-id>
+                  <root>1.2.752.129.2.1.4.1</root>
+                  <extension>dialys</extension>
+               </ns3:enhets-id>
+               <ns3:arbetsplatskod>
+                  <root>1.2.752.29.4.71</root>
+                  <extension>123456789011</extension>
+               </ns3:arbetsplatskod>
+               <ns3:enhetsnamn>Centrum Väst Mott</ns3:enhetsnamn>
+               <ns3:postadress>Lasarettsvägen 13</ns3:postadress>
+               <ns3:postnummer>721 61</ns3:postnummer>
+               <ns3:postort>Västerås</ns3:postort>
+               <ns3:telefonnummer>021-1818000</ns3:telefonnummer>
+               <ns3:epost>centrum-vast@vardenhet.se</ns3:epost>
+               <ns3:vardgivare>
+                  <ns3:vardgivare-id>
+                     <root>1.2.752.129.2.1.4.1</root>
+                     <extension>vastmanland</extension>
+                  </ns3:vardgivare-id>
+                  <ns3:vardgivarnamn>Landstinget Västmanland</ns3:vardgivarnamn>
+               </ns3:vardgivare>
+            </ns3:enhet>
+         </ns3:skapadAv>
+         <ns3:status>
+            <ns3:part>
+               <code>FKASSA</code>
+               <codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</codeSystem>
+               <displayName>Försäkringskassan</displayName>
+            </ns3:part>
+            <ns3:status>
+               <code>SENTTO</code>
+               <codeSystem>9871cd17-8755-4ed9-b894-ff3729e775a4</codeSystem>
+               <displayName>SENT</displayName>
+            </ns3:status>
+            <ns3:tidpunkt>2015-12-23T14:31:03</ns3:tidpunkt>
+         </ns3:status>
+         <ns3:status>
+            <ns3:part>
+               <code>HSVARD</code>
+               <codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</codeSystem>
+               <displayName>Hälso- och sjukvården</displayName>
+            </ns3:part>
+            <ns3:status>
+               <code>RECEIV</code>
+               <codeSystem>9871cd17-8755-4ed9-b894-ff3729e775a4</codeSystem>
+               <displayName>RECEIVED</displayName>
+            </ns3:status>
+            <ns3:tidpunkt>2015-12-23T14:30:03</ns3:tidpunkt>
+         </ns3:status>
+         <ns3:svar id="32">
+            <ns3:instans>1</ns3:instans>
+            <ns3:delsvar id="32.1">
+               <cv>
+                  <code>HELT_NEDSATT</code>
+                  <codeSystem>KV_FKMU_0003</codeSystem>
+                  <displayName>100%</displayName>
+               </cv>
+            </ns3:delsvar>
+            <ns3:delsvar id="32.2">
+               <datePeriod>
+                  <start>2016-01-26</start>
+                  <end>2016-02-13</end>
+               </datePeriod>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="32">
+            <ns3:instans>2</ns3:instans>
+            <ns3:delsvar id="32.1">
+               <cv>
+                  <code>TRE_FJARDEDEL</code>
+                  <codeSystem>KV_FKMU_0003</codeSystem>
+                  <displayName>75%</displayName>
+               </cv>
+            </ns3:delsvar>
+            <ns3:delsvar id="32.2">
+               <datePeriod>
+                  <start>2016-02-14</start>
+                  <end>2016-03-06</end>
+               </datePeriod>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="32">
+            <ns3:instans>3</ns3:instans>
+            <ns3:delsvar id="32.1">
+               <cv>
+                  <code>HALFTEN</code>
+                  <codeSystem>KV_FKMU_0003</codeSystem>
+                  <displayName>50%</displayName>
+               </cv>
+            </ns3:delsvar>
+            <ns3:delsvar id="32.2">
+               <datePeriod>
+                  <start>2016-03-07</start>
+                  <end>2016-03-31</end>
+               </datePeriod>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="32">
+            <ns3:instans>4</ns3:instans>
+            <ns3:delsvar id="32.1">
+               <cv>
+                  <code>EN_FJARDEDEL</code>
+                  <codeSystem>KV_FKMU_0003</codeSystem>
+                  <displayName>25%</displayName>
+               </cv>
+            </ns3:delsvar>
+            <ns3:delsvar id="32.2">
+               <datePeriod>
+                  <start>2016-04-01</start>
+                  <end>2116-05-31</end>
+               </datePeriod>
+            </ns3:delsvar>
+         </ns3:svar>
+      </ns2:intyg>
+      <ns2:intyg>
+         <ns3:intygs-id>
+            <root>TSTNMT2321000156-1077</root>
+            <extension>7e226e5c-392f-40d6-9fcd-c66f4e175f41</extension>
+         </ns3:intygs-id>
+         <ns3:typ>
+            <code>ts-bas</code>
+            <codeSystem>f6fb361a-e31d-48b8-8657-99b63912dd9b</codeSystem>
+            <displayName>Transportstyrelsens läkarintyg</displayName>
+         </ns3:typ>
+         <ns3:version>6.8</ns3:version>
+         <ns3:signeringstidpunkt>2016-08-10T16:03:07</ns3:signeringstidpunkt>
+         <ns3:skickatTidpunkt>2016-08-10T16:03:07</ns3:skickatTidpunkt>
+         <ns3:patient>
+            <ns3:person-id>
+               <root>1.2.752.129.2.1.3.1</root>
+               <extension>191212121212</extension>
+            </ns3:person-id>
+            <ns3:fornamn>Tolvan</ns3:fornamn>
+            <ns3:efternamn>Tolvansson</ns3:efternamn>
+            <ns3:postadress>Svensson, Storgatan 1, PL 1234</ns3:postadress>
+            <ns3:postnummer>12345</ns3:postnummer>
+            <ns3:postort>Småmåla</ns3:postort>
+         </ns3:patient>
+         <ns3:skapadAv>
+            <ns3:personal-id>
+               <root>1.2.752.129.2.1.4.1</root>
+               <extension>TSTNMT2321000156-1079</extension>
+            </ns3:personal-id>
+            <ns3:fullstandigtNamn>Arnold Johansson</ns3:fullstandigtNamn>
+            <ns3:befattning>
+               <code>203090</code>
+               <codeSystem>1.2.752.129.2.2.1.4</codeSystem>
+               <displayName>Läkare legitimerad, annan</displayName>
+            </ns3:befattning>
+            <ns3:enhet>
+               <ns3:enhets-id>
+                  <root>1.2.752.129.2.1.4.1</root>
+                  <extension>TSTNMT2321000156-1077</extension>
+               </ns3:enhets-id>
+               <ns3:arbetsplatskod>
+                  <root>1.2.752.29.4.71</root>
+                  <extension>N/A</extension>
+               </ns3:arbetsplatskod>
+               <ns3:enhetsnamn>NMT vg3 ve1</ns3:enhetsnamn>
+               <ns3:postadress>NMT gata 2</ns3:postadress>
+               <ns3:postnummer>12345</ns3:postnummer>
+               <ns3:postort>Testhult</ns3:postort>
+               <ns3:telefonnummer>0101112131415</ns3:telefonnummer>
+               <ns3:vardgivare>
+                  <ns3:vardgivare-id>
+                     <root>1.2.752.129.2.1.4.1</root>
+                     <extension>TSTNMT2321000156-102Q</extension>
+                  </ns3:vardgivare-id>
+                  <ns3:vardgivarnamn>NMT vg3</ns3:vardgivarnamn>
+               </ns3:vardgivare>
+            </ns3:enhet>
+         </ns3:skapadAv>
+         <ns3:svar id="1">
+            <ns3:instans>1</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV1</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>C1</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>2</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV2</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>C1E</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>3</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV3</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>C</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>4</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV4</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>CE</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>5</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV5</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>D1</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>6</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV6</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>D1E</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>7</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV7</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>D</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>8</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV8</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>DE</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>9</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV9</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>Taxi</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="1">
+            <ns3:instans>10</ns3:instans>
+            <ns3:delsvar id="1.1">
+               <cv>
+                  <code>IAV10</code>
+                  <codeSystem>24c41b8d-258a-46bf-a08a-b90738b28770</codeSystem>
+                  <displayName>Annat</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="2">
+            <ns3:delsvar id="2.1">
+               <cv>
+                  <code>IDK3</code>
+                  <codeSystem>e7cc8f30-a353-4c42-b17a-a189b6876647</codeSystem>
+                  <displayName>Svenskt körkort</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="3">
+            <ns3:delsvar id="3.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="4">
+            <ns3:delsvar id="4.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="5">
+            <ns3:delsvar id="5.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="6">
+            <ns3:delsvar id="6.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="7">
+            <ns3:delsvar id="7.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="8">
+            <ns3:delsvar id="8.1">0.0</ns3:delsvar>
+            <ns3:delsvar id="8.4">0.0</ns3:delsvar>
+            <ns3:delsvar id="8.7">true</ns3:delsvar>
+            <ns3:delsvar id="8.2">2.0</ns3:delsvar>
+            <ns3:delsvar id="8.5">2.0</ns3:delsvar>
+            <ns3:delsvar id="8.8">true</ns3:delsvar>
+            <ns3:delsvar id="8.3">2.0</ns3:delsvar>
+            <ns3:delsvar id="8.6">1.0</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="9">
+            <ns3:delsvar id="9.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="10">
+            <ns3:delsvar id="10.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="11">
+            <ns3:delsvar id="11.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="12">
+            <ns3:delsvar id="12.1">true</ns3:delsvar>
+            <ns3:delsvar id="12.2">typ av nedsättning eller sjukdom</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="13">
+            <ns3:delsvar id="13.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="14">
+            <ns3:delsvar id="14.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="15">
+            <ns3:delsvar id="15.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="16">
+            <ns3:delsvar id="16.1">true</ns3:delsvar>
+            <ns3:delsvar id="16.2">Typ av sjukdom</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="17">
+            <ns3:delsvar id="17.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="18">
+            <ns3:delsvar id="18.1">
+               <cv>
+                  <code>E11</code>
+                  <codeSystem>1.2.752.116.1.1.1.1.3</codeSystem>
+                  <displayName>Diabetes mellitus typ 2</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="19">
+            <ns3:delsvar id="19.1">true</ns3:delsvar>
+            <ns3:delsvar id="19.2">true</ns3:delsvar>
+            <ns3:delsvar id="19.3">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="20">
+            <ns3:delsvar id="20.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="21">
+            <ns3:delsvar id="21.1">true</ns3:delsvar>
+            <ns3:delsvar id="21.2">när den inträffade och orsak</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="22">
+            <ns3:delsvar id="22.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="23">
+            <ns3:delsvar id="23.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="24">
+            <ns3:delsvar id="24.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="25">
+            <ns3:delsvar id="25.1">true</ns3:delsvar>
+            <ns3:delsvar id="25.2">true</ns3:delsvar>
+            <ns3:delsvar id="25.3">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="26">
+            <ns3:delsvar id="26.1">true</ns3:delsvar>
+            <ns3:delsvar id="26.2">Läkemedel och ordinerad dos</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="27">
+            <ns3:delsvar id="27.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="28">
+            <ns3:delsvar id="28.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="29">
+            <ns3:delsvar id="29.1">true</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="30">
+            <ns3:delsvar id="30.1">true</ns3:delsvar>
+            <ns3:delsvar id="30.2">1/1-16</ns3:delsvar>
+            <ns3:delsvar id="30.3">VE1</ns3:delsvar>
+            <ns3:delsvar id="30.4">Diabetes</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="31">
+            <ns3:delsvar id="31.1">true</ns3:delsvar>
+            <ns3:delsvar id="31.2">mediciner</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="32">
+            <ns3:delsvar id="32.1">Övriga kommentarer</ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>1</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR1</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>C1</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>2</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR2</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>C1E</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>3</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR3</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>C</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>4</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR4</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>CE</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>5</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR5</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>D1</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>6</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR6</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>D1E</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>7</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR7</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>D</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>8</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR8</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>DE</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>9</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR9</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>Taxi</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="33">
+            <ns3:instans>10</ns3:instans>
+            <ns3:delsvar id="33.1">
+               <cv>
+                  <code>VAR10</code>
+                  <codeSystem>e889fa20-1dee-4f79-8b37-03853e75a9f8</codeSystem>
+                  <displayName>Annat (AM, A1, A2, A, B, BE eller Traktor)</displayName>
+               </cv>
+            </ns3:delsvar>
+         </ns3:svar>
+         <ns3:svar id="34">
+            <ns3:delsvar id="34.1">specialistkompetens</ns3:delsvar>
+         </ns3:svar>
+      </ns2:intyg>
+      <ns2:intyg>
+         <ns3:intygs-id>
+            <root>TSTNMT2321000156-1077</root>
+            <extension>04b7c12a-c3cd-4d2d-9f87-f44b8fb0d339</extension>
+         </ns3:intygs-id>
+         <ns3:typ>
+            <code>DOI</code>
+            <codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</codeSystem>
+            <displayName>Dödsorsaksintyg</displayName>
+         </ns3:typ>
+         <ns3:version>1.0</ns3:version>
+         <ns3:signeringstidpunkt>2016-08-10T16:03:07</ns3:signeringstidpunkt>
+         <ns3:patient>
+            <ns3:person-id>
+               <root>1.2.752.129.2.1.3.1</root>
+               <extension>191212121212</extension>
+            </ns3:person-id>
+            <ns3:fornamn>Tolvan</ns3:fornamn>
+            <ns3:efternamn>Tolvansson</ns3:efternamn>
+            <ns3:postadress>LÖWENHJELMSKA HUSET, HARRIET LÖWENHJELMS VN 26 LGH 1204</ns3:postadress>
+            <ns3:postnummer>70353</ns3:postnummer>
+            <ns3:postort>ÖREBRO</ns3:postort>
+         </ns3:patient>
+         <ns3:skapadAv>
+            <ns3:personal-id>
+               <root>1.2.752.129.2.1.4.1</root>
+               <extension>TSTNMT2321000156-1079</extension>
+            </ns3:personal-id>
+            <ns3:fullstandigtNamn>Arnold Johansson</ns3:fullstandigtNamn>
+            <ns3:forskrivarkod>0000000</ns3:forskrivarkod>
+            <ns3:befattning>
+               <code>203090</code>
+               <codeSystem>1.2.752.129.2.2.1.4</codeSystem>
+               <displayName>Läkare legitimerad, annan</displayName>
+            </ns3:befattning>
+            <ns3:befattning>
+               <code>601010</code>
+               <codeSystem>1.2.752.129.2.2.1.4</codeSystem>
+               <displayName>Kock</displayName>
+            </ns3:befattning>
+            <ns3:enhet>
+               <ns3:enhets-id>
+                  <root>1.2.752.129.2.1.4.1</root>
+                  <extension>TSTNMT2321000156-1077</extension>
+               </ns3:enhets-id>
+               <ns3:arbetsplatskod>
+                  <root>1.2.752.29.4.71</root>
+                  <extension>1627</extension>
+               </ns3:arbetsplatskod>
+               <ns3:enhetsnamn>Alfa-enheten</ns3:enhetsnamn>
+               <ns3:postadress>Bryggareg 11</ns3:postadress>
+               <ns3:postnummer>653 40</ns3:postnummer>
+               <ns3:postort>Karlstad</ns3:postort>
+               <ns3:telefonnummer>07011111111</ns3:telefonnummer>
+               <ns3:epost>intygnmt@nordicmedtest.se</ns3:epost>
+               <ns3:vardgivare>
+                  <ns3:vardgivare-id>
+                     <root>1.2.752.129.2.1.4.1</root>
+                     <extension>TSTNMT2321000156-102Q</extension>
+                  </ns3:vardgivare-id>
+                  <ns3:vardgivarnamn>nmt_vg3</ns3:vardgivarnamn>
+               </ns3:vardgivare>
+            </ns3:enhet>
+         </ns3:skapadAv>
+      </ns2:intyg>
+   </ns2:intygsLista>
+   <ns2:result>
+      <ns3:resultCode>OK</ns3:resultCode>
+   </ns2:result>
+</ns2:ListCertificatesForCareResponse>
