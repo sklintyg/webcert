@@ -61,8 +61,10 @@ public class TakServiceImpl implements TakService {
     private static final String SEND_MESSAGE_TO_CARE_NS =
             "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
 
-    private static final String ERROR_STRING = "Den angivna enheten går ej att adressera för ärendekommunikation."
-            + " (Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
+    private static final String ERROR_STRING_BASE = "Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
+
+    private static final String ERROR_STRING_ARENDEHANTERING = "Den angivna enheten går ej att adressera för ärendekommunikation. "
+            + ERROR_STRING_BASE;
 
     private String ntjpId;
     private String certificateStatusUpdateForCareV1Id;
@@ -165,10 +167,10 @@ public class TakServiceImpl implements TakService {
         if (!isValid(consumer.doLookup(ntjpId, hsaId, resolveContract(version)))) {
             switch (version) {
             case VERSION_1:
-                errors.add(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V1_NS, hsaId));
+                errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V1_NS, hsaId));
                 break;
             case VERSION_3:
-                errors.add(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V3_NS, hsaId));
+                errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V3_NS, hsaId));
                 break;
             }
             return false;
@@ -179,17 +181,17 @@ public class TakServiceImpl implements TakService {
             if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp)) {
                 // yes? -> fk7263
                 if (!isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateAnswerId))) {
-                    errors.add(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_ANSWER_NS, hsaId));
+                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_ANSWER_NS, hsaId));
                     return false;
                 }
                 if (!isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateQuestionId))) {
-                    errors.add(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsaId));
+                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsaId));
                     return false;
                 }
             } else {
                 // yes? -> other
                 if (!isValid(consumer.doLookup(ntjpId, hsaId, sendMessageToCareId))) {
-                    errors.add(String.format(ERROR_STRING, SEND_MESSAGE_TO_CARE_NS, hsaId));
+                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, SEND_MESSAGE_TO_CARE_NS, hsaId));
                     return false;
                 }
             }

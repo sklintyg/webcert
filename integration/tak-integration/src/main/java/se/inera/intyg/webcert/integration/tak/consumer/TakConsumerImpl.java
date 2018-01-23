@@ -66,6 +66,6 @@ public class TakConsumerImpl implements TakConsumer {
         if (tmp.length > 0) {
             return tmp[0].getId();
         }
-        throw new TakServiceException("Failed to get ServiceContractId");
+        throw new TakServiceException(String.format("Failed to get ServiceContractId for %s", contract));
     }
 }
