@@ -75,8 +75,10 @@ public class TakServiceImplTest {
     private final String RECEIVE_MEDICAL_CERT_ANSWER_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
     private final String SEND_MESSAGE_TO_CARE_NS = "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
 
-    private final String ERROR_STRING = "Den angivna enheten går ej att adressera för ärendekommunikation." +
-            " (Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
+    private final String ERROR_STRING_BASE = "Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
+
+    private final String ERROR_STRING_ARENDEHANTERING = "Den angivna enheten går ej att adressera för ärendekommunikation. "
+            + ERROR_STRING_BASE;
 
     @Mock
     private HsaOrganizationsServiceImpl hsaService;
@@ -164,7 +166,7 @@ public class TakServiceImplTest {
         TakResult result = impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_ANSWER_NS, HSAID_OK), result.getErrorMessages().get(0));
+        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_ANSWER_NS, HSAID_OK), result.getErrorMessages().get(0));
     }
 
     @Test
@@ -180,7 +182,7 @@ public class TakServiceImplTest {
         TakResult result = impl.verifyTakningForCareUnit(hsa, "fk7263", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsa), result.getErrorMessages().get(0));
+        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsa), result.getErrorMessages().get(0));
     }
 
     @Test
@@ -196,7 +198,7 @@ public class TakServiceImplTest {
         TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING, SEND_MESSAGE_TO_CARE_NS, hsa), result.getErrorMessages().get(0));
+        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, SEND_MESSAGE_TO_CARE_NS, hsa), result.getErrorMessages().get(0));
     }
 
     @Test
@@ -211,7 +213,7 @@ public class TakServiceImplTest {
         System.out.println(result.getErrorMessages().size());
 
         assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V3_NS, hsa), result.getErrorMessages().get(0));
+        assertEquals(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V3_NS, hsa), result.getErrorMessages().get(0));
     }
 
     @Test
@@ -224,7 +226,7 @@ public class TakServiceImplTest {
         TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING, CERT_STATUS_FOR_CARE_V1_NS, hsa), result.getErrorMessages().get(0));
+        assertEquals(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V1_NS, hsa), result.getErrorMessages().get(0));
     }
 
     private void setupIds() {
