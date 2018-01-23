@@ -177,22 +177,52 @@ module.exports = {
     },
     getIntyg: function(intygsTyp, patient) {
         var intygShortCode = this.getPathShortcode(intygsTyp);
-
+        var insertDashInPnr = this.insertDashInPnr;
         return new Promise(function(resolve, reject) {
             return pool.getConnection().then(function(connection) {
 
-                console.log(patient);
 
-                if (patient.id.indexOf('-') === -1) {
+                patient.id = insertDashInPnr(patient.id);
+                /*if (patient.id.indexOf('-') === -1) {
                     patient.id = patient.id.substring(0, 8) + '-' + patient.id.substring(8, 12);
                     //yyyymmdd-nnnn format.
-                }
+                }*/
 
                 var query = 'SELECT INTYGS_ID, ENHETS_ID, SKAPAD_AV_HSAID, STATUS';
                 query += ' FROM ' + process.env.DATABASE_NAME + '.INTYG WHERE INTYGS_TYP = "' + intygShortCode + '"';
                 query += ' AND PATIENT_PERSONNUMMER = "' + patient.id + '"';
                 query += ' LIMIT 100';
 
+                logger.info('Hämtar intyg från webcert på patient');
+                console.log(patient);
+                logger.silly('query: ');
+                console.log(query);
+
+                connection.query(query,
+                    function(err, rows, fields) {
+                        connection.release();
+                        if (err) {
+                            throw (err);
+                        }
+                        console.log(fields);
+                        console.log(rows);
+                        resolve(rows);
+                    });
+            });
+        });
+    },
+    getIntygState: function(intygsId) {
+        //Hämtar den senaste statusen från intygstjänstens DB.
+        return new Promise(function(resolve, reject) {
+            return pool.getConnection().then(function(connection) {
+
+                var query = 'SELECT *';
+                query += ' FROM ' + process.env.INTYGTJANST_DATABASE_NAME + '.CERTIFICATE_STATE WHERE CERTIFICATE_ID = "' + intygsId + '"';
+                query += ' ORDER BY TIMESTAMP DESC LIMIT 1';
+
+
+                logger.info('Hämtar intygsstatus från intygstjänstens databas');
+                logger.silly('query: ');
                 console.log(query);
 
                 connection.query(query,

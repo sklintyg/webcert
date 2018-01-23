@@ -246,57 +246,73 @@ module.exports = function() {
             patient = testpatienter[helpers.getIntFromTxt(txt)];
         }
 
-
-        //return new Promise(function(resolve, reject) {
+        //var promiseArr = [];
         return helpers.getIntyg(intygsTyp, patient).then(function(data) {
             if (typeof(data[0]) === 'undefined') {
                 logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
                 return;
             }
-            intyg.id = data[0].INTYGS_ID;
+            console.log('data.length: ' + data.length);
 
-            //Logga in på vårdenhet som skapat intyget:
-            var userObj = {
-                forNamn: '',
-                efterNamn: '',
-                hsaId: data[0].SKAPAD_AV_HSAID,
-                enhetId: data[0].ENHETS_ID
-            };
-            return loginHelpers.logInAsUserRole(userObj, '').then(function() {
-                    return helpers.pageReloadDelay();
-                })
+            data.forEach(function(item, index) {
+                console.log('index: ' + index);
 
-                /*.then(function() {
-                return pages.sokSkrivIntyg.pickPatient.selectPersonnummer(patient.id);
-            })*/
+                var endAction = 'no-action';
+                intyg.id = data[index].INTYGS_ID;
 
-                .then(function() {
-                    var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
-                    var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
-                    logger.info('Går till ' + link);
-                    return browser.get(link);
-                })
+                console.log('intygsstatus från DB: ' + data[index].STATUS);
 
-                .then(function() {
-                    //logger.info('Går in på patient ' + patient.id);
-                    return helpers.pageReloadDelay();
+                if (data[index].STATUS.indexOf('DRAFT') !== -1) {
+                    endAction = raderaUtkastet;
+                }
 
-                })
+                return new Promise(function(resolve, reject) {
+                    helpers.getIntygState(intyg.id).then(function(state) {
+                        console.log(state[0].STATE);
+                        if (state[0].STATE === 'CANCELLED') {
+                            logger.silly(intyg.id + ' är redan makulerat');
+                            return;
+                        } else if (typeof(state[0].STATE) !== 'undefined') {
+                            logger.silly('endAction = makuleraIntyget');
+                            endAction = makuleraIntyget;
+                        } else {
+                            logger.silly('Intyget är utkast');
+                        }
+                    }).then(function() {
+                        if (endAction === 'no-action') {
+                            console.log('no-action');
+                            return;
+                        }
+                        //Logga in på vårdenhet som skapat intyget:
+                        var userObj = {
+                            forNamn: 'x',
+                            efterNamn: 'y',
+                            hsaId: data[index].SKAPAD_AV_HSAID,
+                            enhetId: data[index].ENHETS_ID
+                        };
 
-                .then(function() {
-                    console.log('intygsstatus från DB: ' + data[0].STATUS);
-                    if (data[0].STATUS.indexOf('DRAFT') === -1) {
-                        return makuleraIntyget();
-
-                    } else {
-                        return raderaUtkastet();
-                    }
+                        return loginHelpers.logInAsUser(userObj)
+                            .then(function() {
+                                return helpers.pageReloadDelay();
+                            })
+                            .then(function() {
+                                var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
+                                var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
+                                logger.info('Går till ' + link);
+                                return browser.get(link);
+                            })
+                            .then(function() {
+                                return helpers.pageReloadDelay();
+                            })
+                            .then(function() {
+                                return endAction().then(resolve());
+                            });
+                    });
                 });
+
+            });
+
         });
-        //});
-
-
-
     });
 
 

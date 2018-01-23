@@ -47,7 +47,7 @@ function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänst
     return sokSkrivIntygPage.selectPersonnummer(person.id).then(function() {
         logger.info('Går in på patient ' + person.id);
         //Patientuppgifter visas
-        var patientUppgifter = sokSkrivIntygPage.sokSkrivIntygForm;
+        var patientUppgifter = sokSkrivIntygPage.patientNamn;
         return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id)).then(function() {
             return helpers.smallDelay();
         });
