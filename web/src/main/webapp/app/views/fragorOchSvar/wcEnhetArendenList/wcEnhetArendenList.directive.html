@@ -7,7 +7,7 @@
     <!-- No results message for query -->
     <div id="current-list-noResults-query"
          ng-show="listModel.totalCount < 1 && listModel.viewState.runningQuery && !listModel.viewState.activeErrorMessageKey">
-      <span message key="info.query.noresults"></span>
+      <span dynamic-label key="info.query.noresults"></span>
     </div>
 
     <!-- error message -->
@@ -55,8 +55,8 @@
                                   <span ng-if="arende.updateInProgress"> <img
                                       src="/img/ajax-loader-kit-16x16.gif"></span>
           </td>
-          <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span message key="arende.measure.{{arende.measureResKey}}"></span></td>
-          <td><span message key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
+          <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
+          <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
           <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="arende.meddelandeId" sekretessmarkering="arende.sekretessmarkering"></span></td>
           <td>{{arende.signeratAvNamn}}</td>
           <td class="unbreakable wc-table-striped-last">{{arende.receivedDate | date:'short'}}

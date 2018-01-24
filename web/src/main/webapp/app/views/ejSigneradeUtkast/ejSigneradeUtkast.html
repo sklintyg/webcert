@@ -2,7 +2,7 @@
   <div class="row" id="unsigned">
     <div class="col-md-12">
       <h1 class="page-title">
-        <span message key="dashboard.unsigned.title"></span>
+        <span dynamic-label key="dashboard.unsigned.title"></span>
       </h1>
 
       <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
@@ -29,18 +29,18 @@
               <!-- No results message for unhandled -->
               <div id="current-list-noResults-unit"
                    ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1 && !widgetState.filteredYet">
-                <span message key="info.nounsigned.intyg.for.unit"></span>
+                <span dynamic-label key="info.nounsigned.intyg.for.unit"></span>
               </div>
 
               <!-- No results message for query -->
               <div id="current-list-noResults-query" ng-show="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet">
-                <span message key="info.query.noresults"></span>
+                <span dynamic-label key="info.query.noresults"></span>
               </div>
 
               <!-- error message -->
               <wc-alert-message id="current-list-noResults-error"
                    ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" alert-severity="danger">
-                <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+                <span dynamic-label key="{{widgetState.activeErrorMessageKey}}"></span>
               </wc-alert-message>
 
               <div id="query-count" ng-show="widgetState.totalCount>0">
