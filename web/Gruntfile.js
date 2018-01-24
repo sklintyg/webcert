@@ -350,6 +350,11 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
+                                '/bower_components',
+                                serveStatic(__dirname + '/src/main/webapp/bower_components') // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
                                 '/app/app-deps.js',
                                 serveStatic(__dirname + DEST_DIR + '/app-deps.js') // jshint ignore:line
                             ));
