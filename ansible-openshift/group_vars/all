@@ -23,7 +23,7 @@ database_name: ${db_name}
 database_username: ${db_username}
 database_password: ${db_password}
 database_driver: com.mysql.jdbc.Driver
-database_url: "jdbc:mysql://{{ database_server }}:{{ database_port }}/{{ database_name }}?useCompression=true"
+database_url: "jdbc:mysql://{{ database_server }}:{{ database_port }}/{{ database_name }}?useCompression=true&useSSL=false"
 database_pool_maxActive: 20
 database_pool_maxIdle: 20
 database_pool_minIdle: 10
