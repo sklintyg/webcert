@@ -103,6 +103,9 @@
 
             // Enable debug logging
             $logProvider.debugEnabled(false);
+
+            // Disable angular debug info.
+            $compileProvider.debugInfoEnabled(false);
         }]);
 
 /*
