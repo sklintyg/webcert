@@ -25,7 +25,7 @@ var testTools = require('common-testtools');
 testTools.protractorHelpers.init();
 
 var moveAndSendKeys = testTools.uiHelpers.moveAndSendKeys;
-var scrollElm = testTools.uiHelpers.scrollElement;
+var scrollElm = testTools.uiHelpers.scrollContainer;
 
 var DbUtkast = BaseSkvUtkast._extend({
     init: function init() {

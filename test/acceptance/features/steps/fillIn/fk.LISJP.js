@@ -21,7 +21,9 @@
 
  'use strict';
  var lisjpUtkastPage = pages.intyg.lisjp.utkast;
- var helpers = require('../helpers');
+ //var helpers = require('../helpers');
+ var testTools = require('common-testtools');
+ testTools.protractorHelpers.init();
 
  module.exports = {
      fillIn: function(intyg) {
@@ -61,18 +63,16 @@
                  });
              })
              .then(function() {
-                 var description = 'Konsekvenser - funktionsnedsattning för patient';
                  var elm = lisjpUtkastPage.konsekvenser.funktionsnedsattning;
                  var data = intyg.funktionsnedsattning;
 
-                 return helpers.moveAndSendKeys(elm, data, description);
+                 return elm.typeKeys(data);
              })
              .then(function() {
-                 var description = 'Konsekvenser - aktivitetsbegransning för patient';
                  var elm = lisjpUtkastPage.konsekvenser.aktivitetsbegransning;
                  var data = intyg.aktivitetsbegransning;
 
-                 return helpers.moveAndSendKeys(elm, data, description);
+                 return elm.typeKeys(data);
              })
              .then(function() {
                  logger.info('TODO - Medicinsk behandling');
@@ -97,11 +97,10 @@
                  });
              })
              .then(function() {
-                 var description = 'ange FMB';
                  var elm = lisjpUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning;
                  var data = intyg.arbetsformagaFMB;
 
-                 return helpers.moveAndSendKeys(elm, data, description);
+                 return elm.typeKeys(data);
              })
              .then(function() {
                  //Resor till arbete
