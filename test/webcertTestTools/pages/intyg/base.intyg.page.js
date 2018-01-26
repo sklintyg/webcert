@@ -70,7 +70,9 @@ var BaseIntyg = JClass._extend({
         this.arendeIntygNotSentYetMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
         this.arendeSentMessage = element(by.id('arende-is-sent-to-fk-message-text'));
 
-        this.newArendeBtn = element(by.id('askArendeBtn'));
+        this.getNewArendeBtn = function() {
+            return element(by.id(this.scrollIntoView('askArendeBtn')));
+        };
 
         this.arendeText = element(by.id('arendeNewModelText'));
         this.arendeAmne = element(by.id('new-question-topic'));
@@ -100,6 +102,10 @@ var BaseIntyg = JClass._extend({
     },
     get: function(intygId) {
         browser.get('/#/intyg/' + this.intygType + '/' + intygId + '/');
+    },
+    scrollIntoView: function (domId) {
+        browser.executeScript('if ($("#' + domId + '").length) { $("#' + domId + '")[0].scrollIntoView()}');
+        return domId;
     },
     getReason: function(reasonBth) {
         for (var key in this.makulera) {
@@ -177,7 +183,7 @@ var BaseIntyg = JClass._extend({
     },
     sendNewArende: function(arendeText, arendeAmne) {
         var self = this;
-        return this.newArendeBtn.click().then(function() {
+        return this.getNewArendeBtn().click().then(function() {
             return pageHelpers.moveAndSendKeys(self.arendeText, arendeText).then(function() {
                 return self.arendeValjAmne(arendeAmne).then(function() {
                     return self.arendeSend.click();
@@ -213,7 +219,7 @@ var BaseIntyg = JClass._extend({
         return element(by.id('answerText-' + id));
     },
     getAnswerButton: function(id) {
-        return element(by.id('sendAnswerBtn-' + id));
+        return element(by.id(this.scrollIntoView('sendAnswerBtn-' + id)));
     },
     getKompletteringDisabledSign: function(id) {
         return element(by.id('komplettering-disabled-' + id));
@@ -225,16 +231,16 @@ var BaseIntyg = JClass._extend({
         return element(by.id('answerDisabledReasonPanel-' + id));
     },
     getKompletteraIntygButton: function(id) {
-        return element(by.id('komplettera-intyg-' + id));
+        return element(by.id(this.scrollIntoView('komplettera-intyg-' + id)));
     },
     getUthoppKompletteraSvaraButton: function(id) {
-        return element(by.id('uthopp-svara-med-meddelande-' + id));
+        return element(by.id(this.scrollIntoView('uthopp-svara-med-meddelande-' + id)));
     },
     getKompletteraIntygFortsattPaIntygsutkastButton: function(id) {
-        return element(by.id('komplettera-open-utkast-' + id));
+        return element(by.id(this.scrollIntoView('komplettera-open-utkast-' + id)));
     },
     getKanInteKompletteraButton: function(id) {
-        return element(by.id('kan-inte-komplettera-' + id));
+        return element(by.id(this.scrollIntoView('kan-inte-komplettera-' + id)));
     },
     getKompletteringsDialogLamnaOvrigaUpplysningar: function() {
         return element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button'));
