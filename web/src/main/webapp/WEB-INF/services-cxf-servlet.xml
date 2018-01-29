@@ -41,6 +41,7 @@
   <import resource="classpath:srs-stub-context.xml" />
   <import resource="classpath:pp-stub-context.xml" />
   <import resource="classpath:grp-stub-context.xml" />
+  <import resource="classpath:nias-stub-context.xml" />
   <import resource="classpath:/mail-stub-testability-api-context.xml" />
   <import resource="classpath:/intygstjanst-stub-context.xml" />
   <import resource="classpath:/loggtjanst-stub-context.xml" />
