@@ -6,8 +6,7 @@
       </h1>
 
       <!-- load animation for entire page -->
-      <div wc-spinner label="info.loadingdata" show-spinner="!enhetArendenModel.doneLoading"
-           show-content="enhetArendenModel.doneLoading">
+      <wc-spinner label="info.loadingdata" show-spinner="!enhetArendenModel.doneLoading">
         <wc-vardenhet-filter id="wc-vardenhet-filter"></wc-vardenhet-filter>
 
         <div ng-if="vardenhetFilterModel.selectedUnit">
@@ -18,7 +17,7 @@
 
           <wc-enhet-arenden-list></wc-enhet-arenden-list>
         </div>
-      </div>
+      </wc-spinner>
     </div>
 
   </div>
