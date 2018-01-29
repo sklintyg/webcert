@@ -25,7 +25,7 @@ var pageHelpers = require('../../../pageHelper.util');
 var testTools = require('common-testtools');
 var moveAndSendKeys = pageHelpers.moveAndSendKeys;
 
-testTools.protractorHelpers.init();
+testTools.protractorHelpers.init('certificate-content-container');
 
 
 function sendEnterToElement(el) {

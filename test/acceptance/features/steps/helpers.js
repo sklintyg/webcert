@@ -27,7 +27,7 @@ function sh(value) {
     return (value.search(/\s-\s/g) !== -1) ? value.split(/\s-\s/g)[0].replace('Ämne: ', '') : value.split(/\n/g)[0].replace('Ämne: ', '');
 }
 
-var moveAndSendKeys = require('common-testtools').uiHelpers.moveAndSendKeys;
+var moveAndSendKeys = require('common-testtools').protractorHelpers.moveAndSendKeys;
 
 module.exports = {
     moveAndSendKeys: moveAndSendKeys,

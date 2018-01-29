@@ -22,10 +22,10 @@
 
 var BaseSkvUtkast = require('../skv.base.utkast.page.js');
 var testTools = require('common-testtools');
-testTools.protractorHelpers.init();
+testTools.protractorHelpers.init('certificate-content-container');
 
-var moveAndSendKeys = testTools.uiHelpers.moveAndSendKeys;
-var scrollElm = testTools.uiHelpers.scrollContainer;
+var moveAndSendKeys = testTools.protractorHelpers.moveAndSendKeys;
+var scrollElm = testTools.protractorHelpers.scrollContainer;
 
 var DbUtkast = BaseSkvUtkast._extend({
     init: function init() {
