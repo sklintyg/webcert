@@ -155,56 +155,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn()));
     }
 
-    /**
-     * Implements business rules where the intygsTyp determines which patient information that's saved to the backend.
-     *
-     * @param patient
-     * @param intygsTyp
-     * @return An updated patient DTO with the non-relevant fields nulled out.
-     */
-    @Override
-    public Patient updatePatientForSaving(Patient patient, String intygsTyp) {
-
-        Patient retPatient = new Patient();
-        // Always transfer
-        retPatient.setSekretessmarkering(patient.isSekretessmarkering());
-        retPatient.setAvliden(patient.isAvliden());
-
-        // Make sure any external intygstyp representations (such as TSTRK1007) are mapped to our internal types.
-        String internalIntygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(intygsTyp);
-
-        switch (internalIntygsTyp.toLowerCase()) {
-        case "fk7263":
-        case "luse":
-        case "lisjp":
-        case "luae_na":
-        case "luae_fs":
-            // For FK intyg, never save anything other than personnummer.
-
-            retPatient.setPersonId(patient.getPersonId());
-            break;
-
-        case "ts-bas":
-        case "ts-diabetes":
-            // For TS-intyg, return the patient "as-is"
-            return patient;
-
-        case "db":
-        case "doi":
-            // For DB/DOI, return only personnummer and name, no address.
-
-            retPatient.setPersonId(patient.getPersonId());
-            retPatient.setFornamn(patient.getFornamn());
-            retPatient.setMellannamn(patient.getMellannamn());
-            retPatient.setEfternamn(patient.getEfternamn());
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp);
-        }
-
-        return retPatient;
-    }
-
     /*
      * I: Info om avliden från både PU-tjänst och journalsystem.
      */
