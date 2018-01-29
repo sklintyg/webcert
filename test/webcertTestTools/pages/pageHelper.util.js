@@ -24,7 +24,7 @@
 /*globals protractor, Promise, logger */
 'use strict';
 
-var testTools = require('common-testTools');
+var testTools = require('common-testtools');
 testTools.protractorHelpers.init('certificate-content-container');
 
 var moveAndSendKeys;
