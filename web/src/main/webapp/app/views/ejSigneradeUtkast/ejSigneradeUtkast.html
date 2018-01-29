@@ -1,12 +1,11 @@
-<div class="container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST">
+<div class="webcert-workarea-page container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST">
   <div class="row" id="unsigned">
-    <div class="col-md-12 webcert-col webcert-col-single">
+    <div class="col-md-12">
       <h1 class="page-title">
-        <span message key="dashboard.unsigned.title"></span>
+        <span dynamic-label key="dashboard.unsigned.title"></span>
       </h1>
 
-      <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
-           show-content="widgetState.doneLoading">
+      <wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading">
 
         <div>
           <h2 class="col-head less-top-padding">{{widgetState.valdVardenhet.namn}}</h2>
@@ -21,26 +20,25 @@
             <wc-utkast-filter on-search="filterDrafts(filter)" ng-show="!widgetState.queryFormCollapsed"></wc-utkast-filter>
           </div>
 
-          <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery"
-               show-content="!widgetState.runningQuery">
+          <wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery">
 
-            <div class="webcert-col-section arende-table-section">
+            <div class="arende-table-section">
 
               <!-- No results message for unhandled -->
               <div id="current-list-noResults-unit"
                    ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1 && !widgetState.filteredYet">
-                <span message key="info.nounsigned.intyg.for.unit"></span>
+                <span dynamic-label key="info.nounsigned.intyg.for.unit"></span>
               </div>
 
               <!-- No results message for query -->
               <div id="current-list-noResults-query" ng-show="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet">
-                <span message key="info.query.noresults"></span>
+                <span dynamic-label key="info.query.noresults"></span>
               </div>
 
               <!-- error message -->
               <wc-alert-message id="current-list-noResults-error"
                    ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" alert-severity="danger">
-                <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+                <span dynamic-label key="{{widgetState.activeErrorMessageKey}}"></span>
               </wc-alert-message>
 
               <div id="query-count" ng-show="widgetState.totalCount>0">
@@ -63,10 +61,10 @@
               </div>
 
             </div>
-          </div>
+          </wc-spinner>
           <!-- spinner end -->
         </div>
-      </div>
+      </wc-spinner>
     </div>
 
   </div>

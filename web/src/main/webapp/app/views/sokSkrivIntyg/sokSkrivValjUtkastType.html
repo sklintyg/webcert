@@ -1,7 +1,7 @@
-<wc-content class="wc-body-background" wc-authority feature="HANTERA_INTYGSUTKAST">
+<wc-patient-header></wc-patient-header>
+<div class="webcert-workarea-page container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST">
 
-  <div wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading"
-       show-content="!viewState.patientLoading">
+  <wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading">
 
     <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
       <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"
@@ -10,7 +10,7 @@
       </wc-alert-message>
 
       <div ng-if="!viewState.loadErrorMessageKey">
-        <wc-patient-header></wc-patient-header>
+
         <wc-valj-utkast-typ view-state="viewState"></wc-valj-utkast-typ>
       </div>
 
@@ -19,7 +19,7 @@
     <div ng-if="viewState && !viewState.loadErrorMessageKey">
       <wc-tidigare-intyg view-state="viewState"></wc-tidigare-intyg>
     </div>
-  </div>
+  </wc-spinner>
   <!-- load spinner end -->
 
-</wc-content>
+</div>

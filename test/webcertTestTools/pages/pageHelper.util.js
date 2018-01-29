@@ -24,12 +24,13 @@
 /*globals protractor, Promise, logger */
 'use strict';
 
-var testtools = require('common-testtools');
+var testTools = require('common-testtools');
+testTools.protractorHelpers.init('certificate-content-container');
 
 var moveAndSendKeys;
 
-if (testtools.uiHelpers) {
-    moveAndSendKeys = testtools.uiHelpers.moveAndSendKeys;
+if (testTools.protractorHelpers) {
+    moveAndSendKeys = testTools.protractorHelpers.moveAndSendKeys;
 } else {
     moveAndSendKeys = function(elm, keys, description) {
         return elm.sendKeys(keys).then(function() {

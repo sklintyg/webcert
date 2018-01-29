@@ -495,12 +495,12 @@ module.exports = function() {
 
     });
 
-    this.Given(/^jag raderar ett  slumpat obligatoriskt fält$/, function(callback) {
+    this.Given(/^jag raderar ett slumpat obligatoriskt fält$/, function() {
 
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         var intygShortcode = helpers.getAbbrev(intyg.typ);
 
-        fillInIntyg.changingFields(isSMIIntyg, intygShortcode, callback, true);
+        return fillInIntyg.changingFields(isSMIIntyg, intygShortcode, true);
 
     });
     this.Given(/^jag raderar fältet "([^"]*)" fältet$/, function(field, callback) {

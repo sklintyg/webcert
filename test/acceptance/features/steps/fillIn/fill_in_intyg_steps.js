@@ -273,7 +273,7 @@ module.exports = function() {
 
 };
 
-module.exports.changingFields = function(isSMIIntyg, intygShortcode, callback, clearFlag) {
-    chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback, clearFlag);
+module.exports.changingFields = function(isSMIIntyg, intygShortcode, clearFlag) {
+    return chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, clearFlag);
 
 };

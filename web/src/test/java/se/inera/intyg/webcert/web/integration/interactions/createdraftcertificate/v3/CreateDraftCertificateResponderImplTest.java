@@ -28,6 +28,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -95,6 +96,9 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     private MonitoringLogService mockMonitoringLogService;
     @Mock
     private TakService takService;
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
 
@@ -104,6 +108,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(mockValidator.validateApplicationErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(ResultValidator.newInstance());
         when(mockIntegreradeEnheterService.getSchemaVersion(any(String.class), any(String.class)))
                 .thenReturn(Optional.of(SchemaVersion.VERSION_3));
+        when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
     }
 
     @Test

@@ -53,9 +53,9 @@
     <div class="col-sm-10">
       <wc-alert-message alert-severity="danger">
         <ul>
-          <li ng-show="filterForm['filter-changedate-from'].$error.date"><span message key="validation.invalidfromdate"></span></li>
-          <li ng-show="filterForm['filter-changedate-to'].$error.date"><span message key="validation.invalidtodate"></span></li>
-          <li ng-show="filterForm['filter-changedate-to'].$error.isBefore"><span message key="validation.invalidtobeforefromdate"></span></li>
+          <li ng-show="filterForm['filter-changedate-from'].$error.date"><span dynamic-label key="validation.invalidfromdate"></span></li>
+          <li ng-show="filterForm['filter-changedate-to'].$error.date"><span dynamic-label key="validation.invalidtodate"></span></li>
+          <li ng-show="filterForm['filter-changedate-to'].$error.isBefore"><span dynamic-label key="validation.invalidtobeforefromdate"></span></li>
         </ul>
       </wc-alert-message>
     </div>

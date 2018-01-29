@@ -49,7 +49,7 @@
   <div ui-view="header" autoscroll="true" id="wcHeader"></div>
 
   <%-- ui-view that holds dynamic content managed by angular app --%>
-  <div ui-view="content" autoscroll="false" id="view"></div>
+  <div ui-view="content" autoscroll="false" id="view" class="webcert-workarea"></div>
 
   <%-- No script to show at least something when javascript is off --%>
   <noscript>

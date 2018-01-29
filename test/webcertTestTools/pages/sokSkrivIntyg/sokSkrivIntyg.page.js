@@ -36,6 +36,7 @@ var SokSkrivIntyg = WebcertBasePage._extend({
         this.sekretessmarkering = element(by.id('sekretessmarkering'));
         this.puerror = element(by.id('puerror'));
         this.namnFortsatt = element(by.id('namnFortsatt'));
+		this.patientNamn = element(by.id('patientNamn'));
         this.intygLista = element(by.id('intygLista'));
         this.sokSkrivIntygForm = element(by.css('form[name=certForm]'));
     },

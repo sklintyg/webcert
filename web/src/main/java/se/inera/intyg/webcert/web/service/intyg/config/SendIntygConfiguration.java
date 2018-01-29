@@ -26,7 +26,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class SendIntygConfiguration {
 
-    private static final String PATIENT_CONSENT_PATTERN = "Intyget skickat till mottagare {0}";
+    private static final String PATIENT_CONSENT_PATTERN = "Intyg skickat till mottagare {0}";
 
     private String recipient;
 

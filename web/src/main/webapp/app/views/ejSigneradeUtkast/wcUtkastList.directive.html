@@ -31,7 +31,7 @@
       <span ng-if="intyg.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
     </td>
     <td class="unbreakable">{{getTypeName(intyg.intygType)}}</td>
-    <td><span message key="intyg.status.{{intyg.status}}"></span></td>
+    <td><span dynamic-label key="intyg.status.{{intyg.status}}"></span></td>
     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
     <td class="unbreakable">{{intyg.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering" uuid="intyg.patientId"></span></td>
     <td class="wc-table-striped-last">{{intyg.updatedSignedBy}}</td>

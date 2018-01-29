@@ -87,9 +87,11 @@
 				do {
 					location += element.offsetTop;
 					element = element.offsetParent;
-				} while (element);
+					// NOTE: This is a patch made to fix a bug when scrolling within a container. In the container case, we dont wan't to iterate further up than the container wer'e scrolling in!
+				} while (element && (!container || element.id!==container.id));
 			}
 			location = Math.max(location - offset, 0);
+
 			return location;
 		};
 

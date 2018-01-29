@@ -1,7 +1,7 @@
 <div class="modal-header">
     <button type="button" class="close" ng-click="$dismiss('pressed x in dialog')">×</button>
     <h3>
-        <span message key="common.title.{{title}}"></span>
+        <span dynamic-label key="common.title.{{title}}"></span>
     </h3>
 </div>
 <div class="modal-body">
@@ -9,10 +9,10 @@
     <div class="row">
         <div class="col-md-10">
         <h2>
-            <span message key="{{model.heading}}"></span>
+            <span dynamic-label key="{{model.heading}}"></span>
         </h2>
         <p>
-            <span message key="{{model.bodyTextId}}"></span>
+            <span dynamic-label key="{{model.bodyTextId}}"></span>
         </p>
         </div>
         <div class="col-md-2">
@@ -25,7 +25,7 @@
 </div>
 <div class="modal-footer">
     <button type="button" id="buttonYes" class="btn btn-secondary" ng-click="$dismiss('pressed cancel button')">
-        <span message key="common.cancel"></span>
+        <span dynamic-label key="common.cancel"></span>
     </button>
 
 </div>

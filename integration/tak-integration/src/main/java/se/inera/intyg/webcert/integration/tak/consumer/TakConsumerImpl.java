@@ -27,7 +27,7 @@ import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 
 public class TakConsumerImpl implements TakConsumer {
 
-    private static final String LOGICAL_ADDRESS_URL = "%s/logicalAddresss?logicalAddress=%s&connectionPointId=%s&serviceContractId=%s";
+    private static final String LOGICAL_ADDRESS_URL = "%s/logicalAddresss?logicalAdress=%s&connectionPointId=%s&serviceContractId=%s";
     private static final String CONNECTION_POINT_URL = "%s/connectionPoints?platform=%s&environment=%s";
     private static final String SERVICE_CONTRACT_ID_URL = "%s/serviceContracts?namespace=%s";
 
@@ -66,6 +66,6 @@ public class TakConsumerImpl implements TakConsumer {
         if (tmp.length > 0) {
             return tmp[0].getId();
         }
-        throw new TakServiceException("Failed to get ServiceContractId");
+        throw new TakServiceException(String.format("Failed to get ServiceContractId for %s", contract));
     }
 }
