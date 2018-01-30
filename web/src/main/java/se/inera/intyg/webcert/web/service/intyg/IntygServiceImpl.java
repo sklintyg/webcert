@@ -702,6 +702,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
+        if (oldPatientData == null) {
+            return;
+        }
         newPatientData.setPostadress(oldPatientData.getPostadress());
         newPatientData.setPostnummer(oldPatientData.getPostnummer());
         newPatientData.setPostort(oldPatientData.getPostort());
