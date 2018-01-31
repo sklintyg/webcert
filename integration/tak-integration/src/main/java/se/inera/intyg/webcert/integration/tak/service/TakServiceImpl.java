@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -132,15 +131,15 @@ public class TakServiceImpl implements TakService {
             // If the time taken for entirety of this check exceeds the timeout, log a warning and allow creation.
             LOG.warn("The overall timeout for this call was reached, draft creation allowed anyway.");
             ret = true;
-        } catch (InterruptedException | ExecutionException ee) {
-            LOG.error("Internal application error in TakService: {}", ee.getMessage());
-            ret = false;
         } catch (TakServiceException e) {
             LOG.error("Contacting TAK was unsuccessful", e);
             ret = true;
         } catch (ResourceAccessException e) {
             // This handles timeouts from the actual REST-calls in TakConsumer, log and allow creation.
             LOG.warn("Connection to TAK-api timed out, draft creation allowed anyway.");
+            ret = true;
+        } catch (Exception e) {
+            LOG.warn("Unknown exception occurred when communicating with TAK. Draft creation allowed anyway.", e);
             ret = true;
         }
         return new TakResult(ret, errors);
