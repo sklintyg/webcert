@@ -39,6 +39,4 @@ public interface PatientDetailsResolver {
 
     boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient);
 
-    Patient updatePatientForSaving(Patient patient, String intygsTyp);
-
 }

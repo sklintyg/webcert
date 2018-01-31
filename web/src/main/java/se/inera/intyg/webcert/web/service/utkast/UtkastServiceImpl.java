@@ -712,10 +712,6 @@ public class UtkastServiceImpl implements UtkastService {
 
             GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson).getGrundData();
 
-            // INTYG-4086: Make sure we never save unwanted patient information to the backend.
-            // Patient updatedPatientForSaving = patientDetailsResolver.updatePatientForSaving(grundData.getPatient(),
-            // utkast.getIntygsTyp());
-
             Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
             HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));

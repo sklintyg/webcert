@@ -52,6 +52,7 @@ import java.util.stream.Stream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
@@ -94,7 +95,7 @@ public class TakServiceImplTest {
     @Before
     public void setup() throws HsaServiceCallException {
         impl = new TakServiceImpl();
-        ReflectionTestUtils.setField(impl, "timeout", 1);
+        ReflectionTestUtils.setField(impl, "timeout", 1_000_000);
         MockitoAnnotations.initMocks(this);
         user = createDefaultUser();
         when(hsaService.getParentUnit(HSAID_OK)).thenReturn(HSAID_OK);
@@ -122,6 +123,37 @@ public class TakServiceImplTest {
         when(consumer.doLookup(anyString(), anyString(), anyString())).thenReturn(buildTakLogicalAddress("29"));
 
         assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user).isValid());
+    }
+
+    @Test
+    public void testSuccessForDifferentUnitsFk7263() throws HsaServiceCallException {
+        setupIds();
+
+        final String HSAID_OK_VARDENHET = "HSAID_OK_VARDENHET";
+        final String HSAID_OK_VARDGIVARE = "HSAID_OK_VARDGIVARE";
+
+        when(hsaService.getParentUnit(HSAID_OK)).thenReturn(HSAID_OK_VARDENHET);
+        when(hsaService.getVardgivareOfVardenhet(HSAID_OK)).thenReturn(HSAID_OK_VARDGIVARE);
+
+        when(consumer.doLookup(any(), eq(HSAID_OK), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("29"));
+        when(consumer.doLookup(any(), eq(HSAID_OK_VARDENHET), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(buildTakLogicalAddress("29"));
+        when(consumer.doLookup(any(), eq(HSAID_OK_VARDGIVARE), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(buildTakLogicalAddress("29"));
+        assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user).isValid());
+    }
+
+    @Test
+    public void testSuccessForDifferentUnitsSMI() throws HsaServiceCallException {
+        setupIds();
+
+        final String HSAID_OK_VARDENHET = "HSAID_OK_VARDENHET";
+        final String HSAID_OK_VARDGIVARE = "HSAID_OK_VARDGIVARE";
+
+        when(hsaService.getParentUnit(HSAID_OK)).thenReturn(HSAID_OK_VARDENHET);
+        when(hsaService.getVardgivareOfVardenhet(HSAID_OK)).thenReturn(HSAID_OK_VARDGIVARE);
+
+        when(consumer.doLookup(any(), eq(HSAID_OK), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("29"));
+        when(consumer.doLookup(any(), eq(HSAID_OK_VARDGIVARE), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(buildTakLogicalAddress("29"));
+        assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "luse", SchemaVersion.VERSION_3, user).isValid());
     }
 
     @Test
@@ -166,7 +198,8 @@ public class TakServiceImplTest {
         TakResult result = impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_ANSWER_NS, HSAID_OK), result.getErrorMessages().get(0));
+        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_ANSWER_NS, HSAID_OK),
+                result.getErrorMessages().get(0));
     }
 
     @Test

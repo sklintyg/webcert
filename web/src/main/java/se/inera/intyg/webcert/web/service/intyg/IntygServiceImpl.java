@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.intyg;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -716,6 +717,21 @@ public class IntygServiceImpl implements IntygService {
                         "Certificate is not signed, cannot revoke an unsigned certificate"));
     }
 
+    private static boolean completeAddressProvided(Patient patient) {
+        return !Strings.isNullOrEmpty(patient.getPostadress())
+                && !Strings.isNullOrEmpty(patient.getPostort())
+                && !Strings.isNullOrEmpty(patient.getPostnummer());
+    }
+
+    private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
+        if (oldPatientData == null) {
+            return;
+        }
+        newPatientData.setPostadress(oldPatientData.getPostadress());
+        newPatientData.setPostnummer(oldPatientData.getPostnummer());
+        newPatientData.setPostort(oldPatientData.getPostort());
+    }
+
     /**
      * Builds a IntygContentHolder by first trying to get the Intyg from intygstjansten. If
      * not found or the Intygstjanst couldn't be reached, the local Utkast - if available -
@@ -736,25 +752,34 @@ public class IntygServiceImpl implements IntygService {
 
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
             // Since an FK-intyg never will have anything other than personId, try to fetch all using ruleset
-            Patient patient = patientDetailsResolver.resolvePatient(personId, typ);
+            Patient newPatientData = patientDetailsResolver.resolvePatient(personId, typ);
 
-            // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
-            // Patient object.
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
-
-            boolean patientNameChanged = false, patientAddressChanged = false;
+            Utlatande utlatande = null;
+            boolean patientNameChanged = false;
+            boolean patientAddressChanged = false;
             try {
-                Utlatande utlatande = moduleRegistry.getModuleApi(typ).getUtlatandeFromJson(internalIntygJsonModel);
-                patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(), patient);
-                patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(), patient);
+                utlatande = moduleRegistry.getModuleApi(typ).getUtlatandeFromJson(internalIntygJsonModel);
+                patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(),
+                        newPatientData);
+                patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(),
+                        newPatientData);
             } catch (IOException e) {
                 LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygId);
             }
 
-            // If a Patient were resolved, update the model. If the patient were null, PU-service is probably down and
-            // no integration parameters were available.
-            if (patient != null) {
-                internalIntygJsonModel = moduleApi.updateBeforeSave(internalIntygJsonModel, patient);
+            // Patient is not expected to be null, since that means PU-service is probably down and no integration
+            // parameters were available.
+            if (newPatientData != null) {
+                // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
+                // Patient object.
+                ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
+                // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
+                if (!completeAddressProvided(newPatientData)) {
+                    // Use the old address data.
+                    Patient oldPatientData = utlatande.getGrundData().getPatient();
+                    copyOldAddressToNewPatientData(oldPatientData, newPatientData);
+                }
+                internalIntygJsonModel = moduleApi.updateBeforeSave(internalIntygJsonModel, newPatientData);
             }
 
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
@@ -818,32 +843,41 @@ public class IntygServiceImpl implements IntygService {
 
         try {
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
-            Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
+            Patient newPatientData = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
 
             // Copied from getDraft in UtkastModuleApiController
             // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,
             // create an "empty" Patient with personnummer only.
-            if (patient == null) {
-                patient = new Patient();
-                patient.setPersonId(utkast.getPatientPersonnummer());
+            if (newPatientData == null) {
+                newPatientData = new Patient();
+                newPatientData.setPersonId(utkast.getPatientPersonnummer());
             }
 
+            // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
+            Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+            if (!completeAddressProvided(newPatientData)) {
+                // Use the old address data.
+                Patient oldPatientData = utlatande.getGrundData().getPatient();
+                copyOldAddressToNewPatientData(oldPatientData, newPatientData);
+            }
             String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
-                    patient);
+                    newPatientData);
+            utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
 
-            Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
             Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
 
-            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patient.getPersonId());
+            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(newPatientData.getPersonId());
             if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                         "Sekretesstatus could not be fetched from the PU service");
             }
             final boolean sekretessmarkerad = SekretessStatus.TRUE.equals(sekretessStatus);
 
-            boolean patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(), patient);
-            boolean patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(), patient);
+            boolean patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(),
+                    newPatientData);
+            boolean patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(),
+                    newPatientData);
 
             return IntygContentHolder.builder()
                     .setContents(updatedModel)
