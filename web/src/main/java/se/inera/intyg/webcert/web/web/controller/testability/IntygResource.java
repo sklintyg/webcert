@@ -44,6 +44,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import com.secmaker.netid.nias.v1.ResultCollect;
+import com.secmaker.netid.nias.v1.SignResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -383,11 +385,19 @@ public class IntygResource {
     }
 
     @GET
-    @Path("/nias/authenticate/{personId}")
+    @Path("/nias/sign/{personId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response netiDAuthenticate(@PathParam("personId") String personId) {
-        AuthenticateResponse response = niasSignaturService.authenticate(personId, "", "");
-        return Response.ok(response.getAuthenticateResult()).build();
+    public Response netiDSign(@PathParam("personId") String personId) {
+        SignResponse signResponse = niasSignaturService.sign(personId, "", "", "");
+        return Response.ok(signResponse.getSignResult()).build();
+    }
+
+    @GET
+    @Path("/nias/collect/{orderRef}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response netiDCollect(@PathParam("orderRef") String orderRef) {
+        ResultCollect resultCollect = niasSignaturService.collect(orderRef);
+        return Response.ok(resultCollect).build();
     }
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {

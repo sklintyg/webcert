@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.signatur.grp.factory;
+package se.inera.intyg.webcert.web.service.signatur.nias.factory;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
-import se.inera.intyg.webcert.web.service.signatur.grp.GrpCollectPoller;
+import se.inera.intyg.webcert.web.service.signatur.nias.NiasCollectPoller;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -30,13 +29,13 @@ import se.inera.intyg.webcert.web.service.signatur.grp.GrpCollectPoller;
  * Uses applicationContext in singleton bean to produce instances of the prototype-scoped NiasCollectPoller.
  */
 @Component
-public class GrpCollectPollerFactoryImpl implements GrpCollectPollerFactory, ApplicationContextAware {
+public class NiasCollectPollerFactoryImpl implements NiasCollectPollerFactory, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
     @Override
-    public GrpCollectPoller getInstance() {
-        return applicationContext.getBean("grpCollectPoller", GrpCollectPoller.class);
+    public NiasCollectPoller getInstance() {
+        return applicationContext.getBean("niasCollectPoller", NiasCollectPoller.class);
     }
 
     @Override

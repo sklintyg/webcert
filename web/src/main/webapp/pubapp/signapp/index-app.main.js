@@ -66,17 +66,121 @@ angular.module('rhsIndexApp')
 
         $scope.isNetID = false;
         $scope.isBankID = false;
+        $scope.isNias = false;
 
         $scope.pollHandle = null;
 
         function cleanup() {
             clearInterval($scope.pollHandle);
             clearInterval($scope.grpPollHandle);
+            clearInterval($scope.niasPollHandle);
             $scope.isNetID = false;
+            $scope.isBankID = false;
+            $scope.isNias = false;
             $scope.ticketId = null;
             $scope.pollHandle = null;
             $scope.q.intygsId = null;
         }
+
+        // - START NetiD Access Server sign (nias)
+
+        $scope.bekraftaSigneringNias = function() {
+            // Här måste vi använda ett testbarhets-API för att låtsas vara klara med NIAS-signeringen.
+            if (!isDefined($scope.ticketId)) {
+                alert('Wait until there is an orderRef!');
+                return;
+            }
+            $http.put('/services/nias-api/status/' + $scope.ticketId, 'COMPLETE', null).then(
+                function(response) {
+                    // Success
+                    console.log("NIAS Signing successful: " + JSON.stringify(response));
+                    cleanup();
+                },
+                function(response) {
+                    // Failure
+                    console.log("NIAS Signing NOT successful: " + JSON.stringify(response));
+                    cleanup();
+                }
+            )
+        };
+
+        $scope.startNiasSign = function() {
+
+            if (!isDefined($scope.utkast)) {
+                alert('No utkast selected');
+                return;
+            }
+            clearInterval($scope.pollHandle);
+            clearInterval($scope.grpPollHandle);
+            clearInterval($scope.niasPollHandle);
+
+            $scope.isBankID = false;
+            $scope.isNetID = false;
+            $scope.isNias = true;
+
+            // First, do the ugly hack of specifiying a PERSONNUMMER on the user context just to get BankID or NIAS signing to work... for now.
+            $http.put('/testability/user/personid', $scope.personId, null).then(
+                function(response) {
+                    console.log('PersonID setting on User returned ' + response.data);
+                    // success callback
+
+                    // Then issue NIAS sign to server and start polling backend.
+                    $http.post('/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.utkast.intygsId + '/' +
+                        $scope.utkast.version + '/nias/signeraserver', null, null)
+                        .then(
+                            function(response) {
+                                // success callback
+                                console.log(JSON.stringify(response));
+                                $scope.ticketId = response.data.id;
+                                $scope.newVersion = response.data.version;
+                                $scope.statusMessage = response.data.status;
+
+                                // Got ticket id. Start poller and activate Confirm / Cancel buttons
+                                $scope.pollHandle = setInterval(function() {
+                                    $http({
+                                        method: 'GET',
+                                        url: '/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.ticketId +
+                                        '/signeringsstatus'
+                                    })
+                                        .then(function successCallback(response) {
+                                            console.log(JSON.stringify(response.data));
+                                            $scope.statusMessage = response.data.status;
+                                        }, function errorCallback(response) {
+                                            console.log('Error during poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
+                                            clearInterval($scope.pollHandle);
+                                        });
+                                }, 3000);
+
+                                // $scope.niasPollHandle = setInterval(function() {
+                                //     $http({
+                                //         method: 'GET',
+                                //         url: '/services/nias-api/status/' + $scope.ticketId
+                                //     })
+                                //         .then(function successCallback(response) {
+                                //             console.log(JSON.stringify(response.data));
+                                //             $scope.niasStatusMessage = response.data;
+                                //         }, function errorCallback(response) {
+                                //             console.log('Error during NIAS poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
+                                //             clearInterval($scope.niasPollHandle);
+                                //         });
+                                // }, 3000);
+
+                                // Load all ongoing signatures, filter out those for other personnummer
+
+
+                            },
+                            function(response) {
+                                // failure callback
+                                alert('Failure: ' + JSON.stringify(response));
+                            }
+                        );
+                },
+                function(response) {
+                    // error callback
+                    alert('Error setting personId on session: ' + response.data);
+                });
+        };
+
 
         $scope.signeraAvbrytGrp = function() {
             // Här måste vi använda ett testbarhets-API för att låtsas avbryta GRP-signeringen.
@@ -140,9 +244,11 @@ angular.module('rhsIndexApp')
             }
             clearInterval($scope.pollHandle);
             clearInterval($scope.grpPollHandle);
+            clearInterval($scope.niasPollHandle);
 
             $scope.isBankID = true;
             $scope.isNetID = false;
+            $scope.isNias = false;
 
             $http.put('/testability/user/personid', $scope.personId, null).then(
                 function(response) {
@@ -196,7 +302,7 @@ angular.module('rhsIndexApp')
                                             $scope.grpStatusMessage = response.data.status;
                                         }, function errorCallback(response) {
                                             console.log('Error during poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
-                                            clearInterval($scope.pollHandle);
+                                            clearInterval($scope.grpPollHandle);
                                         });
                                 }, 3000);
                             },
@@ -243,6 +349,7 @@ angular.module('rhsIndexApp')
             }
             $scope.isNetID = true;
             $scope.isBankID = false;
+            $scope.isNias = false;
 
             // Start by issuing client sign to server and start polling backend.
             $http.post('/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.utkast.intygsId + '/' +

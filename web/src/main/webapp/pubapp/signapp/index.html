@@ -114,6 +114,29 @@
               </div>
             </div>
 
+
+            <div class="row"><hr/></div>
+
+
+            <div class="form-group well">
+              <div class="row">
+                <label class="col-sm-12">Signering EFOS NetiD Access Server (SecMaker)</label>
+              </div>
+              <div class="row">
+                <label class="col-sm-3">Personnummer/HsaID för signerande läkare</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="text" ng-model="personId">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <button class="btn btn-primary" ng-click="startNiasSign()">Signera med NetiD Access Server</button>
+                </div>
+              </div>
+            </div>
+
+
           </div>
 
 
@@ -140,6 +163,15 @@
             </p>
           </div>
 
+          <div ng-if="isNias">
+            <p class="well">
+              Fejksignering med NetiD Access Server startad. Välj slutför eller avbryt nedan.
+              <button class="btn btn-success" ng-click="bekraftaSigneringNias()">Slutför</button>
+              <button class="btn btn-error" ng-click="signeraAvbrytNias()">Avbryt</button>
+              <span>Status: {{ statusMessage }}</span>
+              <span>NIAS status: {{ niasStatusMessage }}</span>
+            </p>
+          </div>
 
         </div>
       </div>

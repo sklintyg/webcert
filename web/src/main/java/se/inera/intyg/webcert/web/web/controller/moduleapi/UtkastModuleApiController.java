@@ -18,35 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.OptimisticLockingFailureException;
-import se.inera.intyg.common.services.texts.IntygTextsService;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
-import se.inera.intyg.webcert.web.service.signatur.SignaturService;
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
-import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
@@ -64,8 +37,38 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
+import se.inera.intyg.webcert.web.service.signatur.SignaturService;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
+import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
 
 /**
  * Controller for module interaction with drafts.
@@ -88,6 +91,9 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     @Autowired
     private GrpSignaturService grpSignaturService;
+
+    @Autowired
+    private NiasSignaturService niasSignaturService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
@@ -355,6 +361,35 @@ public class UtkastModuleApiController extends AbstractApiController {
         SignaturTicket ticket;
         try {
             ticket = grpSignaturService.startGrpAuthentication(intygsId, version);
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
+            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
+
+        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
+
+        return new SignaturTicketResponse(ticket);
+    }
+
+
+    /**
+     * Signera utkast mha NetiD Access Server (nias)
+     *
+     * @param intygsId intyg id
+     * @return SignaturTicketResponse
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/{version}/nias/signeraserver")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public SignaturTicketResponse serverSigneraUtkastMedNias(@PathParam("intygsTyp") String intygsTyp,
+                                                            @PathParam("intygsId") String intygsId,
+                                                            @PathParam("version") long version, @Context HttpServletRequest request) {
+
+        verifyIsAuthorizedToSignIntyg(intygsTyp);
+
+        SignaturTicket ticket;
+        try {
+            ticket = niasSignaturService.startNiasAuthentication(intygsId, version);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());

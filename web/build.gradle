@@ -90,6 +90,8 @@ gretty {
     httpPort = 9088
     debugPort = 5007
     debugSuspend = false
+    fastReload = true
+    inplaceMode = 'hard'
 
     def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
 

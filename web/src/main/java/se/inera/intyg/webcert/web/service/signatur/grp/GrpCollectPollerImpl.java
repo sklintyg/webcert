@@ -154,7 +154,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     private void applySecurityContextToThreadLocal() {
         if (securityContext == null) {
             throw new IllegalStateException(
-                    "Cannot start GRP poller thread, no securityContext was bound to the GrpCollectPollerImpl instance.");
+                    "Cannot start GRP poller thread, no securityContext was bound to the NiasCollectPollerImpl instance.");
         }
         SecurityContextHolder.setContext(securityContext);
     }
