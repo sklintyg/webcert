@@ -95,7 +95,7 @@ public class TakServiceImplTest {
     @Before
     public void setup() throws HsaServiceCallException {
         impl = new TakServiceImpl();
-        ReflectionTestUtils.setField(impl, "timeout", 1_000_000);
+        ReflectionTestUtils.setField(impl, "timeout", 1);
         MockitoAnnotations.initMocks(this);
         user = createDefaultUser();
         when(hsaService.getParentUnit(HSAID_OK)).thenReturn(HSAID_OK);
