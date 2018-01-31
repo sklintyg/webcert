@@ -93,7 +93,9 @@
               </div>
             </div>
 
-            <div class="row"><hr/></div>
+            <div class="row">
+              <hr />
+            </div>
 
 
             <div class="form-group well">
@@ -115,7 +117,9 @@
             </div>
 
 
-            <div class="row"><hr/></div>
+            <div class="row">
+              <hr />
+            </div>
 
 
             <div class="form-group well">
@@ -131,9 +135,39 @@
 
               <div class="row">
                 <div class="col-sm-12">
-                  <button class="btn btn-primary" ng-click="startNiasSign()">Signera med NetiD Access Server</button>
+                  <button ng-disabled="signingStarted" class="btn btn-primary" ng-click="startNiasSign()">Signera med NetiD Access Server</button>
                 </div>
               </div>
+              <div ng-if="isNias">
+                 <hr/>
+                <div>Webcert ticket status: <strong>{{ statusMessage }} </strong></div>
+                <div>Fejksignering med NetiD Access Server startad.
+                  <br><br>
+                  Välj en pågående signatur i listan.</div>
+                <hr/>
+                <table class="table table-striped">
+                  <thead>
+                  <th>Signerande läkare</th>
+                  <th>Order ref.</th>
+                  <th>Status</th>
+                  <th>Åtgärd</th>
+                  </thead>
+                  <tbody>
+                  <tr ng-repeat="d in ongoingSignatures">
+                    <td>{{ d.personalNumber}}</td>
+                    <td>{{ d.orderRef}}</td>
+                    <td>{{ d.status }}</td>
+                    <td>
+                      <button class="btn btn-success" ng-click="setNiasSigneringState(d.orderRef, 'COMPLETE')">Slutför</button>
+                      <button class="btn btn-default" ng-click="setNiasSigneringState(d.orderRef, 'USER_SIGN')">Påbörjad</button>
+                      <button class="btn btn-error" ng-click="setNiasSigneringState(d.orderRef, 'USER_CANCEL')">Avbryt</button>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+
+              </div>
+
             </div>
 
 
@@ -163,15 +197,7 @@
             </p>
           </div>
 
-          <div ng-if="isNias">
-            <p class="well">
-              Fejksignering med NetiD Access Server startad. Välj slutför eller avbryt nedan.
-              <button class="btn btn-success" ng-click="bekraftaSigneringNias()">Slutför</button>
-              <button class="btn btn-error" ng-click="signeraAvbrytNias()">Avbryt</button>
-              <span>Status: {{ statusMessage }}</span>
-              <span>NIAS status: {{ niasStatusMessage }}</span>
-            </p>
-          </div>
+
 
         </div>
       </div>

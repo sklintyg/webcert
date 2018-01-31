@@ -68,7 +68,13 @@ angular.module('rhsIndexApp')
         $scope.isBankID = false;
         $scope.isNias = false;
 
+        $scope.ongoingSignatures = [];
+
         $scope.pollHandle = null;
+        $scope.grpPollHandle = null;
+        $scope.niasPollHandle = null;
+
+        $scope.signingStarted = false;
 
         function cleanup() {
             clearInterval($scope.pollHandle);
@@ -79,30 +85,36 @@ angular.module('rhsIndexApp')
             $scope.isNias = false;
             $scope.ticketId = null;
             $scope.pollHandle = null;
-            $scope.q.intygsId = null;
+            $scope.grpPollHandle = null;
+            $scope.niasPollHandle = null;
+            $scope.q = {};
+            $scope.signingStarted = false;
         }
 
         // - START NetiD Access Server sign (nias)
 
-        $scope.bekraftaSigneringNias = function() {
+        $scope.setNiasSigneringState = function(orderRef, state) {
             // Här måste vi använda ett testbarhets-API för att låtsas vara klara med NIAS-signeringen.
-            if (!isDefined($scope.ticketId)) {
+            if (!isDefined(orderRef)) {
                 alert('Wait until there is an orderRef!');
                 return;
             }
-            $http.put('/services/nias-api/status/' + $scope.ticketId, 'COMPLETE', null).then(
+            $http.put('/services/nias-api/status/' + orderRef, state, {headers: {
+                'Content-Type': 'text/plain'
+            }}).then(
                 function(response) {
                     // Success
-                    console.log("NIAS Signing successful: " + JSON.stringify(response));
-                    cleanup();
+                    console.log("NIAS state set successful: " + JSON.stringify(response));
+
                 },
                 function(response) {
                     // Failure
-                    console.log("NIAS Signing NOT successful: " + JSON.stringify(response));
+                    console.log("NIAS state set NOT successful: " + JSON.stringify(response));
                     cleanup();
                 }
             )
         };
+
 
         $scope.startNiasSign = function() {
 
@@ -123,6 +135,7 @@ angular.module('rhsIndexApp')
                 function(response) {
                     console.log('PersonID setting on User returned ' + response.data);
                     // success callback
+                    $scope.signingStarted = true;
 
                     // Then issue NIAS sign to server and start polling backend.
                     $http.post('/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.utkast.intygsId + '/' +
@@ -145,28 +158,30 @@ angular.module('rhsIndexApp')
                                         .then(function successCallback(response) {
                                             console.log(JSON.stringify(response.data));
                                             $scope.statusMessage = response.data.status;
+                                            if (response.data.status === 'SIGNERAD') {
+                                                alert('Signering slutförd!');
+                                                cleanup();
+                                            }
                                         }, function errorCallback(response) {
                                             console.log('Error during poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
                                             clearInterval($scope.pollHandle);
                                         });
                                 }, 3000);
 
-                                // $scope.niasPollHandle = setInterval(function() {
-                                //     $http({
-                                //         method: 'GET',
-                                //         url: '/services/nias-api/status/' + $scope.ticketId
-                                //     })
-                                //         .then(function successCallback(response) {
-                                //             console.log(JSON.stringify(response.data));
-                                //             $scope.niasStatusMessage = response.data;
-                                //         }, function errorCallback(response) {
-                                //             console.log('Error during NIAS poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
-                                //             clearInterval($scope.niasPollHandle);
-                                //         });
-                                // }, 3000);
-
                                 // Load all ongoing signatures, filter out those for other personnummer
-
+                                $scope.niasPollHandle = setInterval(function() {
+                                    $http({
+                                        method: 'GET',
+                                        url: '/services/nias-api/statuses/'
+                                    })
+                                        .then(function successCallback(response) {
+                                            // Populate table
+                                            $scope.ongoingSignatures = response.data;
+                                        }, function errorCallback(response) {
+                                            console.log('Error during NIAS load of ongoing signatures. Msg: ' +
+                                                JSON.stringify(response.data));
+                                        });
+                                }, 3000);
 
                             },
                             function(response) {
@@ -210,7 +225,7 @@ angular.module('rhsIndexApp')
                 },
                 function(response) {
                     // Failure
-
+                    cleanup();
                 }
             )
         };

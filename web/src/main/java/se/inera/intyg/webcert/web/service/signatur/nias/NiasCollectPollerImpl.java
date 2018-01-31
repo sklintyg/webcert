@@ -115,6 +115,13 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                                 + "has the user started their NetID Access application?",
                                 resp.getProgressStatus());
                         break;
+                    case "USER_CANCEL":
+                    case "EXPIRED_TRANSACTION":
+                    case "CANCELLED":
+                    case "ALREADY_COLLECTED":
+                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.OKAND);
+                        LOG.error("NIAS signing {} aborted due to progress state {}", transactionId, resp.getProgressStatus());
+                        return;
                     }
 
                 } catch (Exception ex) {
