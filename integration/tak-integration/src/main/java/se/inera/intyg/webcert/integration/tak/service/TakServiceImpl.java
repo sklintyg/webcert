@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.integration.tak.model.TakResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -146,8 +147,11 @@ public class TakServiceImpl implements TakService {
     }
 
     private boolean isTakConfiguredCorrectly(String intygsTyp, IntygUser user, List<String> errors, String hsaId, SchemaVersion version) {
-        boolean res = checkConfiguration(intygsTyp, user, errors, hsaId, version);
-        if (!res && authoritiesValidator.given(user).features(WebcertFeature.TAK_KONTROLL_TRADKLATTRING).isVerified()) {
+        List<String> hsaIds = new ArrayList<>();
+        hsaIds.add(hsaId);
+
+        if (authoritiesValidator.given(user).features(WebcertFeature.TAK_KONTROLL_TRADKLATTRING).isVerified()) {
+            // Vardenhet (the unit over mottagning - if existing)
             String careUnitId;
             try {
                 careUnitId = hsaOrganizationsService.getParentUnit(hsaId);
@@ -155,22 +159,29 @@ public class TakServiceImpl implements TakService {
                 LOG.warn("Could not reach HSA to get HealthCareUnitId client will need to try again.");
                 return false;
             }
-            if (!careUnitId.equals(hsaId)) {
-                res = checkConfiguration(intygsTyp, user, errors, careUnitId, version);
+            if (!Objects.equals(hsaId, careUnitId)) {
+                hsaIds.add(careUnitId);
             }
+
+            // Caregiver
+            String careGiverId = hsaOrganizationsService.getVardgivareOfVardenhet(hsaId);
+            if (careGiverId != null) {
+                hsaIds.add(careGiverId);
+            }
+
         }
-        return res;
+        return checkConfiguration(intygsTyp, user, errors, hsaIds, version);
     }
 
-    private boolean checkConfiguration(String intygsTyp, IntygUser user, List<String> errors, String hsaId, SchemaVersion version) {
+    private boolean checkConfiguration(String intygsTyp, IntygUser user, List<String> errors, List<String> hsaIds, SchemaVersion version) {
         LOG.debug("Checking configuration for {}", intygsTyp);
-        if (!isValid(consumer.doLookup(ntjpId, hsaId, resolveContract(version)))) {
+        if (hsaIds.stream().noneMatch(hsaId -> isValid(consumer.doLookup(ntjpId, hsaId, resolveContract(version))))) {
             switch (version) {
             case VERSION_1:
-                errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V1_NS, hsaId));
+                errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V1_NS, hsaIds.get(0)));
                 break;
             case VERSION_3:
-                errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V3_NS, hsaId));
+                errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V3_NS, hsaIds.get(0)));
                 break;
             }
             return false;
@@ -180,18 +191,18 @@ public class TakServiceImpl implements TakService {
         if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).isVerified()) {
             if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp)) {
                 // yes? -> fk7263
-                if (!isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateAnswerId))) {
-                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_ANSWER_NS, hsaId));
+                if (hsaIds.stream().noneMatch(hsaId -> isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateAnswerId)))) {
+                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_ANSWER_NS, hsaIds.get(0)));
                     return false;
                 }
-                if (!isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateQuestionId))) {
-                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsaId));
+                if (hsaIds.stream().noneMatch(hsaId -> isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateQuestionId)))) {
+                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsaIds.get(0)));
                     return false;
                 }
             } else {
                 // yes? -> other
-                if (!isValid(consumer.doLookup(ntjpId, hsaId, sendMessageToCareId))) {
-                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, SEND_MESSAGE_TO_CARE_NS, hsaId));
+                if (hsaIds.stream().noneMatch(hsaId -> isValid(consumer.doLookup(ntjpId, hsaId, sendMessageToCareId)))) {
+                    errors.add(String.format(ERROR_STRING_ARENDEHANTERING, SEND_MESSAGE_TO_CARE_NS, hsaIds.get(0)));
                     return false;
                 }
             }
@@ -200,7 +211,7 @@ public class TakServiceImpl implements TakService {
     }
 
     private boolean isValid(TakLogicalAddress[] takLogicalAddresses) {
-        return takLogicalAddresses.length > 0;
+        return takLogicalAddresses != null && takLogicalAddresses.length > 0;
     }
 
     private String resolveContract(SchemaVersion version) {
