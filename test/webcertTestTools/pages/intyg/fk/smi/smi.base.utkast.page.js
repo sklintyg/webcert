@@ -361,7 +361,17 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             }
             return Promise.all(promiseArr);
         }
-
+    },
+    angeTillaggsfragorUE: function(svarArr) {
+        if (!svarArr) {
+            return Promise.resolve();
+        } else {
+            var promiseArr = [];
+            for (var i = 0; i < svarArr.length; i++) {
+                promiseArr.push(this.getTillaggsfragaUE(i).sendKeys(svarArr[i].svar));
+            }
+            return Promise.all(promiseArr);
+        }
     },
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
@@ -379,6 +389,9 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     },
     getTillaggsfraga: function(i) {
         return element(by.id('tillaggsfragor[' + i + '].svar'));
+    },
+    getTillaggsfragaUE: function(i) {
+        return element(by.id('tillaggsfragor-' + i + '--svar'));
     },
     getTillaggsfragaText: function(i) {
         return element(by.css('#form_tillaggsfragor_' + i + ' label')).getText();

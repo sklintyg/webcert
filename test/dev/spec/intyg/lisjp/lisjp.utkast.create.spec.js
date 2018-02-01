@@ -152,7 +152,7 @@ describe('Create and Sign lisjp utkast', function() {
                 UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
             });
             it('angeTillaggsfragor', function() {
-                UtkastPage.angeTillaggsfragor(data.tillaggsfragor)
+                UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor)
             });
             it('angeSmittskydd', function() {
                 UtkastPage.angeSmittskydd(true);
