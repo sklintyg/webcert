@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.integration.tak.consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
@@ -26,6 +28,8 @@ import se.inera.intyg.webcert.integration.tak.model.ServiceContract;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 
 public class TakConsumerImpl implements TakConsumer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TakConsumerImpl.class);
 
     private static final String LOGICAL_ADDRESS_URL = "%s/logicalAddresss?logicalAdress=%s&connectionPointId=%s&serviceContractId=%s";
     private static final String CONNECTION_POINT_URL = "%s/connectionPoints?platform=%s&environment=%s";
@@ -45,8 +49,12 @@ public class TakConsumerImpl implements TakConsumer {
 
     @Override
     public TakLogicalAddress[] doLookup(String ntjpId, String careUnitId, String contract) {
-        return customRestTemplate.getForEntity(String.format(LOGICAL_ADDRESS_URL,
+
+        LOG.debug("Checking TAK for careunit {} and contract {}", careUnitId, contract);
+        TakLogicalAddress[] res = customRestTemplate.getForEntity(String.format(LOGICAL_ADDRESS_URL,
                 baseUrl, careUnitId, ntjpId, contract), TakLogicalAddress[].class).getBody();
+        LOG.debug("TAK for careunit {} and contract {} returned {} results", careUnitId, contract, res != null ? res.length : 0);
+        return res;
     }
 
     @Override
