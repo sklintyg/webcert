@@ -80,6 +80,7 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
    Givet att jag är inloggad som uthoppsläkare
    ###########################################################################
    
+   Och jag går in på intyget
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor

@@ -20,22 +20,14 @@
 /* globals intyg, browser, logger, protractor, wcTestTools, Promise */
 'use strict';
 var db = require('./dbActions');
-var request = require('request');
 var loginHelperStatistik = require('./inloggning/login.helpers.statistik.js');
 var logInAsUserRoleStatistik = loginHelperStatistik.logInAsUserRoleStatistik;
 var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var diagnosKategorier = wcTestTools.testdata.diagnosKategorier;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
+var statistikAPI = require('./statistiktjansten/api/statistikAPI.js');
 
-var restAPIOptions = {
-    url: process.env.STATISTIKTJANST_URL + '/api/testsupport/processIntyg',
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': Buffer.byteLength('')
-    },
-    body: ''
-};
+
 
 global.statistik = {
     diagnosKod: false,
@@ -196,6 +188,20 @@ module.exports = function() {
     });
 
 
+
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmne$/, function(beskrivning, apicall) {
+        return statistikAPI.getMeddelandenPerAmne('TSTNMT2321000156-107M');
+    });
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneLandsting$/, function(beskrivning, apicall) {
+        return statistikAPI.getMeddelandenPerAmneLandsting();
+    });
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetLandsting$/, function(beskrivning, apicall) {
+        return statistikAPI.getMeddelandenPerAmneOchEnhetLandsting();
+    });
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet$/, function(beskrivning, apicall) {
+        return statistikAPI.getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet();
+    });
+
     this.Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntyg, modifer) {
         diagnosKod = slumpaDiagnosKod(diagnosKod);
 
@@ -292,26 +298,7 @@ module.exports = function() {
     });
 
     this.Given(/^jag anropar statitisk-APIet processIntyg$/, function() {
-        return browser.sleep(10000).then(function() {
-            var defer = protractor.promise.defer();
-
-            request(restAPIOptions, function(error, message) {
-                if (error || message.statusCode >= 400) {
-                    logger.info('Request error:', error);
-                    if (message) {
-                        logger.error('Error message: ' + message.statusCode, message.statusMessage /*, body*/ );
-                    }
-                    defer.reject({
-                        error: error,
-                        message: message
-                    });
-                } else {
-                    logger.info('Request success!', message.statusCode, message.statusMessage);
-                    defer.fulfill(message);
-                }
-            });
-            return defer.promise;
-        });
+        return statistikAPI.processIntyg();
     });
 
 };
