@@ -27,9 +27,9 @@ var pageHelpers = require('../../pageHelper.util.js');
 var BaseUtkast = require('../base.utkast.page.js');
 
 var bedomning = {
-    form: element(by.id('bedomningForm')),
-    yes: element(by.id('bedomningy')),
-    no: element(by.id('bedomningn'))
+    form: element(by.id('form_bedomning')),
+    yes: element(by.id('bedomning-lamplighetInnehaBehorighetYes')),
+    no: element(by.id('bedomning-lamplighetInnehaBehorighetNo'))
 };
 
 var BaseTsUtkast = BaseUtkast._extend({
@@ -38,14 +38,14 @@ var BaseTsUtkast = BaseUtkast._extend({
 
         this.intygType = null; // overridden by children
 
-        this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
+        this.korkortsTyperChecks = element(by.id('form_intygAvser-korkortstyp')).all(by.css('label.big-checkbox-label'));
 
-        this.identitetForm = element(by.id('identitetForm'));
-        this.specialist = element(by.id('specialist'));
+        this.identitetForm = element(by.id('form_vardkontakt-idkontroll'));
+        this.specialist = element(by.id('bedomning-lakareSpecialKompetens'));
 
         this.bedomning = bedomning;
 
-        this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.checkbox'));
+        this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.big-checkbox-label'));
 
         this.kommentar = element(by.id('kommentar'));
         this.adress = {
@@ -67,7 +67,7 @@ var BaseTsUtkast = BaseUtkast._extend({
         return pageHelpers.clickAll(this.korkortsTyperChecks, typer);
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
-        return this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
+        return this.identitetForm.element(by.cssContainingText('label.big-radio-label', idtyp)).sendKeys(protractor.Key.SPACE);
     },
     fillInBedomningLamplighet: function(lamplighet) {
         if (lamplighet) {

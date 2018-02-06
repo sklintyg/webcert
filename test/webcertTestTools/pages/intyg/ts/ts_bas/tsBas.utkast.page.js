@@ -33,27 +33,27 @@ var TsBasUtkast = BaseTsUtkast._extend({
         this.intygType = 'ts-bas';
         this.at = element(by.id('edit-ts-bas'));
         this.syn = {
-            aYes: element(by.id('synay')),
-            aNo: element(by.id('synan')),
-            bYes: element(by.id('synby')),
-            bNo: element(by.id('synbn')),
-            cYes: element(by.id('syncy')),
-            cNo: element(by.id('syncn')),
-            dYes: element(by.id('syndy')),
-            dNo: element(by.id('syndn')),
-            eYes: element(by.id('syney')),
-            eNo: element(by.id('synen')),
+            aYes: element(by.id('syn-synfaltsdefekterYes')),
+            aNo: element(by.id('syn-synfaltsdefekterNo')),
+            bYes: element(by.id('syn-nattblindhetYes')),
+            bNo: element(by.id('syn-nattblindhetNo')),
+            cYes: element(by.id('syn-progressivOgonsjukdomYes')),
+            cNo: element(by.id('syn-progressivOgonsjukdomNo')),
+            dYes: element(by.id('syn-diplopiYes')),
+            dNo: element(by.id('syn-diplopiNo')),
+            eYes: element(by.id('syn-nystagmusYes')),
+            eNo: element(by.id('syn-nystagmusNo')),
             hoger: {
-                utan: element(by.id('synHogerOgaUtanKorrektion')),
-                med: element(by.id('synHogerOgaMedKorrektion'))
+                utan: element(by.id('syn-hogerOga-utanKorrektion')),
+                med: element(by.id('syn-hogerOga-medKorrektion'))
             },
             vanster: {
-                utan: element(by.id('synVansterOgaUtanKorrektion')),
-                med: element(by.id('synVansterOgaMedKorrektion'))
+                utan: element(by.id('syn-vansterOga-utanKorrektion')),
+                med: element(by.id('syn-vansterOga-medKorrektion'))
             },
             binokulart: {
-                utan: element(by.id('synBinokulartUtanKorrektion')),
-                med: element(by.id('synBinokulartMedKorrektion'))
+                utan: element(by.id('syn-binokulart-utanKorrektion')),
+                med: element(by.id('syn-binokulart-medKorrektion'))
             },
             // utanKorrektion: {
             //     hoger: element(by.id('synHogerOgaUtanKorrektion')),
@@ -66,62 +66,62 @@ var TsBasUtkast = BaseTsUtkast._extend({
             //     binokulart: element(by.id('synBinokulartMedKorrektion'))
             // },
             kontaktlins: {
-                hoger: element(by.id('synHogerOgaKontaktlins')),
-                vanster: element(by.id('synVasterOgaKontaktlins'))
+                hoger: element(by.id('syn-hogerOga-kontaktlins')),
+                vanster: element(by.id('syn-vansterOga-kontaktlins'))
             }
         };
 
         this.horselBalans = {
-            aYes: element(by.id('horselbalansay')),
-            aNo: element(by.id('horselbalansan')),
-            bYes: element(by.id('horselbalansby')),
-            bNo: element(by.id('horselbalansbn'))
+            aYes: element(by.id('horselBalans-balansrubbningarYes')),
+            aNo: element(by.id('horselBalans-balansrubbningarNo')),
+            bYes: element(by.id('horselBalans-svartUppfattaSamtal4MeterYes')),
+            bNo: element(by.id('horselBalans-svartUppfattaSamtal4MeterNo'))
         };
         this.funktionsnedsattning = {
-            aYes: element(by.id('funktionsnedsattningay')),
-            aNo: element(by.id('funktionsnedsattningan')),
-            aText: element(by.id('funktionsnedsattning')),
-            bYes: element(by.id('funktionsnedsattningby')),
-            bNo: element(by.id('funktionsnedsattningbn'))
+            aYes: element(by.id('funktionsnedsattning-funktionsnedsattningYes')),
+            aNo: element(by.id('funktionsnedsattning-funktionsnedsattningNo')),
+            aText: element(by.id('funktionsnedsattning-beskrivning')),
+            bYes: element(by.id('funktionsnedsattning-otillrackligRorelseformagaYes')),
+            bNo: element(by.id('funktionsnedsattning-otillrackligRorelseformagaNo'))
         };
         this.hjartKarl = {
-            aYes: element(by.id('hjartkarlay')),
-            aNo: element(by.id('hjartkarlan')),
-            bYes: element(by.id('hjartkarlby')),
-            bNo: element(by.id('hjartkarlbn')),
-            cYes: element(by.id('hjartkarlcy')),
-            cNo: element(by.id('hjartkarlcn')),
-            cText: element(by.id('beskrivningRiskfaktorer'))
+            aYes: element(by.id('hjartKarl-hjartKarlSjukdomYes')),
+            aNo: element(by.id('hjartKarl-hjartKarlSjukdomNo')),
+            bYes: element(by.id('hjartKarl-hjarnskadaEfterTraumaYes')),
+            bNo: element(by.id('hjartKarl-hjarnskadaEfterTraumaNo')),
+            cYes: element(by.id('hjartKarl-riskfaktorerStrokeYes')),
+            cNo: element(by.id('hjartKarl-riskfaktorerStrokeNo')),
+            cText: element(by.id('hjartKarl-beskrivningRiskfaktorer'))
         };
         this.diabetes = {
-            aYes: element(by.id('diabetesay')),
-            aNo: element(by.id('diabetesan')),
-            typ1: element(by.id('diabetestyp1')),
-            typ2: element(by.id('diabetestyp2')),
-            endastkost: element(by.id('diabetestreat1')),
-            tabletter: element(by.id('diabetestreat2')),
-            insulin: element(by.id('diabetestreat3'))
+            aYes: element(by.id('diabetes-harDiabetesYes')),
+            aNo: element(by.id('diabetes-harDiabetesNo')),
+            typ1: element(by.id('diabetes.diabetesTyp-DIABETES_TYP_1')),
+            typ2: element(by.id('diabetes.diabetesTyp-DIABETES_TYP_2')),
+            endastkost: element(by.id('diabetes-kost')),
+            tabletter: element(by.id('diabetes-tabletter')),
+            insulin: element(by.id('diabetes-insulin'))
         };
         this.neurologiska = {
-            aYes: element(by.id('neurologiay')),
-            aNo: element(by.id('neurologian'))
+            aYes: element(by.id('neurologi-neurologiskSjukdomYes')),
+            aNo: element(by.id('neurologi-neurologiskSjukdomNo'))
         };
         this.epilepsi = {
-            aYes: element(by.id('medvetandestorningay')),
-            aText: element(by.id('beskrivningMedvetandestorning')),
-            aNo: element(by.id('medvetandestorningan'))
+            aYes: element(by.id('medvetandestorning-medvetandestorningYes')),
+            aText: element(by.id('medvetandestorning-beskrivning')),
+            aNo: element(by.id('medvetandestorning-medvetandestorningNo'))
         };
         this.njursjukdom = {
-            aYes: element(by.id('njuraray')),
-            aNo: element(by.id('njuraran'))
+            aYes: element(by.id('njurar-nedsattNjurfunktionYes')),
+            aNo: element(by.id('njurar-nedsattNjurfunktionNo'))
         };
         this.kognitivt = {
-            aYes: element(by.id('kognitivtay')),
-            aNo: element(by.id('kognitivtan'))
+            aYes: element(by.id('kognitivt-sviktandeKognitivFunktionYes')),
+            aNo: element(by.id('kognitivt-sviktandeKognitivFunktionNo'))
         };
         this.somnOchVakenhetsStorningar = {
-            JA: element(by.css('input[name="somnvakenheta"][value="true"]')),
-            NEJ: element(by.css('input[name="somnvakenheta"][value="false"]'))
+            JA: element(by.id('somnVakenhet-teckenSomnstorningarYes')),
+            NEJ: element(by.id('somnVakenhet-teckenSomnstorningarNo'))
         };
         this.patientAdress = {
             postAdress: element(by.id('patientPostadress')),
@@ -286,6 +286,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
         }
     },
     fillInEpilepsi: function(utkast) {
+console.log(utkast.epilepsi);
         var promiseArr = [];
         if (utkast.epilepsi === 'Ja') {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.epilepsi.aYes, protractor.Key.SPACE));
@@ -293,6 +294,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
         } else {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.epilepsi.aNo, protractor.Key.SPACE));
         }
+console.log(promiseArr);
         return Promise.all(promiseArr);
     },
     fillInNjursjukdomar: function(utkast) {
@@ -319,14 +321,14 @@ var TsBasUtkast = BaseTsUtkast._extend({
     fillInAlkoholNarkotikaLakemedel: function(utkast) {
         var promiseArr = [];
 
-        promiseArr.push(element.all(by.css('[name="narkotikalakemedela"]')).then(function(elm) {
+        promiseArr.push(element.all(by.css('[name="narkotikaLakemedel.teckenMissbruk"]')).then(function(elm) {
             if (utkast.alkoholMissbruk === 'Ja') {
                 return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
                 return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         }));
-        promiseArr.push(element.all(by.css('[name="narkotikalakemedelb"]')).then(function(elm) {
+        promiseArr.push(element.all(by.css('[name="narkotikaLakemedel.foremalForVardinsats"]')).then(function(elm) {
             if (utkast.alkoholVard === 'Ja') {
                 return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
@@ -334,18 +336,18 @@ var TsBasUtkast = BaseTsUtkast._extend({
             }
         }));
 
-        promiseArr.push(element.all(by.css('[name="narkotikalakemedelc"]')).then(function(elm) {
+        promiseArr.push(element.all(by.css('[name="narkotikaLakemedel.lakarordineratLakemedelsbruk"]')).then(function(elm) {
             if (utkast.alkoholLakemedel === 'Ja') {
                 return Promise.all([
                     pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE),
-                    pageHelpers.moveAndSendKeys(element(by.id('beskrivningNarkotikalakemedel')), utkast.alkoholLakemedelBeskrivning)
+                    pageHelpers.moveAndSendKeys(element(by.id('narkotikaLakemedel-lakemedelOchDos')), utkast.alkoholLakemedelBeskrivning)
                 ]);
             } else {
                 return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }
         }));
 
-        promiseArr.push(element.all(by.css('[name="narkotikalakemedelb2"]')).then(function(elm) {
+        promiseArr.push(element.all(by.css('[name="narkotikaLakemedel.provtagningBehovs"]')).then(function(elm) {
             if (utkast.alkoholMissbruk === 'Ja' || utkast.alkoholVard === 'Ja') {
                 if (utkast.alkoholProvtagning === 'Ja') {
                     return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
@@ -359,7 +361,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
     },
     fillInPsykiska: function(utkast) {
-        return element.all(by.css('[name="psykiskta"]')).then(function(elm) {
+        return element.all(by.css('[name="psykiskt.psykiskSjukdom"]')).then(function(elm) {
             if (utkast.psykiskSjukdom === 'Ja') {
                 return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
@@ -370,7 +372,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
     fillInAdhd: function(utkast) {
         var promiseArr = [];
 
-        var a = element.all(by.css('[name="utvecklingsstorninga"]')).then(function(elm) {
+        var a = element.all(by.css('[name="utvecklingsstorning.psykiskUtvecklingsstorning"]')).then(function(elm) {
             if (utkast.adhdPsykisk === 'Ja') {
                 return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
@@ -380,7 +382,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
         promiseArr.push(a);
 
-        var b = element.all(by.css('[name="utvecklingsstorningb"]')).then(function(elm) {
+        var b = element.all(by.css('[name="utvecklingsstorning.harSyndrom"]')).then(function(elm) {
             if (utkast.adhdSyndrom === 'Ja') {
                 return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE);
             } else {
@@ -393,18 +395,18 @@ var TsBasUtkast = BaseTsUtkast._extend({
         return Promise.all(promiseArr);
     },
     fillInSjukhusvard: function(utkast) {
-        return element.all(by.css('[name="sjukhusvarda"]')).then(function(elm) {
+        return element.all(by.css('[name="sjukhusvard.sjukhusEllerLakarkontakt"]')).then(function(elm) {
             if (utkast.sjukhusvard === 'Ja') {
                 
 				return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE)
 				.then(function(){
-					return pageHelpers.moveAndSendKeys(element(by.id('tidpunkt')), utkast.sjukhusvardTidPunkt);
+					return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-tidpunkt')), utkast.sjukhusvardTidPunkt);
 				})
 				.then(function(){
-					return pageHelpers.moveAndSendKeys(element(by.id('vardinrattning')), utkast.sjukhusvardInrattning);
+					return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-vardinrattning')), utkast.sjukhusvardInrattning);
 				})
 				.then(function(){
-					return pageHelpers.moveAndSendKeys(element(by.id('anledning')), utkast.sjukhusvardAnledning);
+					return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-anledning')), utkast.sjukhusvardAnledning);
 				});
             } else {
                 return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
@@ -412,11 +414,11 @@ var TsBasUtkast = BaseTsUtkast._extend({
         });
     },
     fillInOvrigMedicinering: function(utkast) {
-        return element.all(by.css('[name="medicineringa"]')).then(function(elm) {
+        return element.all(by.css('[name="medicinering.stadigvarandeMedicinering"]')).then(function(elm) {
             if (utkast.ovrigMedicin === 'Ja') {
                 return Promise.all([
                     pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE),
-                    pageHelpers.moveAndSendKeys(element(by.id('beskrivningMedicinering')), utkast.ovrigMedicinBeskrivning)
+                    pageHelpers.moveAndSendKeys(element(by.id('medicinering-beskrivning')), utkast.ovrigMedicinBeskrivning)
                 ]);
             } else {
                 return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
