@@ -185,7 +185,9 @@
 
 .popover {
   z-index: 2000;
-  max-width: 450px;
+  max-width: 190px;
+  border-radius: 1px;
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.24);
 }
 
 /* ---------------------------------------
@@ -374,6 +376,15 @@ table .table-4ths th {
  * Popover overrides
  * --------------------------------------- */
 .popover-content {
+  color: $wc-color-00;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
   white-space: pre-wrap;
 }
 
