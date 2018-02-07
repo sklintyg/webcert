@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -17,30 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.index-vy {
-  max-width: 1280px;
+.wc-footer {
+  margin-top:90px;
+  display: block;
+  height: 170px;
+  background-color: #E9EAED;
+  .footer-content {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
 
-  @extend %wc-typo-07;
-  color: $wc-color-07;
-
-  h1 {
-    @extend %wc-typo-02;
-    color: $wc-color-07;
-  }
-
-  h2 {
-    @extend %wc-typo-05;
-    color: $wc-color-08;
-  }
-
-  .webcert-logo {
-    @media (min-width: 1200px) {
-      display: flex;
-      justify-content: flex-end;
+    div {
+      float: left;
+      margin: 30px 130px 30px 0;
+      &.clear-left {
+        clear: left;
+        margin-top: 0;
+      }
+      span, a.internal{
+        .material-icons {
+          font-size: 16px;
+        }
+        display: block;
+        &.nobreak {
+          display:inline-block;
+        }
+      }
     }
-
-    img {
-      margin-top: 20px;
-    }
   }
+  box-shadow: inset 1px 4px 9px -6px #000000;
 }

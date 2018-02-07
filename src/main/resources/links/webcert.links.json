@@ -56,7 +56,7 @@
   {
     "key": "ineraStartsida",
     "url": "http://www.inera.se",
-    "text": "Inera AB",
+    "text": "www.inera.se",
     "target": "_blank"
   },
   {
@@ -69,6 +69,12 @@
     "key": "ineraKundserviceAnmalFel",
     "url": "http://www.inera.se/felanmalan",
     "text": "Ineras kundservice",
+    "target": "_blank"
+  },
+  {
+    "key": "ineraHjalpOchSupport",
+    "url": "https://www.inera.se/kundservice/kontakta-oss/",
+    "text": "Hjälp och support",
     "target": "_blank"
   },
   {
@@ -90,5 +96,12 @@
     "text": "Socialstyrelsens försäkringsmedicinska beslutsstöd <img src='/img/link_icon.png'/>",
     "target": "_blank",
     "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos"
+  },
+  {
+    "key": "ineraNationellaKundservice",
+    "url": "https://www.inera.se/kundservice/formular/felanmalan-och-support/formular-for-felanmalan-och-support/",
+    "text": "Ineras nationella kundservice",
+    "target": "_blank",
+    "tooltip": "Öppnar Ineras nationella kundservice"
   }
 ]

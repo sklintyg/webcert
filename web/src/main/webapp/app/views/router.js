@@ -63,7 +63,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         state('webcert.index', {
             url: '/',
             views: {
-                'content@': {
+                'landing@': {
                     templateUrl: '/app/views/index/index.html',
                     controller: 'webcert.IndexCtrl'
                 }
