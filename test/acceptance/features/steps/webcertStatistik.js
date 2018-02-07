@@ -65,7 +65,7 @@ module.exports = function() {
 
     this.Given(/^jag går in på Statistiktjänsten$/, function() {
         global.statistik.intygsId = intyg.id;
-        var url = process.env.STATISTIKTJANST_URL + '/#!/fakelogin';
+        var url = process.env.STATISTIKTJANST_URL + '/#/fakelogin';
         return browser.get(url).then(function() {
             logger.info('Går till url: ' + url);
         });
@@ -190,26 +190,32 @@ module.exports = function() {
 
 
 
-    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmne$/, function(beskrivning, apicall) {
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmne$/, function(beskrivning) {
         return statistikAPI.getMeddelandenPerAmne('TSTNMT2321000156-107M').then(function(statistik) {
             global.statistik.tempArr.push(statistik);
         });
     });
-    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneLandsting$/, function(beskrivning, apicall) {
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneLandsting$/, function(beskrivning) {
         return statistikAPI.getMeddelandenPerAmneLandsting().then(function(statistik) {
             global.statistik.tempArr.push(statistik);
         });
     });
-    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetLandsting$/, function(beskrivning, apicall) {
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetLandsting$/, function(beskrivning) {
         return statistikAPI.getMeddelandenPerAmneOchEnhetLandsting().then(function(statistik) {
             global.statistik.tempArr.push(statistik);
         });
     });
-    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet$/, function(beskrivning, apicall) {
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet$/, function(beskrivning) {
         return statistikAPI.getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet().then(function(statistik) {
             global.statistik.tempArr.push(statistik);
         });
     });
+    this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetVerksamhet$/, function(beskrivning) {
+        return statistikAPI.getMeddelandenPerAmneOchEnhetVerksamhet().then(function(statistik) {
+            global.statistik.tempArr.push(statistik);
+        });
+    });
+
 
     this.Then(/^ska "([^"]*)" i "([^"]*)" vara en (extra|mindre)$/, function(modifier) {
 
