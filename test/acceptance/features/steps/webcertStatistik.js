@@ -36,7 +36,8 @@ global.statistik = {
         kvinna: 0,
         man: 0
     },
-    intygsId: ''
+    intygsId: '',
+    tempArr: []
 };
 
 function slumpaDiagnosKod(diagnosKod) {
@@ -190,19 +191,42 @@ module.exports = function() {
 
 
     this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmne$/, function(beskrivning, apicall) {
-        return statistikAPI.getMeddelandenPerAmne('TSTNMT2321000156-107M');
+        return statistikAPI.getMeddelandenPerAmne('TSTNMT2321000156-107M').then(function(statistik) {
+            global.statistik.tempArr.push(statistik);
+        });
     });
     this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneLandsting$/, function(beskrivning, apicall) {
-        return statistikAPI.getMeddelandenPerAmneLandsting();
+        return statistikAPI.getMeddelandenPerAmneLandsting().then(function(statistik) {
+            global.statistik.tempArr.push(statistik);
+        });
     });
     this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetLandsting$/, function(beskrivning, apicall) {
-        return statistikAPI.getMeddelandenPerAmneOchEnhetLandsting();
+        return statistikAPI.getMeddelandenPerAmneOchEnhetLandsting().then(function(statistik) {
+            global.statistik.tempArr.push(statistik);
+        });
     });
     this.Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet$/, function(beskrivning, apicall) {
-        return statistikAPI.getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet();
+        return statistikAPI.getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet().then(function(statistik) {
+            global.statistik.tempArr.push(statistik);
+        });
     });
 
-    this.Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntyg, modifer) {
+    this.Then(/^ska "([^"]*)" i "([^"]*)" vara en (extra|mindre)$/, function(modifier) {
+
+        function forvantatAntal(antal) {
+            if (modifier === 'extra') {
+                return antal + 1;
+            } else if (modifier === 'mindre') {
+                return antal - 1;
+            } else {
+                throw ('test steget förväntar sig extra eller mindre variabel.');
+            }
+        }
+        return expect(global.statistik.tempArr[0]).to.equal(forvantatAntal(global.statistik.tempArr[1]));
+    });
+
+
+    this.Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntyg, modifier) {
         diagnosKod = slumpaDiagnosKod(diagnosKod);
 
 
@@ -219,9 +243,9 @@ module.exports = function() {
         var nuvarandeStatistik = global.statistik.nrOfSjukfall;
 
         function raknaUtForvantatAntal(antal) {
-            if (modifer === 'extra') {
+            if (modifier === 'extra') {
                 return antal + parseInt(nrOfIntyg, 10);
-            } else if (modifer === 'mindre') {
+            } else if (modifier === 'mindre') {
                 return antal - parseInt(nrOfIntyg, 10);
             } else {
                 throw ('test steget förväntar sig extra eller mindre variabel.');
