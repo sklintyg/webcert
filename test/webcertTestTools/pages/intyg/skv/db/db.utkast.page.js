@@ -90,10 +90,10 @@ var DbUtkast = BaseSkvUtkast._extend({
 			nej : element(by.id('polisanmalanNo'))
 		};
 		this.enhetensAdress = {
-            postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
-            postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
-            postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
-            enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
+            postAdress: element(by.id('grundData-skapadAv-vardenhet-postadress')),
+            postNummer: element(by.id('grundData-skapadAv-vardenhet-postnummer')),
+            postOrt: element(by.id('grundData-skapadAv-vardenhet-postort')),
+            enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         };
 		this.skrivDoiKnapp = element(by.id('createFromTemplateBtn'));
 	},	

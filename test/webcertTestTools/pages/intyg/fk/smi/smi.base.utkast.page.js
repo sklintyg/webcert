@@ -184,10 +184,10 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         //enhetsadress lika för alla SMI-intyg
         this.enhetensAdress = {
-            postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
-            postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
-            postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
-            enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
+            postAdress: element(by.id('grundData-skapadAv-vardenhet-postadress')),
+            postNummer: element(by.id('grundData-skapadAv-vardenhet-postnummer')),
+            postOrt: element(by.id('grundData-skapadAv-vardenhet-postort')),
+            enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         };
     },
     angeBaseratPa: function(baseratPa) {
