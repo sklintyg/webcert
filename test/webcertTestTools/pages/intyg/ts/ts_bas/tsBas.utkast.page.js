@@ -286,7 +286,6 @@ var TsBasUtkast = BaseTsUtkast._extend({
         }
     },
     fillInEpilepsi: function(utkast) {
-console.log(utkast.epilepsi);
         var promiseArr = [];
         if (utkast.epilepsi === 'Ja') {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.epilepsi.aYes, protractor.Key.SPACE));
@@ -294,7 +293,6 @@ console.log(utkast.epilepsi);
         } else {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.epilepsi.aNo, protractor.Key.SPACE));
         }
-console.log(promiseArr);
         return Promise.all(promiseArr);
     },
     fillInNjursjukdomar: function(utkast) {
