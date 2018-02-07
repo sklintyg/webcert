@@ -65,8 +65,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -241,6 +243,11 @@ public class UtkastApiControllerTest {
     public void testFilterDraftsForUnitSkipsSekretessIntygForUserWithoutAuthorithy() {
         setupUser("", Fk7263EntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
+        Map<Personnummer, SekretessStatus> sekretessMap = mock(Map.class);
+        when(sekretessMap.get(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
+        when(sekretessMap.get(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
+        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekretessMap);
+
         when(utkastService.filterIntyg(any()))
                 .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));
 
@@ -257,7 +264,9 @@ public class UtkastApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, Fk7263EntryPoint.MODULE_ID,
                 AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        Map<Personnummer, SekretessStatus> sekretessMap = mock(Map.class);
+        when(sekretessMap.get(any())).thenReturn(SekretessStatus.UNDEFINED);
+        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekretessMap);
 
         when(utkastService.filterIntyg(any()))
                 .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));

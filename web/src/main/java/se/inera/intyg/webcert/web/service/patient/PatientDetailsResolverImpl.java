@@ -43,8 +43,11 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * This class is responsible for implementing GE-002, e.g. requirements on how to fetch patient details for a given
@@ -129,6 +132,29 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         } else {
             return SekretessStatus.UNDEFINED;
         }
+    }
+
+    @Override
+    public Map<Personnummer, SekretessStatus> getSekretessStatusForList(List<Personnummer> personnummerList) {
+        Map<Personnummer, SekretessStatus> sekretessStatusMap = new HashMap<>();
+        if (personnummerList == null || personnummerList.size() == 0) {
+            return sekretessStatusMap;
+        }
+
+        // Make sure we don't ask twice for a given personnummer.
+        List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
+
+        Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
+        persons.values().stream().forEach(ps -> {
+            if (ps.getStatus() == PersonSvar.Status.FOUND) {
+                sekretessStatusMap.put(ps.getPerson().getPersonnummer(),
+                        ps.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
+            } else {
+                sekretessStatusMap.put(ps.getPerson().getPersonnummer(), SekretessStatus.UNDEFINED);
+            }
+        });
+
+        return sekretessStatusMap;
     }
 
     @Override
@@ -278,8 +304,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 patient.setAvliden(
                         (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
                                 || (user.getParameters() != null && user.getParameters().isPatientDeceased())
-                                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null)
-                );
+                                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
                 return patient;
             } catch (ModuleNotFoundException | IOException e) {
                 // No usabe DB exist

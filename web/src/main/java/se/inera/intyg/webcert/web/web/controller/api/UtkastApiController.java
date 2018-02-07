@@ -274,13 +274,17 @@ public class UtkastApiController extends AbstractApiController {
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
+        Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(listIntygEntries.stream()
+                .map(lie -> lie.getPatientId())
+                .collect(Collectors.toList()));
+
         final WebCertUser user = getWebCertUserService().getUser();
         listIntygEntries = listIntygEntries.stream()
-                .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user))
+                .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user, sekretessStatusMap))
                 .collect(Collectors.toList());
 
         // INTYG-4086: Mark all remaining ListIntygEntry having a patient with sekretessmarkering
-        listIntygEntries.stream().forEach(this::markSekretessMarkering);
+        listIntygEntries.stream().forEach(lie -> markSekretessMarkering(lie, sekretessStatusMap));
 
         int totalCountOfFilteredIntyg = listIntygEntries.size();
 
@@ -302,11 +306,12 @@ public class UtkastApiController extends AbstractApiController {
         return response;
     }
 
-    private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user) {
-        final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patientId);
+    private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user,
+            Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        final SekretessStatus sekretessStatus = sekretessStatusMap.get(patientId);
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
-            //No matter if user has
+            // No matter if user has
             return false;
         } else {
             return sekretessStatus == SekretessStatus.FALSE || authoritiesValidator.given(user, intygsTyp)
@@ -316,8 +321,8 @@ public class UtkastApiController extends AbstractApiController {
 
     }
 
-    private void markSekretessMarkering(ListIntygEntry lie) {
-        if (patientDetailsResolver.getSekretessStatus(lie.getPatientId()) == SekretessStatus.TRUE) {
+    private void markSekretessMarkering(ListIntygEntry lie, Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        if (sekretessStatusMap.get(lie.getPatientId()) == SekretessStatus.TRUE) {
             lie.setSekretessmarkering(true);
         }
     }

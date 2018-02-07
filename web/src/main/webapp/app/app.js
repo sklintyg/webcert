@@ -106,6 +106,10 @@
 
             // Disable angular debug info.
             $compileProvider.debugInfoEnabled(false);
+
+            // Disable comment and css directives
+            $compileProvider.commentDirectivesEnabled(false);
+            $compileProvider.cssClassDirectivesEnabled(false);
         }]);
 
 /*

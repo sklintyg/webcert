@@ -31,48 +31,50 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         this.intygType = 'ts-diabetes';
         this.at = element(by.id('edit-ts-diabetes'));
 
-        this.identitetForm = element(by.id('identitetForm'));
-
-
         this.allmant = {
-            form: element(by.id('allmantForm')),
-            insulinbehandlingsperiod: element(by.id('insulinBehandlingsperiod')),
-            insulin: element(by.id('diabetestreat3'))
+            diabetesyear: element(by.id('diabetes-observationsperiod')),
+            formDiabetesTyp: element(by.id('form_diabetes-diabetestyp')),
+            behandling: {
+                kost: element(by.id('diabetes-endastKost')),
+                tabletter: element(by.id('diabetes-tabletter')),
+                insulin: element(by.id('diabetes-insulin'))
+            },
+            insulinbehandlingsperiod: element(by.id('diabetes-insulinBehandlingsperiod')),
+            insulin: element(by.id('diabetes-insulin')),
+            annanbehandling: element(by.id('diabetes-annanBehandlingBeskrivning'))
         };
-        this.allmant.diabetesyear = this.allmant.form.element(by.id('diabetesyear'));
-        this.allmant.annanbehandling = this.allmant.form.element(by.id('annanBehandlingBeskrivning'));
 
         this.hypoglykemier = {
             a: {
-                yes: element(by.id('hypoay')),
-                no: element(by.id('hypoan'))
+                yes: element(by.id('hypoglykemier-kunskapOmAtgarderYes')),
+                no: element(by.id('hypoglykemier-kunskapOmAtgarderNo'))
             },
             b: {
-                yes: element(by.id('hypoby')),
-                no: element(by.id('hypobn'))
+                yes: element(by.id('hypoglykemier-teckenNedsattHjarnfunktionYes')),
+                no: element(by.id('hypoglykemier-teckenNedsattHjarnfunktionNo'))
             },
             c: {
-                yes: element(by.id('hypocy')),
-                no: element(by.id('hypocn'))
+                yes: element(by.id('hypoglykemier-saknarFormagaKannaVarningsteckenYes')),
+                no: element(by.id('hypoglykemier-saknarFormagaKannaVarningsteckenNo'))
             },
             d: {
-                yes: element(by.id('hypody')),
-                no: element(by.id('hypodn')),
-                antalEpisoder: element(by.id('allvarligForekomstBeskrivning'))
+                yes: element(by.id('hypoglykemier-allvarligForekomstYes')),
+                no: element(by.id('hypoglykemier-allvarligForekomstNo')),
+                antalEpisoder: element(by.id('hypoglykemier-allvarligForekomstBeskrivning'))
             },
             e: {
-                yes: element(by.id('hypoey')),
-                no: element(by.id('hypoen')),
-                antalEpisoder: element(by.id('allvarligForekomstTrafikBeskrivning'))
+                yes: element(by.id('hypoglykemier-allvarligForekomstTrafikenYes')),
+                no: element(by.id('hypoglykemier-allvarligForekomstTrafikenNo')),
+                antalEpisoder: element(by.id('hypoglykemier-allvarligForekomstTrafikBeskrivning'))
             },
             f: {
-                yes: element(by.id('hypofy')),
-                no: element(by.id('hypofn'))
+                yes: element(by.id('hypoglykemier-egenkontrollBlodsockerYes')),
+                no: element(by.id('hypoglykemier-egenkontrollBlodsockerNo'))
             },
             g: {
-                yes: element(by.id('hypogy')),
-                no: element(by.id('hypogn')),
-                datum: element(by.id('allvarligForekomstVakenTidObservationstid'))
+                yes: element(by.id('hypoglykemier-allvarligForekomstVakenTidYes')),
+                no: element(by.id('hypoglykemier-allvarligForekomstVakenTidNo')),
+                datum: element(by.id('datepicker_hypoglykemier.allvarligForekomstVakenTidObservationstid'))
             }
         };
 
@@ -83,20 +85,20 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
 
         this.syn = {
             a: {
-                yes: element(by.id('synay')),
-                no: element(by.id('synan'))
+                yes: element(by.id('syn-separatOgonlakarintygYes')),
+                no: element(by.id('syn-separatOgonlakarintygNo'))
             },
             hoger: {
-                utan: element(by.id('synHogerOgaUtanKorrektion')),
-                med: element(by.id('synHogerOgaMedKorrektion'))
+                utan: element(by.id('syn-hoger-utanKorrektion')),
+                med: element(by.id('syn-hoger-medKorrektion'))
             },
             vanster: {
-                utan: element(by.id('synVansterOgaUtanKorrektion')),
-                med: element(by.id('synVansterOgaMedKorrektion'))
+                utan: element(by.id('syn-vanster-utanKorrektion')),
+                med: element(by.id('syn-vanster-medKorrektion'))
             },
             binokulart: {
-                utan: element(by.id('synBinokulartUtanKorrektion')),
-                med: element(by.id('synBinokulartMedKorrektion'))
+                utan: element(by.id('syn-binokulart-utanKorrektion')),
+                med: element(by.id('syn-binokulart-medKorrektion'))
             }
 
         };
@@ -128,15 +130,22 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         promisesArr.push(this.allmant.diabetesyear.sendKeys(allmant.year));
         promisesArr.push(this.allmant.annanbehandling.sendKeys(allmant.annanbehandling));
 
-        var form = this.allmant.form;
-
         // Ange diabetestyp
-        promisesArr.push(form.element(by.cssContainingText('label.radio', allmant.typ)).sendKeys(protractor.Key.SPACE));
+        promisesArr.push(this.allmant.formDiabetesTyp.element(by.cssContainingText('label.big-radio-label', allmant.typ)).sendKeys(protractor.Key.SPACE));
 
         // Ange behandlingstyp
         var typer = allmant.behandling.typer;
+        var behandlingForm = this.allmant.behandling;
         typer.forEach(function(typ) {
-            promisesArr.push(form.element(by.cssContainingText('label.checkbox', typ)).sendKeys(protractor.Key.SPACE));
+            if (typ === 'Endast kost') {
+                promisesArr.push(behandlingForm.kost.sendKeys(protractor.Key.SPACE));
+            }
+            else if (typ === 'Tabletter') {
+                promisesArr.push(behandlingForm.tabletter.sendKeys(protractor.Key.SPACE));
+            }
+            else if (typ === 'Insulin') {
+                promisesArr.push(behandlingForm.insulin.sendKeys(protractor.Key.SPACE));
+            }
         });
 
         if (allmant.behandling.insulinYear) {
