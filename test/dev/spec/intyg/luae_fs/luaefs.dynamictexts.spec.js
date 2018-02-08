@@ -28,7 +28,7 @@ var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 var restUtil = wcTestTools.restUtil;
 
-describe('Create luae_fs utkast and check dynamic texts', function() {
+xdescribe('Create luae_fs utkast and check dynamic texts', function() {
 
     var utkast = null;
     var intyg = null;
