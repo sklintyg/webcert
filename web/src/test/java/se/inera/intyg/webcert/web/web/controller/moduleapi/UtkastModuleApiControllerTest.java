@@ -265,7 +265,7 @@ public class UtkastModuleApiControllerTest {
         byte[] payload = draftAsJson.getBytes();
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         DraftValidation draftValidation = buildDraftValidation();
-        draftValidation.addWarning(new DraftValidationMessage("field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
+        draftValidation.addWarning(new DraftValidationMessage("category","field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
 
         when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(draftValidation);
 
