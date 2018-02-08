@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,6 +152,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
         draftHolder.setAvliden(resolvedPatient.isAvliden());
 
+        // Businesss logic below should not be here inside a controller.. Should preferably be moved in the future.
         try {
             try {
                 Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
@@ -164,14 +166,42 @@ public class UtkastModuleApiController extends AbstractApiController {
 
             // Update the internal model with the resolved patient if applicable. This means the draft may be updated
             // with new patient info on the next auto-save!
-            String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
-            utkast.setModel(updatedModel);
+            if (completeAddressProvided(resolvedPatient)) {
+                Patient oldPatientData = null;
+                try {
+                    oldPatientData = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel())
+                            .getGrundData()
+                            .getPatient();
+                } catch (IOException e) {
+                    LOG.error("Error while using the module api to convert json to Utlatande for intygsId {}", intygsId);
+                }
+                copyOldAddressToNewPatientData(oldPatientData, resolvedPatient);
+                String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
+                utkast.setModel(updatedModel);
+            }
             draftHolder.setContent(utkast.getModel());
 
             return Response.ok(draftHolder).build();
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
         }
+    }
+
+    // Copied from IntygServiceImpl, INTYG-5380
+    private static boolean completeAddressProvided(Patient patient) {
+        return !Strings.isNullOrEmpty(patient.getPostadress())
+                && !Strings.isNullOrEmpty(patient.getPostort())
+                && !Strings.isNullOrEmpty(patient.getPostnummer());
+    }
+
+    // Copied from IntygServiceImpl, INTYG-5380
+    private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
+        if (oldPatientData == null) {
+            return;
+        }
+        newPatientData.setPostadress(oldPatientData.getPostadress());
+        newPatientData.setPostnummer(oldPatientData.getPostnummer());
+        newPatientData.setPostort(oldPatientData.getPostort());
     }
 
     private void verifySekretessmarkering(String intygsTyp, String enhetsId, Patient resolvedPatient) {
