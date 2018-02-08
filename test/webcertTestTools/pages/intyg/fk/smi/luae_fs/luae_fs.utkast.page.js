@@ -34,9 +34,9 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
             },
             underlagRow: function(index) {
                 return {
-                    underlag: element(by.id('underlag-' + index + '-typ')),
-                    datum: element(by.id('underlag-' + index + '-datum')),
-                    information: element(by.id('underlag-' + index + '-hamtasFran'))
+                    underlag: element(by.id('underlag-' + index + '--typ')),
+                    datum: element(by.id('datepicker_underlag[' + index + '].datum')),
+                    information: element(by.id('underlag-' + index + '--hamtasFran'))
                 };
             }
         };
