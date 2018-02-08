@@ -121,17 +121,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.html',
                     controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
-            },/*
-            resolve: {
-                PreviousState: ['$state', function ($state) {
-                    var currentStateData = {
-                        name: $state.current.name,
-                        params: $state.params,
-                        URL: $state.href($state.current.name, $state.params)
-                    };
-                    return currentStateData;
-                }]
-            }*/
+            }
         }).
         state('webcert.fragasvar', {
             data: { backState: 'webcert.enhet-arenden' },
@@ -140,17 +130,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
-            },/*
-            resolve: {
-                PreviousState: ['$state', function($state) {
-                    var currentStateData = {
-                        name: $state.current.name,
-                        params: $state.params,
-                        URL: $state.href($state.current.name, $state.params)
-                    };
-                    return currentStateData;
-                }]
-            }*/
+            }
         }).
         state('webcert.terms', {
             url: '/terms',
