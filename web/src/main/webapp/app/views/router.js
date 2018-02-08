@@ -115,32 +115,42 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             }
         }).
         state('webcert.intyg', {
-            abstract : true, // jshint ignore:line
-            data: { defaultActive : 'index' }
-        }).
-        state('webcert.intyg.fk', {
+            data: { defaultActive : 'index', backState: 'webcert.create-choose-certtype-index' },
             views: {
                 'content@': {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.html',
                     controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
-            }
-        }).
-        state('webcert.intyg.ts', {
-            views: {
-                'content@' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.ts.html',
-                    controller: 'webcert.VisaIntygFragasvarCtrl'
-                }
-            }
+            },/*
+            resolve: {
+                PreviousState: ['$state', function ($state) {
+                    var currentStateData = {
+                        name: $state.current.name,
+                        params: $state.params,
+                        URL: $state.href($state.current.name, $state.params)
+                    };
+                    return currentStateData;
+                }]
+            }*/
         }).
         state('webcert.fragasvar', {
+            data: { backState: 'webcert.enhet-arenden' },
             views: {
                 'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
-            }
+            },/*
+            resolve: {
+                PreviousState: ['$state', function($state) {
+                    var currentStateData = {
+                        name: $state.current.name,
+                        params: $state.params,
+                        URL: $state.href($state.current.name, $state.params)
+                    };
+                    return currentStateData;
+                }]
+            }*/
         }).
         state('webcert.terms', {
             url: '/terms',
