@@ -35,6 +35,7 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.xmldsig.model.SignatureType;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -59,7 +60,9 @@ import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturData;
 
 import javax.persistence.OptimisticLockException;
+import javax.xml.bind.JAXB;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -174,6 +177,8 @@ public class SignaturServiceImpl implements SignaturService {
                     "Unable to sign certificate: " + e.getMessage());
         }
     }
+
+
 
     private WebCertUser getWebcertUserForSignering() {
         IntygUser user = webCertUserService.getUser();
@@ -394,6 +399,43 @@ public class SignaturServiceImpl implements SignaturService {
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logSignIntyg(logRequest);
+
+        intygService.handleAfterSigned(utkast);
+
+        return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
+    }
+
+    @Override
+    public SignaturTicket clientNiasSignature(String ticketId, SignatureType signatureType, WebCertUser user) {
+        // Lookup signature ticket
+        SignaturTicket ticket = ticketTracker.getTicket(ticketId);
+
+        if (ticket == null) {
+            LOG.warn("Ticket '{}' hittades ej", ticketId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Biljett " + ticketId + " hittades ej");
+        }
+        LOG.debug("Klientsignering ticket '{}' intyg '{}'", ticket.getId(), ticket.getIntygsId());
+
+        // Fetch the draft
+        Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
+
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
+                utkast.getRelationKod());
+
+        // Create and persist the new signature
+        StringWriter sw = new StringWriter();
+        JAXB.marshal(signatureType, sw);
+        String rawSignaturXml = sw.toString();
+        ticket = createAndPersistSignature(utkast, ticket, rawSignaturXml, user);
+
+        // Notify stakeholders when certificate has been signed
+        notificationService.sendNotificationForDraftSigned(utkast,
+                user.getParameters() != null ? user.getParameters().getReference() : null);
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        // Note that we explictly supplies the WebCertUser here. The BankID finalization is not executed in a HTTP
+        // request context and thus we need to supply the user instance manually.
+        logService.logSignIntyg(logRequest, logService.getLogUser(user));
 
         intygService.handleAfterSigned(utkast);
 

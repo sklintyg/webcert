@@ -29,10 +29,14 @@ import org.springframework.stereotype.Component;
 import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
 import com.secmaker.netid.nias.v1.ResultCollect;
 
+import se.inera.intyg.infra.xmldsig.model.SignatureType;
+import se.inera.intyg.infra.xmldsig.model.SignatureValueType;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.nio.charset.Charset;
 
 /**
  * Runnable implementation / spring prototype bean responsible for performing once NIAP collect lifecycle for a single
@@ -75,6 +79,7 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
     private final long defaultSleepMs = 3000L;
     private long ms = defaultSleepMs;
     private SecurityContext securityContext;
+    private SignatureType signatureType;
 
     @Override
     public void run() {
@@ -99,7 +104,11 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                         }
 
                         String signature = resp.getSignature();
-                        signaturService.clientGrpSignature(transactionId, signature, webCertUser);
+                        SignatureValueType signatureValueType = new SignatureValueType();
+                        signatureValueType.setValue(resp.getSignature().getBytes(Charset.forName("UTF-8")));
+                        signatureType.setSignatureValue(signatureValueType);
+
+                        signaturService.clientNiasSignature(transactionId, signatureType, webCertUser);
                         LOG.info("NetiD Access Server Signature was successfully persisted and ticket updated.");
                         return;
                     case "USER_SIGN":
@@ -183,5 +192,10 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
     @Override
     public void setSecurityContext(SecurityContext securityContext) {
         this.securityContext = securityContext;
+    }
+
+    @Override
+    public void setSignature(SignatureType signatureType) {
+        this.signatureType = signatureType;
     }
 }

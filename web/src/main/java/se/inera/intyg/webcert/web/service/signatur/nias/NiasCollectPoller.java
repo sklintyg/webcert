@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.signatur.nias;
 
 import org.springframework.security.core.context.SecurityContext;
+import se.inera.intyg.infra.xmldsig.model.SignatureType;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -29,4 +30,6 @@ public interface NiasCollectPoller extends Runnable {
     void setTransactionId(String transactionId);
 
     void setSecurityContext(SecurityContext securityContext);
+
+    void setSignature(SignatureType signatureType);
 }

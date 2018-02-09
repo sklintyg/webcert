@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.web.service.signatur.nias;
 
 import java.io.StringReader;
+import java.nio.charset.Charset;
 
 import javax.xml.bind.JAXB;
 
@@ -16,6 +17,8 @@ import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
 import com.secmaker.netid.nias.v1.ResultCollect;
 import com.secmaker.netid.nias.v1.SignResponse;
 
+import se.inera.intyg.infra.xmldsig.XMLDSigService;
+import se.inera.intyg.infra.xmldsig.model.SignatureType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -24,6 +27,7 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.nias.factory.NiasCollectPollerFactory;
+import se.inera.intyg.webcert.web.service.signatur.nias.xmldsig.UtkastModelToXmlConverterServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -53,6 +57,12 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
     @Autowired
     private NiasCollectPollerFactory niasCollectPollerFactory;
 
+    @Autowired
+    private UtkastModelToXmlConverterServiceImpl utkastModelToXmlConverterService;
+
+    @Autowired
+    private XMLDSigService xmldSigService;
+
 
     @Override
     public SignaturTicket startNiasAuthentication(String intygId, long version) {
@@ -67,10 +77,16 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
 
         SignaturTicket draftHash = signaturService.createDraftHash(intygId, utkast.getVersion());
 
+        // TODO För NetID Access Server signering så behöver vi göra en XMLDSig signatur
+        // inklusive en ordentlig digest av canoniserad XML.
+        // Börja med att konvertera intyget till XML-format
+        String xml = utkastModelToXmlConverterService.utkastToXml(utkast);
+        SignatureType signatureType = xmldSigService.prepareSignature(xml);
+        byte[] digestValue = signatureType.getSignedInfo().getReference().get(0).getDigestValue();
 
         SignResponse response;
         try {
-            String result = netiDAccessServerSoap.sign(personId, null, null, null);
+            String result = netiDAccessServerSoap.sign(personId, "Inera Webcert: Signera intyg " + utkast.getIntygsId(), new String(digestValue, Charset.forName("UTF-8")), null);
             response = JAXB.unmarshal(new StringReader(result), SignResponse.class);
 
         } catch (Exception ex) {
@@ -83,14 +99,15 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
         // the mechanism already present for SITHS
         String orderRef = response.getSignResult();
 
-        startAsyncNiasCollectPoller(orderRef, draftHash.getId());
+        startAsyncNiasCollectPoller(orderRef, draftHash.getId(), signatureType);
         return draftHash;
     }
 
-    private void startAsyncNiasCollectPoller(String orderRef, String transactionId) {
+    private void startAsyncNiasCollectPoller(String orderRef, String transactionId, SignatureType signatureType) {
         NiasCollectPoller collectTask = niasCollectPollerFactory.getInstance();
         collectTask.setOrderRef(orderRef);
         collectTask.setTransactionId(transactionId);
+        collectTask.setSignature(signatureType);
         collectTask.setSecurityContext(SecurityContextHolder.getContext());
         final long startTimeout = 6000L;
         taskExecutor.execute(collectTask, startTimeout);
