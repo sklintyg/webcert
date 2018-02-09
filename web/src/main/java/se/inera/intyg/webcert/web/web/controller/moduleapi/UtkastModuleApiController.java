@@ -171,8 +171,6 @@ public class UtkastModuleApiController extends AbstractApiController {
                 LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygsId);
             }
 
-            // Update the internal model with the resolved patient if applicable. This means the draft may be updated
-            // with new patient info on the next auto-save!
             if (completeAddressProvided(resolvedPatient)) {
                 Patient oldPatientData = null;
                 try {
@@ -183,9 +181,11 @@ public class UtkastModuleApiController extends AbstractApiController {
                     LOG.error("Error while using the module api to convert json to Utlatande for intygsId {}", intygsId);
                 }
                 copyOldAddressToNewPatientData(oldPatientData, resolvedPatient);
-                String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
-                utkast.setModel(updatedModel);
             }
+            // Update the internal model with the resolved patient. This means the draft may be updated
+            // with new patient info on the next auto-save!
+            String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
+            utkast.setModel(updatedModel);
             draftHolder.setContent(utkast.getModel());
 
             return Response.ok(draftHolder).build();
