@@ -104,6 +104,15 @@ module.exports = function() {
     });
 
 
+    this.Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk$/, function() {
+        //"Försöker gå in" är inte samma steg som "går in". p.g.a. expect logiken.
+        return loginIfSessionUsed().then(function() {
+            return browser.get(getIntegrationUrl(' via djupintegrationslänk'));
+        }).then(function() {
+            return browser.sleep(2000);
+        });
+    });
+
     this.Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk| utan integrations parametrar)*$/, function(intygstyp, origin) {
         return gotoIntyg(intygstyp, origin);
     });
@@ -128,24 +137,7 @@ module.exports = function() {
             url += addToUrl;
         }
 
-        var loginIfSessionUsed = function() {
-            console.log('Går till url: ' + url);
-            if (global.sessionUsed) {
-                console.log('Loggar in med tidigare användare..');
-                return loginHelpers.logInAsUser({
-                    forNamn: global.user.forNamn,
-                    efterNamn: global.user.efterNamn,
-                    hsaId: global.user.hsaId,
-                    enhetId: global.user.enhetId,
-                    lakare: global.user.lakare,
-                    origin: global.user.origin
-                });
-            } else {
-                return Promise.resolve('Använder tidigare session');
-            }
-
-        };
-
+        console.log('Går till url: ' + url);
         return loginIfSessionUsed().then(function() {
             return browser.get(url)
                 .then(function() {
@@ -175,6 +167,23 @@ module.exports = function() {
                 });
         });
     }
+
+    function loginIfSessionUsed() {
+        if (global.sessionUsed) {
+            console.log('Loggar in med tidigare användare..');
+            return loginHelpers.logInAsUser({
+                forNamn: global.user.forNamn,
+                efterNamn: global.user.efterNamn,
+                hsaId: global.user.hsaId,
+                enhetId: global.user.enhetId,
+                lakare: global.user.lakare,
+                origin: global.user.origin
+            });
+        } else {
+            return Promise.resolve('Använder tidigare session');
+        }
+    }
+
 
     function getIntegrationUrl(origin) {
         var url;

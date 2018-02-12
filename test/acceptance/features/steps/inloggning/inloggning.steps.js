@@ -365,6 +365,7 @@ module.exports = function() {
         var elementArray = [
             element(by.id('wc-avliden-text-' + person.id.replace(/(\d{8})(\d{4})/, '$1-$2'))), //.patient-alert? db/doi?
             element(by.id('intyg-load-error')), //?
+            element(by.id('errorPage')), //Raderat utkast
             element(by.id('error-panel')) //Behörighet saknas => sekretessmarkering
         ];
 
@@ -383,17 +384,17 @@ module.exports = function() {
                             if (theMsg !== '') {
                                 return promiseArr.push(expect(theMsg).to.contain(msg));
                             } else {
-                                Promise.resolve();
+                                return;
                             }
                         });
 
                     } else {
-                        Promise.resolve();
+                        return;
                     }
                 });
             });
         }).then(function() {
-            return promiseArr.push(expect(promiseArr.length).to.be.at.least(1)); // vikitigt så att vi inte får passed när inga felmeddelanden visas.
+            return promiseArr.push(expect(promiseArr.length).to.be.at.least(1)); // viktigt så att vi inte får passed när inga felmeddelanden visas.
         }).then(function() {
             return Promise.all(promiseArr);
         });

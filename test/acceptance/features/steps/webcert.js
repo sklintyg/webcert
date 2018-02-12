@@ -26,9 +26,10 @@ var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 
 module.exports = function() {
 
-    this.Given(/^jag går tillbaka till start$/, function(callback) {
-        browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn));
-        basIntyg.backBtn.sendKeys(protractor.Key.SPACE).then(callback);
+    this.Given(/^jag går tillbaka till start$/, function() {
+        return browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn)).then(function() {
+            return basIntyg.backBtn.sendKeys(protractor.Key.SPACE);
+        });
     });
 
     this.Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1, callback) {

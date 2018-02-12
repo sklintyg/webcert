@@ -1,6 +1,6 @@
 # language: sv
 
-@ts @diabetes @statusuppdateringar
+@ts @diabetes
 Egenskap: Hantera Transportstyrelsens diabetesintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
