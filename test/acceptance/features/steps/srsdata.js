@@ -33,16 +33,31 @@ module.exports = {
     },
 
     diagnoskoder: {
-        'finns i SRS': 'M79',
-        'inte finns i SRS': 'A23',
-        'har åtgärder': 'M54',
-        'har förhöjd risk': '',
-        'inte har förhöjd risk': 'M79',
-        'saknar prediktion': 'M79',
-        'saknar statistik': 'S82',
-        'saknar åtgärder': 'S82',
+        'finns i SRS': {
+            kod: 'M79'
+        },
+        'inte finns i SRS': {
+            kod: 'A23'
+        },
+        'har åtgärder': {
+            kod: 'M54'
+        },
+        'har förhöjd risk': {
+            kod: ''
+        },
+        'inte har förhöjd risk': {
+            kod: 'M79'
+        },
+        'saknar prediktion': {
+            kod: 'M79'
+        },
+        'saknar statistik': {
+            kod: 'S82'
+        },
+        'saknar åtgärder': {
+            kod: 'S82'
+        },
     },
-
     inloggningar: {
         'med SRS': {
             forNamn: 'Arnold',

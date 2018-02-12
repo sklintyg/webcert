@@ -22,7 +22,7 @@
 let helpers = require('./helpers');
 //let Soap = require('soap');
 //let soapMessageBodies = require('./soap');
-let fk7263utkast = pages.intyg.fk['7263'].utkast;
+let lisjpUtkast = pages.intyg.lisjp.utkast;
 let srsdata = require('./srsdata.js');
 
 module.exports = function() {
@@ -39,7 +39,7 @@ module.exports = function() {
     );
 
     this.Then(/^ska en frågepanel för SRS "(inte)? ?visas"$/,
-        panelStatus => expect(fk7263utkast.srs.panel().isDisplayed()).to.eventually.equal(panelStatus !== 'inte')
+        panelStatus => expect(lisjpUtkast.srs.panel().isDisplayed()).to.eventually.equal(panelStatus !== 'inte')
     );
 
     this.Then(/^ska en pil med texten "(Visa mindre|Visa mer)" visas$/,
@@ -47,7 +47,7 @@ module.exports = function() {
     );
 
     this.When(/^jag (?:fyller|fyllt) i diagnoskod som "(.*)"$/,
-        srsStatus => fk7263utkast.angeDiagnosKod(srsdata.diagnoskoder[srsStatus])
+        srsStatus => lisjpUtkast.angeDiagnos(srsdata.diagnoskoder[srsStatus])
         .then(() => {
             logger.info('Använder diagnoskod: ' + srsdata.diagnoskoder[srsStatus]);
             return browser.sleep(1000); // Angular behöver extra tid på sig här för att spara diagnoskoden
@@ -55,12 +55,12 @@ module.exports = function() {
     );
 
     this.Then(/^ska knappen för SRS vara i läge "(stängd|öppen|gömd)"$/,
-        srsButtonStatus => expect(fk7263utkast.getSRSButtonStatus()).to.eventually.equal(srsButtonStatus)
+        srsButtonStatus => expect(lisjpUtkast.getSRSButtonStatus()).to.eventually.equal(srsButtonStatus)
     );
 
     this.When(/^jag klickar på knappen för SRS$/, () => {
 
-        return fk7263utkast.srs.knapp().click().then(function() {
+        return lisjpUtkast.srs.knapp().click().then(function() {
             logger.info('OK - klickat knappen för SRS');
             return helpers.mediumDelay();
         }, function(reason) {
@@ -70,16 +70,16 @@ module.exports = function() {
     });
 
     this.When(/^jag klickar på pilen( för att minimera)?$/, function(action) {
-        return fk7263utkast.srs.visamer().getAttribute('class')
+        return lisjpUtkast.srs.visamer().getAttribute('class')
             .then(function(collapsed) {
                 return collapsed.includes('collapsed') ? true : false;
             })
             .then(function(isCollapsed) {
                 logger.silly('isCollapsed :' + isCollapsed);
                 if (isCollapsed === true) {
-                    return fk7263utkast.srs.visamer().click();
+                    return lisjpUtkast.srs.visamer().click();
                 } else if (action !== undefined && action.trim() === 'för att minimera') {
-                    return fk7263utkast.srs.visamer().click();
+                    return lisjpUtkast.srs.visamer().click();
                 } else {
                     return logger.info('Frågeformuläret är redan i önskat läge');
                 }
@@ -88,11 +88,11 @@ module.exports = function() {
     });
 
     this.Then(/^ska frågepanelen för SRS vara "(minimerad|maximerad)"$/, function(status) {
-        return expect(fk7263utkast.getSRSQuestionnaireStatus()).to.eventually.equal(status);
+        return expect(lisjpUtkast.getSRSQuestionnaireStatus()).to.eventually.equal(status);
     });
 
     this.Then(/^ska jag få prediktion "([^"]*)"$/, predictionMsg =>
-        expect(fk7263utkast.srs.prediktion().getText()).to.eventually.contain(predictionMsg)
+        expect(lisjpUtkast.srs.prediktion().getText()).to.eventually.contain(predictionMsg)
     );
 
     this.Then(/^ska en fråga om samtycke visas$/, () => expect(
@@ -100,7 +100,7 @@ module.exports = function() {
     ).to.eventually.equal(true));
 
     this.When(/^jag anger att patienten (inte)? ?samtycker till SRS$/, function(samtycke) {
-        return fk7263utkast.setSRSConsent(samtycke === 'inte' ? false : true).then(function() {
+        return lisjpUtkast.setSRSConsent(samtycke === 'inte' ? false : true).then(function() {
             return helpers.smallDelay();
         });
     });
@@ -109,7 +109,7 @@ module.exports = function() {
     /*													
 	TODO .isSelected() på radio knappar returnerar alltid true
     this.Then(/^frågan om samtycke ska( inte)? vara förifylld med "(Ja|Nej)"$/, function(inte, samtycke) {
-        return fk7263utkast.srs.samtycke[samtycke.toLowerCase()]().isSelected().then(function(selected) {
+        return lisjpUtkast.srs.samtycke[samtycke.toLowerCase()]().isSelected().then(function(selected) {
             if (inte) {
                 logger.info('Förväntar oss att ' + samtycke + ' inte är aktiv');
                 logger.silly('selected = ' + selected);
@@ -125,7 +125,7 @@ module.exports = function() {
 
     });
 	*/
-    this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
+    this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(lisjpUtkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
 
     this.When(/^jag fyller i ytterligare svar för SRS$/, function() {
         return clickAnswerRadioButtons();
@@ -258,16 +258,16 @@ module.exports = function() {
         });
     });
 
-    this.When(/^jag trycker på knappen "Visa"$/, () => helpers.moveAndSendKeys(fk7263utkast.srs.visaKnapp(), protractor.Key.SPACE));
+    this.When(/^jag trycker på knappen "Visa"$/, () => helpers.moveAndSendKeys(lisjpUtkast.srs.visaKnapp(), protractor.Key.SPACE));
 
-    this.Then(/^ska prediktion från SRS-tjänsten visas$/, () => expect(fk7263utkast.srs.prediktion().isDisplayed()).to.eventually.equal(true));
+    this.Then(/^ska prediktion från SRS-tjänsten visas$/, () => expect(lisjpUtkast.srs.prediktion().isDisplayed()).to.eventually.equal(true));
 
     this.When(/^jag trycker på fliken "(Statistik|Åtgärder)"$/,
-        flikText => fk7263utkast.srs.flik(flikText).sendKeys(protractor.Key.ENTER)
+        flikText => lisjpUtkast.srs.flik(flikText).sendKeys(protractor.Key.ENTER)
     );
 
-    this.Then(/^ska en statistikbild från SRS-tjänsten visas för en diagnoskod som "([^"]*)"$/, (srsStatus) => fk7263utkast.srs.statistik().isDisplayed()
-        .then((isDisplayed) => isDisplayed ? fk7263utkast.srs.statistik().element(by.tagName('img')).getAttribute('src') : 'unknown url')
+    this.Then(/^ska en statistikbild från SRS-tjänsten visas för en diagnoskod som "([^"]*)"$/, (srsStatus) => lisjpUtkast.srs.statistik().isDisplayed()
+        .then((isDisplayed) => isDisplayed ? lisjpUtkast.srs.statistik().element(by.tagName('img')).getAttribute('src') : 'unknown url')
         .then((srcUrl) => expect(srcUrl.indexOf(srsdata.diagnoskoder[srsStatus]) > -1).to.equal(true))
     );
 
@@ -280,9 +280,9 @@ module.exports = function() {
         var promiseArr = [];
         var elm;
         if (typ === 'OBS-åtgärder') {
-            elm = fk7263utkast.srs.atgarderObs();
+            elm = lisjpUtkast.srs.atgarderObs();
         } else if (typ === 'REK-åtgärder') {
-            elm = fk7263utkast.srs.atgarderRek();
+            elm = lisjpUtkast.srs.atgarderRek();
         }
         srsdata.atgarder[listNamn].forEach(function(atgard, index) {
             promiseArr.push(
@@ -300,7 +300,7 @@ module.exports = function() {
 };
 
 function clickAnswerRadioButtons() {
-    return fk7263utkast.srs.fragor()
+    return lisjpUtkast.srs.fragor()
         .all(by.css('input[type=radio]'))
         .each(el => helpers.moveAndSendKeys(el, protractor.Key.SPACE)).catch((err) => console.trace(err)); // Av någon anledning kastas ett fel trots att alla element går att klicka på
 }
@@ -340,7 +340,7 @@ function buildLinkToSetConsent(patientId, enhetId) {
 }
 
 function findLabelContainingText(text) {
-    return fk7263utkast.srs.panel()
+    return lisjpUtkast.srs.panel()
         .all(by.tagName('div'))
         .filter(ele => ele.getText().then(t => t.includes(text))).first();
 }
