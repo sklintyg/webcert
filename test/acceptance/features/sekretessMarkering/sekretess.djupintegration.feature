@@ -1,5 +1,5 @@
 # language: sv
-@sekretess @sakerhet @djupintegration
+@sekretessmarkering @sakerhet @djupintegration
 Egenskap: djupintegration - Sekretessmarkerad patient
 
 @smi @signera

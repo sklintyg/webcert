@@ -71,7 +71,7 @@ Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i S
 	
 	När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en annan patient
-    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
+    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag ändrar diagnoskoden till "samma som ovan"
@@ -139,7 +139,7 @@ Exempel:
   | Verksamhet meddelanden per ämne och Enhet | getMeddelandenPerAmneOchEnhetVerksamhet | AVSTMN |
   | Verksamhet meddelanden per ämne och Enhet | getMeddelandenPerAmneOchEnhetVerksamhet | OVRIGT |  
   
-  #Todo's
+  #TODO's
   #| Verksamhet meddelanden per ämne Tvärsnitt | getMeddelandenPerAmneTvarsnittVerksamhet | @MeddelandenPerAmneTvarsnittVerksamhet |
   #| Verksamhet meddelanden per ämne | getMeddelandenPerAmneVerksamhet | @MeddelandenPerAmneVerksamhet |
   #| Antal meddelanden per månad | getNumberOfMeddelandenPerMonth | @NumberOfMeddelandenPerMonth |

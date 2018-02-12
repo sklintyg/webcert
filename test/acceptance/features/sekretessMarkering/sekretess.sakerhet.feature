@@ -1,5 +1,5 @@
 # language: sv
-@sekretess @sakerhet
+@sekretessmarkering @sakerhet
 Egenskap: Säkerhet - Sekretessmarkerad patient
 
 Bakgrund: 
@@ -72,6 +72,7 @@ Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
 	När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
 		
 	#Säkerställer att det finns ett fk7263 intyg på patienten.
+	#@LegacyFK7263
 	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -92,12 +93,12 @@ Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
 
 #@PU
 #Scenario: PU
-#Låg prio: Inte rimligt att vi auto-testar scenarion beroende på om PU är nere när vi testar parallelt ställer det till mycket problem för andra testfall.
+#Låg prio: Inte rimligt att vi auto-testar scenarion beroende på om PU är nere när vi testar parallelt ställer det till mycket problem för andra testfall om vi stänger ned PU-tjänsten.
 
 #@Uthopp
 #Scenario: Uthopp
-#Inga tester krävs - inga krav påvärkar (efter att FK7263 är bortplockat)
+#Inga tester krävs - inga krav påverkar (efter att FK7263 är bortplockat)
 
 #@Statistik
 #Scenario: Statistik
-#Inga tester krävs - inga krav påvärkar
+#Inga tester krävs - inga krav påverkar

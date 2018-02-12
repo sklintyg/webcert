@@ -12,7 +12,7 @@ Bakgrund:
 @SRS-US-W07 @prediktion
 Scenario: GE-005 - Loggning vid visning av prediktion
     Givet en patient som "har givit samtycke" till SRS
-    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263" 
+    Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg för sjukpenning"
   	Och jag går in på utkastet
     Och jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
