@@ -89,4 +89,4 @@ Scenario: förnya intyg
 @srs
 @notReady
 @SRS-US-W07
-Scenario: SRS ska loggas
+Scenario: SRS ska PDL loggas

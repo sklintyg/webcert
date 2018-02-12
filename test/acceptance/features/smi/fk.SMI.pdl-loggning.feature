@@ -66,7 +66,7 @@ Scenario: GE-005 - Skriv ut SMI-intyg
 
 
 #6
-@skicka @utskrift @waitingForFix @INTYG-5274
+@skicka @utskrift
 Scenario: GE-005 - PDL - Skicka SMI-intyg till Försäkringskassan
     När jag går in på ett slumpat SMI-intyg med status "Signerat"
     Och jag skickar intyget till Försäkringskassan

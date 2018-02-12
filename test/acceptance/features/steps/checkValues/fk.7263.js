@@ -237,14 +237,6 @@ function checkArbetesinriktadRehab(rek) {
         );
     } else {
         return Promise.resolve();
-        // TODO: waitingForFix .  Se INTYG-3391
-        /*return expect(intygPage.field7.block.getText()).to.eventually.contain('Ej angivet').then(function(value) {
-                logger.info('OK - Rehabilitering aktuell = ' + value);
-            },
-            function(reason) {
-                throw ('FEL, Rehabilitering aktuell,' + reason);
-            }
-        );*/
     }
 }
 
