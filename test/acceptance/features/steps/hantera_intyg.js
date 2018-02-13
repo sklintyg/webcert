@@ -246,72 +246,77 @@ module.exports = function() {
             patient = testpatienter[helpers.getIntFromTxt(txt)];
         }
 
-        //var promiseArr = [];
-        return helpers.getIntyg(intygsTyp, patient).then(function(data) {
-            if (typeof(data[0]) === 'undefined') {
-                logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
-                return;
-            }
+
+        return helpers.getUtkast(intygsTyp, patient).then(function(data) {
             console.log('data.length: ' + data.length);
+            console.log(data);
 
-            data.forEach(function(item, index) {
-                console.log('index: ' + index);
+            if (!data[0]) {
+                return logger.info('OK - Inget utkast med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);
+            }
 
-                var endAction = 'no-action';
-                intyg.id = data[index].INTYGS_ID;
+            //Logga in på vårdenhet som skapat intyget:
+            var userObj = {
+                forNamn: 'x',
+                efterNamn: 'y',
+                hsaId: data[0].SKAPAD_AV_HSAID,
+                enhetId: data[0].ENHETS_ID
+            };
+            intyg.id = data[0].INTYGS_ID;
 
-                console.log('intygsstatus från DB: ' + data[index].STATUS);
 
-                if (data[index].STATUS.indexOf('DRAFT') !== -1) {
-                    endAction = raderaUtkastet;
+            return loginHelpers.logInAsUser(userObj)
+                .then(function() {
+                    return helpers.pageReloadDelay();
+                })
+                .then(function() {
+                    var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
+                    var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
+                    logger.info('Går till ' + link);
+                    return browser.get(link);
+                })
+                .then(function() {
+                    return helpers.pageReloadDelay();
+                })
+                .then(function() {
+                    return raderaUtkastet();
+                });
+        }).then(function() {
+            return helpers.getIntyg(intygsTyp, patient, false).then(function(data) {
+                console.log('data.length: ' + data.length);
+                console.log(data);
+
+                if (!data[0]) {
+                    return logger.info('OK - Inget intyg med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);
                 }
 
-                return new Promise(function(resolve, reject) {
-                    helpers.getIntygState(intyg.id).then(function(state) {
-                        console.log(state[0].STATE);
-                        if (state[0].STATE === 'CANCELLED') {
-                            logger.silly(intyg.id + ' är redan makulerat');
-                            return;
-                        } else if (typeof(state[0].STATE) !== 'undefined') {
-                            logger.silly('endAction = makuleraIntyget');
-                            endAction = makuleraIntyget;
-                        } else {
-                            logger.silly('Intyget är utkast');
-                        }
-                    }).then(function() {
-                        if (endAction === 'no-action') {
-                            console.log('no-action');
-                            return;
-                        }
-                        //Logga in på vårdenhet som skapat intyget:
-                        var userObj = {
-                            forNamn: 'x',
-                            efterNamn: 'y',
-                            hsaId: data[index].SKAPAD_AV_HSAID,
-                            enhetId: data[index].ENHETS_ID
-                        };
+                //Logga in på vårdenhet som skapat intyget:
+                var userObj = {
+                    forNamn: 'x',
+                    efterNamn: 'y',
+                    hsaId: data[0].SKAPAD_AV_HSAID,
+                    enhetId: data[0].ENHETS_ID
+                };
+                intyg.id = data[0].INTYGS_ID;
 
-                        return loginHelpers.logInAsUser(userObj)
-                            .then(function() {
-                                return helpers.pageReloadDelay();
-                            })
-                            .then(function() {
-                                var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
-                                var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
-                                logger.info('Går till ' + link);
-                                return browser.get(link);
-                            })
-                            .then(function() {
-                                return helpers.pageReloadDelay();
-                            })
-                            .then(function() {
-                                return endAction().then(resolve());
-                            });
+
+                return loginHelpers.logInAsUser(userObj)
+                    .then(function() {
+                        return helpers.pageReloadDelay();
+                    })
+                    .then(function() {
+                        var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
+                        var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
+                        logger.info('Går till ' + link);
+                        return browser.get(link);
+                    })
+                    .then(function() {
+                        return helpers.pageReloadDelay();
+                    })
+                    .then(function() {
+                        return makuleraIntyget();
                     });
-                });
-
             });
-
         });
     });
 

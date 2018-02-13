@@ -67,7 +67,7 @@ module.exports = function() {
                 resolve();
             })
 
-            /* avaktiverar AfterStep tills det att TI-442 är löst.
+            /* avaktiverar AfterStep tills det att TI-444 är löst.
 		.then(function() {
             // Samla in alla externa länkar på aktuell sida
             return element.all(by.css('a')).each(function(link) {
