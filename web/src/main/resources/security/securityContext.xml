@@ -45,6 +45,7 @@
   <security:http security="none" pattern="/fonts/**"/>
 
   <security:http security="none" pattern="/"/>
+  <security:http security="none" pattern="/boot-app.jsp"/>
   <security:http security="none" pattern="/version.jsp"/>
   <security:http security="none" pattern="/index.jsp"/>
   <security:http security="none" pattern="/healthcheck.jsp"/>
