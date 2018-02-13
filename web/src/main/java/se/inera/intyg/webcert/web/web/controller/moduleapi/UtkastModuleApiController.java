@@ -171,7 +171,8 @@ public class UtkastModuleApiController extends AbstractApiController {
                 LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygsId);
             }
 
-            if (completeAddressProvided(resolvedPatient)) {
+            if (!completeAddressProvided(resolvedPatient)) {
+                // Overwrite retrieved address data with saved one.
                 Patient oldPatientData = null;
                 try {
                     oldPatientData = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel())
