@@ -1,6 +1,6 @@
 # language: sv
 
-@db @dodsbevis @skatteverket @skv @notReady
+@db @dodsbevis @skatteverket @skv
 Egenskap: Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -18,7 +18,7 @@ Scenario: Kan signera dödsbevisintyg
 		  Så ska jag se den data jag angett för intyget
 	
 	
-@doi @notReady
+@doi
 Scenario: Ska kunna skapa Dödsorsaksintyg utifrån ett Dödsbevis
 		  Och jag går in på att skapa ett "Dödsbevis" intyg
 		  Och jag fyller i alla nödvändiga fält för intyget

@@ -20,33 +20,57 @@
 /* globals pages, logger, protractor, browser*/
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
 
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var helpers = require('./helpers');
 
-module.exports = function() {
-    this.Given(/^ska jag( inte)? se en varning om kakor$/, function(inte, callback) {
-        var shouldBeVisible = (inte === undefined); //Om 'inte' finns med i stegnamnet
-        console.log('shouldBeVisible:' + shouldBeVisible);
-        expect(sokSkrivIntygPage.cookie.consentBanner.element(by.tagName('button')).isPresent()).to.eventually.equal(shouldBeVisible).then(function() {
-            if (!inte) {
-                inte = '';
-            }
-            logger.info('OK - Varning syns' + inte);
-        }, function(reason) {
-            callback('FEL : ' + reason);
-        }).then(callback);
-    });
+/*
+ *	Stödfunktioner
+ *
+ */
 
-    this.Given(/^jag accepterar kakor$/, function(callback) {
-        sokSkrivIntygPage.cookie.consentBtn.sendKeys(protractor.Key.SPACE)
-            .then(callback());
-    });
 
-    this.Given(/^laddar om sidan$/, function() {
-        return browser.refresh().then(function() {
-            return helpers.mediumDelay();
-        });
-    });
+/*
+ *	Test steg
+ *
+ */
 
-};
+
+Given(/^ska jag( inte)? se en varning om kakor$/, function(inte, callback) {
+    var shouldBeVisible = (inte === undefined); //Om 'inte' finns med i stegnamnet
+    console.log('shouldBeVisible:' + shouldBeVisible);
+    expect(sokSkrivIntygPage.cookie.consentBanner.element(by.tagName('button')).isPresent()).to.eventually.equal(shouldBeVisible).then(function() {
+        if (!inte) {
+            inte = '';
+        }
+        logger.info('OK - Varning syns' + inte);
+    }, function(reason) {
+        callback('FEL : ' + reason);
+    }).then(callback);
+});
+
+Given(/^jag accepterar kakor$/, function(callback) {
+    sokSkrivIntygPage.cookie.consentBtn.sendKeys(protractor.Key.SPACE)
+        .then(callback());
+});
+
+Given(/^laddar om sidan$/, function() {
+    return browser.refresh().then(function() {
+        return helpers.mediumDelay();
+    });
+});

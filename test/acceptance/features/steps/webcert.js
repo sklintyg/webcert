@@ -20,90 +20,114 @@
 /* global pages, intyg, browser, protractor, Promise */
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
 
 var basIntyg = pages.intyg.base.intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 
-module.exports = function() {
+/*
+ *	Stödfunktioner
+ *
+ */
 
-    this.Given(/^jag går tillbaka till start$/, function() {
-        return browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn)).then(function() {
-            return basIntyg.backBtn.sendKeys(protractor.Key.SPACE);
+function textContainsAnyOfValues(text, checkValues) {
+
+    for (var i = 0; i < checkValues.length; i++) {
+        if (text.includes(checkValues[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkElementsForText(els, checkValues) {
+    return els.map(function(elm, index) {
+        return elm.getText();
+    }).then(function(texts) {
+
+        texts.forEach(function(val, index) {
+
+            if (index > 0) { //Inga checkar på tabell-header
+                console.log('Kontrollerar rad: ' + val);
+                var hasFound = textContainsAnyOfValues(val, checkValues);
+                if (!hasFound) {
+                    throw ('Hittade inte ' + checkValues.join(' eller ') + ' i ' + val);
+                }
+            }
         });
-    });
+        return Promise.resolve('Hittade texter i alla element');
 
-    this.Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1, callback) {
-        expect(element(by.id('certificate-is-revoked-message-text')).getText())
-            .to.eventually.contain(arg1).and.notify(callback);
     });
+}
 
-    this.Given(/^ska intyget inte finnas i intygsöversikten$/, function(callback) {
-        element(by.id('intygFilterSamtliga')).sendKeys(protractor.Key.SPACE);
-        expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false).and.notify(callback);
+/*
+ *	Test steg
+ *
+ */
+
+
+Given(/^jag går tillbaka till start$/, function() {
+    return browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn)).then(function() {
+        return basIntyg.backBtn.sendKeys(protractor.Key.SPACE);
     });
+});
 
-    this.Given(/^det finns ett "([^"]*)"$/, function(intygtyp) {
-        return element(by.id('prevIntygTable')).getText().then(function(text) {
-            if (text.indexOf(intygtyp) >= 0) {
-                return Promise.resolve('Intyg finns');
-            } else {
-                return browser.getCurrentUrl().then(function(currentUrl) {
-                    return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp).then(function() {
-                        return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE).then(function() {
-                            return browser.get(currentUrl);
-                        });
+Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1, callback) {
+    expect(element(by.id('certificate-is-revoked-message-text')).getText())
+        .to.eventually.contain(arg1).and.notify(callback);
+});
+
+Given(/^ska intyget inte finnas i intygsöversikten$/, function(callback) {
+    element(by.id('intygFilterSamtliga')).sendKeys(protractor.Key.SPACE);
+    expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false).and.notify(callback);
+});
+
+Given(/^det finns ett "([^"]*)"$/, function(intygtyp) {
+    return element(by.id('prevIntygTable')).getText().then(function(text) {
+        if (text.indexOf(intygtyp) >= 0) {
+            return Promise.resolve('Intyg finns');
+        } else {
+            return browser.getCurrentUrl().then(function(currentUrl) {
+                return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp).then(function() {
+                    return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE).then(function() {
+                        return browser.get(currentUrl);
                     });
                 });
-            }
-        });
-    });
-
-    function textContainsAnyOfValues(text, checkValues) {
-
-        for (var i = 0; i < checkValues.length; i++) {
-            if (text.includes(checkValues[i])) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function checkElementsForText(els, checkValues) {
-        return els.map(function(elm, index) {
-            return elm.getText();
-        }).then(function(texts) {
-
-            texts.forEach(function(val, index) {
-
-                if (index > 0) { //Inga checkar på tabell-header
-                    console.log('Kontrollerar rad: ' + val);
-                    var hasFound = textContainsAnyOfValues(val, checkValues);
-                    if (!hasFound) {
-                        throw ('Hittade inte ' + checkValues.join(' eller ') + ' i ' + val);
-                    }
-                }
             });
-            return Promise.resolve('Hittade texter i alla element');
-
-        });
-    }
-
-    this.Given(/^ska jag inte se intyg av annan typ än "([^"]*)"$/, function(typer) {
-        typer = typer.split(',');
-        var els = element(by.id('prevIntygTable')).all(by.css('tr'));
-        return checkElementsForText(els, typer);
+        }
     });
+});
 
-    this.Given(/^ska jag inte se utkast av annan typ än "([^"]*)"$/, function(typer) {
-        typer = typer.split(',');
-        var els = element(by.id('unsignedCertTable')).all(by.css('tr'));
-        return checkElementsForText(els, typer);
-    });
 
-    this.Given(/^jag ska endast ha möjlighet att skapa nya "([^"]*)" utkast$/, function(typer) {
-        typer = typer.split(',');
-        var els = element(by.id('intygType')).all(by.css('option'));
-        return checkElementsForText(els, typer);
-    });
 
-};
+Given(/^ska jag inte se intyg av annan typ än "([^"]*)"$/, function(typer) {
+    typer = typer.split(',');
+    var els = element(by.id('prevIntygTable')).all(by.css('tr'));
+    return checkElementsForText(els, typer);
+});
+
+Given(/^ska jag inte se utkast av annan typ än "([^"]*)"$/, function(typer) {
+    typer = typer.split(',');
+    var els = element(by.id('unsignedCertTable')).all(by.css('tr'));
+    return checkElementsForText(els, typer);
+});
+
+Given(/^jag ska endast ha möjlighet att skapa nya "([^"]*)" utkast$/, function(typer) {
+    typer = typer.split(',');
+    var els = element(by.id('intygType')).all(by.css('option'));
+    return checkElementsForText(els, typer);
+});

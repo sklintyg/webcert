@@ -20,12 +20,32 @@
 /* global pages, protractor, ursprungligtIntyg, Promise, JSON, intyg, logger */
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./dbActions');
 var tsBasintygtPage = pages.intyg.ts.bas.intyg;
 var statusuppdateringarRows;
 var helpers = require('./helpers');
 
+/*
+ *	Stödfunktioner
+ *
+ */
 
 
 function getNotificationEntries(intygsId, value, numEvents) {
@@ -103,71 +123,73 @@ function waitForEntries(intygsId, statusValue, numEvents, cb) {
     });
 }
 
-module.exports = function() {
+/*
+ *	Test steg
+ *
+ */
 
-    this.Then(/^ska intygsutkastets status vara "([^"]*)"$/, function(statustext, callback) {
-        expect(tsBasintygtPage.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
+Then(/^ska intygsutkastets status vara "([^"]*)"$/, function(statustext, callback) {
+    expect(tsBasintygtPage.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
+});
+
+Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
+    waitForEntries(global.intyg.id, handelsekod, parseInt(antal, 10), callback);
+});
+
+Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
+    waitForEntries(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), callback);
+});
+
+Given(/^jag raderar intyget$/, function(callback) {
+    fk7263Utkast.radera.knapp.sendKeys(protractor.Key.SPACE).then(function() {
+        fk7263Utkast.radera.bekrafta.sendKeys(protractor.Key.SPACE).then(callback);
     });
+});
 
-    this.Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
-        waitForEntries(global.intyg.id, handelsekod, parseInt(antal, 10), callback);
-    });
+Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {
+    console.log(statusuppdateringarRows[0]);
+    var row = statusuppdateringarRows[0];
+    var dbParam = (param === 'ref') ? 'intygRef' : 'undefined';
+    console.log('\'' + param + '\' converted to database equivalent => \'' + dbParam + '\'');
+    expect(paramValue).to.equal(row[dbParam].toString());
+});
 
-    this.Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
-        waitForEntries(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), callback);
-    });
+Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {
+    logger.info(statusuppdateringarRows[0]);
+    var row = statusuppdateringarRows[0];
+    return Promise.all([
+        expect(fragor).to.equal(row.antalFragor.toString()),
+        expect(hanFragor).to.equal(row.antalHanteradeFragor.toString()),
+        expect(svar).to.equal(row.antalSvar.toString()),
+        expect(hanSvar).to.equal(row.antalHanteradeSvar.toString())
+    ]);
+});
 
-    this.Given(/^jag raderar intyget$/, function(callback) {
-        fk7263Utkast.radera.knapp.sendKeys(protractor.Key.SPACE).then(function() {
-            fk7263Utkast.radera.bekrafta.sendKeys(protractor.Key.SPACE).then(callback);
-        });
-    });
 
-    this.Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {
-        console.log(statusuppdateringarRows[0]);
-        var row = statusuppdateringarRows[0];
-        var dbParam = (param === 'ref') ? 'intygRef' : 'undefined';
-        console.log('\'' + param + '\' converted to database equivalent => \'' + dbParam + '\'');
-        expect(paramValue).to.equal(row[dbParam].toString());
-    });
-
-    this.Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {
+Given(/^ska statusuppdateringen visa mottagna frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
+    function(totalt, ejBesvarade, besvarade, hanterade) {
         logger.info(statusuppdateringarRows[0]);
         var row = statusuppdateringarRows[0];
+
         return Promise.all([
-            expect(fragor).to.equal(row.antalFragor.toString()),
-            expect(hanFragor).to.equal(row.antalHanteradeFragor.toString()),
-            expect(svar).to.equal(row.antalSvar.toString()),
-            expect(hanSvar).to.equal(row.antalHanteradeSvar.toString())
+            expect(totalt).to.equal(row.mottagnaFragorTotal.toString()),
+            expect(ejBesvarade).to.equal(row.mottagnaFragorEjBesvarade.toString()),
+            expect(besvarade).to.equal(row.mottagnaFragorBesvarade.toString()),
+            expect(hanterade).to.equal(row.mottagnaFragorHanterade.toString())
         ]);
-    });
+    }
+);
 
+Given(/^ska statusuppdateringen visa skickade frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
+    function(totalt, ejBesvarade, besvarade, hanterade) {
+        logger.info(statusuppdateringarRows[0]);
+        var row = statusuppdateringarRows[0];
 
-    this.Given(/^ska statusuppdateringen visa mottagna frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
-        function(totalt, ejBesvarade, besvarade, hanterade) {
-            logger.info(statusuppdateringarRows[0]);
-            var row = statusuppdateringarRows[0];
-
-            return Promise.all([
-                expect(totalt).to.equal(row.mottagnaFragorTotal.toString()),
-                expect(ejBesvarade).to.equal(row.mottagnaFragorEjBesvarade.toString()),
-                expect(besvarade).to.equal(row.mottagnaFragorBesvarade.toString()),
-                expect(hanterade).to.equal(row.mottagnaFragorHanterade.toString())
-            ]);
-        }
-    );
-
-    this.Given(/^ska statusuppdateringen visa skickade frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
-        function(totalt, ejBesvarade, besvarade, hanterade) {
-            logger.info(statusuppdateringarRows[0]);
-            var row = statusuppdateringarRows[0];
-
-            return Promise.all([
-                expect(totalt).to.equal(row.skickadeFragorTotal.toString()),
-                expect(ejBesvarade).to.equal(row.skickadeFragorEjBesvarade.toString()),
-                expect(besvarade).to.equal(row.skickadeFragorBesvarade.toString()),
-                expect(hanterade).to.equal(row.skickadeFragorHanterade.toString())
-            ]);
-        }
-    );
-};
+        return Promise.all([
+            expect(totalt).to.equal(row.skickadeFragorTotal.toString()),
+            expect(ejBesvarade).to.equal(row.skickadeFragorEjBesvarade.toString()),
+            expect(besvarade).to.equal(row.skickadeFragorBesvarade.toString()),
+            expect(hanterade).to.equal(row.skickadeFragorHanterade.toString())
+        ]);
+    }
+);

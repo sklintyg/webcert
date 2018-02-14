@@ -19,286 +19,32 @@
 
 /* globals pages, browser, protractor, logger, Promise, user, person */
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 let helpers = require('./helpers');
 //let Soap = require('soap');
 //let soapMessageBodies = require('./soap');
 let lisjpUtkast = pages.intyg.lisjp.utkast;
 let srsdata = require('./srsdata.js');
 
-module.exports = function() {
-    //let user = {};
-
-    this.Given(/^spara användare till globaluser$/, () => {
-        //global.user = user;
-        logger.info(`Användare ${global.user.forNamn} ${global.user.efterNamn} på enhet ${global.user.hsaId} sparad sparad till intygsobjekt`);
-        return browser.sleep(500);
-    });
-
-    this.Given(/^en patient som "(inte har givit samtycke|har givit samtycke)" till SRS$/,
-        samtycke => setConsent(person, user, samtycke)
-    );
-
-    this.Then(/^ska en frågepanel för SRS "(inte)? ?visas"$/,
-        panelStatus => expect(lisjpUtkast.srs.panel().isDisplayed()).to.eventually.equal(panelStatus !== 'inte')
-    );
-
-    this.Then(/^ska en pil med texten "(Visa mindre|Visa mer)" visas$/,
-        text => expect(findLabelContainingText(text).isPresent()).to.eventually.equal(true)
-    );
-
-    this.When(/^jag (?:fyller|fyllt) i diagnoskod som "(.*)"$/,
-        srsStatus => lisjpUtkast.angeDiagnos(srsdata.diagnoskoder[srsStatus])
-        .then(() => {
-            logger.info('Använder diagnoskod: ' + srsdata.diagnoskoder[srsStatus]);
-            return browser.sleep(1000); // Angular behöver extra tid på sig här för att spara diagnoskoden
-        })
-    );
-
-    this.Then(/^ska knappen för SRS vara i läge "(stängd|öppen|gömd)"$/,
-        srsButtonStatus => expect(lisjpUtkast.getSRSButtonStatus()).to.eventually.equal(srsButtonStatus)
-    );
-
-    this.When(/^jag klickar på knappen för SRS$/, () => {
-
-        return lisjpUtkast.srs.knapp().click().then(function() {
-            logger.info('OK - klickat knappen för SRS');
-            return helpers.mediumDelay();
-        }, function(reason) {
-            console.trace(reason);
-            throw ('FEL, Kunde inte klicka knappen för SRS');
-        });
-    });
-
-    this.When(/^jag klickar på pilen( för att minimera)?$/, function(action) {
-        return lisjpUtkast.srs.visamer().getAttribute('class')
-            .then(function(collapsed) {
-                return collapsed.includes('collapsed') ? true : false;
-            })
-            .then(function(isCollapsed) {
-                logger.silly('isCollapsed :' + isCollapsed);
-                if (isCollapsed === true) {
-                    return lisjpUtkast.srs.visamer().click();
-                } else if (action !== undefined && action.trim() === 'för att minimera') {
-                    return lisjpUtkast.srs.visamer().click();
-                } else {
-                    return logger.info('Frågeformuläret är redan i önskat läge');
-                }
-            })
-            .then(() => browser.sleep(1500));
-    });
-
-    this.Then(/^ska frågepanelen för SRS vara "(minimerad|maximerad)"$/, function(status) {
-        return expect(lisjpUtkast.getSRSQuestionnaireStatus()).to.eventually.equal(status);
-    });
-
-    this.Then(/^ska jag få prediktion "([^"]*)"$/, predictionMsg =>
-        expect(lisjpUtkast.srs.prediktion().getText()).to.eventually.contain(predictionMsg)
-    );
-
-    this.Then(/^ska en fråga om samtycke visas$/, () => expect(
-        findLabelContainingText('Patienten samtycker till att delta').isPresent()
-    ).to.eventually.equal(true));
-
-    this.When(/^jag anger att patienten (inte)? ?samtycker till SRS$/, function(samtycke) {
-        return lisjpUtkast.setSRSConsent(samtycke === 'inte' ? false : true).then(function() {
-            return helpers.smallDelay();
-        });
-    });
-
-
-    /*													
-	TODO .isSelected() på radio knappar returnerar alltid true
-    this.Then(/^frågan om samtycke ska( inte)? vara förifylld med "(Ja|Nej)"$/, function(inte, samtycke) {
-        return lisjpUtkast.srs.samtycke[samtycke.toLowerCase()]().isSelected().then(function(selected) {
-            if (inte) {
-                logger.info('Förväntar oss att ' + samtycke + ' inte är aktiv');
-                logger.silly('selected = ' + selected);
-                return expect(selected).to.equal(false);
-            } else {
-                logger.info('Förväntar oss att ' + samtycke + ' är aktiv');
-                logger.silly('selected = ' + selected);
-                return expect(selected).to.equal(true);
-            }
-        }).then(function() {
-            return helpers.mediumDelay();
-        });
-
-    });
-	*/
-    this.Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(lisjpUtkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
-
-    this.When(/^jag fyller i ytterligare svar för SRS$/, function() {
-        return clickAnswerRadioButtons();
-    });
-
-    this.When(/^ska en ny sida öppnas och urlen innehålla "([^"]*)"$/, (type) => {
-        browser.ignoreSynchronization = true;
-        //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
-        return helpers.pageReloadDelay().then(function() {
-            return getWindowHandles();
-        }).then(function(handles) {
-            console.log(handles);
-            if (handles.length < 2) {
-                throw ('bara 1 flik är öppen');
-            } else {
-                return switchToWindow(handles[1], true).then(function() {
-                    return testTypeOfUrl(handles[0], type).then((urlPart) => {
-                        return expect(type).to.contain(urlPart);
-
-                    });
-
-                });
-            }
-        });
-    });
-
-    this.When(/^ska en ny sida öppnas och urlen innehålla diagnoskod som "([^"]*)"$/, (type) => {
-        if (srsdata.diagnoskoder[type] !== undefined) {
-            type = srsdata.diagnoskoder[type].toLowerCase();
-        }
-
-        browser.ignoreSynchronization = true;
-        //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
-
-        return helpers.pageReloadDelay().then(function() {
-            return getWindowHandles();
-        }).then(function(handles) {
-            if (handles.length < 2) {
-                throw ('bara 1 flik är öppen');
-            } else {
-                return switchToWindow(handles[1], true).then(function() {
-                    return testTypeOfUrl(handles[0], type).then((urlPart) => {
-                        return expect(type).to.contain(urlPart);
-
-                    });
-                });
-            }
-        });
-    });
-
-    this.When(/^ska en ny sida öppnas och urlen innehålla diagnoskod som "([^"]*)" med postfix "([^"]*)"$/, (type, postfix) => {
-        if (srsdata.diagnoskoder[type] !== undefined) {
-            type = srsdata.diagnoskoder[type].toLowerCase();
-        }
-
-        browser.ignoreSynchronization = true;
-        //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
-        return helpers.pageReloadDelay().then(function() {
-            return getWindowHandles();
-        }).then(function(handles) {
-            if (handles.length < 2) {
-                throw ('bara 1 flik är öppen');
-            } else {
-                return switchToWindow(handles[1], true).then(function() {
-                    return testTypeOfUrl(handles[0], type, postfix).then((urlPart) => {
-                        return expect(type).to.contain(urlPart);
-                    });
-                });
-            }
-        });
-    });
-
-    this.When(/^jag klickar på knappen "([^"]*)" vid (samtycke)$/, (knappText, type) => {
-        if (isQuestionmarkBtn(knappText)) {
-            return clickQuestionmarkBtn(type).then(function() {
-                logger.info('OK - knappText: ' + knappText + ', ' + type);
-                return helpers.mediumDelay();
-            }, function(reason) {
-                console.trace(reason);
-                throw ('FEL, knappText: ' + knappText + ', ' + type);
-            });
-        } else {
-            return clickReadMoreBtn(type).then(function() {
-                logger.info('OK - knappText: ' + knappText + ', ' + type);
-                return helpers.mediumDelay();
-            }, function(reason) {
-                console.trace(reason);
-                throw ('FEL, knappText: ' + knappText + ', ' + type);
-            });
-        }
-    });
-
-    this.When(/^jag klickar på knappen "([^"]*)" vid (prediktionsmeddelandet)$/, (knappText, type) => {
-        if (isQuestionmarkBtn(knappText)) {
-            return clickQuestionmarkBtn(type).then(function() {
-                logger.info('OK - knappText: ' + knappText + ', ' + type);
-                return helpers.mediumDelay();
-            }, function(reason) {
-                console.trace(reason);
-                throw ('FEL, knappText: ' + knappText + ', ' + type);
-            });
-        } else {
-            return clickReadMoreBtn(type).then(function() {
-                logger.info('OK - knappText: ' + knappText + ', ' + type);
-                return helpers.mediumDelay();
-            }, function(reason) {
-                console.trace(reason);
-                throw ('FEL, knappText: ' + knappText + ', ' + type);
-            });
-        }
-    });
-
-    this.When(/^jag klickar på knappen "([^"]*)" vid (åtgärder)$/, (knappText, type) => {
-        return clickReadMoreBtn(type).then(function() {
-            logger.info('OK - knappText: ' + knappText + ', ' + type);
-            return helpers.mediumDelay();
-        }, function(reason) {
-            console.trace(reason);
-            throw ('FEL, knappText: ' + knappText + ', ' + type);
-        });
-    });
-
-    this.When(/^jag klickar på knappen "([^"]*)" vid (statistik)$/, (knappText, type) => {
-        return clickReadMoreBtn(type).then(function() {
-            logger.info('OK - knappText: ' + knappText + ', ' + type);
-            return helpers.mediumDelay();
-        }, function(reason) {
-            console.trace(reason);
-            throw ('FEL, knappText: ' + knappText + ', ' + type);
-        });
-    });
-
-    this.When(/^jag trycker på knappen "Visa"$/, () => helpers.moveAndSendKeys(lisjpUtkast.srs.visaKnapp(), protractor.Key.SPACE));
-
-    this.Then(/^ska prediktion från SRS-tjänsten visas$/, () => expect(lisjpUtkast.srs.prediktion().isDisplayed()).to.eventually.equal(true));
-
-    this.When(/^jag trycker på fliken "(Statistik|Åtgärder)"$/,
-        flikText => lisjpUtkast.srs.flik(flikText).sendKeys(protractor.Key.ENTER)
-    );
-
-    this.Then(/^ska en statistikbild från SRS-tjänsten visas för en diagnoskod som "([^"]*)"$/, (srsStatus) => lisjpUtkast.srs.statistik().isDisplayed()
-        .then((isDisplayed) => isDisplayed ? lisjpUtkast.srs.statistik().element(by.tagName('img')).getAttribute('src') : 'unknown url')
-        .then((srcUrl) => expect(srcUrl.indexOf(srsdata.diagnoskoder[srsStatus]) > -1).to.equal(true))
-    );
-
-    this.Then(/^ska felmeddelandet "(.*)" visas$/,
-        text => expect(findLabelContainingText(text).isDisplayed()).to.eventually.equal(true)
-    );
-
-    this.Then(/^ska (OBS-åtgärder|REK-åtgärder) från "(.*)" visas$/, function(typ, listNamn) {
-        logger.silly('Förväntade ' + typ + ': ' + srsdata.atgarder[listNamn]);
-        var promiseArr = [];
-        var elm;
-        if (typ === 'OBS-åtgärder') {
-            elm = lisjpUtkast.srs.atgarderObs();
-        } else if (typ === 'REK-åtgärder') {
-            elm = lisjpUtkast.srs.atgarderRek();
-        }
-        srsdata.atgarder[listNamn].forEach(function(atgard, index) {
-            promiseArr.push(
-                expect(
-                    elm.getText().then(function(txt) {
-                        txt = txt.replace(/ \n/g, ' '); // Mellanrum innan radbrytning
-                        return txt.replace(/\n/g, ' '); // utan mellanrum
-                    })
-                ).to.eventually.contain(srsdata.atgarder[listNamn][index])
-            );
-        });
-        return Promise.all(promiseArr);
-    });
-
-};
-
+/*
+ *	Stödfunktioner
+ *
+ */
 function clickAnswerRadioButtons() {
     return lisjpUtkast.srs.fragor()
         .all(by.css('input[type=radio]'))
@@ -411,3 +157,276 @@ function clickReadMoreBtn(type) {
 function isQuestionmarkBtn(knappText) {
     return ('?' === knappText) ? true : false;
 }
+
+/*
+ *	Test steg
+ *
+ */
+Given(/^spara användare till globaluser$/, () => {
+    //global.user = user;
+    logger.info(`Användare ${global.user.forNamn} ${global.user.efterNamn} på enhet ${global.user.hsaId} sparad sparad till intygsobjekt`);
+    return browser.sleep(500);
+});
+
+Given(/^en patient som "(inte har givit samtycke|har givit samtycke)" till SRS$/,
+    samtycke => setConsent(person, user, samtycke)
+);
+
+Then(/^ska en frågepanel för SRS "(inte)? ?visas"$/,
+    panelStatus => expect(lisjpUtkast.srs.panel().isDisplayed()).to.eventually.equal(panelStatus !== 'inte')
+);
+
+Then(/^ska en pil med texten "(Visa mindre|Visa mer)" visas$/,
+    text => expect(findLabelContainingText(text).isPresent()).to.eventually.equal(true)
+);
+
+When(/^jag (?:fyller|fyllt) i diagnoskod som "(.*)"$/,
+    srsStatus => lisjpUtkast.angeDiagnos(srsdata.diagnoskoder[srsStatus])
+    .then(() => {
+        logger.info('Använder diagnoskod: ' + srsdata.diagnoskoder[srsStatus]);
+        return browser.sleep(1000); // Angular behöver extra tid på sig här för att spara diagnoskoden
+    })
+);
+
+Then(/^ska knappen för SRS vara i läge "(stängd|öppen|gömd)"$/,
+    srsButtonStatus => expect(lisjpUtkast.getSRSButtonStatus()).to.eventually.equal(srsButtonStatus)
+);
+
+When(/^jag klickar på knappen för SRS$/, () => {
+
+    return lisjpUtkast.srs.knapp().click().then(function() {
+        logger.info('OK - klickat knappen för SRS');
+        return helpers.mediumDelay();
+    }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, Kunde inte klicka knappen för SRS');
+    });
+});
+
+When(/^jag klickar på pilen( för att minimera)?$/, function(action) {
+    return lisjpUtkast.srs.visamer().getAttribute('class')
+        .then(function(collapsed) {
+            return collapsed.includes('collapsed') ? true : false;
+        })
+        .then(function(isCollapsed) {
+            logger.silly('isCollapsed :' + isCollapsed);
+            if (isCollapsed === true) {
+                return lisjpUtkast.srs.visamer().click();
+            } else if (action !== undefined && action.trim() === 'för att minimera') {
+                return lisjpUtkast.srs.visamer().click();
+            } else {
+                return logger.info('Frågeformuläret är redan i önskat läge');
+            }
+        })
+        .then(() => browser.sleep(1500));
+});
+
+Then(/^ska frågepanelen för SRS vara "(minimerad|maximerad)"$/, function(status) {
+    return expect(lisjpUtkast.getSRSQuestionnaireStatus()).to.eventually.equal(status);
+});
+
+Then(/^ska jag få prediktion "([^"]*)"$/, predictionMsg =>
+    expect(lisjpUtkast.srs.prediktion().getText()).to.eventually.contain(predictionMsg)
+);
+
+Then(/^ska en fråga om samtycke visas$/, () => expect(
+    findLabelContainingText('Patienten samtycker till att delta').isPresent()
+).to.eventually.equal(true));
+
+When(/^jag anger att patienten (inte)? ?samtycker till SRS$/, function(samtycke) {
+    return lisjpUtkast.setSRSConsent(samtycke === 'inte' ? false : true).then(function() {
+        return helpers.smallDelay();
+    });
+});
+
+
+/*													
+	TODO .isSelected() på radio knappar returnerar alltid true
+    Then(/^frågan om samtycke ska( inte)? vara förifylld med "(Ja|Nej)"$/, function(inte, samtycke) {
+        return lisjpUtkast.srs.samtycke[samtycke.toLowerCase()]().isSelected().then(function(selected) {
+            if (inte) {
+                logger.info('Förväntar oss att ' + samtycke + ' inte är aktiv');
+                logger.silly('selected = ' + selected);
+                return expect(selected).to.equal(false);
+            } else {
+                logger.info('Förväntar oss att ' + samtycke + ' är aktiv');
+                logger.silly('selected = ' + selected);
+                return expect(selected).to.equal(true);
+            }
+        }).then(function() {
+            return helpers.mediumDelay();
+        });
+
+    });
+	*/
+Then(/^ska åtgärdsförslag från SRS-tjänsten visas$/, () => expect(lisjpUtkast.srs.atgarder().isDisplayed()).to.eventually.equal(true));
+
+When(/^jag fyller i ytterligare svar för SRS$/, function() {
+    return clickAnswerRadioButtons();
+});
+
+When(/^ska en ny sida öppnas och urlen innehålla "([^"]*)"$/, (type) => {
+    browser.ignoreSynchronization = true;
+    //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
+    return helpers.pageReloadDelay().then(function() {
+        return getWindowHandles();
+    }).then(function(handles) {
+        console.log(handles);
+        if (handles.length < 2) {
+            throw ('bara 1 flik är öppen');
+        } else {
+            return switchToWindow(handles[1], true).then(function() {
+                return testTypeOfUrl(handles[0], type).then((urlPart) => {
+                    return expect(type).to.contain(urlPart);
+
+                });
+
+            });
+        }
+    });
+});
+
+When(/^ska en ny sida öppnas och urlen innehålla diagnoskod som "([^"]*)"$/, (type) => {
+    if (srsdata.diagnoskoder[type] !== undefined) {
+        type = srsdata.diagnoskoder[type].toLowerCase();
+    }
+
+    browser.ignoreSynchronization = true;
+    //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
+
+    return helpers.pageReloadDelay().then(function() {
+        return getWindowHandles();
+    }).then(function(handles) {
+        if (handles.length < 2) {
+            throw ('bara 1 flik är öppen');
+        } else {
+            return switchToWindow(handles[1], true).then(function() {
+                return testTypeOfUrl(handles[0], type).then((urlPart) => {
+                    return expect(type).to.contain(urlPart);
+
+                });
+            });
+        }
+    });
+});
+
+When(/^ska en ny sida öppnas och urlen innehålla diagnoskod som "([^"]*)" med postfix "([^"]*)"$/, (type, postfix) => {
+    if (srsdata.diagnoskoder[type] !== undefined) {
+        type = srsdata.diagnoskoder[type].toLowerCase();
+    }
+
+    browser.ignoreSynchronization = true;
+    //Ignorera angular sync om det inte är en angular app. Och vänta på att sidan laddar.
+    return helpers.pageReloadDelay().then(function() {
+        return getWindowHandles();
+    }).then(function(handles) {
+        if (handles.length < 2) {
+            throw ('bara 1 flik är öppen');
+        } else {
+            return switchToWindow(handles[1], true).then(function() {
+                return testTypeOfUrl(handles[0], type, postfix).then((urlPart) => {
+                    return expect(type).to.contain(urlPart);
+                });
+            });
+        }
+    });
+});
+
+When(/^jag klickar på knappen "([^"]*)" vid (samtycke)$/, (knappText, type) => {
+    if (isQuestionmarkBtn(knappText)) {
+        return clickQuestionmarkBtn(type).then(function() {
+            logger.info('OK - knappText: ' + knappText + ', ' + type);
+            return helpers.mediumDelay();
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, knappText: ' + knappText + ', ' + type);
+        });
+    } else {
+        return clickReadMoreBtn(type).then(function() {
+            logger.info('OK - knappText: ' + knappText + ', ' + type);
+            return helpers.mediumDelay();
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, knappText: ' + knappText + ', ' + type);
+        });
+    }
+});
+
+When(/^jag klickar på knappen "([^"]*)" vid (prediktionsmeddelandet)$/, (knappText, type) => {
+    if (isQuestionmarkBtn(knappText)) {
+        return clickQuestionmarkBtn(type).then(function() {
+            logger.info('OK - knappText: ' + knappText + ', ' + type);
+            return helpers.mediumDelay();
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, knappText: ' + knappText + ', ' + type);
+        });
+    } else {
+        return clickReadMoreBtn(type).then(function() {
+            logger.info('OK - knappText: ' + knappText + ', ' + type);
+            return helpers.mediumDelay();
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, knappText: ' + knappText + ', ' + type);
+        });
+    }
+});
+
+When(/^jag klickar på knappen "([^"]*)" vid (åtgärder)$/, (knappText, type) => {
+    return clickReadMoreBtn(type).then(function() {
+        logger.info('OK - knappText: ' + knappText + ', ' + type);
+        return helpers.mediumDelay();
+    }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, knappText: ' + knappText + ', ' + type);
+    });
+});
+
+When(/^jag klickar på knappen "([^"]*)" vid (statistik)$/, (knappText, type) => {
+    return clickReadMoreBtn(type).then(function() {
+        logger.info('OK - knappText: ' + knappText + ', ' + type);
+        return helpers.mediumDelay();
+    }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, knappText: ' + knappText + ', ' + type);
+    });
+});
+
+When(/^jag trycker på knappen "Visa"$/, () => helpers.moveAndSendKeys(lisjpUtkast.srs.visaKnapp(), protractor.Key.SPACE));
+
+Then(/^ska prediktion från SRS-tjänsten visas$/, () => expect(lisjpUtkast.srs.prediktion().isDisplayed()).to.eventually.equal(true));
+
+When(/^jag trycker på fliken "(Statistik|Åtgärder)"$/,
+    flikText => lisjpUtkast.srs.flik(flikText).sendKeys(protractor.Key.ENTER)
+);
+
+Then(/^ska en statistikbild från SRS-tjänsten visas för en diagnoskod som "([^"]*)"$/, (srsStatus) => lisjpUtkast.srs.statistik().isDisplayed()
+    .then((isDisplayed) => isDisplayed ? lisjpUtkast.srs.statistik().element(by.tagName('img')).getAttribute('src') : 'unknown url')
+    .then((srcUrl) => expect(srcUrl.indexOf(srsdata.diagnoskoder[srsStatus]) > -1).to.equal(true))
+);
+
+Then(/^ska felmeddelandet "(.*)" visas$/,
+    text => expect(findLabelContainingText(text).isDisplayed()).to.eventually.equal(true)
+);
+
+Then(/^ska (OBS-åtgärder|REK-åtgärder) från "(.*)" visas$/, function(typ, listNamn) {
+    logger.silly('Förväntade ' + typ + ': ' + srsdata.atgarder[listNamn]);
+    var promiseArr = [];
+    var elm;
+    if (typ === 'OBS-åtgärder') {
+        elm = lisjpUtkast.srs.atgarderObs();
+    } else if (typ === 'REK-åtgärder') {
+        elm = lisjpUtkast.srs.atgarderRek();
+    }
+    srsdata.atgarder[listNamn].forEach(function(atgard, index) {
+        promiseArr.push(
+            expect(
+                elm.getText().then(function(txt) {
+                    txt = txt.replace(/ \n/g, ' '); // Mellanrum innan radbrytning
+                    return txt.replace(/\n/g, ' '); // utan mellanrum
+                })
+            ).to.eventually.contain(srsdata.atgarder[listNamn][index])
+        );
+    });
+    return Promise.all(promiseArr);
+});
