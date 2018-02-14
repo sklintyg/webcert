@@ -34,13 +34,13 @@ function sendEnterToElement(el) {
     };
 }
 
-var intellektuellForm = element(by.id('form_funktionsnedsattningIntellektuell'));
-var kommunikationForm = element(by.id('form_funktionsnedsattningKommunikation'));
-var koncentrationForm = element(by.id('form_funktionsnedsattningKoncentration'));
-var psykiskForm = element(by.id('form_funktionsnedsattningPsykisk'));
-var horselTalForm = element(by.id('form_funktionsnedsattningSynHorselTal'));
-var balansForm = element(by.id('form_funktionsnedsattningBalansKoordination'));
-var annanForm = element(by.id('form_funktionsnedsattningAnnan'));
+var intellektuellForm = element(by.id('form_check-funktionsnedsattningIntellektuell'));
+var kommunikationForm = element(by.id('form_check-funktionsnedsattningKommunikation'));
+var koncentrationForm = element(by.id('form_check-funktionsnedsattningKoncentration'));
+var psykiskForm = element(by.id('form_check-funktionsnedsattningPsykisk'));
+var horselTalForm = element(by.id('form_check-funktionsnedsattningSynHorselTal'));
+var balansForm = element(by.id('form_check-funktionsnedsattningBalansKoordination'));
+var annanForm = element(by.id('form_check-funktionsnedsattningAnnan'));
 
 var avslutadForm = element(by.id('form_avslutadBehandling'));
 var planeradForm = element(by.id('form_planeradBehandling'));
