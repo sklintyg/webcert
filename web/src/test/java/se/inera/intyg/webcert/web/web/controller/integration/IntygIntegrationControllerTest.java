@@ -18,20 +18,26 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
@@ -52,7 +58,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,6 +74,7 @@ public class IntygIntegrationControllerTest {
     private final String INTYGSTYP = "lisjp";
     private final String INTYGSID = "A1234-B5678-C90123-D4567";
     private final String ENHETSID = "11111";
+    private UriInfo uriInfo;
 
     @Mock
     private IntegrationService integrationService;
@@ -73,12 +82,15 @@ public class IntygIntegrationControllerTest {
     @Mock
     private CommonAuthoritiesResolver authoritiesResolver;
 
+    @Mock
+    private ReferensService referensService;
+
     @InjectMocks
     private IntygIntegrationController testee;
 
-    @Test
-    public void invalidParametersShouldNotFailOnNullPatientInfo() {
-        UriInfo uriInfo = mock(UriInfo.class);
+    @Before
+    public void setup() {
+        uriInfo = mock(UriInfo.class);
         UriBuilder uriBuilder = mock(UriBuilder.class);
         when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
         when(uriBuilder.replacePath(anyString())).thenReturn(uriBuilder);
@@ -88,7 +100,46 @@ public class IntygIntegrationControllerTest {
         when(integrationService.prepareRedirectToIntyg(anyString(), anyString(), anyObject()))
                 .thenReturn(createPrepareRedirectToIntyg());
         when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+    }
 
+    @Test
+    public void referenceGetsPersistedCorrectly() {
+        when(referensService.referensExists(eq(INTYGSID))).thenReturn(false);
+
+        String ref = "referens";
+        IntegrationParameters parameters = new IntegrationParameters(ref, null, ALTERNATE_SSN, null, null, null, null,
+                null, null, false, false, false, false);
+
+        WebCertUser user = createDefaultUser();
+        user.setParameters(parameters);
+
+        Response res = testee.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
+
+        assertEquals(Response.Status.TEMPORARY_REDIRECT.getStatusCode(), res.getStatus());
+
+        verify(referensService).saveReferens(eq(INTYGSID), eq(ref));
+    }
+
+    @Test
+    public void referenceNotPersistedIfNotSupplied() {
+        when(referensService.referensExists(eq(INTYGSID))).thenReturn(false);
+
+        String ref = "referens";
+        IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
+                null, null, false, false, false, false);
+
+        WebCertUser user = createDefaultUser();
+        user.setParameters(parameters);
+
+        Response res = testee.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
+
+        assertEquals(Response.Status.TEMPORARY_REDIRECT.getStatusCode(), res.getStatus());
+
+        verify(referensService, times(0)).saveReferens(eq(INTYGSID), eq(ref));
+    }
+
+    @Test
+    public void invalidParametersShouldNotFailOnNullPatientInfo() {
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null, null, null, false,
                 false, false, false);
 

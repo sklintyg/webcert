@@ -28,6 +28,8 @@ public class CreateNewDraftRequest {
 
     private String intygType;
 
+    private String referens;
+
     private UtkastStatus status;
 
     private Patient patient;
@@ -40,13 +42,18 @@ public class CreateNewDraftRequest {
 
     public CreateNewDraftRequest(String intygId, String intygType, UtkastStatus status, HoSPersonal hosPerson,
             Patient patient) {
+        this(intygId, intygType, status, hosPerson, patient, null);
+    }
+
+    public CreateNewDraftRequest(String intygId, String intygType, UtkastStatus status, HoSPersonal hosPerson,
+                                 Patient patient, String referens) {
         this.intygId = intygId;
         this.intygType = intygType;
+        this.referens = referens;
         this.status = status;
         this.hosPerson = hosPerson;
         this.patient = patient;
     }
-
     public String getIntygId() {
         return intygId;
     }
@@ -85,5 +92,13 @@ public class CreateNewDraftRequest {
 
     public void setHosPerson(HoSPersonal hosPerson) {
         this.hosPerson = hosPerson;
+    }
+
+    public String getReferens() {
+        return referens;
+    }
+
+    public void setReferens(String referens) {
+        this.referens = referens;
     }
 }

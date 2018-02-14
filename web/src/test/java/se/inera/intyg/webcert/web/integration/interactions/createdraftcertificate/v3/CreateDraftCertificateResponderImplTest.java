@@ -320,6 +320,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         utlatande.setTypAvIntyg(utlTyp);
         utlatande.setSkapadAv(hosPerson);
         utlatande.setPatient(patType);
+        utlatande.setRef("Test-ref");
 
         CreateDraftCertificateType certificateType = new CreateDraftCertificateType();
         certificateType.setIntyg(utlatande);

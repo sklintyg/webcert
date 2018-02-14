@@ -145,7 +145,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+            Utkast savedUtkast = saveAndNotify(builderResponse);
 
             monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -188,7 +188,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse);
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -224,7 +224,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+            Utkast savedUtkast = saveAndNotify(builderResponse);
 
             monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -290,7 +290,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, originalIntygId, true,
                     coherentJournaling);
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse);
 
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
@@ -305,7 +305,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     // Duplicate in IntygServiceImpl, refactor.
-    private void verifyNotReplacedWithSigned(String originalIntygId, String operation, UtkastStatus... unallowedStates) {
+    private void verifyNotReplacedWithSigned(String originalIntygId, String operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
                 RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED));
         if (replacedByRelation.isPresent()) {
@@ -329,7 +329,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    // INTYG-3620
     private void verifyNotComplementedWithSigned(String originalIntygId, String operation) {
         Optional<WebcertCertificateRelation> complementedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
                 RelationKod.KOMPLT, Arrays.asList(UtkastStatus.SIGNED));
@@ -343,23 +342,16 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse, WebCertUser user) {
+    private Utkast saveAndNotify(CopyUtkastBuilderResponse builderResponse) {
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
-        // notify
-        String reference = user.getParameters() != null ? user.getParameters().getReference() : null;
-        notificationService.sendNotificationForDraftCreated(savedUtkast, reference);
+        notificationService.sendNotificationForDraftCreated(savedUtkast);
 
         LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
         logService.logCreateIntyg(logRequest);
         return savedUtkast;
-    }
-
-    private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse) {
-        WebCertUser user = userService.getUser();
-        return saveAndNotify(originalIntygId, builderResponse, user);
     }
 
     private CopyUtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCompletionCopyRequest copyRequest, String originalIntygId,

@@ -260,7 +260,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
 
         verify(intygService).storeIntyg(completedUtkast);
-        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class), any(String.class));
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
 
@@ -307,7 +307,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
 
         verify(intygService).storeIntyg(completedUtkast);
-        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class), any(String.class));
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
 
@@ -338,7 +338,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.clientGrpSignature(ticket.getId(), signature, user);
 
         verify(intygService).storeIntyg(completedUtkast);
-        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class), any(String.class));
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
 
@@ -370,7 +370,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.clientGrpSignature(ticket.getId(), signature, user);
 
         verify(intygService).storeIntyg(completedUtkast);
-        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class), any(String.class));
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
 
@@ -394,7 +394,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
 
         verify(intygService).storeIntyg(completedUtkast);
-        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class), any(String.class));
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class));
 
@@ -414,7 +414,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
 
         verify(intygService).storeIntyg(completedUtkast);
-        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class), any(String.class));
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class));
 

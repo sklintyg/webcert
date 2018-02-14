@@ -76,6 +76,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -133,6 +134,7 @@ public class IntygServiceTest {
     private static final String LOGICAL_ADDRESS = "<logicalAddress>";
 
     private static final String USER_REFERENCE = "some-ref";
+    private static final String REFERENCE = "reference";
 
     private ListCertificatesForCareResponseType listResponse;
     private VardpersonReferens vardpersonReferens;
@@ -191,6 +193,9 @@ public class IntygServiceTest {
 
     @Mock
     private UtkastIntygDecorator utkastIntygDecorator;
+
+    @Mock
+    private ReferensService referensService;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -284,6 +289,11 @@ public class IntygServiceTest {
     @Before
     public void setupPatientDetailsResolver() {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+    }
+
+    @Before
+    public void setupReferensService() {
+        when(referensService.getReferensForIntygsId(anyString())).thenReturn(REFERENCE);
     }
 
     @Test
@@ -798,7 +808,7 @@ public class IntygServiceTest {
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
-        verify(notificationService).sendNotificationForIntygSent(intygId, USER_REFERENCE);
+        verify(notificationService).sendNotificationForIntygSent(intygId);
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
         verify(intygRepository).save(utkastCaptor.capture());
         assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
@@ -838,7 +848,7 @@ public class IntygServiceTest {
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService, never()).closeCompletionsAsHandled(relationIntygId, intygTyp);
-        verify(notificationService).sendNotificationForIntygSent(intygId, USER_REFERENCE);
+        verify(notificationService).sendNotificationForIntygSent(intygId);
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
         verify(intygRepository).save(utkastCaptor.capture());
         assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
@@ -865,11 +875,10 @@ public class IntygServiceTest {
         final String intygType = "intygType";
         final String intygId = "intygId";
         final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
-        final String reference = "reference";
+
         Handelse handelse = new Handelse();
         handelse.setTimestamp(localDateTime);
         handelse.setCode(HandelsekodEnum.SKAPAT);
-        handelse.setRef(reference);
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
@@ -898,7 +907,7 @@ public class IntygServiceTest {
         assertEquals(6, res.get(0).getReceivedQuestions().getEjBesvarade());
         assertEquals(7, res.get(0).getReceivedQuestions().getBesvarade());
         assertEquals(8, res.get(0).getReceivedQuestions().getHanterade());
-        assertEquals(reference, res.get(0).getRef());
+        assertEquals(REFERENCE, res.get(0).getRef());
     }
 
     @Test
