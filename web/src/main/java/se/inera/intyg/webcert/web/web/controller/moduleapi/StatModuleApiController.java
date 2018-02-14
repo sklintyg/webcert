@@ -90,7 +90,7 @@ public class StatModuleApiController extends AbstractApiController {
             LOG.warn("getStatistics was called, but webcertUser was null!");
             return Response.ok(statsResponse).build();
         } else if (UserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
-            LOG.info("getStatistics was called, but webcertUser origin is DJUPINTEGRATION - returning empty answer");
+            LOG.debug("getStatistics was called, but webcertUser origin is DJUPINTEGRATION - returning empty answer");
             return Response.ok(statsResponse).build();
         }
 
