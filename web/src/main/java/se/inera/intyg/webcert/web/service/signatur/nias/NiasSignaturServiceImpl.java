@@ -89,8 +89,9 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
         WebCertUser webCertUser = webCertUserService.getUser();
         validateWebCertUser(webCertUser);
 
-        String personId = webCertUser.getPersonId();
-        validatePersonId(personId);
+        // Try to use personnummer. If not possible, use hsaId instead. This is a temporary hack for testing.
+        String personId = webCertUser.getPersonId() != null ? webCertUser.getPersonId() : webCertUser.getHsaId();
+      //  validatePersonId(personId);
 
         SignaturTicket draftHash = signaturService.createDraftHash(intygId, utkast.getVersion());
 

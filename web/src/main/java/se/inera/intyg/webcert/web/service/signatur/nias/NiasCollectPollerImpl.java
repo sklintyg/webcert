@@ -102,7 +102,15 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                     switch (resp.getProgressStatus()) {
                     case "COMPLETE":
                         String subjectSerialNumber = resp.getUserInfo().getPersonalNumber();
-                        if (!subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getPersonId().replaceAll("\\-", ""))) {
+                        boolean isValid = false;
+                        if (webCertUser.getPersonId() != null) {
+                            isValid = subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getPersonId().replaceAll("\\-", ""));
+                        }
+                        if (!isValid && webCertUser.getHsaId() != null) {
+                            isValid = subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getHsaId().replaceAll("\\-", ""));
+                        }
+
+                        if (!isValid) {
                             throw new IllegalStateException(
                                     "Could not process NIAS Collect COMPLETE response, subject serialNumber did not match "
                                             + "issuing WebCertUser.");

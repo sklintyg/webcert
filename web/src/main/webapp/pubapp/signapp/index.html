@@ -138,7 +138,9 @@
                   <button ng-disabled="signingStarted" class="btn btn-primary" ng-click="startNiasSign()">Signera med NetiD Access Server</button>
                 </div>
               </div>
-              <div ng-if="isNias">
+
+              <!--
+              <div>
                  <hr/>
                 <div>Webcert ticket status: <strong>{{ statusMessage }} </strong></div>
                 <div>Fejksignering med NetiD Access Server startad.
@@ -167,6 +169,7 @@
                 </table>
 
               </div>
+              -->
 
             </div>
 
@@ -174,7 +177,6 @@
           </div>
 
 
-          <h3>Stuff</h3>
           <div ng-if="isNetID">
             <p class="well">
               Fejksignering med NetID startad. Välj slutför eller avbryt nedan.
@@ -199,6 +201,61 @@
 
 
 
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div>
+            <h2>Pågående EFOS-signeringar</h2>
+            <hr/>
+            <table class="table table-striped">
+              <thead>
+              <th>Signerande läkare</th>
+              <th>Order ref.</th>
+              <th>Status</th>
+              <th>Åtgärd</th>
+              </thead>
+              <tbody>
+              <tr ng-repeat="d in ongoingSignatures">
+                <td>{{ d.personalNumber}}</td>
+                <td>{{ d.orderRef}}</td>
+                <td>{{ d.status }}</td>
+                <td>
+                  <button class="btn btn-success" ng-click="setNiasSigneringState(d.orderRef, 'COMPLETE')">Slutför</button>
+                  <button class="btn btn-default" ng-click="setNiasSigneringState(d.orderRef, 'USER_SIGN')">Påbörjad</button>
+                  <button class="btn btn-error" ng-click="setNiasSigneringState(d.orderRef, 'USER_CANCEL')">Avbryt</button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+          </div>
+          <hr>
+          <div>
+            <h2>Pågående BankID-signeringar</h2>
+            <hr/>
+            <table class="table table-striped">
+              <thead>
+              <th>Transaktions-ID</th>
+              <th>Order ref.</th>
+              <th>Status</th>
+              <th>Åtgärd</th>
+              </thead>
+              <tbody>
+              <tr ng-repeat="d in ongoingGrpSignatures">
+                <td>{{ d.transactionId}}</td>
+                <td>{{ d.orderRef}}</td>
+                <td>{{ d.grpSignatureStatus }}</td>
+                <td>
+                  <button class="btn btn-success" ng-click="setGrpStatus(d.orderRef, 'COMPLETE')">Slutför</button>
+                  <button class="btn btn-default" ng-click="setGrpStatus(d.orderRef, 'USER_SIGN')">Påbörjad</button>
+                  <button class="btn btn-error" ng-click="setGrpStatus(d.orderRef, 'USER_CANCEL')">Avbryt</button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+          </div>
         </div>
       </div>
 
