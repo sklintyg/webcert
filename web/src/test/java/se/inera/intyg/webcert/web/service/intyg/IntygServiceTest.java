@@ -43,6 +43,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -105,6 +106,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -1040,6 +1042,102 @@ public class IntygServiceTest {
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertTrue(intygData.isDeceased());
+    }
+
+    @Test
+    public void testThatCompletePatientAddressIsUsed() throws Exception {
+        // Given
+        String postadress = "ttipafpinu-postadress";
+        String postort = "ttipafpinu-postort";
+        String postnummer= "ttipafpinu-postnummer";
+        Patient patientWithIncompleteAddress = buildPatient(false, false);
+        patientWithIncompleteAddress.setPostadress(postadress);
+        patientWithIncompleteAddress.setPostort(postort);
+        patientWithIncompleteAddress.setPostnummer(postnummer);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+
+        // When
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+        // Then
+        ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        assertEquals(postadress, argumentCaptor.getValue().getPostadress());
+        assertEquals(postort, argumentCaptor.getValue().getPostort());
+        assertEquals(postnummer, argumentCaptor.getValue().getPostnummer());
+    }
+
+    @Test
+    public void testThatIncompletePatientAddressIsNotUsed() throws Exception {
+        // Given
+        String postadress = "ttipafpinu-postadress";
+        String postort = null;
+        String postnummer= null;
+        Patient patientWithIncompleteAddress = buildPatient(false, false);
+        patientWithIncompleteAddress.setPostadress(postadress);
+        patientWithIncompleteAddress.setPostort(postort);
+        patientWithIncompleteAddress.setPostnummer(postnummer);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+
+        // When
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+        // Then
+        ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        assertNotEquals(postadress, argumentCaptor.getValue().getPostadress());
+    }
+
+    @Test
+    public void testThatCompletePatientAddressIsUsedWhenIntygtjanstIsUnavailable() throws Exception {
+        // Given
+        when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(new WebServiceException());
+        when(intygRepository.findOneByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(getIntyg(CERTIFICATE_ID,
+                LocalDateTime.now(), null));
+
+        String postadress = "ttipafpinuwiiu-postadress";
+        String postort = "ttipafpinuwiiu-postort";
+        String postnummer= "ttipafpinuwiiu-postnummer";
+        Patient patientWithIncompleteAddress = buildPatient(false, false);
+        patientWithIncompleteAddress.setPostadress(postadress);
+        patientWithIncompleteAddress.setPostort(postort);
+        patientWithIncompleteAddress.setPostnummer(postnummer);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+
+        // When
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+        // Then
+        ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        assertEquals(postadress, argumentCaptor.getValue().getPostadress());
+        assertEquals(postort, argumentCaptor.getValue().getPostort());
+        assertEquals(postnummer, argumentCaptor.getValue().getPostnummer());
+    }
+
+    @Test
+    public void testThatIncompletePatientAddressIsNotUsedWhenIntygtjanstIsUnavailable() throws Exception {
+        // Given
+        when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(new WebServiceException());
+        when(intygRepository.findOneByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(getIntyg(CERTIFICATE_ID,
+                LocalDateTime.now(), null));
+
+        String postadress = "ttipafpinuwiiu-postadress";
+        String postort = "";
+        String postnummer= "";
+        Patient patientWithIncompleteAddress = buildPatient(false, false);
+        patientWithIncompleteAddress.setPostadress(postadress);
+        patientWithIncompleteAddress.setPostort(postort);
+        patientWithIncompleteAddress.setPostnummer(postnummer);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+
+        // When
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+        // Then
+        ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        assertNotEquals(postadress, argumentCaptor.getValue().getPostadress());
     }
 
     private IntygPdf buildPdfDocument() {
