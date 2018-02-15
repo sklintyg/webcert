@@ -183,10 +183,6 @@ module.exports = {
 
 
                 patient.id = insertDashInPnr(patient.id);
-                /*if (patient.id.indexOf('-') === -1) {
-                    patient.id = patient.id.substring(0, 8) + '-' + patient.id.substring(8, 12);
-                    //yyyymmdd-nnnn format.
-                }*/
 
                 var query = 'SELECT INTYGS_ID, ENHETS_ID, SKAPAD_AV_HSAID, STATUS, STATE';
                 query += ' FROM ' + process.env.DATABASE_NAME + '.INTYG ';
@@ -201,7 +197,6 @@ module.exports = {
                 query += ' LIMIT 100';
 
                 logger.info('Hämtar intyg från webcert på patient ' + patient.id);
-                console.log(patient);
                 logger.silly('query: ');
                 logger.silly(query);
 
@@ -211,8 +206,6 @@ module.exports = {
                         if (err) {
                             throw (err);
                         }
-                        console.log(fields);
-                        console.log(rows);
                         resolve(rows);
                     });
             });
@@ -226,10 +219,6 @@ module.exports = {
 
 
                 patient.id = insertDashInPnr(patient.id);
-                /*if (patient.id.indexOf('-') === -1) {
-                    patient.id = patient.id.substring(0, 8) + '-' + patient.id.substring(8, 12);
-                    //yyyymmdd-nnnn format.
-                }*/
 
                 var query = 'SELECT INTYGS_ID, ENHETS_ID, SKAPAD_AV_HSAID, STATUS';
                 query += ' FROM ' + process.env.DATABASE_NAME + '.INTYG WHERE INTYGS_TYP = "' + intygShortCode + '"';
@@ -238,7 +227,7 @@ module.exports = {
                 query += ' LIMIT 100';
 
                 logger.info('Hämtar utkast från webcert på patient ' + patient.id);
-                console.log(patient);
+
                 logger.silly('query: ');
                 logger.silly(query);
 
@@ -248,8 +237,6 @@ module.exports = {
                         if (err) {
                             throw (err);
                         }
-                        console.log(fields);
-                        console.log(rows);
                         resolve(rows);
                     });
             });
