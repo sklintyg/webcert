@@ -48,7 +48,6 @@ describe('Validera makulering av luae_na Intyg', function() {
             SokSkrivValjIntyg.selectIntygById(intygsId);
 
             expect(IntygPage.isAt()).toBeTruthy();
-            expect(IntygPage.makulera.statusRevokeInprogress.isPresent()).toBeFalsy();
             expect(IntygPage.makulera.statusRevoked.isPresent()).toBeFalsy();
         });
 
@@ -64,11 +63,6 @@ describe('Validera makulering av luae_na Intyg', function() {
                 expect(items.length).toBe(0);
             });
 
-            expect(IntygPage.makulera.statusRevokeInprogress.isDisplayed()).toBeTruthy();
-        });
-
-        it('After page reload the intyg should be revoked in IT', function() {
-            browser.refresh();
             expect(IntygPage.makulera.statusRevoked.isDisplayed()).toBeTruthy();
         });
 

@@ -64,7 +64,7 @@ describe('Skapa ärende luse intyg', function() {
     describe('send intyg', function() {
         it('click send intyg', function() {
             LuseIntygPage.send().then(function(){
-                expect(LuseIntygPage.skicka.statusSendInprogress.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.skicka.statusSent.isDisplayed()).toBeTruthy();
                 expect(LuseIntygPage.getNewArendeBtn().isPresent()).toBeTruthy();
             });
         });

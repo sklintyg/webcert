@@ -43,15 +43,13 @@ var BaseIntyg = JClass._extend({
             dialogRadioAnnatAllvarligtFel: element(by.id('reason-ANNAT_ALLVARLIGT_FEL')),
             dialogRadioAnnatAllvarligtFelClarification: element(by.id('clarification-ANNAT_ALLVARLIGT_FEL')),
 
-            statusRevokeInprogress: element(by.id('certificate-is-revoked-message-text')),
-            statusRevoked: element(by.id('certificate-revoked-it-message-text'))
+            statusRevoked: element(by.css('#intygstatus1 [data-intyg-status-code="is-004"]'))
         };
         this.patientNamnOchPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.skicka = {
             knapp: element(by.id('sendBtn')),
             dialogKnapp: element(by.id('button1send-dialog')),
-            statusSendInprogress: element(by.id('certificate-is-on-sendqueue-to-it-message-text')),
-            statusSent: element(by.id('certificate-is-sent-to-recipient-message-text'))
+            statusSent: element(by.css('#intygstatus1 [data-intyg-status-code="is-002"]'))
         };
         this.fornya = {
             button: element(by.id('fornyaBtn')),
@@ -210,7 +208,7 @@ var BaseIntyg = JClass._extend({
         return element(by.id('arende-' + subgroup + '-' + id));
     },
     getIntygHasKompletteringMessage: function() {
-        return element(by.id('intyg-has-komplettering-message'));
+        return element(by.css('#intygstatus1 [data-intyg-status-code="is-006"]'));
     },
     getIntygKompletteringFrageText: function(frageId, index) {
         return element(by.id('inline-komplettering-' + frageId + '-' + index));
