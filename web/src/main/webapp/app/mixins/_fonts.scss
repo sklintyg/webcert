@@ -1,30 +1,160 @@
+
 @font-face {
-  font-family: 'Roboto';
-  src: url('/web/webjars/common/webcert/fonts/Roboto-Regular.ttf')  format('truetype');
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 300;
+  src: local('Roboto Light'), local('Roboto-Light'),
+  url('/web/webjars/common/webcert/fonts/Roboto-Light.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/web/webjars/common/webcert/fonts/Roboto-Light.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 @font-face {
-  font-family: 'RobotoLight';
-  src: url('/web/webjars/common/webcert/fonts/Roboto-Light.ttf')  format('truetype');
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'),
+  url('/web/webjars/common/webcert/fonts/Roboto-Regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/web/webjars/common/webcert/fonts/Roboto-Regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
-$font-0: 'Roboto';
-$font-01: 'RobotoLight';
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  src: local('Roboto Medium'), local('Roboto-Medium'),
+  url('/web/webjars/common/webcert/fonts/Roboto-Medium.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/web/webjars/common/webcert/fonts/Roboto-Medium.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 700;
+  src: local('Roboto Bold'), local('Roboto-Bold'),
+  url('/web/webjars/common/webcert/fonts/Roboto-Bold.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/web/webjars/common/webcert/fonts/Roboto-Bold.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+//Font priority
+$font-0: Roboto;
 $font-1: helvetica;
 $font-2: arial;
 $font-3: sans-serif;
 
-@mixin font-variant($font-size: 14px, $font-weight: 400) {
+
+@mixin font-variant-light($font-size: 14px) {
   font-family: $font-0, $font-1, $font-2, $font-3;
   font-size: $font-size;
-  font-weight: $font-weight;
+  font-weight: 300;
 }
 
-@mixin font-variant-light($font-size: 14px, $font-weight: 300) {
-  font-family: $font-01, $font-1, $font-2, $font-3;
+@mixin font-variant-regular($font-size: 14px) {
+  font-family: $font-0, $font-1, $font-2, $font-3;
   font-size: $font-size;
-  font-weight: $font-weight;
+  font-weight: 400;
 }
+
+@mixin font-variant-medium($font-size: 14px) {
+  font-family: $font-0, $font-1, $font-2, $font-3;
+  font-size: $font-size;
+  font-weight: 500;
+}
+
+@mixin font-variant-bold($font-size: 14px) {
+  font-family: $font-0, $font-1, $font-2, $font-3;
+  font-size: $font-size;
+  font-weight: 700;
+}
+
+
+/*
+Placeholders for the typography classes.
+
+Note that the typo classes does NOT specify color or background, as this is not part of
+the wc-typo-xx specs (https://inera-certificate.atlassian.net/wiki/spaces/IT/pages/166953134/A+-+Typografi)
+
+Color and background should be specified at the extension point, eg:
+
+.vardgivare {
+      @extend %wc-typo-05;
+      color: $wc-color-09;
+ }
+
+ */
+
+%wc-typo-01 {
+  @include font-variant-light(25px);
+}
+
+%wc-typo-02 {
+  @include font-variant-medium(18px);
+}
+
+%wc-typo-03 {
+  @include font-variant-light(18px);
+}
+
+%wc-typo-04 {
+  @include font-variant-bold(18px);
+}
+
+%wc-typo-05 {
+  @include font-variant-medium(16px);
+}
+
+%wc-typo-06 {
+  @include font-variant-medium(14px);
+}
+
+%wc-typo-07 {
+  @include font-variant-regular(14px);
+}
+
+%wc-typo-08 {
+  @include font-variant-regular(14px);
+  text-decoration: underline;
+}
+
+%wc-typo-09 {
+  @include font-variant-regular(12px);
+}
+
+%wc-typo-10 {
+  @include font-variant-regular(16px);
+}
+
+%wc-typo-11 {
+  @include font-variant-regular(12px);
+  font-style: italic;
+}
+
+%wc-typo-12 {
+  @include font-variant-regular(14px);
+  font-style: italic;
+}
+
+%wc-typo-13 {
+  @include font-variant-bold(12px);
+}
+
+//WC - Demo font styles - ONLY to be used in views/font-demo.html!
+.font-variant-light {
+  @include font-variant-light(24px);
+  font-size: inherit;
+}
+.font-variant-regular {
+  @include font-variant-regular(24px);
+  font-size: inherit;
+}
+.font-variant-medium {
+  @include font-variant-medium(24px);
+  font-size: inherit;
+}
+.font-variant-bold {
+  @include font-variant-bold(24px);
+  font-size: inherit;
+}
+//--------------------------------------
 
 %fonts {
   font-size: 14px;
@@ -43,61 +173,6 @@ $font-3: sans-serif;
   url(/fonts/MaterialIcons-Regular.woff) format('woff'),
   url(/fonts/MaterialIcons-Regular.ttf) format('truetype');
 }
-
-
-%wc-typo-01 {
-  @include font-variant-light(25px, 400);
-}
-
-%wc-typo-02 {
-  @include font-variant(18px, 600);
-}
-
-%wc-typo-03 {
-  @include font-variant-light(18px, 400);
-}
-
-%wc-typo-04 {
-  @include font-variant(18px, 800);
-}
-
-%wc-typo-05 {
-  @include font-variant(16px, 600);
-}
-
-%wc-typo-06 {
-  @include font-variant(14px, 600);
-}
-
-%wc-typo-07 {
-  @include font-variant(14px, 400);
-}
-
-%wc-typo-08 {
-  @include font-variant(14px, 400);
-  text-decoration: underline;
-  //specify underline here? seems to always be used in link context, so we get underline from that anyway..
-}
-
-%wc-typo-09 {
-  @include font-variant(12px, 400);
-}
-
-%wc-typo-10 {
-  @include font-variant(14px, 600);
-}
-
-%wc-typo-12 {
-  @include font-variant(14px, 400);
-  font-style: italic;
-}
-
-%wc-typo-13 {
-  @include font-variant(12px, 600);
-}
-
-
-
 
 .material-icons {
   font-family: 'Material Icons';
