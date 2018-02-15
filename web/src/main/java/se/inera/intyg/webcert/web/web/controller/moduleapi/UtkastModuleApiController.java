@@ -205,11 +205,15 @@ public class UtkastModuleApiController extends AbstractApiController {
     // Copied from IntygServiceImpl, INTYG-5380
     private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
         if (oldPatientData == null) {
-            return;
+            newPatientData.setPostadress(null);
+            newPatientData.setPostnummer(null);
+            newPatientData.setPostort(null);
+        } else {
+            newPatientData.setPostadress(oldPatientData.getPostadress());
+            newPatientData.setPostnummer(oldPatientData.getPostnummer());
+            newPatientData.setPostort(oldPatientData.getPostort());
+
         }
-        newPatientData.setPostadress(oldPatientData.getPostadress());
-        newPatientData.setPostnummer(oldPatientData.getPostnummer());
-        newPatientData.setPostort(oldPatientData.getPostort());
     }
 
     private void verifySekretessmarkering(String intygsTyp, String enhetsId, Patient resolvedPatient) {

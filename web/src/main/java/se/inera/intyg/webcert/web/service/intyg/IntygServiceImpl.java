@@ -703,11 +703,15 @@ public class IntygServiceImpl implements IntygService {
 
     private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
         if (oldPatientData == null) {
-            return;
+            newPatientData.setPostadress(null);
+            newPatientData.setPostnummer(null);
+            newPatientData.setPostort(null);
+        } else {
+            newPatientData.setPostadress(oldPatientData.getPostadress());
+            newPatientData.setPostnummer(oldPatientData.getPostnummer());
+            newPatientData.setPostort(oldPatientData.getPostort());
+
         }
-        newPatientData.setPostadress(oldPatientData.getPostadress());
-        newPatientData.setPostnummer(oldPatientData.getPostnummer());
-        newPatientData.setPostort(oldPatientData.getPostort());
     }
 
     /**
