@@ -44,8 +44,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import com.secmaker.netid.nias.v1.ResultCollect;
-import com.secmaker.netid.nias.v1.SignResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +56,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.secmaker.netid.nias.v1.AuthenticateResponse;
+import com.secmaker.netid.nias.v1.ResultCollect;
+import com.secmaker.netid.nias.v1.SignResponse;
 
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;

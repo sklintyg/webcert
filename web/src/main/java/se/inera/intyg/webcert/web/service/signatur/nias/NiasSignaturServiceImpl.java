@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.signatur.nias;
 
 import java.io.StringReader;
@@ -34,7 +52,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Service
 public class NiasSignaturServiceImpl implements NiasSignaturService {
 
-    private  static final Logger LOG = LoggerFactory.getLogger(NiasSignaturServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NiasSignaturServiceImpl.class);
 
     @Autowired
     private NetiDAccessServerSoap netiDAccessServerSoap;
@@ -63,7 +81,6 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
     @Autowired
     private XMLDSigService xmldSigService;
 
-
     @Override
     public SignaturTicket startNiasAuthentication(String intygId, long version) {
         Utkast utkast = utkastRepository.findOne(intygId);
@@ -77,7 +94,7 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
 
         SignaturTicket draftHash = signaturService.createDraftHash(intygId, utkast.getVersion());
 
-        // TODO För NetID Access Server signering så behöver vi göra en XMLDSig signatur
+        // För NetID Access Server signering så behöver vi göra en XMLDSig signatur
         // inklusive en ordentlig digest av canoniserad XML.
         // Börja med att konvertera intyget till XML-format
         String xml = utkastModelToXmlConverterService.utkastToXml(utkast);
@@ -86,7 +103,8 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
 
         SignResponse response;
         try {
-            String result = netiDAccessServerSoap.sign(personId, "Inera Webcert: Signera intyg " + utkast.getIntygsId(), new String(digestValue, Charset.forName("UTF-8")), null);
+            String result = netiDAccessServerSoap.sign(personId, "Inera Webcert: Signera intyg " + utkast.getIntygsId(),
+                    new String(digestValue, Charset.forName("UTF-8")), null);
             response = JAXB.unmarshal(new StringReader(result), SignResponse.class);
 
         } catch (Exception ex) {
@@ -132,7 +150,6 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
             throw new IllegalArgumentException("Could not send GRP authenticate request, no Utkast found for intygId '" + intygId + "'");
         }
     }
-
 
     @Override
     public String authenticate(String personId, String userNonVisibleData, String endUserInfo) {

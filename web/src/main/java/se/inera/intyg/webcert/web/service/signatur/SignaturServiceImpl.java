@@ -406,7 +406,7 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     @Override
-    public SignaturTicket clientNiasSignature(String ticketId, SignatureType signatureType, WebCertUser user) {
+    public SignaturTicket clientNiasSignature(String ticketId, SignatureType signatureType, String niasCertificate, WebCertUser user) {
         // Lookup signature ticket
         SignaturTicket ticket = ticketTracker.getTicket(ticketId);
 
@@ -433,7 +433,7 @@ public class SignaturServiceImpl implements SignaturService {
                 user.getParameters() != null ? user.getParameters().getReference() : null);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        // Note that we explictly supplies the WebCertUser here. The BankID finalization is not executed in a HTTP
+        // Note that we explictly supplies the WebCertUser here. The NIAS finalization is not executed in a HTTP
         // request context and thus we need to supply the user instance manually.
         logService.logSignIntyg(logRequest, logService.getLogUser(user));
 

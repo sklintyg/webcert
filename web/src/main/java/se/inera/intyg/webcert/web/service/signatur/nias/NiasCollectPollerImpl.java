@@ -29,6 +29,8 @@ import org.springframework.stereotype.Component;
 import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
 import com.secmaker.netid.nias.v1.ResultCollect;
 
+import se.inera.intyg.infra.xmldsig.XMLDSigService;
+import se.inera.intyg.infra.xmldsig.model.KeyInfoType;
 import se.inera.intyg.infra.xmldsig.model.SignatureType;
 import se.inera.intyg.infra.xmldsig.model.SignatureValueType;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
@@ -76,6 +78,9 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
     @Autowired
     private NetiDAccessServerSoap netiDAccessServerSoap;
 
+    @Autowired
+    private XMLDSigService xmldSigService;
+
     private final long defaultSleepMs = 3000L;
     private long ms = defaultSleepMs;
     private SecurityContext securityContext;
@@ -103,12 +108,17 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                                             + "issuing WebCertUser.");
                         }
 
-                        String signature = resp.getSignature();
                         SignatureValueType signatureValueType = new SignatureValueType();
                         signatureValueType.setValue(resp.getSignature().getBytes(Charset.forName("UTF-8")));
                         signatureType.setSignatureValue(signatureValueType);
 
-                        signaturService.clientNiasSignature(transactionId, signatureType, webCertUser);
+                        KeyInfoType keyInfo = xmldSigService.buildKeyInfoForCertificate(resp.getUserInfo().getCertificate());
+                        signatureType.setKeyInfo(keyInfo);
+
+                        // Perform validation against XSD.
+                        xmldSigService.validate(signatureType);
+
+                        signaturService.clientNiasSignature(transactionId, signatureType, resp.getUserInfo().getCertificate(), webCertUser);
                         LOG.info("NetiD Access Server Signature was successfully persisted and ticket updated.");
                         return;
                     case "USER_SIGN":

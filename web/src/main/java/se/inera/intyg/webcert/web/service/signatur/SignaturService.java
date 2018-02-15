@@ -67,8 +67,8 @@ public interface SignaturService {
      *
      * @param transactionId
      * @param signatureType
-     * @param webCertUser
-     * @return
+     * @param certificate
+     *@param webCertUser  @return
      */
-    SignaturTicket clientNiasSignature(String transactionId, SignatureType signatureType, WebCertUser webCertUser);
+    SignaturTicket clientNiasSignature(String transactionId, SignatureType signatureType, String certificate, WebCertUser webCertUser);
 }
