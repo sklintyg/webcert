@@ -71,7 +71,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_3.0.xsd");
+                .load("interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_3.1.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
