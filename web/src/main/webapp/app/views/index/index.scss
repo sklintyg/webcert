@@ -18,6 +18,9 @@
  */
 
 .index-vy {
+  max-width: 1280px;
+  width: 100%;
+  flex: 1 0 auto;
 
   @extend %wc-typo-07;
   color: $wc-color-07;
@@ -30,10 +33,6 @@
   h2 {
     @extend %wc-typo-05;
     color: $wc-color-08;
-  }
-
-  @media (min-width: 1200px) {
-    padding-top: 148px;
   }
 
   .webcert-logo {

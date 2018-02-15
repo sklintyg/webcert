@@ -1,6 +1,6 @@
 # language: sv
 
-@doi @dodsorsaksintyg @socialstyrelsen @soc @notReady
+@doi @dodsorsaksintyg @socialstyrelsen @soc
 Egenskap: Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida

@@ -66,7 +66,7 @@ Scenario: GE-005 - Skriv ut TS-intyg
 
 
 #6
-@skicka @utskrift @waitingForFix @INTYG-5274
+@skicka @utskrift
 Scenario: GE-005 - PDL - Skicka TS-intyg till Transportstyrelsen
     När jag går in på ett slumpat TS-intyg med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen

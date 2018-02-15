@@ -63,7 +63,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         state('webcert.index', {
             url: '/',
             views: {
-                'content@': {
+                'landing@': {
                     templateUrl: '/app/views/index/index.html',
                     controller: 'webcert.IndexCtrl'
                 }
@@ -115,26 +115,16 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             }
         }).
         state('webcert.intyg', {
-            abstract : true, // jshint ignore:line
-            data: { defaultActive : 'index' }
-        }).
-        state('webcert.intyg.fk', {
+            data: { defaultActive : 'index', backState: 'webcert.create-choose-certtype-index' },
             views: {
                 'content@': {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
-                    controller: 'webcert.VisaIntygFragasvarCtrl'
-                }
-            }
-        }).
-        state('webcert.intyg.ts', {
-            views: {
-                'content@' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.ts.html',
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.html',
                     controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
             }
         }).
         state('webcert.fragasvar', {
+            data: { backState: 'webcert.enhet-arenden' },
             views: {
                 'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',

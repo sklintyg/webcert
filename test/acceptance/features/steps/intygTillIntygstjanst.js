@@ -20,12 +20,35 @@
  /* globals intyg, wcTestTools, logger*/
 
  'use strict';
+ /*jshint newcap:false */
+ //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+ /*
+  *	Stödlib och ramverk
+  *
+  */
+
+ const {
+     Given, // jshint ignore:line
+     When, // jshint ignore:line
+     Then // jshint ignore:line
+ } = require('cucumber');
+
 
  var helpers = require('./helpers');
  var soap = require('soap');
  var soapMessageBodies = require('./soap');
  var testdataHelper = wcTestTools.helpers.testdata;
  var testvalues = wcTestTools.testdata.values;
+
+
+ /*
+  *	Stödfunktioner
+  *
+  */
+
+
 
  function intygTillIntygtjanst(intygtyp, callback) {
      var url;
@@ -119,40 +142,41 @@
      }
 
  }
- module.exports = function() {
+ /*
+  *	Test steg
+  *
+  */
 
-     this.Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
-         global.intyg.id = testdataHelper.generateTestGuid();
 
-         if (!global.person || !global.person.id) {
-             global.person = testdataHelper.shuffle(testvalues.patienter)[0];
-         }
+ Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
+     global.intyg.id = testdataHelper.generateTestGuid();
 
-         //console.log(personId);
-         //                'patientforNamn': 'Tolvan',
-         //      'patientefterNamn': 'Tolvansson',
-
-         intygTillIntygtjanst(intygCode, callback);
-
-     });
-     this.Given(/^jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten$/, function(callback) {
-         global.intyg.id = testdataHelper.generateTestGuid();
+     if (!global.person || !global.person.id) {
          global.person = testdataHelper.shuffle(testvalues.patienter)[0];
-         global.person.forNamn = 'forNamn';
-         global.person.efterNamn = 'efterNamn';
-         console.log(global.intyg);
-         intygTillIntygtjanst('Läkarintyg FK 7263', callback);
-     });
-     this.When(/^jag skickar ett SMI\-intyg till intygstjänsten på en avliden person$/, function(callback) {
-         global.intyg.id = testdataHelper.generateTestGuid();
-         global.person = testdataHelper.shuffle(testvalues.patienterAvlidna)[0];
-         global.person.forNamn = 'forNamn';
-         global.person.efterNamn = 'efterNamn';
-         console.log(global.intyg);
-         intygTillIntygtjanst('Läkarutlåtande för sjukersättning', callback);
+     }
+
+     //console.log(personId);
+     //                'patientforNamn': 'Tolvan',
+     //      'patientefterNamn': 'Tolvansson',
+
+     intygTillIntygtjanst(intygCode, callback);
+
+ });
+ Given(/^jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten$/, function(callback) {
+     global.intyg.id = testdataHelper.generateTestGuid();
+     global.person = testdataHelper.shuffle(testvalues.patienter)[0];
+     global.person.forNamn = 'forNamn';
+     global.person.efterNamn = 'efterNamn';
+     console.log(global.intyg);
+     intygTillIntygtjanst('Läkarintyg FK 7263', callback);
+ });
+ When(/^jag skickar ett SMI\-intyg till intygstjänsten på en avliden person$/, function(callback) {
+     global.intyg.id = testdataHelper.generateTestGuid();
+     global.person = testdataHelper.shuffle(testvalues.patienterAvlidna)[0];
+     global.person.forNamn = 'forNamn';
+     global.person.efterNamn = 'efterNamn';
+     console.log(global.intyg);
+     intygTillIntygtjanst('Läkarutlåtande för sjukersättning', callback);
 
 
-     });
-
-
- };
+ });

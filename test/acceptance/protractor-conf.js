@@ -48,8 +48,8 @@ exports.config = {
         platform: 'ANY'
     },
     cucumberOpts: {
-        format: ['json:./node_modules/common-testtools/cucumber-html-report/acc_results.json', 'pretty'],
-        require: ['features/steps/**/*.js', 'features/support/**/*.js']
+        format: ['json:./node_modules/common-testtools/cucumber-html-report/acc_results.json', 'node_modules/cucumber-pretty'], 
+        require: ['./features/steps/*']
     },
     onPrepare: function() {
         browser.manage().window().setSize(1600, 1000);
@@ -173,7 +173,7 @@ exports.config = {
     onComplete: function() {
 
         // Kontrollera externa länkar på sidan som samlats ihop under scenario.
-        if (global.externalPageLinks.length > 0) {
+        if (global.externalPageLinks && global.externalPageLinks.length > 0) {
             var linksArr = [];
 
             fs.readFile(browser.params.externalLinksFile, 'utf-8', function(err, data) {

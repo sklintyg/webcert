@@ -562,8 +562,8 @@ public class UtkastServiceImpl implements UtkastService {
         // Always return the warning messages
         for (ValidationMessage validationWarning : dr.getValidationWarnings()) {
             draftValidation.addWarning(new DraftValidationMessage(
-                    validationWarning.getField(), validationWarning.getType(), validationWarning.getMessage(),
-                    validationWarning.getDynamicKey()));
+                    validationWarning.getCategory(), validationWarning.getField(), validationWarning.getType(),
+                    validationWarning.getMessage(), validationWarning.getDynamicKey()));
         }
 
         if (ValidationStatus.VALID.equals(validationStatus)) {
@@ -576,7 +576,8 @@ public class UtkastServiceImpl implements UtkastService {
         // Only bother with returning validation (e.g. error) messages if the ArendeDraft is INVALID.
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
             draftValidation.addMessage(new DraftValidationMessage(
-                    validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage(), validationMsg.getDynamicKey()));
+                    validationMsg.getCategory(), validationMsg.getField(), validationMsg.getType(),
+                    validationMsg.getMessage(), validationMsg.getDynamicKey()));
         }
 
         LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());

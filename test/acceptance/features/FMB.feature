@@ -13,7 +13,7 @@ Scenariomall: Visas vid rätt fält för <intygKod>
 	Och jag fyller i diagnoskod
 	Så ska rätt info gällande FMB visas
 
-@fk7263
+@fk7263 @LegacyFk7263
 Exempel:
   |intygKod | 	intyg 								|
   |FK7263	|  	"Läkarintyg FK 7263" 				|

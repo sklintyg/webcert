@@ -1,0 +1,46 @@
+<div id="login-metoder-eleg-help">
+  <div class="modal-header">
+    <h3 class="modal-title">Inloggning med E-legitimation</h3>
+  </div>
+  <div class="modal-body">
+    <p>Du som är läkare enligt Socialstyrelsens register över legitimerad hälso- och sjukvårdspersonal (HOSP) 
+       men inte arbetar inom en organisation som är ansluten till HSA-katalogen loggar in med e-legitimation.</p>
+
+    <h4>Allmän information om e-legitimation</h4>
+    <p>Fördjupad information om e-legitimation hittar du på <span dynamiclink key="elegInformation"></span><br/>
+       Stäng samtliga öppna webbläsarfönster för att vara säker på att information om din e-legitimation inte har lagrats temporärt, när du loggar ut från Webcert.<br/>
+       Spärra din e-legitimation omedelbart hos utgivaren, om du förlorat din e-legitimation, så att den inte kan missbrukas.</p>
+
+    <a class="internal" ng-click="elegExpanded = !elegExpanded">Problem med inloggning med e-legitimation? <i class="glyphicon" ng-class="{'glyphicon-chevron-down': elegExpanded, 'glyphicon-chevron-right': !elegExpanded}"></i></a>
+    <div ng-if="elegExpanded">
+
+        <h4>Felsökning med inloggning med e-legitimation</h4>
+        <p>Med e-legitimation kan du skaffa användarkonto och logga in direkt i Webcert. Du kan använda BankID på kort, 
+          mobilt BankID eller Telia e-legitimation.</p>
+
+        <h4>Giltighetstid</h4>
+        <p>Giltighetstiden för en e-legitimation är begränsad. Om du får problem med att logga in bör du därför först 
+          kontrollera om giltighetstiden har gått ut. Det kan du göra på utgivarens webbplats.</p>
+
+        <h4>Testa din e-legitimation</h4>
+        <p>Webcert använder CGI:s eID-tjänst för att verifiera e-legitimationer. På CGI:s webbplats kan du testa att din e-legitimation fungerar: 
+          <span dynamiclink key="testaEleg"></span>
+        </p>
+
+        <h4>Tekniska krav</h4>
+        <p>På CGI:s webbplats kan du läsa om vilka tekniska krav som utgivaren av din e-legitimation ställer. 
+          Du bör också kontrollera att du installerat de senaste uppdateringarna för ditt operativsystem och webbläsare. 
+          Observera att Webcert är utvecklat och testat för Internet Explorer 11 och senare versioner. 
+          Webcert kan fungera även med andra webbläsare men det finns risk för att problem uppstår.<br/>
+          <span dynamiclink key="testaEleg"></span>
+        </p>
+
+        <h4>Kontakt Ineras Kundtjänst</h4>
+        <p>Om du fortfarande har problem att logga in bör du kontakta <span dynamiclink key="ineraNationellaKundservice"></span></p>
+
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" type="button" ng-click="button1click()">Stäng</button>
+  </div>
+</div>

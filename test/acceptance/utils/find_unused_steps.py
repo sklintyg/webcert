@@ -39,4 +39,4 @@ for step in steps:
                         hasFound = 1
 
     if hasFound is 0:
-        print '%s:%s' % (step[1], step[0])
+        print '%s:%s' % (step[1].encode('utf-8'), step[0].encode('utf-8'))

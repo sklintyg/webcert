@@ -47,6 +47,11 @@ var FkBaseUtkast = BaseUtkast._extend({
     getDynamicLabelText: function(textKey) {
         return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
     },
+    //in ue-form-label the dynamic text is rendered differently
+    getDynamicLabelTextById: function(id) {
+        return element(by.id(id)).getText();
+    },
+
     isMarkeraSomKlartAttSigneraButtonDisplayed: function() {
         return this.markeraKlartForSigneringButton.isDisplayed();
     },

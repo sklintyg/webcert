@@ -1,11 +1,11 @@
 # language: sv
-@djupintegration @SMI
+@djupintegration @SMI @integrationsparametrar
 Egenskap: Djupintegration SMI intyg
 
 Bakgrund: Jag är inloggad som djupintegrerad läkare
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 
-@namnbyte @waitingForFix
+@namnbyte
 Scenario: Informera om patienten har bytt namn
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     Och jag går in på intygsutkastet via djupintegrationslänk
@@ -42,7 +42,7 @@ Scenario: Patienten har fått ett reservnummer
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
-@parametrar @intygsdelning-vårdenhet
+@intygsdelning-vårdenhet
 Scenario: Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenheter
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk

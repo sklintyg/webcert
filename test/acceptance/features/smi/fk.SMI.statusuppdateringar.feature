@@ -33,8 +33,9 @@ Scenario: Statusuppdateringar då SMI-intyg raderas
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
 
-    Och jag går in på intygsutkastet via djupintegrationslänk
-    Så ska ett fel-meddelande visa "Intyget gick inte att läsa in"
+    Och jag försöker gå in på intygsutkastet via djupintegrationslänk
+	Så ska jag varnas om att "Intyget gick inte att läsa in"
+	Så ska jag varnas om att "Intygsutkastet är raderat och kan därför inte längre visas."
 
 @fråga-från-fk @NYFRFM
 Scenario: Statusuppdateringar vid fråga från FK

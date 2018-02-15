@@ -51,6 +51,8 @@
   <%-- ui-view that holds dynamic content managed by angular app --%>
   <div ui-view="content" autoscroll="false" id="view" class="webcert-workarea"></div>
 
+  <div ui-view="landing" autoscroll="false" id="webcertLanding" class="webcert-landing"></div>
+
   <%-- No script to show at least something when javascript is off --%>
   <noscript>
     <h1>

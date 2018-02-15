@@ -18,32 +18,12 @@
  */
 
 wc-patient-header {
-  display: block;
-  padding: 20px 0px 32px 0;
-  background-color: $wc-color-00;
-  box-shadow: 0 2px 4px 0 $black_12;
-
   .gutter-icon {
     top: 10px;
   }
 
   .patient-header-data {
     display: inline-block;
-
-    .patient-heading {
-      @extend %wc-typo-02;
-      color: $wc-color-07;
-      padding:0;
-      margin:0;
-    }
-
-    .patient-personal-data {
-      @extend %wc-typo-01;
-      color: $wc-color-19;
-      display: inline-block;
-      padding: 0;
-      margin: 0;
-    }
 
     .patient-button {
       vertical-align: text-bottom;

@@ -22,6 +22,8 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageTy
 
 public class DraftValidationMessage {
 
+    private String category;
+
     private String field;
 
     private ValidationMessageType type;
@@ -30,12 +32,17 @@ public class DraftValidationMessage {
 
     private String dynamicKey;
 
-    public DraftValidationMessage(String field, ValidationMessageType type, String message, String dynamicKey) {
+    public DraftValidationMessage(String category, String field, ValidationMessageType type, String message, String dynamicKey) {
         super();
+        this.category = category;
         this.field = field;
         this.type = type;
         this.message = message;
         this.dynamicKey = dynamicKey;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public String getField() {

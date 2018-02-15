@@ -7,7 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare
    När jag går in på en patient
 
-@FK7263-förnya-knapp
+@fk7263-förnya-knapp @LegacyFk7263
 Scenario: Det ska inte gå att förnya ett makulerat FK7263 intyg
   Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
   Och jag går in på utkastet
@@ -19,44 +19,35 @@ Scenario: Det ska inte gå att förnya ett makulerat FK7263 intyg
   Så ska det inte finnas en knapp med texten "Förnya"
 
 @SMI-förnya-knapp
-Scenario: Det ska gå att förnya slumpat och makulerat SMI-intyg
+Scenario: Det ska inte gå att förnya makulerat SMI-intyg
    När jag går in på ett slumpat SMI-intyg med status "Signerat"
    Och jag skickar intyget till Försäkringskassan
    Och jag makulerar intyget
    Så ska intyget visa varningen "Intyget är makulerat"
    Så ska det inte finnas en knapp med texten "Förnya"
 
-
-   Scenariomall: Utkast för <intygKod> ska inte kunna makuleras
-  När jag går in på att skapa ett <intyg> intyg
-  Så ska det inte finnas någon knapp för "makulera"
-
-Exempel:
-  |intygKod |   intyg                        |
-  |LISJP    |   "Läkarintyg för sjukpenning" |
-
- @upplys-om-makulering
-  Scenario: Användaren ska upplysas om att intyget makulerats
-  Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+@upplys-om-makulering
+Scenario: Användaren ska upplysas om att intyget makulerats
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet 
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
 
-  Och jag makulerar intyget
-  Så ska intyget visa varningen "Intyget är makulerat"
+	Och jag makulerar intyget
+	Så ska intyget visa varningen "Intyget är makulerat"
 
-  Scenario: Användaren ska kunna skriva ut ett makulerat intyg
-  Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+Scenario: Användaren ska kunna skriva ut ett makulerat intyg
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på utkastet 
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
 
-  Och jag makulerar intyget
-  Så ska det finnas en knapp med texten "Skriv ut"
+	Och jag makulerar intyget
+	Så ska det finnas en knapp med texten "Skriv ut"
 
 @notReady
-  Scenario: Ersatt intyg vid makulering ska innehålla uppdaterade personuppgifter
-  När jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten
-  Och jag går in på intyget
-  Och jag makulerar intyget och ersätter med nytt intyg
-  Så ska intyget inte innehålla gamla personuppgifter
+Scenario: Ersatt intyg vid makulering ska innehålla uppdaterade personuppgifter
+	När jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten
+	Och jag går in på intyget
+	Och jag makulerar intyget och ersätter med nytt intyg
+	Så ska intyget inte innehålla gamla personuppgifter

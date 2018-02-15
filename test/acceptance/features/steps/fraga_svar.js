@@ -20,6 +20,22 @@
 /* globals pages, intyg, browser, protractor, logger, JSON, wcTestTools, Promise, person*/
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
@@ -27,6 +43,11 @@ var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
+
+/*
+ *	Stödfunktioner
+ *
+ */
 
 function kontrolleraKompletteringsFragaHanterad(id) {
     var selector = 'arende-handled-' + id;
@@ -88,540 +109,208 @@ function hamtaAllaTraffar() {
     });
 }
 
-module.exports = function() {
-    this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
-        sendQuestionToFK(amne, callback);
+/*
+ *	Test steg
+ *
+ */
 
-    });
-    this.Given(/^jag väljer att svara med ett nytt intyg$/, function() {
-        helpers.updateEnhetAdressForNewIntyg();
-        var page = fkIntygPage;
-        //var utkast = fkUtkastPage;
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            page = fkLusePage;
-            //utkast = luseUtkastPage;
-        }
+Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
+    sendQuestionToFK(amne, callback);
 
-
-        if (!intyg.messages || intyg.messages.length <= 0) {
-            throw ('Inga frågor hittades');
-        } else if (intyg.messages.length > 1) {
-            throw ('Fler än en fråga hittades, Granska teststegen!');
-        } else {
-
-            return browser.getCurrentUrl().then(function(url) {
-
-                global.behoverKompletterasLink = url;
-
-                return page.clickKompletteraIntyg(intyg.messages[0].id)
-                    .then(function() {
-                        //Fulhack för att inte global ska innehålla en referens
-                        logger.info('OK clickKompletteraIntyg(' + intyg.messages[0].id + ');');
-                        global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
-                        return;
-
-                    });
-
-            });
+});
+Given(/^jag väljer att svara med ett nytt intyg$/, function() {
+    helpers.updateEnhetAdressForNewIntyg();
+    var page = fkIntygPage;
+    //var utkast = fkUtkastPage;
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    if (isSMIIntyg) {
+        page = fkLusePage;
+        //utkast = luseUtkastPage;
+    }
 
 
-        }
-    });
-    this.Given(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {
-        return browser.get(global.behoverKompletterasLink);
+    if (!intyg.messages || intyg.messages.length <= 0) {
+        throw ('Inga frågor hittades');
+    } else if (intyg.messages.length > 1) {
+        throw ('Fler än en fråga hittades, Granska teststegen!');
+    } else {
 
-        // Denna funktionalitet användes när relations-valen fanns kvar
-        // return element(by.id('wc-intyg-relations-button')).click().then(function() {
-        //     return element(by.id('wc-intyg-relations-list')).element(by.cssContainingText('.btn', 'Visa')).click();
-        // });
+        return browser.getCurrentUrl().then(function(url) {
 
-    });
-    this.Given(/^ska det finnas en knapp med texten "([^"]*)"$/, function(texten) {
-        return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(true);
-    });
-    this.Given(/^ska det inte finnas en knapp med texten "([^"]*)"$/, function(texten) {
-        return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
-    });
+            global.behoverKompletterasLink = url;
 
-    this.Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
-        var fragaText;
-
-        if (typ === 'intygs') {
-            fragaText = global.intyg.guidcheck;
-        } else {
-            fragaText = global.ursprungligtIntyg.guidcheck;
-        }
-
-        var page = fkIntygPage;
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            page = fkLusePage;
-        }
-
-        console.log('Letar efter fråga som innehåller text: ' + fragaText);
-        return expect(page.getQAElementByText(fragaText).panel.isPresent()).to.become(true);
-    });
-
-
-    this.Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
-        var komplettera = element(by.id('komplettera-intyg-' + global.intyg.messages[0].id));
-
-        return expect(komplettera.isPresent()).to.become(false);
-
-    });
-
-    this.Given(/^ska svara med textmeddelande vara tillgängligt i dialogen/, function() {
-        var svaraMedMeddelande = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
-
-        return expect(svaraMedMeddelande.isDisplayed()).to.become(true);
-
-    });
-
-    this.Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text) {
-        return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(text);
-    });
-
-    this.Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() {
-        return element(by.id('uthopp-svara-med-meddelande-' + global.intyg.messages[0].id)).sendKeys(protractor.Key.SPACE)
-            .then(function() {
-                return helpers.pageReloadDelay();
-            });
-    });
-
-
-    this.Given(/^jag ska kunna svara med textmeddelande/, function() {
-        browser.ignoreSynchronization = false;
-        var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
-        var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
-
-        var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-default', 'Kan inte komplettera')).sendKeys(protractor.Key.SPACE)
-            .then(function() {
-                return helpers.largeDelay();
-            })
-            .then(function() {
-                return fkIntygPage.komplettera.dialog.svaraMedMeddelandeButton.sendKeys(protractor.Key.SPACE);
-            })
-            .then(function() {
-                return helpers.largeDelay();
-            })
-            .then(function() {
-                return kompletteringsFraga.element(by.model('arendeSvar.meddelande')).sendKeys(textSvar);
-
-            })
-            .then(function() {
-                return helpers.largeDelay();
-            })
-            .then(function() {
-                return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
-
-            })
-            .then(function() {
-                return helpers.largeDelay();
-            });
-
-        return svaraPaKomplettering
-            .then(function() {
-                logger.info('Kontrollerar att fråga är märkt som hanterad..');
-                expect(kompletteringsFraga.element(by.css('.arende-block-handled')).getText()).to.eventually.contain(textSvar)
-                    .then(function(value) {
-                        logger.info('OK - textsvar = ' + value);
-                    }, function(reason) {
-                        throw ('FEL - textsvar: ' + reason);
-                    });
-
-            });
-    });
-
-    var messageID;
-    this.Given(/^jag svarar på frågan$/, function() {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-
-        return browser.refresh()
-            .then(function() {
-                return helpers.fetchMessageIds(intyg.typ);
-            })
-            .then(function() {
-                console.log(intyg.messages);
-                console.log(global.meddelanden);
-                for (var k = 0; k < intyg.messages.length; k++) {
-                    logger.info('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg));
-                    var amneMatcharSkickadFraga = helpers.splitHeader(intyg.messages[k].amne) === helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg);
-                    if (amneMatcharSkickadFraga && !intyg.messages[k].isHandled) {
-                        messageID = intyg.messages[k].id;
-                    }
-                }
-                return fkIntygPage.sendAnswerForMessageID(messageID, 'Ett svar till FK, ' + global.intyg.guidcheck);
-            });
-    });
-
-    this.Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
-        return kontrolleraKompletteringsFragaHanterad(messageID);
-    });
-
-    this.Given(/^ska jag se påminnelsen på intygssidan$/, function() {
-        var fragaText = global.intyg.guidcheck;
-        var panel = element(by.cssContainingText('.arende-panel', fragaText));
-        return browser.refresh()
-            .then(function() {
-                console.log('Letar efter påminnelse som innehåller text: ' + fragaText);
-                return expect(panel.isPresent()).to.eventually.become(true);
-
-            })
-            .then(function() {
-                // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions
-                // return expect(panel.getText()).to.eventually.contain('Ämne: Påminnelsee'); //
-                return panel.getText().then(function(text) {
-                    expect(text).to.contain('Ämne: Påminnelse');
-                });
-
-            });
-    });
-
-    this.Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function(callback) {
-        fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
-    });
-
-    this.Given(/^jag markerar svaret från Försäkringskassan (?:.*) hanterat$/, function() {
-
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            var messageId;
-            console.log(global.meddelanden);
-            for (var k = 0; k < global.meddelanden.length; k++) {
-                if (global.meddelanden[k].typ === 'Fråga') {
-                    messageId = global.meddelanden[k].id;
-                }
-            }
-            return element(by.id('handleCheck-' + messageId)).sendKeys(protractor.Key.SPACE);
-        } else {
-            return browser.refresh()
+            return page.clickKompletteraIntyg(intyg.messages[0].id)
                 .then(function() {
-                    return helpers.fetchMessageIds(intyg.typ);
-                })
-                .then(function() {
-                    return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
+                    //Fulhack för att inte global ska innehålla en referens
+                    logger.info('OK clickKompletteraIntyg(' + intyg.messages[0].id + ');');
+                    global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
+                    return;
+
                 });
-        }
+
+        });
 
 
+    }
+});
+Given(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {
+    return browser.get(global.behoverKompletterasLink);
 
-    });
+    // Denna funktionalitet användes när relations-valen fanns kvar
+    // return element(by.id('wc-intyg-relations-button')).click().then(function() {
+    //     return element(by.id('wc-intyg-relations-list')).element(by.cssContainingText('.btn', 'Visa')).click();
+    // });
 
-    this.Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
-        global.intyg.guidcheck = testdataHelper.generateTestGuid();
+});
+Given(/^ska det finnas en knapp med texten "([^"]*)"$/, function(texten) {
+    return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(true);
+});
+Given(/^ska det inte finnas en knapp med texten "([^"]*)"$/, function(texten) {
+    return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
+});
 
-        var url;
-        var body;
-        var amneCode = amne;
+Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
+    var fragaText;
 
-        var isSMIIntyg;
-        if (intyg && intyg.typ) {
-            isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        }
+    if (typ === 'intygs') {
+        fragaText = global.intyg.guidcheck;
+    } else {
+        fragaText = global.ursprungligtIntyg.guidcheck;
+    }
 
-        if (isSMIIntyg) {
-            body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
-            console.log(body);
-            var path = '/send-message-to-care/v2.0?wsdl';
-            url = process.env.INTYGTJANST_URL + path;
-            url = url.replace('https', 'http');
+    var page = fkIntygPage;
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    if (isSMIIntyg) {
+        page = fkLusePage;
+    }
 
-            soap.createClient(url, function(err, client) {
-                logger.info(url);
-                if (err) {
-                    callback(err);
-                } else {
-                    client.SendMessageToCare(body, function(err, result, resBody) {
-                        console.log(resBody);
-                        var resultcode = result.result.resultCode;
-                        logger.info('ResultCode: ' + resultcode);
-                        console.log(result);
-                        if (resultcode !== 'OK') {
-                            logger.info(result);
-                            callback('ResultCode: ' + resultcode + '\n' + resBody);
-                        } else {
-                            logger.info('ResultCode: ' + resultcode);
-                            console.log(JSON.stringify(result));
-
-                            browser.refresh().then(function() {
-                                callback(err);
-                            });
-                        }
-                    });
-                }
-            });
-        } else {
-            amneCode = amne; //helpers.subjectCodesFK7263[amne];
-            url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
-            url = url.replace('https', 'http');
-
-            body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
-                global.person.id,
-                global.user,
-                'Enhetsnamn',
-                global.intyg.id,
-                amneCode,
-                'nytt meddelande: ' + global.intyg.guidcheck);
-            console.log(body);
-            soap.createClient(url, function(err, client) {
-                if (err) {
-                    callback(err);
-                }
-
-                client.ReceiveMedicalCertificateQuestion(body, function(err, result, resBody) {
-                    global.meddelanden.push({
-                        typ: 'Fråga',
-                        amne: amne
-                    });
-                    var resultcode = result.result.resultCode;
-                    if (resultcode !== 'OK') {
-                        logger.info(result);
-                        callback('ResultCode: ' + resultcode + '\n' + resBody);
-                    } else {
-                        browser.refresh().then(function() {
-                            callback(err);
-                        });
-                    }
-                });
-            });
-        }
-    });
-
-    this.Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
-
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        var url = '';
-        var body = '';
-
-        if (isSMIIntyg) {
-
-            global.intyg.guidcheck = testdataHelper.generateTestGuid();
-
-            body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ' + global.intyg.guidcheck, false);
-            console.log(body);
-            var path = '/send-message-to-care/v2.0?wsdl';
-            url = process.env.INTYGTJANST_URL + path;
-            url = url.replace('https', 'http');
-
-            soap.createClient(url, function(err, client) {
-                logger.info(url);
-                if (err) {
-                    callback(err);
-                } else {
-                    client.SendMessageToCare(body, function(err, result, resBody) {
-                        console.log(resBody);
-                        if (err) {
-                            callback(err);
-                        } else {
-                            var resultcode = result.result.resultCode;
-                            logger.info('ResultCode: ' + resultcode);
-                            // console.log(result);
-                            if (resultcode !== 'OK') {
-                                logger.info(result);
-                                callback('ResultCode: ' + resultcode + '\n' + resBody);
-                            } else {
-                                logger.info('ResultCode: ' + resultcode);
-                                callback();
-                            }
-
-                        }
-                    });
-                }
-            });
+    console.log('Letar efter fråga som innehåller text: ' + fragaText);
+    return expect(page.getQAElementByText(fragaText).panel.isPresent()).to.become(true);
+});
 
 
-        } else {
-            url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-answer/v1.0?wsdl';
-            url = url.replace('https', 'http');
-            soap.createClient(url, function(err, client) {
-                if (err) {
-                    callback(err);
-                } else {
-                    body = soapMessageBodies.ReceiveMedicalCertificateAnswer(
-                        global.person.id,
-                        global.user.hsaId,
-                        global.user.forNamn + '' + global.user.efterNamn,
-                        global.user.enhetId,
-                        'WebCert Enhet 1',
-                        'Enhetsnamn',
-                        global.meddelanden[0].id
-                    );
-                    console.log(body);
-                    client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
-                        callback(err);
-                    });
-                }
+Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
+    var komplettera = element(by.id('komplettera-intyg-' + global.intyg.messages[0].id));
 
-            });
+    return expect(komplettera.isPresent()).to.become(false);
 
-        }
-    });
+});
 
-    this.Given(/^jag markerar frågan från vården som hanterad$/, function() {
-        var fragaText;
-        for (var k = 0; k < global.meddelanden.length; k++) {
-            if (global.meddelanden[k].typ === 'Fråga') {
-                fragaText = global.meddelanden[k].text;
-            }
-        }
-        return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).sendKeys(protractor.Key.SPACE);
-    });
+Given(/^ska svara med textmeddelande vara tillgängligt i dialogen/, function() {
+    var svaraMedMeddelande = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
 
+    return expect(svaraMedMeddelande.isDisplayed()).to.become(true);
 
-    this.Given(/^jag går till sidan Frågor och svar$/, function() {
-        return pages.fragorOchSvar.get().then(function() {
+});
+
+Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text) {
+    return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(text);
+});
+
+Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() {
+    return element(by.id('uthopp-svara-med-meddelande-' + global.intyg.messages[0].id)).sendKeys(protractor.Key.SPACE)
+        .then(function() {
             return helpers.pageReloadDelay();
         });
-    });
+});
 
-    this.Given(/^ska frågan inte finnas i listan$/, function() {
 
-        return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
+Given(/^jag ska kunna svara med textmeddelande/, function() {
+    browser.ignoreSynchronization = false;
+    var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
+    var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
 
-            return expect(element(by.id('showqaBtn-' + intyg.id)).isPresent()).to.become(false);
+    var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-default', 'Kan inte komplettera')).sendKeys(protractor.Key.SPACE)
+        .then(function() {
+            return helpers.largeDelay();
+        })
+        .then(function() {
+            return fkIntygPage.komplettera.dialog.svaraMedMeddelandeButton.sendKeys(protractor.Key.SPACE);
+        })
+        .then(function() {
+            return helpers.largeDelay();
+        })
+        .then(function() {
+            return kompletteringsFraga.element(by.model('arendeSvar.meddelande')).sendKeys(textSvar);
 
+        })
+        .then(function() {
+            return helpers.largeDelay();
+        })
+        .then(function() {
+            return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
+
+        })
+        .then(function() {
+            return helpers.largeDelay();
         });
-    });
 
-    var matchingQARow;
-    this.Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
-        logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
-        return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
-            return row.all(by.css('td')).getText().then(function(text) {
-                console.log(text);
-                if (person.id.indexOf('-') === -1) {
-                    person.id = person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
-                }
-                var hasPersonnummer = (text.indexOf(person.id) > -1);
-                var hasAtgard = (text.indexOf(atgard) > -1);
-                return hasAtgard && hasPersonnummer;
-            });
-        }).then(function(rows) {
-            matchingQARow = rows[0];
-            if (inte) {
-                return expect(rows.length).to.equal(0);
-            } else {
-                return expect(rows).to.have.length.above(0);
-            }
-        });
-    });
-
-    var buttonId;
-    this.Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function() {
-        var btn = matchingQARow.element(by.cssContainingText('button', 'Visa'));
-        return btn.getAttribute('id').then(function(id) {
-            logger.info('knapp-id: ' + id);
-            buttonId = id;
-            return btn.sendKeys(protractor.Key.SPACE);
-        });
-    });
-
-    this.Given(/^jag väljer att visa intyget med frågan$/, function() {
-        console.log(global.meddelanden);
-        var atgard = 'Svara';
-
-        logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
-        return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
-            return row.all(by.css('td')).getText().then(function(text) {
-                console.log(text);
-                var hasPersonnummer = (text.indexOf(person.id) > -1);
-                var hasAtgard = (text.indexOf(atgard) > -1);
-                return hasAtgard && hasPersonnummer;
-            });
-        }).then(function(rows) {
-            matchingQARow = rows[0];
-            var btn = matchingQARow.element(by.cssContainingText('button', 'Visa'));
-            return btn.getAttribute('id').then(function(id) {
-                logger.info('knapp-id: ' + id);
-                buttonId = id;
-                return btn.sendKeys(protractor.Key.SPACE);
-            });
-
-
-        });
-    });
-
-    this.Given(/^jag lämnar intygssidan$/, function() {
-        return fkIntygPage.backBtn.click();
-    });
-
-    this.Given(/^ska jag få dialogen "([^"]*)"$/, function(text) {
-        return expect(element(by.cssContainingText('.modal-dialog', text)).isPresent()).to.eventually.be.ok;
-    });
-
-    this.Given(/^jag väljer valet att markera som hanterade$/, function() {
-        return element(by.cssContainingText('button', 'Hanterade')).sendKeys(protractor.Key.SPACE);
-    });
-
-    this.Given(/^ska den tidigare raden inte finnas kvar i tabellen för Frågor och svar$/, function() {
-        return expect(element(by.id(buttonId)).isPresent()).to.eventually.not.be.ok;
-    });
-
-    this.Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
-        var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
-        return showFilter.isPresent().then(function(isPresent) {
-            if (isPresent) {
-                return showFilter.sendKeys(protractor.Key.SPACE);
-            } else {
-                return Promise.resolve('Filter visas redan');
-            }
-        }).then(function() {
-            return pages.fragorOchSvar.atgardSelect.element(by.cssContainingText('option', atgard))
-                .sendKeys(protractor.Key.SPACE).then(function() {
-                    return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE).then(function() {
-                        return helpers.smallDelay;
-                    });
-                });
-        }).then(function() {
-            if (atgard === 'Visa alla ej hanterade') {
-                return hamtaAllaTraffar();
-            } else {
-                return;
-            }
-        });
-    });
-
-
-
-    this.Given(/^ska jag se flera frågor$/, function() {
-        return pages.fragorOchSvar.qaTable.all(by.css('tr')).count().then(function(count) {
-            return expect(count).to.be.above(1); // mer än 1 pga att table-header är en rad
-        });
-    });
-
-    this.Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
-        var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
-        return showFilter.isPresent().then(function(isPresent) {
-            if (isPresent) {
-                return showFilter.sendKeys(protractor.Key.SPACE);
-            } else {
-                return Promise.resolve('Filter visas redan');
-            }
-        }).then(function() {
-            return element(by.id('qp-lakareSelector'))
-                .element(by.cssContainingText('option', lakare)).click()
-                .then(function() {
-                    return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
+    return svaraPaKomplettering
+        .then(function() {
+            logger.info('Kontrollerar att fråga är märkt som hanterad..');
+            expect(kompletteringsFraga.element(by.css('.arende-block-handled')).getText()).to.eventually.contain(textSvar)
+                .then(function(value) {
+                    logger.info('OK - textsvar = ' + value);
+                }, function(reason) {
+                    throw ('FEL - textsvar: ' + reason);
                 });
 
         });
-    });
+});
 
+var messageID;
+Given(/^jag svarar på frågan$/, function() {
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
 
-    this.Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lakare) {
-        console.log('Kontrollerar att varje rad innehåller texten ' + lakare);
-        return pages.fragorOchSvar.qaTable.all(by.css('tr')).getText()
-            .then(function(textArr) {
-                var text = textArr.join('\n');
-                logger.info(text);
-                if (text.indexOf(lakare) < 0) {
-                    throw 'Hittade felaktig rad';
+    return browser.refresh()
+        .then(function() {
+            return helpers.fetchMessageIds(intyg.typ);
+        })
+        .then(function() {
+            console.log(intyg.messages);
+            console.log(global.meddelanden);
+            for (var k = 0; k < intyg.messages.length; k++) {
+                logger.info('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg));
+                var amneMatcharSkickadFraga = helpers.splitHeader(intyg.messages[k].amne) === helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg);
+                if (amneMatcharSkickadFraga && !intyg.messages[k].isHandled) {
+                    messageID = intyg.messages[k].id;
                 }
-            });
-    });
+            }
+            return fkIntygPage.sendAnswerForMessageID(messageID, 'Ett svar till FK, ' + global.intyg.guidcheck);
+        });
+});
 
-    this.Given(/^ska jag se min fråga under ohanterade frågor$/, function() {
+Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
+    return kontrolleraKompletteringsFragaHanterad(messageID);
+});
+
+Given(/^ska jag se påminnelsen på intygssidan$/, function() {
+    var fragaText = global.intyg.guidcheck;
+    var panel = element(by.cssContainingText('.arende-panel', fragaText));
+    return browser.refresh()
+        .then(function() {
+            console.log('Letar efter påminnelse som innehåller text: ' + fragaText);
+            return expect(panel.isPresent()).to.eventually.become(true);
+
+        })
+        .then(function() {
+            // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions
+            // return expect(panel.getText()).to.eventually.contain('Ämne: Påminnelsee'); //
+            return panel.getText().then(function(text) {
+                expect(text).to.contain('Ämne: Påminnelse');
+            });
+
+        });
+});
+
+Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function(callback) {
+    fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
+});
+
+Given(/^jag markerar svaret från Försäkringskassan (?:.*) hanterat$/, function() {
+
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    if (isSMIIntyg) {
         var messageId;
         console.log(global.meddelanden);
         for (var k = 0; k < global.meddelanden.length; k++) {
@@ -629,30 +318,362 @@ module.exports = function() {
                 messageId = global.meddelanden[k].id;
             }
         }
-        return kontrolleraKompletteringsFragaOHanterad(messageId);
+        return element(by.id('handleCheck-' + messageId)).sendKeys(protractor.Key.SPACE);
+    } else {
+        return browser.refresh()
+            .then(function() {
+                return helpers.fetchMessageIds(intyg.typ);
+            })
+            .then(function() {
+                return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
+            });
+    }
 
-    });
 
-    this.Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function(callback) {
-        sendQuestionToFK(
-            testdataHelper.shuffle(['Arbetstidsförläggning', 'Avstämningsmöte', 'Kontakt', 'Övrigt'])[0],
-            callback
-        );
-    });
 
-    this.Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
-        return expect(element(by.id('unhandled-vidarebefordraEjHanterad')).isPresent()).to.eventually.be.ok;
-    });
-    this.Then(/^ska det synas vem som svarat$/, function() {
-        var name = global.user.forNamn + ' ' + global.user.efterNamn;
-        return element.all(by.css('.arende-sender.ng-binding.ng-scope')).map(function(data) {
-            return data.getText();
-        }).then(function(theNames) {
-            return expect(theNames.join('\n')).to.contain(name);
+});
+
+Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
+    global.intyg.guidcheck = testdataHelper.generateTestGuid();
+
+    var url;
+    var body;
+    var amneCode = amne;
+
+    var isSMIIntyg;
+    if (intyg && intyg.typ) {
+        isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    }
+
+    if (isSMIIntyg) {
+        body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
+        console.log(body);
+        var path = '/send-message-to-care/v2.0?wsdl';
+        url = process.env.INTYGTJANST_URL + path;
+        url = url.replace('https', 'http');
+
+        soap.createClient(url, function(err, client) {
+            logger.info(url);
+            if (err) {
+                callback(err);
+            } else {
+                client.SendMessageToCare(body, function(err, result, resBody) {
+                    console.log(resBody);
+                    var resultcode = result.result.resultCode;
+                    logger.info('ResultCode: ' + resultcode);
+                    console.log(result);
+                    if (resultcode !== 'OK') {
+                        logger.info(result);
+                        callback('ResultCode: ' + resultcode + '\n' + resBody);
+                    } else {
+                        logger.info('ResultCode: ' + resultcode);
+                        console.log(JSON.stringify(result));
+
+                        browser.refresh().then(function() {
+                            callback(err);
+                        });
+                    }
+                });
+            }
+        });
+    } else {
+        amneCode = amne; //helpers.subjectCodesFK7263[amne];
+        url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
+        url = url.replace('https', 'http');
+
+        body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
+            global.person.id,
+            global.user,
+            'Enhetsnamn',
+            global.intyg.id,
+            amneCode,
+            'nytt meddelande: ' + global.intyg.guidcheck);
+        console.log(body);
+        soap.createClient(url, function(err, client) {
+            if (err) {
+                callback(err);
+            }
+
+            client.ReceiveMedicalCertificateQuestion(body, function(err, result, resBody) {
+                global.meddelanden.push({
+                    typ: 'Fråga',
+                    amne: amne
+                });
+                var resultcode = result.result.resultCode;
+                if (resultcode !== 'OK') {
+                    logger.info(result);
+                    callback('ResultCode: ' + resultcode + '\n' + resBody);
+                } else {
+                    browser.refresh().then(function() {
+                        callback(err);
+                    });
+                }
+            });
+        });
+    }
+});
+
+Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
+
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    var url = '';
+    var body = '';
+
+    if (isSMIIntyg) {
+
+        global.intyg.guidcheck = testdataHelper.generateTestGuid();
+
+        body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ' + global.intyg.guidcheck, false);
+        console.log(body);
+        var path = '/send-message-to-care/v2.0?wsdl';
+        url = process.env.INTYGTJANST_URL + path;
+        url = url.replace('https', 'http');
+
+        soap.createClient(url, function(err, client) {
+            logger.info(url);
+            if (err) {
+                callback(err);
+            } else {
+                client.SendMessageToCare(body, function(err, result, resBody) {
+                    console.log(resBody);
+                    if (err) {
+                        callback(err);
+                    } else {
+                        var resultcode = result.result.resultCode;
+                        logger.info('ResultCode: ' + resultcode);
+                        // console.log(result);
+                        if (resultcode !== 'OK') {
+                            logger.info(result);
+                            callback('ResultCode: ' + resultcode + '\n' + resBody);
+                        } else {
+                            logger.info('ResultCode: ' + resultcode);
+                            callback();
+                        }
+
+                    }
+                });
+            }
         });
 
+
+    } else {
+        url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-answer/v1.0?wsdl';
+        url = url.replace('https', 'http');
+        soap.createClient(url, function(err, client) {
+            if (err) {
+                callback(err);
+            } else {
+                body = soapMessageBodies.ReceiveMedicalCertificateAnswer(
+                    global.person.id,
+                    global.user.hsaId,
+                    global.user.forNamn + '' + global.user.efterNamn,
+                    global.user.enhetId,
+                    'WebCert Enhet 1',
+                    'Enhetsnamn',
+                    global.meddelanden[0].id
+                );
+                console.log(body);
+                client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
+                    callback(err);
+                });
+            }
+
+        });
+
+    }
+});
+
+Given(/^jag markerar frågan från vården som hanterad$/, function() {
+    var fragaText;
+    for (var k = 0; k < global.meddelanden.length; k++) {
+        if (global.meddelanden[k].typ === 'Fråga') {
+            fragaText = global.meddelanden[k].text;
+        }
+    }
+    return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).sendKeys(protractor.Key.SPACE);
+});
+
+
+Given(/^jag går till sidan Frågor och svar$/, function() {
+    return pages.fragorOchSvar.get().then(function() {
+        return helpers.pageReloadDelay();
+    });
+});
+
+Given(/^ska frågan inte finnas i listan$/, function() {
+
+    return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
+
+        return expect(element(by.id('showqaBtn-' + intyg.id)).isPresent()).to.become(false);
+
+    });
+});
+
+var matchingQARow;
+Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
+    logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
+    return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
+        return row.all(by.css('td')).getText().then(function(text) {
+            console.log(text);
+            if (person.id.indexOf('-') === -1) {
+                person.id = person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
+            }
+            var hasPersonnummer = (text.indexOf(person.id) > -1);
+            var hasAtgard = (text.indexOf(atgard) > -1);
+            return hasAtgard && hasPersonnummer;
+        });
+    }).then(function(rows) {
+        matchingQARow = rows[0];
+        if (inte) {
+            return expect(rows.length).to.equal(0);
+        } else {
+            return expect(rows).to.have.length.above(0);
+        }
+    });
+});
+
+var buttonId;
+Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function() {
+    var btn = matchingQARow.element(by.cssContainingText('button', 'Visa'));
+    return btn.getAttribute('id').then(function(id) {
+        logger.info('knapp-id: ' + id);
+        buttonId = id;
+        return btn.sendKeys(protractor.Key.SPACE);
+    });
+});
+
+Given(/^jag väljer att visa intyget med frågan$/, function() {
+    console.log(global.meddelanden);
+    var atgard = 'Svara';
+
+    logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
+    return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
+        return row.all(by.css('td')).getText().then(function(text) {
+            console.log(text);
+            var hasPersonnummer = (text.indexOf(person.id) > -1);
+            var hasAtgard = (text.indexOf(atgard) > -1);
+            return hasAtgard && hasPersonnummer;
+        });
+    }).then(function(rows) {
+        matchingQARow = rows[0];
+        var btn = matchingQARow.element(by.cssContainingText('button', 'Visa'));
+        return btn.getAttribute('id').then(function(id) {
+            logger.info('knapp-id: ' + id);
+            buttonId = id;
+            return btn.sendKeys(protractor.Key.SPACE);
+        });
+
+
+    });
+});
+
+Given(/^jag lämnar intygssidan$/, function() {
+    return fkIntygPage.backBtn.click();
+});
+
+Given(/^ska jag få dialogen "([^"]*)"$/, function(text) {
+    return expect(element(by.cssContainingText('.modal-dialog', text)).isPresent()).to.eventually.be.ok;
+});
+
+Given(/^jag väljer valet att markera som hanterade$/, function() {
+    return element(by.cssContainingText('button', 'Hanterade')).sendKeys(protractor.Key.SPACE);
+});
+
+Given(/^ska den tidigare raden inte finnas kvar i tabellen för Frågor och svar$/, function() {
+    return expect(element(by.id(buttonId)).isPresent()).to.eventually.not.be.ok;
+});
+
+Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
+    var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
+    return showFilter.isPresent().then(function(isPresent) {
+        if (isPresent) {
+            return showFilter.sendKeys(protractor.Key.SPACE);
+        } else {
+            return Promise.resolve('Filter visas redan');
+        }
+    }).then(function() {
+        return pages.fragorOchSvar.atgardSelect.element(by.cssContainingText('option', atgard))
+            .sendKeys(protractor.Key.SPACE).then(function() {
+                return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE).then(function() {
+                    return helpers.smallDelay;
+                });
+            });
+    }).then(function() {
+        if (atgard === 'Visa alla ej hanterade') {
+            return hamtaAllaTraffar();
+        } else {
+            return;
+        }
+    });
+});
+
+
+
+Given(/^ska jag se flera frågor$/, function() {
+    return pages.fragorOchSvar.qaTable.all(by.css('tr')).count().then(function(count) {
+        return expect(count).to.be.above(1); // mer än 1 pga att table-header är en rad
+    });
+});
+
+Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
+    var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
+    return showFilter.isPresent().then(function(isPresent) {
+        if (isPresent) {
+            return showFilter.sendKeys(protractor.Key.SPACE);
+        } else {
+            return Promise.resolve('Filter visas redan');
+        }
+    }).then(function() {
+        return element(by.id('qp-lakareSelector'))
+            .element(by.cssContainingText('option', lakare)).click()
+            .then(function() {
+                return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
+            });
+
+    });
+});
+
+
+Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lakare) {
+    console.log('Kontrollerar att varje rad innehåller texten ' + lakare);
+    return pages.fragorOchSvar.qaTable.all(by.css('tr')).getText()
+        .then(function(textArr) {
+            var text = textArr.join('\n');
+            logger.info(text);
+            if (text.indexOf(lakare) < 0) {
+                throw 'Hittade felaktig rad';
+            }
+        });
+});
+
+Given(/^ska jag se min fråga under ohanterade frågor$/, function() {
+    var messageId;
+    console.log(global.meddelanden);
+    for (var k = 0; k < global.meddelanden.length; k++) {
+        if (global.meddelanden[k].typ === 'Fråga') {
+            messageId = global.meddelanden[k].id;
+        }
+    }
+    return kontrolleraKompletteringsFragaOHanterad(messageId);
+
+});
+
+Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function(callback) {
+    sendQuestionToFK(
+        testdataHelper.shuffle(['Arbetstidsförläggning', 'Avstämningsmöte', 'Kontakt', 'Övrigt'])[0],
+        callback
+    );
+});
+
+Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
+    return expect(element(by.id('unhandled-vidarebefordraEjHanterad')).isPresent()).to.eventually.be.ok;
+});
+Then(/^ska det synas vem som svarat$/, function() {
+    var name = global.user.forNamn + ' ' + global.user.efterNamn;
+    return element.all(by.css('.arende-sender.ng-binding.ng-scope')).map(function(data) {
+        return data.getText();
+    }).then(function(theNames) {
+        return expect(theNames.join('\n')).to.contain(name);
     });
 
-
-
-};
+});

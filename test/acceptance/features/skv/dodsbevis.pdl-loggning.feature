@@ -8,8 +8,6 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 		  Och att jag är inloggad som läkare
 		  Och jag går in på "tredje" testpatienten
 		  
-
-		  
 #1 #4
 # Första ändring per ändringssession ska loggas
 @skapa @skriva @läsa
@@ -74,7 +72,7 @@ Scenario: GE-005 - Skriv ut Dödsbevis
 		Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet"
 
 #6
-@skicka @utskrift @waitingForFix @INTYG-5274
+@skicka @utskrift
 Scenario: GE-005 - PDL - Skicka Dödsbevis till Skatteverket
 		När jag går in på att skapa ett "Dödsbevis" intyg
 		Och jag fyller i alla nödvändiga fält för intyget

@@ -226,8 +226,7 @@ module.exports = {
         efternamn: ''
     }],
     patienterMedSamordningsnummerEjPU: [{
-        //id: '194401831674', <-- gammalt nummer, finns numer i PU.
-		id: '194412602387',
+		id: '200402712384',
         namn: '',
         efternamn: ''
     }],

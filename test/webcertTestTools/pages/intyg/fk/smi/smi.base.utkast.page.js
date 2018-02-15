@@ -34,13 +34,13 @@ function sendEnterToElement(el) {
     };
 }
 
-var intellektuellForm = element(by.id('form_funktionsnedsattningIntellektuell'));
-var kommunikationForm = element(by.id('form_funktionsnedsattningKommunikation'));
-var koncentrationForm = element(by.id('form_funktionsnedsattningKoncentration'));
-var psykiskForm = element(by.id('form_funktionsnedsattningPsykisk'));
-var horselTalForm = element(by.id('form_funktionsnedsattningSynHorselTal'));
-var balansForm = element(by.id('form_funktionsnedsattningBalansKoordination'));
-var annanForm = element(by.id('form_funktionsnedsattningAnnan'));
+var intellektuellForm = element(by.id('form_check-funktionsnedsattningIntellektuell'));
+var kommunikationForm = element(by.id('form_check-funktionsnedsattningKommunikation'));
+var koncentrationForm = element(by.id('form_check-funktionsnedsattningKoncentration'));
+var psykiskForm = element(by.id('form_check-funktionsnedsattningPsykisk'));
+var horselTalForm = element(by.id('form_check-funktionsnedsattningSynHorselTal'));
+var balansForm = element(by.id('form_check-funktionsnedsattningBalansKoordination'));
+var annanForm = element(by.id('form_check-funktionsnedsattningAnnan'));
 
 var avslutadForm = element(by.id('form_avslutadBehandling'));
 var planeradForm = element(by.id('form_planeradBehandling'));
@@ -153,9 +153,9 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             },
             underlagRow: function(index) {
                 return {
-                    underlag: element(by.id('underlag-' + index + '-typ')),
-                    datum: element(by.id('underlag-' + index + '-datum')),
-                    information: element(by.id('underlag-' + index + '-hamtasFran'))
+                    underlag: element(by.id('underlag-' + index + '--typ')),
+                    datum: element(by.id('datepicker_underlag[' + index + '].datum')),
+                    information: element(by.id('underlag-' + index + '--hamtasFran'))
                 };
             }
         };
@@ -184,10 +184,10 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         //enhetsadress lika för alla SMI-intyg
         this.enhetensAdress = {
-            postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
-            postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
-            postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
-            enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
+            postAdress: element(by.id('grundData-skapadAv-vardenhet-postadress')),
+            postNummer: element(by.id('grundData-skapadAv-vardenhet-postnummer')),
+            postOrt: element(by.id('grundData-skapadAv-vardenhet-postort')),
+            enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         };
     },
     angeBaseratPa: function(baseratPa) {

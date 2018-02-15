@@ -18,11 +18,11 @@ Scenario: Kan signera intyg på lisjp
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
    
-@signera @fk7263
+@signera @fk7263 @LegacyFK7263
 Scenario: Kan signera intyg på fk7263
    När jag går in på en patient
    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" 
- Och jag går in på utkastet
+   Och jag går in på utkastet
    Och jag fyller i alla nödvändiga fält för intyget
    Så är signeraknappen tillgänglig
    När jag signerar intyget
@@ -61,71 +61,33 @@ Scenario: Kan inte filtrera osignerade intyg på läkare
    Och väljer att visa sökfilter
    Så ska sökfiltret Sparat av inte vara tillgängligt
 
-@fråga-från-fk @fk7263
+@fråga-från-fk @lisjp
 Scenario: Ska kunna svara på frågor från Försäkringskassan
    När går in på Sök/skriv intyg
    Och jag går in på en patient
-   
-   ###### TODO ändra till att testa med lisjp intyg ##########################
-   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
-   #När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
-   
-   Givet att jag är inloggad som läkare
-   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
-   Och jag går in på utkastet
-   Och jag fyller i alla nödvändiga fält för intyget
-   Och jag signerar intyget
-   Och jag skickar intyget till Försäkringskassan 
-   
-   Givet att jag är inloggad som uthoppsläkare
-   ###########################################################################
-   
+
+   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
+      
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
-@nyttIntyg @fk7263
+@nyttIntyg @lisjp
 Scenario: Ska få varning vid svar med nytt intyg
-   När jag går in på en patient
-   
-   ###### TODO ändra till att testa med lisjp intyg ##########################
-   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
-   #När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
-   
-   Givet att jag är inloggad som läkare
-   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
-   Och jag går in på utkastet
-   Och jag fyller i alla nödvändiga fält för intyget
-   Och jag signerar intyget
-   Och jag skickar intyget till Försäkringskassan 
-   
-   Givet att jag är inloggad som uthoppsläkare
-   ###########################################################################
-   
-   När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
-   Och jag går in på intyget via uthoppslänk
-   Så ska jag se kompletteringsfrågan på intygs-sidan
-   Och jag ska inte kunna komplettera med nytt intyg från webcert
-   När jag klickar på svara knappen, fortfarande i uthoppsläge
-   Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
+	När jag går in på en patient
+	Och jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+	
+	När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
+	Och jag går in på intyget via uthoppslänk
+	Så ska jag se kompletteringsfrågan på intygs-sidan
+	Och jag ska inte kunna komplettera med nytt intyg från webcert
+	När jag klickar på svara knappen, fortfarande i uthoppsläge
+	Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
 
-@komplettera @fk7263
+@komplettera @lisjp
 Scenario: Ska kunna besvara komplettering med textmeddelande via uthoppslänk
    När jag går in på en patient
-   
-   ###### TODO ändra till att testa med lisjp intyg ##########################
-   #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"    
-   #När jag går in på ett "Läkarintyg FK 7263" med status "Skickat"
-   
-   Givet att jag är inloggad som läkare
-   Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
-   Och jag går in på utkastet
-   Och jag fyller i alla nödvändiga fält för intyget
-   Och jag signerar intyget
-   Och jag skickar intyget till Försäkringskassan 
-   
-   Givet att jag är inloggad som uthoppsläkare
-   ###########################################################################
+   Och jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"    
    
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk

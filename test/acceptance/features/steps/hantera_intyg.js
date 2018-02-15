@@ -20,6 +20,21 @@
 /* globals pages, intyg, protractor, browser, logger, browser, Promise, wcTestTools*/
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
 
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
@@ -27,6 +42,11 @@ var utkastPage = pages.intyg.base.utkast;
 var helpers = require('./helpers.js');
 var moveAndSendKeys = helpers.moveAndSendKeys;
 var loginHelpers = require('./inloggning/login.helpers');
+
+/*
+ *	Stödfunktioner
+ *
+ */
 
 function signeraUtkast() {
 
@@ -163,303 +183,313 @@ function raderaUtkastLoop(intygsTyp) {
     });
 }
 
-module.exports = function() {
-    this.Given(/^jag signerar intyget$/, function() {
-        return signeraUtkast();
-    });
+/*
+ *	Test steg
+ *
+ */
 
-    this.Then(/^klickar jag på knappen "([^"]*)"$/, function(knapp) {
-        if (knapp === 'Skriv dödsorsaksintyg') {
-            intyg.typ = 'Dödsorsaksintyg';
 
-            return pages.intyg.skv.db.utkast.skrivDoiKnapp.click().then(function() {
-                return browser.getCurrentUrl().then(function(text) {
-                    global.dbIntyg = intyg;
+Given(/^jag signerar intyget$/, function() {
+    return signeraUtkast();
+});
 
-                    logger.info('global.dbIntyg.id: ' + global.dbIntyg.id);
+Then(/^klickar jag på knappen "([^"]*)"$/, function(knapp) {
+    if (knapp === 'Skriv dödsorsaksintyg') {
+        intyg.typ = 'Dödsorsaksintyg';
 
-                    intyg.id = text.split('/').slice(-2)[0];
-                    intyg.id = intyg.id.split('?')[0];
+        return pages.intyg.skv.db.utkast.skrivDoiKnapp.click().then(function() {
+            return browser.getCurrentUrl().then(function(text) {
+                global.dbIntyg = intyg;
 
-                    global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
-                    logger.info('intyg.id: ' + intyg.id);
+                logger.info('global.dbIntyg.id: ' + global.dbIntyg.id);
 
-                    return intyg;
-                });
-                //TODO: Uppdatera testdata så att den matchar med dödsdatum.
+                intyg.id = text.split('/').slice(-2)[0];
+                intyg.id = intyg.id.split('?')[0];
+
+                global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
+                logger.info('intyg.id: ' + intyg.id);
+
+                return intyg;
             });
-
-        } else {
-            return;
-        }
-    });
-
-    this.Given(/^jag signerar och skickar kompletteringen$/, function() {
-        return signeraUtkast();
-    });
-
-    this.Given(/^ska det inte finnas någon knapp för "([^"]*)"$/, function(texten) {
-        return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
-    });
-
-    this.Given(/^jag klickar på signera\-knappen$/, function() {
-        return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
-    });
-
-
-
-    this.Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
-        utkastPage.signeraButton.isEnabled().then(function(isVisible) {
-            if (isVisible) {
-                callback('FEL - Signera-knappen är klickbar!');
-            } else {
-                logger.debug('OK Signera-knappen är ej klickbar!');
-            }
-        }).then(callback);
-    });
-
-    this.Given(/^jag uppdaterar enhetsaddress$/, function() {
-        return require('./fillIn/common.js').fillInEnhetAdress();
-    });
-
-    this.Given(/^jag makulerar intyget$/, function() {
-
-        return makuleraIntyget();
-    });
-
-    this.Given(/^jag makulerar tidigare "([^"]*)" intyg$/, function(intygsTyp, txt) {
-        return makuleraIntygLoop(intygsTyp).then(function() {
-            return raderaUtkastLoop(intygsTyp);
+            //TODO: Uppdatera testdata så att den matchar med dödsdatum.
         });
-    });
+
+    } else {
+        return;
+    }
+});
+
+Given(/^jag signerar och skickar kompletteringen$/, function() {
+    return signeraUtkast();
+});
+
+Given(/^ska det inte finnas någon knapp för "([^"]*)"$/, function(texten) {
+    return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
+});
+
+Given(/^jag klickar på signera\-knappen$/, function() {
+    return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
+});
 
 
 
-    this.Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$/, function(intygsTyp, txt) {
-
-        var testpatienter = wcTestTools.testdata.values.patienter;
-
-        var patient;
-        if (txt === 'sekretessmarkering') {
-            patient = wcTestTools.testdata.values.patienterMedSekretessmarkering[0];
+Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
+    utkastPage.signeraButton.isEnabled().then(function(isVisible) {
+        if (isVisible) {
+            callback('FEL - Signera-knappen är klickbar!');
         } else {
-            patient = testpatienter[helpers.getIntFromTxt(txt)];
+            logger.debug('OK Signera-knappen är ej klickbar!');
+        }
+    }).then(callback);
+});
+
+Given(/^jag uppdaterar enhetsaddress$/, function() {
+    return require('./fillIn/common.js').fillInEnhetAdress();
+});
+
+Given(/^jag makulerar intyget$/, function() {
+
+    return makuleraIntyget();
+});
+
+Given(/^jag makulerar tidigare "([^"]*)" intyg$/, function(intygsTyp, txt) {
+    return makuleraIntygLoop(intygsTyp).then(function() {
+        return raderaUtkastLoop(intygsTyp);
+    });
+});
+
+
+
+Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$/, function(intygsTyp, txt) {
+
+    var testpatienter = wcTestTools.testdata.values.patienter;
+
+    var patient;
+    if (txt === 'sekretessmarkering') {
+        patient = wcTestTools.testdata.values.patienterMedSekretessmarkering[0];
+    } else {
+        patient = testpatienter[helpers.getIntFromTxt(txt)];
+    }
+
+
+    return helpers.getUtkast(intygsTyp, patient).then(function(data) {
+        console.log('data.length: ' + data.length);
+        console.log(data);
+
+        if (!data[0]) {
+            return logger.info('OK - Inget utkast med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);
         }
 
-        //var promiseArr = [];
-        return helpers.getIntyg(intygsTyp, patient).then(function(data) {
-            if (typeof(data[0]) === 'undefined') {
-                logger.info('OK - inget intyg med intygstyp ' + intygsTyp + ' finns');
-                return;
-            }
+        //Logga in på vårdenhet som skapat intyget:
+        var userObj = {
+            forNamn: 'x',
+            efterNamn: 'y',
+            hsaId: data[0].SKAPAD_AV_HSAID,
+            enhetId: data[0].ENHETS_ID
+        };
+        global.intyg = {};
+        global.intyg.id = data[0].INTYGS_ID;
+
+
+        return loginHelpers.logInAsUser(userObj)
+            .then(function() {
+                return helpers.pageReloadDelay();
+            })
+            .then(function() {
+                var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
+                var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
+                logger.info('Går till ' + link);
+                return browser.get(link);
+            })
+            .then(function() {
+                return helpers.pageReloadDelay();
+            })
+            .then(function() {
+                return raderaUtkastet();
+            });
+    }).then(function() {
+        return helpers.getIntyg(intygsTyp, patient, false).then(function(data) {
             console.log('data.length: ' + data.length);
+            console.log(data);
 
-            data.forEach(function(item, index) {
-                console.log('index: ' + index);
+            if (!data[0]) {
+                return logger.info('OK - Inget intyg med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);
+            }
 
-                var endAction = 'no-action';
-                intyg.id = data[index].INTYGS_ID;
+            //Logga in på vårdenhet som skapat intyget:
+            var userObj = {
+                forNamn: 'x',
+                efterNamn: 'y',
+                hsaId: data[0].SKAPAD_AV_HSAID,
+                enhetId: data[0].ENHETS_ID
+            };
+            global.intyg = {};
+            global.intyg.id = data[0].INTYGS_ID;
 
-                console.log('intygsstatus från DB: ' + data[index].STATUS);
 
-                if (data[index].STATUS.indexOf('DRAFT') !== -1) {
-                    endAction = raderaUtkastet;
-                }
+            return loginHelpers.logInAsUser(userObj)
+                .then(function() {
+                    return helpers.pageReloadDelay();
+                })
+                .then(function() {
+                    var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
+                    var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
+                    logger.info('Går till ' + link);
+                    return browser.get(link);
+                })
+                .then(function() {
+                    return helpers.pageReloadDelay();
+                })
+                .then(function() {
+                    return makuleraIntyget();
+                });
+        });
+    });
+});
 
-                return new Promise(function(resolve, reject) {
-                    helpers.getIntygState(intyg.id).then(function(state) {
-                        console.log(state[0].STATE);
-                        if (state[0].STATE === 'CANCELLED') {
-                            logger.silly(intyg.id + ' är redan makulerat');
-                            return;
-                        } else if (typeof(state[0].STATE) !== 'undefined') {
-                            logger.silly('endAction = makuleraIntyget');
-                            endAction = makuleraIntyget;
-                        } else {
-                            logger.silly('Intyget är utkast');
-                        }
-                    }).then(function() {
-                        if (endAction === 'no-action') {
-                            console.log('no-action');
-                            return;
-                        }
-                        //Logga in på vårdenhet som skapat intyget:
-                        var userObj = {
-                            forNamn: 'x',
-                            efterNamn: 'y',
-                            hsaId: data[index].SKAPAD_AV_HSAID,
-                            enhetId: data[index].ENHETS_ID
-                        };
 
-                        return loginHelpers.logInAsUser(userObj)
-                            .then(function() {
-                                return helpers.pageReloadDelay();
-                            })
-                            .then(function() {
-                                var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
-                                var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
-                                logger.info('Går till ' + link);
-                                return browser.get(link);
-                            })
-                            .then(function() {
-                                return helpers.pageReloadDelay();
-                            })
-                            .then(function() {
-                                return endAction().then(resolve());
-                            });
+Given(/^jag raderar utkastet$/, function() {
+    return raderaUtkastet();
+});
+
+
+Given(/^jag skriver ut intyget$/, function() {
+    var isFK7263Intyg = helpers.isFK7263Intyg(intyg.typ);
+
+    if (isFK7263Intyg === false) {
+        return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
+    } else {
+        return fkIntygPage.skrivUtFullstandigtIntyg();
+    }
+});
+
+Given(/^jag skriver ut utkastet$/, function() {
+    return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE).then(function() {
+        return helpers.pageReloadDelay(); // Page reload
+    });
+});
+
+Given(/^ska det finnas en referens till gamla intyget$/, function() {
+    return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
+        return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
+            return browser.getCurrentUrl().then(function(text) {
+                logger.info('(%s contain %s) => %s', text, intyg.id, (text.indexOf(intyg.id) !== -1 ? true : false));
+                return expect(text).to.contain(intyg.id);
+            });
+        });
+    });
+});
+Given(/^ska intyget inte innehålla gamla personuppgifter$/, function() {
+    var namn = global.intyg.person.forNamn + ' ' + global.intyg.person.efterNamn;
+    return expect(element(by.id('patientNamnPersonnummer')).getText()).to.eventually.not.contain(namn);
+
+});
+
+When(/^jag markerar intyget som klart för signering$/, function() {
+    return moveAndSendKeys(element(by.id('markeraKlartForSigneringButton')), protractor.Key.SPACE);
+});
+
+When(/^ska jag se texten "([^"]*)"$/, function(msg) {
+    return expect(element(by.id('draft-marked-ready-text')).getText()).to.eventually.contain(msg);
+});
+
+Given(/^ska intyget inte finnas i listan$/, function() {
+
+    return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
+
+        return expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false);
+
+    });
+});
+
+When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
+
+    if (intygstyp !== intyg.typ) {
+        logger.info('Intygstyp är inte ' + intygstyp);
+        return Promise.resolve();
+    } else {
+        browser.ignoreSynchronization = true;
+        logger.info('Intygstyp är: ' + intyg.typ);
+        logger.info(intyg);
+
+        if (intyg.typ === 'Dödsorsaksintyg') {
+            var doiUtkastPage = pages.intyg.soc.doi.utkast;
+
+            //Läkarens utlåtande om dödsorsaken 
+            return doiUtkastPage.angeUtlatandeOmDodsorsak(intyg.dodsorsak)
+                .then(function() {
+                    logger.info('OK - angeUtlatandeOmDodsorsak');
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
+                }).then(function() {
+                    //Opererad inom fyra veckor före döden
+                    return doiUtkastPage.angeOperation(intyg.operation)
+                        .then(function() {
+                            logger.info('OK - angeOperation');
+                        }, function(reason) {
+                            console.trace(reason);
+                            throw ('FEL, angeOperation,' + reason);
+                        });
+                }).then(function() {
+                    //SkadaForgiftning
+                    return doiUtkastPage.angeSkadaForgiftning(intyg.skadaForgiftning)
+                        .then(function() {
+                            logger.info('OK - angeSkadaForgiftning');
+                        }, function(reason) {
+                            console.trace(reason);
+                            throw ('FEL, angeSkadaForgiftning,' + reason);
+                        });
+                }).then(function() {
+                    //Dödsorsaksuppgifter
+                    return doiUtkastPage.angeDodsorsaksuppgifterna(intyg.dodsorsaksuppgifter)
+                        .then(function() {
+                            logger.info('OK - angeDodsorsaksuppgifterna');
+                        }, function(reason) {
+                            console.trace(reason);
+                            throw ('FEL, angeDodsorsaksuppgifterna,' + reason);
+                        });
+                });
+
+
+        } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
+
+            if (typeof(intyg.baseratPa) === 'undefined') {
+                global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
+            }
+            return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
+                .then(function() {
+                    return logger.info('OK - angeBaseratPa');
+                }, function(reason) {
+                    throw ('FEL, angeBaseratPa,' + reason);
+                })
+                .then(function() {
+                    return pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
+                        browser.ignoreSynchronization = false;
+                        return logger.info('OK - angeArbetsformaga');
+                    }, function(reason) {
+                        throw ('FEL, angeArbetsformaga,' + reason);
                     });
-                });
-
-            });
-
-        });
-    });
-
-
-    this.Given(/^jag raderar utkastet$/, function() {
-        return raderaUtkastet();
-    });
-
-
-    this.Given(/^jag skriver ut intyget$/, function() {
-        var isFK7263Intyg = helpers.isFK7263Intyg(intyg.typ);
-
-        if (isFK7263Intyg === false) {
-            return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
-        } else {
-            return fkIntygPage.skrivUtFullstandigtIntyg();
-        }
-    });
-
-    this.Given(/^jag skriver ut utkastet$/, function() {
-        return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE).then(function() {
-            return helpers.pageReloadDelay(); // Page reload
-        });
-    });
-
-    this.Given(/^ska det finnas en referens till gamla intyget$/, function() {
-        return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
-            return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
-                return browser.getCurrentUrl().then(function(text) {
-                    logger.info('(%s contain %s) => %s', text, intyg.id, (text.indexOf(intyg.id) !== -1 ? true : false));
-                    return expect(text).to.contain(intyg.id);
-                });
-            });
-        });
-    });
-    this.Given(/^ska intyget inte innehålla gamla personuppgifter$/, function() {
-        var namn = global.intyg.person.forNamn + ' ' + global.intyg.person.efterNamn;
-        return expect(element(by.id('patientNamnPersonnummer')).getText()).to.eventually.not.contain(namn);
-
-    });
-
-    this.When(/^jag markerar intyget som klart för signering$/, function() {
-        return moveAndSendKeys(element(by.id('markeraKlartForSigneringButton')), protractor.Key.SPACE);
-    });
-
-    this.When(/^ska jag se texten "([^"]*)"$/, function(msg) {
-        return expect(element(by.id('draft-marked-ready-text')).getText()).to.eventually.contain(msg);
-    });
-
-    this.Given(/^ska intyget inte finnas i listan$/, function() {
-
-        return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
-
-            return expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false);
-
-        });
-    });
-
-    this.When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
-
-        if (intygstyp !== intyg.typ) {
-            logger.info('Intygstyp är inte ' + intygstyp);
-            return Promise.resolve();
-        } else {
-            browser.ignoreSynchronization = true;
-            logger.info('Intygstyp är: ' + intyg.typ);
-            logger.info(intyg);
-
-            if (intyg.typ === 'Dödsorsaksintyg') {
-                var doiUtkastPage = pages.intyg.soc.doi.utkast;
-
-                //Läkarens utlåtande om dödsorsaken 
-                return doiUtkastPage.angeUtlatandeOmDodsorsak(intyg.dodsorsak)
-                    .then(function() {
-                        logger.info('OK - angeUtlatandeOmDodsorsak');
+                })
+                .then(function() {
+                    return pages.intyg.lisjp.utkast.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
+                        logger.info('OK - angeArbetstidsforlaggning');
                     }, function(reason) {
                         console.trace(reason);
-                        throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
-                    }).then(function() {
-                        //Opererad inom fyra veckor före döden
-                        return doiUtkastPage.angeOperation(intyg.operation)
-                            .then(function() {
-                                logger.info('OK - angeOperation');
-                            }, function(reason) {
-                                console.trace(reason);
-                                throw ('FEL, angeOperation,' + reason);
-                            });
-                    }).then(function() {
-                        //SkadaForgiftning
-                        return doiUtkastPage.angeSkadaForgiftning(intyg.skadaForgiftning)
-                            .then(function() {
-                                logger.info('OK - angeSkadaForgiftning');
-                            }, function(reason) {
-                                console.trace(reason);
-                                throw ('FEL, angeSkadaForgiftning,' + reason);
-                            });
-                    }).then(function() {
-                        //Dödsorsaksuppgifter
-                        return doiUtkastPage.angeDodsorsaksuppgifterna(intyg.dodsorsaksuppgifter)
-                            .then(function() {
-                                logger.info('OK - angeDodsorsaksuppgifterna');
-                            }, function(reason) {
-                                console.trace(reason);
-                                throw ('FEL, angeDodsorsaksuppgifterna,' + reason);
-                            });
+                        throw ('FEL, angeArbetstidsforlaggning,' + reason);
                     });
-
-
-            } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
-
-                if (typeof(intyg.baseratPa) === 'undefined') {
-                    global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
-                }
-                return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
-                    .then(function() {
-                        return logger.info('OK - angeBaseratPa');
+                })
+                .then(function() {
+                    return pages.intyg.lisjp.utkast.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
+                        logger.info('OK - prognosForArbetsformaga');
                     }, function(reason) {
-                        throw ('FEL, angeBaseratPa,' + reason);
-                    })
-                    .then(function() {
-                        return pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
-                            browser.ignoreSynchronization = false;
-                            return logger.info('OK - angeArbetsformaga');
-                        }, function(reason) {
-                            throw ('FEL, angeArbetsformaga,' + reason);
-                        });
-                    })
-                    .then(function() {
-                        return pages.intyg.lisjp.utkast.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
-                            logger.info('OK - angeArbetstidsforlaggning');
-                        }, function(reason) {
-                            console.trace(reason);
-                            throw ('FEL, angeArbetstidsforlaggning,' + reason);
-                        });
-                    })
-                    .then(function() {
-                        return pages.intyg.lisjp.utkast.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
-                            logger.info('OK - prognosForArbetsformaga');
-                        }, function(reason) {
-                            console.trace(reason);
-                            throw ('FEL, prognosForArbetsformaga,' + reason);
-                        });
+                        console.trace(reason);
+                        throw ('FEL, prognosForArbetsformaga,' + reason);
                     });
-            } else {
-                console.trace(intygstyp);
-                logger.warn('Kunde inte matcha intygstyp.');
-            }
+                });
+        } else {
+            console.trace(intygstyp);
+            logger.warn('Kunde inte matcha intygstyp.');
         }
-    });
-
-};
+    }
+});

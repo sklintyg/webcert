@@ -6,18 +6,19 @@
       <h1 class="error">DJUPINTEGRERAD testläge</h1>
       <span class="error">OBS! Dashboard i djupintegrerat läge är EJ tillgängligt i prod-miljö, den finns endast för att vid behov underlätta utveckling/testning.</span>
     </wc-alert-message>
-    <div class="form-group">
+    <div class="form-group sokSkrivIntygWrapper">
       <label for="pnr" class="control-label">Patientens personnummer</label>
 
-      <div class="form-inline">
+      <div class="form-inline sokSkrivIntygInput">
         <input id="pnr" class="form-control" name="pnr" type="text"
                placeholder="ååååmmdd-nnnn"
                ng-model="personnummer"
                wc-person-number
                required maxlength="13"
-               wc-focus-me="focusPnr" />
+               wc-focus-me="focusPnr"/>
         <button id="skapapersonnummerfortsatt" name="skapapersonnummerfortsatt"
-                class="btn btn-primary" type="submit" ng-disabled="viewState.loading">
+                class="btn btn-primary" ng-class="{'correct' : pnrForm.pnr.$valid }" type="submit" ng-disabled="viewState.loading">
+
           <img ng-show="viewState.loading" ng-src="/img/ajax-loader-small-green.gif"/> Fortsätt
         </button>
       </div>

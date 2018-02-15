@@ -20,23 +20,40 @@
 /*global intyg, browser, user*/
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 var mail = require('./mail');
 
-module.exports = function() {
+/*
+ *	Test steg
+ *
+ */
 
-    this.Given(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
-        console.log('intygsid:' + intyg.id);
-        var textToSearchFor = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + intyg.id + '/questions?enhet=' + user.enhetId;
+Given(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
+    console.log('intygsid:' + intyg.id);
+    var textToSearchFor = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + intyg.id + '/questions?enhet=' + user.enhetId;
 
-        console.log(textToSearchFor);
-        return browser.sleep(30000).then(function() {
-            return mail.readRecentMails()
-                .then(function(mailArr) {
-                    console.log(mailArr);
-                    return mailArr.join(',');
-                })
-                .should.eventually.contain(textToSearchFor);
-        });
-
+    console.log(textToSearchFor);
+    return browser.sleep(30000).then(function() {
+        return mail.readRecentMails()
+            .then(function(mailArr) {
+                console.log(mailArr);
+                return mailArr.join(',');
+            })
+            .should.eventually.contain(textToSearchFor);
     });
-};
+
+});

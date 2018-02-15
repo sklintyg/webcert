@@ -253,7 +253,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSaveDraftDraftFirstSave() throws Exception {
-        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -289,7 +289,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSaveDraftSecondSave() throws Exception {
-        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -354,7 +354,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testValidateDraft() throws Exception {
-        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a", "field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
@@ -685,7 +685,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private ValidateDraftResponse buildValidationResponse() {
         return new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList(),
-                Collections.singletonList(new ValidationMessage("testfield", ValidationMessageType.WARN)));
+                Collections.singletonList(new ValidationMessage("testcategory","testfield", ValidationMessageType.WARN)));
     }
 
     private Patient buildPatient(String pnr, String fornamn, String efternamn) {

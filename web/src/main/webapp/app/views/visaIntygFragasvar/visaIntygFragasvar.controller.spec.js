@@ -146,9 +146,6 @@ describe('VisaIntygFragasvarCtrl', function() {
             $controller('webcert.VisaIntygFragasvarCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
 
-            // ----- arrange
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
-
             // kick off the window change event
             $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
 
@@ -158,9 +155,6 @@ describe('VisaIntygFragasvarCtrl', function() {
 
             $controller('webcert.VisaIntygFragasvarCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
-
-            // ----- arrange
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
             // spy on the deferred
             var def = mockDeferreds.getDeferred();
@@ -185,9 +179,6 @@ describe('VisaIntygFragasvarCtrl', function() {
 
     describe('#checkHasNoUnhandledMessages', function() {
         it('should check that a dialog is not opened, if there are no unhandled messages, and go to then newUrl', function(){
-
-            // ----- arrange
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
             // spy on the defferd
             var def = mockDeferreds.getDeferred();
@@ -228,10 +219,6 @@ describe('VisaIntygFragasvarCtrl', function() {
 
             mockDeferreds.getLast().resolve(false);
 
-
-            // ------ assert
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
-
             expect($scope.$broadcast).not.toHaveBeenCalledWith('hasUnhandledQasEvent', mockDeferreds.popDeferred());
 
         });
@@ -267,7 +254,6 @@ describe('VisaIntygFragasvarCtrl', function() {
 
 
             // ------ assert
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
             expect(UserPreferencesService.isSkipShowUnhandledDialogSet).toHaveBeenCalled();
             expect($scope.$broadcast).toHaveBeenCalledWith('hasUnhandledQasEvent', mockDeferreds.getLastPopped());
 

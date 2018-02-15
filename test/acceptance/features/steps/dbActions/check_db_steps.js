@@ -24,7 +24,7 @@
 
 module.exports = function() {
 
-    // this.Given(/^ska spår av utkastet inte finnas i databasen$/, function(callback) {
+    // Given(/^ska spår av utkastet inte finnas i databasen$/, function(callback) {
 
     //     if (!process.env.DATABASE_PASSWORD) {
     //         callback('Miljövariabel DATABASE_PASSWORD saknas för DATABASE_USER:' + process.env.DATABASE_USER);

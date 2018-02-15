@@ -175,7 +175,50 @@ module.exports = {
         }
         return n;
     },
-    getIntyg: function(intygsTyp, patient) {
+    getIntyg: function(intygsTyp, patient, makulerad) {
+        var intygShortCode = this.getPathShortcode(intygsTyp);
+        var insertDashInPnr = this.insertDashInPnr;
+        return new Promise(function(resolve, reject) {
+            return pool.getConnection().then(function(connection) {
+
+
+                patient.id = insertDashInPnr(patient.id);
+                /*if (patient.id.indexOf('-') === -1) {
+                    patient.id = patient.id.substring(0, 8) + '-' + patient.id.substring(8, 12);
+                    //yyyymmdd-nnnn format.
+                }*/
+
+                var query = 'SELECT INTYGS_ID, ENHETS_ID, SKAPAD_AV_HSAID, STATUS, STATE';
+                query += ' FROM ' + process.env.DATABASE_NAME + '.INTYG ';
+                query += ' INNER JOIN ' + process.env.INTYGTJANST_DATABASE_NAME + '.CERTIFICATE_STATE ON ';
+                query += process.env.DATABASE_NAME + '.INTYG.INTYGS_ID = ' + process.env.INTYGTJANST_DATABASE_NAME + '.CERTIFICATE_STATE.CERTIFICATE_ID';
+                query += ' WHERE INTYGS_TYP = "' + intygShortCode + '"';
+                query += ' AND PATIENT_PERSONNUMMER = "' + patient.id + '"';
+                query += ' AND STATUS NOT LIKE "DRAFT%" '; //Utkast är inte intressant för denna funktionen.
+                if (makulerad !== true) { //Behöver efter makulerat intyg i IT p.g.a. Makulering kan ske i mina intyg.
+                    query += ' AND STATE != "CANCELLED"';
+                }
+                query += ' LIMIT 100';
+
+                logger.info('Hämtar intyg från webcert på patient ' + patient.id);
+                console.log(patient);
+                logger.silly('query: ');
+                logger.silly(query);
+
+                return connection.query(query,
+                    function(err, rows, fields) {
+                        connection.release();
+                        if (err) {
+                            throw (err);
+                        }
+                        console.log(fields);
+                        console.log(rows);
+                        resolve(rows);
+                    });
+            });
+        });
+    },
+    getUtkast: function(intygsTyp, patient) {
         var intygShortCode = this.getPathShortcode(intygsTyp);
         var insertDashInPnr = this.insertDashInPnr;
         return new Promise(function(resolve, reject) {
@@ -191,41 +234,15 @@ module.exports = {
                 var query = 'SELECT INTYGS_ID, ENHETS_ID, SKAPAD_AV_HSAID, STATUS';
                 query += ' FROM ' + process.env.DATABASE_NAME + '.INTYG WHERE INTYGS_TYP = "' + intygShortCode + '"';
                 query += ' AND PATIENT_PERSONNUMMER = "' + patient.id + '"';
+                query += ' AND STATUS LIKE "DRAFT%" ';
                 query += ' LIMIT 100';
 
-                logger.info('Hämtar intyg från webcert på patient');
+                logger.info('Hämtar utkast från webcert på patient ' + patient.id);
                 console.log(patient);
                 logger.silly('query: ');
-                console.log(query);
+                logger.silly(query);
 
-                connection.query(query,
-                    function(err, rows, fields) {
-                        connection.release();
-                        if (err) {
-                            throw (err);
-                        }
-                        console.log(fields);
-                        console.log(rows);
-                        resolve(rows);
-                    });
-            });
-        });
-    },
-    getIntygState: function(intygsId) {
-        //Hämtar den senaste statusen från intygstjänstens DB.
-        return new Promise(function(resolve, reject) {
-            return pool.getConnection().then(function(connection) {
-
-                var query = 'SELECT *';
-                query += ' FROM ' + process.env.INTYGTJANST_DATABASE_NAME + '.CERTIFICATE_STATE WHERE CERTIFICATE_ID = "' + intygsId + '"';
-                query += ' ORDER BY TIMESTAMP DESC LIMIT 1';
-
-
-                logger.info('Hämtar intygsstatus från intygstjänstens databas');
-                logger.silly('query: ');
-                console.log(query);
-
-                connection.query(query,
+                return connection.query(query,
                     function(err, rows, fields) {
                         connection.release();
                         if (err) {

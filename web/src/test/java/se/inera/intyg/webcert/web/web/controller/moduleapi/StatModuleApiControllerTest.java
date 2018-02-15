@@ -25,7 +25,19 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +48,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -46,6 +59,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -53,16 +67,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
-
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
@@ -268,6 +272,31 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
 
         verify(webCertUserService).getUser();
         assertEquals(OK, response.getStatus());
+    }
+
+    @Test
+    public void testWebcertUserIsDjupintegrerad() {
+        mockUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        Response response = statController.getStatistics();
+
+        assertNotNull(response);
+        verify(webCertUserService).getUser();
+        verifyZeroInteractions(authoritiesHelper);
+        verifyZeroInteractions(fragaSvarService);
+        verifyZeroInteractions(arendeService);
+        verifyZeroInteractions(intygDraftService);
+
+        assertEquals(OK, response.getStatus());
+
+        StatsResponse statsResponse = (StatsResponse) response.getEntity();
+        assertNotNull(statsResponse);
+
+        assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
+        assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+
+        assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
+        assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
     }
 
     @Test

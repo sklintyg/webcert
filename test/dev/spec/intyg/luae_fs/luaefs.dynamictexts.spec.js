@@ -66,7 +66,7 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
             expect(UtkastPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
 
             //Funktionsnedsättning/påverkan
-            expect(UtkastPage.getDynamicLabelText('FRG_16.RBK')).toBe(texts['FRG_16.RBK']);
+            expect(UtkastPage.getDynamicLabelTextById('FRG_16-RBK')).toContain(texts['FRG_16.RBK']);
 
             //Tilläggsfråga
             //expect(UtkastPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);

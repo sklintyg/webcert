@@ -78,7 +78,6 @@ describe('Luse attic tests', function() {
             expect(LuseUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag.');
         });
     });
-
     describe('underlag', function() {
         it('should still be valid if underlagFinns is set to no', function() {
             LuseUtkastPage.andraMedicinskaUtredningar.finns.NEJ.sendKeys(protractor.Key.SPACE);

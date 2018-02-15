@@ -20,59 +20,83 @@
  /* globals intyg, logger*/
 
  'use strict';
+ /*jshint newcap:false */
+ //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+ /*
+  *	Stödlib och ramverk
+  *
+  */
+
+ const {
+     Given, // jshint ignore:line
+     When, // jshint ignore:line
+     Then // jshint ignore:line
+ } = require('cucumber');
+
 
  var helpers = require('./helpers');
  var soap = require('soap');
  var soapMessageBodies = require('./soap');
 
- module.exports = function() {
 
-     this.Given(/^jag skickar intyget direkt till Försäkringskassan$/, function(callback) {
-         //console.log(personId);
-         var url;
-         var body;
-         //console.log(intyg);
-         var isSMIIntyg;
-         if (intyg && intyg.typ) {
-             isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-         }
+ /*
+  *	Stödfunktioner
+  *
+  */
 
-         if (isSMIIntyg) {
-             console.log('is isSMIIntyg');
-         } else {
-             url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/send-certificate/v1.0?wsdl';
-             url = url.replace('https', 'http');
 
-             //function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId)
-             body = soapMessageBodies.SendMedicalCertificate(
-                 global.person.id,
-                 global.user.hsaId,
-                 global.user.forNamn + ' ' + global.user.efterNamn,
-                 global.user.enhetId,
-                 global.user.enhetId,
-                 global.intyg.id);
-             console.log(body);
-             soap.createClient(url, function(err, client) {
+ /*
+  *	Test steg
+  *
+  */
+
+ Given(/^jag skickar intyget direkt till Försäkringskassan$/, function(callback) {
+     //console.log(personId);
+     var url;
+     var body;
+     //console.log(intyg);
+     var isSMIIntyg;
+     if (intyg && intyg.typ) {
+         isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+     }
+
+     if (isSMIIntyg) {
+         console.log('is isSMIIntyg');
+     } else {
+         url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/send-certificate/v1.0?wsdl';
+         url = url.replace('https', 'http');
+
+         //function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId)
+         body = soapMessageBodies.SendMedicalCertificate(
+             global.person.id,
+             global.user.hsaId,
+             global.user.forNamn + ' ' + global.user.efterNamn,
+             global.user.enhetId,
+             global.user.enhetId,
+             global.intyg.id);
+         console.log(body);
+         soap.createClient(url, function(err, client) {
+             if (err) {
+                 callback(err);
+             }
+
+             client.SendMedicalCertificate(body, function(err, result, body) {
                  if (err) {
-                     callback(err);
+                     throw err;
                  }
+                 console.log(result);
 
-                 client.SendMedicalCertificate(body, function(err, result, body) {
-                     if (err) {
-                         throw err;
-                     }
-                     console.log(result);
-
-                     var resultcode = result.result.resultCode;
-                     logger.info('ResultCode: ' + resultcode);
-                     if (resultcode !== 'OK') {
-                         logger.info(result);
-                         callback('ResultCode: ' + resultcode + '\n' + body);
-                     } else {
-                         callback();
-                     }
-                 });
+                 var resultcode = result.result.resultCode;
+                 logger.info('ResultCode: ' + resultcode);
+                 if (resultcode !== 'OK') {
+                     logger.info(result);
+                     callback('ResultCode: ' + resultcode + '\n' + body);
+                 } else {
+                     callback();
+                 }
              });
-         }
-     });
- };
+         });
+     }
+ });

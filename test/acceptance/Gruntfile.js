@@ -43,11 +43,12 @@ module.exports = function(grunt) {
         jshint: {
             acc: [
                 'features/steps/*.js',
-                'features/steps/**/*.js' //,
+                'features/steps/**/*.js', //,
                 //'../webcertTestTools/**/*.js',
                 //'../webcertTestTools/*.js'
             ],
             options: {
+				newcap: false,
                 force: false,
                 jshintrc: '.jshintrc'
             }
@@ -56,7 +57,7 @@ module.exports = function(grunt) {
             verify: {
                 src: [
                     'features/steps/*.js',
-                    'features/steps/**/*.js' //,
+                    'features/steps/**/*.js'
                     //'webcertTestTools/**/*.js',
                     //'webcertTestTools/*.js'
                 ],
@@ -68,7 +69,7 @@ module.exports = function(grunt) {
             modify: {
                 src: [
                     'features/steps/*.js',
-                    'features/steps/**/*.js' //,
+                    'features/steps/**/*.js'
                     // '../webcertTestTools/**/*.js',
                     // '../webcertTestTools/*.js'
                 ],
@@ -175,36 +176,14 @@ module.exports = function(grunt) {
             grunt.config.set('protractor.acc.options.args.seleniumAddress', 'http://selenium1.nordicmedtest.se:4444/wd/hub');
         }
 
-        // Ange taggar som grunt.option istället for argument till task. Flexiblare när det gäller att
-        // kombinera OCH och ELLER operatorer.
-        // https://github.com/cucumber/cucumber/wiki/Tags
-        let tags = ['~@waitingForFix', '~@notReady'];
+		//Använder tag expressions
+		//https://github.com/cucumber/cucumber/tree/master/tag-expressions
+		
+		let tags = 'not @waitingForFix and not @notReady';
+		
         if (grunt.option('tags')) {
-            tags = grunt.option('tags').split(',');
-			
-			
-			
-            // När man kör med parallella tester måste man av någon 
-            // anledning manuellt filtrera bort de feature-filer som inte 
-            // innehåller några av de aktuella taggarna för att det inte 
-            // ska ta väldigt lång tid.
-			if (grunt.option('gridnodeinstances') && tags.indexOf('~@waitingForFix') === -1 && tags.indexOf('~@notReady') === -1 ) {
-                let tagList = grunt.option('tags').split(/ |,/);
-                let featureFiles = grunt.file.expand('features/**/*.feature');
-
-                let _hasAtLeastOneTag = (text, tags) => tags.some(tag => text.indexOf(tag) > -1);
-
-                featureFiles = featureFiles.filter(file => _hasAtLeastOneTag(grunt.file.read(file), tagList));
-
-                if (featureFiles.length === 0) {
-                    grunt.fail.warn('Hittade inget scenario som hade någon av taggarna som specificerats');
-                } else {
-                    grunt.config.set('protractor.acc.options.args.specs', featureFiles);
-                }
-            }
+			tags = grunt.option('tags');
         }
-        
-        tags = tags.map(tag => tag.replace(/ /g, ','));
 
         grunt.log.subhead('Taggar:' + tags);
         grunt.config.set('protractor.acc.options.args.cucumberOpts.tags', tags);

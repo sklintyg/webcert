@@ -139,6 +139,25 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         this.arbetslivsinriktadeAtgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
         var panel = element(by.css('.arende-panel'));
         this.arendePanel = panel;
+		this.srs = {
+            knapp: () => element(by.buttonText('SRS')),
+            panel: () => element(by.tagName('wc-srs-content')),
+            samtycke: {
+                ja: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'JA')).first(),
+                nej: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'NEJ')).first()
+            },
+            visamer: () => element.all(by.id('questionsCollapser')),
+            visaKnapp: () => element(by.buttonText('Visa')),
+            fragor: () => element(by.tagName('wc-srs-questionaire')),
+            prediktion: () => element(by.id('predictionBox')),
+            flik: linkText => element(by.linkText(linkText)),
+            atgarder: () => element(by.id('atgarder2')), //SRS rutan vid diagnos antas
+            statistik: () => element(by.id('statstics2')), //SRS rutan vid diagnos antas
+            atgarderRek: () => element(by.id('atgarderRek')),
+            atgarderObs: () => element(by.id('atgarderObs')),
+            questionsCollapser: () => element(by.id('questionsCollapser')),
+
+        };
     },
     selectQuestionTopic: function(amne) {
         this.arendeQuestion.topic.element(by.cssContainingText('option', amne)).click();

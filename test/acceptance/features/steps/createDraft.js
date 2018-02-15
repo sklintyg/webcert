@@ -20,11 +20,34 @@
 /* global intyg, logger,wcTestTools */
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var helpers = require('./helpers');
 var testvalues = wcTestTools.testdata.values;
 var testdataHelpers = wcTestTools.helpers.testdata;
+
+
+/*
+ *	Stödfunktioner
+ *
+ */
+
 
 function sendCreateDraft(url, body, callback) {
     soap.createClient(url, function(err, client) {
@@ -91,64 +114,66 @@ function createBody(intygstyp, callback) {
 
     sendCreateDraft(url, body, callback);
 }
+/*
+ *	Test steg
+ *
+ */
 
-module.exports = function() {
-    this.Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
+Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
+
+    if (!sammaPatient) {
+        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+        if (samordningsnummer) {
+            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+        }
+    }
+    createBody(intygstyp, callback);
+});
+
+//Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
+Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
+    function(sammaPatient, smi, ts, samEllerPersonNummer, callback) {
 
         if (!sammaPatient) {
             global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-            if (samordningsnummer) {
-                global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+            if (samEllerPersonNummer) {
+                var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
+                global.person = testdataHelpers.shuffle(shuffladPID)[0];
             }
         }
-        createBody(intygstyp, callback);
+
+
+
+        logger.debug('SMI: ' + (smi));
+        logger.debug('TS: ' + (ts));
+
+        var intygtyper = [];
+
+        if (smi) {
+            intygtyper.push('Läkarintyg för sjukpenning',
+                'Läkarutlåtande för sjukersättning',
+                'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+            );
+        } else if (ts) {
+            intygtyper.push('Transportstyrelsens läkarintyg',
+                'Transportstyrelsens läkarintyg, diabetes');
+        } else {
+            intygtyper.push(
+                'Läkarintyg för sjukpenning',
+                'Läkarutlåtande för sjukersättning',
+                'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+                'Läkarintyg FK 7263',
+                'Transportstyrelsens läkarintyg',
+                'Transportstyrelsens läkarintyg, diabetes'
+                //TODO aktivera DB-DOI
+                //'Dödsbevis',
+                //'Dödsorsaksintyg'
+            );
+        }
+
+        var randomIntygType = testdataHelpers.shuffle(intygtyper)[0];
+        logger.info('Intyg typ: ' + randomIntygType + '\n');
+        createBody(randomIntygType, callback);
     });
-
-    //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
-    this.Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
-        function(sammaPatient, smi, ts, samEllerPersonNummer, callback) {
-
-            if (!sammaPatient) {
-                global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-                if (samEllerPersonNummer) {
-                    var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
-                    global.person = testdataHelpers.shuffle(shuffladPID)[0];
-                }
-            }
-
-
-
-            logger.debug('SMI: ' + (smi));
-            logger.debug('TS: ' + (ts));
-
-            var intygtyper = [];
-
-            if (smi) {
-                intygtyper.push('Läkarintyg för sjukpenning',
-                    'Läkarutlåtande för sjukersättning',
-                    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-                    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
-                );
-            } else if (ts) {
-                intygtyper.push('Transportstyrelsens läkarintyg',
-                    'Transportstyrelsens läkarintyg, diabetes');
-            } else {
-                intygtyper.push(
-                    'Läkarintyg för sjukpenning',
-                    'Läkarutlåtande för sjukersättning',
-                    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-                    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-                    'Läkarintyg FK 7263',
-                    'Transportstyrelsens läkarintyg',
-                    'Transportstyrelsens läkarintyg, diabetes'
-                    //TODO aktivera DB-DOI
-                    //'Dödsbevis',
-                    //'Dödsorsaksintyg'
-                );
-            }
-
-            var randomIntygType = testdataHelpers.shuffle(intygtyper)[0];
-            logger.info('Intyg typ: ' + randomIntygType + '\n');
-            createBody(randomIntygType, callback);
-        });
-};

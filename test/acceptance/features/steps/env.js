@@ -19,7 +19,7 @@
 
 /* globals browser, logger */
 'use strict';
-
+/*jshint newcap:false */
 
 var fs = require('fs');
 
@@ -50,24 +50,45 @@ function checkConsoleErrors() {
     }
 }
 
-function removeAlerts() {
+/*function removeAlerts() {
     browser.switchTo().alert().accept()
         .then(() => logger.log('info', 'Dialogruta accepterad.'))
         .catch(err => {}); // Ingen dialogruta hittad, allt är frid och fröjd.
-}
+}*/
 
-module.exports = function() {
-    this.setDefaultTimeout(600 * 1000);
-    global.externalPageLinks = [];
+//module.exports = function() {
+var {
+    setDefaultTimeout
+} = require('cucumber');
+var {
+    Before
+} = require('cucumber');
+var {
+    After
+} = require('cucumber');
 
-    this.AfterStep(function(event) {
 
-        return new Promise(function(resolve) {
-                //Kör promisekedja för AfterStep.
-                resolve();
-            })
+setDefaultTimeout(600 * 1000);
+global.externalPageLinks = [];
 
-            /* avaktiverar AfterStep tills det att TI-442 är löst.
+/*
+
+var {
+    AfterStep
+} = require('cucumber');
+
+//TODO AfterStep ska bytas ut mot AfterAll TI-444
+//och
+//https://github.com/cucumber/cucumber-js/commit/9499817a42d2b1734adf3dcb2818b00c110e3b10
+
+AfterStep(function(event) {
+
+    return new Promise(function(resolve) {
+            //Kör promisekedja för AfterStep.
+            resolve();
+        })
+
+        // avaktiverar AfterStep tills det att TI-444 är löst.
 		.then(function() {
             // Samla in alla externa länkar på aktuell sida
             return element.all(by.css('a')).each(function(link) {
@@ -134,94 +155,96 @@ module.exports = function() {
             });
         })
 		
-		*/
-            .then(function() {
-                // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
-                return removeAlerts();
-            });
+		
+        .then(function() {
+            // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
+            return removeAlerts();
+        });
 
-    });
+});*/
 
-    this.Before(function(scenario) {
-        global.scenario = scenario;
+Before(function() {
+    global.scenario = this;
 
-        logger.info('Återställer globala variabler');
-        global.person = {};
-        global.intyg = {};
-        global.meddelanden = []; //{typ:'', id:''}
-        global.user = {};
-        hasFoundConsoleErrors = false;
-        duplicateIds = [];
-    });
-    //After scenario
-    this.After(function(scenario) {
+    logger.info('Återställer globala variabler');
+    global.person = {};
+    global.intyg = {};
+    global.meddelanden = []; //{typ:'', id:''}
+    global.user = {};
+    hasFoundConsoleErrors = false;
+    duplicateIds = [];
+});
+//After scenario
+After(function(testCase) {
+    //
+    var world = this;
 
-        if (scenario.isFailed()) {
+    if (testCase.result.status === 'failed') {
 
-            var frontEndJS = 'var div = document.createElement("DIV"); ';
-            frontEndJS += 'div.style.position = "fixed";';
-            frontEndJS += 'div.style.height = (window.innerHeight - 2) + "px";';
-            frontEndJS += 'div.style.width = (window.innerWidth - 2) + "px";';
-            frontEndJS += 'div.style.border = "1px solid red";';
-            frontEndJS += 'div.style.top = "1px";';
-            frontEndJS += 'div.style.zIndex = "10000";';
-            frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
-            frontEndJS += 'body.appendChild(div);';
+        var frontEndJS = 'var div = document.createElement("DIV"); ';
+        frontEndJS += 'div.style.position = "fixed";';
+        frontEndJS += 'div.style.height = (window.innerHeight - 2) + "px";';
+        frontEndJS += 'div.style.width = (window.innerWidth - 2) + "px";';
+        frontEndJS += 'div.style.border = "1px solid red";';
+        frontEndJS += 'div.style.top = "1px";';
+        frontEndJS += 'div.style.zIndex = "10000";';
+        frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
+        frontEndJS += 'body.appendChild(div);';
 
-            return browser.executeScript(frontEndJS).then(function() {
-                return browser.takeScreenshot();
-            }).then(function(png) {
-                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-                var filename = 'screenshots/' + new Date().getTime() + '.png';
-                return writeScreenShot(png, ssPath + filename, function() {
-                    return scenario.attach(filename, 'image/png', function(err) {
-                        if (err) {
-                            throw err;
-                        }
-                        logger.silly('Skärmbild tagen: ' + filename);
-                        return checkConsoleErrors();
-                    });
+        return browser.executeScript(frontEndJS).then(function() {
+            return browser.takeScreenshot();
+        }).then(function(png) {
+            var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+            var filename = 'screenshots/' + new Date().getTime() + '.png';
+            return writeScreenShot(png, ssPath + filename, function() {
+                return world.attach(filename, 'image/png', function(err) {
+                    if (err) {
+                        throw err;
+                    }
+                    logger.silly('Skärmbild tagen: ' + filename);
+                    return checkConsoleErrors();
                 });
-            }).then(function() {
-                logger.silly('Rensar session-storage');
-                return browser.executeScript('window.sessionStorage.clear();');
-            }).then(function() {
-                logger.silly('Rensar local-storage');
-                return browser.executeScript('window.localStorage.clear();');
-            }).catch(function(err) {
-                logger.warn('Fel i afterScenario');
-                logger.debug(err);
-                return;
             });
-        } else {
-            return checkConsoleErrors();
+        }).then(function() {
+            logger.silly('Rensar session-storage');
+            return browser.executeScript('window.sessionStorage.clear();');
+        }).then(function() {
+            logger.silly('Rensar local-storage');
+            return browser.executeScript('window.localStorage.clear();');
+        }).catch(function(err) {
+            logger.warn('Fel i afterScenario');
+            logger.debug(err);
+            return;
+        });
+    } else {
+        return checkConsoleErrors();
+    }
+
+
+    //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
+    /*var rensaBortIntyg = true;
+    var tagArr = scenario.getTags();
+    for (var i = 0; i < tagArr.length; i++) {
+        if (tagArr[i].getName() === '@keepIntyg') {
+            rensaBortIntyg = false;
         }
-
-
-        //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
-        /*var rensaBortIntyg = true;
-        var tagArr = scenario.getTags();
-        for (var i = 0; i < tagArr.length; i++) {
-            if (tagArr[i].getName() === '@keepIntyg') {
-                rensaBortIntyg = false;
-            }
-        }*/
+    }*/
 
 
 
 
-    });
+});
 
 
 
-    logger.on('logging', function(transport, level, msg, meta) {
-        var date = new Date();
-        var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
-        if (global.scenario) {
-            global.scenario.attach(dateString + ' - ' + level + ': ' + msg);
-        }
-    });
+logger.on('logging', function(transport, level, msg, meta) {
+    var date = new Date();
+    var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
+    if (global.scenario) {
+        global.scenario.attach(dateString + ' - ' + level + ': ' + msg);
+    }
+});
 
 
 
-};
+//};

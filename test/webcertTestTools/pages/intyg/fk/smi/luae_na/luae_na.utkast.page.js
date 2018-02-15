@@ -47,15 +47,15 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
 
         this.baseratPa = {
             minUndersokningAvPatienten: {
-                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3')),
+                checkbox: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=checbox]')),
                 datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
             },
             journaluppgifter: {
-                checkbox: element(by.id('formly_1_date_journaluppgifter_4')),
+                checkbox:  element(by.id('form_journaluppgifter')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
             },
             anhorigBeskrivning: {
-                checkbox: element(by.id('form_anhorigsBeskrivningAvPatienten')),
+                checkbox: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=text]'))
             },
             annat: {
@@ -65,7 +65,7 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
             },
             kannedomOmPatient: {
                 datum: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=text]')),
-                checkbox: element(by.id('formly_1_date_kannedomOmPatient_8'))
+                checkbox: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=checkbox]'))
             }
         };
     },

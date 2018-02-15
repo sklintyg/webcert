@@ -139,10 +139,10 @@ var doiUtkast = BaseSocUtkast._extend({
 			rattsmedicinskBesiktning : element(by.id('grunder-RATTSMEDICINSK_BESIKTNING'))
 		}
 		this.enhetensAdress = {
-            postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
-            postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
-            postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
-            enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
+            postAdress: element(by.id('grundData-skapadAv-vardenhet-postadress')),
+            postNummer: element(by.id('grundData-skapadAv-vardenhet-postnummer')),
+            postOrt: element(by.id('grundData-skapadAv-vardenhet-postort')),
+            enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         }
 	},	
 	angeIdentitetStyrktGenom : function angeIdentitetStyrktGenom(identitetStyrktGenom){

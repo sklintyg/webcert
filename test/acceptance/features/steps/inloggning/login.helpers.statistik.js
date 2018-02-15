@@ -47,7 +47,7 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
 
     var login;
     browser.ignoreSynchronization = true;
-    browser.get('/#!/fakelogin');
+    browser.get('/#/fakelogin');
     browser.sleep(2000);
     login = loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
     browser.ignoreSynchronization = false;

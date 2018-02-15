@@ -22,7 +22,7 @@
 		Förvaltas av: Sveriges Kommuner och Landsting</wsdl:documentation>
   <wsdl:types>
     <xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificate:3:rivtabp21">
-      <xs:import schemaLocation="CreateDraftCertificateResponder_3.0.xsd" namespace="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3"/>
+      <xs:import schemaLocation="CreateDraftCertificateResponder_3.1.xsd" namespace="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3"/>
       <xs:import schemaLocation="../../core_components/itintegration_registry_1.0.xsd" namespace="urn:riv:itintegration:registry:1"/>
     </xs:schema>
   </wsdl:types>
@@ -57,7 +57,7 @@
       <soap:address location="http://tempuri.org"/>
     </wsdl:port>
   </wsdl:service>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:/Users/mango/Projects/Inera/Develop/sklintyg/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_3.0.xsd</con:url><con:content><![CDATA[<!--Licensed to the Apache Software Foundation (ASF) under one
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>file:/Users/mango/Projects/Inera/Develop/sklintyg/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/interactions/CreateDraftCertificateInteraction/CreateDraftCertificateResponder_3.1.xsd</con:url><con:content><![CDATA[<!--Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements. See the NOTICE file
  distributed with this work for additional information
  regarding copyright ownership. Sveriges Kommuner och Landsting licenses this file

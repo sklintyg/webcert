@@ -1,14 +1,15 @@
 # language: sv
-@sekretess @Varningmeddelanden
+@sekretessmarkering @Varningmeddelanden
 Egenskap: Sekretessmarkerad patient
 
 Bakgrund:
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient med sekretessmarkering
 
-@fk7263 @fornya @intygstjänsten
+@lisjp @fornya @intygstjänsten
 Scenario: Varningmeddelanden när man går in på patient
-   När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
+   #När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
+   När jag skickar ett "Läkarintyg för sjukpenning" intyg till Intygstjänsten
    Så ska det finnas en knapp med texten "Förnya"
    Så ska jag varnas om att "Patienten har en sekretessmarkering."
 
