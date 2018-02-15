@@ -70,11 +70,6 @@ global.externalPageLinks = [];
 
 AfterAll(function() {
 
-    /*return new Promise(function(resolve) {
-            logger.silly('Kör promisekedja för AfterStep.');
-            resolve();
-        })
-        .then(function() {*/
     logger.silly('Samlar in alla externa länkar på aktuell sida');
     return element.all(by.css('a')).each(function(link) {
             return link.getAttribute('href').then(function(href) {
@@ -98,9 +93,7 @@ AfterAll(function() {
             logger.warn('Fel vid insamling av externa länkar');
             logger.debug(err);
             return;
-        }) //;
-        //})
-        .then(function() {
+        }).then(function() {
             logger.silly('Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.');
             var frontEndScript = '';
 
@@ -159,9 +152,11 @@ Before(function() {
     hasFoundConsoleErrors = false;
     duplicateIds = [];
 });
-//After scenario
+
+
+
 After(function(testCase) {
-    //
+
     var world = this;
 
     if (testCase.result.status === 'failed') {
@@ -198,21 +193,19 @@ After(function(testCase) {
                 logger.silly('Rensar local-storage');
                 return browser.executeScript('window.localStorage.clear();');
             })
-            /*.then(function() {
-                        var url = 'about:blank';
-                        logger.silly('går till ' + url);
-                        return browser.get(url).catch(function() {
-                            return browser.switchTo().alert().then(function(alert) {
-                                alert.accept();
-                                return browser.get(url);
-                            });
-                        }).then(function() {
-                            // wait for get request
-                            return browser.sleep(1000);
-                        }).then(function() {
-                            return browser.refresh();
-                        });
-                    })*/
+            .then(function() {
+                var url = 'about:blank';
+                console.log('går till ' + url);
+                return browser.get(url);
+            }).then(function() {
+                return browser.sleep(1000);
+            }).then(function() {
+                return removeAlerts();
+            }).then(function() {
+                return browser.sleep(1000);
+            }).then(function() {
+                return browser.refresh();
+            })
             .catch(function(err) {
                 logger.warn('Fel i afterScenario');
                 console.trace(err);
@@ -220,26 +213,23 @@ After(function(testCase) {
             });
     } else {
         logger.silly('Rensar session-storage');
-        return browser.executeScript('window.sessionStorage.clear();')
-            .then(function() {
+        return browser.executeScript('window.sessionStorage.clear();').then(function() {
                 return checkConsoleErrors();
             }).then(function() {
                 logger.silly('Rensar local-storage');
                 return browser.executeScript('window.localStorage.clear();');
             }).then(function() {
                 var url = 'about:blank';
-                logger.silly('går till ' + url);
-                return browser.get(url).catch(function() {
-                    return browser.switchTo().alert().then(function(alert) {
-                        alert.accept();
-                        return browser.get(url);
-                    });
-                }).then(function() {
-                    // wait for get request
-                    return browser.sleep(1000);
-                }).then(function() {
-                    return browser.refresh();
-                });
+                console.log('går till ' + url);
+                return browser.get(url);
+            }).then(function() {
+                return browser.sleep(1000);
+            }).then(function() {
+                return removeAlerts();
+            }).then(function() {
+                return browser.sleep(1000);
+            }).then(function() {
+                return browser.refresh();
             })
             .catch(function(err) {
                 logger.warn('Fel i afterScenario');
@@ -247,20 +237,6 @@ After(function(testCase) {
                 return;
             });
     }
-
-
-    //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
-    /*var rensaBortIntyg = true;
-    var tagArr = scenario.getTags();
-    for (var i = 0; i < tagArr.length; i++) {
-        if (tagArr[i].getName() === '@keepIntyg') {
-            rensaBortIntyg = false;
-        }
-    }*/
-
-
-
-
 });
 
 
@@ -272,7 +248,3 @@ logger.on('logging', function(transport, level, msg, meta) {
         global.scenario.attach(Buffer.from(dateString + ' - ' + level + ': ' + msg).toString('base64'));
     }
 });
-
-
-
-//};
