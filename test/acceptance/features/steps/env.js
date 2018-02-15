@@ -177,48 +177,52 @@ After(function(testCase) {
         frontEndJS += 'body.appendChild(div);';
 
         return browser.executeScript(frontEndJS).then(function() {
-            return browser.takeScreenshot();
-        }).then(function(png) {
-            var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-            var filename = 'screenshots/' + new Date().getTime() + '.png';
-            return writeScreenShot(png, ssPath + filename, function() {
-                return world.attach(filename, 'image/png', function(err) {
-                    if (err) {
-                        throw err;
-                    }
-                    logger.silly('Skärmbild tagen: ' + filename);
-                    return checkConsoleErrors();
-                });
-            });
-        }).then(function() {
-            logger.silly('Rensar session-storage');
-            return browser.executeScript('window.sessionStorage.clear();');
-        }).then(function() {
-            logger.silly('Rensar local-storage');
-            return browser.executeScript('window.localStorage.clear();');
-        }).then(function() {
-            var url = 'about:blank';
-            logger.silly('går till ' + url);
-            return browser.get(url).catch(function() {
-                return browser.switchTo().alert().then(function(alert) {
-                    alert.accept();
-                    return browser.get(url);
+                return browser.takeScreenshot();
+            }).then(function(png) {
+                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+                var filename = 'screenshots/' + new Date().getTime() + '.png';
+                return writeScreenShot(png, ssPath + filename, function() {
+                    return world.attach(new Buffer(png, 'base64'), 'image/png', function(err) {
+                        //return world.attach(filename, 'image/png', function(err) {
+                        if (err) {
+                            throw err;
+                        }
+                        logger.silly('Skärmbild tagen: ' + filename);
+                        return checkConsoleErrors();
+                    });
                 });
             }).then(function() {
-                // wait for get request
-                return browser.sleep(1000);
-            }).then(function() {
-                return browser.refresh();
-            });
-        }).catch(function(err) {
-            logger.warn('Fel i afterScenario');
-            console.trace(err);
-            return;
-        });
-    } else {
-        return checkConsoleErrors().then(function() {
                 logger.silly('Rensar session-storage');
                 return browser.executeScript('window.sessionStorage.clear();');
+            }).then(function() {
+                logger.silly('Rensar local-storage');
+                return browser.executeScript('window.localStorage.clear();');
+            })
+            /*.then(function() {
+                        var url = 'about:blank';
+                        logger.silly('går till ' + url);
+                        return browser.get(url).catch(function() {
+                            return browser.switchTo().alert().then(function(alert) {
+                                alert.accept();
+                                return browser.get(url);
+                            });
+                        }).then(function() {
+                            // wait for get request
+                            return browser.sleep(1000);
+                        }).then(function() {
+                            return browser.refresh();
+                        });
+                    })*/
+            .catch(function(err) {
+                logger.warn('Fel i afterScenario');
+                console.trace(err);
+                return;
+            });
+    } else {
+        logger.silly('Rensar session-storage');
+        return browser.executeScript('window.sessionStorage.clear();')
+            .then(function() {
+                return checkConsoleErrors();
             }).then(function() {
                 logger.silly('Rensar local-storage');
                 return browser.executeScript('window.localStorage.clear();');
@@ -265,7 +269,7 @@ logger.on('logging', function(transport, level, msg, meta) {
     var date = new Date();
     var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
     if (global.scenario) {
-        global.scenario.attach(dateString + ' - ' + level + ': ' + msg);
+        global.scenario.attach(Buffer.from(dateString + ' - ' + level + ': ' + msg).toString('base64'));
     }
 });
 
