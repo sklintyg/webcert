@@ -50,72 +50,58 @@ function checkConsoleErrors() {
     }
 }
 
-/*function removeAlerts() {
+function removeAlerts() {
     browser.switchTo().alert().accept()
         .then(() => logger.log('info', 'Dialogruta accepterad.'))
         .catch(err => {}); // Ingen dialogruta hittad, allt är frid och fröjd.
-}*/
+}
 
-//module.exports = function() {
-var {
-    setDefaultTimeout
-} = require('cucumber');
-var {
-    Before
-} = require('cucumber');
-var {
-    After
+const {
+    setDefaultTimeout, // jshint ignore:line
+    Before, // jshint ignore:line
+    BeforeAll, // jshint ignore:line
+    After, // jshint ignore:line
+    AfterAll // jshint ignore:line
 } = require('cucumber');
 
 
 setDefaultTimeout(600 * 1000);
 global.externalPageLinks = [];
 
-/*
+AfterAll(function() {
 
-var {
-    AfterStep
-} = require('cucumber');
-
-//TODO AfterStep ska bytas ut mot AfterAll TI-444
-//och
-//https://github.com/cucumber/cucumber-js/commit/9499817a42d2b1734adf3dcb2818b00c110e3b10
-
-AfterStep(function(event) {
-
-    return new Promise(function(resolve) {
-            //Kör promisekedja för AfterStep.
+    /*return new Promise(function(resolve) {
+            logger.silly('Kör promisekedja för AfterStep.');
             resolve();
         })
-
-        // avaktiverar AfterStep tills det att TI-444 är löst.
-		.then(function() {
-            // Samla in alla externa länkar på aktuell sida
-            return element.all(by.css('a')).each(function(link) {
-                return link.getAttribute('href').then(function(href) {
-                    if (href !== null &&
-                        href !== '' &&
-                        href.includes('javascript') !== true &&
-                        href.indexOf(process.env.WEBCERT_URL) === -1 &&
-                        href.indexOf(process.env.MINAINTYG_URL) === -1 &&
-                        href.indexOf(process.env.REHABSTOD_URL) === -1 &&
-                        href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
-                        global.externalPageLinks.indexOf(href) === -1) {
-                        logger.info('Found external link: ' + href);
-                        global.externalPageLinks.push(href);
-                    }
-                }).catch(function(err) {
-                logger.warn('Fel vid insamling av externa länkar');
-                logger.debug(err);
-                return;
-				});
+        .then(function() {*/
+    logger.silly('Samlar in alla externa länkar på aktuell sida');
+    return element.all(by.css('a')).each(function(link) {
+            return link.getAttribute('href').then(function(href) {
+                if (href !== null &&
+                    href !== '' &&
+                    href.includes('javascript') !== true &&
+                    href.indexOf(process.env.WEBCERT_URL) === -1 &&
+                    href.indexOf(process.env.MINAINTYG_URL) === -1 &&
+                    href.indexOf(process.env.REHABSTOD_URL) === -1 &&
+                    href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
+                    global.externalPageLinks.indexOf(href) === -1) {
+                    logger.info('Found external link: ' + href);
+                    global.externalPageLinks.push(href);
+                }
             }).catch(function(err) {
                 logger.warn('Fel vid insamling av externa länkar');
                 logger.debug(err);
                 return;
             });
-        }).then(function() {
-            //Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.
+        }).catch(function(err) {
+            logger.warn('Fel vid insamling av externa länkar');
+            logger.debug(err);
+            return;
+        }) //;
+        //})
+        .then(function() {
+            logger.silly('Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.');
             var frontEndScript = '';
 
             frontEndScript += 'if (window.jQuery) {';
@@ -134,10 +120,11 @@ AfterStep(function(event) {
                 //Browser is open
                 return browser.executeScript(frontEndScript);
             }).catch(function() {
-                //Browser was closed
+                logger.silly('Kontroll av ID-dubletter felade - Browser was closed');
                 return;
             });
         }).then(function() {
+            logger.silly('Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr');
             return browser.getCurrentUrl().then(function(url) {
                 logger.silly('current URL ' + url);
                 //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
@@ -154,14 +141,12 @@ AfterStep(function(event) {
                 return;
             });
         })
-		
-		
         .then(function() {
             // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
             return removeAlerts();
         });
 
-});*/
+});
 
 Before(function() {
     global.scenario = this;
@@ -211,13 +196,52 @@ After(function(testCase) {
         }).then(function() {
             logger.silly('Rensar local-storage');
             return browser.executeScript('window.localStorage.clear();');
+        }).then(function() {
+            var url = 'about:blank';
+            logger.silly('går till ' + url);
+            return browser.get(url).catch(function() {
+                return browser.switchTo().alert().then(function(alert) {
+                    alert.accept();
+                    return browser.get(url);
+                });
+            }).then(function() {
+                // wait for get request
+                return browser.sleep(1000);
+            }).then(function() {
+                return browser.refresh();
+            });
         }).catch(function(err) {
             logger.warn('Fel i afterScenario');
-            logger.debug(err);
+            console.trace(err);
             return;
         });
     } else {
-        return checkConsoleErrors();
+        return checkConsoleErrors().then(function() {
+                logger.silly('Rensar session-storage');
+                return browser.executeScript('window.sessionStorage.clear();');
+            }).then(function() {
+                logger.silly('Rensar local-storage');
+                return browser.executeScript('window.localStorage.clear();');
+            }).then(function() {
+                var url = 'about:blank';
+                logger.silly('går till ' + url);
+                return browser.get(url).catch(function() {
+                    return browser.switchTo().alert().then(function(alert) {
+                        alert.accept();
+                        return browser.get(url);
+                    });
+                }).then(function() {
+                    // wait for get request
+                    return browser.sleep(1000);
+                }).then(function() {
+                    return browser.refresh();
+                });
+            })
+            .catch(function(err) {
+                logger.warn('Fel i afterScenario');
+                console.trace(err);
+                return;
+            });
     }
 
 
