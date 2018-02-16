@@ -214,7 +214,7 @@ After(function(testCase) {
                 console.log('browser.refresh');
                 return browser.refresh();
             });
-        ;
+
     } else {
         logger.silly('Rensar session-storage');
         return browser.executeScript('window.sessionStorage.clear();').then(function() {
