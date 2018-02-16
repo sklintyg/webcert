@@ -51,16 +51,13 @@ function checkConsoleErrors() {
 }
 
 function removeAlerts() {
-	browser.switchTo().alert().accept().then(null, function(e) {
-	  if (e.code !== webdriver.ErrorCode.NO_SUCH_ALERT) {
-	  throw e;
-	  }
-	});
-
-    /*browser.switchTo().alert().accept()
-        .then(() => logger.log('info', 'Dialogruta accepterad.'))
-        .catch(err => {
-		}); // Ingen dialogruta hittad, allt är frid och fröjd.*/
+    browser.switchTo().alert().then(function() {
+        logger.log('info', 'Dialogruta accepterad.');
+        return;
+    }, function(e) {
+        // Ingen dialogruta hittad, allt är frid och fröjd.*/
+        return;
+    });
 }
 
 const {
