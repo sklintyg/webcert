@@ -51,7 +51,7 @@ function checkConsoleErrors() {
 }
 
 function removeAlerts() {
-    browser.switchTo().alert().then(function() {
+    return browser.switchTo().alert().then(function() {
         logger.log('info', 'Dialogruta accepterad.');
         return;
     }, function(e) {
@@ -202,20 +202,19 @@ After(function(testCase) {
                 var url = 'about:blank';
                 console.log('går till ' + url);
                 return browser.get(url);
-            }).then(function() {
+            })
+            .then(function() {
                 return browser.sleep(1000);
-            }).then(function() {
+            })
+            .then(function() {
                 return removeAlerts();
             }).then(function() {
                 return browser.sleep(1000);
             }).then(function() {
+                console.log('browser.refresh');
                 return browser.refresh();
-            })
-            .catch(function(err) {
-                logger.warn('Fel i afterScenario');
-                console.trace(err);
-                return;
             });
+        ;
     } else {
         logger.silly('Rensar session-storage');
         return browser.executeScript('window.sessionStorage.clear();').then(function() {
@@ -227,19 +226,13 @@ After(function(testCase) {
                 var url = 'about:blank';
                 console.log('går till ' + url);
                 return browser.get(url);
-            }).then(function() {
-                return browser.sleep(1000);
-            }).then(function() {
+            })
+            .then(function() {
                 return removeAlerts();
             }).then(function() {
                 return browser.sleep(1000);
             }).then(function() {
                 return browser.refresh();
-            })
-            .catch(function(err) {
-                logger.warn('Fel i afterScenario');
-                console.trace(err);
-                return;
             });
     }
 });
