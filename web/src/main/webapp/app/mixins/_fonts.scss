@@ -137,6 +137,10 @@ Color and background should be specified at the extension point, eg:
   @include font-variant-bold(12px);
 }
 
+%wc-typo-14 {
+  @include font-variant-bold(14px);
+}
+
 //WC - Demo font styles - ONLY to be used in views/font-demo.html!
 .font-variant-light {
   @include font-variant-light(24px);
