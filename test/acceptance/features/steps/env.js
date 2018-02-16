@@ -158,6 +158,7 @@ Before(function() {
 After(function(testCase) {
 
     var world = this;
+    browser.ignoreSynchronization = true;
 
     if (testCase.result.status === 'failed') {
 
