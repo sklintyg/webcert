@@ -52,7 +52,7 @@
   <beans profile="dev,testability-api">
     <context:component-scan base-package="se.inera.intyg.webcert.intygstjanststub" />
 
-    <jaxrs:server address="/intygstjanst-stub">
+    <jaxrs:server address="/api/intygstjanst-stub">
       <jaxrs:serviceBeans>
         <ref bean="intygstjanstStubRestApi"/>
       </jaxrs:serviceBeans>

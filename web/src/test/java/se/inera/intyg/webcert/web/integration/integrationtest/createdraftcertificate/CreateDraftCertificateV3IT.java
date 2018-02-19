@@ -52,7 +52,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
 
     private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
     private static final String CREATE_DRAFT_CERTIFICATE_V3_0 = "services/create-draft-certificate/v3.0";
-    private static final String SEKRETESS_TESTABILITY_API = "services/pu-api/person/";
+    private static final String SEKRETESS_TESTABILITY_API = "services/api/pu-api/person/";
 
     private static final String DEFAULT_LAKARE_HSAID = "IFV1239877878-1049";
     private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";

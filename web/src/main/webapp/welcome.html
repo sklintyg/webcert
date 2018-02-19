@@ -68,7 +68,7 @@
         $scope.performPUOperation = function(evt, type, enable) {
             evt.preventDefault();
             $http({
-                url: '/services/pu-api/person/' + $scope.PU.patientId + '/' + type + '?value=' + enable,
+                url: '/services/api/pu-api/person/' + $scope.PU.patientId + '/' + type + '?value=' + enable,
                 method: 'GET',
                 transformResponse: undefined
             }).then(
@@ -82,7 +82,7 @@
         $scope.togglePU = function(evt, enable) {
             evt.preventDefault();
             $http({
-                url: '/services/pu-api/' + (enable ? 'active':'inactive'),
+                url: '/services/api/pu-api/' + (enable ? 'active':'inactive'),
                 method: 'GET',
                 transformResponse: undefined
             }).then(
@@ -97,7 +97,7 @@
         $scope.clearPUCache = function(evt) {
             evt.preventDefault();
             $http({
-                url: '/services/pu-api/cache',
+                url: '/services/api/pu-api/cache',
                 method: 'DELETE',
                 transformResponse: undefined
             }).then(
@@ -110,7 +110,7 @@
         };
         $scope.editPU = function() {
           $http({
-            url: '/services/pu-api/person/'+$scope.PU.patientId,
+            url: '/services/api/pu-api/person/'+$scope.PU.patientId,
               method: 'GET'
           }).then(
           function success(response) {
@@ -123,7 +123,7 @@
         };
         $scope.editPUSave = function() {
           $http({
-            url: '/services/pu-api/person',
+            url: '/services/api/pu-api/person',
             method: 'PUT',
             data: $scope.PU.editData
           }).then(
@@ -161,7 +161,7 @@
         }
 
       function _fetchHsaPersons() {
-        $http.get('/services/hsa-api/person').
+        $http.get('/services/api/hsa-api/person').
         then(function(response) {
           $scope.loginModel = _loginModel(response.data);
           $scope.loginOptions = _loginOptions();
@@ -174,7 +174,7 @@
       }
 
         function _fetchPrivatlakare() {
-            $http.get('/services/pp-api/medarbetaruppdrag').
+            $http.get('/services/api/pp-api/medarbetaruppdrag').
             then(function(response) {
               var data = response.data;
               for (var a = 0; a < data.length; a++) {

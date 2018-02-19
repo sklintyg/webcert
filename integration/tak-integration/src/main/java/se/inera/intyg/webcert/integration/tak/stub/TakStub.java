@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.net.URL;
 
 @Service("takStub")
-@Path("/takstub")
+@Path("/")
 public class TakStub {
     private static final Logger LOG = LoggerFactory.getLogger(TakStub.class);
 

@@ -62,30 +62,28 @@
   <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
 
   <beans>
-    <!-- All config files must be present in other modes than dev -->
-    <context:property-placeholder
-      location="file:${credentials.file}"
-      order="1" ignore-unresolvable="true"/>
-    <util:properties id="webcertProps" location="file:${webcert.config.file}"/>
-    <context:property-placeholder
-        properties-ref="webcertProps"
-        order="2" ignore-unresolvable="true"/>
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+      <property name="locations">
+        <list>
+          <!-- Order matters - last value wins -->
+          <value>classpath:default.properties</value>
+          <value>classpath:version.properties</value>
+          <value>classpath:webcert-notification-route-params.properties</value>
+          <value>classpath:webcert-certificate-route-params.properties</value>
+          <value>file:${webcert.config.file}</value>
+          <value>file:${credentials.file}</value>
+        </list>
+      </property>
+    </bean>
 
-    <!-- Remove when REST-api is used to serve config to frontend! -->
-    <!-- This ugliness is needed in order for dashboard.jsp to get an id from which to evaluate a property -->
-    <util:properties id="defaultProps" location="classpath:default.properties"/>
-    <context:property-placeholder
-        properties-ref="defaultProps"
-        order="3" ignore-unresolvable="false"/>
-
-    <!-- Remove when REST-api is used to serve config to frontend! -->
-    <!-- This configuration solves WEBCERT-2249 -->
+    <!-- ONLY used for login.jsp -->
     <bean id="webcertProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
       <property name="singleton" value="true" />
       <property name="properties">
         <props>
-          <prop key="privatepractitioner.portal.registration.url">${privatepractitioner.portal.registration.url}</prop>
-          <prop key="certificate.view.url.base">${certificate.view.url.base}</prop>
+          <prop key="sakerhetstjanst.saml.idp.metadata.url">${sakerhetstjanst.saml.idp.metadata.url}</prop>
+          <prop key="cgi.funktionstjanster.saml.idp.metadata.url">${cgi.funktionstjanster.saml.idp.metadata.url}</prop>
         </props>
       </property>
     </bean>
@@ -111,9 +109,9 @@
   </beans>
 
   <beans>
-    <context:property-placeholder
-      location="classpath:webcert-notification-route-params.properties, classpath:webcert-certificate-route-params.properties, classpath:default.properties, classpath:version.properties"
-      order="2" ignore-resource-not-found="false" />
+    <!--<context:property-placeholder-->
+      <!--location="classpath:webcert-notification-route-params.properties, classpath:webcert-certificate-route-params.properties, classpath:version.properties"-->
+      <!--order="4" ignore-unresolvable="true" ignore-resource-not-found="false" />-->
 
     <bean id="moduleRegistry" class="se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl">
       <property name="origin" value="WEBCERT" />

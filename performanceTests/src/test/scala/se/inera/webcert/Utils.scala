@@ -18,7 +18,7 @@ object Utils {
   }
 
   def injectPersonIntoPU(personnummer: String) = {
-    var url = baseUrl + "/services/pu-api/person"
+    var url = baseUrl + "/services/api/pu-api/person"
     Http(url)
       .postData(s"""{ "sekretessmarkering": "N", "senasteAndringFolkbokforing": null, "personpost": { "personId" : "${personnummer}", "namn": { "fornamn": "Test", "efternamn": "Testsson" }, "folkbokforingsadress": { "utdelningsadress2": "Adress1", "postNr": "12345", "postort": "postort" }}}""")
       .method("put")
@@ -38,7 +38,7 @@ object Utils {
   }
 
   def removePersonFromPU(personnummer: String) = {
-    var url = baseUrl + "/services/pu-api/person/" + personnummer
+    var url = baseUrl + "/services/api/pu-api/person/" + personnummer
     Http(url)
       .method("delete")
       .header("Content-type", "application/json")

@@ -29,12 +29,12 @@
   </beans>
 
   <beans profile="dev,wc-all-stubs,wc-fk-stub">
-    <jaxws:endpoint address="/send-question-stub" implementor="se.inera.intyg.webcert.fkstub.SendQuestionStub"/>
-    <jaxws:endpoint address="/send-answer-stub" implementor="se.inera.intyg.webcert.fkstub.SendAnswerStub"/>
+    <jaxws:endpoint address="/stubs/SendMedicalCertificateQuestion/1/rivtabp20" implementor="se.inera.intyg.webcert.fkstub.SendQuestionStub"/>
+    <jaxws:endpoint address="/stubs/SendMedicalCertificateAnswer/1/rivtabp20" implementor="se.inera.intyg.webcert.fkstub.SendAnswerStub"/>
   </beans>
 
   <beans profile="dev,testability-api">
-    <jaxrs:server address="/fk-stub">
+    <jaxrs:server address="/api/fk-api">
       <jaxrs:serviceBeans>
         <ref bean="fkStubRestApi"/>
       </jaxrs:serviceBeans>

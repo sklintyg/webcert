@@ -40,9 +40,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-// Fullständig URL till endpoint, ex: http://localhost:9088/services/fmbstubs/fmbstub/typfall
 @Service("fmbStub")
-@Path("/fmbstub")
+@Path("/")
 public class FmbStub {
 
     private static final Logger LOG = LoggerFactory.getLogger(FmbStub.class);
