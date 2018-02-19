@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, logger */
+/* globals browser, logger, protractor */
 'use strict';
 /*jshint newcap:false */
 
@@ -25,6 +25,7 @@ var fs = require('fs');
 
 var hasFoundConsoleErrors = false;
 var duplicateIds = [];
+var EC = protractor.ExpectedConditions;
 
 function writeScreenShot(data, filename, cb) {
     var stream = fs.createWriteStream(filename);
@@ -51,10 +52,9 @@ function checkConsoleErrors() {
 }
 
 function removeAlerts() {
-    return browser.switchTo().alert().then(function() {
-        logger.log('info', 'Dialogruta accepterad.');
-        return;
-    }, function(e) {
+    return browser.wait(EC.alertIsPresent(), 1000).then(function() {
+        return browser.switchTo().alert().accept();
+    }, function() {
         // Ingen dialogruta hittad, allt är frid och fröjd.*/
         return;
     });
