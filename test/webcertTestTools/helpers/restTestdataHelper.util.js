@@ -71,6 +71,10 @@ module.exports = {
     saveUtkast: function(intygType, intygId, version, utkastJson) {
         return restUtil.saveUtkast(intygType, intygId, version, utkastJson);
     },
+    markeraSkickatTillFK: function (id) {
+        return restUtil.markeraSkickatTillFK(id);
+    },
+
     deleteAllUtkast: function() {
         restUtil.login();
         return restUtil.deleteAllUtkast();

@@ -32,7 +32,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('svaranyttintyg - arende on luse intyg', function() {
 
     var utkastId;
-    var intygId = 'luse-arende-intyg-1';
+    var intygId = 'luse-arende-intyg-2';
     var meddelandeId = 'luse-arende-komplt';
 
     beforeAll(function() {
@@ -44,21 +44,28 @@ describe('svaranyttintyg - arende on luse intyg', function() {
             'revoked': false
         };
 
-        restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                    {
-                        'frageId': '1',
-                        'instans': 1,
-                        'text': 'Fixa.'
-                    }
-                ]);
+        restTestdataHelper.deleteAllArenden().then(function() {
+            restTestdataHelper.createWebcertIntyg(testData).then(function() {
+                restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+                    restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+                        'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                            {
+                                'frageId': '1',
+                                'instans': 1,
+                                'text': 'Fixa.'
+                            }
+                        ],
+                        'test'
+                    );
+
+                });
+            });
         });
     });
 
     afterAll(function() {
         restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.deleteArende(meddelandeId);
         restTestdataHelper.deleteUtkast(utkastId);
     });
 
@@ -73,9 +80,11 @@ describe('svaranyttintyg - arende on luse intyg', function() {
         it('pushed arende is visible', function() {
             var arende = LuseIntygPage.getArendeById(false, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
+
         });
 
         it('should display message that intyg has komplettering', function() {
+            browser.sleep(10000);
             expect(LuseIntygPage.getIntygHasKompletteringMessage().isDisplayed()).toBeTruthy();
         });
 

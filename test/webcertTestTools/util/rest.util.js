@@ -89,6 +89,13 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    markeraSkickatTillFK: function(id) {
+        var options = {
+            url: 'testability/intyg/' + id + '/skickat',
+            method: 'PUT'
+        };
+        return restClient.run(options, 'json');
+    },
 
     // Ärenden
 

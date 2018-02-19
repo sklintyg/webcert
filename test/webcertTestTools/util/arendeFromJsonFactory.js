@@ -91,6 +91,7 @@ module.exports = {
         arende.amne = arendeOptions.amne;
         arende.status = arendeOptions.status;
         arende.komplettering = arendeOptions.kompletteringar;
+        arende.timestamp = arendeOptions.timestamp;
         return arende;
     }
 };

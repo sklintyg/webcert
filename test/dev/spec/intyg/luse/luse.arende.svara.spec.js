@@ -50,8 +50,10 @@ describe('answer arende on luse intyg', function() {
 
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                'AVSTMN', 'PENDING_INTERNAL_ACTION');
+            restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+                restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+                    'AVSTMN', 'PENDING_INTERNAL_ACTION');
+            });
         });
 
     });
