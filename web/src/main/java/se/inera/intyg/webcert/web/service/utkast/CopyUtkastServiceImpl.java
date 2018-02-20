@@ -351,7 +351,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private Utkast saveAndNotify(CopyUtkastBuilderResponse builderResponse, WebCertUser user) {
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
-        if (!Strings.isNullOrEmpty(user.getParameters().getReference())) {
+        if (user.getParameters() != null && !Strings.isNullOrEmpty(user.getParameters().getReference())) {
             referensService.saveReferens(savedUtkast.getIntygsId(), user.getParameters().getReference());
         }
         notificationService.sendNotificationForDraftCreated(savedUtkast);
