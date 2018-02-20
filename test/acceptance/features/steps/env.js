@@ -65,17 +65,18 @@ const {
     Before, // jshint ignore:line
     BeforeAll, // jshint ignore:line
     After, // jshint ignore:line
-    AfterAll // jshint ignore:line
+    AfterStep // jshint ignore:line
 } = require('cucumber');
 
 
 setDefaultTimeout(600 * 1000);
 global.externalPageLinks = [];
 
-AfterAll(function() {
+/*AfterStep(function() {
 
     logger.silly('Samlar in alla externa länkar på aktuell sida');
     return element.all(by.css('a')).each(function(link) {
+            logger.silly('Kontrollerar' + link);
             return link.getAttribute('href').then(function(href) {
                 if (href !== null &&
                     href !== '' &&
@@ -143,7 +144,7 @@ AfterAll(function() {
             return removeAlerts();
         });
 
-});
+});*/
 
 Before(function() {
     global.scenario = this;
