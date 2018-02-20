@@ -49,6 +49,7 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -118,6 +119,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Autowired
     private UtkastService utkastService;
 
+    @Autowired
+    private ReferensService referensService;
+
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     /*
@@ -133,6 +137,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         String originalIntygId = copyRequest.getOriginalIntygId();
 
         LOG.debug("Creating completion to intyg '{}'", originalIntygId);
+        WebCertUser user = userService.getUser();
 
         try {
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
@@ -145,7 +150,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(builderResponse);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
             monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -188,7 +193,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(builderResponse);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -205,6 +210,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     public CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest replacementRequest) {
 
         String originalIntygId = replacementRequest.getOriginalIntygId();
+        WebCertUser user = userService.getUser();
 
         LOG.debug("Creating replacement copy of intyg '{}'", originalIntygId);
 
@@ -224,7 +230,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(builderResponse);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
             monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -290,7 +296,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, originalIntygId, true,
                     coherentJournaling);
 
-            Utkast savedUtkast = saveAndNotify(builderResponse);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
@@ -342,9 +348,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    private Utkast saveAndNotify(CopyUtkastBuilderResponse builderResponse) {
+    private Utkast saveAndNotify(CopyUtkastBuilderResponse builderResponse, WebCertUser user) {
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
+        if (!Strings.isNullOrEmpty(user.getParameters().getReference())) {
+            referensService.saveReferens(savedUtkast.getIntygsId(), user.getParameters().getReference());
+        }
         notificationService.sendNotificationForDraftCreated(savedUtkast);
 
         LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());

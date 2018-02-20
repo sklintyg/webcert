@@ -48,6 +48,7 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -128,6 +129,9 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
+
+    @Mock
+    private ReferensService referensService;
 
     @InjectMocks
     private CopyUtkastService copyService = new CopyUtkastServiceImpl();
@@ -238,6 +242,7 @@ public class CopyUtkastServiceImplTest {
         verify(createReplacementUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(true));
         verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(logService).logCreateIntyg(any(LogRequest.class));
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
@@ -306,6 +311,7 @@ public class CopyUtkastServiceImplTest {
         verify(copyCompletionUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
@@ -340,6 +346,7 @@ public class CopyUtkastServiceImplTest {
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), eq(false), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
@@ -440,6 +447,7 @@ public class CopyUtkastServiceImplTest {
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
                 anyString());
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
