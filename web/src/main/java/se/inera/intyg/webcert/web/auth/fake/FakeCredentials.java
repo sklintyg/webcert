@@ -42,6 +42,7 @@ public class FakeCredentials implements Serializable {
     private String befattningsKod;
     private String forskrivarKod;
     private String origin = UserOriginType.NORMAL.name();
+    private String authenticationMethod = "";
 
     private List<String> legitimeradeYrkesgrupper;
 
@@ -101,6 +102,13 @@ public class FakeCredentials implements Serializable {
         this.sekretessMarkerad = sekretessMarkerad;
     }
 
+    public String getAuthenticationMethod() {
+        return authenticationMethod;
+    }
+
+    public void setAuthenticationMethod(String authenticationMethod) {
+        this.authenticationMethod = authenticationMethod;
+    }
 
     @JsonIgnore
     public boolean isLakare() {
@@ -138,6 +146,7 @@ public class FakeCredentials implements Serializable {
         private String forskrivarKod;
         private String origin;
         private Boolean sekretessMarkerad;
+        private String authenticationMethod;
         private List<String> legitimeradeYrkesgrupper;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
@@ -176,6 +185,10 @@ public class FakeCredentials implements Serializable {
         }
         public FakeCredentialsBuilder sekretessMarkerad(boolean sekretessMarkerad) {
             this.sekretessMarkerad = sekretessMarkerad;
+            return this;
+        }
+        public FakeCredentialsBuilder authenticationMethod(String authenticationMethod) {
+            this.authenticationMethod = authenticationMethod;
             return this;
         }
 

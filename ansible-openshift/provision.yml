@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+  serial: 1
+  become: no
+  roles:
+    - webcert-resurser
+    - webcert-jarfiler
+    - app-resources

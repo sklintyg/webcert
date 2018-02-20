@@ -36,6 +36,7 @@ import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
@@ -45,6 +46,7 @@ import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 
@@ -69,6 +71,8 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         overrideSekretessMarkeringFromFakeCredentials(token, details);
         updateFeatures(details);
         applyUserOrigin(token, details);
+        applyAuthenticationMethod(token, details);
+        applyPersonalNumberForBankID(token, details);
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential, new ArrayList<>());
         result.setDetails(details);
 
@@ -79,7 +83,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
             final FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
-            //Only override if set
+            // Only override if set
             if (fakeCredentials.getSekretessMarkerad() != null) {
                 user.setSekretessMarkerad(fakeCredentials.getSekretessMarkerad());
             }
@@ -96,6 +100,29 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         }
     }
 
+    private void applyAuthenticationMethod(Authentication token, Object details) {
+        if (details instanceof IntygUser) {
+            if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
+                String authenticationMethod = ((FakeCredentials) token.getCredentials()).getAuthenticationMethod();
+                try {
+                    if (authenticationMethod != null && !authenticationMethod.isEmpty()) {
+                        IntygUser user = (IntygUser) details;
+                        AuthenticationMethod newAuthMethod = AuthenticationMethod.valueOf(authenticationMethod);
+                        user.setAuthenticationMethod(newAuthMethod);
+                    }
+                } catch (IllegalArgumentException e) {
+                    String allowedTypes = Arrays.asList(AuthenticationMethod.values())
+                            .stream()
+                            .map(val -> val.name())
+                            .collect(Collectors.joining(", "));
+                    throw new AuthoritiesException(
+                            "Could not set authenticationMethod '" + authenticationMethod + "'. Unknown, allowed types are "
+                                    + allowedTypes);
+                }
+            }
+        }
+    }
+
     private void applyUserOrigin(Authentication token, Object details) {
         if (details instanceof IntygUser) {
             if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
@@ -106,6 +133,20 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
                 } catch (IllegalArgumentException e) {
                     throw new AuthoritiesException(
                             "Could not set origin '" + origin + "'. Unknown, allowed types are NORMAL, DJUPINTEGRATION, UTHOPP");
+                }
+            }
+        }
+    }
+
+    private void applyPersonalNumberForBankID(Authentication token, Object details) {
+        if (details instanceof IntygUser) {
+            // If we've selected MOBILT_BANK_ID in welcome.html, transfer hsaId onto personId if not set.
+            IntygUser user = (IntygUser) details;
+
+            if (user.getAuthenticationMethod() == AuthenticationMethod.MOBILT_BANK_ID
+                    || user.getAuthenticationMethod() == AuthenticationMethod.BANK_ID) {
+                if (user.getPersonId() == null || user.getPersonId().isEmpty()) {
+                    user.setPersonId(user.getHsaId());
                 }
             }
         }

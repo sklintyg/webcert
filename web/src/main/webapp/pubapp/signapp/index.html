@@ -29,9 +29,10 @@
 
   <div class="index-content-container">
 
-    <!-- header part -->
+    <!-- header part   -->
     <div class="index-header-section">
 
+      <!--
       <div class="row">
         <div class="col-sm-6">
           <h1 class="page-title">Välkommen till Signeringsverktyget</h1>
@@ -79,7 +80,6 @@
         <div class="col-sm-6">
           <h1 class="page-title" ng-if="q.intygsId != ''">Signeringsformulär</h1>
 
-          <!-- Begin default form -->
           <div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-if="q.intygsId != ''">
 
             <div class="form-group well">
@@ -93,7 +93,9 @@
               </div>
             </div>
 
-            <div class="row"><hr/></div>
+            <div class="row">
+              <hr />
+            </div>
 
 
             <div class="form-group well">
@@ -114,10 +116,67 @@
               </div>
             </div>
 
+
+            <div class="row">
+              <hr />
+            </div>
+
+
+            <div class="form-group well">
+              <div class="row">
+                <label class="col-sm-12">Signering EFOS NetiD Access Server (SecMaker)</label>
+              </div>
+              <div class="row">
+                <label class="col-sm-3">Personnummer/HsaID för signerande läkare</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="text" ng-model="personId">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <button ng-disabled="signingStarted" class="btn btn-primary" ng-click="startNiasSign()">Signera med NetiD Access Server</button>
+                </div>
+              </div>
+
+
+              <div>
+                 <hr/>
+                <div>Webcert ticket status: <strong>{{ statusMessage }} </strong></div>
+                <div>Fejksignering med NetiD Access Server startad.
+                  <br><br>
+                  Välj en pågående signatur i listan.</div>
+                <hr/>
+                <table class="table table-striped">
+                  <thead>
+                  <th>Signerande läkare</th>
+                  <th>Order ref.</th>
+                  <th>Status</th>
+                  <th>Åtgärd</th>
+                  </thead>
+                  <tbody>
+                  <tr ng-repeat="d in ongoingSignatures">
+                    <td>{{ d.personalNumber}}</td>
+                    <td>{{ d.orderRef}}</td>
+                    <td>{{ d.status }}</td>
+                    <td>
+                      <button class="btn btn-success" ng-click="setNiasSigneringState(d.orderRef, 'COMPLETE')">Slutför</button>
+                      <button class="btn btn-default" ng-click="setNiasSigneringState(d.orderRef, 'USER_SIGN')">Påbörjad</button>
+                      <button class="btn btn-error" ng-click="setNiasSigneringState(d.orderRef, 'USER_CANCEL')">Avbryt</button>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+
+              </div>
+
+
+            </div>
+
+             -->
           </div>
 
 
-          <h3>Stuff</h3>
           <div ng-if="isNetID">
             <p class="well">
               Fejksignering med NetID startad. Välj slutför eller avbryt nedan.
@@ -141,6 +200,64 @@
           </div>
 
 
+
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-md-9">
+          <div>
+            <h2>Pågående EFOS-signeringar</h2>
+            <hr/>
+            <table class="table table-striped">
+              <thead>
+              <th>Signerande läkare</th>
+              <th>Order ref.</th>
+              <th>Status</th>
+              <th>Åtgärd</th>
+              </thead>
+              <tbody>
+              <tr ng-repeat="d in ongoingSignatures">
+                <td>{{ d.personalNumber}}</td>
+                <td>{{ d.orderRef}}</td>
+                <td>{{ d.status }}</td>
+                <td>
+                  <button class="btn btn-success" ng-click="setNiasSigneringState(d.orderRef, 'COMPLETE')">Slutför</button>
+                  <button class="btn btn-default" ng-click="setNiasSigneringState(d.orderRef, 'USER_SIGN')">Påbörjad</button>
+                  <button class="btn btn-error" ng-click="setNiasSigneringState(d.orderRef, 'USER_CANCEL')">Avbryt</button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+          </div>
+          <hr>
+          <div>
+            <h2>Pågående BankID-signeringar</h2>
+            <hr/>
+            <table class="table table-striped">
+              <thead>
+              <th>Transaktions-ID</th>
+              <th>Order ref.</th>
+              <th>Status</th>
+              <th>Åtgärd</th>
+              </thead>
+              <tbody>
+              <tr ng-repeat="d in ongoingGrpSignatures">
+                <td>{{ d.transactionId}}</td>
+                <td>{{ d.orderRef}}</td>
+                <td>{{ d.grpSignatureStatus }}</td>
+                <td>
+                  <button class="btn btn-success" ng-click="setGrpStatus(d.orderRef, 'COMPLETE')">Slutför</button>
+                  <button class="btn btn-default" ng-click="setGrpStatus(d.orderRef, 'USER_SIGN')">Påbörjad</button>
+                  <button class="btn btn-error" ng-click="setGrpStatus(d.orderRef, 'USER_CANCEL')">Avbryt</button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+
+          </div>
         </div>
       </div>
 

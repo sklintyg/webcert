@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
+import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
@@ -89,6 +90,9 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     @Autowired
     private GrpSignaturService grpSignaturService;
+
+    @Autowired
+    private NiasSignaturService niasSignaturService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
@@ -390,6 +394,35 @@ public class UtkastModuleApiController extends AbstractApiController {
         SignaturTicket ticket;
         try {
             ticket = grpSignaturService.startGrpAuthentication(intygsId, version);
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
+            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
+
+        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
+
+        return new SignaturTicketResponse(ticket);
+    }
+
+
+    /**
+     * Signera utkast mha NetiD Access Server (nias).
+     *
+     * @param intygsId intyg id
+     * @return SignaturTicketResponse
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/{version}/nias/signeraserver")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public SignaturTicketResponse serverSigneraUtkastMedNias(@PathParam("intygsTyp") String intygsTyp,
+                                                            @PathParam("intygsId") String intygsId,
+                                                            @PathParam("version") long version, @Context HttpServletRequest request) {
+
+        verifyIsAuthorizedToSignIntyg(intygsTyp);
+
+        SignaturTicket ticket;
+        try {
+            ticket = niasSignaturService.startNiasAuthentication(intygsId, version);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());

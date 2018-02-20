@@ -319,6 +319,7 @@
             'befattningsKod',
             'forskrivarKod',
             'origin',
+            'authenticationMethod',
         'privatLakare','personId'];
 
         var string = JSON.stringify(hsaPerson, validProperties, 1);
@@ -369,7 +370,8 @@
 
       $scope.environment = {
         name: 'all',
-        origin: 'NORMAL'
+        origin: 'NORMAL',
+          authenticationMethod: 'FAKE'
       };
 
       $scope.$watch('selectedIndex', function(newSelected, oldVal) {
@@ -377,6 +379,10 @@
       });
 
       $scope.$watch('environment.origin', function() {
+          $scope.updateUserContext($scope.selectedIndex);
+      });
+
+      $scope.$watch('environment.authenticationMethod', function() {
           $scope.updateUserContext($scope.selectedIndex);
       });
 
@@ -497,6 +503,7 @@
                 // Add properties to HSA person
                 _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
                 _updateObject(hsaPerson, 'origin', $scope.environment.origin);
+                _updateObject(hsaPerson, 'authenticationMethod', $scope.environment.authenticationMethod);
 
                 var loginJson = _stringify(hsaPerson);
                 $scope.jsonModel = loginJson;
@@ -562,7 +569,7 @@
                           </textarea>
               </div>
 
-              <h5>Logga in med origin: </h5>
+              <h5>Logga in med origin:</h5>
               <span class="originButtons"><label for="NORMAL"><input id="NORMAL" name="origin" type="radio"
                                                                      ng-model="environment.origin" value="NORMAL"
                                                                      checked /> NORMAL</label></span>
@@ -573,6 +580,17 @@
                                                                        ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
               <span class="originButtons"><label for="READONLY"><input id="READONLY" name="origin" type="radio"
                                                                      ng-model="environment.origin" value="READONLY" /> READONLY</label></span>
+
+              <h5>Logga in med metod:  <i>(påverkar endast signering)</i></h5>
+              <span class="authenticationMethodButtons"><label for="FAKE"><input id="FAKE" name="authenticationMethod" type="radio"
+                                                                     ng-model="environment.authenticationMethod" value="FAKE"
+                                                                     checked /> FAKE</label></span>
+              <span class="authenticationMethodButtons"><label for="EFOS"><input id="EFOS" name="authenticationMethod"
+                                                                              type="radio" ng-model="environment.authenticationMethod"
+                                                                              value="EFOS" /> EFOS</label></span>
+              <span class="authenticationMethodButtons"><label for="MOBILT_BANK_ID"><input id="MOBILT_BANK_ID" name="authenticationMethod"
+                                                                                 type="radio" ng-model="environment.authenticationMethod"
+                                                                                 value="MOBILT_BANK_ID" /> MOBILT_BANK_ID</label></span>
             </div>
           </form>
 

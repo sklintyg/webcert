@@ -56,6 +56,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.secmaker.netid.nias.v1.ResultCollect;
+import com.secmaker.netid.nias.v1.SignResponse;
 
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -77,6 +79,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
@@ -108,6 +111,9 @@ public class IntygResource {
 
     @Autowired
     private SignaturTicketTracker signaturTicketTracker;
+
+    @Autowired
+    private NiasSignaturService niasSignaturService;
 
     /**
      * This method is not very safe nor accurate - it parses the [intygsTyp].sch file using XPath and tries
@@ -375,6 +381,22 @@ public class IntygResource {
     public Response getSigningTicket(@PathParam("id") String id) {
         SignaturTicket ticket = signaturTicketTracker.getTicket(id);
         return Response.ok(ticket).build();
+    }
+
+    @GET
+    @Path("/nias/sign/{personId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response netiDSign(@PathParam("personId") String personId) {
+        SignResponse signResponse = niasSignaturService.sign(personId, "", "", "");
+        return Response.ok(signResponse.getSignResult()).build();
+    }
+
+    @GET
+    @Path("/nias/collect/{orderRef}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response netiDCollect(@PathParam("orderRef") String orderRef) {
+        ResultCollect resultCollect = niasSignaturService.collect(orderRef);
+        return Response.ok(resultCollect).build();
     }
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {

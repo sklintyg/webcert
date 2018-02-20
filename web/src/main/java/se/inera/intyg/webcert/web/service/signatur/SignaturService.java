@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.signatur;
 
+import se.inera.intyg.infra.xmldsig.model.SignatureType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 
@@ -61,4 +62,13 @@ public interface SignaturService {
      */
     SignaturTicket createDraftHash(String intygId, long version);
 
+    /**
+     * This method is used by the NIAS collect mechanism to finalize NetID Access Server XMLDSig signatures.
+     *
+     * @param transactionId
+     * @param signatureType
+     * @param certificate
+     *@param webCertUser  @return
+     */
+    SignaturTicket clientNiasSignature(String transactionId, SignatureType signatureType, String certificate, WebCertUser webCertUser);
 }
