@@ -25,6 +25,36 @@ module.exports = {
     ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js'),
     patienter: [{
+		id: '200001152388',// Boende utomlands
+		kon: 'kvinna',
+		namn: 'Anna Karin',
+        efternamn: 'Levin'
+	}, {
+		//Testfamilj
+		//Är vårdnadshavare för barn 1 och barn 2.
+		id: '198311209285'
+		kon: 'kvinna',
+		namn: 'Pernilla',
+		efternamn: 'Backman'
+	}, {
+		//Är vårdnadshavare för barn 1.
+		id: '199003122398',
+		kon: 'man',
+		namn: 'Sune',
+		efternamn: 'Backman'
+	}, {
+		//Barn 1, Har mor och far där båda är vårdnadshavare.		
+		id: '201602092387',
+		kon: 'kvinna',
+		namn: 'Malin',
+		efternamn: 'Backman'
+	}, {
+		//Barn 2 Har mor och far men endast mor är vårdnadshavare.
+		id: '201510262395',
+		kon: 'man',
+		namn: 'Erik',
+		efternamn: 'Backman'
+	}, {
         id: '190007179815', // Har adress i PU
 		kon: 'man'
     }, {
