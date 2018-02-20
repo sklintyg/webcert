@@ -49,10 +49,9 @@ var BaseTsUtkast = BaseUtkast._extend({
 
         this.kommentar = element(by.id('kommentar'));
         this.adress = {
-            postadress: element(by.id('patientPostadress')),
-            postort: element(by.id('patientPostort')),
-            postnummer: element(by.id('patientPostnummer'))
-
+            postadress: element(by.id('grundData-patient-postadress')),
+            postnummer: element(by.id('grundData-patient-postnummer')),
+			postort: element(by.id('grundData-patient-postort'))
         };
 
         this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));

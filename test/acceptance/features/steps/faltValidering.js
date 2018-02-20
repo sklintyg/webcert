@@ -134,67 +134,36 @@ function checkFMB(fmbDiagnos) {
     } else {
         page = fkUtkastPage;
     }
-    var elm = page.fmbButtons.falt2;
-    return elm.sendKeys(protractor.Key.SPACE).then(function() {
-            return helpers.largeDelay();
-        })
-        .then(function() {
 
-            var promiseArray = [];
+    var promiseArray = [];
 
-            if (fmbDiagnos.overliggande) {
-                logger.info('Kontrollerar överliggande');
-                promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.overliggande));
+    if (fmbDiagnos.overliggande) {
+        logger.info('Kontrollerar överliggande');
+        promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.overliggande));
 
-            }
-            if (fmbDiagnos.symptomPrognosBehandling) {
-                logger.info('Kontrollerar Symtom Prognos Behandling');
-                promiseArray.push(expect(page.fmbDialogs.symptomPrognosBehandling.getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
+    }
+    if (fmbDiagnos.symptomPrognosBehandling) {
+        logger.info('Kontrollerar Symtom Prognos Behandling');
+        promiseArray.push(expect(page.fmbDialogs.symptomPrognosBehandling.getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
 
-            }
-            if (fmbDiagnos.generellInfo) {
-                logger.info('Kontrollerar Generell info');
-                promiseArray.push(expect(page.fmbDialogs.generellInfo.getText()).to.eventually.contain(fmbDiagnos.generellInfo));
-
-            }
-            if (fmbDiagnos.funktionsnedsattning) {
-                logger.info('Kontrollerar Funktionsnedsättning');
-                promiseArray.push(
-
-                    page.fmbButtons.falt4.sendKeys(protractor.Key.SPACE)
-                    .then(function() {
-                        return helpers.largeDelay();
-                    })
-                    .then(function() {
-                        return expect(page.fmbDialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning);
-                    }));
-            }
-            if (fmbDiagnos.aktivitetsbegransning) {
-                logger.info('Kontrollerar Aktivietsbegränsning');
-                promiseArray.push(
-                    page.fmbButtons.falt5.sendKeys(protractor.Key.SPACE)
-                    .then(function() {
-                        return helpers.largeDelay();
-                    })
-                    .then(function() {
-                        return expect(page.fmbDialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning);
-                    }));
-
-            }
-            if (fmbDiagnos.beslutsunderlag) {
-                logger.info('Kontrollerar Beslutsunderlag');
-
-                promiseArray.push(page.fmbButtons.falt8.sendKeys(protractor.Key.SPACE)
-                    .then(function() {
-                        return helpers.largeDelay();
-                    })
-                    .then(function() {
-                        return expect(page.fmbDialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag);
-                    }));
-            }
-            return Promise.all(promiseArray);
-
-        });
+    }
+    if (fmbDiagnos.generellInfo) {
+        logger.info('Kontrollerar Generell info');
+        promiseArray.push(expect(page.fmbDialogs.generellInfo.getText()).to.eventually.contain(fmbDiagnos.generellInfo));
+    }
+    if (fmbDiagnos.funktionsnedsattning) {
+        logger.info('Kontrollerar Funktionsnedsättning');
+        promiseArray.push(expect(page.fmbDialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning));
+    }
+    if (fmbDiagnos.aktivitetsbegransning) {
+        logger.info('Kontrollerar Aktivietsbegränsning');
+        promiseArray.push(expect(page.fmbDialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning));
+    }
+    if (fmbDiagnos.beslutsunderlag) {
+        logger.info('Kontrollerar Beslutsunderlag');
+        promiseArray.push(expect(page.fmbDialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag));
+    }
+    return Promise.all(promiseArray);
 
 }
 

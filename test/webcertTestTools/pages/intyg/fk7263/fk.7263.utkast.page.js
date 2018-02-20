@@ -49,6 +49,13 @@ var FkBaseUtkast = BaseUtkast._extend({
     init: function init() {
         init._super.call(this);
 
+		
+		this.enhetensAdress = {
+            postAdress: element(by.id('clinicInfoPostalAddress')),
+            postNummer: element(by.id('clinicInfoPostalCode')),
+            postOrt: element(by.id('clinicInfoPostalCity')),
+            enhetsTelefon: element(by.id('clinicInfoPhone'))
+        };
         this.at = element(by.css('.edit-form'));
         this.smittskyddLabel = element(by.css('[key="fk7263.label.smittskydd"]'));
         this.smittskyddCheckbox = element(by.id('smittskydd'));

@@ -35,12 +35,13 @@ var BaseUtkast = JClass._extend({
             aktivitetsbegransning: element(by.id('fmb_text_AKTIVITETSBEGRANSNING')),
             beslutsunderlag: element(by.id('fmb_text_BESLUTSUNDERLAG_TEXTUELLT'))
         };
-        this.fmbButtons = {
+		this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
+        /*this.fmbButtons = {
             falt2: element(by.id('FALT2-fmb-button')),
             falt4: element(by.id('FALT4-fmb-button')),
             falt5: element(by.id('FALT5-fmb-button')),
             falt8: element(by.id('FALT8B-fmb-button'))
-        };
+        };*/
         this.fmbAlertText = element(by.id('fmb_diagnos_not_in_fmb_alert'));
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
@@ -58,10 +59,10 @@ var BaseUtkast = JClass._extend({
         this.patientNamnPersonnummerFd = element(by.css('.old-person-id'));
         this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande'));
         this.enhetensAdress = {
-            postAdress: element(by.id('clinicInfoPostalAddress')),
-            postNummer: element(by.id('clinicInfoPostalCode')),
-            postOrt: element(by.id('clinicInfoPostalCity')),
-            enhetsTelefon: element(by.id('clinicInfoPhone'))
+            postAdress: element(by.id('grundData-skapadAv-vardenhet-postadress')),
+            postNummer: element(by.id('grundData-skapadAv-vardenhet-postnummer')),
+            postOrt: element(by.id('grundData-skapadAv-vardenhet-postort')),
+            enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         };
         this.patientAdress = {
             postAdress: element(by.id('grundData.patient.postadress')),

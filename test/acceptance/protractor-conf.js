@@ -135,7 +135,7 @@ exports.config = {
 		// Winston Logger level. Logging levels are prioritized from 0 to 5 (highest to lowest):
 		// error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5
 		
-		logger.transports.console.level = 'debug';
+		logger.transports.console.level = 'silly';
 		
 
         //Set window size

@@ -33,16 +33,14 @@ Scenario: Signera ett ts-intyg
 
 @komplettera @svara @lisjp
 Scenario: Besvara kompletteringsfråga
-   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
-   
+   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    Och Försäkringskassan ställer en "Kontakt" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
 @komplettera @nytt-intyg @svara
 Scenario: Svara med nytt intyg
-   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
-   
+   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
 
    När jag går in på intygsutkastet via djupintegrationslänk

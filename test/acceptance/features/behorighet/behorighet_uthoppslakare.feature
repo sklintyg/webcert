@@ -66,8 +66,7 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
    När går in på Sök/skriv intyg
    Och jag går in på en patient
 
-   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -
-      
+   När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    Och Försäkringskassan har ställt en "Avstamningsmote" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
