@@ -58,10 +58,8 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                 browser.ignoreSynchronization = true;
                 specHelper.setUserRole("VARDADMINISTRATOR").then(function() {
                     specHelper.setUserOrigin("DJUPINTEGRATION").then(function() {
-                        specHelper.setUserRef("some-reference").then(function() {
-                            browser.ignoreSynchronization = false;
-                            UtkastPage.get(utkastId);
-                        });
+                        browser.ignoreSynchronization = false;
+                        UtkastPage.get(utkastId);
                     });
                 });
             });
@@ -107,15 +105,13 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                                     // Detta borde kunna göras snyggare med jsonPath...
                                     for (var a = 0; a < data.body.length; a++) {
                                         var statusUppdatering = data.body[a];
-                                        if (statusUppdatering.intyg.intygsId.extension === utkastId &&
-                                            statusUppdatering.ref === 'some-reference') {
+                                        if (statusUppdatering.intyg.intygsId.extension === utkastId) {
                                             return true;
                                         }
                                     }
                                     fail('No matching status message was found, failing test!!');
                                 });
                         });
-
             });
         });
     });

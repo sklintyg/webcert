@@ -51,11 +51,6 @@ module.exports = {
         return browser.get('authtestability/user/origin/' + origin);
     },
 
-    // For DJUPINTEGRERAD, allows us to specify a reference through testability  API.
-    setUserRef: function(ref) {
-        return browser.get('authtestability/user/parameters/ref/' + ref);
-    },
-
     waitForAngularTestability: function() {
         var clientScript =
             'var asyncCallback = arguments[2];\n' +
