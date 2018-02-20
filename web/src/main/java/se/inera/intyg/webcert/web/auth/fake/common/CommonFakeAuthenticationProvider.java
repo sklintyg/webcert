@@ -79,8 +79,6 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
         return result;
     }
 
-
-
     private void overrideSekretessMarkeringFromFakeCredentials(Authentication token, Object details) {
         if (details instanceof IntygUser) {
             IntygUser user = (IntygUser) details;
@@ -108,8 +106,9 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
                 String authenticationMethod = ((FakeCredentials) token.getCredentials()).getAuthenticationMethod();
                 try {
                     if (authenticationMethod != null && !authenticationMethod.isEmpty()) {
+                        IntygUser user = (IntygUser) details;
                         AuthenticationMethod newAuthMethod = AuthenticationMethod.valueOf(authenticationMethod);
-                        ((IntygUser) details).setAuthenticationMethod(newAuthMethod);
+                        user.setAuthenticationMethod(newAuthMethod);
                     }
                 } catch (IllegalArgumentException e) {
                     String allowedTypes = Arrays.asList(AuthenticationMethod.values())
@@ -141,14 +140,13 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
 
     private void applyPersonalNumberForBankID(Authentication token, Object details) {
         if (details instanceof IntygUser) {
-            if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
-                String origin = ((FakeCredentials) token.getCredentials()).getOrigin();
-                try {
-                    UserOriginType.valueOf(origin); // Type check.
-                    ((IntygUser) details).setOrigin(origin);
-                } catch (IllegalArgumentException e) {
-                    throw new AuthoritiesException(
-                            "Could not set origin '" + origin + "'. Unknown, allowed types are NORMAL, DJUPINTEGRATION, UTHOPP");
+            // If we've selected MOBILT_BANK_ID in welcome.html, transfer hsaId onto personId if not set.
+            IntygUser user = (IntygUser) details;
+
+            if (user.getAuthenticationMethod() == AuthenticationMethod.MOBILT_BANK_ID
+                    || user.getAuthenticationMethod() == AuthenticationMethod.BANK_ID) {
+                if (user.getPersonId() == null || user.getPersonId().isEmpty()) {
+                    user.setPersonId(user.getHsaId());
                 }
             }
         }

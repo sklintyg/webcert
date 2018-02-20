@@ -59,6 +59,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
@@ -123,6 +124,9 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
 
+    @Autowired
+    private ReferensService referensService;
+
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
     public int countFilterIntyg(UtkastFilter filter) {
@@ -148,11 +152,16 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
+        // Persist the referens if supplied
+        if (!Strings.isNullOrEmpty(request.getReferens())) {
+            referensService.saveReferens(request.getIntygId(), request.getReferens());
+        }
+
         monitoringService.logUtkastCreated(savedUtkast.getIntygsId(),
                 savedUtkast.getIntygsTyp(), savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId());
 
         // Notify stakeholders when a draft has been created
-        sendNotification(savedUtkast, Event.CREATED, getUserReference());
+        sendNotification(savedUtkast, Event.CREATED);
 
         // Create a PDL log for this action
         LogUser logUser = createLogUser(request);
@@ -194,7 +203,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast utkast = getIntygAsDraft(intygsId, intygType);
         if (utkast.getKlartForSigneringDatum() == null) {
-            notificationService.sendNotificationForDraftReadyToSign(utkast, getUserReference());
+            notificationService.sendNotificationForDraftReadyToSign(utkast);
             utkast.setKlartForSigneringDatum(LocalDateTime.now());
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
             saveDraft(utkast);
@@ -276,7 +285,7 @@ public class UtkastServiceImpl implements UtkastService {
         monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
 
         // Notify stakeholders when a draft is deleted
-        sendNotification(utkast, Event.DELETED, getUserReference());
+        sendNotification(utkast, Event.DELETED);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
@@ -404,7 +413,7 @@ public class UtkastServiceImpl implements UtkastService {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             if (moduleApi.shouldNotify(persistedJson, draftAsJson)) {
                 LOG.debug("*** Detected changes in model, sending notification! ***");
-                sendNotification(utkast, Event.CHANGED, getUserReference());
+                sendNotification(utkast, Event.CHANGED);
             }
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
@@ -471,7 +480,7 @@ public class UtkastServiceImpl implements UtkastService {
                 updateUtkastModel(utkast, updatedModel);
                 saveDraft(utkast);
                 monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
-                sendNotification(utkast, Event.CHANGED, getUserReference());
+                sendNotification(utkast, Event.CHANGED);
 
                 // Spara undan det gamla personnummret temporärt
                 webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
@@ -690,17 +699,17 @@ public class UtkastServiceImpl implements UtkastService {
         return savedUtkast;
     }
 
-    private void sendNotification(Utkast utkast, Event event, String reference) {
+    private void sendNotification(Utkast utkast, Event event) {
 
         switch (event) {
         case CHANGED:
-            notificationService.sendNotificationForDraftChanged(utkast, reference);
+            notificationService.sendNotificationForDraftChanged(utkast);
             break;
         case CREATED:
-            notificationService.sendNotificationForDraftCreated(utkast, reference);
+            notificationService.sendNotificationForDraftCreated(utkast);
             break;
         case DELETED:
-            notificationService.sendNotificationForDraftDeleted(utkast, reference);
+            notificationService.sendNotificationForDraftDeleted(utkast);
             break;
         }
     }

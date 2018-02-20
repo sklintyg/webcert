@@ -44,8 +44,10 @@ describe('answer arende on luse intyg', function() {
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
+            restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
             restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
                 'AVSTMN', 'PENDING_EXTERNAL_ACTION');
+            });
         });
     });
 

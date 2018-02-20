@@ -53,6 +53,9 @@ var FkBaseIntyg = BaseIntyg._extend({
     },
     clickKompletteraIntyg: function(id) {
         return element(by.id('komplettera-intyg-' + id)).sendKeys(protractor.Key.SPACE);
+    },
+    switchToArendeTab: function() {
+        return element(by.id('tab-link-wc-arende-panel-tab')).click();
     }
 });
 

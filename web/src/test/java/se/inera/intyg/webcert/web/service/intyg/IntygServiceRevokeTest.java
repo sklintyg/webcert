@@ -92,7 +92,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         // verify that services were called
         verify(arendeService).closeAllNonClosed(INTYG_ID);
-        verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID, USER_REFERENCE);
+        verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
         verify(logService).logRevokeIntyg(any(LogRequest.class));
         verify(intygRepository).save(any(Utkast.class));
         verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK));

@@ -41,7 +41,7 @@ var db = require('./dbActions');
  *
  */
 
-Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten( med argument "([^"]*)")?$/, function(activity, medArgument, activityarg) {
+Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten(?: med argument "([^"]*)")?$/, function(activity, activityarg) {
     console.log(activity);
     console.log(activityarg);
     return db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId, activityarg);

@@ -118,13 +118,13 @@ public class CopyUtkastServiceImplTest {
     private NotificationService mockNotificationService;
 
     @Mock
-    private MonitoringLogService mockMonitoringService;
-
-    @Mock
     private LogService logService;
 
     @Mock
     private WebCertUserService userService;
+
+    @Mock
+    private MonitoringLogService monitoringLogService;
 
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
@@ -238,8 +238,7 @@ public class CopyUtkastServiceImplTest {
         verify(createReplacementUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(true));
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
-        verify(userService).getUser();
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(logService).logCreateIntyg(any(LogRequest.class));
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
@@ -274,7 +273,7 @@ public class CopyUtkastServiceImplTest {
         verify(createReplacementUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(true));
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(userService).getUser();
         verify(logService).logCreateIntyg(any(LogRequest.class));
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
@@ -307,8 +306,7 @@ public class CopyUtkastServiceImplTest {
         verify(copyCompletionUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
                 any(boolean.class), any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
-        verify(userService).getUser();
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 
@@ -342,8 +340,7 @@ public class CopyUtkastServiceImplTest {
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), eq(false), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
-        verify(userService).getUser();
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
     }
 
@@ -409,7 +406,7 @@ public class CopyUtkastServiceImplTest {
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
                 any(boolean.class), eq(true), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, true);
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
@@ -445,7 +442,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
                 anyString());
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
 
@@ -483,7 +480,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
                 anyString());
-        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class), eq(reference));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
 

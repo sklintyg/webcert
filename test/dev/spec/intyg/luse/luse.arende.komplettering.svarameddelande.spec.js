@@ -51,17 +51,19 @@ describe('svarameddelande - arende on luse intyg', function() {
 
         restTestdataHelper.deleteAllArenden().then(function() {
             restTestdataHelper.createWebcertIntyg(testData).then(function() {
-                restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                    'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                        {
-                            'frageId': '1',
-                            'instans': 1,
-                            'text': 'Fixa.'
-                        }
-                    ],
-                    'test'
-                );
+                restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+                    restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+                        'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                            {
+                                'frageId': '1',
+                                'instans': 1,
+                                'text': 'Fixa.'
+                            }
+                        ],
+                        'test'
+                    );
 
+                });
             });
         });
     });

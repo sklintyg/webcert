@@ -273,8 +273,8 @@ Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$
 
 
     return helpers.getUtkast(intygsTyp, patient).then(function(data) {
-        console.log('data.length: ' + data.length);
-        console.log(data);
+        //console.log('data.length: ' + data.length);
+        //console.log(data);
 
         if (!data[0]) {
             return logger.info('OK - Inget utkast med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);
@@ -306,44 +306,44 @@ Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$
             })
             .then(function() {
                 return raderaUtkastet();
-            });
-    }).then(function() {
-        return helpers.getIntyg(intygsTyp, patient, false).then(function(data) {
-            console.log('data.length: ' + data.length);
-            console.log(data);
+            }).then(function() {
+                return helpers.getIntyg(intygsTyp, patient, false).then(function(data) {
+                    //console.log('data.length: ' + data.length);
+                    //console.log(data);
 
-            if (!data[0]) {
-                return logger.info('OK - Inget intyg med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);
-            }
+                    if (!data[0]) {
+                        return logger.info('OK - Inget intyg med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);
+                    }
 
-            //Logga in på vårdenhet som skapat intyget:
-            var userObj = {
-                forNamn: 'x',
-                efterNamn: 'y',
-                hsaId: data[0].SKAPAD_AV_HSAID,
-                enhetId: data[0].ENHETS_ID
-            };
-            global.intyg = {};
-            global.intyg.id = data[0].INTYGS_ID;
+                    //Logga in på vårdenhet som skapat intyget:
+                    var userObj = {
+                        forNamn: 'x',
+                        efterNamn: 'y',
+                        hsaId: data[0].SKAPAD_AV_HSAID,
+                        enhetId: data[0].ENHETS_ID
+                    };
+                    global.intyg = {};
+                    global.intyg.id = data[0].INTYGS_ID;
 
 
-            return loginHelpers.logInAsUser(userObj)
-                .then(function() {
-                    return helpers.pageReloadDelay();
-                })
-                .then(function() {
-                    var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
-                    var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
-                    logger.info('Går till ' + link);
-                    return browser.get(link);
-                })
-                .then(function() {
-                    return helpers.pageReloadDelay();
-                })
-                .then(function() {
-                    return makuleraIntyget();
+                    return loginHelpers.logInAsUser(userObj)
+                        .then(function() {
+                            return helpers.pageReloadDelay();
+                        })
+                        .then(function() {
+                            var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
+                            var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
+                            logger.info('Går till ' + link);
+                            return browser.get(link);
+                        })
+                        .then(function() {
+                            return helpers.pageReloadDelay();
+                        })
+                        .then(function() {
+                            return makuleraIntyget();
+                        });
                 });
-        });
+            });
     });
 });
 

@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -70,6 +71,7 @@ import java.util.stream.Stream;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -159,6 +161,63 @@ public class UtkastModuleApiControllerTest {
         setupUser("", intygType, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         when(utkastService.getDraft(CERTIFICATE_ID, intygType)).thenReturn(buildUtkast(intygType, CERTIFICATE_ID));
         moduleApiController.getDraft(intygType, CERTIFICATE_ID, request);
+    }
+
+    @Test
+    public void getDraftShouldPatchIfNewAddressExist() throws Exception {
+        // Given
+        String intygsTyp = "gdspinae-intygsTyp";
+        String intygsId = "gdspinae-intygsId";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        when(utkastService.getDraft(CERTIFICATE_ID, intygsTyp)).thenReturn(buildUtkast(intygsTyp, intygsId));
+        when(certificateRelationService.getRelations(eq(intygsId))).thenReturn(new Relations());
+
+        String postadress = "gdspinae-postadress";
+        String postort = "gdspinae-postort";
+        String postnummer= "gdspinae-postnummer";
+        Patient patientWithIncompleteAddress = buildPatient();
+        patientWithIncompleteAddress.setPostadress(postadress);
+        patientWithIncompleteAddress.setPostort(postort);
+        patientWithIncompleteAddress.setPostnummer(postnummer);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+
+        // When
+        Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
+
+        // Then
+        ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        assertEquals(postadress, argumentCaptor.getValue().getPostadress());
+        assertEquals(postort, argumentCaptor.getValue().getPostort());
+        assertEquals(postnummer, argumentCaptor.getValue().getPostnummer());
+    }
+
+    @Test
+    public void getDraftShouldNotPatchIfNewAddressIsIncomplete() throws Exception {
+        // Given
+        String intygsTyp = "gdsnpinaii-intygsTyp";
+        String intygsId = "gdsnpinaii-intygsId";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        when(utkastService.getDraft(CERTIFICATE_ID, intygsTyp)).thenReturn(buildUtkast(intygsTyp, intygsId));
+        when(certificateRelationService.getRelations(eq(intygsId))).thenReturn(new Relations());
+
+        String postadress = "gdsnpinaii-postadress";
+        String postort = "";
+        String postnummer= "gdsnpinaii-postnummer";
+        Patient patientWithIncompleteAddress = buildPatient();
+        patientWithIncompleteAddress.setPostadress(postadress);
+        patientWithIncompleteAddress.setPostort(postort);
+        patientWithIncompleteAddress.setPostnummer(postnummer);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+
+        // When
+        Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
+
+        // Then
+        ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
+        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        assertNotEquals(postadress, argumentCaptor.getValue().getPostadress());
+        assertNotEquals(postnummer, argumentCaptor.getValue().getPostnummer());
     }
 
     @Test

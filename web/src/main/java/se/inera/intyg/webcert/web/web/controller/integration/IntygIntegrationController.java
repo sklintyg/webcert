@@ -30,6 +30,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
@@ -96,6 +97,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
+    @Autowired
+    private ReferensService referensService;
 
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
@@ -257,8 +261,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
 
-    // protected scope
-
     @Override
     protected String[] getGrantedRoles() {
         return GRANTED_ROLES;
@@ -269,13 +271,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return GRANTED_ORIGIN;
     }
 
-    // default scope
-
     Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
-
         try {
             // Call service
             PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+
+            // Persist reference
+            handleReference(intygId, user.getParameters().getReference());
 
             if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
 
@@ -300,7 +302,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
             } else {
                 if (user.changeValdVardenhet(enhetId)) {
                     updateUserWithActiveFeatures(user);
-
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
                     return buildRedirectResponse(uriInfo, prepareRedirectInfo);
                 }
@@ -319,7 +320,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
     }
 
-    // private stuff
+    private void handleReference(String intygId, String referens) {
+        if (referens != null) {
+            if (!referensService.referensExists(intygId)) {
+                referensService.saveReferens(intygId, referens);
+            }
+        }
+    }
 
     private Response buildNoContentErrorResponse(UriInfo uriInfo) {
         return buildErrorResponse(uriInfo, "integration.nocontent");

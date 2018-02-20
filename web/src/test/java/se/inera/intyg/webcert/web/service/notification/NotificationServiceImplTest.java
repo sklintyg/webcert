@@ -61,12 +61,15 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
+import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
+import se.inera.intyg.webcert.web.service.referens.ReferensServiceImpl;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 import javax.jms.JMSException;
@@ -128,6 +131,9 @@ public class NotificationServiceImplTest {
     @Mock
     private UtkastRepository utkastRepo;
 
+    @Mock
+    private ReferensServiceImpl referensService;
+
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -139,6 +145,7 @@ public class NotificationServiceImplTest {
         setupMocks(SchemaVersion.VERSION_3);
 
         when(session.createTextMessage(anyString())).thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
+        when(referensService.getReferensForIntygsId(any(String.class))).thenReturn(USER_REFERENCE);
     }
 
     private void setupMocks(SchemaVersion schemaVersion) {
@@ -197,22 +204,20 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testCreateAndSendNotificationWithReference() throws Exception {
-        final String ref = "reference";
-
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
         when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_1));
 
         NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.ANDRAT, INTYG_JSON);
-        notMsg.setReference(ref);
+        notMsg.setReference(USER_REFERENCE);
 
         when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
-                eq(SchemaVersion.VERSION_1), eq(ref), any(Amneskod.class), any(LocalDate.class))).thenReturn(notMsg);
+                eq(SchemaVersion.VERSION_1), eq(USER_REFERENCE), any(Amneskod.class), any(LocalDate.class))).thenReturn(notMsg);
 
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
 
         Utkast utkast = createUtkast();
-        notificationService.createAndSendNotification(utkast, HandelsekodEnum.ANDRAT, ref);
+        notificationService.createAndSendNotification(utkast, HandelsekodEnum.ANDRAT);
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 
@@ -234,35 +239,33 @@ public class NotificationServiceImplTest {
         assertEquals(HandelsekodEnum.ANDRAT, captNotMsg.getHandelse());
         assertEquals(INTYG_JSON, captNotMsg.getUtkast());
         assertEquals(SchemaVersion.VERSION_1, captNotMsg.getVersion());
-        assertEquals(ref, captNotMsg.getReference());
+        assertEquals(USER_REFERENCE, captNotMsg.getReference());
 
         // verify call has been made
         verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.ANDRAT),
-                eq(SchemaVersion.VERSION_1), eq(ref), any(Amneskod.class), any(LocalDate.class));
+                eq(SchemaVersion.VERSION_1), eq(USER_REFERENCE), any(Amneskod.class), any(LocalDate.class));
     }
 
     @Test
     public void testIntygsutkastCreated() throws Exception {
-        final String ref = "reference";
-
         when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Optional.of(SchemaVersion.VERSION_3));
 
         NotificationMessage notMsg = createNotificationMessage(HandelsekodEnum.SKAPAT, INTYG_JSON);
-        notMsg.setReference(ref);
+        notMsg.setReference(USER_REFERENCE);
 
         when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.SKAPAT),
-                eq(SchemaVersion.VERSION_3), eq(ref), any(Amneskod.class), any(LocalDate.class))).thenReturn(notMsg);
+                eq(SchemaVersion.VERSION_3), eq(USER_REFERENCE), any(Amneskod.class), any(LocalDate.class))).thenReturn(notMsg);
 
-        notificationService.sendNotificationForDraftCreated(createUtkast(), ref);
+        notificationService.sendNotificationForDraftCreated(createUtkast());
 
         // verify call has been made
         verify(mockNotificationMessageFactory).createNotificationMessage(any(Utkast.class), eq(HandelsekodEnum.SKAPAT),
-                eq(SchemaVersion.VERSION_3), eq(ref), any(Amneskod.class), any(LocalDate.class));
+                eq(SchemaVersion.VERSION_3), eq(USER_REFERENCE), any(Amneskod.class), any(LocalDate.class));
     }
 
     @Test
     public void testDraftCreated() throws Exception {
-        notificationService.sendNotificationForDraftCreated(createUtkast(), null);
+        notificationService.sendNotificationForDraftCreated(createUtkast());
         verifySuccessfulInvocations(HandelsekodEnum.SKAPAT);
     }
 
@@ -270,7 +273,7 @@ public class NotificationServiceImplTest {
     public void testDraftCreatedJmsException() throws Exception {
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
-            notificationService.sendNotificationForDraftCreated(createUtkast(), null);
+            notificationService.sendNotificationForDraftCreated(createUtkast());
         } finally {
             verify(template).send(any(MessageCreator.class));
             verifyZeroInteractions(mockMonitoringLogService);
@@ -279,7 +282,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testDraftSigned() throws Exception {
-        notificationService.sendNotificationForDraftSigned(createUtkast(), USER_REFERENCE);
+        notificationService.sendNotificationForDraftSigned(createUtkast());
         verifySuccessfulInvocations(HandelsekodEnum.SIGNAT);
     }
 
@@ -287,7 +290,7 @@ public class NotificationServiceImplTest {
     public void testDraftSignedJmsException() throws Exception {
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
-            notificationService.sendNotificationForDraftSigned(createUtkast(), USER_REFERENCE);
+            notificationService.sendNotificationForDraftSigned(createUtkast());
         } finally {
             verify(template).send(any(MessageCreator.class));
             verifyZeroInteractions(mockMonitoringLogService);
@@ -296,7 +299,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testDraftChanged() throws Exception {
-        notificationService.sendNotificationForDraftChanged(createUtkast(), USER_REFERENCE);
+        notificationService.sendNotificationForDraftChanged(createUtkast());
         verifySuccessfulInvocations(HandelsekodEnum.ANDRAT);
     }
 
@@ -304,7 +307,7 @@ public class NotificationServiceImplTest {
     public void testDraftChangedJmsException() throws Exception {
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
-            notificationService.sendNotificationForDraftChanged(createUtkast(), USER_REFERENCE);
+            notificationService.sendNotificationForDraftChanged(createUtkast());
         } finally {
             verify(template).send(any(MessageCreator.class));
             verifyZeroInteractions(mockMonitoringLogService);
@@ -313,7 +316,7 @@ public class NotificationServiceImplTest {
 
     @Test
     public void testDraftDeleted() throws Exception {
-        notificationService.sendNotificationForDraftDeleted(createUtkast(), USER_REFERENCE);
+        notificationService.sendNotificationForDraftDeleted(createUtkast());
         verifySuccessfulInvocations(HandelsekodEnum.RADERA);
     }
 
@@ -321,7 +324,7 @@ public class NotificationServiceImplTest {
     public void testDraftDeletedJmsException() throws Exception {
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
-            notificationService.sendNotificationForDraftDeleted(createUtkast(), USER_REFERENCE);
+            notificationService.sendNotificationForDraftDeleted(createUtkast());
         } finally {
             verify(template).send(any(MessageCreator.class));
             verifyZeroInteractions(mockMonitoringLogService);
@@ -331,7 +334,7 @@ public class NotificationServiceImplTest {
     @Test
     public void testIntygSent() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
-        notificationService.sendNotificationForIntygSent(INTYG_ID, USER_REFERENCE);
+        notificationService.sendNotificationForIntygSent(INTYG_ID);
         verifySuccessfulInvocations(HandelsekodEnum.SKICKA);
     }
 
@@ -340,7 +343,7 @@ public class NotificationServiceImplTest {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
-            notificationService.sendNotificationForIntygSent(INTYG_ID, USER_REFERENCE);
+            notificationService.sendNotificationForIntygSent(INTYG_ID);
         } finally {
             verify(template).send(any(MessageCreator.class));
             verifyZeroInteractions(mockMonitoringLogService);
@@ -350,7 +353,7 @@ public class NotificationServiceImplTest {
     @Test
     public void testIntygRevoked() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
-        notificationService.sendNotificationForIntygRevoked(INTYG_ID, USER_REFERENCE);
+        notificationService.sendNotificationForIntygRevoked(INTYG_ID);
         verifySuccessfulInvocations(HandelsekodEnum.MAKULE);
     }
 
@@ -359,7 +362,7 @@ public class NotificationServiceImplTest {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
-            notificationService.sendNotificationForIntygRevoked(INTYG_ID, USER_REFERENCE);
+            notificationService.sendNotificationForIntygRevoked(INTYG_ID);
         } finally {
             verify(template).send(any(MessageCreator.class));
             verifyZeroInteractions(mockMonitoringLogService);

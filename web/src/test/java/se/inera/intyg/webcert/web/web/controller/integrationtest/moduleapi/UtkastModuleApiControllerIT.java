@@ -18,12 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.restassured.RestAssured;
@@ -33,13 +27,18 @@ import com.jayway.restassured.response.Response;
 import org.junit.Test;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.inera.intyg.common.fk7263.model.internal.PrognosBedomning;
-import se.inera.intyg.infra.integration.grp.stub.GrpServicePortTypeStub;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 import java.io.IOException;
 import java.util.Map;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 
 /**
  * Basic test suite that verifies that the endpoint (/moduleapi/utkast) is available and repond according to
@@ -51,6 +50,8 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
     public static final String MODULEAPI_UTKAST_BASE = "moduleapi/utkast";
     public static final String GRPAPI_STUBBE_BASE = "services/grp-api";
+
+    private static final String TOLVAN_PERSON_ID = "19121212-1212";
 
     @Test
     public void testGetDraft() {
@@ -146,20 +147,20 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .expect().statusCode(200)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-            .extract().response();
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+                .extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         Map<String, String> content = model.getJsonObject("content");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .contentType(ContentType.JSON).body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
-            .expect().statusCode(200)
-            .when().post(MODULEAPI_UTKAST_BASE + "/{intygsTyp}/{intygsId}/validate")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
+                .contentType(ContentType.JSON).body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
+                .expect().statusCode(200)
+                .when().post(MODULEAPI_UTKAST_BASE + "/{intygsTyp}/{intygsId}/validate")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
     }
 
     @Test
@@ -198,11 +199,11 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .expect().statusCode(200)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-            .extract().response();
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+                .extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         String version = model.getString("version");
@@ -247,7 +248,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testServerSigneraUtkastMedGrp() throws IOException {
 
         FakeElegCredentials fakeElegCredentials = new FakeElegCredentials();
-        fakeElegCredentials.setPersonId(GrpServicePortTypeStub.PERSON_ID);
+        fakeElegCredentials.setPersonId(TOLVAN_PERSON_ID);
         fakeElegCredentials.setPrivatLakare(true);
 
         RestAssured.sessionId = getAuthSession(fakeElegCredentials);
@@ -258,16 +259,16 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Påbörja signering
         Response responseTicket = given()
-            .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .contentType(ContentType.JSON)
-            .expect().statusCode(200)
-            .when()
-            .post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                + "/grp/signeraserver")
-            .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-            .body("status", equalTo("BEARBETAR"))
-            .extract().response();
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when()
+                .post(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+                        + "/grp/signeraserver")
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+                .body("status", equalTo("BEARBETAR"))
+                .extract().response();
 
         // Hämta ut biljett-id från svaret
         JsonPath model = new JsonPath(responseTicket.body().asString());
@@ -276,59 +277,59 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         // biljettId är inte samma sak som orderRef.
         // Hämta ut orderRef först
         Response responseOrderRef = given()
-            .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .contentType(ContentType.TEXT)
-            .expect().statusCode(200)
-            .when()
-            .get(GRPAPI_STUBBE_BASE + "/orderref/" + biljettId)
-            .then()
-            .extract().response();
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.TEXT)
+                .expect().statusCode(200)
+                .when()
+                .get(GRPAPI_STUBBE_BASE + "/orderref/" + biljettId)
+                .then()
+                .extract().response();
 
         String orderRef = responseOrderRef.body().asString();
 
         // Ändra GRP-status till USER_SIGN och kontrollera
         given()
-            .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .contentType(ContentType.JSON)
-            .body(createGrpSignatureStatus(orderRef, ProgressStatusType.USER_SIGN))
-            .expect().statusCode(200)
-            .when()
-            .put(GRPAPI_STUBBE_BASE + "/status");
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .body(createGrpSignatureStatus(orderRef, ProgressStatusType.USER_SIGN))
+                .expect().statusCode(200)
+                .when()
+                .put(GRPAPI_STUBBE_BASE + "/status");
 
         // Simulera väntetid vid pollning mot riktig GPR-tjänst
         sleep();
 
         given()
-            .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .contentType(ContentType.JSON)
-            .expect().statusCode(200)
-            .when()
-            .get(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
-            .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-            .body("status", equalTo("VANTA_SIGN"));
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when()
+                .get(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+                .body("status", equalTo("VANTA_SIGN"));
 
         // Ändra GRP-status till COMPLETE och kontrollera
         given()
-            .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .contentType(ContentType.JSON)
-            .body(createGrpSignatureStatus(orderRef, ProgressStatusType.COMPLETE))
-            .expect().statusCode(200)
-            .when()
-            .put(GRPAPI_STUBBE_BASE + "/status");
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .body(createGrpSignatureStatus(orderRef, ProgressStatusType.COMPLETE))
+                .expect().statusCode(200)
+                .when()
+                .put(GRPAPI_STUBBE_BASE + "/status");
 
         // Simulera väntetid vid pollning mot riktig GPR-tjänst
         sleep();
 
         given()
-            .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-            .contentType(ContentType.JSON)
-            .expect().statusCode(200)
-            .when()
-            .get(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
-            .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-            .body("status", equalTo("SIGNERAD"));
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
+                .expect().statusCode(200)
+                .when()
+                .get(MODULEAPI_UTKAST_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+                .body("status", equalTo("SIGNERAD"));
 
     }
 

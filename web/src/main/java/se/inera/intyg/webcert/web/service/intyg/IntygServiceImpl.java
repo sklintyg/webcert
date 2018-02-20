@@ -32,7 +32,6 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -85,6 +84,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -178,6 +178,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private ReferensService referensService;
 
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
@@ -598,12 +601,7 @@ public class IntygServiceImpl implements IntygService {
         for (Utkast utkast : utkastList) {
             List<Handelse> notifications = notificationService.getNotifications(utkast.getIntygsId());
 
-            // We still want to return the reference even if the SKAPAT was not in the time span. Hence we need to
-            // extract this information before filtering.
-            String ref = notifications.stream()
-                    .filter(h -> HandelsekodEnum.SKAPAT == h.getCode())
-                    .findAny()
-                    .map(Handelse::getRef).orElse(null);
+            String ref = referensService.getReferensForIntygsId(utkast.getIntygsId());
 
             notifications = notifications.stream().filter(handelse -> {
                 if (request.getStartDate() != null && handelse.getTimestamp().isBefore(request.getStartDate())) {
@@ -679,7 +677,7 @@ public class IntygServiceImpl implements IntygService {
                     objectMapper.writeValueAsString(skickatAv), recipient, delay);
 
             // Notify stakeholders when a certificate is sent
-            notificationService.sendNotificationForIntygSent(intygsId, getUserReference());
+            notificationService.sendNotificationForIntygSent(intygsId);
 
             return IntygServiceResult.OK;
 
@@ -725,11 +723,15 @@ public class IntygServiceImpl implements IntygService {
 
     private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
         if (oldPatientData == null) {
-            return;
+            newPatientData.setPostadress(null);
+            newPatientData.setPostnummer(null);
+            newPatientData.setPostort(null);
+        } else {
+            newPatientData.setPostadress(oldPatientData.getPostadress());
+            newPatientData.setPostnummer(oldPatientData.getPostnummer());
+            newPatientData.setPostort(oldPatientData.getPostort());
+
         }
-        newPatientData.setPostadress(oldPatientData.getPostadress());
-        newPatientData.setPostnummer(oldPatientData.getPostnummer());
-        newPatientData.setPostort(oldPatientData.getPostort());
     }
 
     /**
@@ -914,7 +916,7 @@ public class IntygServiceImpl implements IntygService {
         monitoringService.logIntygRevoked(intygsId, hsaId, reason);
 
         // First: send a notification informing stakeholders that this certificate has been revoked
-        notificationService.sendNotificationForIntygRevoked(intygsId, getUserReference());
+        notificationService.sendNotificationForIntygRevoked(intygsId);
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.

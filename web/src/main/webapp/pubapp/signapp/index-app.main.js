@@ -106,10 +106,10 @@ angular.module('rhsIndexApp')
                 });
         };
 
-        $scope.loadOngoingBankIDSignatures = function() {
+        $scope.loadOngoingGrpSignatures = function() {
             $http({
                 method: 'GET',
-                url: '/services/grp-api/statuses/'
+                url: '/services/grp-api/statuses'
             })
                 .then(function successCallback(response) {
                     // Populate table

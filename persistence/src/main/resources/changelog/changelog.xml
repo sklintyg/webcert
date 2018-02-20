@@ -1011,4 +1011,30 @@
     <addAutoIncrement tableName="PAGAENDE_SIGNERING" columnName="INTERN_REFERENS" columnDataType="bigint" incrementBy="1" startWith="1"/>
   </changeSet>
 
+  <changeSet id="52" author="ef">
+    <createTable tableName="REFERENS">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="INTYG_ID" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="REFERENS" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement tableName="REFERENS" columnName="ID" columnDataType="bigint" incrementBy="1" startWith="1"/>
+
+    <createIndex tableName="REFERENS" indexName="INTYG_ID_REFERENS_IDX">
+      <column name="INTYG_ID"/>
+    </createIndex>
+
+    <sql>
+      INSERT INTO REFERENS (INTYG_ID, REFERENS) SELECT INTYGS_ID, REFERENCE FROM (SELECT DISTINCT INTYGS_ID, MIN(TIMESTAMP), REFERENCE FROM HANDELSE WHERE REFERENCE IS NOT NULL GROUP BY INTYGS_ID) as a;
+    </sql>
+
+    <dropColumn tableName="HANDELSE" columnName="REFERENCE"/>
+  </changeSet>
+
 </databaseChangeLog>

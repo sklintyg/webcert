@@ -48,14 +48,16 @@ describe('ej lakare - arende on luse intyg', function() {
             browser.ignoreSynchronization = false;
             restTestdataHelper.deleteUtkast(intygId);
             restTestdataHelper.createWebcertIntyg(testData).then(function() {
-                restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                    'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                        {
-                            'frageId':'1',
-                            'instans':1,
-                            'text':'Fixa.'
-                        }
-                    ]);
+                restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+                    restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+                        'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                            {
+                                'frageId':'1',
+                                'instans':1,
+                                'text':'Fixa.'
+                            }
+                        ]);
+                    });
             });
         });
     });

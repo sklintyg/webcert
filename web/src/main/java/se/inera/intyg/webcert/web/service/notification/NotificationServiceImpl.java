@@ -48,6 +48,7 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 import javax.annotation.PostConstruct;
@@ -110,6 +111,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private HandelseRepository handelseRepo;
 
+    @Autowired
+    private ReferensService referensService;
+
     @PostConstruct
     public void checkJmsTemplate() {
         if (jmsTemplateForAggregation == null) {
@@ -126,8 +130,8 @@ public class NotificationServiceImpl implements NotificationService {
      * .persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForDraftCreated(Utkast utkast, String reference) {
-        createAndSendNotification(utkast, SKAPAT, reference);
+    public void sendNotificationForDraftCreated(Utkast utkast) {
+        createAndSendNotification(utkast, SKAPAT);
     }
 
     /*
@@ -139,8 +143,8 @@ public class NotificationServiceImpl implements NotificationService {
      * persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForDraftSigned(Utkast utkast, String reference) {
-        createAndSendNotification(utkast, SIGNAT, reference);
+    public void sendNotificationForDraftSigned(Utkast utkast) {
+        createAndSendNotification(utkast, SIGNAT);
     }
 
     /*
@@ -152,8 +156,8 @@ public class NotificationServiceImpl implements NotificationService {
      * .persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForDraftChanged(Utkast utkast, String reference) {
-        createAndSendNotification(utkast, ANDRAT, reference);
+    public void sendNotificationForDraftChanged(Utkast utkast) {
+        createAndSendNotification(utkast, ANDRAT);
     }
 
     /*
@@ -165,8 +169,8 @@ public class NotificationServiceImpl implements NotificationService {
      * .persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForDraftDeleted(Utkast utkast, String reference) {
-        createAndSendNotification(utkast, RADERA, reference);
+    public void sendNotificationForDraftDeleted(Utkast utkast) {
+        createAndSendNotification(utkast, RADERA);
     }
 
     /*
@@ -177,8 +181,8 @@ public class NotificationServiceImpl implements NotificationService {
      * intyg.webcert.web.persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForDraftReadyToSign(Utkast utkast, String reference) {
-        createAndSendNotification(utkast, KFSIGN, reference);
+    public void sendNotificationForDraftReadyToSign(Utkast utkast) {
+        createAndSendNotification(utkast, KFSIGN);
     }
 
     /*
@@ -190,10 +194,10 @@ public class NotificationServiceImpl implements NotificationService {
      * persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForIntygSent(String intygsId, String reference) {
+    public void sendNotificationForIntygSent(String intygsId) {
         Optional<Utkast> utkast = getUtkast(intygsId);
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), SKICKA, reference);
+            createAndSendNotification(utkast.get(), SKICKA);
         }
     }
 
@@ -206,10 +210,10 @@ public class NotificationServiceImpl implements NotificationService {
      * .persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForIntygRevoked(String intygsId, String reference) {
+    public void sendNotificationForIntygRevoked(String intygsId) {
         Optional<Utkast> utkast = getUtkast(intygsId);
         if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), MAKULE, reference);
+            createAndSendNotification(utkast.get(), MAKULE);
         }
     }
 
@@ -277,14 +281,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse) {
-        createAndSendNotification(utkast, handelse, null);
+        createAndSendNotification(utkast, handelse, null, null);
     }
 
-    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference) {
-        createAndSendNotification(utkast, handelse, reference, null, null);
-    }
-
-    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference,
+    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
                                              ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
@@ -293,15 +293,17 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        createAndSendNotification(utkast, handelse, reference, amne, sistaDatumForSvar, version.get());
+        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get());
     }
 
-    private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse, String reference,
+    private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
                                            ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version) {
         Amneskod amneskod = null;
         if (amne != null) {
             amneskod = AmneskodCreator.create(amne.name(), amne.getDescription());
         }
+
+        String reference = referensService.getReferensForIntygsId(utkast.getIntygsId());
 
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse,
                 version, reference, amneskod, sistaDatumForSvar);
@@ -332,7 +334,7 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        createAndSendNotification(utkast, handelse, null, amne, sistaDatumForSvar, version.get());
+        createAndSendNotification(utkast, handelse, amne, sistaDatumForSvar, version.get());
     }
 
     private HandelsekodEnum getHandelseV1(NotificationEvent event) {
@@ -386,7 +388,6 @@ public class NotificationServiceImpl implements NotificationService {
         handelse.setEnhetsId(enhetsId);
         handelse.setIntygsId(notificationMessage.getIntygsId());
         handelse.setPersonnummer(personnummer);
-        handelse.setRef(notificationMessage.getReference());
         handelse.setTimestamp(notificationMessage.getHandelseTid());
         handelse.setVardgivarId(vardgivarId);
         handelse.setAmne(amne);

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, logger */
+/* globals browser, logger, protractor */
 'use strict';
 /*jshint newcap:false */
 
@@ -25,6 +25,7 @@ var fs = require('fs');
 
 var hasFoundConsoleErrors = false;
 var duplicateIds = [];
+var EC = protractor.ExpectedConditions;
 
 function writeScreenShot(data, filename, cb) {
     var stream = fs.createWriteStream(filename);
@@ -50,72 +51,54 @@ function checkConsoleErrors() {
     }
 }
 
-/*function removeAlerts() {
-    browser.switchTo().alert().accept()
-        .then(() => logger.log('info', 'Dialogruta accepterad.'))
-        .catch(err => {}); // Ingen dialogruta hittad, allt är frid och fröjd.
-}*/
+function removeAlerts() {
+    return browser.wait(EC.alertIsPresent(), 1000).then(function() {
+        return browser.switchTo().alert().accept();
+    }, function() {
+        // Ingen dialogruta hittad, allt är frid och fröjd.*/
+        return;
+    });
+}
 
-//module.exports = function() {
-var {
-    setDefaultTimeout
-} = require('cucumber');
-var {
-    Before
-} = require('cucumber');
-var {
-    After
+const {
+    setDefaultTimeout, // jshint ignore:line
+    Before, // jshint ignore:line
+    BeforeAll, // jshint ignore:line
+    After, // jshint ignore:line
+    AfterAll // jshint ignore:line
 } = require('cucumber');
 
 
 setDefaultTimeout(600 * 1000);
 global.externalPageLinks = [];
 
-/*
+AfterAll(function() {
 
-var {
-    AfterStep
-} = require('cucumber');
-
-//TODO AfterStep ska bytas ut mot AfterAll TI-444
-//och
-//https://github.com/cucumber/cucumber-js/commit/9499817a42d2b1734adf3dcb2818b00c110e3b10
-
-AfterStep(function(event) {
-
-    return new Promise(function(resolve) {
-            //Kör promisekedja för AfterStep.
-            resolve();
-        })
-
-        // avaktiverar AfterStep tills det att TI-444 är löst.
-		.then(function() {
-            // Samla in alla externa länkar på aktuell sida
-            return element.all(by.css('a')).each(function(link) {
-                return link.getAttribute('href').then(function(href) {
-                    if (href !== null &&
-                        href !== '' &&
-                        href.includes('javascript') !== true &&
-                        href.indexOf(process.env.WEBCERT_URL) === -1 &&
-                        href.indexOf(process.env.MINAINTYG_URL) === -1 &&
-                        href.indexOf(process.env.REHABSTOD_URL) === -1 &&
-                        href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
-                        global.externalPageLinks.indexOf(href) === -1) {
-                        logger.info('Found external link: ' + href);
-                        global.externalPageLinks.push(href);
-                    }
-                }).catch(function(err) {
-                logger.warn('Fel vid insamling av externa länkar');
-                logger.debug(err);
-                return;
-				});
+    logger.silly('Samlar in alla externa länkar på aktuell sida');
+    return element.all(by.css('a')).each(function(link) {
+            return link.getAttribute('href').then(function(href) {
+                if (href !== null &&
+                    href !== '' &&
+                    href.includes('javascript') !== true &&
+                    href.indexOf(process.env.WEBCERT_URL) === -1 &&
+                    href.indexOf(process.env.MINAINTYG_URL) === -1 &&
+                    href.indexOf(process.env.REHABSTOD_URL) === -1 &&
+                    href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
+                    global.externalPageLinks.indexOf(href) === -1) {
+                    logger.info('Found external link: ' + href);
+                    global.externalPageLinks.push(href);
+                }
             }).catch(function(err) {
                 logger.warn('Fel vid insamling av externa länkar');
                 logger.debug(err);
                 return;
             });
+        }).catch(function(err) {
+            logger.warn('Fel vid insamling av externa länkar');
+            logger.debug(err);
+            return;
         }).then(function() {
-            //Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.
+            logger.silly('Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.');
             var frontEndScript = '';
 
             frontEndScript += 'if (window.jQuery) {';
@@ -134,10 +117,11 @@ AfterStep(function(event) {
                 //Browser is open
                 return browser.executeScript(frontEndScript);
             }).catch(function() {
-                //Browser was closed
+                logger.silly('Kontroll av ID-dubletter felade - Browser was closed');
                 return;
             });
         }).then(function() {
+            logger.silly('Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr');
             return browser.getCurrentUrl().then(function(url) {
                 logger.silly('current URL ' + url);
                 //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
@@ -154,14 +138,12 @@ AfterStep(function(event) {
                 return;
             });
         })
-		
-		
         .then(function() {
             // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
             return removeAlerts();
         });
 
-});*/
+});
 
 Before(function() {
     global.scenario = this;
@@ -174,10 +156,13 @@ Before(function() {
     hasFoundConsoleErrors = false;
     duplicateIds = [];
 });
-//After scenario
+
+
+
 After(function(testCase) {
-    //
+
     var world = this;
+    browser.ignoreSynchronization = true;
 
     if (testCase.result.status === 'failed') {
 
@@ -192,47 +177,64 @@ After(function(testCase) {
         frontEndJS += 'body.appendChild(div);';
 
         return browser.executeScript(frontEndJS).then(function() {
-            return browser.takeScreenshot();
-        }).then(function(png) {
-            var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-            var filename = 'screenshots/' + new Date().getTime() + '.png';
-            return writeScreenShot(png, ssPath + filename, function() {
-                return world.attach(filename, 'image/png', function(err) {
-                    if (err) {
-                        throw err;
-                    }
-                    logger.silly('Skärmbild tagen: ' + filename);
-                    return checkConsoleErrors();
+                return browser.takeScreenshot();
+            }).then(function(png) {
+                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+                var filename = 'screenshots/' + new Date().getTime() + '.png';
+                return writeScreenShot(png, ssPath + filename, function() {
+                    return world.attach(new Buffer(png, 'base64'), 'image/png', function(err) {
+                        //return world.attach(filename, 'image/png', function(err) {
+                        if (err) {
+                            throw err;
+                        }
+                        logger.silly('Skärmbild tagen: ' + filename);
+                        return checkConsoleErrors();
+                    });
                 });
+            }).then(function() {
+                logger.silly('Rensar session-storage');
+                return browser.executeScript('window.sessionStorage.clear();');
+            }).then(function() {
+                logger.silly('Rensar local-storage');
+                return browser.executeScript('window.localStorage.clear();');
+            })
+            .then(function() {
+                var url = 'about:blank';
+                console.log('går till ' + url);
+                return browser.get(url);
+            })
+            .then(function() {
+                return browser.sleep(1000);
+            })
+            .then(function() {
+                return removeAlerts();
+            }).then(function() {
+                return browser.sleep(1000);
+            }).then(function() {
+                console.log('browser.refresh');
+                return browser.refresh();
             });
-        }).then(function() {
-            logger.silly('Rensar session-storage');
-            return browser.executeScript('window.sessionStorage.clear();');
-        }).then(function() {
-            logger.silly('Rensar local-storage');
-            return browser.executeScript('window.localStorage.clear();');
-        }).catch(function(err) {
-            logger.warn('Fel i afterScenario');
-            logger.debug(err);
-            return;
-        });
+
     } else {
-        return checkConsoleErrors();
+        logger.silly('Rensar session-storage');
+        return browser.executeScript('window.sessionStorage.clear();').then(function() {
+                return checkConsoleErrors();
+            }).then(function() {
+                logger.silly('Rensar local-storage');
+                return browser.executeScript('window.localStorage.clear();');
+            }).then(function() {
+                var url = 'about:blank';
+                console.log('går till ' + url);
+                return browser.get(url);
+            })
+            .then(function() {
+                return removeAlerts();
+            }).then(function() {
+                return browser.sleep(1000);
+            }).then(function() {
+                return browser.refresh();
+            });
     }
-
-
-    //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
-    /*var rensaBortIntyg = true;
-    var tagArr = scenario.getTags();
-    for (var i = 0; i < tagArr.length; i++) {
-        if (tagArr[i].getName() === '@keepIntyg') {
-            rensaBortIntyg = false;
-        }
-    }*/
-
-
-
-
 });
 
 
@@ -241,10 +243,6 @@ logger.on('logging', function(transport, level, msg, meta) {
     var date = new Date();
     var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
     if (global.scenario) {
-        global.scenario.attach(dateString + ' - ' + level + ': ' + msg);
+        global.scenario.attach(Buffer.from(dateString + ' - ' + level + ': ' + msg).toString('base64'));
     }
 });
-
-
-
-//};

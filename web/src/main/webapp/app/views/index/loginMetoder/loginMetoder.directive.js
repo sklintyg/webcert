@@ -28,9 +28,9 @@ angular.module('webcert').directive('wcLoginMetoder', ['$window', '$http', 'modu
             link: function(scope) {
 
                 scope.showELegWarning = (function() {
-                    var re = /(?:Chrome\/\d+)|(?:Edge\/\d+)/;
+                    var re = /(?:Trident\/\d+)|(?:MSIE \d+)/;
                     var userAgent = $window.navigator.userAgent;
-                    return re.test(userAgent);
+                    return !re.test(userAgent);
                 }());
 
                 scope.loginMethods = [{

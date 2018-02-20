@@ -60,8 +60,10 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
@@ -69,6 +71,7 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import javax.persistence.OptimisticLockException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -107,6 +110,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private static final String UTKAST_ENHETS_ID = "hsa123";
 
     private static final String USER_REFERENCE = "some-ref";
+    private static final String REFERENS = "referens";
 
     @Mock
     private UtkastRepository mockUtkastRepository;
@@ -126,6 +130,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private AuthoritiesHelper authoritiesHelper;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
+    @Mock
+    private ReferensService referensService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -181,9 +187,70 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardperson.setHsaId(hoSPerson.getPersonId());
         vardperson.setNamn(hoSPerson.getFullstandigtNamn());
 
+        hoSPerson.setVardenhet(vardenhet);
+
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
 
+    }
+
+    @Test
+    public void testReferensGetsPersistedWhenSupplied() throws ModuleNotFoundException, IOException, ModuleException {
+        CreateNewDraftRequest request = buildCreateNewDraftRequest();
+        request.setReferens(REFERENS);
+
+        setupReferensMocks();
+
+        draftService.createNewDraft(request);
+        verify(referensService).saveReferens(INTYG_ID, REFERENS);
+    }
+
+    @Test
+    public void testEmptyReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
+        CreateNewDraftRequest request = buildCreateNewDraftRequest();
+        request.setReferens("");
+
+        setupReferensMocks();
+
+        draftService.createNewDraft(request);
+        verify(referensService, times(0)).saveReferens(INTYG_ID, REFERENS);
+    }
+
+    @Test
+    public void testNullReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
+        CreateNewDraftRequest request = buildCreateNewDraftRequest();
+        request.setReferens(null);
+
+        setupReferensMocks();
+
+        draftService.createNewDraft(request);
+        verify(referensService, times(0)).saveReferens(INTYG_ID, REFERENS);
+    }
+
+    private void setupReferensMocks() throws ModuleNotFoundException, ModuleException, IOException {
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+        grunddata.setSkapadAv(new HoSPersonal());
+        grunddata.setPatient(defaultPatient);
+
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+    }
+
+    private CreateNewDraftRequest buildCreateNewDraftRequest() {
+        CreateNewDraftRequest request = new CreateNewDraftRequest();
+        request.setHosPerson(hoSPerson);
+        request.setIntygId(INTYG_ID);
+        request.setIntygType(INTYG_TYPE);
+        request.setPatient(defaultPatient);
+        request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        return request;
     }
 
     @Test
@@ -199,7 +266,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).delete(utkast);
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class), anyString());
+        verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
 
         // Assert pdl log
         verify(logService).logDeleteIntyg(any(LogRequest.class));
@@ -276,7 +343,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         // Assert pdl log
         verify(logService).logUpdateIntyg(any(LogRequest.class));
@@ -312,7 +379,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         // Assert that no logs are called
         verifyZeroInteractions(logService);
@@ -463,7 +530,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
         assertEquals(expectedPatientId, user.getParameters().getBeforeAlternateSsn());
     }
@@ -497,7 +564,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository, never()).save(any(Utkast.class));
-        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
         assertEquals("", user.getParameters().getBeforeAlternateSsn());
     }
@@ -532,7 +599,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository, never()).save(any(Utkast.class));
-        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
         assertEquals("", user.getParameters().getBeforeAlternateSsn());
     }
@@ -623,7 +690,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
-        verify(notificationService).sendNotificationForDraftReadyToSign(utkast, USER_REFERENCE);
+        verify(notificationService).sendNotificationForDraftReadyToSign(utkast);
         verify(mockMonitoringService).logUtkastMarkedAsReadyToSignNotificationSent(INTYG_ID, "luae_fs");
         verify(mockUtkastRepository).save(utkast);
     }
