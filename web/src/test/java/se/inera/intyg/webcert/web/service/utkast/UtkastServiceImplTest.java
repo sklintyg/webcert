@@ -201,8 +201,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         setupReferensMocks();
 
-        draftService.createNewDraft(request);
+        Utkast res = draftService.createNewDraft(request);
+        assertNotNull(res.getSkapad());
         verify(referensService).saveReferens(INTYG_ID, REFERENS);
+
     }
 
     @Test
@@ -212,7 +214,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         setupReferensMocks();
 
-        draftService.createNewDraft(request);
+        Utkast res = draftService.createNewDraft(request);
+        assertNotNull(res.getSkapad());
         verify(referensService, times(0)).saveReferens(INTYG_ID, REFERENS);
     }
 
@@ -223,12 +226,14 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         setupReferensMocks();
 
-        draftService.createNewDraft(request);
+        Utkast res = draftService.createNewDraft(request);
+        assertNotNull(res.getSkapad());
         verify(referensService, times(0)).saveReferens(INTYG_ID, REFERENS);
     }
 
     private void setupReferensMocks() throws ModuleNotFoundException, ModuleException, IOException {
-        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
+                "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
@@ -240,7 +245,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(mockUtkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
     }
 
     private CreateNewDraftRequest buildCreateNewDraftRequest() {
@@ -320,7 +325,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSaveDraftDraftFirstSave() throws Exception {
-        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
+                "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -356,7 +362,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSaveDraftSecondSave() throws Exception {
-        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
+                "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -752,7 +759,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private ValidateDraftResponse buildValidationResponse() {
         return new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList(),
-                Collections.singletonList(new ValidationMessage("testcategory","testfield", ValidationMessageType.WARN)));
+                Collections.singletonList(new ValidationMessage("testcategory", "testfield", ValidationMessageType.WARN)));
     }
 
     private Patient buildPatient(String pnr, String fornamn, String efternamn) {

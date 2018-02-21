@@ -64,6 +64,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -349,6 +350,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private Utkast saveAndNotify(CopyUtkastBuilderResponse builderResponse, WebCertUser user) {
+        builderResponse.getUtkastCopy().setSkapad(LocalDateTime.now());
+
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
         if (user.getParameters() != null && !Strings.isNullOrEmpty(user.getParameters().getReference())) {

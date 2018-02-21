@@ -27,6 +27,7 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 import javax.annotation.Nullable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AutoValue
@@ -47,6 +48,9 @@ public abstract class IntygContentHolder {
     public abstract boolean isRevoked();
 
     public abstract Relations getRelations();
+
+    @Nullable
+    public abstract LocalDateTime getCreated();
 
     public abstract boolean isDeceased();
 
@@ -75,6 +79,8 @@ public abstract class IntygContentHolder {
         public abstract Builder setRevoked(boolean revoked);
 
         public abstract Builder setRelations(Relations relations);
+
+        public abstract Builder setCreated(LocalDateTime relations);
 
         public abstract Builder setDeceased(boolean deceased);
 

@@ -186,6 +186,25 @@ public class IntygServiceImpl implements IntygService {
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
+    private static boolean completeAddressProvided(Patient patient) {
+        return !Strings.isNullOrEmpty(patient.getPostadress())
+                && !Strings.isNullOrEmpty(patient.getPostort())
+                && !Strings.isNullOrEmpty(patient.getPostnummer());
+    }
+
+    private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
+        if (oldPatientData == null) {
+            newPatientData.setPostadress(null);
+            newPatientData.setPostnummer(null);
+            newPatientData.setPostort(null);
+        } else {
+            newPatientData.setPostadress(oldPatientData.getPostadress());
+            newPatientData.setPostnummer(oldPatientData.getPostnummer());
+            newPatientData.setPostort(oldPatientData.getPostort());
+
+        }
+    }
+
     @PostConstruct
     public void init() {
         sekretessmarkeringStartDatum = LocalDateTime.parse(sekretessmarkeringProdDate, DateTimeFormatter.ISO_DATE_TIME);
@@ -651,6 +670,8 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
+    /* --------------------- Protected scope --------------------- */
+
     public void setLogicalAddress(String logicalAddress) {
         this.logicalAddress = logicalAddress;
     }
@@ -660,7 +681,7 @@ public class IntygServiceImpl implements IntygService {
         this.sekretessmarkeringStartDatum = sekretessmarkeringStartDatum;
     }
 
-    /* --------------------- Protected scope --------------------- */
+    /* --------------------- Private scope --------------------- */
 
     protected IntygServiceResult sendIntygToCertificateSender(SendIntygConfiguration sendConfig, Utlatande intyg, boolean delay) {
 
@@ -705,33 +726,12 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    /* --------------------- Private scope --------------------- */
-
     private void verifyIsSigned(List<Status> statuses) {
         statuses.stream()
                 .filter(status -> CertificateState.RECEIVED.equals(status.getType()) && status.getTimestamp() != null)
                 .findAny()
                 .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                         "Certificate is not signed, cannot revoke an unsigned certificate"));
-    }
-
-    private static boolean completeAddressProvided(Patient patient) {
-        return !Strings.isNullOrEmpty(patient.getPostadress())
-                && !Strings.isNullOrEmpty(patient.getPostort())
-                && !Strings.isNullOrEmpty(patient.getPostnummer());
-    }
-
-    private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
-        if (oldPatientData == null) {
-            newPatientData.setPostadress(null);
-            newPatientData.setPostnummer(null);
-            newPatientData.setPostort(null);
-        } else {
-            newPatientData.setPostadress(oldPatientData.getPostadress());
-            newPatientData.setPostnummer(oldPatientData.getPostnummer());
-            newPatientData.setPostort(oldPatientData.getPostort());
-
-        }
     }
 
     /**
@@ -794,12 +794,16 @@ public class IntygServiceImpl implements IntygService {
             }
             final boolean sekretessmarkering = SekretessStatus.TRUE.equals(sekretessStatus);
 
+            Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygId, typ);
+            final LocalDateTime created = utkast != null ? utkast.getSkapad() : null;
+
             return IntygContentHolder.builder()
                     .setContents(internalIntygJsonModel)
                     .setUtlatande(certificate.getUtlatande())
                     .setStatuses(certificate.getMetaData().getStatus())
                     .setRevoked(certificate.isRevoked())
                     .setRelations(certificateRelations)
+                    .setCreated(created)
                     .setDeceased(isDeceased(personId))
                     .setSekretessmarkering(sekretessmarkering)
                     .setPatientNameChangedInPU(patientNameChanged)
@@ -887,6 +891,7 @@ public class IntygServiceImpl implements IntygService {
                     .setStatuses(statuses)
                     .setRevoked(utkast.getAterkalladDatum() != null)
                     .setRelations(certificateRelations)
+                    .setCreated(utkast.getSkapad())
                     .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
                     .setSekretessmarkering(sekretessmarkerad)
                     .setPatientNameChangedInPU(patientNameChanged)

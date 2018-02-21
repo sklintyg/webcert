@@ -75,6 +75,9 @@
     },
     "patientAddressChangedInPU": {
       "type": "boolean"
+    },
+    "created": {
+      "type": "string"
     }
   },
   "additionalProperties": false,

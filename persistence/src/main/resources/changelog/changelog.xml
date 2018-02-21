@@ -1037,4 +1037,12 @@
     <dropColumn tableName="HANDELSE" columnName="REFERENCE"/>
   </changeSet>
 
+  <changeSet id="53" author="kja">
+    <addColumn tableName="INTYG">
+      <column name="SKAPAD" type="datetime">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

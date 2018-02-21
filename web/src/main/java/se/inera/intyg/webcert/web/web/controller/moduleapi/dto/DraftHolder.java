@@ -48,6 +48,7 @@ public class DraftHolder {
 
     private Relations relations = new Relations();
     private LocalDateTime klartForSigneringDatum;
+    private LocalDateTime created;
 
     private boolean patientResolved = false;
     private boolean sekretessmarkering = false;
@@ -165,5 +166,13 @@ public class DraftHolder {
 
     public void setPatientNameChangedInPU(boolean patientNameChangedInPU) {
         this.patientNameChangedInPU = patientNameChangedInPU;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
     }
 }

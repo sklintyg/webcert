@@ -92,6 +92,10 @@ public class Utkast {
     @Column(name = "PATIENT_EFTERNAMN")
     private String patientEfternamn;
 
+    @Column(name = "SKAPAD")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    private LocalDateTime skapad;
+
     @Version
     private long version;
 
@@ -384,5 +388,13 @@ public class Utkast {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Failed to convert bytes to String!", e);
         }
+    }
+
+    public LocalDateTime getSkapad() {
+        return skapad;
+    }
+
+    public void setSkapad(LocalDateTime skapad) {
+        this.skapad = skapad;
     }
 }

@@ -73,6 +73,9 @@
     },
     "vidarebefordrad": {
       "type": "boolean"
+    },
+    "skapad": {
+      "type": "string"
     }
   },
   "additionalProperties": false,

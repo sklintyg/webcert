@@ -676,6 +676,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         utkast.setSenastSparadAv(creator);
         utkast.setSkapadAv(creator);
+        utkast.setSkapad(LocalDateTime.now());
 
         return saveDraft(utkast);
     }

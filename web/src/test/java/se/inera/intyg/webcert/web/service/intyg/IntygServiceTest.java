@@ -43,7 +43,6 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -108,6 +107,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -161,7 +161,7 @@ public class IntygServiceTest {
     private IntygModuleFacade moduleFacade;
 
     @Mock
-    private UtkastRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     @Mock
     private LogService logservice;
@@ -337,10 +337,43 @@ public class IntygServiceTest {
         intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verifyNoMoreInteractions(intygRepository);
+        verify(utkastRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
+    }
+
+    @Test
+    public void testFetchIntygDataUtkastNotFound() throws Exception {
+
+        IntygContentHolder res = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        assertNull(res.getCreated());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(utkastRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
+        verifyNoMoreInteractions(moduleFacade, utkastRepository, logservice, mockMonitoringService, intygRelationHelper);
+    }
+
+    @Test
+    public void testFetchIntygDataWithCreatedTimestamp() throws Exception {
+
+        final LocalDateTime timestamp = LocalDateTime.of(2010, 11, 12, 13, 14, 15);
+        Utkast utkast = new Utkast();
+        utkast.setSkapad(timestamp);
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(utkast);
+
+        IntygContentHolder res = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        assertEquals(timestamp, res.getCreated());
+
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(utkastRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(intygRelationHelper).getRelationsForIntyg(CERTIFICATE_ID);
+        verifyNoMoreInteractions(moduleFacade, utkastRepository, logservice, mockMonitoringService, intygRelationHelper);
     }
 
     @Test
@@ -359,7 +392,7 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygDataWithRelationNotFoundInIT() throws Exception {
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new IntygModuleFacadeException(""));
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -368,7 +401,7 @@ public class IntygServiceTest {
         assertNotNull(res.getRelations());
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verify(intygRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(utkastRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(certificateRelationService).getRelations(eq(CERTIFICATE_ID));
@@ -377,7 +410,7 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygDataWithRelationITUnavailable() throws Exception {
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenThrow(new WebServiceException(""));
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
 
         IntygContentHolder res = intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -386,7 +419,7 @@ public class IntygServiceTest {
         assertNotNull(res.getRelations());
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verify(intygRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(utkastRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(logservice).logReadIntyg(any(LogRequest.class));
         verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(certificateRelationService).getRelations(eq(CERTIFICATE_ID));
@@ -430,7 +463,7 @@ public class IntygServiceTest {
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
                 .thenThrow(
                         WebServiceException.class);
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+        when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
                 buildDraftList(false, null, null));
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
@@ -514,24 +547,30 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchIntygDataWhenIntygstjanstIsUnavailable() throws Exception {
+        final LocalDateTime timestamp = LocalDateTime.of(2010, 11, 12, 13, 14, 15);
+        Utkast utkast = getIntyg(CERTIFICATE_ID, null, null);
+        utkast.setIntygsTyp(CERTIFICATE_TYPE);
+        utkast.setSkapad(timestamp);
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
-                .thenReturn(getIntyg(CERTIFICATE_ID, null, null));
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(utkast);
         IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertEquals(intygContentHolder.getStatuses().size(), 1);
         assertNotNull(intygContentHolder.getUtlatande());
+        assertEquals(timestamp, intygContentHolder.getCreated());
 
-        // ensure that correct call is made to moduleFacade
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        // Assert pdl log
+        verify(moduleFacade, times(2)).getUtlatandeFromInternalModel(eq(CERTIFICATE_TYPE), anyString());
         verify(logservice).logReadIntyg(any(LogRequest.class));
+        verify(utkastRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verifyNoMoreInteractions(moduleFacade, logservice, utkastRepository);
     }
+
 
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchIntygDataHasSentStatusWhenIntygstjanstIsUnavailableAndDraftHadSentDate() throws Exception {
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), null));
         IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertEquals(intygContentHolder.getStatuses().size(), 2);
@@ -549,7 +588,7 @@ public class IntygServiceTest {
     public void testFetchIntygDataHasSentAndRevokedStatusesWhenIntygstjanstIsUnavailableAndDraftHadSentDateAndRevokedDate()
             throws Exception {
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
         IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertEquals(intygContentHolder.getStatuses().size(), 3);
@@ -566,15 +605,15 @@ public class IntygServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
-    public void testFetchIntygDataFailsWhenIntygstjanstIsUnavailableAndUtkastInNotFound() throws Exception {
+    public void testFetchIntygDataFailsWhenIntygstjanstIsUnavailableAndUtkastIsNotFound() throws Exception {
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(null);
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(null);
         try {
             intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         } catch (Exception e) {
             // ensure that correct call is made to moduleFacade
             verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-            verify(intygRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+            verify(utkastRepository).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
             // Assert pdl log
             verifyZeroInteractions(logservice);
             throw e;
@@ -584,7 +623,7 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testDraftAddedToListResponseIfUnique() throws Exception {
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet()))
+        when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet()))
                 .thenReturn(buildDraftList(true, null, null));
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
                 .thenReturn(listResponse);
@@ -593,13 +632,13 @@ public class IntygServiceTest {
                 new Personnummer("19121212-1212"));
 
         assertEquals(3, intygItemListResponse.getLeft().size());
-        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
+        verify(utkastRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testDraftNotAddedToListResponseIfNotUnique() throws Exception {
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet()))
+        when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet()))
                 .thenReturn(buildDraftList(false, null, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
@@ -609,13 +648,13 @@ public class IntygServiceTest {
                 new Personnummer("19121212-1212"));
         assertEquals("Dr. Who", intygItemListResponse.getLeft().get(0).getUpdatedSignedBy());
         assertEquals(2, intygItemListResponse.getLeft().size());
-        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
+        verify(utkastRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testDraftAddedWithSkapadAvNameIfMatching() throws Exception {
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+        when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
                 buildDraftList(true, vardpersonReferens, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
@@ -627,14 +666,14 @@ public class IntygServiceTest {
 
         // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
         assertEquals(CREATED_BY_NAME, intygItemListResponse.getLeft().get(2).getUpdatedSignedBy());
-        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
+        verify(utkastRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testDraftAddedWithSenastSparadAvNameIfMatching() throws Exception {
         vardpersonReferens.setNamn(SENAST_SPARAD_NAME);
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+        when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
                 buildDraftList(true, null, vardpersonReferens));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
@@ -647,14 +686,14 @@ public class IntygServiceTest {
 
         // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
         assertEquals(SENAST_SPARAD_NAME, intygItemListResponse.getLeft().get(2).getUpdatedSignedBy());
-        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
+        verify(utkastRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testDraftAddedWithHsaIdIfNoneMatching() throws Exception {
         vardpersonReferens.setNamn(SENAST_SPARAD_NAME);
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
+        when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet())).thenReturn(
                 buildDraftList(true, null, null));
 
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
@@ -667,19 +706,19 @@ public class IntygServiceTest {
 
         // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
         assertEquals(HSA_ID, intygItemListResponse.getLeft().get(2).getUpdatedSignedBy());
-        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
+        verify(utkastRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
-        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), null));
+        when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), null));
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
                 .thenReturn(buildPdfDocument());
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
-        verify(intygRepository, times(1)).findOne(anyString());
+        verify(utkastRepository, times(1)).findOne(anyString());
         verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
         verifyNoMoreInteractions(logservice);
         verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
@@ -691,13 +730,13 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchRevokedIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
-        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
+        when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
                 .thenReturn(buildPdfDocument());
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
-        verify(intygRepository, times(1)).findOne(anyString());
+        verify(utkastRepository, times(1)).findOne(anyString());
         verify(logservice).logPrintRevokedIntygAsPDF(any(LogRequest.class));
         verifyNoMoreInteractions(logservice);
         verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
@@ -706,29 +745,29 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchIntygAsPdfFromIntygstjansten() throws IOException, IntygModuleFacadeException {
-        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
+        when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
                 .thenReturn(buildPdfDocument());
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
         verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
-        verify(intygRepository, times(1)).findOne(anyString());
+        verify(utkastRepository, times(1)).findOne(anyString());
         verify(moduleFacade, times(1)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
     public void testFetchIntygAsPdfNoIntygFound() throws IntygModuleFacadeException {
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(null);
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(null);
         when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(IntygModuleFacadeException.class);
 
         try {
             intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         } catch (Exception e) {
             verify(moduleFacade, times(1)).getCertificate(anyString(), anyString());
-            verify(intygRepository, times(1)).findOne(CERTIFICATE_ID);
-            verify(intygRepository, times(1)).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
+            verify(utkastRepository, times(1)).findOne(CERTIFICATE_ID);
+            verify(utkastRepository, times(1)).findOneByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
             verifyZeroInteractions(logservice);
             throw e;
         }
@@ -738,7 +777,7 @@ public class IntygServiceTest {
     @Test
     public void testLoggingFetchIntygAsPdfWithDraft() throws IOException, IntygModuleFacadeException {
         final Utkast draft = getDraft(CERTIFICATE_ID);
-        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(draft);
+        when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(draft);
 
         Fk7263Utlatande utlatande = objectMapper.readValue(draft.getModel(), Fk7263Utlatande.class);
 
@@ -748,7 +787,7 @@ public class IntygServiceTest {
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
-        verify(intygRepository).findOne(anyString());
+        verify(utkastRepository).findOne(anyString());
         verify(logservice).logPrintIntygAsDraft(any(LogRequest.class));
         verifyNoMoreInteractions(logservice);
         verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
@@ -763,7 +802,7 @@ public class IntygServiceTest {
         when(webcertUser.getParameters()).thenReturn(parameters);
 
         final Utkast draft = getDraft(CERTIFICATE_ID);
-        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(draft);
+        when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(draft);
 
         Fk7263Utlatande utlatande = objectMapper.readValue(draft.getModel(), Fk7263Utlatande.class);
 
@@ -797,7 +836,7 @@ public class IntygServiceTest {
         utkast.setRelationIntygsId(relationIntygId);
         utkast.setModel(json);
 
-        when(intygRepository.findOne(intygId)).thenReturn(utkast);
+        when(utkastRepository.findOne(intygId)).thenReturn(utkast);
         when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
         when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED))))
@@ -812,7 +851,7 @@ public class IntygServiceTest {
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
         verify(notificationService).sendNotificationForIntygSent(intygId);
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
-        verify(intygRepository).save(utkastCaptor.capture());
+        verify(utkastRepository).save(utkastCaptor.capture());
         assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
         assertEquals(recipient, utkastCaptor.getValue().getSkickadTillMottagare());
     }
@@ -836,11 +875,11 @@ public class IntygServiceTest {
         utkast.setIntygsTyp(intygTyp);
         utkast.setModel(json);
 
-        when(intygRepository.findOne(intygId)).thenReturn(utkast);
+        when(utkastRepository.findOne(intygId)).thenReturn(utkast);
         when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
         when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED))))
-                        .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
         when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, intygTyp)).thenReturn(true);
 
@@ -852,7 +891,7 @@ public class IntygServiceTest {
         verify(arendeService, never()).closeCompletionsAsHandled(relationIntygId, intygTyp);
         verify(notificationService).sendNotificationForIntygSent(intygId);
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
-        verify(intygRepository).save(utkastCaptor.capture());
+        verify(utkastRepository).save(utkastCaptor.capture());
         assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
         assertEquals(recipient, utkastCaptor.getValue().getSkickadTillMottagare());
     }
@@ -886,8 +925,9 @@ public class IntygServiceTest {
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
-                eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
+        when(utkastRepository
+                .findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
+                        eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Arrays.asList(handelse));
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -923,8 +963,9 @@ public class IntygServiceTest {
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
-                eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
+        when(utkastRepository
+                .findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
+                        eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
@@ -961,7 +1002,7 @@ public class IntygServiceTest {
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
-        when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
+        when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId)))
@@ -1002,7 +1043,7 @@ public class IntygServiceTest {
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
-        when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
+        when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
@@ -1049,7 +1090,7 @@ public class IntygServiceTest {
         // Given
         String postadress = "ttipafpinu-postadress";
         String postort = "ttipafpinu-postort";
-        String postnummer= "ttipafpinu-postnummer";
+        String postnummer = "ttipafpinu-postnummer";
         Patient patientWithIncompleteAddress = buildPatient(false, false);
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
@@ -1072,7 +1113,7 @@ public class IntygServiceTest {
         // Given
         String postadress = "ttipafpinu-postadress";
         String postort = null;
-        String postnummer= null;
+        String postnummer = null;
         Patient patientWithIncompleteAddress = buildPatient(false, false);
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
@@ -1092,12 +1133,12 @@ public class IntygServiceTest {
     public void testThatCompletePatientAddressIsUsedWhenIntygtjanstIsUnavailable() throws Exception {
         // Given
         when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(new WebServiceException());
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(getIntyg(CERTIFICATE_ID,
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(getIntyg(CERTIFICATE_ID,
                 LocalDateTime.now(), null));
 
         String postadress = "ttipafpinuwiiu-postadress";
         String postort = "ttipafpinuwiiu-postort";
-        String postnummer= "ttipafpinuwiiu-postnummer";
+        String postnummer = "ttipafpinuwiiu-postnummer";
         Patient patientWithIncompleteAddress = buildPatient(false, false);
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
@@ -1119,12 +1160,12 @@ public class IntygServiceTest {
     public void testThatIncompletePatientAddressIsNotUsedWhenIntygtjanstIsUnavailable() throws Exception {
         // Given
         when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(new WebServiceException());
-        when(intygRepository.findOneByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(getIntyg(CERTIFICATE_ID,
+        when(utkastRepository.findOneByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(getIntyg(CERTIFICATE_ID,
                 LocalDateTime.now(), null));
 
         String postadress = "ttipafpinuwiiu-postadress";
         String postort = "";
-        String postnummer= "";
+        String postnummer = "";
         Patient patientWithIncompleteAddress = buildPatient(false, false);
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
