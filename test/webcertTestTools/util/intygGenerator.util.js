@@ -21,7 +21,7 @@
  * Created by BESA on 2015-11-23.
  */
 
-/* globals JSON */
+/* globals JSON, logger*/
 'use strict';
 
 /*

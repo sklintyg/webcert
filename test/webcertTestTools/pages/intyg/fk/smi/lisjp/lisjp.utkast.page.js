@@ -127,7 +127,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         this.arbetslivsinriktadeAtgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
         var panel = element(by.css('.arende-panel'));
         this.arendePanel = panel;
-		this.srs = {
+        this.srs = {
             knapp: () => element(by.buttonText('SRS')),
             panel: () => element(by.tagName('wc-srs-content')),
             samtycke: {
@@ -161,9 +161,9 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angeMedicinskBehandling: function(behandling) {
         var fn = this.medicinskbehandling;
-        return pageHelpers.moveAndSendKeys(fn.pagaende, behandling.pagaende, behandling.pagaende).then(function(){
-			return pageHelpers.moveAndSendKeys(fn.planerad, behandling.planerad, behandling.planerad);
-		});
+        return pageHelpers.moveAndSendKeys(fn.pagaende, behandling.pagaende, behandling.pagaende).then(function() {
+            return pageHelpers.moveAndSendKeys(fn.planerad, behandling.planerad, behandling.planerad);
+        });
     },
     angeArbetsformaga: function(arbetsformaga) {
         var el25 = this.sjukskrivning['25'];
@@ -179,7 +179,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             promisesArr.push(pageHelpers.moveAndSendKeys(el25.fran, arbetsformaga.nedsattMed25.from, arbetsformaga.nedsattMed25.from)
                 .then(function() {
                     return pageHelpers.moveAndSendKeys(el25.till, arbetsformaga.nedsattMed25.tom, arbetsformaga.nedsattMed25.tom);
-                
+
                 })
             );
         }
@@ -240,14 +240,13 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         if (arbetstidsforlaggning.val === 'Ja') {
             return pageHelpers.moveAndSendKeys(el.ja, protractor.Key.SPACE)
                 .then(function() {
-					return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
+                    return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
                 });
         } else {
             return pageHelpers.moveAndSendKeys(el.nej, protractor.Key.SPACE);
         }
     },
     angeAtgarder: function(atgarder) {
-        var atgarderEL = this.atgarder;
         var beskrivningEL = this.arbetslivsinriktadeAtgarderBeskrivning;
 
         var elementsToCheck = [];
@@ -277,7 +276,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     angeSysselsattning: function(sysselsattning) {
         var sysselsattningEL = this.sysselsattning;
         return element(by.id('sysselsattning-' + sysselsattning.typ)).click()
-			.then(function() {
+            .then(function() {
                 if (sysselsattning.yrkesAktiviteter) {
                     return pageHelpers.moveAndSendKeys(sysselsattningEL.nuvarandeArbeteBeskrivning, sysselsattning.yrkesAktiviteter, sysselsattning.yrkesAktiviteter);
                 } else {

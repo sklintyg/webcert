@@ -84,10 +84,10 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
     angeFunktionsnedsattning: function(funktionsnedsattning) {
         var fn = this.funktionsnedsattning;
 
-		return pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut)
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan)
-		});
+        return pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut)
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan);
+            });
     },
 
     get: function get(intygId) {

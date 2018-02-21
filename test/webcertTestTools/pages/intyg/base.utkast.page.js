@@ -35,7 +35,7 @@ var BaseUtkast = JClass._extend({
             aktivitetsbegransning: element(by.id('fmb_text_AKTIVITETSBEGRANSNING')),
             beslutsunderlag: element(by.id('fmb_text_BESLUTSUNDERLAG_TEXTUELLT'))
         };
-		this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
+        this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
         /*this.fmbButtons = {
             falt2: element(by.id('FALT2-fmb-button')),
             falt4: element(by.id('FALT4-fmb-button')),

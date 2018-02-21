@@ -20,7 +20,7 @@
 /**
  * Created by eriklupander on 2016-04-29.
  */
-
+/* globals logger */
 'use strict';
 
 // These are pushed to webcert using restDataHelper.createArende

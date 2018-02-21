@@ -30,24 +30,81 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
         return {
-            "id":intygsID,"typ":"Transportstyrelsens läkarintyg",
-            "korkortstyper":["C1","CE","DE","C1E","D","C","Taxi","D1E"],
-            "identitetStyrktGenom":"Försäkran enligt 18 kap. 4§",
-            "allmant":{"year":1981,"behandling":{"typer":["Tabletter"]}},"synintyg":{"a":"Ja"},
-            "bedomning":{"stallningstagande":"Kan inte ta ställning","lamplighet":null},
-            "synDonder":"Ja","synNedsattBelysning":"Nej","synOgonsjukdom":"Nej","synDubbel":"Nej","synNystagmus":"Nej",
-            "horsel":{"yrsel":"Nej","samtal":"Ja"},"linser":{"vanster":"Nej","hoger":"Ja"},
-            "rorelseorganensFunktioner":{"nedsattning":"Nej","nedsattningBeskrivning":"0QFqaNgxqRNuÅOMÖ","inUtUrFordon":"Ja"},
-            "hjartHjarna":"Nej","hjartSkada":"Ja","hjartRisk":"Ja","hjartRiskBeskrivning":"TIA och förmaksflimmer.",
-            "diabetes":{"hasDiabetes":"Nej","typ":"Typ 1","behandlingsTyper":["Endast kost","Tabletter","Insulin"]},
-            "neurologiska":"Ja","epilepsi":"Nej","epilepsiBeskrivning":"aKCa7WnLäÅåSA19j","njursjukdom":"Ja",
-            "demens":"Ja","somnVakenhet":"Nej","alkoholMissbruk":"Nej","alkoholVard":"Nej","alkoholProvtagning":"Ja",
-            "alkoholLakemedel":"Nej","alkoholLakemedelBeskrivning":"2 liter metadon.","psykiskSjukdom":"Ja",
-            "adhdPsykisk":"Ja","adhdSyndrom":"Ja","sjukhusvard":"Nej","sjukhusvardTidPunkt":"ThGvhEEAövOqIfJC",
-            "sjukhusvardInrattning":"FiqMöIcw9öNi7Pe0","sjukhusvardAnledning":"eQcIma21cDNrasGÄ","ovrigMedicin":"Nej",
-            "ovrigMedicinBeskrivning":"I4b80sdÖ0qwC4ÄML","kommentar":"Inget att rapportera",
-            "styrkor":{"houk":"1.1","homk":"1.3","vouk":"1.6","vomk":"1.7","buk":"1.8","bmk":"1.7"},
-            "specialist":"SkW4Gdzöl6m3pvyJ"};
+            "id": intygsID,
+            "typ": "Transportstyrelsens läkarintyg",
+            "korkortstyper": ["C1", "CE", "DE", "C1E", "D", "C", "Taxi", "D1E"],
+            "identitetStyrktGenom": "Försäkran enligt 18 kap. 4§",
+            "allmant": {
+                "year": 1981,
+                "behandling": {
+                    "typer": ["Tabletter"]
+                }
+            },
+            "synintyg": {
+                "a": "Ja"
+            },
+            "bedomning": {
+                "stallningstagande": "Kan inte ta ställning",
+                "lamplighet": null
+            },
+            "synDonder": "Ja",
+            "synNedsattBelysning": "Nej",
+            "synOgonsjukdom": "Nej",
+            "synDubbel": "Nej",
+            "synNystagmus": "Nej",
+            "horsel": {
+                "yrsel": "Nej",
+                "samtal": "Ja"
+            },
+            "linser": {
+                "vanster": "Nej",
+                "hoger": "Ja"
+            },
+            "rorelseorganensFunktioner": {
+                "nedsattning": "Nej",
+                "nedsattningBeskrivning": "0QFqaNgxqRNuÅOMÖ",
+                "inUtUrFordon": "Ja"
+            },
+            "hjartHjarna": "Nej",
+            "hjartSkada": "Ja",
+            "hjartRisk": "Ja",
+            "hjartRiskBeskrivning": "TIA och förmaksflimmer.",
+            "diabetes": {
+                "hasDiabetes": "Nej",
+                "typ": "Typ 1",
+                "behandlingsTyper": ["Endast kost", "Tabletter", "Insulin"]
+            },
+            "neurologiska": "Ja",
+            "epilepsi": "Nej",
+            "epilepsiBeskrivning": "aKCa7WnLäÅåSA19j",
+            "njursjukdom": "Ja",
+            "demens": "Ja",
+            "somnVakenhet": "Nej",
+            "alkoholMissbruk": "Nej",
+            "alkoholVard": "Nej",
+            "alkoholProvtagning": "Ja",
+            "alkoholLakemedel": "Nej",
+            "alkoholLakemedelBeskrivning": "2 liter metadon.",
+            "psykiskSjukdom": "Ja",
+            "adhdPsykisk": "Ja",
+            "adhdSyndrom": "Ja",
+            "sjukhusvard": "Nej",
+            "sjukhusvardTidPunkt": "ThGvhEEAövOqIfJC",
+            "sjukhusvardInrattning": "FiqMöIcw9öNi7Pe0",
+            "sjukhusvardAnledning": "eQcIma21cDNrasGÄ",
+            "ovrigMedicin": "Nej",
+            "ovrigMedicinBeskrivning": "I4b80sdÖ0qwC4ÄML",
+            "kommentar": "Inget att rapportera",
+            "styrkor": {
+                "houk": "1.1",
+                "homk": "1.3",
+                "vouk": "1.6",
+                "vomk": "1.7",
+                "buk": "1.8",
+                "bmk": "1.7"
+            },
+            "specialist": "SkW4Gdzöl6m3pvyJ"
+        };
     },
     getRandom: function(intygsID, patient) {
         var randomKorkortstyper = testValues.getRandomKorkortstyperHogre();
@@ -59,12 +116,14 @@ module.exports = {
         var bedomningObj = testValues.getRandomBedomning(randomKorkortstyper);
         // TS Bas behöver inte svar på lämplighet
         bedomningObj.lamplighet = null;
-		
-		//Använd patientens födelseår för att ta fram allmant.year (vilket år ställdes diagnosen diabetes får inte vare tidigare än födelseår)
-		if (!patient || patient === true) {
-			patient = {id: '1980'};
-		}
-		
+
+        //Använd patientens födelseår för att ta fram allmant.year (vilket år ställdes diagnosen diabetes får inte vare tidigare än födelseår)
+        if (!patient || patient === true) {
+            patient = {
+                id: '1980'
+            };
+        }
+
         return {
             id: intygsID,
             typ: 'Transportstyrelsens läkarintyg',

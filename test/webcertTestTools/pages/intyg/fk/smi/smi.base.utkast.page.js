@@ -57,9 +57,9 @@ function getTextarea(el) {
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
     return moveAndSendKeys(checkboxEL, protractor.Key.SPACE)
-	.then(function() {
-        return moveAndSendKeys(textEL, text);
-    });
+        .then(function() {
+            return moveAndSendKeys(textEL, text);
+        });
 }
 
 function sendTextToForm(textEL, text) {
@@ -75,7 +75,7 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     init: function init() {
         init._super.call(this);
         // this.fmbButtons = ['diagnos-fmb-button', 'funktionsnedsattning-fmb-button', 'aktivitetsbegransning-fmb-button', 'bedomning-fmb-button'];
-		this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
+        this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
         /*this.fmbButtons = {
             falt2: element(by.id('diagnos-fmb-button')),
             falt4: element(by.id('funktionsnedsattning-fmb-button')),
@@ -239,19 +239,19 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeFunktionsnedsattning: function(nedsattning) {
         var fn = this.funktionsnedsattning;
         return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell)
-		.then(function() {
-            return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan);
-        });
+            .then(function() {
+                return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan);
+            });
     },
 
     angeAndraMedicinskaUtredningar: function(utredningar) {
@@ -261,25 +261,25 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             var row = utredningarElement.underlagRow(index);
 
 
-				browser.ignoreSynchronization = false;
-				logger.silly('Klickar på element med id: underlag-' + index + '-typ');
-				
-				return browser.sleep(1500).then(function(){
-					return row.underlag.element(by.css('.ui-select-match')).click()	//sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
-						.then(function() {
-							return browser.sleep(1500); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
-						})
-						.then(function() {
-							return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function (elm) {
-								return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
-						});
-					});
-				})
-				.then(function() {
-					return moveAndSendKeys(row.datum, val.datum)
-				})
+            browser.ignoreSynchronization = false;
+            logger.silly('Klickar på element med id: underlag-' + index + '-typ');
+
+            return browser.sleep(1500).then(function() {
+                    return row.underlag.element(by.css('.ui-select-match')).click() //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
+                        .then(function() {
+                            return browser.sleep(1500); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
+                        })
+                        .then(function() {
+                            return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function(elm) {
+                                return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
+                            });
+                        });
+                })
                 .then(function() {
-					browser.ignoreSynchronization = true;
+                    return moveAndSendKeys(row.datum, val.datum);
+                })
+                .then(function() {
+                    browser.ignoreSynchronization = true;
                     return moveAndSendKeys(row.information, val.infoOmUtredningen);
                 });
 
@@ -301,44 +301,44 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var promiseArr = [];
         for (var i = 0; i < diagnoser.length; i++) {
             var row = this.diagnos.diagnosRow(i);
-			promiseArr.push(moveAndSendKeys(row.kod,diagnoser[i].kod).then(browser.sleep(1000)).then(sendEnterToElement(row.kod)))
+            promiseArr.push(moveAndSendKeys(row.kod, diagnoser[i].kod).then(browser.sleep(1000)).then(sendEnterToElement(row.kod)));
         }
         return Promise.all(promiseArr);
 
     },
     angeDiagnos: function(diagnosObj) {
         var diagnoser = diagnosObj.diagnoser;
-		var diagnosElm = this.diagnos;
+        var diagnosElm = this.diagnos;
 
 
         //Ange diagnoser
         return this.angeDiagnosKoder(diagnoser)
-		
-		.then(function(){
-			//Ange när och var diagnoser ställts
-			return moveAndSendKeys(diagnosElm.narOchVarStalldesDiagnoser, diagnosObj.narOchVarStalldesDiagnoserna);
-			})
-		.then(function(){
-			//Ange Finns skäl till ny bedömning
-			var nyBedomning = diagnosElm.skalTillNyBedomning.NEJ;
-			if (diagnosObj.nyBedomning) {
-				nyBedomning = diagnosElm.skalTillNyBedomning.JA;
-			}
-			var diagnosForNyBedomning = diagnosElm.diagnosForNyBedomning;
-			
-			return moveAndSendKeys(nyBedomning, protractor.Key.SPACE)
-			.then(function() {
-				if (diagnosObj.nyBedomning) {
-						//Ange diagnosForNyBedomning
-						return moveAndSendKeys(diagnosForNyBedomning, diagnosObj.diagnosForNyBedomning);
-				} else {
-					return Promise.resolve();
-				}
-			});
-			
-		});
+
+            .then(function() {
+                //Ange när och var diagnoser ställts
+                return moveAndSendKeys(diagnosElm.narOchVarStalldesDiagnoser, diagnosObj.narOchVarStalldesDiagnoserna);
+            })
+            .then(function() {
+                //Ange Finns skäl till ny bedömning
+                var nyBedomning = diagnosElm.skalTillNyBedomning.NEJ;
+                if (diagnosObj.nyBedomning) {
+                    nyBedomning = diagnosElm.skalTillNyBedomning.JA;
+                }
+                var diagnosForNyBedomning = diagnosElm.diagnosForNyBedomning;
+
+                return moveAndSendKeys(nyBedomning, protractor.Key.SPACE)
+                    .then(function() {
+                        if (diagnosObj.nyBedomning) {
+                            //Ange diagnosForNyBedomning
+                            return moveAndSendKeys(diagnosForNyBedomning, diagnosObj.diagnosForNyBedomning);
+                        } else {
+                            return Promise.resolve();
+                        }
+                    });
+
+            });
     },
-	angeOvrigaUpplysningar: function(ovrigt) {
+    angeOvrigaUpplysningar: function(ovrigt) {
         var elm = this.ovrigt;
         return elm.clear().then(function() {
             return moveAndSendKeys(elm, ovrigt);
@@ -375,17 +375,17 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     },
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
-		
-		return sendTextToForm(mb.avslutad.text, behandling.avslutad)
-		.then(function(){
-			return sendTextToForm(mb.pagaende.text, behandling.pagaende);
-		})
-		.then(function(){
-			return sendTextToForm(mb.planerad.text, behandling.planerad);
-		})
-		.then(function(){
-			return sendTextToForm(mb.substansintag.text, behandling.substansintag);
-		});
+
+        return sendTextToForm(mb.avslutad.text, behandling.avslutad)
+            .then(function() {
+                return sendTextToForm(mb.pagaende.text, behandling.pagaende);
+            })
+            .then(function() {
+                return sendTextToForm(mb.planerad.text, behandling.planerad);
+            })
+            .then(function() {
+                return sendTextToForm(mb.substansintag.text, behandling.substansintag);
+            });
     },
     getTillaggsfraga: function(i) {
         return element(by.id('tillaggsfragor[' + i + '].svar'));

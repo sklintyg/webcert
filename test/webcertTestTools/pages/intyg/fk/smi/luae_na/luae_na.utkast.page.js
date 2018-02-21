@@ -51,7 +51,7 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
                 datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
             },
             journaluppgifter: {
-                checkbox:  element(by.id('form_journaluppgifter')).element(by.css('input[type=checkbox]')),
+                checkbox: element(by.id('form_journaluppgifter')).element(by.css('input[type=checkbox]')),
                 datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
             },
             anhorigBeskrivning: {

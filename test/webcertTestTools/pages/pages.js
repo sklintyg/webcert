@@ -74,18 +74,18 @@ module.exports = {
                 intyg: require(intygPath + 'ts/ts_bas/tsBas.intyg.page.js')
             }
         },
-		skv : {
-			db : {
-				utkast: require(intygPath + 'skv/db/db.utkast.page.js'),
-				intyg: require(intygPath + 'skv/db/db.intyg.page.js')
-			}
-		},
-		soc : {
-			doi : {
-				utkast: require(intygPath + 'soc/doi/doi.utkast.page.js'),
-				intyg: require(intygPath + 'soc/doi/doi.intyg.page.js')
-			}
-		}
+        skv: {
+            db: {
+                utkast: require(intygPath + 'skv/db/db.utkast.page.js'),
+                intyg: require(intygPath + 'skv/db/db.intyg.page.js')
+            }
+        },
+        soc: {
+            doi: {
+                utkast: require(intygPath + 'soc/doi/doi.utkast.page.js'),
+                intyg: require(intygPath + 'soc/doi/doi.intyg.page.js')
+            }
+        }
     },
     'unsignedPage': require('./unsignedPage.js'),
 
@@ -106,7 +106,7 @@ module.exports = {
                 return this.intyg.luaeNA.intyg;
             case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
                 return this.intyg.luaeFS.intyg;
-			case 'Dödsbevis':
+            case 'Dödsbevis':
                 return this.intyg.skv.db.intyg;
             case 'Dödsorsaksintyg':
                 return this.intyg.soc.doi.intyg;
@@ -130,7 +130,7 @@ module.exports = {
                 return this.intyg.luaeNA.utkast;
             case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
                 return this.intyg.luaeFS.utkast;
-			case 'Dödsbevis':
+            case 'Dödsbevis':
                 return this.intyg.skv.db.utkast;
             case 'Dödsorsaksintyg':
                 return this.intyg.soc.doi.utkast;

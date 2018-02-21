@@ -25,7 +25,7 @@ module.exports = {
     ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js'),
     patienter: [{
-        id: '200001152388',// Boende utomlands
+        id: '200001152388', // Boende utomlands
         kon: 'kvinna',
         namn: 'Anna Karin',
         efternamn: 'Levin'

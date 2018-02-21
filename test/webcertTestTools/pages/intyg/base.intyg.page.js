@@ -101,7 +101,7 @@ var BaseIntyg = JClass._extend({
     get: function(intygId) {
         browser.get('/#/intyg/' + this.intygType + '/' + intygId + '/');
     },
-    scrollIntoView: function (domId) {
+    scrollIntoView: function(domId) {
         browser.executeScript('if ($("#' + domId + '").length) { $("#' + domId + '")[0].scrollIntoView()}');
         return domId;
     },

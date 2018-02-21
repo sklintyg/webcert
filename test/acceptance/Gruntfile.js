@@ -43,12 +43,12 @@ module.exports = function(grunt) {
         jshint: {
             acc: [
                 'features/steps/*.js',
-                'features/steps/**/*.js', //,
-                //'../webcertTestTools/**/*.js',
-                //'../webcertTestTools/*.js'
+                'features/steps/**/*.js',
+				'jshint --exclude ../webcertTestTools/node_modules',
+                '../webcertTestTools/**/*.js',
+                '../webcertTestTools/*.js'
             ],
             options: {
-				newcap: false,
                 force: false,
                 jshintrc: '.jshintrc'
             }
@@ -57,9 +57,9 @@ module.exports = function(grunt) {
             verify: {
                 src: [
                     'features/steps/*.js',
-                    'features/steps/**/*.js'
-                    //'webcertTestTools/**/*.js',
-                    //'webcertTestTools/*.js'
+                    'features/steps/**/*.js',
+                    '../webcertTestTools/**/*.js',
+                    '../webcertTestTools/*.js'
                 ],
                 options: {
                     mode: 'VERIFY_ONLY',
@@ -69,9 +69,9 @@ module.exports = function(grunt) {
             modify: {
                 src: [
                     'features/steps/*.js',
-                    'features/steps/**/*.js'
-                    // '../webcertTestTools/**/*.js',
-                    // '../webcertTestTools/*.js'
+                    'features/steps/**/*.js',
+                    '../webcertTestTools/**/*.js',
+                    '../webcertTestTools/*.js'
                 ],
                 options: {
                     mode: 'VERIFY_AND_WRITE',

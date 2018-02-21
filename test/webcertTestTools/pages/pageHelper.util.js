@@ -21,7 +21,7 @@
  * Created by BESA on 2015-11-25.
  * Holds helper functions for actions that are needed often in pages.
  */
-/*globals protractor, Promise, logger */
+/*globals protractor, Promise, logger, browser */
 'use strict';
 
 var testTools = require('common-testtools');
@@ -110,7 +110,13 @@ module.exports = {
         var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
         return foundHogreBehorigheter.length > 0;
     },
-	smallDelay : function() { return browser.sleep(100); },
-	mediumDelay : function() { return browser.sleep(500); },
-	largeDelay : function() { return browser.sleep(1000); }
+    smallDelay: function() {
+        return browser.sleep(100);
+    },
+    mediumDelay: function() {
+        return browser.sleep(500);
+    },
+    largeDelay: function() {
+        return browser.sleep(1000);
+    }
 };

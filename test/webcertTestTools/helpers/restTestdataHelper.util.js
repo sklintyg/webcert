@@ -20,6 +20,7 @@
 /**
  * Created by BESA on 2015-11-25.
  */
+/*globals logger */
 'use strict';
 
 var restUtil = require('./../util/rest.util.js');
@@ -71,7 +72,7 @@ module.exports = {
     saveUtkast: function(intygType, intygId, version, utkastJson) {
         return restUtil.saveUtkast(intygType, intygId, version, utkastJson);
     },
-    markeraSkickatTillFK: function (id) {
+    markeraSkickatTillFK: function(id) {
         return restUtil.markeraSkickatTillFK(id);
     },
 

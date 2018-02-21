@@ -395,17 +395,17 @@ var TsBasUtkast = BaseTsUtkast._extend({
     fillInSjukhusvard: function(utkast) {
         return element.all(by.css('[name="sjukhusvard.sjukhusEllerLakarkontakt"]')).then(function(elm) {
             if (utkast.sjukhusvard === 'Ja') {
-                
-				return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE)
-				.then(function(){
-					return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-tidpunkt')), utkast.sjukhusvardTidPunkt);
-				})
-				.then(function(){
-					return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-vardinrattning')), utkast.sjukhusvardInrattning);
-				})
-				.then(function(){
-					return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-anledning')), utkast.sjukhusvardAnledning);
-				});
+
+                return pageHelpers.moveAndSendKeys(elm[0], protractor.Key.SPACE)
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-tidpunkt')), utkast.sjukhusvardTidPunkt);
+                    })
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-vardinrattning')), utkast.sjukhusvardInrattning);
+                    })
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(element(by.id('sjukhusvard-anledning')), utkast.sjukhusvardAnledning);
+                    });
             } else {
                 return pageHelpers.moveAndSendKeys(elm[1], protractor.Key.SPACE);
             }

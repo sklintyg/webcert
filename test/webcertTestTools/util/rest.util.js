@@ -31,15 +31,15 @@ module.exports = {
 
         // login with doctor Leonie Koehl if noone else is specified
         var user = userJson || {
-                'hsaId': 'TSTNMT2321000156-103F',
-                'forNamn': 'Leonie',
-                'efterNamn': 'Koehl',
-                'enhetId': 'TSTNMT2321000156-1039',
-                'legitimeradeYrkesgrupper': [ 'Läkare' ],
-                'forskrivarKod': '9300005',
-                'befattningsKod': '203090',
-                'origin': 'NORMAL'
-            };
+            'hsaId': 'TSTNMT2321000156-103F',
+            'forNamn': 'Leonie',
+            'efterNamn': 'Koehl',
+            'enhetId': 'TSTNMT2321000156-1039',
+            'legitimeradeYrkesgrupper': ['Läkare'],
+            'forskrivarKod': '9300005',
+            'befattningsKod': '203090',
+            'origin': 'NORMAL'
+        };
 
         var options = {
             url: 'fake',

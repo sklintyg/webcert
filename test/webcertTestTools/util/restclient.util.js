@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, browser */
+/* globals protractor, browser, logger */
 'use strict';
 
 var request = require('request');
@@ -40,7 +40,7 @@ function post(options, baseUrl) {
     logger.debug('== END REQUEST ==');
     request(options, function(error, message) {
         if (error || message.statusCode >= 400) {
-            logger.warn('Request error for '+ JSON.stringify(options) + ':', error);
+            logger.warn('Request error for ' + JSON.stringify(options) + ':', error);
             if (message) {
                 logger.error('Error message:', message.statusCode, message.statusMessage /*, body*/ );
             }

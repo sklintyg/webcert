@@ -80,7 +80,7 @@ var LuseUtkast = BaseSmiUtkast._extend({
             }
         };
     },
-	angeAktivitetsbegransning: function(aktivitetsbegransning) {
+    angeAktivitetsbegransning: function(aktivitetsbegransning) {
         return pageHelpers.moveAndSendKeys(this.aktivitetsbegransning, aktivitetsbegransning);
     },
     angeMedicinskaForutsattningar: function(forutsattningar) {
@@ -93,15 +93,15 @@ var LuseUtkast = BaseSmiUtkast._extend({
         var mb = this.medicinskBehandling;
 
         return pageHelpers.moveAndSendKeys(mb.avslutad.text, behandling.avslutad)
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(mb.pagaende.text, behandling.pagaende);
-		})
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(mb.planerad.text, behandling.planerad)
-		})
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(mb.substansintag.text, behandling.substansintag);
-		});
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(mb.pagaende.text, behandling.pagaende);
+            })
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(mb.planerad.text, behandling.planerad);
+            })
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(mb.substansintag.text, behandling.substansintag);
+            });
     },
 
     get: function get(intygId) {

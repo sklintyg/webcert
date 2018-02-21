@@ -31,47 +31,61 @@ module.exports = {
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
         }
-        return { id: intygsID,
+        return {
+            id: intygsID,
             typ: 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-            baseratPa:
-            { minUndersokningAvPatienten: '2017-09-26',
+            baseratPa: {
+                minUndersokningAvPatienten: '2017-09-26',
                 journaluppgifter: '2017-09-26',
                 anhorigsBeskrivning: '2017-09-26',
                 annat: '2017-09-26',
                 annatBeskrivning: 'Mliö62f4OrsNgKäB',
-                personligKannedom: '2017-09-26' },
+                personligKannedom: '2017-09-26'
+            },
             andraMedicinskaUtredningar: [{
                 underlag: 'Övrigt',
                 datum: '2016-04-09',
                 infoOmUtredningen: 'tSE0JcyzBKux55rP'
             }],
             diagnos: {
-                diagnoser:[{kod:"Z413",bakgrund:"AmÄ4N2DGrzPbDÅaP"}],
+                diagnoser: [{
+                    kod: "Z413",
+                    bakgrund: "AmÄ4N2DGrzPbDÅaP"
+                }],
                 narOchVarStalldesDiagnoserna: 'QYCVäåuQWseawWSd',
                 nyBedomning: true,
-                diagnosForNyBedomning: 'o2ÖD423TOqrTj1hr' },
+                diagnosForNyBedomning: 'o2ÖD423TOqrTj1hr'
+            },
             sjukdomsForlopp: '8XkulDgjrtcHWkxw',
-            funktionsnedsattning:
-            { intellektuell: 'Svajig i benen',
+            funktionsnedsattning: {
+                intellektuell: 'Svajig i benen',
                 kommunikation: 'Total',
                 koncentration: 'Svajig i benen',
                 psykisk: 'Total',
                 synHorselTal: 'Inget tal',
                 balansKoordination: 'Ingen koncentration',
-                annan: 'Ingen koncentration' },
+                annan: 'Ingen koncentration'
+            },
             aktivitetsbegransning: 'D2åUURoA6fODF7iI',
-            medicinskbehandling:
-            { avslutad: 'Kostrådgivning',
+            medicinskbehandling: {
+                avslutad: 'Kostrådgivning',
                 pagaende: 'Lågkaloridiet',
                 planerad: 'Kostrådgivning',
-                substansintag: 'Alvedon' },
-            medicinskaForutsattningar:
-            { utecklasOverTid: 'Q5KWnk1äbEvmÄIJö',
+                substansintag: 'Alvedon'
+            },
+            medicinskaForutsattningar: {
+                utecklasOverTid: 'Q5KWnk1äbEvmÄIJö',
                 trotsBegransningar: 'ÅÖ2A8ÖE0WCTmEXMa',
-                forslagTillAtgard: 'DG2PDZZ4Q3XRzJåq' },
+                forslagTillAtgard: 'DG2PDZZ4Q3XRzJåq'
+            },
             ovrigt: 'bÖBv3EATatnwd211',
             kontaktMedFk: true,
-            tillaggsfragor: [ { svar: 'FKY1E5fijr9NM6SA' }, { svar: 'ucrQIäf19L3n2k38' } ] }
+            tillaggsfragor: [{
+                svar: 'FKY1E5fijr9NM6SA'
+            }, {
+                svar: 'ucrQIäf19L3n2k38'
+            }]
+        };
     },
     getRandom: function(intygsID) {
         if (!intygsID) {

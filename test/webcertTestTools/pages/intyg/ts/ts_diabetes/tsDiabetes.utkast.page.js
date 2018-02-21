@@ -139,11 +139,9 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         typer.forEach(function(typ) {
             if (typ === 'Endast kost') {
                 promisesArr.push(behandlingForm.kost.sendKeys(protractor.Key.SPACE));
-            }
-            else if (typ === 'Tabletter') {
+            } else if (typ === 'Tabletter') {
                 promisesArr.push(behandlingForm.tabletter.sendKeys(protractor.Key.SPACE));
-            }
-            else if (typ === 'Insulin') {
+            } else if (typ === 'Insulin') {
                 promisesArr.push(behandlingForm.insulin.sendKeys(protractor.Key.SPACE));
             }
         });

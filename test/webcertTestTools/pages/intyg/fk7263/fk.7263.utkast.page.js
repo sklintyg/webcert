@@ -49,8 +49,8 @@ var FkBaseUtkast = BaseUtkast._extend({
     init: function init() {
         init._super.call(this);
 
-		
-		this.enhetensAdress = {
+
+        this.enhetensAdress = {
             postAdress: element(by.id('clinicInfoPostalAddress')),
             postNummer: element(by.id('clinicInfoPostalCode')),
             postOrt: element(by.id('clinicInfoPostalCity')),
@@ -468,12 +468,12 @@ var FkBaseUtkast = BaseUtkast._extend({
             return this.prognos.GAR_EJ_ATT_BEDOMA.check().then(function() {
                 if (prognos.fortydligande) {
                     return prognosFortydligande.clear()
-					.then(function() {
-						return pageHelpers.smallDelay();
-					})
-					.then(function() {
-                        return pageHelpers.moveAndSendKeys(prognosFortydligande, prognos.fortydligande);
-                    });
+                        .then(function() {
+                            return pageHelpers.smallDelay();
+                        })
+                        .then(function() {
+                            return pageHelpers.moveAndSendKeys(prognosFortydligande, prognos.fortydligande);
+                        });
                 } else {
                     return Promise.resolve('Inget förtydligande');
                 }
