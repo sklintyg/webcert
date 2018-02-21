@@ -38,14 +38,14 @@ var BaseTsUtkast = BaseUtkast._extend({
 
         this.intygType = null; // overridden by children
 
-        this.korkortsTyperChecks = element(by.id('form_intygAvser-korkortstyp')).all(by.css('label.big-checkbox-label'));
+        this.korkortsTyperChecks = element(by.id('form_intygAvser-korkortstyp')).all(by.css('label'));
 
         this.identitetForm = element(by.id('form_vardkontakt-idkontroll'));
         this.specialist = element(by.id('bedomning-lakareSpecialKompetens'));
 
         this.bedomning = bedomning;
 
-        this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.big-checkbox-label'));
+        this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label'));
 
         this.kommentar = element(by.id('kommentar'));
         this.adress = {
@@ -63,7 +63,7 @@ var BaseTsUtkast = BaseUtkast._extend({
         get._super.call(this, this.intygType, intygId);
     },
     fillInKorkortstyper: function(typer) {
-        return pageHelpers.clickAll(this.korkortsTyperChecks, typer);
+        return pageHelpers.selectAllCheckBoxes(this.korkortsTyperChecks, typer);
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
         return this.identitetForm.element(by.cssContainingText('label.big-radio-label', idtyp)).sendKeys(protractor.Key.SPACE);
@@ -84,7 +84,7 @@ var BaseTsUtkast = BaseUtkast._extend({
 
         return element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE)
             .then(function() {
-                return pageHelpers.clickAll(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
+                return pageHelpers.selectAllCheckBoxes(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
                     .then(function() {
                         return fillInLamplighet(bedomningObj.lamplighet);
                     });

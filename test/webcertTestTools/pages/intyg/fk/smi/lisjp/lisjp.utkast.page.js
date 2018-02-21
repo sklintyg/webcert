@@ -51,10 +51,10 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         this.sysselsattning = {
             form: element(by.id('form_sysselsattning')),
             typ: {
-                nuvarandeArbete: element(by.id('sysselsattning.typ-1')),
-                arbetssokande: element(by.id('sysselsattning.typ-2')),
-                foraldraledighet: element(by.id('sysselsattning.typ-3')),
-                studier: element(by.id('sysselsattning.typ-4'))
+                nuvarandeArbete: element(by.id('sysselsattning-NUVARANDE_ARBETE')),
+                arbetssokande: element(by.id('sysselsattning-ARBETSSOKANDE')),
+                foraldraledighet: element(by.id('sysselsattning-FORALDRALEDIG')),
+                studier: element(by.id('sysselsattning-STUDIER'))
             },
             nuvarandeArbeteBeskrivning: element(by.id('nuvarandeArbete'))
         };
@@ -112,22 +112,10 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             }
         };
         this.atgarder = {
-            typ: { //TODO det finns uppdaterade IDn för dessa
-                1: element(by.id('arbetslivsinriktadeAtgarder-1')),
-                2: element(by.id('arbetslivsinriktadeAtgarder-2')),
-                3: element(by.id('arbetslivsinriktadeAtgarder-3')),
-                4: element(by.id('arbetslivsinriktadeAtgarder-4')),
-                5: element(by.id('arbetslivsinriktadeAtgarder-5')),
-                6: element(by.id('arbetslivsinriktadeAtgarder-6')),
-                7: element(by.id('arbetslivsinriktadeAtgarder-7')),
-                8: element(by.id('arbetslivsinriktadeAtgarder-8')),
-                9: element(by.id('arbetslivsinriktadeAtgarder-9')),
-                10: element(by.id('arbetslivsinriktadeAtgarder-10')),
-                11: element(by.id('arbetslivsinriktadeAtgarder-11'))
-            },
+
             ejAktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderEjAktuelltBeskrivning')),
-            aktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderAktuelltBeskrivning')),
-            labels: element(by.id('form_arbetslivsinriktadeAtgarder')).all(by.css('label.checkbox-inline'))
+            aktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderAktuelltBeskrivning'))
+
         };
         this.arendeQuestion = {
             newArendeButton: element(by.id('askArendeBtn')),
@@ -262,11 +250,12 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         var atgarderEL = this.atgarder;
         var beskrivningEL = this.arbetslivsinriktadeAtgarderBeskrivning;
 
-        var atgarderNamn = atgarder.map(function(obj) {
-            return obj.namn;
+        var elementsToCheck = [];
+        atgarder.forEach(function(atgard) {
+            elementsToCheck.push('arbetslivsinriktadeAtgarder-' + atgard.key);
         });
 
-        return pageHelpers.clickAll(atgarderEL.labels, atgarderNamn).then(function() {
+        return pageHelpers.selectCheckBoxesById(elementsToCheck).then(function() {
             var beskrivning = '';
             atgarder.forEach(function(atgard) {
 
@@ -287,8 +276,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angeSysselsattning: function(sysselsattning) {
         var sysselsattningEL = this.sysselsattning;
-
-        return pageHelpers.moveAndSendKeys(sysselsattningEL.form.element(by.cssContainingText('label', sysselsattning.typ)), protractor.Key.SPACE)
+        return element(by.id('sysselsattning-' + sysselsattning.typ)).click()
 			.then(function() {
                 if (sysselsattning.yrkesAktiviteter) {
                     return pageHelpers.moveAndSendKeys(sysselsattningEL.nuvarandeArbeteBeskrivning, sysselsattning.yrkesAktiviteter, sysselsattning.yrkesAktiviteter);

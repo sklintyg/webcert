@@ -24,7 +24,7 @@ var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 
-describe('Create a FK7263 draft and verify behaviour of diagnosis fields', function() {
+xdescribe('Create a FK7263 draft and verify behaviour of diagnosis fields', function() {
 
     var utkastId = null;
 

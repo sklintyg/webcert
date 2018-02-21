@@ -26,9 +26,13 @@
       </button>
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST" class="center">
-      <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="intyg.updateState.vidarebefordraInProgress" ng-model="intyg.vidarebefordrad"
+      <wc-checkbox-wrapper>
+      <input class="vidarebefordrad-checkbox" ng-attr-id="vidarebefordra_{{intyg.intygId}}" type="checkbox" ng-disabled="intyg.updateState.vidarebefordraInProgress" ng-model="intyg.vidarebefordrad"
              ng-change="onNotifyChange(intyg)" />
+        <label ng-attr-for="vidarebefordra_{{intyg.intygId}}">&nbsp;</label>
       <span ng-if="intyg.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+      </wc-checkbox-wrapper>
+
     </td>
     <td class="unbreakable">{{getTypeName(intyg.intygType)}}</td>
     <td><span dynamic-label key="intyg.status.{{intyg.status}}"></span></td>

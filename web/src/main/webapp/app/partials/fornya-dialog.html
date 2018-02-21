@@ -11,7 +11,12 @@
 </div>
 <div class="modal-footer">
   <div class="webcert-top-padding-section form-inline">
-    <label id="dontShowAgain" class="checkbox"><input type="checkbox" ng-model="model.dontShowInfo"> Visa inte denna information igen</label>
+    <wc-checkbox-wrapper>
+      <input id="dontShowAgain-checkbox" type="checkbox" ng-model="model.dontShowInfo">
+      <label for="dontShowAgain-checkbox" id="dontShowAgain" class="checkbox">
+        Visa inte denna information igen
+      </label>
+    </wc-checkbox-wrapper>
   </div>
   <div class="webcert-top-padding-section form-inline">
     <button type="button" id="{{button1id}}" class="btn btn-primary" ng-disabled="!model.acceptprogressdone" ng-click="button1click()">

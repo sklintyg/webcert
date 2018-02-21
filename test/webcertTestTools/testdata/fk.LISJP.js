@@ -26,14 +26,14 @@ var today = testdataHelper.dateFormat(new Date());
 
 function getRandomSysselsattning() {
     return shuffle([{
-        typ: 'Nuvarande arbete',
+        typ: 'NUVARANDE_ARBETE',
         yrkesAktiviteter: testdataHelper.randomTextString()
     }, {
-        typ: 'Arbetssökande'
+        typ: 'ARBETSSOKANDE'
     }, {
-        typ: 'Föräldraledighet för vård av barn'
+        typ: 'FORALDRALEDIG'
     }, {
-        typ: 'Studier'
+        typ: 'STUDIER'
     }])[0];
 }
 
@@ -142,7 +142,7 @@ module.exports = {
         }
         return {"id":intygsID,"typ":"Läkarintyg för sjukpenning","smittskydd":false,"nuvarandeArbeteBeskrivning":"iÅI3WYZMFe8ÖV5Ox",
             "baseratPa":{"minUndersokningAvPatienten":"2017-09-27","journaluppgifter":"2017-09-27","telefonkontakt":"2017-09-27","annat":"2017-09-27","annatBeskrivning":"klHh4TcWVGHÖQw8K"},
-            "sysselsattning":{"typ":"Arbetssökande"},
+            "sysselsattning":{"typ":"ARBETSSOKANDE"},
             "diagnos":{"kod":"Z413","bakgrund":"BRBQOdppäJEBbÖ0i"},
             "medicinskbehandling":{"planerad":"IawIÖIdU8sCfä7Uq","pagaende":"cnEYDuNuqWBd59åY"},
             "funktionsnedsattning":"3wexbyEqÄsoxaWWl","aktivitetsbegransning":"Wpnv0SMoElXnTJXh",

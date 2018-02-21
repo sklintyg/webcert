@@ -49,10 +49,12 @@
             </button>
           </td>
           <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
-            <input id="selected" type="checkbox" ng-disabled="arende.updateInProgress"
+            <wc-checkbox-wrapper>
+            <input ng-attr-id="vidarebefordra_arende_{{arende.meddelandeId}}" type="checkbox" ng-disabled="arende.updateInProgress"
                    ng-model="arende.vidarebefordrad" ng-change="onVidareBefordradChange(arende)" />
-                                  <span ng-if="arende.updateInProgress"> <img
-                                      src="/img/ajax-loader-kit-16x16.gif"></span>
+              <label ng-attr-for="vidarebefordra_arende_{{arende.meddelandeId}}">&nbsp;</label>
+                                  <span ng-if="arende.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+            </wc-checkbox-wrapper>
           </td>
           <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
           <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>

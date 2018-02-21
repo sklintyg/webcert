@@ -50,6 +50,7 @@ module.exports = {
 
         }
         return elementArray.filter(function(elem) {
+
             return elem.getText().then(function(text) {
                 return (elementTextsArray.indexOf(text) >= 0);
             });
@@ -57,11 +58,45 @@ module.exports = {
 
             return filteredElements.forEach(function(element, i) {
                 filteredElements[i].getText().then(function(description) {
+
                     moveAndSendKeys(filteredElements[i], protractor.Key.SPACE, description);
                 });
             });
         });
     },
+    selectAllCheckBoxes: function(elementArray, elementTextsArray) {
+        if (!elementTextsArray) {
+            return Promise.resolve();
+
+        }
+        return elementArray.filter(function(elem) {
+
+            return elem.getText().then(function(text) {
+                return (elementTextsArray.indexOf(text) >= 0);
+            });
+        }).then(function(filteredElements) {
+
+            return filteredElements.forEach(function(element, i) {
+                filteredElements[i].getText().then(function(description) {
+
+                    filteredElements[i].click();
+                });
+            });
+        });
+    },
+    selectCheckBoxesById: function(elementIds) {
+        if (!elementIds) {
+            return Promise.resolve();
+
+        }
+        var promiseArr = [];
+        elementIds.forEach(function(elementId, i) {
+            promiseArr.push(moveAndSendKeys(element(by.id(elementId)), protractor.Key.SPACE, 'Checking checkbox (' + i + '/' + elementIds.length + ') with id "' + elementId + '"'));
+        });
+
+        return Promise.all(promiseArr);
+    },
+
     hasHogreKorkortsbehorigheter: function(korkortstyper) {
         function findArrayElementsInArray(targetArray, compareArray) {
             // find all elements in targetArray matching any elements in compareArray
