@@ -131,7 +131,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
         promisesArr.push(this.allmant.annanbehandling.sendKeys(allmant.annanbehandling));
 
         // Ange diabetestyp
-        promisesArr.push(this.allmant.formDiabetesTyp.element(by.cssContainingText('label.big-radio-label', allmant.typ)).sendKeys(protractor.Key.SPACE));
+        promisesArr.push(this.allmant.formDiabetesTyp.element(by.cssContainingText('label', allmant.typ)).click());
 
         // Ange behandlingstyp
         var typer = allmant.behandling.typer;

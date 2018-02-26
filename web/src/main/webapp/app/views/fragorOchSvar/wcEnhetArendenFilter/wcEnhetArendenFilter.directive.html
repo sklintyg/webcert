@@ -18,18 +18,23 @@
     <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="form-group" id="filterFormVidarebefordrad">
       <label class="col-sm-2 control-label">Frågor och svar som är</label>
       <div class="col-sm-10">
-        <label class="radio-inline">
-          <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio" value="default"
-                 ng-model="enhetArendenFilterModel.filterForm.vidarebefordrad" checked="checked"> Alla frågor och svar
-        </label>
-        <label class="radio-inline">
+       <wc-radio-wrapper>
+         <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio" value="default"
+                ng-model="enhetArendenFilterModel.filterForm.vidarebefordrad" checked="checked">
+         <label for="vidarebefordradAlla">Alla frågor och svar</label>
+       </wc-radio-wrapper>
+
+        <wc-radio-wrapper>
           <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="true"
-                 ng-model="enhetArendenFilterModel.filterForm.vidarebefordrad"> Vidarebefordrade
-        </label>
-        <label class="radio-inline">
+                 ng-model="enhetArendenFilterModel.filterForm.vidarebefordrad">
+          <label for="vidarebefordradJa">Vidarebefordrade</label>
+        </wc-radio-wrapper>
+
+        <wc-radio-wrapper>
           <input id="vidarebefordradNej" name="vidarebefordrad" type="radio" value="false"
-                 ng-model="enhetArendenFilterModel.filterForm.vidarebefordrad"> Ej vidarebefordrade
-        </label>
+                 ng-model="enhetArendenFilterModel.filterForm.vidarebefordrad">
+          <label for="vidarebefordradNej">Ej vidarebefordrade</label>
+        </wc-radio-wrapper>
       </div>
     </div>
 
@@ -46,17 +51,23 @@
     <div class="form-group">
       <label class="col-sm-2 control-label">Avsändare</label>
       <div class="col-sm-10">
-        <label class="radio-inline">
+        <wc-radio-wrapper>
           <input id="frageStallareAlla" name="frageStallare" type="radio" value="default"
-                 ng-model="enhetArendenFilterModel.filterForm.questionFrom" checked="checked"> Alla avsändare
-        </label>
-        <label class="radio-inline">
+                 ng-model="enhetArendenFilterModel.filterForm.questionFrom" checked="checked">
+          <label for="frageStallareAlla">Alla avsändare</label>
+        </wc-radio-wrapper>
+
+        <wc-radio-wrapper>
           <input id="frageStallareFK" name="frageStallare" type="radio" value="FK"
-                 ng-model="enhetArendenFilterModel.filterForm.questionFrom"> Försäkringskassan
-        </label>
-        <label class="radio-inline">
+                 ng-model="enhetArendenFilterModel.filterForm.questionFrom">
+          <label for="frageStallareFK">Försäkringskassan</label>
+        </wc-radio-wrapper>
+
+        <wc-radio-wrapper>
           <input id="frageStallareWC" name="frageStallare" type="radio" value="WC"
-                 ng-model="enhetArendenFilterModel.filterForm.questionFrom"> Vårdenheten</label>
+                 ng-model="enhetArendenFilterModel.filterForm.questionFrom">
+          <label for="frageStallareWC">Vårdenheten</label>
+        </wc-radio-wrapper>
       </div>
     </div>
 

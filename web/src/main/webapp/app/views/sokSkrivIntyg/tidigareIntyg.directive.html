@@ -6,18 +6,23 @@
 
     <div class="inline-block">
       <div class="form-group text-right">
-        <label class="radio-inline">
+        <wc-radio-wrapper>
           <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
-                 ng-model="viewState.intygFilter" checked="checked"> Aktuella intyg
-        </label>
-        <label class="radio-inline">
+                 ng-model="viewState.intygFilter" checked="checked">
+          <label for="intygFilterAktuella">Aktuella intyg</label>
+        </wc-radio-wrapper>
+        <wc-radio-wrapper>
           <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
-                 ng-model="viewState.intygFilter" checked="checked"> Ersatta, makulerade och kompletterade intyg
-        </label>
-        <label class="radio-inline">
-          <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all"
-                 ng-model="viewState.intygFilter" checked="checked"> Alla intyg
-        </label>
+                 ng-model="viewState.intygFilter" checked="checked">
+          <label for="intygFilterRattade">Ersatta, makulerade och kompletterade intyg
+          </label>
+        </wc-radio-wrapper>
+        <wc-radio-wrapper>
+          <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all" ng-model="viewState.intygFilter"
+                 checked="checked">
+          <label for="intygFilterSamtliga">Alla intyg
+          </label>
+        </wc-radio-wrapper>
       </div>
 
       <wc-spinner label="info.loadingdata" show-spinner="viewState.tidigareIntygLoading">

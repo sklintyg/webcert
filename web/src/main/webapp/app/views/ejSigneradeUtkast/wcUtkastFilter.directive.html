@@ -2,18 +2,27 @@
   <div wc-authority="VIDAREBEFORDRA_UTKAST" class="form-group" id="filterFormVidarebefordrad">
     <label class="col-sm-2 control-label">Utkast som är</label>
     <div class="col-sm-10">
-      <label class="radio-inline">
+
+      <wc-radio-wrapper>
         <input id="notifiedAll" name="notified" type="radio" ng-model="filter.notified" ng-value="undefined">
-        Alla utkast
-      </label>
-      <label class="radio-inline">
+        <label for="notifiedAll">
+          Alla utkast
+        </label>
+      </wc-radio-wrapper>
+
+      <wc-radio-wrapper>
         <input id="notified" name="notified" type="radio" ng-value="true" ng-model="filter.notified">
-        Vidarebefordrade
-      </label>
-      <label class="radio-inline">
+        <label for="notified">
+          Vidarebefordrade
+        </label>
+      </wc-radio-wrapper>
+
+      <wc-radio-wrapper>
         <input id="notifiedNot" name="notified" type="radio" ng-value="false" ng-model="filter.notified">
-        Ej vidarebefordrade
-      </label>
+        <label for="notifiedNot">
+          Ej vidarebefordrade
+        </label>
+      </wc-radio-wrapper>
     </div>
   </div>
 
@@ -21,16 +30,22 @@
   <div class="form-group">
     <label class="col-sm-2 control-label">Visa endast</label>
     <div class="col-sm-10">
-      <label class="radio-inline">
-        <input id="completeAll" name="complete" type="radio" ng-value="undefined"  ng-model="filter.complete">
-        Båda
-      </label>
-      <label class="radio-inline">
+
+      <wc-radio-wrapper>
+        <input id="completeAll" name="complete" type="radio" ng-value="undefined" ng-model="filter.complete">
+        <label for="completeAll">Båda</label>
+      </wc-radio-wrapper>
+
+      <wc-radio-wrapper>
         <input id="completeNo" name="complete" type="radio" ng-value="false" ng-model="filter.complete">
-        Utkast, uppgifter saknas</label>
-      <label class="radio-inline">
+        <label for="completeNo">Utkast, uppgifter saknas</label>
+      </wc-radio-wrapper>
+
+      <wc-radio-wrapper>
         <input id="completeYes" name="complete" type="radio" ng-value="true" ng-model="filter.complete">
-        Utkast, kan signeras</label>
+        <label for="completeYes"> Utkast, kan signeras</label>
+      </wc-radio-wrapper>
+
     </div>
   </div>
 

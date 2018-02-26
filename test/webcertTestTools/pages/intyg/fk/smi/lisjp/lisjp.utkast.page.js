@@ -107,7 +107,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             // }
             prognos: {
                 form: element(by.id('form_prognos')),
-                inom: element(by.id('prognosDagarTillArbete-1-typ')),
+                inom: element(by.id('prognos-ATER_X_ANTAL_DGR')),
                 select: element(by.css('#prognosDagarTillArbete-1-typ > div.ui-select-match > span'))
             }
         };
@@ -286,7 +286,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angePrognosForArbetsformaga: function(prognos) {
         var prognosEL = this.sjukskrivning.prognos;
-        return pageHelpers.moveAndSendKeys(prognosEL.form.element(by.cssContainingText('label', prognos.name)), protractor.Key.SPACE, 'angePrognosForArbetsformaga').then(function() {
+        return pageHelpers.moveAndSendKeys(prognosEL.form.element(by.id('prognos-' + prognos.name)), protractor.Key.SPACE, 'angePrognosForArbetsformaga').then(function() {
             if (prognos.within) {
 
                 var frontEndJS = 'Element.prototype.documentOffsetTop = function () {';

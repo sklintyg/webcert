@@ -66,7 +66,7 @@ var BaseTsUtkast = BaseUtkast._extend({
         return pageHelpers.selectAllCheckBoxes(this.korkortsTyperChecks, typer);
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
-        return this.identitetForm.element(by.cssContainingText('label.big-radio-label', idtyp)).sendKeys(protractor.Key.SPACE);
+        return this.identitetForm.element(by.cssContainingText('label', idtyp)).click();
     },
     fillInBedomningLamplighet: function(lamplighet) {
         if (lamplighet) {
@@ -82,7 +82,7 @@ var BaseTsUtkast = BaseUtkast._extend({
         var fillInLamplighet = this.fillInBedomningLamplighet;
         var bedomningKorkortsTyperChecks = this.bedomningKorkortsTyperChecks;
 
-        return element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE)
+        return element(by.cssContainingText('label', bedomningObj.stallningstagande)).click()
             .then(function() {
                 return pageHelpers.selectAllCheckBoxes(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
                     .then(function() {
