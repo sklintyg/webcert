@@ -37,7 +37,7 @@
     <td class="unbreakable">{{getTypeName(intyg.intygType)}}</td>
     <td><span dynamic-label key="intyg.status.{{intyg.status}}"></span></td>
     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
-    <td class="unbreakable">{{intyg.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering" uuid="intyg.patientId"></span></td>
+    <td class="unbreakable">{{intyg.patientId | PersonIdFormatter}} <wc-sekretess-avliden uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering" uuid="intyg.patientId"></wc-sekretess-avliden></td>
     <td class="wc-table-striped-last">{{intyg.updatedSignedBy}}</td>
   </tr>
 </table>

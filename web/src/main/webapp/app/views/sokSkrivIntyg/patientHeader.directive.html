@@ -9,6 +9,7 @@
         <button class="btn btn-primary patient-button" type="button" ng-click="changePatient()"><i class="material-icons">swap_horiz</i> Byt patient</button>
       </h3>
     </div>
-    <span wc-sekretess-avliden uuid="patientModel.personnummer" printlabel="true" avliden="patientModel.avliden" sekretessmarkering="patientModel.sekretessmarkering"></span>
+    pmr:{{patientModel.personnummer}} avl:{{patientModel.avliden}}
+    <wc-sekretess-avliden uuid="patientModel.personnummer" printlabel="true" avliden="patientModel.avliden" sekretessmarkering="patientModel.sekretessmarkering"></wc-sekretess-avliden>
   </div>
 </div>
