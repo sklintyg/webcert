@@ -88,7 +88,7 @@ describe('Luse attic tests', function() {
         it('should restore underlag if underlagFinns is set to yes again', function() {
             LuseUtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
 
-            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.ui-select-match-text')).getText()).toBe('Underlag från habiliteringen');
+            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.dropdown-label span')).getText()).toBe('Underlag från habiliteringen');
             expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).datum.getAttribute('value')).toBe('2016-04-07');
             expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).information.getAttribute('value')).toBe('Information om utredning.');
         });

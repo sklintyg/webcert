@@ -88,7 +88,7 @@ describe('luae_na attic tests', function() {
         it('should restore underlag if underlagFinns is set to yes again', function() {
             UtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
 
-            expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.ui-select-match-text')).getText()).toBe('Underlag från habiliteringen');
+            expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.dropdown-label span')).getText()).toBe('Underlag från habiliteringen');
             expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).datum.getAttribute('value')).toBe('2016-04-26');
             expect(UtkastPage.andraMedicinskaUtredningar.underlagRow(0).information.getAttribute('value')).toBe('vårdgivare');
         });
