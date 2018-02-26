@@ -265,12 +265,12 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             logger.silly('Klickar på element med id: underlag-' + index + '-typ');
 
             return browser.sleep(1500).then(function() {
-                    return row.underlag.element(by.css('.ui-select-match')).click() //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
+                    return row.underlag.element(by.css('.dropdown-label')).click() //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
                         .then(function() {
                             return browser.sleep(1500); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
                         })
                         .then(function() {
-                            return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function(elm) {
+                            return row.underlag.all(by.css('.plate div')).getByText(val.underlag).then(function(elm) {
                                 return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
                             });
                         });
