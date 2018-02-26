@@ -145,12 +145,13 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
 
         Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
-        persons.values().stream().forEach(ps -> {
-            if (ps.getStatus() == PersonSvar.Status.FOUND) {
-                sekretessStatusMap.put(ps.getPerson().getPersonnummer(),
-                        ps.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
+        persons.entrySet().stream().forEach(entry -> {
+            if (entry.getValue() != null && entry.getValue().getStatus() == PersonSvar.Status.FOUND) {
+                sekretessStatusMap.put(entry.getKey(),
+                        entry.getValue().getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
             } else {
-                sekretessStatusMap.put(ps.getPerson().getPersonnummer(), SekretessStatus.UNDEFINED);
+                // contains no person instance.
+                sekretessStatusMap.put(entry.getKey(), SekretessStatus.UNDEFINED);
             }
         });
 
