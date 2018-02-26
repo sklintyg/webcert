@@ -10,7 +10,7 @@ Scenario: Mail när fråga på intyg inkommer
 	Givet att jag är inloggad som uthoppsläkare
 	När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
 	Och jag skickar intyget direkt till Försäkringskassan
-	Och Försäkringskassan ställer en "Kontakt" fråga om intyget
+	Och Försäkringskassan ställer en "KONTKT" fråga om intyget
 	Så ska jag få ett mejl med ämnet "Försäkringskassan har ställt en fråga angående ett intyg"
 
 @fråga-till-fk

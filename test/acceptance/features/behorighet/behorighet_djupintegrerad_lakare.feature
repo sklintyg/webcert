@@ -7,7 +7,7 @@ Bakgrund: Logga in och gå in på en patient
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 	Och jag går in på en patient
 
-@makulera @lisjp
+@makulera @lisjp @WC-F019
 Scenario: Kan makulera sjukintyg
 	När jag går in på ett "Läkarintyg för sjukpenning" med status "Signerat"
 	Och jag makulerar intyget
@@ -34,7 +34,7 @@ Scenario: Signera ett ts-intyg
 @komplettera @svara @lisjp
 Scenario: Besvara kompletteringsfråga
    När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
-   Och Försäkringskassan ställer en "Kontakt" fråga om intyget
+   Och Försäkringskassan ställer en "KONTKT" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 

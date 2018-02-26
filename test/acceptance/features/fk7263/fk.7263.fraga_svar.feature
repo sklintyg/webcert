@@ -30,7 +30,7 @@ Scenario: HAN Påminnelse
 
 @kontakt
 Scenario: Kontakt
-   När Försäkringskassan ställer en "Kontakt" fråga om intyget
+   När Försäkringskassan ställer en "KONTKT" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
 
    Och jag går in på intygsutkastet via djupintegrationslänk

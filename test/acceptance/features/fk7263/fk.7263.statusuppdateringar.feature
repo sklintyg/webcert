@@ -50,7 +50,7 @@ Scenario: HAN Statusuppdateringar vid fråga från FK
    Och jag skickar intyget till Försäkringskassan
    Så ska statusuppdatering "HAN3" skickas till vårdsystemet. Totalt: "1"
 
-   Och Försäkringskassan ställer en "Kontakt" fråga om intyget
+   Och Försäkringskassan ställer en "KONTKT" fråga om intyget
    Så ska statusuppdatering "HAN6" skickas till vårdsystemet. Totalt: "1"
    Och jag går in på intygsutkastet via djupintegrationslänk
    Och jag svarar på frågan
