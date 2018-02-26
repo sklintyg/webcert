@@ -681,13 +681,13 @@
               </div>
 
             <div class="panel panel-body panel-info" ng-show="PU.showPUEdit">
-              <label for="pu-fornamn">Förnamn</label><input id="pu-fornamn" type="text" ng-model="PU.editData.Personpost.Namn.Fornamn"><br>
-              <label for="pu-efternamn">Efternamn</label><input id="pu-efternamn" type="text" ng-model="PU.editData.Personpost.Namn.Efternamn"><br>
-              <label for="pu-careof">CareOf</label><input id="pu-careof" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.CareOf"><br>
-              <label for="pu-utdelningsadress1">Utdelningsadress1</label><input id="pu-utdelningsadress1" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Utdelningsadress1"><br>
-              <label for="pu-utdelningsadress2">Utdelningsadress2</label><input id="pu-utdelningsadress2" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Utdelningsadress2"><br>
-              <label for="pu-postnr">PostNr</label><input id="pu-postnr" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.PostNr"><br>
-              <label for="pu-postort">Postort</label><input id="pu-postort" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Postort"><br>
+              <label for="pu-fornamn">Förnamn</label><input id="pu-fornamn" type="text" ng-model="PU.editData.name.givenName.name"><br>
+              <label for="pu-efternamn">Efternamn</label><input id="pu-efternamn" type="text" ng-model="PU.editData.name.surname.name"><br>
+              <label for="pu-careof">CareOf</label><input id="pu-careof" type="text" ng-model="PU.editData.addressInformation.residentialAddress.careOf"><br>
+              <label for="pu-utdelningsadress1">Utdelningsadress1</label><input id="pu-utdelningsadress1" type="text" ng-model="PU.editData.addressInformation.residentialAddress.postalAddress1"><br>
+              <label for="pu-utdelningsadress2">Utdelningsadress2</label><input id="pu-utdelningsadress2" type="text" ng-model="PU.editData.addressInformation.residentialAddress.postalAddress2"><br>
+              <label for="pu-postnr">PostNr</label><input id="pu-postnr" type="text" ng-model="PU.editData.addressInformation.residentialAddress.postalCode"><br>
+              <label for="pu-postort">Postort</label><input id="pu-postort" type="text" ng-model="PU.editData.addressInformation.residentialAddress.city"><br>
               <button type="button" class="btn btn-primary" ng-click="editPUSave()">
                 Spara
               </button>
