@@ -99,10 +99,9 @@ describe('Generate fk intyg', function() {
         });
 
         it('should sign copy', function() {
-            FkUtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                FkUtkastPage.signeraButtonClick();
-                expect(FkIntygPage.isAt()).toBeTruthy();
-            });
+            FkUtkastPage.whenSigneraButtonIsEnabled();
+            FkUtkastPage.signeraButtonClick();
+            expect(FkIntygPage.isAt()).toBeTruthy();
         });
     });
 
