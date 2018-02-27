@@ -47,6 +47,9 @@ describe('svaranyttintyg - arende on luse intyg', function() {
         restTestdataHelper.deleteAllArenden().then(function() {
             restTestdataHelper.createWebcertIntyg(testData).then(function() {
                 restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+                    // Intygstatus is sorted by timestamps with second resolution (no milliseconds)
+                    // Sleep here to make sure arende timestamp is after signed timestamp
+                    browser.sleep(1500);
                     restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
                         'KOMPLT', 'PENDING_INTERNAL_ACTION', [
                             {
