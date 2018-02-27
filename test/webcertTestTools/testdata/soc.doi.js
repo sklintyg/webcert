@@ -21,6 +21,8 @@
 
 'use strict';
 
+//Krav på teckenlängd - Se "Utformning Dödsbevis & dödsorsaksintyg"
+
 var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
 
@@ -69,6 +71,13 @@ function getDodsOrsak() {
     } else if (n >= 3) {
         obj.d = getDodsOrsakObj(4);
     }
+	
+	obj.bidragande = {
+		beskrivning: testdataHelper.randomTextString(5, 45),
+		datum: testdataHelper.dateFormat(new Date(dayBeforeDeath)),
+		tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
+	};
+	
     return obj;
 }
 
@@ -77,18 +86,31 @@ function getDodsOrsakObj(n) {
     datum.setDate(deathDate.getDate() - n);
 
     var obj = {
-        beskrivning: testdataHelper.randomTextString(),
+        beskrivning: testdataHelper.randomTextString(5, 140),
         datum: testdataHelper.dateFormat(datum),
         tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
     };
     return obj;
 }
 
+function getSkadaForgiftning() {
+	var ja = {
+        ja: {
+			orsakAvsikt: shuffle(['Olycksfall', 'Självmord', 'Avsiktligt vållad av annan', 'Oklart om avsikt förelegat'])[0],
+            datum: testdataHelper.dateFormat(dayBeforeDeath),
+            beskrivning: testdataHelper.randomTextString(5, 400)
+        }
+    };
+	
+	return shuffle([ja, false])[0];
+}
+
+
 function getOperation() {
     var ja = {
         ja: {
             datum: testdataHelper.dateFormat(dayBeforeDeath),
-            beskrivning: testdataHelper.randomTextString()
+            beskrivning: testdataHelper.randomTextString(5, 100)
         }
     };
     return shuffle([ja, 'Nej', 'Uppgift om operation saknas'])[0];
@@ -112,15 +134,16 @@ module.exports = {
             id: intygsID,
             typ: "Dödsorsaksintyg",
             deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
-            identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
+            identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning", testdataHelper.randomTextString(5, 100)])[0],
+            land: shuffle(["Norge", "Danmark", "Finland", "Island", testdataHelper.randomTextString(5, 100)])[0], //?
             dodsdatum: getDodsdatum(datumSakert),
             dodsPlats: {
-                kommun: testdataHelper.randomTextString(),
+                kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 100)])[0],
                 boende: shuffle(["sjukhus", "ordinartBoende", "sarskiltBoende", "annan"])[0]
             },
             dodsorsak: getDodsOrsak(),
             operation: getOperation(),
-            skadaForgiftning: testdataHelper.randomTrueFalse(),
+            skadaForgiftning: getSkadaForgiftning(),
             dodsorsaksuppgifter: {
                 foreDoden: testdataHelper.randomTrueFalse(),
                 efterDoden: testdataHelper.randomTrueFalse(),

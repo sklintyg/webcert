@@ -73,10 +73,10 @@ module.exports = {
             id: intygsID,
             typ: "Dödsbevis",
             deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
-            identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning"])[0],
+            identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning", testdataHelper.randomTextString(5, 100)])[0],
             dodsdatum: getDodsdatum(datumSakert),
             dodsPlats: {
-                kommun: testdataHelper.randomTextString(),
+                kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 100)])[0],
                 boende: shuffle(["sjukhus", "ordinartBoende", "sarskiltBoende", "annan"])[0]
             },
             explosivImplantat: getExplosivImplantat(),
