@@ -355,8 +355,13 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
-                                '/app/app-deps.js',
-                                serveStatic(__dirname + DEST_DIR + '/app-deps.js') // jshint ignore:line
+                                '/app/app-deps.json',
+                                serveStatic(__dirname + DEST_DIR + '/app-deps.json') // jshint ignore:line
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/app/templates.js',
+                                serveStatic(__dirname + DEST_DIR + '/templates.js') // jshint ignore:line
                             ));
                         middlewares.push(
                             connect().use(
