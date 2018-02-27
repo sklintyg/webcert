@@ -36,8 +36,11 @@ const {
 } = require('cucumber');
 
 
-var basIntyg = pages.intyg.base.intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
+
+var testTools = require('common-testtools');
+testTools.protractorHelpers.init();
+
 
 /*
  *	Stödfunktioner
@@ -79,11 +82,8 @@ function checkElementsForText(els, checkValues) {
  *
  */
 
-
-Given(/^jag går tillbaka till start$/, function() {
-    return browser.driver.wait(protractor.until.elementIsVisible(basIntyg.backBtn)).then(function() {
-        return basIntyg.backBtn.sendKeys(protractor.Key.SPACE);
-    });
+Given(/^jag går till Sök\/skriv intyg$/, function() {
+    return element(by.id('menu-skrivintyg')).typeKeys(protractor.Key.SPACE);
 });
 
 Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1, callback) {

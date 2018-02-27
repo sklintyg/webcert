@@ -36,7 +36,6 @@ const {
 } = require('cucumber');
 
 
-var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
 var helpers = require('./helpers');
 var testdataHelpers = wcTestTools.helpers.testdata;
 var testdata = wcTestTools.testdata;
@@ -165,11 +164,6 @@ function getIntegrationUrl(origin) {
  */
 Given(/^jag trycker på visa intyget$/, function() {
     return element(by.id('showBtn-' + intyg.id)).sendKeys(protractor.Key.SPACE);
-});
-
-
-Given(/^jag går tillbaka$/, function() {
-    return fkUtkastPage.backBtn.sendKeys(protractor.Key.SPACE);
 });
 
 Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, function(arg1) {

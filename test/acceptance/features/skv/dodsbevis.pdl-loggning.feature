@@ -15,7 +15,7 @@ Scenario: GE-005 - Skapa Dödsbevis
 		Och jag går in på att skapa ett "Dödsbevis" intyg
 		Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
 		  
-		Och jag går tillbaka
+		Och jag går till Sök/skriv intyg
 		Och jag går in på utkastet
 		Så ska det nu finnas 1 loggaktivitet "Läsa" för intyget
 		Och jag ändrar i slumpat fält
@@ -27,7 +27,7 @@ Scenario: GE-005 - Öppna Dödsbevis
 		När jag går in på att skapa ett "Dödsbevis" intyg
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag signerar intyget
-		Och jag går tillbaka
+		Och jag går till Sök/skriv intyg
 		Och jag går in på intyget
 		Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 		

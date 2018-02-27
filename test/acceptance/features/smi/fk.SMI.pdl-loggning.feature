@@ -13,7 +13,7 @@ Bakgrund: Jag är inloggad
 Scenario: GE-005 - Skapa SMI-intyg
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
-	Och jag går tillbaka
+	Och jag går till Sök/skriv intyg
 	Och jag går in på utkastet
 	Så ska det nu finnas 1 loggaktivitet "Läsa" för intyget
 	Och jag ändrar diagnoskod
