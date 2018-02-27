@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,18 +35,29 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.*;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -60,21 +72,24 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String MOTTAGNING_1 = "VG1VE1M1";
     private static final String MOTTAGNING_2 = "VG1VE1M2";
-
-    @Mock
-    private AnvandarPreferenceRepository anvandarPreferenceRepository;
-
     @InjectMocks
     public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
+    @Mock
+    private AnvandarPreferenceRepository anvandarPreferenceRepository;
+    @Mock
+    private ThreadPoolTaskScheduler scheduler;
 
     @Test
     public void testCheckIfAuthorizedForUnit() {
         // anv inloggad på VE1 på VG1
         WebCertUser user = createWebCertUser(false);
 
-        assertTrue("ska kunna titta på ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
-        assertFalse("ska INTE kunna titta på ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
-        assertTrue("ska kunna redigera ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
+        assertTrue("ska kunna titta på ett intyg inom VE1",
+                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
+        assertFalse("ska INTE kunna titta på ett intyg inom VE2",
+                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
+        assertTrue("ska kunna redigera ett intyg inom VE1",
+                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
         assertFalse("ska INTE kunna redigera ett intyg inom VE2",
                 webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
     }
@@ -84,9 +99,12 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         // anv i JS-läge inloggad på VE1 på VG1
         WebCertUser user = createWebCertUser(true);
 
-        assertTrue("ska kunna titta på ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
-        assertTrue("ska kunna titta på ett intyg inom VE2", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
-        assertTrue("ska kunna redigera ett intyg inom VE1", webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
+        assertTrue("ska kunna titta på ett intyg inom VE1",
+                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
+        assertTrue("ska kunna titta på ett intyg inom VE2",
+                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
+        assertTrue("ska kunna redigera ett intyg inom VE1",
+                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
         assertFalse("ska INTE kunna redigera ett intyg inom VE2",
                 webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
     }
@@ -124,7 +142,8 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testStoreExistingUserMetadata() {
         WebCertUser user = createWebCertUser(false);
         applyUserToThreadLocalCtx(user);
-        when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1")).thenReturn(new AnvandarPreference("HSA-id", "key1", "value1"));
+        when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1"))
+                .thenReturn(new AnvandarPreference("HSA-id", "key1", "value1"));
 
         webcertUserService.storeUserPreference("key1", "value1");
         assertEquals("value1", user.getAnvandarPreference().get("key1"));
@@ -235,6 +254,30 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         user.setOrigin(UserOriginType.READONLY.name());
 
         assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+    }
+
+    @Test
+    public void testLogout() {
+        String sessionId = "sessionId";
+        when(scheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(mock(ScheduledFuture.class));
+
+        webcertUserService.scheduleSessionRemoval(sessionId, mock(HttpSession.class));
+
+        assertTrue(webcertUserService.taskMap.containsKey(sessionId));
+    }
+
+    @Test
+    public void testLogoutCancel() {
+        String sessionId = "sessionId";
+        ScheduledFuture future = mock(ScheduledFuture.class);
+
+        webcertUserService.taskMap.put(sessionId, future);
+
+        webcertUserService.cancelScheduledLogout(sessionId);
+
+        assertFalse(webcertUserService.taskMap.containsKey(sessionId));
+
+        verify(future).cancel(false);
     }
 
     private WebCertUser setupUserMottagningAccessTest() {

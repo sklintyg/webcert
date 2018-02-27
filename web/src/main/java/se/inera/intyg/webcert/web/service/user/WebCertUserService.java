@@ -22,6 +22,7 @@ import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 public interface WebCertUserService {
@@ -29,17 +30,17 @@ public interface WebCertUserService {
     /**
      * Checks wether the currently executing thread has a user Principal, e.g. through
      * {@link org.springframework.security.core.context.SecurityContextHolder#getContext}.
-     *
+     * <p>
      * Typically, all requests from the frontend for a protected resource will have a Principal while
      * unsecured and threads invoked by a service will not, such as CreateDraftCertificate.
      *
-     * @return
-     *      true if there is an available user Principal, false if not.
+     * @return true if there is an available user Principal, false if not.
      */
     boolean hasAuthenticationContext();
 
     /**
      * Returns the user principal from the session.
+     *
      * @return
      */
     WebCertUser getUser();
@@ -47,19 +48,15 @@ public interface WebCertUserService {
     /**
      * Stores (creates or updates) the given key-value pair for current user. Stores in DB and updates the session.
      *
-     * @param key
-     *         An arbitrary string-based key.
-     *
-     * @param value
-     *         An arbitrary string-based value.
+     * @param key   An arbitrary string-based key.
+     * @param value An arbitrary string-based value.
      */
-     void storeUserPreference(String key, String value);
+    void storeUserPreference(String key, String value);
 
     /**
      * Deletes the specified user preference for the current user.
      *
-     * @param key
-     *      Preference key.
+     * @param key Preference key.
      */
     void deleteUserPreference(String key);
 
@@ -82,5 +79,31 @@ public interface WebCertUserService {
 
     void updateUserRole(String roleName);
 
+    /**
+     * Note - this is just a proxy for accessing
+     * {@link se.inera.intyg.infra.security.common.service.CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet}.
+     *
+     * @param enhetId HSA-id of a vardenhet or mottagning.
+     * @return True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
+     */
     boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetId);
+
+    /**
+     * Schedule removal of backend session (both HttpSession and Spring session) for user.
+     * <p>
+     * This is done after a timeout and invalidation can be cancelled through calling {@link #cancelScheduledLogout}.
+     *
+     * @param sessionId The session to invalidate. Used as id for cancelling removal.
+     * @param session   The HttpSession to call invalidate on after timeout.
+     */
+    void scheduleSessionRemoval(String sessionId, HttpSession session);
+
+    /**
+     * Cancel scheduled removal of session.
+     * <p>
+     * If no removal of session with id sessionId then nothing is done. Does not interrupt currently running scheduled tasks.
+     *
+     * @param sessionId The id of the session to cancel removal of.
+     */
+    void cancelScheduledLogout(String sessionId);
 }
