@@ -39,7 +39,7 @@ var logInAsUser = loginHelper.logInAsUser;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 var users = commonTools.HSAusers;
 var helpers = require('../helpers');
-let srsdata = require('../srsdata.js');
+
 
 
 /*
@@ -188,11 +188,6 @@ Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"
         forskrivarKod: '2481632',
         origin: 'DJUPINTEGRATION'
     };
-    return logInAsUserRole(userObj, 'Läkare');
-});
-
-Given(/^att jag är djupintegrerat inloggad som läkare på vårdenhet "(med SRS|utan SRS)"$/, function(srsStatus) {
-    var userObj = srsdata.inloggningar[srsStatus];
     return logInAsUserRole(userObj, 'Läkare');
 });
 

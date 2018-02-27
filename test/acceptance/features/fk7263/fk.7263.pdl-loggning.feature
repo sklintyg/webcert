@@ -85,8 +85,3 @@ Scenario: förnya intyg
 	Och jag anger kontakt med FK
 	Och jag signerar intyget
 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
-
-@srs
-@notReady
-@SRS-US-W07
-Scenario: SRS ska PDL loggas
