@@ -90,6 +90,8 @@ describe('Create and Sign luae_fs utkast', function() {
         it('Signera intyget', function() {
             UtkastPage.whenSigneraButtonIsEnabled();
 
+            browser.sleep(1000);
+
             UtkastPage.signeraButtonClick();
 
             expect(IntygPage.isAt()).toBeTruthy();
