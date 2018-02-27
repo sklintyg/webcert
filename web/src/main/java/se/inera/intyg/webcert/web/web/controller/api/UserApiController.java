@@ -18,32 +18,42 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorageRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Controller for accessing the users security context.
  *
  * @author npet
- *
  */
 @Path("/anvandare")
 @Api(value = "anvandare", description = "REST API för användarhantering", produces = MediaType.APPLICATION_JSON)
@@ -187,5 +197,33 @@ public class UserApiController extends AbstractApiController {
         LOG.debug("User deleted user preference entry for key: " + prefKey);
         getWebCertUserService().deleteUserPreference(prefKey);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/logout")
+    public Response logoutUserAfterTimeout() {
+        getWebCertUserService().scheduleSessionRemoval(getSessionId(), getHttpSession());
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/logout/cancel")
+    public Response cancelLogout() {
+        getWebCertUserService().cancelScheduledLogout(getSessionId());
+        return Response.ok().build();
+    }
+
+    private HttpSession getHttpSession() {
+        if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes) {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            if (request != null) {
+                return request.getSession();
+            }
+        }
+        return null;
+    }
+
+    private String getSessionId() {
+        return RequestContextHolder.currentRequestAttributes().getSessionId();
     }
 }

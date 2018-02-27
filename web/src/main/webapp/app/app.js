@@ -43,6 +43,11 @@
 
     $.ajaxSetup({ cache: false });
 
+    // Cancel any logout requests if one exists
+    window.onload = function() {
+        $.get('/api/anvandare/logout/cancel');
+    };
+
     // before we do anything.. we need to get the user and moduleConfig
     var moduleArray = [];
     var moduleConfig;
@@ -259,6 +264,12 @@
             // Once per session we want to log relevant information about the users environment.
             // As of now this is limited to screen resolution.
             MonitoringLogService.screenResolution($window.innerWidth, $window.innerHeight);
+
+            $window.onbeforeunload = function() {
+                if (user && user.origin === 'DJUPINTEGRATION') {
+                    $.get('/api/anvandare/logout');
+                }
+            };
         }]);
 
 
