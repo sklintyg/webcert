@@ -43,6 +43,11 @@
 
     $.ajaxSetup({ cache: false });
 
+    // Cancel any logout requests if one exists
+    window.onload = function() {
+        $.get('/api/anvandare/logout/cancel');
+    };
+
     // before we do anything.. we need to get the user and moduleConfig
     var moduleArray = [];
     var moduleConfig;
@@ -269,6 +274,12 @@
             if (user) {
                 MonitoringLogService.screenResolution($window.innerWidth, $window.innerHeight);
             }
+
+            $window.onbeforeunload = function() {
+                if (user && user.origin === 'DJUPINTEGRATION') {
+                    $.get('/api/anvandare/logout');
+                }
+            };
         }]);
 
 

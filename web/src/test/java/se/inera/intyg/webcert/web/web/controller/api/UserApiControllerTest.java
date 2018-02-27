@@ -26,18 +26,30 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserApiControllerTest {
 
@@ -56,7 +68,7 @@ public class UserApiControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
     }
 
     @Test
@@ -66,7 +78,7 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(true);
 
         final HashMap<String, Feature> features = new HashMap<>();
-        Mockito.when(webCertUser.getFeatures()).thenReturn(features);
+        when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
@@ -86,7 +98,7 @@ public class UserApiControllerTest {
         Feature f1 = new Feature();
         f1.setName(AuthoritiesConstants.FEATURE_JS_LOGGNING);
         features.put(f1.getName(), f1);
-        Mockito.when(webCertUser.getFeatures()).thenReturn(features);
+        when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
@@ -106,7 +118,7 @@ public class UserApiControllerTest {
         Feature f1 = new Feature();
         f1.setName(AuthoritiesConstants.FEATURE_JS_LOGGNING);
         features.put(f1.getName(), f1);
-        Mockito.when(webCertUser.getFeatures()).thenReturn(features);
+        when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
@@ -123,7 +135,7 @@ public class UserApiControllerTest {
         webUserFeaturesRequest.setJsLoggning(false);
 
         final HashMap<String, Feature> features = new HashMap<>();
-        Mockito.when(webCertUser.getFeatures()).thenReturn(features);
+        when(webCertUser.getFeatures()).thenReturn(features);
 
         //When
         userApiController.userFeatures(webUserFeaturesRequest);
@@ -133,4 +145,31 @@ public class UserApiControllerTest {
         assertFalse(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
     }
 
+    @Test
+    public void testLogout() {
+        String sessionId = "sessionId";
+        ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
+
+        when(attributes.getSessionId()).thenReturn(sessionId);
+
+        RequestContextHolder.setRequestAttributes(attributes);
+
+        userApiController.logoutUserAfterTimeout();
+
+        verify(webCertUserService).scheduleSessionRemoval(eq(sessionId), any(HttpSession.class));
+    }
+
+    @Test
+    public void testLogoutCancel() {
+        String sessionId = "sessionId";
+        ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
+
+        when(attributes.getSessionId()).thenReturn(sessionId);
+
+        RequestContextHolder.setRequestAttributes(attributes);
+
+        userApiController.cancelLogout();
+
+        verify(webCertUserService).cancelScheduledLogout(sessionId);
+    }
 }

@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,16 +40,20 @@ import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPr
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,6 +75,9 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
     @Mock
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
+
+    @Mock
+    private ThreadPoolTaskScheduler scheduler;
 
     @Test
     public void testCheckIfAuthorizedForUnit() {
@@ -217,6 +225,30 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         user.setOrigin(UserOriginType.READONLY.name());
 
         assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+    }
+
+    @Test
+    public void testLogout() {
+        String sessionId = "sessionId";
+        when(scheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(mock(ScheduledFuture.class));
+
+        webcertUserService.scheduleSessionRemoval(sessionId, mock(HttpSession.class));
+
+        assertTrue(webcertUserService.taskMap.containsKey(sessionId));
+    }
+
+    @Test
+    public void testLogoutCancel() {
+        String sessionId = "sessionId";
+        ScheduledFuture future = mock(ScheduledFuture.class);
+
+        webcertUserService.taskMap.put(sessionId, future);
+
+        webcertUserService.cancelScheduledLogout(sessionId);
+
+        assertFalse(webcertUserService.taskMap.containsKey(sessionId));
+
+        verify(future).cancel(false);
     }
 
     private WebCertUser setupUserMottagningAccessTest() {

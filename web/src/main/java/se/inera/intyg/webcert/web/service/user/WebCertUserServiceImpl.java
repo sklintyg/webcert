@@ -18,9 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -34,19 +37,33 @@ import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPrefere
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import javax.servlet.http.HttpSession;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
 
+    @VisibleForTesting
+    ConcurrentHashMap<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
+
     @Autowired
     private CommonAuthoritiesResolver authoritiesResolver;
 
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
+
+    @Autowired
+    private ThreadPoolTaskScheduler scheduler;
+
+    @Value("${logout.timeout.seconds}")
+    private int logoutTimeout;
 
     @Override
     public boolean hasAuthenticationContext() {
@@ -134,17 +151,41 @@ public class WebCertUserServiceImpl implements WebCertUserService {
      * Note - this is just a proxy for accessing
      * {@link CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet(IntygUser, String)}.
      *
-     * @param enhetId
-     *            HSA-id of a vardenhet or mottagning.
-     * @return
-     *         True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
+     * @param enhetId HSA-id of a vardenhet or mottagning.
+     * @return True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
      */
     @Override
     public boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetId) {
         return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(getUser(), enhetId);
     }
 
-    // - - - - - Package scope - - - - -
+    @Override
+    public void cancelScheduledLogout(String sessionId) {
+        ScheduledFuture task = taskMap.get(sessionId);
+        if (task != null) {
+            task.cancel(false);
+            LOG.debug("Canceling removal of session {}", sessionId);
+            taskMap.remove(sessionId);
+        }
+    }
+
+    @Override
+    public void scheduleSessionRemoval(String sessionId, HttpSession session) {
+        ScheduledFuture<?> task = scheduler.schedule(() -> {
+            LOG.debug("Removing session {}", sessionId);
+            if (session != null) {
+                session.invalidate();
+            }
+            taskMap.remove(sessionId);
+        }, Date.from(Instant.now().plusSeconds(logoutTimeout)));
+        taskMap.putIfAbsent(sessionId, task);
+        LOG.debug("Scheduled removal of session {}", sessionId);
+    }
+
+    private void updateUserRole(Role role) {
+        getUser().setRoles(AuthoritiesResolverUtil.toMap(role));
+        getUser().setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+    }
 
     boolean checkIfAuthorizedForUnit(WebCertUser user, String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
         if (user == null) {
@@ -162,10 +203,5 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         } else {
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
         }
-    }
-
-    private void updateUserRole(Role role) {
-        getUser().setRoles(AuthoritiesResolverUtil.toMap(role));
-        getUser().setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
     }
 }

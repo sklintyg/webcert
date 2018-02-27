@@ -22,6 +22,8 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -33,6 +35,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitReque
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorageRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -87,17 +91,6 @@ public class UserApiController extends AbstractApiController {
         updateFeatures(webUserFeaturesRequest.isJsLoggning(), AuthoritiesConstants.FEATURE_JS_LOGGNING, mutFeatures);
         user.setFeatures(mutFeatures);
         return Response.ok(mutFeatures).build();
-    }
-
-    private void updateFeatures(boolean active, String name, Map<String, Feature> features) {
-        if (active) {
-            Feature feature = new Feature();
-            feature.setName(name);
-            feature.setGlobal(true);
-            features.put(name, feature);
-        } else {
-            features.remove(name);
-        }
     }
 
     /**
@@ -198,5 +191,44 @@ public class UserApiController extends AbstractApiController {
         LOG.debug("User deleted user preference entry for key: " + prefKey);
         getWebCertUserService().deleteUserPreference(prefKey);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/logout")
+    public Response logoutUserAfterTimeout() {
+        getWebCertUserService().scheduleSessionRemoval(getSessionId(), getHttpSession());
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/logout/cancel")
+    public Response cancelLogout() {
+        getWebCertUserService().cancelScheduledLogout(getSessionId());
+        return Response.ok().build();
+    }
+
+    private void updateFeatures(boolean active, String name, Map<String, Feature> features) {
+        if (active) {
+            Feature feature = new Feature();
+            feature.setName(name);
+            feature.setGlobal(true);
+            features.put(name, feature);
+        } else {
+            features.remove(name);
+        }
+    }
+
+    private HttpSession getHttpSession() {
+        if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes) {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            if (request != null) {
+                return request.getSession();
+            }
+        }
+        return null;
+    }
+
+    private String getSessionId() {
+        return RequestContextHolder.currentRequestAttributes().getSessionId();
     }
 }
