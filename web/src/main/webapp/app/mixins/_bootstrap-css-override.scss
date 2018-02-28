@@ -34,7 +34,10 @@
   cursor: pointer;
   white-space: nowrap;
 
-  &:hover, &:focus, &:active, &.active {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
     background-color: $btn-common-hover-background-color;
     border-color: $btn-common-hover-background-color;
     color: $wc-color-00;
@@ -42,6 +45,19 @@
   }
 
   transition: all 0.3s;
+
+  &,
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    &:disabled {
+      background-color: $wc-color-13;
+      border-color: $wc-color-13;
+      color: $wc-color-22;
+      opacity: 1;
+    }
+  }
 }
 
 .btn {
@@ -51,7 +67,7 @@
   border-radius: 4px;
 }
 
-.btn-primary, .btn-secondary, .btn-default {
+.btn-primary, .btn-secondary, .btn-default, .btn-success {
   @extend %btn-common;
 }
 .btn-default {
