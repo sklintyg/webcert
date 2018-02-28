@@ -223,6 +223,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             // Get address if djupintegration from params, fallback to PU for address if unavailable.
             if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
                 IntegrationParameters parameters = user.getParameters();
+                // Loading utkast without uthoppslänk would fail during end-to-end tests, thus the line below
+                if (parameters == null) {
+                    parameters = new IntegrationParameters(null, null, null, null, null, null, null, null, null, false, false, false,
+                            false);
+                }
 
                 // Update avliden with integrationparameters
                 patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
