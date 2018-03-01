@@ -130,6 +130,13 @@ Then(/^jag går in på "([^"]*)" testpatienten$/, function(nummer) {
     return gotoPatient(patient);
 });
 
+Then(/^jag går in på testpatienten "([^"]*)"$/, function(personnummer) {
+    var patient = {
+        id: personnummer.replace("-", "")
+    };
+    return gotoPatient(patient);
+});
+
 
 Given(/^jag går in på en patient med sekretessmarkering$/, function() {
     var patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
