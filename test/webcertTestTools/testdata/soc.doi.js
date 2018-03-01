@@ -71,13 +71,13 @@ function getDodsOrsak() {
     } else if (n >= 3) {
         obj.d = getDodsOrsakObj(4);
     }
-	
-	obj.bidragande = {
-		beskrivning: testdataHelper.randomTextString(5, 45),
-		datum: testdataHelper.dateFormat(new Date(dayBeforeDeath)),
-		tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
-	};
-	
+
+    obj.bidragande = {
+        beskrivning: testdataHelper.randomTextString(5, 45),
+        datum: testdataHelper.dateFormat(new Date(dayBeforeDeath)),
+        tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
+    };
+
     return obj;
 }
 
@@ -94,15 +94,15 @@ function getDodsOrsakObj(n) {
 }
 
 function getSkadaForgiftning() {
-	var ja = {
+    var ja = {
         ja: {
-			orsakAvsikt: shuffle(['Olycksfall', 'Självmord', 'Avsiktligt vållad av annan', 'Oklart om avsikt förelegat'])[0],
+            orsakAvsikt: shuffle(['Olycksfall', 'Självmord', 'Avsiktligt vållad av annan', 'Oklart om avsikt förelegat'])[0],
             datum: testdataHelper.dateFormat(dayBeforeDeath),
             beskrivning: testdataHelper.randomTextString(5, 400)
         }
     };
-	
-	return shuffle([ja, false])[0];
+
+    return shuffle([ja, false])[0];
 }
 
 

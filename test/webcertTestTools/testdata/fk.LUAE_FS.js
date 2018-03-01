@@ -73,7 +73,7 @@ module.exports = {
                 journaluppgifter: today,
                 anhorigsBeskrivning: today,
                 annat: today,
-                annatBeskrivning: testdataHelper.randomTextString(),
+                annatBeskrivning: testdataHelper.randomTextString(5, 3500),
                 personligKannedom: today
             },
             andraMedicinskaUtredningar: fkValues.getRandomMedicinskaUtredningar(),
@@ -86,11 +86,13 @@ module.exports = {
             },
             funktionsnedsattning: {
                 //funktionsnedsattningar
-                debut: testdataHelper.randomTextString(),
-                paverkan: testdataHelper.randomTextString()
+                debut: testdataHelper.randomTextString(5, 3500),
+                paverkan: testdataHelper.randomTextString(5, 3500)
             },
-            ovrigt: testdataHelper.randomTextString(),
-            kontaktMedFk: testdataHelper.randomTrueFalse()
+            ovrigt: testdataHelper.randomTextString(5, 3500),
+            kontaktMedFk: shuffle([false, {
+                motivering: testdataHelper.randomTextString(5, 3500)
+            }])
         };
     }
 };
