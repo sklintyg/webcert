@@ -40,8 +40,6 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
             trotsBegransningar: element(by.id('formagaTrotsBegransning')),
             forslagTillAtgard: element(by.id('forslagTillAtgard'))
         };
-        this.kontaktMedFkNo = element(by.id('formly_1_checkbox-inline_kontaktMedFk_0'));
-        // this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
         this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
         this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 

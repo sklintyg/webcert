@@ -50,7 +50,7 @@
     var _links;
 
     var app = angular.module('webcert',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'ng.shims.placeholder', 'ui.select', 'common.dynamiclink']);
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'ng.shims.placeholder', 'common.dynamiclink']);
 
     app.value('networkConfig', {
         defaultTimeout: 30000 // test: 1000
@@ -102,10 +102,10 @@
             $httpProvider.interceptors.push('common.http403ResponseInterceptor');
 
             // Enable debug logging
-            $logProvider.debugEnabled(false);
+            $logProvider.debugEnabled(true);
 
             // Disable angular debug info.
-            $compileProvider.debugInfoEnabled(false);
+            $compileProvider.debugInfoEnabled(true);
 
             // Disable comment and css directives
             $compileProvider.commentDirectivesEnabled(false);
@@ -172,13 +172,8 @@
 
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', 'common.messageService', 'common.moduleService',
-             'common.UserModel', 'formlyConfig', 'webcert.messages', 'common.MonitoringLogService', 'dynamicLinkService',
-        function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, formlyConfig, wcMessages, MonitoringLogService, dynamicLinkService) {
-
-            // Configure formly to use default hide directive.
-            // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
-            // With ng-show they are always in DOM and those phases won't happen.
-            formlyConfig.extras.defaultHideDirective = 'ng-if';
+             'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'dynamicLinkService',
+        function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages, MonitoringLogService, dynamicLinkService) {
 
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';

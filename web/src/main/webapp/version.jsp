@@ -32,7 +32,6 @@
 <title><spring:message code="application.name" /> : Version</title>
 
 <!-- bower:css -->
-<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
 <!-- endbower -->
 
 </head>

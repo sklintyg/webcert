@@ -42,8 +42,8 @@ var doiUtkast = BaseSocUtkast._extend({
             },
             inteSakert: {
                 checkbox: element(by.id('dodsdatumSakertNo')),
-                month: element(by.css('#dodsdatum-month > div.ui-select-match > span.btn > span.ui-select-match-text > span.ng-binding')),
-                year: element(by.css('#dodsdatum-year > div.ui-select-match > span.btn > span.ui-select-match-text > span.ng-binding')),
+                month: element(by.css('#dodsdatum-month > .dropdown-label > span')),
+                year: element(by.css('#dodsdatum-year > .dropdown-label > span')),
                 options: element.all(by.css('.ui-select-choices-row-inner')),
                 antraffadDod: element(by.id('datepicker_antraffatDodDatum'))
             }

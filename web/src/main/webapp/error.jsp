@@ -34,7 +34,6 @@
 <title><spring:message code="application.name" /></title>
 
 <!-- bower:css -->
-<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
 <!-- endbower -->
 <link rel="stylesheet" href="/app/webcert.css?<spring:message code="buildNumber" />">
 <link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css?<spring:message code="buildNumber" />">
@@ -56,10 +55,7 @@
     <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js"></script>
     <script type="text/javascript" src="/bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script type="text/javascript" src="/bower_components/api-check/dist/api-check.js"></script>
-    <script type="text/javascript" src="/bower_components/angular-formly/dist/formly.js"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script type="text/javascript" src="/bower_components/angular-ui-select/dist/select.js"></script>
     <script type="text/javascript" src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
     <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
     <!-- endbower -->
