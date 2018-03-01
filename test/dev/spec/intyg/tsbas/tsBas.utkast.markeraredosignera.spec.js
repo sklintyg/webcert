@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 var restUtil = wcTestTools.restUtil;
 
-fdescribe('INTYG-4083: Create partially complete tsbas utkast and mark as ready to sign', function() {
+describe('INTYG-4083: Create partially complete tsbas utkast and mark as ready to sign', function() {
 
     var utkastId = null,
         data = null;
