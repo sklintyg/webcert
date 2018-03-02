@@ -20,6 +20,9 @@
       "detailedDescription": {
         "type": "string"
       },
+      "issuerTypeId": {
+        "type": "string"
+      },
       "cssPath": {
         "type": "string"
       },
@@ -39,6 +42,7 @@
       "label",
       "description",
       "detailedDescription",
+      "issuerTypeId",
       "cssPath",
       "scriptPath",
       "dependencyDefinitionPath",

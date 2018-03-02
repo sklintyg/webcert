@@ -729,7 +729,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         doi.setVardgivarId("other");
         when(moduleRegistry.listAllModules()).thenReturn(
                 Arrays.asList("lisjp", "db", "doi").stream()
-                        .map(a -> new IntygModule(a, null, null, null, null, null, null, null)).collect(
+                        .map(a -> new IntygModule(a, null, null, null, null, "", null, null, null)).collect(
                         Collectors.toList()));
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer, activeModules))

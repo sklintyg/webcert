@@ -924,7 +924,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository
                 .findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                         eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
@@ -962,7 +962,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "","", "", "")));
         when(utkastRepository
                 .findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                         eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
@@ -1001,7 +1001,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
@@ -1042,7 +1042,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));

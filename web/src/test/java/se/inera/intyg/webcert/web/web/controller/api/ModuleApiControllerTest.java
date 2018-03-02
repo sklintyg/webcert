@@ -50,6 +50,7 @@ public class ModuleApiControllerTest {
 
     private static final String MODULE_1_DETAILED_DESC = "This is a detailed description";
     private static final String SOME_REPLACED_DESCRIPTION = "Some replaced description";
+    private static final String ISSUER_TYPE_ID = "TheAuthorities";
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -64,9 +65,9 @@ public class ModuleApiControllerTest {
     @Before
     public void setup() {
         when(moduleRegistry.listAllModules())
-                .thenReturn(Arrays.asList(new IntygModule(MODULE_ID_1, null, null, MODULE_1_DETAILED_DESC, null, null, null, null),
-                        new IntygModule(MODULE_ID_2, null, null, null, null, null, null, null),
-                        new IntygModule(MODULE_ID_3, null, null, null, null, null, null, null)));
+                .thenReturn(Arrays.asList(new IntygModule(MODULE_ID_1, null, null, MODULE_1_DETAILED_DESC, ISSUER_TYPE_ID, null, null, null, null),
+                        new IntygModule(MODULE_ID_2, null, null, null, ISSUER_TYPE_ID, null, null, null, null),
+                        new IntygModule(MODULE_ID_3, null, null, null, ISSUER_TYPE_ID, null, null, null, null)));
 
         when(dynamicLinkService.apply(DYNAMIC_LINK_PLACEHOLDER, MODULE_1_DETAILED_DESC)).thenReturn(SOME_REPLACED_DESCRIPTION);
     }
@@ -79,6 +80,7 @@ public class ModuleApiControllerTest {
         List<IntygModule> res = (List<IntygModule>) response.getEntity();
         assertEquals(3, res.size());
         assertEquals(MODULE_ID_1, res.get(0).getId());
+        assertEquals(ISSUER_TYPE_ID, res.get(0).getIssuerTypeId());
         assertEquals(MODULE_ID_2, res.get(1).getId());
         assertEquals(MODULE_ID_3, res.get(2).getId());
     }
