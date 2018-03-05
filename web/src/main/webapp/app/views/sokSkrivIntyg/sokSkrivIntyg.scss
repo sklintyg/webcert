@@ -31,6 +31,9 @@
       border: 1px solid $wc-color-15;
       border-radius: 4px;
       transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+      &.ng-invalid-valid-pnr {
+        border-color: $wc-color-11;
+      }
     }
     input.form-control:focus {
       outline: none !important;
@@ -43,6 +46,10 @@
     .correct {
       background-color: $wc-color-21;
     }
+  }
+  .error {
+    margin-top: 14px;
+    color: $wc-color-11;
   }
 }
 
