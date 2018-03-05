@@ -149,14 +149,26 @@ privileges:
       - *ki060 # luae_na
       - *ki070 # luae_fs
     requestOrigins:
-      - *ro010 # NORMAL
+      - <<: *ro010 # NORMAL
+        intygstyper: # EJ ts-intyg eller fk7263
+          - *ki040 # lisjp
+          - *ki050 # luse
+          - *ki060 # luae_na
+          - *ki070 # luae_fs
       - *ro020 # DJUPINTEGRATION
   - &p031
     name: *kp031
     desc: Ersätta intyg
     intygstyper: # Implicit alla
     requestOrigins:
-      - *ro010 # NORMAL
+      - <<: *ro010 # NORMAL
+        intygstyper: # EJ fk7263
+          - *ki020 # ts-bas
+          - *ki030 # ts-diabetes
+          - *ki040 # lisjp
+          - *ki050 # luse
+          - *ki060 # luae_na
+          - *ki070 # luae_fs
       - *ro020 # DJUPINTEGRATION
   - &p040
     name: *kp040
@@ -282,10 +294,22 @@ roles:
       - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper: # EJ ts-intyg eller fk7263
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
       - <<: *p031 # ERSATTA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper: # EJ fk7263
+              - *ki020 # ts-bas
+              - *ki030 # ts-diabetes
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
@@ -348,9 +372,21 @@ roles:
       - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper: # EJ ts-intyg eller fk7263
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
       - <<: *p031 # ERSATTA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper: # EJ fk7263
+              - *ki020 # ts-bas
+              - *ki030 # ts-diabetes
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -444,15 +480,19 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
-              - *ki010
               - *ki040
           - <<: *ro020 # DJUPINTEGRATION
             intygstyper:
               - *ki010
               - *ki040
       - <<: *p031 # ERSATTA_INTYG
+        intygstyper:
+          - *ki010
+          - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper: # EJ fk7263
+              - *ki040 # lisjp
           - <<: *ro020 # DJUPINTEGRATION
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         intygstyper:
@@ -598,6 +638,11 @@ roles:
       - <<: *p030 # FORNYA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper: # EJ ts-intyg eller fk7263
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
