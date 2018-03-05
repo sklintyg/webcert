@@ -20,7 +20,7 @@
 /**
  * Created by stephenwhite on 09/06/15.
  */
-/* globals browser, protractor */
+/* globals browser */
 
 'use strict';
 
@@ -47,10 +47,10 @@ var SokSkrivIntyg = WebcertBasePage._extend({
         return this.personnummer.sendKeys(pn);
     },
     selectPersonnummer: function(pn) {
-        return protractor.promise.all([
-            this.setPersonnummer(pn).then(),
-            this.pnButton.click().then()
-        ]);
+        var pnButton = this.pnButton;
+        return this.setPersonnummer(pn).then(function() {
+            return pnButton.click();
+        });
     }
 });
 

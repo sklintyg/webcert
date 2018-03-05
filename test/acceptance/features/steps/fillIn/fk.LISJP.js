@@ -99,8 +99,10 @@
              .then(function() {
                  var elm = lisjpUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning;
                  var data = intyg.arbetsformagaFMB;
-
-                 return elm.typeKeys(data);
+                 if (data) {
+                     return elm.typeKeys(data);
+                 }
+                 return;
              })
              .then(function() {
                  //Resor till arbete

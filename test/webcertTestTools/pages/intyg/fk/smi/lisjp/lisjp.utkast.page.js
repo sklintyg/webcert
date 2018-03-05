@@ -237,7 +237,9 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angeArbetstidsforlaggning: function(arbetstidsforlaggning) {
         var el = this.sjukskrivning.arbetstidsforlaggning;
-        if (arbetstidsforlaggning.val === 'Ja') {
+        if (!arbetstidsforlaggning) {
+            return Promise.resolve();
+        } else if (arbetstidsforlaggning.val === 'Ja') {
             return pageHelpers.moveAndSendKeys(el.ja, protractor.Key.SPACE)
                 .then(function() {
                     return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);

@@ -36,7 +36,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
         postnummer: '66130',
         postort: 'Karlstad',
         postadress: 'Testsvängen 3',
-        telefon: '072-9192811'
+        telefon: '0729192811'
     };
 
     global.sessionUsed = false;

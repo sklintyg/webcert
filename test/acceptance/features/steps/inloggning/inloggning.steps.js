@@ -63,17 +63,20 @@ function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänst
 
     if (global.user.origin !== 'DJUPINTEGRATION') {
         element(by.id('menu-skrivintyg')).click().then(function() {
-            return helpers.smallDelay();
+            return helpers.pageReloadDelay();
         });
     }
     return sokSkrivIntygPage.selectPersonnummer(person.id).then(function() {
-        logger.info('Går in på patient ' + person.id);
-        //Patientuppgifter visas
-        var patientUppgifter = sokSkrivIntygPage.patientNamn;
-        return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id)).then(function() {
-            return helpers.smallDelay();
+            return helpers.pageReloadDelay();
+        })
+        .then(function() {
+            logger.info('Går in på patient ' + person.id);
+            //Patientuppgifter visas
+            var patientUppgifter = sokSkrivIntygPage.patientNamn;
+            return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id)).then(function() {
+                return helpers.smallDelay();
+            });
         });
-    });
 
 }
 
@@ -86,10 +89,9 @@ function setForkedBrowser(forkedBrowser2) {
 
 function gotoIntygUtkast(intygtyp) {
     intyg.typ = intygtyp;
-    return Promise.all([
-        sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp),
-        sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
-    ]).then(function() {
+    return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp).then(function() {
+        return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
+    }).then(function() {
         // Spara intygsid för kommande steg
         return browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-2)[0];

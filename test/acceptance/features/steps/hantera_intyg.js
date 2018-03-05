@@ -62,7 +62,7 @@ function signeraUtkast() {
     return uppdateraAdressOmErsattandeIntyg().then(function() {
         return browser.sleep(1).then(function() { // fix för nåt med animering?
 
-            return expect(fkUtkastPage.sparatOchKomplettMeddelande.isDisplayed()).to.eventually.equal(true)
+            return expect(fkUtkastPage.klartAttSigneraStatus.getText()).to.eventually.contain('Klart')
                 .then(function() {
                     return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
                 })

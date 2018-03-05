@@ -110,7 +110,8 @@ function getRandomAtgarder() {
     // 33% chans för inte aktuellt
     return shuffle([
         [{
-            namn: 'Inte aktuellt'
+            namn: 'Inte aktuellt',
+            key: 'EJ_AKTUELLT'
         }], shuffle(atgarder).slice(0, randomLength),
         shuffle(atgarder).slice(0, randomLength)
     ])[0];

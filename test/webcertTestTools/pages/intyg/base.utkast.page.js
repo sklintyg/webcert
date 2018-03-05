@@ -57,7 +57,10 @@ var BaseUtkast = JClass._extend({
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
         this.patientNamnPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.patientNamnPersonnummerFd = element(by.css('.old-person-id'));
-        this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande'));
+        /*this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande')); Finns inte i 6.0? */
+        this.klartAttSigneraStatus = element(by.id('intygstatus1'));
+        this.sparatStatus = element(by.id('intygstatus2'));
+
         this.enhetensAdress = {
             postAdress: element(by.id('grundData-skapadAv-vardenhet-postadress')),
             postNummer: element(by.id('grundData-skapadAv-vardenhet-postnummer')),
