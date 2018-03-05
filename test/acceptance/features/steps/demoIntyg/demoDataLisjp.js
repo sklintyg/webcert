@@ -414,7 +414,7 @@ var demoDataLisjp = [{
     "arbetsformaga": {
         "nedsattMed75": {
             "from": idag(-14),
-            "tom": idag(-28)
+            "tom": idag(28)
         }
     },
     "arbetstidsforlaggning": {
@@ -758,8 +758,11 @@ var demoDataLisjp = [{
     "arbetsformaga": {
         "nedsattMed50": {
             "from": idag(-10),
-            "tom": idag(+8)
+            "tom": idag(8)
         }
+    },
+    "arbetstidsforlaggning": {
+        "val": "Nej"
     },
     "atgarder": [{
         "namn": 'Hjälpmedel',
@@ -820,6 +823,9 @@ var demoDataLisjp = [{
             "tom": idag(8)
         }
     },
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
     "atgarder": [{
         namn: 'Inte aktuellt',
         key: 'EJ_AKTUELLT'
@@ -849,6 +855,9 @@ var demoDataLisjp = [{
             "from": idag(-111),
             "tom": idag(-96)
         }
+    },
+    "arbetstidsforlaggning": {
+        "val": "Nej"
     },
     "atgarder": [{
         namn: 'Söka nytt arbete',
