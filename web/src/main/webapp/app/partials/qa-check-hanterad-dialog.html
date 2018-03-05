@@ -8,9 +8,12 @@
 <div class="modal-body">
   <div style="padding-bottom: 10px"><span dynamic-label key="{{bodyTextId}}"></span></div>
   <div class="form-group form-inline">
-    <label class="checkbox" ng-click="model.widgetState.setSkipShowUnhandledDialog(model.widgetState)">
+    <wc-checkbox-wrapper>
       <input type="checkbox" id="preferenceSkipShowUnhandledDialog" name="preferenceSkipShowUnhandledDialog" ng-model="model.widgetState.skipShowUnhandledDialog" ng-change="model.widgetState.setSkipShowUnhandledDialog(model.widgetState)">
-      <span dynamic-label key="label.qacheckhanterad.checkbox"></span></label>
+      <label for="preferenceSkipShowUnhandledDialog" ng-click="model.widgetState.setSkipShowUnhandledDialog(model.widgetState)">
+            <span dynamic-label key="label.qacheckhanterad.checkbox"></span>
+      </label>
+    </wc-checkbox-wrapper>
   </div>
 </div>
 <div class="modal-footer">
