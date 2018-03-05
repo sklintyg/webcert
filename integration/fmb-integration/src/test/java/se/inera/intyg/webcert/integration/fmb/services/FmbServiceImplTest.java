@@ -87,12 +87,13 @@ public class FmbServiceImplTest {
         //Then
         Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         List<Fmb> fmbCaptorAllValues = fmbCaptor.getValue();
-        assertEquals(1329, fmbCaptorAllValues.size());
-        assertEquals(84, getCount(fmbCaptorAllValues, FmbType.AKTIVITETSBEGRANSNING));
-        assertEquals(712, getCount(fmbCaptorAllValues, FmbType.BESLUTSUNDERLAG_TEXTUELLT));
-        assertEquals(171, getCount(fmbCaptorAllValues, FmbType.FUNKTIONSNEDSATTNING));
-        assertEquals(181, getCount(fmbCaptorAllValues, FmbType.GENERELL_INFO));
-        assertEquals(181, getCount(fmbCaptorAllValues, FmbType.SYMPTOM_PROGNOS_BEHANDLING));
+        assertEquals(1865, fmbCaptorAllValues.size());
+        assertEquals(100, getCount(fmbCaptorAllValues, FmbType.AKTIVITETSBEGRANSNING));
+        assertEquals(863, getCount(fmbCaptorAllValues, FmbType.BESLUTSUNDERLAG_TEXTUELLT));
+        assertEquals(292, getCount(fmbCaptorAllValues, FmbType.FUNKTIONSNEDSATTNING));
+        assertEquals(305, getCount(fmbCaptorAllValues, FmbType.GENERELL_INFO));
+        assertEquals(305, getCount(fmbCaptorAllValues, FmbType.SYMPTOM_PROGNOS_BEHANDLING));
+
     }
 
     private long getCount(List<Fmb> fmbCaptorAllValues, FmbType aktivitetsbegransning) {
