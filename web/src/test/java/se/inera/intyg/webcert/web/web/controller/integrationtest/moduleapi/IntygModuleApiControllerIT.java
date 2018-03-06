@@ -238,6 +238,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         final String personnummer = "19121212-1212";
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        changeOriginTo("DJUPINTEGRATION");
 
         String utkastId = createUtkast("fk7263", personnummer);
 
@@ -293,6 +294,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testCreateRenewalBasedOnExistingUtkastWithInvalidPatientpersonNummer() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        changeOriginTo("DJUPINTEGRATION");
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
@@ -396,6 +398,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         final String personnummer = "19121212-1212";
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        changeOriginTo("DJUPINTEGRATION");
 
         String intygsId = createSignedIntyg("fk7263", personnummer);
 
