@@ -8,7 +8,6 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 		  Givet jag har makulerat tidigare "Dödsorsaksintyg" intyg för "första" testpatienten
 		  Och att jag är inloggad som läkare
 		  När jag går in på "första" testpatienten
-		  
 
 @signera
 Scenario: Kan signera dödsbevisintyg 

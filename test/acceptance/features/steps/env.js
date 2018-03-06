@@ -156,6 +156,11 @@ Before(function() {
     global.user = {};
     hasFoundConsoleErrors = false;
     duplicateIds = [];
+
+    return browser.executeScript(function() {
+        window.autoSave = false;
+    });
+
 });
 
 

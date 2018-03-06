@@ -2,7 +2,7 @@
 @behorighet @lakare @hurr
 Egenskap: Behörigheter för en läkare
 
-@smi @inloggad-enhet
+@smi @inloggad-enhet @VA-002
 Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Givet att jag är inloggad som läkare utan angiven vårdenhet
 	Så ska jag se en rubrik med texten "Välj din vårdenhet"
@@ -11,10 +11,7 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Så ska jag se en rubrik med texten "Sök/skriv intyg"
 
 	När jag går in på en patient
-	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
-    Och jag går in på utkastet 
-    Och jag fyller i alla nödvändiga fält för intyget
-    Och jag signerar intyget
+	Och jag går in på ett slumpat SMI-intyg med status "Signerat"
 
 	Och jag sparar länken till aktuell sida
 
@@ -23,7 +20,7 @@ Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Så ska ett fel-meddelande visa "Kunde inte hämta intyget eftersom du saknar behörighet"
 
 
-@underliggande-enhet @smi
+@underliggande-enhet @smi @VA-002
 Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enhet
 	Givet att jag är inloggad som läkare på underenhet "TSTNMT2321000156-UND2"
 	När jag går in på en patient

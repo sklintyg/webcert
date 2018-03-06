@@ -25,7 +25,8 @@ Scenario: Skicka ett befintligt intyg till Försäkringskassan
 	Och jag signerar intyget
 	#När jag går in på ett "Läkarintyg FK 7263" med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan
-	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system"
+	Så ska intygets status vara "Intyget är skickat till Försäkringskassan"
+	Och ska intygets status vara "Intyget är tillgängligt för patienten"
 	När jag går till Mina intyg för patienten
 	Så ska intygets status i Mina intyg visa "Skickat till Försäkringskassan"
 

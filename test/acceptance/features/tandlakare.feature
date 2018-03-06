@@ -34,7 +34,8 @@ Scenario: Skapa, Skicka och Makulera FK7263
 	Så ska intygets status vara "Intyget är signerat"
 
 	När jag skickar intyget till Försäkringskassan
-	Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system."
+	Så ska intygets status vara "Intyget är skickat till Försäkringskassan"
+	Och ska intygets status vara "Intyget är tillgängligt för patienten"
 
 	Så ska det finnas en knapp för att förnya intyget
 
