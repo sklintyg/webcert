@@ -3,7 +3,7 @@
 Egenskap: Generera Demo-data
 
 Bakgrund: Inloggad som uthoppsläkare
-   Givet att jag är inloggad som läkare
+   Givet att jag är inloggad som läkare "Ingrid Nilsson Olsson"
 
 @demoRehabstöd
 Scenariomall: Generera intyg för <Patient> med demoDataIndex <demoDataIndex>

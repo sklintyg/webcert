@@ -143,6 +143,12 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
         if (lakarNamn && lakarNamn === 'Karin Persson') {
             userObj.hsaId = 'TSTNMT2321000156-107T';
 
+        } else if (lakarNamn && lakarNamn === 'Ingrid Nilsson Olsson') {
+            userObj.hsaId = 'TSTNMT2321000156-105T';
+            userObj.enhetId = 'TSTNMT2321000156-105P';
+            userObj.forNamn = lakarNamn.split(' ')[0];
+            userObj.efterNamn = lakarNamn.split(' ')[1] + ' ' + lakarNamn.split(' ')[2];
+
         }
     }
 
