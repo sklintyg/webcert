@@ -32,7 +32,7 @@ var SokSkrivValjUtkastTyp = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-describe('Generate fk intyg', function() {
+xdescribe('Generate fk intyg', function() {
 
     var intygId;
     //var intyg;
