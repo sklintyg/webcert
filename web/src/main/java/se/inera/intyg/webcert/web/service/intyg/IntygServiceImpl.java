@@ -670,8 +670,6 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    /* --------------------- Protected scope --------------------- */
-
     public void setLogicalAddress(String logicalAddress) {
         this.logicalAddress = logicalAddress;
     }
@@ -680,8 +678,6 @@ public class IntygServiceImpl implements IntygService {
     public void setSekretessmarkeringStartDatum(ChronoLocalDateTime sekretessmarkeringStartDatum) {
         this.sekretessmarkeringStartDatum = sekretessmarkeringStartDatum;
     }
-
-    /* --------------------- Private scope --------------------- */
 
     protected IntygServiceResult sendIntygToCertificateSender(SendIntygConfiguration sendConfig, Utlatande intyg, boolean delay) {
 
