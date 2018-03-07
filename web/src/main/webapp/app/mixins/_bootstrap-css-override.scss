@@ -48,10 +48,16 @@
   line-height: 18px;
   padding: 7px 12px;
   text-overflow: ellipsis;
+  border-radius: 4px;
 }
 
 .btn-primary, .btn-secondary, .btn-default {
   @extend %btn-common;
+}
+.btn-default {
+  border-color: $wc-color-15;
+  background-color: $wc-color-00;
+  color: $wc-color-17;
 }
 
 .btn-link {
@@ -230,6 +236,17 @@
 
 .form-group--small-gap {
   padding-bottom: 5px;
+}
+input.form-control {
+  height: 38px;
+  border: 1px solid $wc-color-15;
+  border-radius: 4px;
+  transition: border-color .36s ease-in-out, box-shadow .36s ease-in-out;
+}
+input.form-control:focus {
+  outline: none !important;
+  border: 1px solid $wc-color-21;
+  box-shadow: 2px 2px 4px 0 $black_12;
 }
 
 /*
