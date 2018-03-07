@@ -39,7 +39,7 @@ tomcat7_group: "inera-tomcat"
 # Database configuration
 database_server: localhost
 database_port: 3306
-database_name: webcert
+database_name: wc4
 database_username: webcert
 database_password: webcert
 database_driver: com.mysql.jdbc.Driver

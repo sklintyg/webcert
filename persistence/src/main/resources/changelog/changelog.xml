@@ -961,20 +961,6 @@
     </createIndex>
   </changeSet>
 
-  <changeSet id="49" author="kja">
-    <preConditions onFail="MARK_RAN">
-        <or>
-            <dbms type="h2" />
-            <sqlCheck expectedResult="blob">SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'INTYG' AND COLUMN_NAME = 'MODEL'</sqlCheck>
-        </or>
-    </preConditions>
-
-    <modifyDataType
-      columnName="MODEL"
-      newDataType="mediumblob"
-      tableName="INTYG"/>
-  </changeSet>
-
   <changeSet id="50" author="kja">
     <dropNotNullConstraint
       columnDataType="varchar(255)"
