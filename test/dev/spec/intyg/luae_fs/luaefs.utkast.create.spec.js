@@ -88,13 +88,13 @@ describe('Create and Sign luae_fs utkast', function() {
         });
 */
         it('Signera intyget', function() {
-            UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                browser.sleep(1000);
+            UtkastPage.whenSigneraButtonIsEnabled();
 
-                UtkastPage.signeraButtonClick();
+            browser.sleep(1000);
 
-                expect(IntygPage.isAt()).toBeTruthy();
-            });
+            UtkastPage.signeraButtonClick();
+
+            expect(IntygPage.isAt()).toBeTruthy();
         });
 
         it('Wait until intyg in IT', function() {
