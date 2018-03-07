@@ -78,11 +78,12 @@ describe('Create and Sign ts-diabetes utkast', function() {
     });
 
     it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled();
+        UtkastPage.whenSigneraButtonIsEnabled().then(function() {
 
-        UtkastPage.signeraButtonClick();
+            UtkastPage.signeraButtonClick();
 
-        expect(IntygPage.isAt()).toBeTruthy();
+            expect(IntygPage.isAt()).toBeTruthy();
+        });
     });
 
     it('Verifiera intyg', function() {

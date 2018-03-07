@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
-fdescribe('Create and Sign luae_fs utkast', function() {
+describe('Create and Sign luae_fs utkast', function() {
 
     var utkastId = null;
     var data = null;

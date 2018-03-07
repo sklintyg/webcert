@@ -82,11 +82,11 @@ describe('Create and Sign luse utkast', function() {
     });
 
     it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled();
+        UtkastPage.whenSigneraButtonIsEnabled().then(function() {
+            UtkastPage.signeraButtonClick();
 
-        UtkastPage.signeraButtonClick();
-
-        expect(IntygPage.isAt()).toBeTruthy();
+            expect(IntygPage.isAt()).toBeTruthy();
+        });
     });
 
     it('Wait until intyg in IT', function() {
