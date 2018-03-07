@@ -1,0 +1,10 @@
+---
+
+environment_name: "intygspoc5"
+config_etc_folder: "{{ config_folder }}/test"
+
+# Spring profiles
+profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled
+
+# Tomcat
+tomcat_http_port: 9185
