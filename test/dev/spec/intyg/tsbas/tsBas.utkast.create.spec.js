@@ -118,12 +118,11 @@ describe('Create and Sign ts-bas utkast', function() {
     });
 
     it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled().then(function() {
+        UtkastPage.whenSigneraButtonIsEnabled();
 
-            UtkastPage.signeraButtonClick();
+        UtkastPage.signeraButtonClick();
 
-            expect(IntygPage.isAt()).toBeTruthy();
-        });
+        expect(IntygPage.isAt()).toBeTruthy();
     });
 
     it('Verifiera intyg', function() {

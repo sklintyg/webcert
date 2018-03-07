@@ -84,11 +84,11 @@ describe('Create and Sign luae_na utkast', function() {
         });
 
         it('Signera intyget', function() {
-            UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                UtkastPage.signeraButtonClick();
+            UtkastPage.whenSigneraButtonIsEnabled();
 
-                expect(IntygPage.isAt()).toBeTruthy();
-            });
+            UtkastPage.signeraButtonClick();
+
+            expect(IntygPage.isAt()).toBeTruthy();
         });
 
         it('Wait until intyg in IT', function() {
