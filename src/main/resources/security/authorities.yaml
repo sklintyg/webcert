@@ -161,6 +161,8 @@ privileges:
           - *ki050 # luse
           - *ki060 # luae_na
           - *ki070 # luae_fs
+          - *ki080 # db
+          - *ki090 # doi
       - *ro020 # DJUPINTEGRATION
   - &p040
     name: *kp040
@@ -302,6 +304,8 @@ roles:
               - *ki050 # luse
               - *ki060 # luae_na
               - *ki070 # luae_fs
+              - *ki080 # db
+              - *ki090 # doi
           - <<: *ro020 # DJUPINTEGRATION
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
@@ -379,6 +383,8 @@ roles:
               - *ki050 # luse
               - *ki060 # luae_na
               - *ki070 # luae_fs
+              - *ki080 # db
+              - *ki090 # doi
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
