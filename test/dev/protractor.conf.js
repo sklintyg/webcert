@@ -67,6 +67,8 @@ exports.config = {
     // Capabilities to be passed to the webdriver instance. (ignored if multiCapabilities is used)
     capabilities: {
 
+        acceptInsecureCerts: true,
+
         loggingPrefs: {'driver': 'ALL', 'server': 'ALL', 'browser': 'ALL'},
 
         // IE11
@@ -79,7 +81,6 @@ exports.config = {
 
         chromeOptions: {
             args: [
-                /*"--headless", "--disable-gpu", */
                 "--window-size=1280,1024"
             ]
         },

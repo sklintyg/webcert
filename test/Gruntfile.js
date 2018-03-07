@@ -29,6 +29,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-force-task');
 
     var devSuite = grunt.option('suite') || 'app';
+    var headless = grunt.option('headless') || false;
     grunt.initConfig({
         env: grunt.file.readJSON('./webcertTestTools/envConfig.json'),
         protractor: {
@@ -44,7 +45,7 @@ module.exports = function(grunt) {
             // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
             dev: {
                 options: {
-                    configFile: './dev/protractor.conf.js',
+                    configFile: headless?'./dev/protractor.conf.ci.js':'./dev/protractor.conf.js',
                     args: {
                         'suite': devSuite
                     } // Target-specific arguments
