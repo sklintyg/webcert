@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -65,6 +66,8 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
@@ -114,6 +117,9 @@ public class IntygResource {
 
     @Autowired
     private NiasSignaturService niasSignaturService;
+
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
 
     /**
      * This method is not very safe nor accurate - it parses the [intygsTyp].sch file using XPath and tries
@@ -235,6 +241,21 @@ public class IntygResource {
         statuses.add(UtkastStatus.DRAFT_INCOMPLETE);
         statuses.add(UtkastStatus.DRAFT_COMPLETE);
         List<Utkast> utkast = utkastRepository.findByEnhetsIdsAndStatuses(enhetsIds, statuses);
+        if (utkast != null) {
+            for (Utkast u : utkast) {
+                deleteDraftAndRelatedQAs(u);
+            }
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/patient/{patientId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteDraftsByPatient(@PathParam("patientId") String patientId) {
+        Set<String> intygTyper = moduleRegistry.listAllModules().stream()
+                .map(IntygModule::getId).collect(Collectors.toSet());
+        List<Utkast> utkast = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patientId, intygTyper);
         if (utkast != null) {
             for (Utkast u : utkast) {
                 deleteDraftAndRelatedQAs(u);

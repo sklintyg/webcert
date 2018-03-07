@@ -44,6 +44,10 @@ module.exports = {
         restUtil.login();
         return restUtil.deleteAllIntyg();
     },
+    deleteAllIntygForPatient: function(personnummer) {
+        restUtil.login();
+        return restUtil.deleteAllIntygForPatient(personnummer);
+    },
     deleteIntyg: function(id) {
         restUtil.login();
         return restUtil.deleteIntyg(id);
@@ -79,6 +83,10 @@ module.exports = {
     deleteAllUtkast: function() {
         restUtil.login();
         return restUtil.deleteAllUtkast();
+    },
+    deleteAllUtkastForPatient: function(personnummer) {
+        restUtil.login();
+        return restUtil.deleteAllUtkastForPatient(personnummer);
     },
     deleteUtkast: function(id) {
         restUtil.login();

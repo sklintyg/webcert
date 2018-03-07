@@ -74,6 +74,13 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    deleteAllUtkastForPatient: function(personnummer) {
+        var options = {
+            url: 'testability/intyg/patient/' + personnummer,
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
+    },
     deleteUtkast: function(id) {
         var options = {
             url: 'testability/intyg/' + id,
@@ -153,6 +160,13 @@ module.exports = {
     deleteAllIntyg: function() {
         var options = {
             url: 'certificate/',
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+    },
+    deleteAllIntygForPatient: function(personnummer) {
+        var options = {
+            url: 'certificate/citizen/' + personnummer,
             method: 'DELETE'
         };
         return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
