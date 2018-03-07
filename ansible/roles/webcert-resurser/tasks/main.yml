@@ -10,9 +10,9 @@
 - name: Configure jdbc resource
   lineinfile:
     dest: "{{ tomcat_conf }}/context.xml"
-    regexp: "    <ResourceLink name='jdbc/wc4'|    <Resource name='jdbc/wc4'"
+    regexp: "    <ResourceLink name='jdbc/webcert'|    <Resource name='jdbc/webcert'"
     insertbefore: "</Context>"
-    line: "    <ResourceLink name='jdbc/wc4' global='sharedWebcert' type='javax.sql.DataSource'/>"
+    line: "    <ResourceLink name='jdbc/webcert' global='sharedWebcert' type='javax.sql.DataSource'/>"
 
 - name: Configure connection factory
   lineinfile:
