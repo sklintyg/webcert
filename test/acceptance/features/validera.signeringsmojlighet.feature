@@ -10,7 +10,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 Scenario: Det ska inte gå att signera ofullständigt SMI Intyg   
 	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg 
 	Och jag går in på utkastet
-	Och jag fyller i alla obligatoriska  fält för intyget
+	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag raderar ett slumpat obligatoriskt fält
 	Och jag klickar på signera-knappen
 	Så ska jag se en rubrik med texten "Utkastet saknar uppgifter i följande avsnitt"
