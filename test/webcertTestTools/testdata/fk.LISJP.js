@@ -37,20 +37,6 @@ function getRandomSysselsattning() {
     }])[0];
 }
 
-/* TODO funktionen används inte. Kan tas bort?
-function getRandomSannolikhetAtergang() {
-    return shuffle([{
-        bedomning: 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning'
-    }, {
-        bedomning: 'Patienten kan sannolikt inte återgå i nuvarande sysselsättning'
-    }, {
-        bedomning: 'Prognos för återgång i nuvarande sysselsättning är oklar'
-    }, {
-        bedomning: 'Patienten kommer med stor sannolikhet att återgå helt i nuvarande sysselsättning efter x antal dagar',
-        antalDagar: shuffle([30, 60, 90, 180])[0]
-    }])[0];
-}*/
-
 function getRandomArbetstidsforlaggning(arbetsformaga) {
     if (arbetsformaga.nedsattMed25 || arbetsformaga.nedsattMed50 || arbetsformaga.nedsattMed75) {
         return shuffle([{
@@ -119,15 +105,17 @@ function getRandomAtgarder() {
 
 function getRandomPrognosForArbetsformaga() {
     return shuffle([{
-        name: 'STOR_SANNOLIKHET'
-    }, {
-        name: 'SANNOLIKT_INTE'
-    }, {
-        name: 'PROGNOS_OKLAR'
-    }, {
-        name: 'ATER_X_ANTAL_DGR',
-        within: shuffle(['1 månad', '2 månader', '3 månader'])[0]
-    }])[0];
+            name: 'STOR_SANNOLIKHET'
+        }, {
+            name: 'SANNOLIKT_INTE'
+        }, {
+            name: 'PROGNOS_OKLAR'
+        },
+        {
+            name: 'ATER_X_ANTAL_DGR',
+            within: shuffle(['1 månad', '2 månader', '3 månader'])[0]
+        }
+    ])[0];
 }
 
 module.exports = {
@@ -297,7 +285,6 @@ module.exports = {
                 annat: today,
                 annatBeskrivning: testdataHelper.randomTextString()
             },
-
             sysselsattning: getRandomSysselsattning(),
             diagnos: {
                 kod: shuffle(fkValues.ICD10)[0],

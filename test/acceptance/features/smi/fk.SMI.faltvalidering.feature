@@ -14,21 +14,33 @@ Scenariomall: <krav> Validera felaktigt <typAvFält> i <intygsTyp>
     Och jag klickar på signera-knappen
     Så ska valideringsfelet <feltext> visas
 
+@F.Val-001
 Exempel:
     | krav |    typAvFält              |                   feltext                         | intygsTyp |
     | F.Val-001 |   "postnummer"            |  "Postnummer måste anges med fem siffror"         |	"Läkarintyg för sjukpenning"			|
-    # Personligkännedom om patient finns inte för LISJP |   "kännedom-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarintyg för sjukpenning"			|
+    | F.Val-001 |   "postnummer"            |  "Postnummer måste anges med fem siffror"         |	"Läkarutlåtande för sjukersättning"		|
+    | F.Val-001 |   "postnummer"            |  "Postnummer måste anges med fem siffror"         |	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga"		|
+    | F.Val-001 |   "postnummer"            |  "Postnummer måste anges med fem siffror"         |	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"			|
+	
+@F.Val-030
+Exempel:
+    | krav |    typAvFält              |                   feltext                         | intygsTyp | 
+	#LISJP
+	# Personligkännedom om patient finns inte för LISJP |   "kännedom-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarintyg för sjukpenning"			|
     | F.Val-030 |   "slumpat-datum"         |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarintyg för sjukpenning"			|
     # andraMedicinskaUtredningar finns inte för LISJP |   "underlag-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarintyg för sjukpenning"			|
-    | F.Val-001 |   "postnummer"            |  "Postnummer måste anges med fem siffror"         |	"Läkarutlåtande för sjukersättning"		|
+
+	#LUSE
     | F.Val-030 |   "kännedom-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för sjukersättning"		|
     | F.Val-030 |   "slumpat-datum"         |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för sjukersättning"		|
     | F.Val-030 |   "underlag-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för sjukersättning"		|
-	| F.Val-001 |   "postnummer"            |  "Postnummer måste anges med fem siffror"         |	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga"		|
+
+	#LUAENA
     | F.Val-030 |   "kännedom-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga"		|
     | F.Val-030 |   "slumpat-datum"         |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga"		|
     | F.Val-030 |   "underlag-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga"		|
-    | F.Val-001 |   "postnummer"            |  "Postnummer måste anges med fem siffror"         |	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"			|
+	
+	#LUAEFS
     | F.Val-030 |   "kännedom-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"			|
     | F.Val-030 |   "slumpat-datum"         |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"			|
     | F.Val-030 |   "underlag-datum"        |  "Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD"   |	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"			|

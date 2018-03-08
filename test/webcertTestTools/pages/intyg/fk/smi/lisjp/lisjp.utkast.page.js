@@ -107,8 +107,8 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             // }
             prognos: {
                 form: element(by.id('form_prognos')),
-                inom: element(by.id('prognos-ATER_X_ANTAL_DGR')),
-                select: element(by.css('#prognosDagarTillArbete-1-typ > div.ui-select-match > span'))
+                inom: element(by.css('#prognosDagarTillArbete-1-typ > div.plate')),
+                select: element(by.css('#prognosDagarTillArbete-1-typ > div.dropdown-label'))
             }
         };
         this.atgarder = {
@@ -229,7 +229,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         }
     },
     angeDiagnos: function(diagnos) {
-        var el = this.diagnoseCode; //TODO diagnoseCode är felstavat? undef?
+        var el = this.diagnoseCode;
         return pageHelpers.moveAndSendKeys(el, diagnos.kod, diagnos.kod).then(function() {
             return pageHelpers.moveAndSendKeys(el, protractor.Key.TAB, 'TAB');
         });
@@ -299,7 +299,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
 
                 return browser.executeScript(frontEndJS).then(function() {
                     return prognosEL.select.click().then(function() {
-                        return prognosEL.inom.element(by.cssContainingText('.ui-select-choices-row', prognos.within)).click();
+                        return prognosEL.inom.element(by.cssContainingText('div', prognos.within)).click();
                     });
                 });
             } else {
