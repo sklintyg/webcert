@@ -230,7 +230,7 @@ Given(/^att jag loggar in som läkare utan medarbetaruppdrag$/, function() {
 });
 
 Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vårdenhet) "([^"]*)" och inte har uppdrag på "([^"]*)"$/, function(selectedOrigin, typ, harEnhet, harInteEnhet) {
-    console.log(selectedOrigin);
+    logger.silly(selectedOrigin);
     var origin = 'NORMAL';
     if (selectedOrigin === ' djupintegrerad') {
         origin = 'DJUPINTEGRATION';

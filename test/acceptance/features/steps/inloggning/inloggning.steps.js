@@ -83,7 +83,7 @@ function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänst
 var forkedBrowser;
 
 function setForkedBrowser(forkedBrowser2) {
-    console.log('Store forked browser for next step');
+    logger.silly('Store forked browser for next step');
     forkedBrowser = forkedBrowser2;
 }
 
@@ -157,7 +157,7 @@ Given(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function()
 Given(/^jag går in på en patient som är avliden$/, function() {
     //return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0]);
     var patient = testdataHelpers.shuffle(testdata.values.patienterAvlidna)[0];
-    console.log(patient);
+    logger.silly(patient);
     return gotoPatient(patient);
 
 });
@@ -216,7 +216,7 @@ Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
         'Transportstyrelsens läkarintyg',
         'Transportstyrelsens läkarintyg, diabetes'
     ])[0];
-    console.log('intyg.typ: ' + intyg.typ);
+    logger.silly('intyg.typ: ' + intyg.typ);
     return gotoIntygUtkast(intyg.typ);
 
 });
@@ -228,7 +228,7 @@ Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
         'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
         'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
     ])[0];
-    console.log('intyg.typ: ' + intyg.typ);
+    logger.silly('intyg.typ: ' + intyg.typ);
     return Promise.all([
         sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
         sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
@@ -246,7 +246,7 @@ Given(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
         'Transportstyrelsens läkarintyg',
         'Transportstyrelsens läkarintyg, diabetes'
     ])[0];
-    console.log('intyg.typ: ' + intyg.typ);
+    logger.silly('intyg.typ: ' + intyg.typ);
     return Promise.all([
         sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
         sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)

@@ -68,7 +68,7 @@ function gotoIntyg(intygstyp, origin, addToUrl) {
         url += addToUrl;
     }
 
-    console.log('Går till url: ' + url);
+    logger.silly('Går till url: ' + url);
     return loginIfSessionUsed().then(function() {
         return browser.get(url)
             .then(function() {
@@ -101,7 +101,7 @@ function gotoIntyg(intygstyp, origin, addToUrl) {
 
 function loginIfSessionUsed() {
     if (global.sessionUsed) {
-        console.log('Loggar in med tidigare användare..');
+        logger.silly('Loggar in med tidigare användare..');
         return loginHelpers.logInAsUser({
             forNamn: global.user.forNamn,
             efterNamn: global.user.efterNamn,
@@ -124,7 +124,7 @@ function getIntegrationUrl(origin) {
         case ' via djupintegrationslänk':
 
             intygUrlShortCode = intygUrlShortCode.toLowerCase();
-            console.log(intygUrlShortCode);
+            logger.silly(intygUrlShortCode);
             url = process.env.WEBCERT_URL + 'visa/intyg/';
             //url += intygUrlShortCode + '/';  //Integrerade journalsystem använder inte intygstyp i URL
             url += global.intyg.id;
@@ -138,7 +138,7 @@ function getIntegrationUrl(origin) {
             break;
         case ' utan integrations parametrar':
             intygUrlShortCode = intygUrlShortCode.toLowerCase();
-            console.log(intygUrlShortCode);
+            logger.silly(intygUrlShortCode);
             url = process.env.WEBCERT_URL + 'visa/intyg/';
             //url += intygUrlShortCode + '/'; //Integrerade journalsystem använder inte intygstyp i URL
             url += global.intyg.id;
@@ -216,8 +216,8 @@ Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat p
     var valbaraPatienter = testpatienter.filter(function(el) {
         return el.id !== global.ursprungligPerson.id;
     });
-    console.log(testpatienter);
-    console.log(valbaraPatienter);
+    logger.silly(testpatienter);
+    logger.silly(valbaraPatienter);
 
     global.person = testdataHelpers.shuffle(valbaraPatienter)[0];
     logger.info('Går in på personnummer: ' + global.person.id);

@@ -28,7 +28,7 @@ function getIntygEntries(intygsID, connection) {
     var column = 'correlationId';
     var query = 'SELECT ' + column + ' FROM ' + dbTable + ' WHERE ' + column + ' = "' + intygsID + '"';
 
-    console.log('query: ' + query);
+    logger.silly('query: ' + query);
     var p1 = new Promise(function(resolve, reject) {
         connection.query(query,
             function(err, rows, fields) {
@@ -55,7 +55,7 @@ function lookUp(count, intygsID, cb) {
                 cb();
             } else {
                 logger.info('Hittade färre än ' + count + 'rader i databasen');
-                console.log('Ny kontroll sker efter ' + intervall + 'ms');
+                logger.silly('Ny kontroll sker efter ' + intervall + 'ms');
                 setTimeout(function() {
                     lookUp(count, intygsID, cb);
                 }, intervall);

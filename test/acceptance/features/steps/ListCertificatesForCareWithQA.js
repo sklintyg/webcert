@@ -16,7 +16,7 @@
   * You should have received a copy of the GNU General Public License
   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
- /* globals logger, intyg, Promise */
+ /* globals logger, intyg, Promise, logger*/
 
  'use strict';
  /*jshint newcap:false */
@@ -49,7 +49,7 @@
      var path = '/services/list-certificates-for-care-with-qa/v3.0?wsdl';
      var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
      url = url.replace('https', 'http');
-     console.log(url);
+     logger.silly(url);
      return new Promise(function(resolve, reject) {
          soap.createClient(url, function(err, client) {
              logger.info(url);
@@ -86,7 +86,7 @@
 
      //Vänta på att intyget/intygen ska vara tillgänligt i webcert.
      return helpers.largeDelay().then(function() {
-         console.log(body);
+         logger.silly(body);
          return sendListCertificatesForCareWithQA(body).then(function(result) {
              response = result;
              //Spara svar för aktuellt intyg i responseIntyg variabel
@@ -95,7 +95,7 @@
                      var intygID = element.intyg['intygs-id'].extension;
                      if (intygID === intyg.id) {
                          responseIntyg = element;
-                         console.log(JSON.stringify(responseIntyg));
+                         logger.silly(JSON.stringify(responseIntyg));
                      }
                  });
              }
@@ -108,7 +108,7 @@
 
  Then(/^ska responsen visa mottagna frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/, function(totalt, ejBesvarade, besvarade, hanterade) {
      var mf = responseIntyg.mottagnaFragor;
-     console.log(mf);
+     logger.silly(mf);
      return Promise.all([
          expect(totalt).to.equal(mf.totalt.toString()),
          expect(ejBesvarade).to.equal(mf.ejBesvarade.toString()),
@@ -120,7 +120,7 @@
 
  Then(/^ska responsen visa skickade frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/, function(totalt, ejBesvarade, besvarade, hanterade) {
      var sf = responseIntyg.skickadeFragor;
-     console.log(sf);
+     logger.silly(sf);
      return Promise.all([
          expect(totalt).to.equal(sf.totalt.toString()),
          expect(ejBesvarade).to.equal(sf.ejBesvarade.toString()),
@@ -138,9 +138,9 @@
          var intygID = element.intyg['intygs-id'].extension;
          idn.push(intygID);
      });
-     console.log('idn:');
-     console.log(idn);
-     console.log('letar efter: ' + intyg.id);
+     logger.silly('idn:');
+     logger.silly(idn);
+     logger.silly('letar efter: ' + intyg.id);
      if (inte) {
          return expect(idn).to.not.include(intyg.id);
      }

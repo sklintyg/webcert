@@ -269,7 +269,7 @@ Given(/^jag fyller i alla nödvändiga fält för intyget$/, function() {
         throw 'intyg.typ odefinierad.';
     } else {
         global.intyg = generateIntygByType(intyg.typ, intyg.id);
-        console.log(intyg);
+        logger.silly(intyg);
         return fillIn(global.intyg);
     }
 });
@@ -347,7 +347,7 @@ Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
     isSmitta = (typeof isSmitta === 'undefined');
     logger.silly('isSmitta : ' + isSmitta);
     global.intyg = testdata.fk['7263'].getRandom(false, isSmitta);
-    console.log(intyg);
+    logger.silly(intyg);
     return fillIn(global.intyg);
 });
 

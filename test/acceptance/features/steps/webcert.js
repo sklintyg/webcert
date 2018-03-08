@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, intyg, browser, protractor, Promise */
+/* global pages, intyg, browser, protractor, Promise, logger */
 
 'use strict';
 /*jshint newcap:false */
@@ -65,7 +65,7 @@ function checkElementsForText(els, checkValues) {
         texts.forEach(function(val, index) {
 
             if (index > 0) { //Inga checkar på tabell-header
-                console.log('Kontrollerar rad: ' + val);
+                logger.silly('Kontrollerar rad: ' + val);
                 var hasFound = textContainsAnyOfValues(val, checkValues);
                 if (!hasFound) {
                     throw ('Hittade inte ' + checkValues.join(' eller ') + ' i ' + val);

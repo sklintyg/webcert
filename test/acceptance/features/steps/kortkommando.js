@@ -86,7 +86,7 @@ Given(/^jag fyller i kortkommando som till och med datum$/, function() {
 });
 
 Given(/^ska till och med datum räknas ut automatiskt$/, function() {
-    console.log(date);
+    logger.silly(date);
     var result = pattern.test(date);
     if (result) {
         var futureDate = new Date();

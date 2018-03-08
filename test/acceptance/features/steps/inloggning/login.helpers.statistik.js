@@ -62,7 +62,7 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
 module.exports = {
     logInAsUserStatistik: logInAsUserStatistik,
     logInAsUserRoleStatistik: function(userObj, roleName, skipCookieConsent) {
-        console.log(userObj);
+        logger.silly(userObj);
         global.user.roleName = roleName;
         var self = this;
         return logInAsUserStatistik(userObj, roleName, skipCookieConsent, self).then(function() {

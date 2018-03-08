@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg, testdata, person */
+/*global intyg, testdata, person, logger*/
 
 'use strict';
 /*jshint newcap:false */
@@ -82,7 +82,7 @@ Given(/^jag fyller i alla nödvändiga fält för intyget med demodata "([^"]*)"
         throw 'intyg.typ odefinierad.';
     } else {
         global.intyg = getDemoData(intyg.typ, index);
-        console.log(intyg);
+        logger.silly(intyg);
         return fillIn(global.intyg);
     }
 });

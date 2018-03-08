@@ -50,8 +50,8 @@ function checkIfButtonIsUsable(btnId, shouldBePresent) {
         .then(function(val) {
             logger.info('OK - ' + btnId + ' - present: ' + shouldBePresent);
         }, function(val) {
-            console.log('NOK - ' + btnId + ' - expected isPresent to be:' + shouldBePresent);
-            console.log('Maybe its just not displayed? Checking..');
+            logger.silly('NOK - ' + btnId + ' - expected isPresent to be:' + shouldBePresent);
+            logger.silly('Maybe its just not displayed? Checking..');
 
             return expect(element(by.id(btnId)).isDisplayed()).to.become(shouldBePresent)
                 .then(function(val) {
@@ -127,7 +127,7 @@ Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalM
 Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typText, typ) {
 
     if (typ && intyg.typ !== typ) {
-        console.log('Intygstyp är inte ' + typ);
+        logger.silly('Intygstyp är inte ' + typ);
         return Promise.resolve();
     }
 

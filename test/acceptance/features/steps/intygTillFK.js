@@ -53,17 +53,17 @@
   */
 
  Given(/^jag skickar intyget direkt till Försäkringskassan$/, function(callback) {
-     //console.log(personId);
+     //logger.silly(personId);
      var url;
      var body;
-     //console.log(intyg);
+     //logger.silly(intyg);
      var isSMIIntyg;
      if (intyg && intyg.typ) {
          isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
      }
 
      if (isSMIIntyg) {
-         console.log('is isSMIIntyg');
+         logger.silly('is isSMIIntyg');
      } else {
          url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/send-certificate/v1.0?wsdl';
          url = url.replace('https', 'http');
@@ -76,7 +76,7 @@
              global.user.enhetId,
              global.user.enhetId,
              global.intyg.id);
-         console.log(body);
+         logger.silly(body);
          soap.createClient(url, function(err, client) {
              if (err) {
                  callback(err);
@@ -86,7 +86,7 @@
                  if (err) {
                      throw err;
                  }
-                 console.log(result);
+                 logger.silly(result);
 
                  var resultcode = result.result.resultCode;
                  logger.info('ResultCode: ' + resultcode);

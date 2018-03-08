@@ -57,7 +57,7 @@ Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/
 
     if (typ === 'frågan') {
         elm = 'wc-sekretessmarkering-icon-' + global.meddelanden[0].id;
-        console.log(elm);
+        logger.silly(elm);
     } else if (typ === 'intyget') {
         //Annars kollar vi efter 'icon+intyg' elemenetet
         elm = 'wc-sekretessmarkering-icon-' + intyg.id;
@@ -71,7 +71,7 @@ Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, func
     global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
     var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne) + ' ' + global.intyg.guidcheck, amne);
-    console.log(body);
+    logger.silly(body);
     var path = '/send-message-to-care/v2.0?wsdl';
     var url = process.env.INTYGTJANST_URL + path;
     url = url.replace('https', 'http');
@@ -82,19 +82,19 @@ Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, func
             callback(err);
         } else {
             client.SendMessageToCare(body, function(err, result, resBody) {
-                console.log(resBody);
+                logger.silly(resBody);
                 if (err) {
                     callback(err);
                 } else {
                     var resultcode = result.result.resultCode;
                     logger.info('ResultCode: ' + resultcode);
-                    // console.log(result);
+                    // logger.silly(result);
                     if (resultcode !== 'OK') {
                         logger.info(result);
                         callback('ResultCode: ' + resultcode + '\n' + resBody);
                     } else {
                         logger.info('ResultCode: ' + resultcode);
-                        // console.log(JSON.stringify(result));
+                        // logger.silly(JSON.stringify(result));
                         callback();
                     }
 

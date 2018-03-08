@@ -49,7 +49,7 @@ function getLogEntries(activity, intygsID, userHSA, connection, activityArg) {
         query += ` AND activityarg = "${activityArg}"`;
     }
 
-    console.log('query: ' + query);
+    logger.silly('query: ' + query);
     var p1 = new Promise(function(resolve, reject) {
 
         connection.query(query,

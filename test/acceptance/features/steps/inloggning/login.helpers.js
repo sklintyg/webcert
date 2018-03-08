@@ -97,7 +97,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
 module.exports = {
     logInAsUser: logInAsUser,
     logInAsUserRole: function(userObj, roleName, skipCookieConsent, secondBrowser) {
-        console.log(userObj);
+        logger.silly(userObj);
         global.user.roleName = roleName;
 
         return logInAsUser(userObj, skipCookieConsent, secondBrowser)

@@ -205,16 +205,16 @@ Given(/^ska Förnya\-knappen visas för( alla)?( aktuella)? signerade eller mott
             var rowChecks = [];
 
             function onSucc(value) {
-                //console.log('kontrollerart att rad ' + notText + ' har en ' + buttonText + '-knapp');
+                //logger.silly('kontrollerart att rad ' + notText + ' har en ' + buttonText + '-knapp');
             }
 
             function onFail(reason) {
-                console.log(reason.message);
+                logger.silly(reason.message);
                 throw reason;
             }
 
             function printText(txt) {
-                console.log(txt);
+                logger.silly(txt);
             }
 
             for (var k = 0; k < els.length; k++) {
@@ -341,7 +341,7 @@ Given(/^jag byter vårdenhet till "([^"]*)"$/, function(id) {
         })
         .then(function() {
             var enhetId = 'select-active-unit-' + id + '-modal';
-            console.log(enhetId);
+            logger.silly(enhetId);
             return helpers.moveAndSendKeys(element(by.id(enhetId)), protractor.Key.SPACE);
 
         });

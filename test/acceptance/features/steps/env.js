@@ -206,7 +206,7 @@ After(function(testCase) {
             })
             .then(function() {
                 var url = 'about:blank';
-                console.log('går till ' + url);
+                logger.silly('går till ' + url);
                 return browser.get(url);
             })
             .then(function() {
@@ -217,7 +217,7 @@ After(function(testCase) {
             }).then(function() {
                 return browser.sleep(1000);
             }).then(function() {
-                console.log('browser.refresh');
+                logger.silly('browser.refresh');
                 return browser.refresh();
             });
 
@@ -230,7 +230,7 @@ After(function(testCase) {
                 return browser.executeScript('window.localStorage.clear();');
             }).then(function() {
                 var url = 'about:blank';
-                console.log('går till ' + url);
+                logger.silly('går till ' + url);
                 return browser.get(url);
             })
             .then(function() {

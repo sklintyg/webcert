@@ -57,13 +57,13 @@ function sendCreateDraft(url, body, callback) {
             callback(err);
         } else {
             client.CreateDraftCertificate(body, function(err, result, resBody) {
-                console.log(resBody);
+                logger.silly(resBody);
                 if (err) {
                     callback(err);
                 } else {
                     var resultcode = result.result.resultCode;
                     logger.info('ResultCode: ' + resultcode);
-                    console.log(result);
+                    logger.silly(result);
                     if (resultcode !== 'OK') {
                         logger.info(result);
                         callback('ResultCode: ' + resultcode + '\n' + resBody);
@@ -108,7 +108,7 @@ function createBody(intygstyp, callback) {
             global.person.id
         );
     }
-    console.log(body);
+    logger.silly(body);
     var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
     url = url.replace('https', 'http');
 

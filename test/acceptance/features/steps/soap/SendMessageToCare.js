@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals wcTestTools, JSON*/
+/*globals wcTestTools, JSON, logger*/
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
@@ -56,7 +56,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
 
     }
 
-    console.log('global.meddelanden: ' + JSON.stringify(global.meddelanden));
+    logger.silly('global.meddelanden: ' + JSON.stringify(global.meddelanden));
 
     var kompletteringar = '';
     var paminnelseMeddelandeId = '';

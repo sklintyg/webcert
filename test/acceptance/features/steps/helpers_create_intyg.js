@@ -42,7 +42,7 @@ function writeNewIntyg(typ, status) {
 
 
     if (typ === 'Läkarintyg FK 7263') {
-        console.log('Det går inte längre skapa nytt intygs utkast för FK7263');
+        logger.silly('Det går inte längre skapa nytt intygs utkast för FK7263');
         return;
     } else {
         // Logga in med en användare som garanterat kan signera intyg
@@ -51,11 +51,11 @@ function writeNewIntyg(typ, status) {
             .then(function() {
                 return sokSkrivIntygPage.selectPersonnummer(person.id)
                     .then(function() { // Välj rätt typ av utkast
-                        console.log('Väljer typ av utkast..');
+                        logger.silly('Väljer typ av utkast..');
                         return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(typ);
                     })
                     .then(function() { // Klicka på skapa nytt utkast
-                        console.log('Klickar på nytt utkast knapp');
+                        logger.silly('Klickar på nytt utkast knapp');
                         return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
                     })
                     .then(function() {
@@ -69,13 +69,13 @@ function writeNewIntyg(typ, status) {
 
                     })
                     .then(function() { // Ange intygsdata
-                        console.log('Anger intygsdata..');
+                        logger.silly('Anger intygsdata..');
                         global.intyg = helpers.generateIntygByType(typ, intyg.id);
-                        console.log(global.intyg);
+                        logger.silly(global.intyg);
                         return require('./fillIn').fillIn(intyg);
                     })
                     .then(function() { //Klicka på signera
-                        console.log('Klickar på signera..');
+                        logger.silly('Klickar på signera..');
                         return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
                     })
                     .then(function() {
@@ -83,19 +83,19 @@ function writeNewIntyg(typ, status) {
                     })
                     .then(function() { // Skicka till mottagare om intyget ska vara Skickat
                         if (status === 'Skickat') {
-                            console.log('Klickar på skicka knapp..');
+                            logger.silly('Klickar på skicka knapp..');
                             return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE)
                                 .then(function() {
-                                    console.log('Klickar skicka knapp i skicka-dialog..');
+                                    logger.silly('Klickar skicka knapp i skicka-dialog..');
                                     return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
                                 });
                         } else {
-                            console.log('Klar utan att skicka till mottagare..');
+                            logger.silly('Klar utan att skicka till mottagare..');
                             return Promise.resolve();
                         }
                     })
                     .then(function() { // Logga in med tidigare användare
-                        console.log('Loggar in med tidigare användare..');
+                        logger.silly('Loggar in med tidigare användare..');
                         return loginHelpers.logInAsUser({
                             forNamn: standardUser.forNamn,
                             efterNamn: standardUser.efterNamn,

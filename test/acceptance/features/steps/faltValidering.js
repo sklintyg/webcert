@@ -263,7 +263,7 @@ Given(/^ska valideringsfelet "([^"]*)" visas "([^"]*)" gånger$/, function(arg1,
         return elm.getText();
     });
     return alertTexts.then(function(result) {
-        // console.log(result);
+        // logger.silly(result);
         return expect(antalAvLoop(result, arg1)).to.equal(arg2);
     });
 
@@ -275,7 +275,7 @@ Given(/^ska alla (standard|utökade) valideringsfel för "([^"]*)" visas*$/, fun
     });
     if (arg1 === 'standard' && intygsTyp === 'Transportstyrelsens läkarintyg, diabetes') {
         return alertTexts.then(function(result) {
-            // console.log(result);
+            // logger.silly(result);
             expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['1', '4']);
             expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
             expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('4');
@@ -284,7 +284,7 @@ Given(/^ska alla (standard|utökade) valideringsfel för "([^"]*)" visas*$/, fun
     }
     if (arg1 === 'utökade' && intygsTyp === 'Transportstyrelsens läkarintyg, diabetes') {
         return alertTexts.then(function(result) {
-            // console.log(result);
+            // logger.silly(result);
             expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['7', '10']);
             expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('2');
             expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('7');
@@ -293,7 +293,7 @@ Given(/^ska alla (standard|utökade) valideringsfel för "([^"]*)" visas*$/, fun
     }
     if (arg1 === 'standard' && intygsTyp === 'Transportstyrelsens läkarintyg') {
         return alertTexts.then(function(result) {
-            // console.log(result);
+            // logger.silly(result);
             expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['3', '6']);
             expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
             expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('24');
@@ -301,7 +301,7 @@ Given(/^ska alla (standard|utökade) valideringsfel för "([^"]*)" visas*$/, fun
     }
     if (arg1 === 'utökade' && intygsTyp === 'Transportstyrelsens läkarintyg') {
         return alertTexts.then(function(result) {
-            // console.log(result);
+            // logger.silly(result);
             expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['10', '13']);
             expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
             expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('20');
@@ -314,9 +314,9 @@ Given(/^ska inga valideringsfel visas$/, function() {
         return elm.getText();
     });
     return alertTexts.then(function(result) {
-        // console.log(result);
+        // logger.silly(result);
         result.forEach(function(n) {
-            // console.log(n += 'H');
+            // logger.silly(n += 'H');
             expect(n.length).to.be.at.most(1);
         });
     });
@@ -463,7 +463,7 @@ Given(/^jag lägger till fältet "([^"]*)"$/, function(fieldtype) {
             return fkUtkastPage.baserasPa.minUndersokning.datum.clear().then(function() {
                 return helpers.moveAndSendKeys(fkUtkastPage.baserasPa.minUndersokning.datum, '2017-01-12').then(function() {
                     logger.info('Ändrar undersökningsdatum: 2017-01-12 ');
-                    //console.log('Ändrar datum');
+                    //logger.silly('Ändrar datum');
                     return helpers.enter.perform();
                 });
             });

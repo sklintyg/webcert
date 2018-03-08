@@ -93,7 +93,7 @@ module.exports = {
         }
     },
     fetchMessageIds: function(intygtyp) {
-        console.log('Hämtar meddelande-id:n');
+        logger.silly('Hämtar meddelande-id:n');
 
         // var isSMIIntyg = this.isSMIIntyg(intygtyp);
 

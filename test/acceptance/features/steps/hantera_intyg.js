@@ -273,8 +273,8 @@ Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$
 
 
     return helpers.getUtkast(intygsTyp, patient).then(function(data) {
-        //console.log('data.length: ' + data.length);
-        //console.log(data);
+        //logger.silly('data.length: ' + data.length);
+        //logger.silly(data);
 
         if (!data[0]) {
             return logger.info('OK - Inget utkast med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);
@@ -308,8 +308,8 @@ Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$
                 return raderaUtkastet();
             }).then(function() {
                 return helpers.getIntyg(intygsTyp, patient, false).then(function(data) {
-                    //console.log('data.length: ' + data.length);
-                    //console.log(data);
+                    //logger.silly('data.length: ' + data.length);
+                    //logger.silly(data);
 
                     if (!data[0]) {
                         return logger.info('OK - Inget intyg med intygsTyp ' + intygsTyp + ' finns i databasen för patienten ' + patient.id);

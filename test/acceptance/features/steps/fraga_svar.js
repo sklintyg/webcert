@@ -63,7 +63,7 @@ function kontrolleraKompletteringsFragaOHanterad(id) {
 
 function sendQuestionToFK(amne, cb) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-    console.log('isSMIIntyg : ' + isSMIIntyg);
+    logger.silly('isSMIIntyg : ' + isSMIIntyg);
 
     var fragaText = 'En ' + amne + '-fråga ' + testdataHelper.generateTestGuid();
 
@@ -184,7 +184,7 @@ Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(
         page = fkLusePage;
     }
 
-    console.log('Letar efter fråga som innehåller text: ' + fragaText);
+    logger.silly('Letar efter fråga som innehåller text: ' + fragaText);
     return expect(page.getQAElementByText(fragaText).panel.isPresent()).to.become(true);
 });
 
@@ -267,8 +267,8 @@ Given(/^jag svarar på frågan$/, function() {
             return helpers.fetchMessageIds(intyg.typ);
         })
         .then(function() {
-            console.log(intyg.messages);
-            console.log(global.meddelanden);
+            logger.silly(intyg.messages);
+            logger.silly(global.meddelanden);
             for (var k = 0; k < intyg.messages.length; k++) {
                 logger.info('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg));
                 var amneMatcharSkickadFraga = helpers.splitHeader(intyg.messages[k].amne) === helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg);
@@ -289,7 +289,7 @@ Given(/^ska jag se påminnelsen på intygssidan$/, function() {
     var panel = element(by.cssContainingText('.arende-panel', fragaText));
     return browser.refresh()
         .then(function() {
-            console.log('Letar efter påminnelse som innehåller text: ' + fragaText);
+            logger.silly('Letar efter påminnelse som innehåller text: ' + fragaText);
             return expect(panel.isPresent()).to.eventually.become(true);
 
         })
@@ -312,7 +312,7 @@ Given(/^jag markerar svaret från Försäkringskassan (?:.*) hanterat$/, functio
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     if (isSMIIntyg) {
         var messageId;
-        console.log(global.meddelanden);
+        logger.silly(global.meddelanden);
         for (var k = 0; k < global.meddelanden.length; k++) {
             if (global.meddelanden[k].typ === 'Fråga') {
                 messageId = global.meddelanden[k].id;
@@ -347,7 +347,7 @@ Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om inty
 
     if (isSMIIntyg) {
         body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
-        console.log(body);
+        logger.silly(body);
         var path = '/send-message-to-care/v2.0?wsdl';
         url = process.env.INTYGTJANST_URL + path;
         url = url.replace('https', 'http');
@@ -358,16 +358,16 @@ Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om inty
                 callback(err);
             } else {
                 client.SendMessageToCare(body, function(err, result, resBody) {
-                    console.log(resBody);
+                    logger.silly(resBody);
                     var resultcode = result.result.resultCode;
                     logger.info('ResultCode: ' + resultcode);
-                    console.log(result);
+                    logger.silly(result);
                     if (resultcode !== 'OK') {
                         logger.info(result);
                         callback('ResultCode: ' + resultcode + '\n' + resBody);
                     } else {
                         logger.info('ResultCode: ' + resultcode);
-                        console.log(JSON.stringify(result));
+                        logger.silly(JSON.stringify(result));
 
                         browser.refresh().then(function() {
                             callback(err);
@@ -388,7 +388,7 @@ Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om inty
             global.intyg.id,
             amneCode,
             'nytt meddelande: ' + global.intyg.guidcheck);
-        console.log(body);
+        logger.silly(body);
         soap.createClient(url, function(err, client) {
             if (err) {
                 callback(err);
@@ -424,7 +424,7 @@ Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
         body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ' + global.intyg.guidcheck, false);
-        console.log(body);
+        logger.silly(body);
         var path = '/send-message-to-care/v2.0?wsdl';
         url = process.env.INTYGTJANST_URL + path;
         url = url.replace('https', 'http');
@@ -435,13 +435,13 @@ Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
                 callback(err);
             } else {
                 client.SendMessageToCare(body, function(err, result, resBody) {
-                    console.log(resBody);
+                    logger.silly(resBody);
                     if (err) {
                         callback(err);
                     } else {
                         var resultcode = result.result.resultCode;
                         logger.info('ResultCode: ' + resultcode);
-                        // console.log(result);
+                        // logger.silly(result);
                         if (resultcode !== 'OK') {
                             logger.info(result);
                             callback('ResultCode: ' + resultcode + '\n' + resBody);
@@ -472,7 +472,7 @@ Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
                     'Enhetsnamn',
                     global.meddelanden[0].id
                 );
-                console.log(body);
+                logger.silly(body);
                 client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
                     callback(err);
                 });
@@ -514,7 +514,7 @@ Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, funct
     logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
     return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
         return row.all(by.css('td')).getText().then(function(text) {
-            console.log(text);
+            logger.silly(text);
             if (person.id.indexOf('-') === -1) {
                 person.id = person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
             }
@@ -543,13 +543,13 @@ Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function()
 });
 
 Given(/^jag väljer att visa intyget med frågan$/, function() {
-    console.log(global.meddelanden);
+    logger.silly(global.meddelanden);
     var atgard = 'Svara';
 
     logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
     return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
         return row.all(by.css('td')).getText().then(function(text) {
-            console.log(text);
+            logger.silly(text);
             var hasPersonnummer = (text.indexOf(person.id) > -1);
             var hasAtgard = (text.indexOf(atgard) > -1);
             return hasAtgard && hasPersonnummer;
@@ -635,7 +635,7 @@ Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
 
 
 Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lakare) {
-    console.log('Kontrollerar att varje rad innehåller texten ' + lakare);
+    logger.silly('Kontrollerar att varje rad innehåller texten ' + lakare);
     return pages.fragorOchSvar.qaTable.all(by.css('tr')).getText()
         .then(function(textArr) {
             var text = textArr.join('\n');
@@ -648,7 +648,7 @@ Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lak
 
 Given(/^ska jag se min fråga under ohanterade frågor$/, function() {
     var messageId;
-    console.log(global.meddelanden);
+    logger.silly(global.meddelanden);
     for (var k = 0; k < global.meddelanden.length; k++) {
         if (global.meddelanden[k].typ === 'Fråga') {
             messageId = global.meddelanden[k].id;
