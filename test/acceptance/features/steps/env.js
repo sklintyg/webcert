@@ -68,6 +68,7 @@ const {
     AfterStep // jshint ignore:line
 } = require('cucumber');
 
+let ScenarioLogg = '';
 
 setDefaultTimeout(600 * 1000);
 global.externalPageLinks = [];
@@ -148,7 +149,7 @@ global.externalPageLinks = [];
 
 Before(function() {
     global.scenario = this;
-
+    ScenarioLogg = '';
     logger.info('Återställer globala variabler');
     global.person = {};
     global.intyg = {};
@@ -169,6 +170,8 @@ After(function(testCase) {
 
     var world = this;
     browser.ignoreSynchronization = true;
+
+    world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
 
     if (testCase.result.status === 'failed') {
 
@@ -248,7 +251,11 @@ After(function(testCase) {
 logger.on('logging', function(transport, level, msg, meta) {
     var date = new Date();
     var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
-    if (global.scenario) {
+
+    ScenarioLogg += dateString + ' - ' + level + ': ' + msg + '<br /> ';
+
+
+    /*if (global.scenario) {
         global.scenario.attach(Buffer.from(dateString + ' - ' + level + ': ' + msg).toString('base64'));
-    }
+    }*/
 });
