@@ -131,14 +131,25 @@
 /* ---------------------------------------
  * Modal overrides
  * --------------------------------------- */
-.modal-footer {
-  text-align: left;
-  .btn-primary, .btn-secondary {
-    padding: 7px 15px;
+
+.modal-header {
+
+  h3 {
+    padding: 0;
+    line-height: 1.78;
+    font-weight: 500;
+  }
+
+  .material-icons {
+    font-size: 16px;
+    padding-top: 10px;
   }
 }
 
 .modal-body {
+  letter-spacing: normal;
+
+
   h3 {
     padding: 5px 0 5px 0;
   }
@@ -154,9 +165,23 @@
     font-size: 14px;
   }
 }
+.modal-content {
+  box-shadow: 2px 2px 4px 0 $black_24;
+}
 
-.modal-header h3 {
-  padding: 0;
+.modal-footer {
+  text-align: left;
+  border: none;
+
+  .btn-primary, .btn-secondary {
+    padding: 7px 15px;
+  }
+
+  .btn {
+    width: 128px;
+    height: 38px;
+    border: solid 1px $wc-color-17;
+  }
 }
 
 /* ---------------------------------------
