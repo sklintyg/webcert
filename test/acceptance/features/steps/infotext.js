@@ -103,11 +103,11 @@ Given(/^ska jag få en dialog med texten "([^"]*)"$/, function(text) {
 
 Given(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighet, text) {
 
-    var header3s = element.all(by.css('h3, h1')).map(function(elm, index) {
+    var headers = element.all(by.css('h3, h1')).map(function(elm, index) {
         return elm.getText();
     });
 
-    return header3s.then(function(headerTexts) {
+    return headers.then(function(headerTexts) {
         var joinedTexts = headerTexts.join('\n');
         logger.info('Hittade rubriker: ' + joinedTexts);
         if (synlighet === 'se') {
