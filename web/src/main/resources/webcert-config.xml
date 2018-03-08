@@ -104,7 +104,7 @@
     <bean id="IntegreradeEnheterBootstrapBean" class="se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean" />
   </beans>
 
-  <beans profile="dev,wc-init-data,test,demo">
+  <beans profile="dev,wc-init-data,demo">
     <bean id="UtkastBootstrapBean" class="se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean" />
   </beans>
 
