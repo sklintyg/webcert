@@ -74,7 +74,7 @@ function getNotificationEntries(intygsId, value, numEvents) {
         ' AND ' + databaseTable + '.' + extensionType + ' = "' + intygsId + '"' +
         ' ORDER BY ' + handelseTidName + ' DESC;';
 
-    console.log('query: ' + query);
+    logger.silly('query: ' + query);
 
 
     var promise = new Promise(function(resolve, reject) {
@@ -87,10 +87,10 @@ function getNotificationEntries(intygsId, value, numEvents) {
                     if (err) {
                         reject(err);
                         // } else if (rows.length !== numEvents) {
-                        //     // console.log('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
+                        //     // logger.silly('FEL, Antal händelser i db: ' + rows[0].Counter + ' (' + numEvents + ')');
                         //     resolve();
                     } else {
-                        console.log('Antal händelser i db ' + rows.length + '(' + numEvents + ')');
+                        logger.silly('Antal händelser i db ' + rows.length + '(' + numEvents + ')');
                         resolve(rows);
                     }
                 });
@@ -106,12 +106,12 @@ function waitForEntries(intygsId, statusValue, numEvents, cb) {
 
     getNotificationEntries(intygsId, statusValue, numEvents).then(function(result) {
         if (result.length >= numEvents) {
-            console.log('Hittade rader: ' + JSON.stringify(result));
+            logger.silly('Hittade rader: ' + JSON.stringify(result));
             statusuppdateringarRows = result;
             cb();
         } else {
-            console.log('Hittade färre än ' + numEvents + 'rader i databasen');
-            console.log('Ny kontroll sker efter ' + intervall + 'ms');
+            logger.silly('Hittade färre än ' + numEvents + 'rader i databasen');
+            logger.silly('Ny kontroll sker efter ' + intervall + 'ms');
             setTimeout(function() {
                 waitForEntries(intygsId, statusValue, numEvents, cb);
             }, intervall);
@@ -147,21 +147,21 @@ Given(/^jag raderar intyget$/, function(callback) {
 });
 
 Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {
-    console.log(statusuppdateringarRows[0]);
+    logger.silly(statusuppdateringarRows[0]);
     var row = statusuppdateringarRows[0];
     var dbParam = (param === 'ref') ? 'intygRef' : 'undefined';
-    console.log('\'' + param + '\' converted to database equivalent => \'' + dbParam + '\'');
-    expect(paramValue).to.equal(row[dbParam].toString());
+    logger.silly('\'' + param + '\' converted to database equivalent => \'' + dbParam + '\'');
+    expect(paramValue).to.equal(row[dbParam]);
 });
 
 Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {
     logger.info(statusuppdateringarRows[0]);
     var row = statusuppdateringarRows[0];
     return Promise.all([
-        expect(fragor).to.equal(row.antalFragor.toString()),
-        expect(hanFragor).to.equal(row.antalHanteradeFragor.toString()),
-        expect(svar).to.equal(row.antalSvar.toString()),
-        expect(hanSvar).to.equal(row.antalHanteradeSvar.toString())
+        expect(fragor).to.equal(row.antalFragor),
+        expect(hanFragor).to.equal(row.antalHanteradeFragor),
+        expect(svar).to.equal(row.antalSvar),
+        expect(hanSvar).to.equal(row.antalHanteradeSvar)
     ]);
 });
 
@@ -172,10 +172,10 @@ Given(/^ska statusuppdateringen visa mottagna frågor totalt (\d+),ej besvarade 
         var row = statusuppdateringarRows[0];
 
         return Promise.all([
-            expect(totalt).to.equal(row.mottagnaFragorTotal.toString()),
-            expect(ejBesvarade).to.equal(row.mottagnaFragorEjBesvarade.toString()),
-            expect(besvarade).to.equal(row.mottagnaFragorBesvarade.toString()),
-            expect(hanterade).to.equal(row.mottagnaFragorHanterade.toString())
+            expect(totalt).to.equal(row.mottagnaFragorTotal),
+            expect(ejBesvarade).to.equal(row.mottagnaFragorEjBesvarade),
+            expect(besvarade).to.equal(row.mottagnaFragorBesvarade),
+            expect(hanterade).to.equal(row.mottagnaFragorHanterade)
         ]);
     }
 );
@@ -186,10 +186,10 @@ Given(/^ska statusuppdateringen visa skickade frågor totalt (\d+),ej besvarade 
         var row = statusuppdateringarRows[0];
 
         return Promise.all([
-            expect(totalt).to.equal(row.skickadeFragorTotal.toString()),
-            expect(ejBesvarade).to.equal(row.skickadeFragorEjBesvarade.toString()),
-            expect(besvarade).to.equal(row.skickadeFragorBesvarade.toString()),
-            expect(hanterade).to.equal(row.skickadeFragorHanterade.toString())
+            expect(totalt).to.equal(row.skickadeFragorTotal),
+            expect(ejBesvarade).to.equal(row.skickadeFragorEjBesvarade),
+            expect(besvarade).to.equal(row.skickadeFragorBesvarade),
+            expect(hanterade).to.equal(row.skickadeFragorHanterade)
         ]);
     }
 );
