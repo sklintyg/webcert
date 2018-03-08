@@ -1,7 +1,7 @@
 #!groovy
 
-def buildVersion = "5.4.0.${BUILD_NUMBER}"
-def commonVersion = "3.5.0.+"
+def buildVersion = "5.4.0.0-SESSION-MANAGEMENT"
+def commonVersion = "3.5.0.0-SESSION-MANAGEMENT"
 def infraVersion = "3.5.0.+"
 def logsenderBaseVersion = "5.4.0.*" // Star is needed as this is a regexp
 
