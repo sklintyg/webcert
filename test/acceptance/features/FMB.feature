@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-
+@WAITINGFORFIX @INTYG-5717
 Scenariomall: Visas vid rätt fält för <intygKod>
 	Givet att vårdsystemet skapat ett intygsutkast för <intyg>
 	Och jag går in på utkastet
