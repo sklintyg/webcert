@@ -1,20 +1,19 @@
 # language: sv
-@sekretessmarkering @Varningmeddelanden
-Egenskap: Sekretessmarkerad patient
+@SEKRETESSMARKERING @VARNINGMEDDELANDEN @GE-008 @PS-002
+Egenskap: GE-008 - Sekretessmarkerad patient
 
 Bakgrund:
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient med sekretessmarkering
 
-@lisjp @fornya @intygstjänsten
-Scenario: Varningmeddelanden när man går in på patient
-   #När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
+@LISJP @FORNYA @INTYGSTJÄNSTEN
+Scenario: PS-002 - Varningmeddelanden när man går in på patient
    När jag skickar ett "Läkarintyg för sjukpenning" intyg till Intygstjänsten
    Så ska det finnas en knapp med texten "Förnya"
    Så ska jag varnas om att "Patienten har en sekretessmarkering."
 
-@signera @frågasvar @smi @skriv-ut
-Scenario: Varningmeddelanden i fråga-svar för sekretessmarkerad person
+@SIGNERA @FRÅGASVAR @SMI @SKRIV-UT @MO-007
+Scenario: MO-007 - Varningmeddelanden i fråga-svar för sekretessmarkerad person
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
@@ -23,19 +22,23 @@ Scenario: Varningmeddelanden i fråga-svar för sekretessmarkerad person
 	Och jag signerar intyget
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
 
+	#MO-007
 	Och jag skriver ut intyget
 	Så ska jag varnas om att "OBS! Patienten har en sekretessmarkering." i nytt fönster
 
 	När jag skickar intyget till Försäkringskassan
 	Och Försäkringskassan ställer en "OVRIGT" fråga om intyget
 	Och jag går till sidan Frågor och svar
+	
+	#steg nedan reds ut i GE-008 - kommentarfältet
 	Så ska frågan ha en indikator som indikerar sekretessmarkering
 
-@utkast @smi
+@UTKAST @SMI
 Scenario: Varningmeddelanden i Ej signerade utkast för sekretessmarkerad person
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
 
 	Och jag går till ej signerade utkast
+	#steg nedan reds ut i GE-008 - kommentarfältet
 	Så ska intyget ha en indikator som indikerar sekretessmarkering

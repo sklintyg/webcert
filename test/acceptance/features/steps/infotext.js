@@ -101,25 +101,6 @@ Given(/^ska jag få en dialog med texten "([^"]*)"$/, function(text) {
 });
 
 
-Given(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighet, text) {
-
-    var headers = element.all(by.css('h3, h1')).map(function(elm, index) {
-        return elm.getText();
-    });
-
-    return headers.then(function(headerTexts) {
-        var joinedTexts = headerTexts.join('\n');
-        logger.info('Hittade rubriker: ' + joinedTexts);
-        if (synlighet === 'se') {
-            return expect(joinedTexts).to.include(text);
-        } else {
-            return expect(joinedTexts).to.not.include(text);
-        }
-
-    });
-
-
-});
 
 
 Given(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighet, text) {
