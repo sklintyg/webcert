@@ -110,10 +110,10 @@
      var mf = responseIntyg.mottagnaFragor;
      logger.silly(mf);
      return Promise.all([
-         expect(totalt).to.equal(mf.totalt.toString()),
-         expect(ejBesvarade).to.equal(mf.ejBesvarade.toString()),
-         expect(besvarade).to.equal(mf.besvarade.toString()),
-         expect(hanterade).to.equal(mf.hanterade.toString())
+         expect(totalt).to.equal(mf.totalt),
+         expect(ejBesvarade).to.equal(mf.ejBesvarade),
+         expect(besvarade).to.equal(mf.besvarade),
+         expect(hanterade).to.equal(mf.hanterade)
      ]);
  });
 
@@ -122,10 +122,10 @@
      var sf = responseIntyg.skickadeFragor;
      logger.silly(sf);
      return Promise.all([
-         expect(totalt).to.equal(sf.totalt.toString()),
-         expect(ejBesvarade).to.equal(sf.ejBesvarade.toString()),
-         expect(besvarade).to.equal(sf.besvarade.toString()),
-         expect(hanterade).to.equal(sf.hanterade.toString())
+         expect(totalt).to.equal(sf.totalt),
+         expect(ejBesvarade).to.equal(sf.ejBesvarade),
+         expect(besvarade).to.equal(sf.besvarade),
+         expect(hanterade).to.equal(sf.hanterade)
      ]);
  });
 
