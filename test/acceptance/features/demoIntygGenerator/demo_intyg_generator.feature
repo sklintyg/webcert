@@ -1,15 +1,37 @@
 # language: sv
-@BACKOFFICE @NOTREADY
+@BACKOFFICE
 Egenskap: Generera Demo-data
 
-Bakgrund: Inloggad som uthoppsläkare
+Bakgrund: Inloggad som demoläkare
    Givet att jag är inloggad som läkare "Ingrid Nilsson Olsson"
 
-
-@DEMODATA-REHABSTOD
-Scenariomall: Generera intyg för <Patient> med demoDataIndex <demoDataIndex>
+@DEMODATA-REHABSTOD-RADERA
+Scenariomall: Ta bort intyg för <Patient>
    Givet att jag har raderat alla intyg för "<Patient>" via testAPI
-   Och att jag har raderat alla utkast för "<Patient>" via testAPI
+   #Och att jag har raderat alla utkast för "<Patient>" via testAPI   
+   #tabort utkast när demo har version 6.0.0.506 eller senare
+
+Exempel:
+  | Patient |
+  | 19790124-9297 |
+  | 19940901-2383 |
+  | 19970328-2393 |
+  | 19931209-2381 |
+  | 19641024-3056 |
+  | 19920815-2398 |
+  | 19930419-2397 |
+  | 19940421-2392 |
+  | 19950725-2394 |
+  | 19971008-2398 |
+  | 19950917-2392 |
+  | 19900920-2392 |
+  | 19900628-2389 |
+  | 19590313-3279 |
+  | 19601027-2661 |
+   
+@DEMODATA-REHABSTOD
+Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med demoDataIndex <demoDataIndex>
+
    
    När jag går in på testpatienten "<Patient>"
    Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
