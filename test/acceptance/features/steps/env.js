@@ -171,7 +171,6 @@ After(function(testCase) {
     var world = this;
     browser.ignoreSynchronization = true;
 
-    world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
 
     if (testCase.result.status === 'failed') {
 
@@ -218,6 +217,7 @@ After(function(testCase) {
             .then(function() {
                 return removeAlerts();
             }).then(function() {
+				world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
                 return browser.sleep(1000);
             }).then(function() {
                 logger.silly('browser.refresh');

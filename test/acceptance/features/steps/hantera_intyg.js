@@ -258,7 +258,13 @@ Given(/^jag makulerar tidigare "([^"]*)" intyg$/, function(intygsTyp, txt) {
     });
 });
 
+Givet(/^jag har raderat alla intyg för "([^"]*)" via testAPI$/, function(personnummer) {
+	
+});
 
+Givet(/^jag har raderat alla utkast för "([^"]*)" via testAPI$/, function(personnummer) {
+	
+});
 
 Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$/, function(intygsTyp, txt) {
 
