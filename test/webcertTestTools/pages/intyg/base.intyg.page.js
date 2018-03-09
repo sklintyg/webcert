@@ -45,6 +45,7 @@ var BaseIntyg = JClass._extend({
 
             statusRevoked: element(by.css('#intygstatus1 [data-intyg-status-code="is-004"]'))
         };
+        this.intygStatus = element(by.id('intygstatus1'));
         this.patientNamnOchPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.skicka = {
             knapp: element(by.id('sendBtn')),

@@ -86,9 +86,9 @@ Given(/^jag går till Sök\/skriv intyg$/, function() {
     return element(by.id('menu-skrivintyg')).typeKeys(protractor.Key.SPACE);
 });
 
-Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1, callback) {
-    expect(element(by.id('certificate-is-revoked-message-text')).getText())
-        .to.eventually.contain(arg1).and.notify(callback);
+Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1) {
+    return expect(pages.intyg.base.intyg.intygStatus.getText())
+        .to.eventually.contain(arg1);
 });
 
 Given(/^ska intyget inte finnas i intygsöversikten$/, function(callback) {
