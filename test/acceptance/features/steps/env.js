@@ -217,7 +217,7 @@ After(function(testCase) {
             .then(function() {
                 return removeAlerts();
             }).then(function() {
-				world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
+                world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
                 return browser.sleep(1000);
             }).then(function() {
                 logger.silly('browser.refresh');

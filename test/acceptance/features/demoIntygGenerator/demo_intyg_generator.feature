@@ -4,10 +4,13 @@ Egenskap: Generera Demo-data
 
 Bakgrund: Inloggad som uthoppsläkare
    Givet att jag är inloggad som läkare "Ingrid Nilsson Olsson"
-   Och jag har 
+
 
 @DEMODATA-REHABSTOD
 Scenariomall: Generera intyg för <Patient> med demoDataIndex <demoDataIndex>
+   Givet att jag har raderat alla intyg för "<Patient>" via testAPI
+   Och att jag har raderat alla utkast för "<Patient>" via testAPI
+   
    När jag går in på testpatienten "<Patient>"
    Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
    Och jag fyller i alla nödvändiga fält för intyget med demodata "<demoDataIndex>"
