@@ -76,13 +76,14 @@ Scenario: Makulera ett skickat ett SMI-intyg
 	När jag går till Mina intyg för patienten
     Så ska intyget inte finnas i Mina intyg
 
-@SAMTIDAANVANDARE
-Scenario: Samtida användare ska generera felmeddelande (SMI-intyg)
+@SAMTIDAANVANDARE @IS-010
+Scenario: IS-010 - Samtida användare ska generera felmeddelande (SMI-intyg)
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
 
 @SAMTIDAANVANDARE @MAKULERA @SMOKE
+#Krav diskutteras i kommentarfältet "Felmeddelanden, Webcert" - "Generella"
 Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) efter att intyg blivit makulerat
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget

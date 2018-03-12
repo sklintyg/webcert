@@ -43,8 +43,9 @@ module.exports = {
             var customBrowser1 = secondBrowser.findElement(by.id(elementId));
             var randomTxt1 = helpers.randomTextString();
             return customBrowser1.sendKeys(randomTxt1).then(function() {
-                var saveErrorMessage = secondBrowser.findElement(by.binding('viewState.common.error.saveErrorMessage'));
-                return expect(saveErrorMessage.getText()).to.eventually.contain('Kan inte spara utkastet.');
+                //var saveErrorMessage = secondBrowser.findElement(by.binding('viewState.common.error.saveErrorMessage'));
+                var saveErrorMessage = secondBrowser.findElement(by.binding('utkastViewState.common.error.saveErrorMessage'));
+                return expect(saveErrorMessage.getText()).to.eventually.contain('Utkastet har samtidigt ändrats av en annan användare och kunde därför inte sparas. Ladda om sidan och försök igen. Utkastet ändrades av:');
             });
         });
     },

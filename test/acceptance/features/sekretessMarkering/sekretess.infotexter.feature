@@ -34,7 +34,7 @@ Scenario: MO-007 - Varningmeddelanden i fråga-svar för sekretessmarkerad perso
 	Så ska frågan ha en indikator som indikerar sekretessmarkering
 
 @UTKAST @SMI
-Scenario: Varningmeddelanden i Ej signerade utkast för sekretessmarkerad person
+Scenario: @GE-008 - Varningmeddelanden i Ej signerade utkast för sekretessmarkerad person
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
