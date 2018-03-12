@@ -700,4 +700,6 @@ titleCodes:
   - titleCode: 204090
     groupPrescriptionCode: 9100009
     role: *r010 # LAKARE
-
+  - titleCode: 204090
+    groupPrescriptionCode: 9200007
+    role: *r010 # LAKARE
