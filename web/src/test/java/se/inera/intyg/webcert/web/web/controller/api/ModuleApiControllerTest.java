@@ -65,9 +65,9 @@ public class ModuleApiControllerTest {
     @Before
     public void setup() {
         when(moduleRegistry.listAllModules())
-                .thenReturn(Arrays.asList(new IntygModule(MODULE_ID_1, null, null, MODULE_1_DETAILED_DESC, ISSUER_TYPE_ID, null, null, null, null),
-                        new IntygModule(MODULE_ID_2, null, null, null, ISSUER_TYPE_ID, null, null, null, null),
-                        new IntygModule(MODULE_ID_3, null, null, null, ISSUER_TYPE_ID, null, null, null, null)));
+                .thenReturn(Arrays.asList(new IntygModule(MODULE_ID_1, null, null, MODULE_1_DETAILED_DESC, ISSUER_TYPE_ID, null, null, null, null, false),
+                        new IntygModule(MODULE_ID_2, null, null, null, ISSUER_TYPE_ID, null, null, null, null, false),
+                        new IntygModule(MODULE_ID_3, null, null, null, ISSUER_TYPE_ID, null, null, null, null, false)));
 
         when(dynamicLinkService.apply(DYNAMIC_LINK_PLACEHOLDER, MODULE_1_DETAILED_DESC)).thenReturn(SOME_REPLACED_DESCRIPTION);
     }
