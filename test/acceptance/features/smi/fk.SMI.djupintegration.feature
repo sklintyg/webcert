@@ -35,7 +35,7 @@ Scenario: PS-007 - Patienten har fått ett reservnummer
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer
-    Så ska ett varning-meddelande visa "Patientens personummer har ändrats"
+    Så ska ett varning-meddelande visa "Patienten har samordningsnummer kopplat till reservnummer:"
 
     När jag förnyar intyget
 	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")

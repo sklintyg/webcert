@@ -395,7 +395,6 @@ Then(/^ska varningen "([^"]*)" visas$/, function(msg) {
 });
 
 Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
-    var promiseArr = [];
     var elementArray = [
         element(by.id('wc-avliden-text-' + person.id.replace(/(\d{8})(\d{4})/, '$1-$2'))), //.patient-alert? db/doi?
         element(by.id('intyg-load-error')), //?
@@ -403,12 +402,16 @@ Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, n
         element(by.id('error-panel')) //Behörighet saknas => sekretessmarkering
     ];
 
+    var msgString = '';
     return element.all(by.css('.modal-body')).map(function(elm) { //nyttFonster => sekretessmarkering
         return elementArray.push(elm);
     }).then(function() {
         return element.all(by.css('.patient-alert')).map(function(elm) {
             return elementArray.push(elm);
-
+        });
+    }).then(function() {
+        return element.all(by.css('.alert')).map(function(elm) {
+            return elementArray.push(elm);
         });
     }).then(function() {
         elementArray.forEach(function(elm, index) {
@@ -416,7 +419,8 @@ Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, n
                 if (present) {
                     elm.getText().then(function(theMsg) {
                         if (theMsg !== '') {
-                            return promiseArr.push(expect(theMsg).to.contain(msg));
+                            msgString += theMsg;
+                            return;
                         } else {
                             return;
                         }
@@ -428,9 +432,7 @@ Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, n
             });
         });
     }).then(function() {
-        return promiseArr.push(expect(promiseArr.length).to.be.at.least(1)); // viktigt så att vi inte får passed när inga felmeddelanden visas.
-    }).then(function() {
-        return Promise.all(promiseArr);
+        return expect(msgString).to.contain(msg);
     });
 });
 
