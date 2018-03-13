@@ -131,8 +131,6 @@ features:
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
-      - *ki080 # DB
-      - *ki090 # DOI
   - &f060
     name: *kf060
     desc: Skapa ny fråga
