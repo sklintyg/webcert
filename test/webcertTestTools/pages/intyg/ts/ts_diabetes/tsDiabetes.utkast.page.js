@@ -102,12 +102,6 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             }
 
         };
-
-        this.patientAdress = {
-            postAdress: element(by.id('patientPostadress')),
-            postNummer: element(by.id('patientPostnummer')),
-            postOrt: element(by.id('patientPostort'))
-        };
     },
 
     /**

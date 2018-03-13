@@ -22,6 +22,7 @@
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
 var pool = require('./dbActions').dbPool;
+var EC = protractor.ExpectedConditions;
 
 function sh(value) {
     return (value.search(/\s-\s/g) !== -1) ? value.split(/\s-\s/g)[0].replace('Ämne: ', '') : value.split(/\n/g)[0].replace('Ämne: ', '');
@@ -30,6 +31,14 @@ function sh(value) {
 var moveAndSendKeys = require('common-testtools').protractorHelpers.moveAndSendKeys;
 
 module.exports = {
+    removeAlerts: function() {
+        return browser.wait(EC.alertIsPresent(), 1000).then(function() {
+            return browser.switchTo().alert().accept();
+        }, function() {
+            // Ingen dialogruta hittad, allt är frid och fröjd.*/
+            return;
+        });
+    },
     moveAndSendKeys: moveAndSendKeys,
     smallDelay: function() {
         return browser.sleep(100);
@@ -350,22 +359,12 @@ module.exports = {
     },
     randomPageField: function(isSMIIntyg, intygAbbrev) {
         var index = Math.floor(Math.random() * 3);
-        if (isSMIIntyg) {
-            if (intygAbbrev === 'LISJP') {
-                return this.pageField[intygAbbrev][index];
-            } else if (intygAbbrev === 'LUSE') {
-                return this.pageField[intygAbbrev][index];
-            } else if (intygAbbrev === 'LUAE_NA') {
-                return this.pageField[intygAbbrev][index];
-            } else if (intygAbbrev === 'LUAE_FS') {
-                return this.pageField[intygAbbrev][index];
-            }
-        } else if (intygAbbrev === 'TSTRK1007') {
+        if (intygAbbrev === 'TSTRK1007') {
             return this.pageField.TSTRK1007[index];
         } else if (intygAbbrev === 'TSTRK1031') {
             return this.pageField.TSTRK1031[index];
         } else {
-            return this.pageField.FK7263[index];
+            return this.pageField[intygAbbrev][index];
         }
 
     },
@@ -374,10 +373,10 @@ module.exports = {
         'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'ovrigt'],
         'LUAE_FS': ['funktionsnedsattningDebut', 'funktionsnedsattningPaverkan', 'ovrigt'],
-        'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod'],
         'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion'],
-        'TSTRK1031': ['hypoglykemier', 'diabetesBehandling', 'specialist']
-
+        'TSTRK1031': ['hypoglykemier', 'diabetesBehandling', 'specialist'],
+        'DB': ['dodsdatum', 'dodsplats', 'identitetstyrkt'],
+        'DOI': ['dodsdatum', 'dodsplats', 'identitetstyrkt']
     },
     getUserObj: function(userKey) {
         return this.userObj[userKey];

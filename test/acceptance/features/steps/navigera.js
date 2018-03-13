@@ -48,6 +48,8 @@ var loginHelpers = require('./inloggning/login.helpers.js');
  *	Stödfunktioner
  *
  */
+
+
 function gotoIntyg(intygstyp, origin, addToUrl) {
     var usingCreateDraft2;
     if (intyg && intyg.typ) {
@@ -71,6 +73,9 @@ function gotoIntyg(intygstyp, origin, addToUrl) {
     logger.silly('Går till url: ' + url);
     return loginIfSessionUsed().then(function() {
         return browser.get(url)
+            .then(function() {
+                return helpers.removeAlerts();
+            })
             .then(function() {
                 return expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true);
             }).then(function() {

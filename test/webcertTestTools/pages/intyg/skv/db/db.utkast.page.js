@@ -105,14 +105,11 @@ var DbUtkast = BaseSkvUtkast._extend({
     angeDodsdatum: function angeDodsdatum(dodsdatum) {
         var dodsdatumElm = this.dodsdatum;
 
-        console.log(dodsdatum.sakert);
-
         if (dodsdatum.sakert) {
             return moveAndSendKeys(dodsdatumElm.sakert.checkbox, protractor.Key.SPACE).then(function() {
                 return moveAndSendKeys(dodsdatumElm.sakert.datePicker, dodsdatum.sakert.datum);
             });
         } else {
-            console.log(dodsdatum.inteSakert);
             return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE)
                 .then(function() {
                     return dodsdatumElm.inteSakert.year.click().then(function() {

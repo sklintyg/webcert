@@ -1,6 +1,6 @@
 # language: sv
 
-@doi @dodsorsaksintyg @socialstyrelsen @soc
+@DOI @DODSORSAKSINTYG @SOCIALSTYRELSEN @SOC
 Egenskap: Dödsorsaksintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida

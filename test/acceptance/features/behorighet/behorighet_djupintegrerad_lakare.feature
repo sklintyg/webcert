@@ -20,7 +20,7 @@ Scenario: Kan förnya och signera ett läkarintyg
    
    Och ska det finnas en knapp för att skriva ut intyget
 
-@skriv-ut @signera @ts
+@skriv-ut @signera @TS
 Scenario: Signera ett ts-intyg
    När att vårdsystemet skapat ett intygsutkast för slumpat TS-intyg
    Och jag går in på intygsutkastet via djupintegrationslänk
@@ -31,17 +31,17 @@ Scenario: Signera ett ts-intyg
    Så ska det finnas en knapp för att skriva ut intyget
 
 
-@komplettera @svara @lisjp
+@komplettera @svara @LISJP
 Scenario: Besvara kompletteringsfråga
    När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    Och Försäkringskassan ställer en "KONTKT" fråga om intyget
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
-@komplettera @nytt-intyg @svara
+@komplettera @nytt-intyg @svara @LISJP
 Scenario: Svara med nytt intyg
    När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
-   Och Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
+   Och Försäkringskassan ställer en "KOMPLT" fråga om intyget
 
    När jag går in på intygsutkastet via djupintegrationslänk
    Och jag väljer att svara med ett nytt intyg

@@ -68,9 +68,9 @@ var BaseUtkast = JClass._extend({
             enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         };
         this.patientAdress = {
-            postAdress: element(by.id('grundData.patient.postadress')),
-            postNummer: element(by.id('grundData.patient.postnummer')),
-            postOrt: element(by.id('grundData.patient.postort'))
+            postAdress: element(by.id('grundData-patient-postadress')),
+            postNummer: element(by.id('grundData-patient-postnummer')),
+            postOrt: element(by.id('grundData-patient-postort'))
         };
     },
     get: function(intygType, intygId) {

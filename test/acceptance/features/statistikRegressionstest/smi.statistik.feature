@@ -1,11 +1,11 @@
 # language: sv
 
-@Regressionstest @RegressionsTestStatistik @Statistik @smi @notReady
+@REGRESSIONSTEST @REGRESSIONSTESTSTATISTIK @STATISTIK @SMI @NOTREADY
 Egenskap: Regressionstest på Statistiktjänsten med ökad test teckning.
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 
-@makulera @verksamhetsStatistik @lisjp
+@MAKULERA @VERKSAMHETSSTATISTIK @LISJP
 Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort från Statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
@@ -33,7 +33,7 @@ Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort
     Och jag går till statistiksidan för diagnoskod "samma som ovan"
     Så ska totala "samma som ovan" diagnoser som finns vara "1" mindre
 
-@verksamhetsStatistik @lisjp
+@VERKSAMHETSSTATISTIK @LISJP
 Scenario: Två nyskapade LISJP intyg på samma person ska räknas som en i Statistiktjänstens GUI
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
@@ -58,8 +58,8 @@ Scenario: Två nyskapade LISJP intyg på samma person ska räknas som en i Stati
     Och jag anropar statitisk-APIet processIntyg
     Och laddar om sidan
     Så ska totala "samma som ovan" diagnoser som finns vara "1" extra
-	
-@verksamhetsStatistik
+
+@VERKSAMHETSSTATISTIK
 Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i Statistiktjänstens GUI
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
@@ -86,7 +86,7 @@ Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i S
     Och laddar om sidan
     Så ska totala "samma som ovan" diagnoser som finns vara "2" extra
 
-@statistikApiet @fragasvar @lisjp @workingOnThis
+@STATISTIKAPIET @FRAGASVAR @LISJP
 Scenariomall: <beskrivning> statistik ska finnas i statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient

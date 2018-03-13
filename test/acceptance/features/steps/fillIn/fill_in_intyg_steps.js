@@ -46,6 +46,8 @@ var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 var tsDiabetesUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
+var dbUtkastPage = wcTestTools.pages.intyg.skv.db.utkast;
+var doiUtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 var moveAndSendKeys = helpers.moveAndSendKeys;
 
@@ -139,7 +141,33 @@ function clearField(intygShortcode, field) {
 
 function changeField(intygShortcode, field) {
     logger.info('Fältet som ändras är: ' + field + ' i intyg ' + intygShortcode);
-    if (intygShortcode === 'LUSE') {
+
+    var dodsdatumObj = {
+        inteSakert: {
+            year: '2018',
+            month: '01',
+            antraffadDod: '2017-09-27'
+        }
+    };
+
+
+    if (intygShortcode === 'DB') {
+        if (field === 'dodsdatum') {
+            return dbUtkastPage.angeDodsdatum(dodsdatumObj);
+        } else if (field === 'dodsplats') {
+            return moveAndSendKeys(dbUtkastPage.dodsPlats.kommun.inputText, helpers.randomTextString());
+        } else if (field === 'identitetstyrkt') {
+            return moveAndSendKeys(dbUtkastPage.identitetStyrktGenom.inputText, helpers.randomTextString());
+        }
+    } else if (intygShortcode === 'DOI') {
+        if (field === 'dodsdatum') {
+            return doiUtkastPage.angeDodsdatum(dodsdatumObj);
+        } else if (field === 'dodsplats') {
+            return moveAndSendKeys(doiUtkastPage.dodsPlats.kommun.inputText, helpers.randomTextString());
+        } else if (field === 'identitetstyrkt') {
+            return moveAndSendKeys(doiUtkastPage.identitetStyrktGenom.inputText, helpers.randomTextString());
+        }
+    } else if (intygShortcode === 'LUSE') {
         if (field === 'aktivitetsbegransning') {
             intyg.aktivitetsbegransning = helpers.randomTextString();
             return moveAndSendKeys(luseUtkastPage.aktivitetsbegransning, intyg.aktivitetsbegransning);

@@ -123,11 +123,6 @@ var TsBasUtkast = BaseTsUtkast._extend({
             JA: element(by.id('somnVakenhet-teckenSomnstorningarYes')),
             NEJ: element(by.id('somnVakenhet-teckenSomnstorningarNo'))
         };
-        this.patientAdress = {
-            postAdress: element(by.id('patientPostadress')),
-            postNummer: element(by.id('patientPostnummer')),
-            postOrt: element(by.id('patientPostort'))
-        };
     },
     fillInSynfunktioner: function(utkast) {
         var promiseArr = [];

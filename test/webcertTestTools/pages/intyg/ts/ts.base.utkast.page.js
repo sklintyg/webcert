@@ -48,11 +48,7 @@ var BaseTsUtkast = BaseUtkast._extend({
         this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label'));
 
         this.kommentar = element(by.id('kommentar'));
-        this.adress = {
-            postadress: element(by.id('grundData-patient-postadress')),
-            postnummer: element(by.id('grundData-patient-postnummer')),
-            postort: element(by.id('grundData-patient-postort'))
-        };
+        this.adress = this.patientAdress;
 
         this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));
         this.markeraKlartForSigneringModalYesButton = element(by.id('buttonYes'));
