@@ -70,10 +70,17 @@
 .btn-primary, .btn-secondary, .btn-default, .btn-success {
   @extend %btn-common;
 }
+
 .btn-default {
   border-color: $wc-color-15;
   background-color: $wc-color-00;
   color: $wc-color-17;
+}
+
+.btn-secondary {
+  border-color: $wc-color-15;
+  background-color: $wc-color-15;
+  color: $wc-color-08;
 }
 
 .btn-link {
