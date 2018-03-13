@@ -30,16 +30,10 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', function() {
 
-    var utkastId = 'fk7263-utkast-1';
-    var intygsId;
-
-    afterAll(function() {
-        restTestdataHelper.deleteIntyg(intygsId);
-        restTestdataHelper.deleteUtkast(utkastId);
-    });
-
 
     describe('Verifiera utkast', function() {
+        var utkastId = 'fk7263-utkast-1';
+
         beforeAll(function() {
             browser.ignoreSynchronization = false;
             specHelper.login();
@@ -56,15 +50,27 @@ describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', functi
             restTestdataHelper.createWebcertIntyg(utkastData);
         });
 
+        afterAll(function() {
+            restTestdataHelper.deleteUtkast(utkastId);
+        });
+
         it('skall visa utkast read-only', function() {
             UtkastPage.get(utkastId);
             expect(UtkastPage.isAt()).toBeTruthy();
 
         });
 
+        it('Skall visa "deprecated" meddelande i utkast-headern', function() {
+            expect(element(by.id('wc-deprectated-intygstype-message-utkastheader')).isDisplayed());
+        });
+
+
     });
 
     describe('Verifiera intyg med uv-ramverket', function() {
+
+        var intygsId;
+
         beforeAll(function() {
             browser.ignoreSynchronization = false;
             specHelper.login();
@@ -81,11 +87,21 @@ describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', functi
 
         });
 
+        afterAll(function() {
+            restTestdataHelper.deleteIntyg(intygsId);
+        });
+
         it('Skall visa signerat intyg med uv-ramverket', function() {
             IntygPage.get(intygsId);
             expect(IntygPage.isAt()).toBeTruthy();
 
         });
+
+        it('Skall visa "deprecated" meddelande i intygs-headern och ärendehanteringen', function() {
+           expect(element(by.id('wc-deprectated-intygstype-message-intygheader')).isDisplayed());
+           expect(element(by.id('wc-deprectated-intygstype-message-arendeheader')).isDisplayed());
+        });
+
     });
 
 });
