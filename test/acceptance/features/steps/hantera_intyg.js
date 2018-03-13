@@ -304,8 +304,7 @@ Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$
             .then(function() {
                 var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
                 var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
-                logger.info('Går till ' + link);
-                return browser.get(link);
+                return helpers.getUrl(link);
             })
             .then(function() {
                 return helpers.pageReloadDelay();
@@ -339,8 +338,7 @@ Given(/^jag har makulerat tidigare "([^"]*)" intyg för "([^"]*)" testpatienten$
                         .then(function() {
                             var intygUrlShortcode = helpers.getPathShortcode(intygsTyp).toLowerCase();
                             var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
-                            logger.info('Går till ' + link);
-                            return browser.get(link);
+                            return helpers.getUrl(link);
                         })
                         .then(function() {
                             return helpers.pageReloadDelay();

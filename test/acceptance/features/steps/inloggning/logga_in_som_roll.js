@@ -58,7 +58,7 @@ function checkUserOrigin() {
 
 function performUserCheck(userconfig) {
     browser.ignoreSynchronization = true;
-    browser.get('testability/user/' + userconfig + '/');
+    helpers.getUrl('testability/user/' + userconfig + '/');
     var attribute = element(by.css('pre')).getText();
     browser.navigate().back();
     browser.sleep(1000);

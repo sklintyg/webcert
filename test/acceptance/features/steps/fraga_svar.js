@@ -154,7 +154,7 @@ Given(/^jag väljer att svara med ett nytt intyg$/, function() {
     }
 });
 Given(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {
-    return browser.get(global.behoverKompletterasLink);
+    return helpers.getUrl(global.behoverKompletterasLink);
 
     // Denna funktionalitet användes när relations-valen fanns kvar
     // return element(by.id('wc-intyg-relations-button')).click().then(function() {

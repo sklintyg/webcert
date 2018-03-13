@@ -33,7 +33,7 @@ const {
     Then // jshint ignore:line
 } = require('cucumber');
 
-
+var helpers = require('./helpers');
 var db = require('./dbActions');
 var loginHelperStatistik = require('./inloggning/login.helpers.statistik.js');
 var logInAsUserRoleStatistik = loginHelperStatistik.logInAsUserRoleStatistik;
@@ -86,9 +86,7 @@ Given(/^ska jag se intyget i databasen$/, function(callback) {
 Given(/^jag går in på Statistiktjänsten$/, function() {
     global.statistik.intygsId = intyg.id;
     var url = process.env.STATISTIKTJANST_URL + '/#/fakelogin';
-    return browser.get(url).then(function() {
-        logger.info('Går till url: ' + url);
-    });
+    return helpers.getUrl(url);
 });
 
 Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
@@ -162,7 +160,7 @@ Given(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagn
     logger.silly('diagnosKod.charAt(0) - ' + diagnosKod.charAt(0));
     logger.silly('url[diagnosKod.charAt(0)] - ' + url[diagnosKod.charAt(0)]);
 
-    return browser.get(url[diagnosKod.charAt(0)]).then(function() {
+    return helpers.getUrl(url[diagnosKod.charAt(0)]).then(function() {
         logger.info('Går till url för diagnoskod ' + diagnosKod + ': ' + url[diagnosKod.charAt(0)]);
     });
 });

@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global logger, JSON, browser, Promise */
+/*global logger, JSON, browser */
 'use strict';
-// var helpers = require('../helpers');
+var helpers = require('../helpers');
 
 function loginByJSON(userJson, giveCookieConsent, self) {
     if (giveCookieConsent) {
@@ -47,15 +47,16 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
 
     var login;
     browser.ignoreSynchronization = true;
-    browser.get('/#/fakelogin');
-    browser.sleep(2000);
+
+
     login = loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
     browser.ignoreSynchronization = false;
-    browser.sleep(3000);
     global.user.roleName = roleName;
 
-    return login.then(function() {
-        return Promise.resolve();
+    return helpers.getUrl('/#/fakelogin').then(function() {
+        return login();
+    }).then(function() {
+        return helpers.pageReloadDelay();
     });
 };
 

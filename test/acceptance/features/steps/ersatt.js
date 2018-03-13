@@ -102,9 +102,7 @@ When(/^jag klickar på ersätt\-knappen i dialogen$/, function() {
 Given(/^jag går tillbaka till det ersatta intyget$/, function() {
     return helpers.pageReloadDelay().then(function() {
         var url = intygURL(global.ersattintyg.typ, global.ersattintyg.id);
-        return browser.get(url).then(function() {
-            logger.info('Går till url: ' + url);
-        });
+        return helpers.getUrl(url);
     });
 });
 

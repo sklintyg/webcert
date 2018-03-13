@@ -31,6 +31,18 @@ function sh(value) {
 var moveAndSendKeys = require('common-testtools').protractorHelpers.moveAndSendKeys;
 
 module.exports = {
+    getUrl: function(url) {
+        var reloadDelay = this.pageReloadDelay;
+        logger.info('Går till url:' + url);
+        return browser.get(url).then(function() {
+            return reloadDelay();
+        }).then(function() {
+            return browser.getCurrentUrl();
+        }).then(function(currentUrl) {
+            logger.silly('currentUrl: ' + currentUrl);
+            return browser.sleep(1);
+        });
+    },
     removeAlerts: function() {
         return browser.wait(EC.alertIsPresent(), 1000).then(function() {
             return browser.switchTo().alert().accept();

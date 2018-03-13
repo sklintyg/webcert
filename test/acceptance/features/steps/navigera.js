@@ -72,7 +72,7 @@ function gotoIntyg(intygstyp, origin, addToUrl) {
 
     logger.silly('Går till url: ' + url);
     return loginIfSessionUsed().then(function() {
-        return browser.get(url)
+        return helpers.getUrl(url)
             .then(function() {
                 return helpers.removeAlerts();
             })
@@ -174,8 +174,7 @@ Given(/^jag trycker på visa intyget$/, function() {
 Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, function(arg1) {
     var intygUrlShortcode = helpers.getPathShortcode(intyg.typ).toLowerCase();
     var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
-    logger.info('Går till ' + link);
-    return browser.get(link).then(function() {
+    return helpers.getUrl(link).then(function() {
         return helpers.pageReloadDelay();
     });
 });
@@ -239,9 +238,7 @@ Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservn
 Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk$/, function() {
     //"Försöker gå in" är inte samma steg som "går in". p.g.a. expect logiken.
     return loginIfSessionUsed().then(function() {
-        return browser.get(getIntegrationUrl(' via djupintegrationslänk'));
-    }).then(function() {
-        return browser.sleep(2000);
+        return helpers.getUrl(getIntegrationUrl(' via djupintegrationslänk'));
     });
 });
 
@@ -268,7 +265,7 @@ Given(/^jag sparar länken till aktuell sida$/, function() {
 });
 
 Given(/^går till den sparade länken$/, function() {
-    return browser.get(savedLink);
+    return helpers.getUrl(savedLink);
 });
 
 Given(/^jag verifierar att URL:en är samma som den sparade länken$/, function() {
@@ -304,7 +301,7 @@ Given(/^jag anger "([^"]*)" i valet "([^"]*)"$/, function(svar, text) {
 
 Given(/^jag går in på healthcheck\-sidan$/, function() {
     browser.ignoreSynchronization = true;
-    return browser.get('healthcheck.jsp');
+    return helpers.getUrl('healthcheck.jsp');
 });
 
 Given(/^ska status för "([^"]*)" vara "([^"]*)"$/, function(checknamn, varaText) {

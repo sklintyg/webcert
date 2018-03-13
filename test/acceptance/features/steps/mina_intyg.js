@@ -38,6 +38,7 @@ const {
 
 var miCheckValues = require('./checkValues/minaintyg');
 var STATUS_REGEX;
+var helpers = require('./helpers');
 
 
 /*
@@ -71,7 +72,7 @@ Given(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
 
 Given(/^jag går till Mina intyg för patienten$/, function(callback) {
     browser.ignoreSynchronization = true;
-    browser.get(process.env.MINAINTYG_URL + '/web/sso?guid=' + global.person.id);
+    helpers.getUrl(process.env.MINAINTYG_URL + '/web/sso?guid=' + global.person.id);
     // element(by.id('guid')).sendKeys(global.person.id);
     // element(by.css('input.btn')).sendKeys(protractor.Key.SPACE).then(function() {
 

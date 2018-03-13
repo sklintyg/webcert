@@ -33,7 +33,7 @@ const {
     Then // jshint ignore:line
 } = require('cucumber');
 
-
+var helpers = require('./helpers');
 var fillIn = require('./fillIn/').fillIn;
 var loginHelper = require('./inloggning/login.helpers.js');
 var loginHelperRehabstod = require('./inloggning/login.helpers.rehabstod.js');
@@ -166,7 +166,7 @@ function findSsn(obj) {
 
 Given(/^jag går in på Rehabstöd$/, function() {
     var url = process.env.REHABSTOD_URL + 'welcome.html';
-    return browser.get(url).then(function() {
+    return helpers.getUrl(url).then(function() {
         logger.info('Går till url: ' + url);
     });
 });
@@ -317,7 +317,5 @@ Given(/^jag går in på intyget som tidigare skapats$/, function() {
         url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + global.statistik.intygsId + '/';
     }
 
-    return browser.get(url).then(function() {
-        logger.info('Går till url: ' + url);
-    });
+    return helpers.getUrl(url);
 });

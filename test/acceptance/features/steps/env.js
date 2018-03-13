@@ -26,6 +26,7 @@ var fs = require('fs');
 var hasFoundConsoleErrors = false;
 var duplicateIds = [];
 var EC = protractor.ExpectedConditions;
+var helpers = require('./helpers');
 
 function writeScreenShot(data, filename, cb) {
     var stream = fs.createWriteStream(filename);
@@ -190,12 +191,12 @@ After(function(testCase) {
                 var ssPath = './node_modules/common-testtools/cucumber-html-report/';
                 var filename = 'screenshots/' + new Date().getTime() + '.png';
                 return writeScreenShot(png, ssPath + filename, function() {
+                    logger.silly('Skärmbild tagen: ' + filename);
                     return world.attach(new Buffer(png, 'base64'), 'image/png', function(err) {
                         //return world.attach(filename, 'image/png', function(err) {
                         if (err) {
                             throw err;
                         }
-                        logger.silly('Skärmbild tagen: ' + filename);
                         return checkConsoleErrors();
                     });
                 });
@@ -208,8 +209,7 @@ After(function(testCase) {
             })
             .then(function() {
                 var url = 'about:blank';
-                logger.silly('går till ' + url);
-                return browser.get(url);
+                return helpers.getUrl(url);
             })
             .then(function() {
                 return browser.sleep(1000);
@@ -233,8 +233,7 @@ After(function(testCase) {
                 return browser.executeScript('window.localStorage.clear();');
             }).then(function() {
                 var url = 'about:blank';
-                logger.silly('går till ' + url);
-                return browser.get(url);
+                return helpers.getUrl(url);
             })
             .then(function() {
                 return removeAlerts();

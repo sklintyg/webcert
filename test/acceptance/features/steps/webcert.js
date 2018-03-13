@@ -35,7 +35,7 @@ const {
     Then // jshint ignore:line
 } = require('cucumber');
 
-
+var helpers = require('./helpers');
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 
 var testTools = require('common-testtools');
@@ -104,7 +104,7 @@ Given(/^det finns ett "([^"]*)"$/, function(intygtyp) {
             return browser.getCurrentUrl().then(function(currentUrl) {
                 return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp).then(function() {
                     return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE).then(function() {
-                        return browser.get(currentUrl);
+                        return helpers.getUrl(currentUrl);
                     });
                 });
             });

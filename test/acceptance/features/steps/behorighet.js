@@ -158,7 +158,7 @@ Given(/^att det finns intygsutkast$/, function() {
                                 return element(by.id('intygTypeFortsatt')).sendKeys(protractor.Key.SPACE);
                             })
                             .then(function() {
-                                return browser.get(url); // gå tillbaka till översikt
+                                return helpers.getUrl(url); // gå tillbaka till översikt
                             });
                     });
             }
