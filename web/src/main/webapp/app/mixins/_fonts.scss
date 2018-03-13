@@ -220,14 +220,14 @@ Color and background should be specified at the extension point, eg:
  Custom icon font (built with fontello)
  */
 
-@font-face {
-  font-family: 'wc-customicons_02';
-  src: url('/fonts/wc-customicons_02.eot?83434560');
-  src: url('/fonts/wc-customicons_02.eot?83434560#iefix') format('embedded-opentype'),
-  url('/fonts/wc-customicons_02.woff2?83434560') format('woff2'),
-  url('/fonts/wc-customicons_02.woff?83434560') format('woff'),
-  url('/fonts/wc-customicons_02.ttf?83434560') format('truetype'),
-  url('/fonts/wc-customicons_02.svg?83434560#wc-customicons_02') format('svg');
+ @font-face {
+  font-family: 'wc-customicons_03';
+  src: url('/fonts/wc-customicons_03.eot?43248863');
+  src: url('/fonts/wc-customicons_03.eot?43248863#iefix') format('embedded-opentype'),
+       url('/fonts/wc-customicons_03.woff2?43248863') format('woff2'),
+       url('/fonts/wc-customicons_03.woff?43248863') format('woff'),
+       url('/fonts/wc-customicons_03.ttf?43248863') format('truetype'),
+       url('/fonts/wc-customicons_03.svg?43248863#wc-customicons_03') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -236,14 +236,14 @@ Color and background should be specified at the extension point, eg:
 /*
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
-    font-family: 'wc-customicons_02';
-    src: url('../font/wc-customicons_02.svg?83434560#wc-customicons_02') format('svg');
+    font-family: 'wc-customicons_03';
+    src: url('/fonts/wc-customicons_03.svg?43248863#wc-customicons_03') format('svg');
   }
 }
 */
 
-[class^="icon-"]:before, [class*=" icon-"]:before {
-  font-family: "wc-customicons_02";
+ [class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "wc-customicons_03";
   font-style: normal;
   font-weight: normal;
   speak: none;
@@ -287,6 +287,9 @@ Color and background should be specified at the extension point, eg:
 .icon-wc-ikon-reply:before { content: '\e807'; } /* '' */
 .icon-wc-ikon-tek-fragor:before { content: '\e808'; } /* '' */
 .icon-wc-ikon-fraga:before { content: '\e809'; } /* '' */
+.icon-wc-ikon-30:before { content: '\e80a'; } /* '' */
+.icon-wc-ikon-39:before { content: '\e80b'; } /* '' */
+.icon-wc-ikon-38:before { content: '\e80c'; } /* '' */
 
 /*
   Sizes
