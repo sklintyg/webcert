@@ -11,7 +11,9 @@
        Stäng samtliga öppna webbläsarfönster för att vara säker på att information om din e-legitimation inte har lagrats temporärt, när du loggar ut från Webcert.<br/>
        Spärra din e-legitimation omedelbart hos utgivaren, om du förlorat din e-legitimation, så att den inte kan missbrukas.</p>
 
-    <a class="internal" ng-click="elegExpanded = !elegExpanded">Problem med inloggning med e-legitimation? <i class="glyphicon" ng-class="{'glyphicon-chevron-down': elegExpanded, 'glyphicon-chevron-right': !elegExpanded}"></i></a>
+    <a class="internal" ng-click="elegExpanded = !elegExpanded">Problem med inloggning med e-legitimation?
+      <i ng-if="elegExpanded" class="material-icons">expand_less</i><i ng-if="!elegExpanded" class="material-icons">expand_more</i>
+    </a>
     <div ng-if="elegExpanded">
 
         <h4>Felsökning med inloggning med e-legitimation</h4>

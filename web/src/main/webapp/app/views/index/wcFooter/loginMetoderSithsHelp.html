@@ -4,7 +4,8 @@
 <div class="modal-body">
   <p>Du som arbetar i en organisation som är ansluten till HSA-katalogen samt har medarbetaruppdrag ”Vård och behandling” loggar in med SITHS-kort. </p>
   
-  <a class="internal" ng-click="sithsExpanded = !sithsExpanded">Problem med inloggning med SITHS-kort? <i class="glyphicon" ng-class="{'glyphicon-chevron-down': sithsExpanded, 'glyphicon-chevron-right': !sithsExpanded}"></i></a>
+  <a class="internal" ng-click="sithsExpanded = !sithsExpanded">Problem med inloggning med SITHS-kort?
+    <i ng-if="sithsExpanded" class="material-icons">expand_less</i><i ng-if="!sithsExpanded" class="material-icons">expand_more</i></a>
   <div ng-if="sithsExpanded">
     <p>Om du inte kan logga in i Webcert med ditt SITHS-kort prova att gå igenom punkterna nedan för att ta reda på vad
       problemet kan bero på. </p>
