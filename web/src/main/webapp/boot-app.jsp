@@ -64,6 +64,10 @@
 
   <c:choose>
     <c:when test="${pageAttributes.useMinifiedJavaScript == 'true'}">
+
+      <script type="text/javascript">
+          var WEBCERT_DEBUG_MODE = false;
+      </script>
       <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular/angular.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/bower_components/angular-animate/angular-animate.min.js?<spring:message code="buildNumber" />"></script>
@@ -80,6 +84,10 @@
       <script type="text/javascript" src="/app/app.min.js?<spring:message code="buildNumber" />"></script>
     </c:when>
     <c:otherwise>
+      <script type="text/javascript">
+          var WEBCERT_DEBUG_MODE = true;
+      </script>
+
       <!-- bower:js -->
       <script type="text/javascript" src="/bower_components/jquery/dist/jquery.js"></script>
       <script type="text/javascript" src="/bower_components/angular/angular.js"></script>

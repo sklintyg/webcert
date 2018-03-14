@@ -94,6 +94,9 @@
     app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider',
         function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider) {
 
+            // Set in boot-app.jsp
+            var debugMode = angular.isDefined(WEBCERT_DEBUG_MODE) ? WEBCERT_DEBUG_MODE : true; //jshint ignore:line
+
             // START TEMP 1.6 migration compatibility flags
             $compileProvider.preAssignBindingsEnabled(true);
             $locationProvider.hashPrefix('');
@@ -107,10 +110,10 @@
             $httpProvider.interceptors.push('common.http403ResponseInterceptor');
 
             // Enable debug logging
-            $logProvider.debugEnabled(true);
+            $logProvider.debugEnabled(debugMode);
 
             // Disable angular debug info.
-            $compileProvider.debugInfoEnabled(true);
+            $compileProvider.debugInfoEnabled(debugMode);
 
             // Disable comment and css directives
             $compileProvider.commentDirectivesEnabled(false);
