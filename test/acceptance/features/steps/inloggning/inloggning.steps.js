@@ -403,37 +403,40 @@ Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, n
     ];
 
     var msgString = '';
-    return element.all(by.css('.modal-body')).map(function(elm) { //nyttFonster => sekretessmarkering
-        return elementArray.push(elm);
-    }).then(function() {
-        return element.all(by.css('.patient-alert')).map(function(elm) {
-            return elementArray.push(elm);
-        });
-    }).then(function() {
-        return element.all(by.css('.alert')).map(function(elm) {
-            return elementArray.push(elm);
-        });
-    }).then(function() {
-        elementArray.forEach(function(elm, index) {
-            elm.isPresent().then(function(present) {
-                if (present) {
-                    elm.getText().then(function(theMsg) {
-                        if (theMsg !== '') {
-                            msgString += theMsg;
-                            return;
-                        } else {
-                            return;
-                        }
-                    });
-
-                } else {
-                    return;
-                }
+    return helpers.largeDelay().then(function() {
+            return element.all(by.css('.modal-body')).map(function(elm) { //nyttFonster => sekretessmarkering
+                return elementArray.push(elm);
             });
+        })
+        .then(function() {
+            return element.all(by.css('.patient-alert')).map(function(elm) {
+                return elementArray.push(elm);
+            });
+        }).then(function() {
+            return element.all(by.css('.alert')).map(function(elm) {
+                return elementArray.push(elm);
+            });
+        }).then(function() {
+            elementArray.forEach(function(elm, index) {
+                elm.isPresent().then(function(present) {
+                    if (present) {
+                        elm.getText().then(function(theMsg) {
+                            if (theMsg !== '') {
+                                msgString += theMsg;
+                                return;
+                            } else {
+                                return;
+                            }
+                        });
+
+                    } else {
+                        return;
+                    }
+                });
+            });
+        }).then(function() {
+            return expect(msgString).to.contain(msg);
         });
-    }).then(function() {
-        return expect(msgString).to.contain(msg);
-    });
 });
 
 Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {

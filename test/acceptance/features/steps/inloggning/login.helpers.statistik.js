@@ -44,18 +44,13 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
 
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
-
-    var login;
-    browser.ignoreSynchronization = true;
-
-
-    login = loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
-    browser.ignoreSynchronization = false;
     global.user.roleName = roleName;
 
+    browser.ignoreSynchronization = true;
     return helpers.getUrl('/#/fakelogin').then(function() {
-        return login();
+        return loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
     }).then(function() {
+        browser.ignoreSynchronization = false;
         return helpers.pageReloadDelay();
     });
 };

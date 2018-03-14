@@ -36,7 +36,7 @@ module.exports = {
     processIntyg: function() {
         var options = defaultRESTAPIOptions;
         options.method = 'POST';
-        options.url += 'testsupport/processIntyg';
+        options.url = process.env.STATISTIKTJANST_URL + '/api/testsupport/processIntyg';
         return apiRequest(options);
     },
     setFilter: function(body) {

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg, browser, logger, protractor, wcTestTools, Promise */
+/* globals intyg, browser, logger, wcTestTools, Promise */
 'use strict';
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
@@ -37,7 +37,7 @@ var helpers = require('./helpers');
 var db = require('./dbActions');
 var loginHelperStatistik = require('./inloggning/login.helpers.statistik.js');
 var logInAsUserRoleStatistik = loginHelperStatistik.logInAsUserRoleStatistik;
-var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var diagnosKategorier = wcTestTools.testdata.diagnosKategorier;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 var statistikAPI = require('./statistiktjansten/api/statistikAPI.js');
@@ -107,35 +107,15 @@ Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
 });
 
 Given(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnosKod) {
-    diagnosKod = slumpaDiagnosKod(diagnosKod);
+    var diagnos = {
+        kod: diagnosKod
+    };
+    if (diagnosKod === 'slumpad') {
+        diagnos.kod = slumpaDiagnosKod(diagnosKod);
+    }
 
-
-
-    element(by.id('smittskydd')).isSelected().then(function(isSelected) {
-        if (isSelected) {
-            return element(by.id('smittskydd')).sendKeys(protractor.Key.SPACE).then(function() {
-                element(by.id('basedOnExamination')).isPresent().then(function(isPresent) {
-                    if (isPresent) {
-                        return element(by.id('basedOnExamination')).sendKeys(protractor.Key.SPACE).then(function() {
-                            return element(by.id('disabilities')).sendKeys('disabilities').then(function() {
-                                return element(by.id('activityLimitation')).sendKeys('activityLimitation').then(function() {
-                                    return element(by.id('currentWork')).sendKeys('currentWork').then(function() {
-                                        return fkUtkastPage.diagnosKod.clear().then(function() {
-                                            return fkUtkastPage.angeDiagnosKod(diagnosKod);
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    }
-                });
-            });
-        } else {
-            logger.info('Inget smittaintyg, ändra enbart diagnoskod till %s', diagnosKod);
-            return fkUtkastPage.diagnosKod.clear().then(function() {
-                return fkUtkastPage.angeDiagnosKod(diagnosKod);
-            });
-        }
+    return lisjpUtkastPage.diagnoseCode.clear().then(function() {
+        return lisjpUtkastPage.angeDiagnos(diagnos);
     });
 });
 

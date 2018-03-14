@@ -34,6 +34,8 @@ module.exports = {
     getUrl: function(url) {
         var reloadDelay = this.pageReloadDelay;
         logger.info('Går till url:' + url);
+
+
         return browser.get(url).then(function() {
             return reloadDelay();
         }).then(function() {

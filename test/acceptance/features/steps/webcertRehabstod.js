@@ -312,9 +312,9 @@ Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabst�
 Given(/^jag går in på intyget som tidigare skapats$/, function() {
     var url;
     if (global.rehabstod) {
-        url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + global.rehabstod.user.intygId + '/';
+        url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + global.rehabstod.user.intygId + '/';
     } else if (global.statistik) {
-        url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + global.statistik.intygsId + '/';
+        url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + global.statistik.intygsId + '/';
     }
 
     return helpers.getUrl(url);

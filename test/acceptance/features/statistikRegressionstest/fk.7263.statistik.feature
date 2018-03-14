@@ -12,7 +12,7 @@ Scenario: Testa att anropa statitisk-APIet
     När jag anropar statitisk-APIet processIntyg
 
 @makulera @verksamhetsStatistik
-Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort från Statistiktjänsten
+Scenario: Ett nyskapat och makulerat Läkarintyg för sjukpenning intyg ska finnas och senare tas bort från Statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
@@ -41,7 +41,7 @@ Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort
     Så ska totala "samma som ovan" diagnoser som finns vara "1" mindre
 
 @verksamhetsStatistik
-Scenario: Två nyskapade FK7263 intyg på samma person ska räknas som en i Statistiktjänstens GUI
+Scenario: Två nyskapade Läkarintyg för sjukpenning intyg på samma person ska räknas som en i Statistiktjänstens GUI
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
@@ -69,7 +69,7 @@ Scenario: Två nyskapade FK7263 intyg på samma person ska räknas som en i Stat
     Så ska totala "samma som ovan" diagnoser som finns vara "1" extra
 	
 @verksamhetsStatistik
-Scenario: Två nyskapade FK7263 intyg på olika personer ska räknas som två i Statistiktjänstens GUI
+Scenario: Två nyskapade Läkarintyg för sjukpenning intyg på olika personer ska räknas som två i Statistiktjänstens GUI
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
