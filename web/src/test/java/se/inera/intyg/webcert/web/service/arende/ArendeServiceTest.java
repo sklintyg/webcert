@@ -675,7 +675,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = WebCertServiceException.class)
     public void setForwardedArendeNotFoundTest() {
         try {
-            service.setForwarded(MEDDELANDE_ID, true);
+            service.setForwarded(MEDDELANDE_ID);
         } finally {
             verify(arendeRepository, never()).save(any(Arende.class));
             verifyZeroInteractions(notificationService);
@@ -686,7 +686,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void setForwardedTrueTest() {
         Arende arende = buildArende(MEDDELANDE_ID, null);
         when(arendeRepository.findOneByMeddelandeId(MEDDELANDE_ID)).thenReturn(arende);
-        service.setForwarded(MEDDELANDE_ID, true);
+        service.setForwarded(MEDDELANDE_ID);
 
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(arendeRepository).save(arendeCaptor.capture());
@@ -701,7 +701,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void setForwardedFalseTest() {
         Arende arende = buildArende(MEDDELANDE_ID, null);
         when(arendeRepository.findOneByMeddelandeId(MEDDELANDE_ID)).thenReturn(arende);
-        service.setForwarded(MEDDELANDE_ID, false);
+        service.setForwarded(MEDDELANDE_ID);
 
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
         verify(arendeRepository).save(arendeCaptor.capture());

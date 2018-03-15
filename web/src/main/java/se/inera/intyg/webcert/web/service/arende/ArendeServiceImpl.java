@@ -109,7 +109,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private static Predicate<Arende> isCorrectEnhet(WebCertUser user) {
-        return (a -> user.getIdsOfSelectedVardenhet().contains(a.getEnhetId()));
+        return a -> user.getIdsOfSelectedVardenhet().contains(a.getEnhetId());
     }
 
     private static Predicate<Arende> composePredicate(Stream<Predicate<Arende>> predicates) {
@@ -257,7 +257,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     @Transactional
-    public List<ArendeConversationView> setForwarded(final String intygsId, final boolean vidarebefordrad) {
+    public List<ArendeConversationView> setForwarded(final String intygsId) {
 
         final WebCertUser user = webcertUserService.getUser();
 
@@ -265,14 +265,18 @@ public class ArendeServiceImpl implements ArendeService {
                 isCorrectEnhet(user),
                 isQuestion()));
 
-        final List<Arende> updatedArendeList = arendeRepository.save(
-                arendeRepository.findByIntygsId(intygsId)
-                    .stream()
-                    .filter(filter)
-                    .peek(arende -> arende.setVidarebefordrad(vidarebefordrad))
-                    .collect(Collectors.toList()));
+        final List<Arende> arendenToForward = arendeRepository.findByIntygsId(intygsId)
+                .stream()
+                .filter(filter)
+                .peek(arende -> authoritiesValidator
+                        .given(user, arende.getIntygTyp())
+                        .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                        .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
+                        .orThrow())
+                .peek(Arende::setArendeToVidareBerordrat)
+                .collect(Collectors.toList());
 
-        return getArendeConversationViewList(intygsId, updatedArendeList);
+        return getArendeConversationViewList(intygsId, arendenToForward);
     }
 
     @Override
@@ -333,21 +337,19 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public List<ArendeConversationView> getArenden(final String intygsId) {
         final WebCertUser user = webcertUserService.getUser();
-        final List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
         final List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId);
 
-        final Personnummer personnummer = arendeList
-                .stream()
-                .findFirst()
-                .map(Arende::getPatientPersonId)
-                .flatMap(Personnummer::createValidatedPersonnummerWithDash)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer when querying for arenden."));
-
-
-        authoritiesValidator.given(user)
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                        SekretessStatus.TRUE.equals(patientDetailsResolver.getSekretessStatus(personnummer)))
-                .orThrow();
+        arendeList.stream()
+            .findFirst()
+            .map(Arende::getPatientPersonId)
+            .map(personNummer -> Personnummer.createValidatedPersonnummerWithDash(personNummer)
+                    .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer when querying for arenden.")))
+            .ifPresent(pn -> authoritiesValidator
+                    .given(user)
+                    .privilegeIf(
+                        AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                        SekretessStatus.TRUE.equals(patientDetailsResolver.getSekretessStatus(pn)))
+                    .orThrow());
 
         final List<Arende> filteredArendeList = arendeList.stream()
                 .filter(isCorrectEnhet(user))
