@@ -83,19 +83,19 @@ public class ArendeModuleApiController extends AbstractApiController {
     }
 
     @PUT
-    @Path("/{intygsTyp}/{meddelandeId}/vidarebefordrad")
+    @Path("/{intygsTyp}/{intygsId}/vidarebefordrad")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response setForwarded(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId,
+    public Response setForwarded(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
             Boolean vidarebefordrad) {
-        LOGGER.debug("Set arende {} as forwared {}", meddelandeId, vidarebefordrad != null ? vidarebefordrad : "");
+        LOGGER.debug("Set arende {} as forwared {}", intygsId, vidarebefordrad != null ? vidarebefordrad : "");
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
                 .orThrow();
 
-        ArendeConversationView response = arendeService.setForwarded(meddelandeId, vidarebefordrad != null ? vidarebefordrad : true);
+        final ArendeConversationView response = arendeService.setForwarded(intygsId, vidarebefordrad != null ? vidarebefordrad : true);
         return Response.ok(response).build();
     }
 
