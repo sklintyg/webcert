@@ -12,8 +12,8 @@ Scenario: PS-002 - Varningmeddelanden när man går in på patient
    Så ska det finnas en knapp med texten "Förnya"
    Så ska jag varnas om att "Patienten har en sekretessmarkering."
 
-@SIGNERA @FRÅGASVAR @SMI @SKRIV-UT @MO-007
-Scenario: MO-007 - Varningmeddelanden i fråga-svar för sekretessmarkerad person
+@SIGNERA @FRÅGASVAR @SMI @SKRIV-UT @MO-007 @SE-011
+Scenario: SE-011 - Varningmeddelanden i fråga-svar för sekretessmarkerad person
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
@@ -30,15 +30,14 @@ Scenario: MO-007 - Varningmeddelanden i fråga-svar för sekretessmarkerad perso
 	Och Försäkringskassan ställer en "OVRIGT" fråga om intyget
 	Och jag går till sidan Frågor och svar
 	
-	#steg nedan reds ut i GE-008 - kommentarfältet
 	Så ska frågan ha en indikator som indikerar sekretessmarkering
 
-@UTKAST @SMI
-Scenario: @GE-008 - Varningmeddelanden i Ej signerade utkast för sekretessmarkerad person
+@UTKAST @SMI @SE-011
+Scenario: SE-011 - Varningmeddelanden i Ej signerade utkast för sekretessmarkerad person
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska jag varnas om att "Patienten har en sekretessmarkering."
 
 	Och jag går till ej signerade utkast
-	#steg nedan reds ut i GE-008 - kommentarfältet
+	
 	Så ska intyget ha en indikator som indikerar sekretessmarkering

@@ -33,7 +33,7 @@ var BaseUtkast = JClass._extend({
             generellInfo: element(by.id('fmb_text_GENERELL_INFO')),
             funktionsnedsattning: element(by.id('fmb_text_FUNKTIONSNEDSATTNING')),
             aktivitetsbegransning: element(by.id('fmb_text_AKTIVITETSBEGRANSNING')),
-            beslutsunderlag: element(by.id('fmb_text_BESLUTSUNDERLAG_TEXTUELLT'))
+            beslutsunderlag: element(by.id('fmb_text_BESLUTSUNDERLAG_TEXTUELLT_list'))
         };
         this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
         /*this.fmbButtons = {

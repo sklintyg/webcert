@@ -36,6 +36,8 @@ const {
     Then // jshint ignore:line
 } = require('cucumber');
 
+var testTools = require('common-testtools');
+testTools.protractorHelpers.init();
 
 var luseUtkastPage = pages.intyg.luse.utkast;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
@@ -137,34 +139,65 @@ function checkFMB(fmbDiagnos) {
 
     var promiseArray = [];
 
-    if (fmbDiagnos.overliggande) {
-        logger.info('Kontrollerar överliggande');
-        promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.overliggande));
+    return klickaAllaVisaMerFMBLankar().then(function() {
 
-    }
-    if (fmbDiagnos.symptomPrognosBehandling) {
-        logger.info('Kontrollerar Symtom Prognos Behandling');
-        promiseArray.push(expect(page.fmbDialogs.symptomPrognosBehandling.getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
+        if (fmbDiagnos.overliggande) {
+            promiseArray.push(expect(page.fmbAlertText.getText()).to.eventually.contain(fmbDiagnos.overliggande));
+        }
+        if (fmbDiagnos.symptomPrognosBehandling) {
+            promiseArray.push(expect(page.fmbDialogs.symptomPrognosBehandling.getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
+        }
+        if (fmbDiagnos.generellInfo) {
+            promiseArray.push(expect(page.fmbDialogs.generellInfo.getText()).to.eventually.contain(fmbDiagnos.generellInfo));
+        }
+        if (fmbDiagnos.funktionsnedsattning) {
+            promiseArray.push(expect(page.fmbDialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning));
+        }
+        if (fmbDiagnos.aktivitetsbegransning) {
+            promiseArray.push(expect(page.fmbDialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning));
+        }
+        if (fmbDiagnos.beslutsunderlag) {
+            promiseArray.push(expect(page.fmbDialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag));
+        }
 
-    }
-    if (fmbDiagnos.generellInfo) {
-        logger.info('Kontrollerar Generell info');
-        promiseArray.push(expect(page.fmbDialogs.generellInfo.getText()).to.eventually.contain(fmbDiagnos.generellInfo));
-    }
-    if (fmbDiagnos.funktionsnedsattning) {
-        logger.info('Kontrollerar Funktionsnedsättning');
-        promiseArray.push(expect(page.fmbDialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning));
-    }
-    if (fmbDiagnos.aktivitetsbegransning) {
-        logger.info('Kontrollerar Aktivietsbegränsning');
-        promiseArray.push(expect(page.fmbDialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning));
-    }
-    if (fmbDiagnos.beslutsunderlag) {
-        logger.info('Kontrollerar Beslutsunderlag');
-        promiseArray.push(expect(page.fmbDialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag));
-    }
-    return Promise.all(promiseArray);
+        logger.info('Kontrollerar FMB texter');
+        return Promise.all(promiseArray);
+    });
+}
 
+
+function klickaAllaVisaMerFMBLankar() {
+    logger.silly('klickaAllaVisaMerFMBLankar');
+    var fmbElm = {
+        funktionsnedsattning: element(by.id('fmb-text-expandable-content-link-FUNKTIONSNEDSATTNING')),
+        symptomPrognosBehandling: element(by.id('fmb-text-expandable-content-link-SYMPTOM_PROGNOS_BEHANDLING')),
+        generellt: element(by.id('fmb-text-expandable-content-link-GENERELL_INFO'))
+    };
+    return Promise.all([
+        fmbElm.funktionsnedsattning.isPresent().then(function(present) {
+            if (present) {
+                logger.silly('Klickar Funktionsnedsattning');
+                return fmbElm.funktionsnedsattning.click();
+            }
+            return;
+        }).then(function() {
+            return fmbElm.symptomPrognosBehandling.isPresent();
+        }).then(function(present) {
+            if (present) {
+                logger.silly('Klickar SymptomPrognosBehandling');
+                return fmbElm.symptomPrognosBehandling.click();
+            }
+            return;
+        }).then(function() {
+            return fmbElm.generellt.isPresent();
+        }).then(function(present) {
+            if (present) {
+                logger.silly('Klickar Generellt');
+                return fmbElm.generellt.click();
+            }
+            return;
+        })
+    ]);
 }
 
 
@@ -221,7 +254,8 @@ Given(/^jag fyller i diagnoskod utan FMB info$/, function() {
 });
 
 Given(/^ska ingen info gällande FMB visas$/, function() {
-    var promiseArray = [];
+    throw ('TODO - Kontrollera nya FMB fält');
+    /*var promiseArray = [];
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     var page;
     if (isSMIIntyg) {
@@ -237,7 +271,7 @@ Given(/^ska ingen info gällande FMB visas$/, function() {
     promiseArray.push(expect(page.fmbButtons.falt8.isPresent()).to.become(false));
 
 
-    return Promise.all(promiseArray);
+    return Promise.all(promiseArray);*/
 
 });
 

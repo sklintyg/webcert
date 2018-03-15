@@ -70,13 +70,6 @@ module.exports = {
             beslutsunderlag: 'luxation och distorsion i höftled och höftligament, knäets leder och ligament'
 
         }, {
-            kod: 'R09',
-            symptomPrognosBehandling: null,
-            generellInfo: 'Sjukskrivning enbart',
-            funktionsnedsattning: null,
-            aktivitetsbegransning: null,
-            beslutsunderlag: 'Sjukskrivning enbart utifrån symtom ska undvikas'
-        }, {
             kod: 'O267',
             symptomPrognosBehandling: 'Smärtor i bäckenet och',
             generellInfo: 'Observandum',
@@ -104,13 +97,6 @@ module.exports = {
             funktionsnedsattning: 'axelbesvär ger ofta',
             aktivitetsbegransning: null,
             beslutsunderlag: 'cuff-syndrom i skulderled och utförd åtgärd rekonstruktion av rotatorkuff med sutur'
-        }, {
-            kod: 'R40',
-            symptomPrognosBehandling: null,
-            generellInfo: 'Sjukskrivning enbart utifrån symtom ska undvikas',
-            funktionsnedsattning: null,
-            aktivitetsbegransning: null,
-            beslutsunderlag: 'Sjukskrivning enbart utifrån symtom ska undvikas'
         }]
     },
     utanEgenFMBInfo: {
