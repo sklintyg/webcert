@@ -159,9 +159,7 @@ Before(function() {
     hasFoundConsoleErrors = false;
     duplicateIds = [];
 
-    return browser.executeScript(function() {
-        window.autoSave = false;
-    });
+    return browser.executeScript('window.autoSave = false;');
 
 });
 
