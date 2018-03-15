@@ -43,6 +43,7 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
@@ -135,9 +136,9 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardperson.setHsaId(hoSPerson.getPersonId());
         vardperson.setNamn(hoSPerson.getFullstandigtNamn());
 
-        utkast = createUtkast(INTYG_ID, 1, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson, ENHET_ID);
-        completedUtkast = createUtkast(INTYG_ID, 2, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson, ENHET_ID);
-        signedUtkast = createUtkast(INTYG_ID, 3, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson, ENHET_ID);
+        utkast = createUtkast(INTYG_ID, 1, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson, ENHET_ID, PERSON_ID);
+        completedUtkast = createUtkast(INTYG_ID, 2, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson, ENHET_ID, PERSON_ID);
+        signedUtkast = createUtkast(INTYG_ID, 3, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson, ENHET_ID, PERSON_ID);
 
         vardenhet = new Vardenhet(ENHET_ID, "testNamn");
         vardgivare = new Vardgivare("123", "vardgivare");
@@ -163,12 +164,6 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(pagaendeSignering.getIntygsId()).thenReturn(INTYG_ID);
         when(pagaendeSignering.getSigneradAvHsaId()).thenReturn(hoSPerson.getPersonId());
         when(pagaendeSignering.getSigneradAvNamn()).thenReturn(hoSPerson.getFullstandigtNamn());
-
-        // pagaendeSignering.setInternReferens(PAGAENDE_SIGN_ID);
-        // pagaendeSignering.setIntygData(INTYG_JSON);
-        // pagaendeSignering.setIntygsId(INTYG_ID);
-        // pagaendeSignering.setSigneradAvHsaId(hoSPerson.getPersonId());
-        // pagaendeSignering.setSigneradAvNamn(hoSPerson.getFullstandigtNamn());
 
         when(pagaendeSigneringRepository.findOne(anyLong())).thenReturn(pagaendeSignering);
         when(pagaendeSigneringRepository.save(any(PagaendeSignering.class))).thenReturn(pagaendeSignering);
@@ -568,8 +563,9 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         intygSignatureService.clientSignature(ticket.getId(), signature);
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson,
-            String enhetsId) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
+                                VardpersonReferens vardperson, String enhetsId, String personId) {
+
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);
@@ -579,6 +575,8 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSkapadAv(vardperson);
         utkast.setSenastSparadAv(vardperson);
         utkast.setEnhetsId(enhetsId);
+        utkast.setPatientPersonnummer(Personnummer.createValidatedPersonnummer(personId).get());
+
         return utkast;
     }
 

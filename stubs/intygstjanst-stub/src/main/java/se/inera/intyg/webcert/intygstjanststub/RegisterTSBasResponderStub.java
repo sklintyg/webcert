@@ -18,17 +18,18 @@
  */
 package se.inera.intyg.webcert.intygstjanststub;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
-import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.*;
+import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasResponderInterface;
+import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasResponseType;
+import se.inera.intygstjanster.ts.services.RegisterTSBasResponder.v1.RegisterTSBasType;
 import se.inera.intygstjanster.ts.services.v1.ResultCodeType;
 import se.inera.intygstjanster.ts.services.v1.ResultatTyp;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by eriklupander on 2015-06-10.
@@ -55,8 +56,8 @@ public class RegisterTSBasResponderStub implements RegisterTSBasResponderInterfa
         CertificateHolder certificate = new CertificateHolder();
         certificate.setId(source.getIntyg().getIntygsId());
         certificate.setType(source.getIntyg().getIntygsTyp());
-        certificate
-                .setCivicRegistrationNumber(new Personnummer(source.getIntyg().getGrundData().getPatient().getPersonId().getExtension()));
+        certificate.setCivicRegistrationNumber(Personnummer.createValidatedPersonnummer(
+                source.getIntyg().getGrundData().getPatient().getPersonId().getExtension()).get());
         certificate.setSignedDate(
                 LocalDateTime.parse(source.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         certificate.setCareUnitId(source.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsId().getExtension());

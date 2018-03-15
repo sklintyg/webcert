@@ -39,7 +39,7 @@ public final class SendCertificateToRecipientTypeConverter {
         SendCertificateToRecipientType request = new SendCertificateToRecipientType();
         request.setSkickatTidpunkt(LocalDateTime.now());
         request.setIntygsId(buildIntygId(intygsId));
-        request.setPatientPersonId(InternalConverterUtil.getPersonId(new Personnummer(personnummer)));
+        request.setPatientPersonId(InternalConverterUtil.getPersonId(createPnr(personnummer)));
         request.setMottagare(buildPart(recipient));
         request.setSkickatAv(buildSkickatAv(skickatAv));
         return request;
@@ -63,5 +63,10 @@ public final class SendCertificateToRecipientTypeConverter {
         SkickatAv skickatAv = new SkickatAv();
         skickatAv.setHosPersonal(InternalConverterUtil.getSkapadAv(hosPersonal));
         return skickatAv;
+    }
+
+    private static Personnummer createPnr(String personId) {
+        return Personnummer.createValidatedPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 }

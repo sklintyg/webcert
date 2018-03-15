@@ -18,18 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import static java.time.LocalDateTime.now;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +51,11 @@ import javax.jms.Session;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.time.LocalDateTime.now;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by pehr on 13/11/13.
@@ -99,7 +92,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         LogRequest logRequest = new LogRequest();
         logRequest.setIntygId("abc123");
-        logRequest.setPatientId(new Personnummer("19121212-1212"));
+        logRequest.setPatientId(createPnr("19121212-1212"));
         logRequest.setPatientName("Hans Olof van der Test");
 
         logService.logReadIntyg(logRequest);
@@ -150,7 +143,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         LogRequest logRequest = new LogRequest();
         logRequest.setIntygId("abc123");
-        logRequest.setPatientId(new Personnummer("19121212-1212"));
+        logRequest.setPatientId(createPnr("19121212-1212"));
         logRequest.setPatientName("Hans Olof van der Test");
 
         try {
@@ -163,7 +156,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testActivityArgsAreIdenticalToAdditionalInfo() {
         LogRequest logRequest = new LogRequest();
         logRequest.setIntygId("abc123");
-        logRequest.setPatientId(new Personnummer("19121212-1212"));
+        logRequest.setPatientId(createPnr("19121212-1212"));
         logRequest.setPatientName("Hans Olof van der Test");
         logRequest.setAdditionalInfo("this is additional");
 
@@ -195,6 +188,11 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Map<String, String> map = new HashMap<>();
         map.put("VARDENHET_ID", "Läkare på vårdcentralen");
         return map;
+    }
+
+    private Personnummer createPnr(String personId) {
+        return Personnummer.createValidatedPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer"));
     }
 
 }

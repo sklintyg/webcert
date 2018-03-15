@@ -272,7 +272,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     private PersonSvar buildPersonSvar(PersonSvar.Status status) {
-        Personnummer personnummer = new Personnummer("19121212-1212");
+        Personnummer personnummer = Personnummer.createValidatedPersonnummer("19121212-1212").get();
         return new PersonSvar(new PersonSvar(
                 new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), status));
     }
@@ -280,33 +280,41 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     private Utlatande buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,
             String enhetsnamn, boolean createUnit) {
 
-        return buildIntyg(intygsKod, patientEfternamn, patientFornamn, "191212121212",
+        return buildIntyg(intygsKod, patientEfternamn, patientFornamn, "19121212-1212",
                 hosPersonalFullstandigtNamn, "hosHsaId", enhetsnamn, "enhetHsaId", createUnit);
     }
 
     private Utlatande buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String patientPersonId,
             String hosPersonalFullstandigtNamn, String hosPersonalHsaId, String enhetsnamn, String enhetHsaId,
             boolean createUnit) {
+
         Utlatande intyg = new Utlatande();
+
         TypAvUtlatande typAvIntyg = new TypAvUtlatande();
         typAvIntyg.setCode(intygsKod);
         intyg.setTypAvUtlatande(typAvIntyg);
+
         Patient patient = new Patient();
         patient.setEfternamn(patientEfternamn);
+
         if (patientFornamn != null) {
             patient.getFornamn().add(patientFornamn);
         }
+
         if (patientPersonId != null) {
             patient.setPersonId(new PersonId());
             patient.getPersonId().setExtension(patientPersonId);
         }
+
         intyg.setPatient(patient);
+
         HosPersonal hosPersonal = new HosPersonal();
         hosPersonal.setFullstandigtNamn(hosPersonalFullstandigtNamn);
         if (hosPersonalHsaId != null) {
             hosPersonal.setPersonalId(new HsaId());
             hosPersonal.getPersonalId().setExtension(hosPersonalHsaId);
         }
+
         if (createUnit) {
             Enhet enhet = new Enhet();
             enhet.setEnhetsnamn(enhetsnamn);
@@ -316,7 +324,9 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
             }
             hosPersonal.setEnhet(enhet);
         }
+
         intyg.setSkapadAv(hosPersonal);
+
         return intyg;
     }
 }

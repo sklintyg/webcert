@@ -18,15 +18,14 @@
  */
 package se.inera.intyg.webcert.common.client.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class SendCertificateToRecipientTypeConverterTest {
 
@@ -35,7 +34,7 @@ public class SendCertificateToRecipientTypeConverterTest {
         final String intygsId = "intygsid";
         final String enhetsId = "enhetsid";
         final String enhetsnamn = "enhetsnamn";
-        final String patientPersonId = "pid";
+        final String patientPersonId = "201212121212";
         final String skapadAvFullstandigtNamn = "fullständigt namn";
         final String skapadAvPersonId = "skapad av pid";
         final String arbetsplatsKod = "arbetsplatsKod";

@@ -18,14 +18,7 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.xml.ws.WebServiceException;
-
 import com.google.common.base.Strings;
-
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -38,6 +31,11 @@ import se.inera.intyg.webcert.web.converter.util.FragestallareConverterUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
+
+import javax.xml.ws.WebServiceException;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class ArendeConverter {
 
@@ -91,7 +89,7 @@ public final class ArendeConverter {
         arende.setIntygsId(utkast.getIntygsId());
         arende.setIntygTyp(utkast.getIntygsTyp());
         arende.setMeddelande(meddelande);
-        arende.setPatientPersonId(utkast.getPatientPersonnummer().getPersonnummerWithoutDash());
+        arende.setPatientPersonId(utkast.getPatientPersonnummer().getPersonnummer());
         arende.setRubrik(rubrik);
         arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
         arende.setSigneratAvName(getSignedByName(utkast, hsaEmployeeService));

@@ -18,15 +18,8 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.time.LocalDateTime;
-
-import org.junit.Test;
-
 import iso.v21090.dt.v1.II;
+import org.junit.Test;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
@@ -36,6 +29,10 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.*;
 
 public class ConvertToFKTypesTest {
 
@@ -100,12 +97,12 @@ public class ConvertToFKTypesTest {
     public void testToLakarUtlatande() {
         final String intygsId = "intygsId";
         final String patientNamn = "fullständigt namn";
-        final String patientId = "patientId";
+        final String patientId = "19121212-1212";
         final LocalDateTime signeringsdatum = LocalDateTime.now();
         IntygsReferens ir = new IntygsReferens();
         ir.setIntygsId(intygsId);
         ir.setPatientNamn(patientNamn);
-        ir.setPatientId(new Personnummer(patientId));
+        ir.setPatientId(createPnr(patientId));
         ir.setSigneringsDatum(signeringsdatum);
         LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(ir);
 
@@ -123,18 +120,20 @@ public class ConvertToFKTypesTest {
         final String patientNamn = "fullständigt namn";
         final String patientId = "999999-9999";
         final LocalDateTime signeringsdatum = LocalDateTime.now();
+
         IntygsReferens ir = new IntygsReferens();
         ir.setIntygsId(intygsId);
         ir.setPatientNamn(patientNamn);
-        ir.setPatientId(new Personnummer(patientId));
+        ir.setPatientId(createPnr(patientId));
         ir.setSigneringsDatum(signeringsdatum);
+
         LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(ir);
 
         assertNotNull(res);
         assertEquals(intygsId, res.getLakarutlatandeId());
         assertNull(res.getPatient().getFullstandigtNamn());
         assertEquals("1.2.752.129.2.1.3.3", res.getPatient().getPersonId().getRoot());
-        assertEquals(patientId, res.getPatient().getPersonId().getExtension());
+        assertEquals("19999999-9999", res.getPatient().getPersonId().getExtension());
         assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
     }
 
@@ -245,6 +244,11 @@ public class ConvertToFKTypesTest {
         EnhetType res = ConvertToFKTypes.toEnhetType(null);
 
         assertNull(res);
+    }
+
+    private Personnummer createPnr(String personId) {
+        return Personnummer.createValidatedPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
 }

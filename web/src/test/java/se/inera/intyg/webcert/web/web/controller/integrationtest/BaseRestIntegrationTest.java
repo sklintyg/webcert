@@ -296,7 +296,7 @@ public abstract class BaseRestIntegrationTest {
         utkastRequest.setIntygType(intygsType);
         utkastRequest.setPatientFornamn(DEFAULT_UTKAST_PATIENT_FORNAMN);
         utkastRequest.setPatientEfternamn(DEFAULT_UTKAST_PATIENT_EFTERNAMN);
-        utkastRequest.setPatientPersonnummer(new Personnummer(patientPersonNummer));
+        utkastRequest.setPatientPersonnummer(Personnummer.createValidatedPersonnummer(patientPersonNummer).get());
         utkastRequest.setPatientPostadress("Blåbärsvägen 14");
         utkastRequest.setPatientPostort("Molnet");
         utkastRequest.setPatientPostnummer("44837");
@@ -395,7 +395,8 @@ public abstract class BaseRestIntegrationTest {
         FragaSvar fs = new FragaSvar();
         fs.setAmne(Amne.ARBETSTIDSFORLAGGNING);
         fs.setFrageText(DEFAULT_FRAGE_TEXT);
-        fs.setIntygsReferens(new IntygsReferens(intygId, typ, new Personnummer(personnummer), "Api Restman", now));
+        fs.setIntygsReferens(new IntygsReferens(intygId, typ,
+                Personnummer.createValidatedPersonnummer(personnummer).get(), "Api Restman", now));
         fs.setStatus(Status.PENDING_INTERNAL_ACTION);
         fs.setFrageSkickadDatum(now);
         fs.setMeddelandeRubrik("Meddelanderubrik");

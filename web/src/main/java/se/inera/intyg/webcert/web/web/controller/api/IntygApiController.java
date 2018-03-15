@@ -44,12 +44,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
 
 import javax.persistence.OptimisticLockException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -93,6 +88,7 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
@@ -105,8 +101,8 @@ public class IntygApiController extends AbstractApiController {
     @Path("/person/{personNummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummerIn) {
-        Personnummer personNummer = new Personnummer(personNummerIn);
-        LOG.debug("Retrieving intyg for person {}", personNummer.getPnrHash());
+        Personnummer personNummer = createPnr(personNummerIn);
+        LOG.debug("Retrieving intyg for person {}", personNummer.getPersonnummerHash());
 
         // INTYG-4086 (epic) - make sure only users with HANTERA_SEKRETESSMARKERAD_PATIENT can list intyg for patient
         // with sekretessmarkering.
@@ -213,4 +209,11 @@ public class IntygApiController extends AbstractApiController {
         utkastService.setKlarForSigneraAndSendStatusMessage(intygsId, intygsTyp);
         return Response.ok().build();
     }
+
+    private Personnummer createPnr(String pnr) {
+        return Personnummer.createValidatedPersonnummer(pnr)
+                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                        String.format("Cannot create Personnummer object with invalid personId %s", pnr)));
+    }
+
 }

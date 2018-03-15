@@ -134,10 +134,10 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         String intygsTyp =
                 moduleRegistry.getModuleIdFromExternalId(utkastsParams.getTypAvIntyg().getCode());
 
-        Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(
+        Personnummer personnummer = Personnummer.createValidatedPersonnummer(
                 utkastsParams.getPatient().getPersonId().getExtension()).orElseThrow(() ->
                 new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        "Failed to create valid personnummer for createDraft reques"));
+                        "Failed to create valid personnummer for createDraft request"));
         SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
 
         if (AuthoritiesHelperUtil.mayNotCreateUtkastForSekretessMarkerad(sekretessStatus, user, intygsTyp)) {

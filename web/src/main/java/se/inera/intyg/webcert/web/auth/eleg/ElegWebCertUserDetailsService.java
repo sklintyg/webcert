@@ -18,10 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +26,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
@@ -55,6 +50,10 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -182,18 +181,21 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private void decorateWebcertUserWithSekretessMarkering(WebCertUser webCertUser, HoSPersonType hosPerson) {
         // Make sure we have a valid personnr to work with..
-        Personnummer personNummer = Personnummer.createValidatedPersonnummerWithDash(hosPerson.getPersonId().getExtension())
-                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        String.format("Can't determine sekretesstatus for invalid personId %s", hosPerson.getPersonId().getExtension())));
-
+        Personnummer personNummer = createPnr(hosPerson);
         PersonSvar person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
             webCertUser.setSekretessMarkerad(person.getPerson().isSekretessmarkering());
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
-                            personNummer.getPersonnummer()));
+                            personNummer.getPersonnummerWithDash()));
         }
+    }
+
+    private Personnummer createPnr(HoSPersonType hosPerson) {
+        return Personnummer.createValidatedPersonnummer(hosPerson.getPersonId().getExtension())
+                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        String.format("Can't determine sekretesstatus for invalid personId %s", hosPerson.getPersonId().getExtension())));
     }
 
     private void decorateWebCertUserWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {

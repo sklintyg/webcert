@@ -126,7 +126,7 @@ public class IntygModuleApiControllerTest {
         utlatande.setTyp(CERTIFICATE_TYPE);
         GrundData grundData = new GrundData();
         patient = new Patient();
-        patient.setPersonId(new Personnummer(PERSON_ID));
+        patient.setPersonId(createPnr(PERSON_ID));
         patient.setFornamn("Fornamn");
         patient.setEfternamn("Efternamn");
         grundData.setPatient(patient);
@@ -357,7 +357,7 @@ public class IntygModuleApiControllerTest {
         final String newPersonnummer = "201212121212";
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null,
@@ -404,7 +404,7 @@ public class IntygModuleApiControllerTest {
         final String newReservnummer = "A20090122";
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newReservnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
@@ -489,7 +489,7 @@ public class IntygModuleApiControllerTest {
         final String newIntygId = "newIntygId";
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         WebCertUser user = new WebCertUser();
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
@@ -513,7 +513,7 @@ public class IntygModuleApiControllerTest {
         final String personnummer = "191212121212";
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         WebCertUser user = new WebCertUser();
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
@@ -534,7 +534,7 @@ public class IntygModuleApiControllerTest {
         final String personnummer = "191212121212";
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         WebCertUser user = new WebCertUser();
         user.setOrigin("NORMAL");
@@ -563,7 +563,7 @@ public class IntygModuleApiControllerTest {
         final String postnummer = "postnummer";
 
         final CopyIntygRequest request = new CopyIntygRequest();
-        request.setPatientPersonnummer(new Personnummer(personnummer));
+        request.setPatientPersonnummer(createPnr(personnummer));
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
@@ -651,7 +651,7 @@ public class IntygModuleApiControllerTest {
         final String postnummer = "postnummer";
 
         CopyIntygRequest request = new CopyIntygRequest();
-        request.setPatientPersonnummer(new Personnummer(personnummer));
+        request.setPatientPersonnummer(createPnr(personnummer));
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
@@ -733,7 +733,7 @@ public class IntygModuleApiControllerTest {
         final String newCertificateType = "newCertificateType";
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         WebCertUser user = new WebCertUser();
         addFeatures(user, newCertificateType, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
@@ -777,7 +777,7 @@ public class IntygModuleApiControllerTest {
 
         when(webcertUserService.getUser()).thenReturn(user);
         CopyIntygRequest copyRequest = new CopyIntygRequest();
-        copyRequest.setPatientPersonnummer(new Personnummer("191212121212"));
+        copyRequest.setPatientPersonnummer(createPnr("191212121212"));
 
         try {
             moduleApiController.createUtkastFromTemplate(copyRequest, CERTIFICATE_TYPE, CERTIFICATE_ID, CERTIFICATE_TYPE);
@@ -825,4 +825,10 @@ public class IntygModuleApiControllerTest {
             user.getAuthorities().put(privilegeString, privilege);
         }
     }
+
+    private static Personnummer createPnr(String personId) {
+        return Personnummer.createValidatedPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
+
 }

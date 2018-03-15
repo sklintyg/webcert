@@ -70,7 +70,7 @@ public class NotificationTestHelper {
     }
 
     public static Person buildPerson(boolean sekretessmarkering) {
-        return new Person(Personnummer.createValidatedPersonnummerWithDash("191212121212").get(),
+        return new Person(Personnummer.createValidatedPersonnummer("191212121212").get(),
                 sekretessmarkering, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult");
     }
 

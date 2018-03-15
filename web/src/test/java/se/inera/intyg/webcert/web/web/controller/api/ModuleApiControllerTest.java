@@ -54,8 +54,10 @@ public class ModuleApiControllerTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
+
     @Mock
     private DynamicLinkService dynamicLinkService;
+
     @Mock
     private AuthoritiesHelper authoritiesHelper;
 

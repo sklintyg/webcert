@@ -192,7 +192,7 @@ public class UtkastBootstrapBean {
         String meddelandeId = UUID.randomUUID().toString();
         arende.setMeddelandeId(meddelandeId);
         arende.setPaminnelseMeddelandeId(paminnelseMeddelandeId);
-        arende.setPatientPersonId(utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithoutDash());
+        arende.setPatientPersonId(utlatande.getGrundData().getPatient().getPersonId().getPersonnummer());
         arende.setReferensId("referens");
         arende.setRubrik(arende.getAmne().getDescription());
         arende.setSenasteHandelse(LocalDateTime.now());

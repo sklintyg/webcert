@@ -99,7 +99,7 @@ public class CertificateSenderServiceImplTest {
     @Test
     public void sendCertificateTest() throws Exception {
         final String intygsId = "intygsId";
-        final Personnummer personId = new Personnummer("19121212-1212");
+        final Personnummer personId = createPnr("19121212-1212");
         final String jsonBody = "jsonBody";
         final String recipientId = "recipientId";
 
@@ -110,7 +110,7 @@ public class CertificateSenderServiceImplTest {
         Message res = messageCaptor.getValue().createMessage(session);
         assertEquals(Constants.SEND_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
         assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
-        assertEquals(personId.getPersonnummerWithoutDash(), res.getStringProperty(Constants.PERSON_ID));
+        assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
         assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
         assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
         assertNull(res.getStringProperty(Constants.DELAY_MESSAGE));
@@ -120,7 +120,7 @@ public class CertificateSenderServiceImplTest {
     @Test
     public void sendCertificateWithDelayTest() throws Exception {
         final String intygsId = "intygsId";
-        final Personnummer personId = new Personnummer("19121212-1212");
+        final Personnummer personId = createPnr("19121212-1212");
         final String jsonBody = "jsonBody";
         final String recipientId = "recipientId";
 
@@ -131,7 +131,7 @@ public class CertificateSenderServiceImplTest {
         Message res = messageCaptor.getValue().createMessage(session);
         assertEquals(Constants.SEND_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
         assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
-        assertEquals(personId.getPersonnummerWithoutDash(), res.getStringProperty(Constants.PERSON_ID));
+        assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
         assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
         assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
         assertEquals("true", res.getStringProperty(Constants.DELAY_MESSAGE));
@@ -144,7 +144,7 @@ public class CertificateSenderServiceImplTest {
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
         try {
-            service.sendCertificate("intygsId", new Personnummer("19121212-1212"), "jsonBody", "recipientId");
+            service.sendCertificate("intygsId", createPnr("19121212-1212"), "jsonBody", "recipientId");
         } finally {
             verify(template, times(1)).send(any(MessageCreator.class));
         }
@@ -218,4 +218,10 @@ public class CertificateSenderServiceImplTest {
         message.setText(s);
         return message;
     }
+
+    private Personnummer createPnr(String personId) {
+        return Personnummer.createValidatedPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
+
 }

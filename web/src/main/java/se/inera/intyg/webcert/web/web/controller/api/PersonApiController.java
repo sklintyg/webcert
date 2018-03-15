@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
@@ -53,13 +54,26 @@ public class PersonApiController extends AbstractApiController {
     @Path("/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getPersonuppgifter(@PathParam("personnummer") String personnummerIn) {
-        Personnummer personnummer = new Personnummer(personnummerIn);
-        LOG.debug("Hämtar personuppgifter för: {}", personnummer.getPnrHash());
 
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        try {
+            Personnummer personnummer = createPnr(personnummerIn);
+            LOG.debug("Hämtar personuppgifter för: {}", personnummer.getPersonnummerHash());
 
-        monitoringService.logPULookup(personnummer, personSvar.getStatus().name());
+            PersonSvar personSvar = puService.getPerson(personnummer);
 
-        return Response.ok(new PersonuppgifterResponse(personSvar)).build();
+            monitoringService.logPULookup(personnummer, personSvar.getStatus().name());
+
+            return Response.ok(new PersonuppgifterResponse(personSvar)).build();
+
+        } catch (InvalidPersonNummerException e) {
+            LOG.error(e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
     }
+
+    private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
+        return Personnummer.createValidatedPersonnummer(personId)
+                .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
+    }
+
 }

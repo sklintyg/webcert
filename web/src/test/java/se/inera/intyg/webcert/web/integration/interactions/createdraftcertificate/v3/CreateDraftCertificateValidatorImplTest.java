@@ -232,7 +232,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     private PersonSvar buildPersonSvar(PersonSvar.Status status) {
-        Personnummer personnummer = new Personnummer("19121212-1212");
+        Personnummer personnummer = Personnummer.createValidatedPersonnummer("191212121212").get();
         return new PersonSvar(new PersonSvar(
                 new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), status));
     }

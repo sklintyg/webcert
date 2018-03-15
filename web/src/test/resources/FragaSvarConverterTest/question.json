@@ -10,7 +10,7 @@
     "intygsReferens" : {
         "intygsId" : "b2f6d5bc-2f50-4623-9ce9-bf1ee5404347",
         "intygsTyp" : "fk7263",
-        "patientId" : "19121212-1212",
+        "patientId" : "191212121212",
         "signeringsDatum":"2013-11-30T12:12:12.000"
     },
     "kompletteringar" : [

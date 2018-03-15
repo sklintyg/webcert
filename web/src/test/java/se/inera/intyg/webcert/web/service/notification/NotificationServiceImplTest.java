@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.junit.Before;
@@ -52,6 +39,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.FragorOchS
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -61,14 +49,12 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
-import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.referens.ReferensServiceImpl;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
@@ -79,6 +65,12 @@ import javax.jms.TextMessage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -94,6 +86,9 @@ public class NotificationServiceImplTest {
     private static final String ENHET_NAMN = "enhetName";
     private static final String SIGNED_BY_HSA_ID = "signedByHsaId";
     private static final String ARENDE_ID = "arendeId";
+
+    private static final Personnummer PATIENT_ID = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+
     private static final Long FRAGASVAR_ID = 1L;
 
     private static final String USER_REFERENCE = "some-ref";
@@ -754,6 +749,7 @@ public class NotificationServiceImplTest {
         utkast.setEnhetsId(ENHET_ID);
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
         utkast.setModel(INTYG_JSON);
+        utkast.setPatientPersonnummer(PATIENT_ID);
         return utkast;
     }
 

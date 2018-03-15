@@ -243,7 +243,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String utkastId = createUtkast("lisjp", personnummer);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "lisjp");
@@ -272,7 +272,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         changeOriginTo(UserOriginType.UTHOPP.name());
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setPatientPersonnummer(createPnr(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "lisjp");
@@ -333,7 +333,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Set coherentJournaling=true in copyIntygRequest, this is normally done in the js using the copyService.
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setPatientPersonnummer(createPnr(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "lisjp");
@@ -378,7 +378,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // coherentJournaling defaults to false, so don't set it here.
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
+        copyIntygRequest.setPatientPersonnummer(createPnr(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "lisjp");
@@ -403,7 +403,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createSignedIntyg("lisjp", personnummer);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "lisjp");
@@ -448,7 +448,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String dbIntyg = createDbIntyg(personnummer);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+        copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsTyp", "db");
@@ -531,4 +531,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     private void deleteUtkast(String id) {
         given().contentType(ContentType.JSON).expect().statusCode(200).when().delete("testability/intyg/" + id);
     }
+
+    private Personnummer createPnr(String personId) {
+        return Personnummer.createValidatedPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
+
 }

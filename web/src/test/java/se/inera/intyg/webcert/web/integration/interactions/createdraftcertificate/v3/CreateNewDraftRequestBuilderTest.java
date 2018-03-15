@@ -46,7 +46,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
 
     private static final String CERT_TYPE = "LUSE";
 
-    public static final String PERSONNUMMER = "19121212-1212";
+    public static final String PERSONNUMMER = "191212121212";
     public static final String FORNAMN = "Adam";
     public static final String MELLANNAMN = "Cesarsson";
     public static final String EFTERNAMN = "Eriksson";

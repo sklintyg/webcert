@@ -18,25 +18,15 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-
+import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-
-import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
@@ -47,6 +37,14 @@ import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -168,7 +166,8 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         FragaSvar fs = new FragaSvar();
         fs.setAmne(Amne.ARBETSTIDSFORLAGGNING);
         fs.setFrageText("Frågetext");
-        fs.setIntygsReferens(new IntygsReferens(intygId, typ, new Personnummer(personnummer), "Api Restman", now));
+        fs.setIntygsReferens(new IntygsReferens(intygId, typ,
+                Personnummer.createValidatedPersonnummer(personnummer).get(), "Api Restman", now));
         fs.setStatus(Status.PENDING_INTERNAL_ACTION);
         fs.setFrageSkickadDatum(now);
         fs.setMeddelandeRubrik("Meddelanderubrik");

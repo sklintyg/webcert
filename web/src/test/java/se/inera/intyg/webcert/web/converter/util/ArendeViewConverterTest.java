@@ -18,16 +18,6 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.ImmutableList;
@@ -45,12 +35,7 @@ import se.inera.intyg.common.luse.model.internal.LuseUtlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.InternalDate;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -70,15 +55,15 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeViewConverterTest {
@@ -537,7 +522,7 @@ public class ArendeViewConverterTest {
         skapadAv.setPersonId(skapadavPersonId);
         grundData.setSkapadAv(skapadAv);
         Patient patient = new Patient();
-        Personnummer personId = new Personnummer(patientPersonId);
+        Personnummer personId = Personnummer.createValidatedPersonnummer(patientPersonId).get();
         patient.setPersonId(personId);
         grundData.setPatient(patient);
         grundData.setSigneringsdatum(timeStamp);

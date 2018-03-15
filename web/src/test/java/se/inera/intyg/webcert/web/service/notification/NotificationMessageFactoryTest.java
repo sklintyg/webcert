@@ -18,31 +18,25 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -200,7 +194,7 @@ public class NotificationMessageFactoryTest {
         utkast.setIntygsTyp(INTYGS_TYP);
         utkast.setEnhetsId("SE12345678-1000");
         utkast.setEnhetsNamn("Vårdenhet 1");
-        utkast.setPatientPersonnummer(new Personnummer("19121212-1212"));
+        utkast.setPatientPersonnummer(Personnummer.createValidatedPersonnummer("19121212-1212").get());
         utkast.setPatientFornamn("Tolvan");
         utkast.setPatientEfternamn("Tolvansson");
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);

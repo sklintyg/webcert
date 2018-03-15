@@ -47,6 +47,7 @@ import static org.junit.Assert.assertNotNull;
 public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
 
     private static final String CERT_TYPE = FK7263;
+    private static final String PERSNR = "19121212-1212";
 
 
     private WebCertUser user;
@@ -87,7 +88,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         assertEquals(CAREGIVER_HSAID, res.getHosPerson().getVardenhet().getVardgivare().getVardgivarid());
         assertNotNull(res.getHosPerson().getVardenhet().getVardgivare().getVardgivarnamn());
 
-        assertEquals("19121212-1212", res.getPatient().getPersonId().getPersonnummer());
+        assertEquals(PERSNR, res.getPatient().getPersonId().getPersonnummerWithDash());
         assertEquals("Adam Bertil", res.getPatient().getFornamn());
         assertEquals("Cesarsson Davidsson", res.getPatient().getMellannamn());
         assertEquals("Eriksson", res.getPatient().getEfternamn());
@@ -180,7 +181,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         // Patient
         PersonId personId = new PersonId();
         personId.setRoot("PERSNR");
-        personId.setExtension("19121212-1212");
+        personId.setExtension(PERSNR);
 
         Patient patType = new Patient();
         patType.setPersonId(personId);

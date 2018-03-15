@@ -18,22 +18,20 @@
  */
 package se.inera.intyg.webcert.web.integration.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendMessageToRecipientTypeBuilderTest {
@@ -42,7 +40,7 @@ public class SendMessageToRecipientTypeBuilderTest {
     private static final String MEDDELANDE = "meddelande";
     private static final String MEDDELANDE_ID = "meddelandeId";
     private static final String PAMINNELSE_MEDDELANDE_ID = "paminnelseMeddelandeId";
-    private static final String PATIENT_PERSON_ID = "patientPersonId";
+    private static final String PATIENT_PERSON_ID = "191212121212";
     private static final String REFERENS_ID = "referensId";
     private static final String RUBRIK = "rubrik";
     private static final LocalDate SISTA_DATUM_FOR_SVAR = LocalDate.now().plusDays(10);

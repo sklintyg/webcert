@@ -34,6 +34,8 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
+import java.util.Optional;
+
 /**
  * For SMI-intyg, use the PU-service to fetch patient details and add them to the Utlatande.
  */
@@ -54,7 +56,7 @@ public class NotificationPatientEnricher {
         case "luae_na":
         case "luae_fs":
         case "lisjp":
-            Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(
+            Personnummer personnummer = Personnummer.createValidatedPersonnummer(
                     intyg.getPatient().getPersonId().getExtension())
                     .orElseThrow(() -> new IllegalArgumentException("Cannot parse personnummer"));
 
@@ -76,7 +78,7 @@ public class NotificationPatientEnricher {
                         new IllegalStateException("Could not query PU-service for enriching notification with patient data."));
             } else {
                 LOG.warn("PU-service returned NOT_FOUND for personnummer: {}, not enriching notification.",
-                        personnummer.getPnrHash());
+                        personnummer.getPersonnummerHash());
             }
             break;
         default:
@@ -88,10 +90,11 @@ public class NotificationPatientEnricher {
     private se.riv.clinicalprocess.healthcond.certificate.v3.Patient buildPatientFromPersonSvar(Person person) {
         se.riv.clinicalprocess.healthcond.certificate.v3.Patient patient = new se.riv.clinicalprocess.healthcond.certificate.v3.Patient();
         PersonId personId = new PersonId();
-        personId
-                .setRoot(SamordningsnummerValidator.isSamordningsNummer(person.getPersonnummer()) ? Constants.SAMORDNING_ID_OID
+        personId.setRoot(
+                SamordningsnummerValidator.isSamordningsNummer(Optional.ofNullable(person.getPersonnummer()))
+                        ? Constants.SAMORDNING_ID_OID
                         : Constants.PERSON_ID_OID);
-        personId.setExtension(person.getPersonnummer().getPersonnummerWithoutDash());
+        personId.setExtension(person.getPersonnummer().getPersonnummer());
         patient.setPersonId(personId);
         patient.setFornamn(nullSafe(person.getFornamn()));
         if (person.getMellannamn() != null) {

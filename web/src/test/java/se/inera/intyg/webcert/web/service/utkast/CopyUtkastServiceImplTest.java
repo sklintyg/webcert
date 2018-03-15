@@ -73,13 +73,12 @@ public class CopyUtkastServiceImplTest {
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
-
     private static final String INTYG_JSON = "A bit of text representing json";
-
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final Personnummer PATIENT_SSN = new Personnummer("19121212-1212");
-    private static final Personnummer PATIENT_NEW_SSN = new Personnummer("19121212-1414");
+    private static final Personnummer PATIENT_SSN = createPnr("19121212-1212");
+    private static final Personnummer PATIENT_NEW_SSN = createPnr("19121212-1414");
+
     private static final String PATIENT_FNAME = "Adam";
     private static final String PATIENT_MNAME = "Bertil";
     private static final String PATIENT_LNAME = "Caesarsson";
@@ -92,6 +91,7 @@ public class CopyUtkastServiceImplTest {
 
     private static final String HOSPERSON_ID = "SE12345678-0001";
     private static final String HOSPERSON_NAME = "Dr Börje Dengroth";
+
     private static final String MEDDELANDE_ID = "13";
 
     @Mock
@@ -565,4 +565,10 @@ public class CopyUtkastServiceImplTest {
         return new CreateReplacementCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
 
     }
+
+    private static Personnummer createPnr(String personId) {
+        return Personnummer.createValidatedPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
+
 }

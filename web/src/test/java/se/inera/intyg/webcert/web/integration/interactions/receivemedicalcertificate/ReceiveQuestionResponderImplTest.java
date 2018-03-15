@@ -18,20 +18,6 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.HashSet;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -39,22 +25,28 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiveQuestionResponderImplTest {
@@ -63,7 +55,7 @@ public class ReceiveQuestionResponderImplTest {
 
     private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
 
-    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
+    private static final Personnummer PATIENT_ID = Personnummer.createValidatedPersonnummer("19121212-1212").get();
 
     @Spy
     private FragaSvarConverter converter = new FragaSvarConverter();

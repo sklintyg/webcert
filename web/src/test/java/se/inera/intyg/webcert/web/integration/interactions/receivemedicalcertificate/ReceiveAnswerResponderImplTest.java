@@ -55,7 +55,7 @@ public class ReceiveAnswerResponderImplTest {
 
     private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
 
-    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
+    private static final Personnummer PATIENT_ID = Personnummer.createValidatedPersonnummer("19121212-1212").get();
 
     @Mock
     private FragaSvarService mockFragaSvarService;

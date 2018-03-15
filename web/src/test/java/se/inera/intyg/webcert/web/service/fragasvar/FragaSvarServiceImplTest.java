@@ -109,7 +109,7 @@ import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttr
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
+    private static final Personnummer PATIENT_ID = Personnummer.createValidatedPersonnummer("19121212-1212").get();
     private static final String INTYG_ID = "<intygsId>";
 
     private static final LocalDateTime JANUARY = LocalDateTime.parse("2013-01-12T11:22:11");

@@ -228,7 +228,7 @@ public class Utkast {
     }
 
     public Personnummer getPatientPersonnummer() {
-        return new Personnummer(patientPersonnummer);
+        return Personnummer.createValidatedPersonnummer(patientPersonnummer).get();
     }
 
     public void setPatientPersonnummer(Personnummer patientPersonnummer) {

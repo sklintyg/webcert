@@ -128,18 +128,22 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceTest {
+
     private static final String HSA_ID = "HSA-123";
     private static final String CREATED_BY_NAME = "Läkare Läkarsson";
     private static final String SENAST_SPARAD_NAME = "Spara Sparasson";
     private static final String CERTIFICATE_ID = "123";
     private static final String CERTIFICATE_TYPE = "fk7263";
     private static final String LOGICAL_ADDRESS = "<logicalAddress>";
-
     private static final String USER_REFERENCE = "some-ref";
     private static final String REFERENCE = "reference";
+    private static final String PERSON_ID = "19121212-1212";
+
+    private static final Personnummer PERSNR = Personnummer.createValidatedPersonnummer(PERSON_ID).get();
 
     private ListCertificatesForCareResponseType listResponse;
     private VardpersonReferens vardpersonReferens;
+
     private String json;
 
     @Mock
@@ -312,7 +316,7 @@ public class IntygServiceTest {
         // TODO: INTYG-4086, fix this assert. The contents have been updated with the just-in-time fetched patient...
         // assertEquals(json, intygData.getContents());
         assertEquals(CERTIFICATE_ID, intygData.getUtlatande().getId());
-        assertEquals("19121212-1212", intygData.getUtlatande().getGrundData().getPatient().getPersonId().getPersonnummer());
+        assertEquals(PERSON_ID, intygData.getUtlatande().getGrundData().getPatient().getPersonId().getPersonnummerWithDash());
         assertFalse(intygData.isDeceased());
     }
 
@@ -434,7 +438,7 @@ public class IntygServiceTest {
                 .thenReturn(listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList(enhetsId),
-                new Personnummer("19121212-1212"));
+                PERSNR);
 
         ArgumentCaptor<ListCertificatesForCareType> argument = ArgumentCaptor.forClass(ListCertificatesForCareType.class);
 
@@ -447,7 +451,7 @@ public class IntygServiceTest {
         assertEquals("1", meta.getIntygId());
         assertEquals("fk7263", meta.getIntygType());
         assertEquals(CertificateState.SENT.name(), meta.getStatus());
-        assertTrue(new Personnummer("191212121212").equals(meta.getPatientId()));
+        assertTrue(PERSNR.equals(meta.getPatientId()));
         assertEquals(1, argument.getValue().getEnhetsId().size());
         assertNotNull(argument.getValue().getEnhetsId().get(0).getRoot());
         assertEquals(enhetsId, argument.getValue().getEnhetsId().get(0).getExtension());
@@ -467,7 +471,7 @@ public class IntygServiceTest {
                 buildDraftList(false, null, null));
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
         assertNotNull(intygItemListResponse);
         assertEquals(1, intygItemListResponse.getLeft().size());
 
@@ -483,7 +487,7 @@ public class IntygServiceTest {
                 .thenReturn(listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
 
         assertTrue(intygItemListResponse.getLeft().isEmpty());
     }
@@ -498,7 +502,7 @@ public class IntygServiceTest {
                 .thenReturn(listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
 
         assertTrue(intygItemListResponse.getLeft().isEmpty());
     }
@@ -509,7 +513,7 @@ public class IntygServiceTest {
                 .thenReturn(listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
 
         assertEquals(2, intygItemListResponse.getLeft().size());
     }
@@ -539,7 +543,7 @@ public class IntygServiceTest {
                 .thenReturn(listResponse2);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
 
         assertEquals(2, intygItemListResponse.getLeft().size());
     }
@@ -629,7 +633,7 @@ public class IntygServiceTest {
                 .thenReturn(listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
 
         assertEquals(3, intygItemListResponse.getLeft().size());
         verify(utkastRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
@@ -645,7 +649,7 @@ public class IntygServiceTest {
                 .thenReturn(listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
         assertEquals("Dr. Who", intygItemListResponse.getLeft().get(0).getUpdatedSignedBy());
         assertEquals(2, intygItemListResponse.getLeft().size());
         verify(utkastRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(), anySet());
@@ -661,7 +665,7 @@ public class IntygServiceTest {
                 .thenReturn(listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
         assertEquals(3, intygItemListResponse.getLeft().size());
 
         // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
@@ -681,7 +685,7 @@ public class IntygServiceTest {
                         listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
         assertEquals(3, intygItemListResponse.getLeft().size());
 
         // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
@@ -701,7 +705,7 @@ public class IntygServiceTest {
                         listResponse);
 
         Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"),
-                new Personnummer("19121212-1212"));
+                PERSNR);
         assertEquals(3, intygItemListResponse.getLeft().size());
 
         // Se till att posten vi lade till från "drafts" har fått namnet från Utkastet, inte signaturen där HsaId står.
@@ -784,7 +788,9 @@ public class IntygServiceTest {
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
                 .thenReturn(buildPdfDocument());
+
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
         assertNotNull(intygPdf);
 
         verify(utkastRepository).findOne(anyString());
@@ -822,7 +828,7 @@ public class IntygServiceTest {
         final String relationIntygId = "relationIntygId";
         final String recipient = new Fk7263EntryPoint().getDefaultRecipient();
 
-        final Personnummer personnummer = new Personnummer("19121212-1212");
+        final Personnummer personnummer = PERSNR;
 
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         utlatande.setId(intygId);
@@ -863,7 +869,7 @@ public class IntygServiceTest {
         final String relationIntygId = "relationIntygId";
         final String recipient = new Fk7263EntryPoint().getDefaultRecipient();
 
-        final Personnummer personnummer = new Personnummer("19121212-1212");
+        final Personnummer personnummer = PERSNR;
 
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         utlatande.setId(intygId);
@@ -911,22 +917,25 @@ public class IntygServiceTest {
 
     @Test
     public void testListCertificatesForCareWithQAOk() throws Exception {
-        final String personnummer = "personnummer";
         final List<String> enhetList = Arrays.asList("enhet");
+
         final String intygType = "intygType";
         final String intygId = "intygId";
+
         final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
 
         Handelse handelse = new Handelse();
         handelse.setTimestamp(localDateTime);
         handelse.setCode(HandelsekodEnum.SKAPAT);
+
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
         when(utkastRepository
-                .findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
+                .findDraftsByPatientAndEnhetAndStatus(eq(PERSON_ID), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                         eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Arrays.asList(handelse));
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
@@ -934,7 +943,7 @@ public class IntygServiceTest {
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-                new IntygWithNotificationsRequest.Builder().setPersonnummer(new Personnummer(personnummer)).setEnhetId(enhetList).build());
+                new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -954,17 +963,19 @@ public class IntygServiceTest {
 
     @Test
     public void testListCertificatesForCareWithQANoNotifications() throws Exception {
-        final String personnummer = "personnummer";
         final List<String> enhetList = Arrays.asList("enhet");
+
         final String intygType = "intygType";
         final String intygId = "intygId";
+
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "","", "", "", false)));
         when(utkastRepository
-                .findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
+                .findDraftsByPatientAndEnhetAndStatus(eq(PERSON_ID), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                         eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
@@ -972,7 +983,7 @@ public class IntygServiceTest {
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-                new IntygWithNotificationsRequest.Builder().setPersonnummer(new Personnummer(personnummer)).setEnhetId(enhetList).build());
+                new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -989,20 +1000,23 @@ public class IntygServiceTest {
 
     @Test
     public void testListCertificatesForCareWithQAVardgivare() throws Exception {
-        final String personnummer = "personnummer";
         final String vardgivarId = "vardgivarId";
         final String intygType = "intygType";
         final String intygId = "intygId";
-        Handelse handelse = new Handelse();
+
         final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
+
+        Handelse handelse = new Handelse();
         handelse.setTimestamp(localDateTime);
         handelse.setCode(HandelsekodEnum.SKAPAT);
+
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
-        when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
+        when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(PERSON_ID), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId)))
@@ -1012,7 +1026,7 @@ public class IntygServiceTest {
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-                new IntygWithNotificationsRequest.Builder().setPersonnummer(new Personnummer(personnummer)).setVardgivarId(vardgivarId)
+                new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setVardgivarId(vardgivarId)
                         .build());
 
         assertNotNull(res);
@@ -1034,16 +1048,18 @@ public class IntygServiceTest {
     public void testListCertificatesForCareWithQANoNotificationsTrim() throws Exception {
         final LocalDateTime start = LocalDateTime.of(2017, Month.APRIL, 1, 1, 1);
         final LocalDateTime end = LocalDateTime.of(2018, Month.APRIL, 1, 1, 1);
-        final String personnummer = "personnummer";
+
         final String vardgivarId = "vardgivarId";
         final String intygType = "intygType";
         final String intygId = "intygId";
+
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
-        when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
+        when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(PERSON_ID), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
@@ -1052,7 +1068,7 @@ public class IntygServiceTest {
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-                new IntygWithNotificationsRequest.Builder().setPersonnummer(new Personnummer(personnummer)).setVardgivarId(vardgivarId)
+                new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setVardgivarId(vardgivarId)
                         .setStartDate(start).setEndDate(end).build());
 
         assertNotNull(res);
@@ -1196,14 +1212,17 @@ public class IntygServiceTest {
     }
 
     private Utkast getIntyg(String intygsId, LocalDateTime sendDate, LocalDateTime revokeDate) throws IOException {
-        Utkast utkast = new Utkast();
         String json = IOUtils.toString(new ClassPathResource(
                 "FragaSvarServiceImplTest/utlatande.json").getInputStream(), "UTF-8");
+
+        Utkast utkast = new Utkast();
         utkast.setModel(json);
         utkast.setIntygsId(intygsId);
         utkast.setSkickadTillMottagareDatum(sendDate);
         utkast.setAterkalladDatum(revokeDate);
         utkast.setStatus(UtkastStatus.SIGNED);
+        utkast.setPatientPersonnummer(PERSNR);
+
         Signatur signatur = new Signatur(LocalDateTime.now(), HSA_ID, CERTIFICATE_ID, "", "", "");
         utkast.setSignatur(signatur);
 
@@ -1216,6 +1235,7 @@ public class IntygServiceTest {
                 "IntygServiceTest/utkast-utlatande.json").getInputStream(), "UTF-8");
         utkast.setModel(json);
         utkast.setIntygsId(intygsId);
+        utkast.setPatientPersonnummer(PERSNR);
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
         return utkast;
@@ -1223,7 +1243,7 @@ public class IntygServiceTest {
 
     private Patient buildPatient(boolean sekretessMarkering, boolean avliden) {
         Patient patient = new Patient();
-        patient.setPersonId(new Personnummer("19121212-1212"));
+        patient.setPersonId(PERSNR);
         patient.setFornamn("fornamn");
         patient.setMellannamn("mellannamn");
         patient.setEfternamn("efternamn");
@@ -1236,8 +1256,9 @@ public class IntygServiceTest {
 
     private PersonSvar getPersonSvar(boolean deceased, PersonSvar.Status status) {
         return new PersonSvar(
-                new Person(new Personnummer("19121212-1212"), false, deceased, "fornamn", "mellannamn", "efternamn", "postadress",
+                new Person(PERSNR, false, deceased, "fornamn", "mellannamn", "efternamn", "postadress",
                         "postnummer", "postort"),
                 status);
     }
+
 }
