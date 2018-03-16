@@ -166,14 +166,30 @@ privileges:
   - &p040
     name: *kp040
     desc: Vidarebefordra utkast
-    intygstyper: # Implicit alla
+    intygstyper: # EJ fk7263
+      - *ki020 # ts-bas
+      - *ki030 # ts-diabetes
+      - *ki040 # lisjp
+      - *ki050 # luse
+      - *ki060 # luae_na
+      - *ki070 # luae_fs
+      - *ki080 # db
+      - *ki090 # doi
     requestOrigins:
       - *ro010 # NORMAL
       - *ro030 # UTHOPP
   - &p050
     name: *kp050
     desc: Vidarebefordra frågasvar
-    intygstyper: # Implicit alla
+    intygstyper: # EJ fk7263
+      - *ki020 # ts-bas
+      - *ki030 # ts-diabetes
+      - *ki040 # lisjp
+      - *ki050 # luse
+      - *ki060 # luae_na
+      - *ki070 # luae_fs
+      - *ki080 # db
+      - *ki090 # doi
     requestOrigins:
       - *ro010 # NORMAL
       - *ro030 # UTHOPP
@@ -499,24 +515,20 @@ roles:
           - <<: *ro020 # DJUPINTEGRATION
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         intygstyper:
-          - *ki010
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
-              - *ki010
               - *ki040
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
       - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
         intygstyper:
-          - *ki010
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
-              - *ki010
               - *ki040
           - <<: *ro030 # UTHOPP
             intygstyper:
@@ -527,11 +539,9 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
-              - *ki010
               - *ki040
           - <<: *ro020 # DJUPINTEGRATION
             intygstyper:
-              - *ki010
               - *ki040
           - <<: *ro030 # UTHOPP
             intygstyper:
@@ -599,11 +609,9 @@ roles:
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
-              - *ki010
               - *ki040
           - <<: *ro020 # DJUPINTEGRATION
             intygstyper:
-              - *ki010
               - *ki040
       - <<: *p140 # HANTERA_SEKRETESSMARKERAD_PATIENT
         intygstyper:

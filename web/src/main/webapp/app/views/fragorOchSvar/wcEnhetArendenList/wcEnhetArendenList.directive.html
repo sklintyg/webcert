@@ -43,18 +43,21 @@
                     class="btn"
                     ng-class="{'btn-primary': !arende.vidarebefordrad, 'btn-secondary' : arende.vidarebefordrad}"
                     title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
-                    ng-click="openMailDialog(arende)">
+                    ng-click="openMailDialog(arende)"
+                    wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
               <span class="glyphicon glyphicon-share-alt"
                     ng-class="{'forward-active': !arende.vidarebefordrad, 'forward-inactive': arende.vidarebefordrad}"></span>
             </button>
           </td>
           <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
-            <wc-checkbox-wrapper>
-            <input ng-attr-id="vidarebefordra_arende_{{arende.meddelandeId}}" type="checkbox" ng-disabled="arende.updateInProgress"
-                   ng-model="arende.vidarebefordrad" ng-change="onVidareBefordradChange(arende)" />
-              <label ng-attr-for="vidarebefordra_arende_{{arende.meddelandeId}}">&nbsp;</label>
-                                  <span ng-if="arende.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
-            </wc-checkbox-wrapper>
+            <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
+              <wc-checkbox-wrapper>
+              <input ng-attr-id="vidarebefordra_arende_{{arende.meddelandeId}}" type="checkbox" ng-disabled="arende.updateInProgress"
+                     ng-model="arende.vidarebefordrad" ng-change="onVidareBefordradChange(arende)" />
+                <label ng-attr-for="vidarebefordra_arende_{{arende.meddelandeId}}">&nbsp;</label>
+                                    <span ng-if="arende.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+              </wc-checkbox-wrapper>
+            </div>
           </td>
           <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
           <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>

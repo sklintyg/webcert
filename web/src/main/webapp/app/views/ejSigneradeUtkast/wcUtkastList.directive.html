@@ -20,19 +20,21 @@
               class="btn vidarebefordra-btn"
               ng-class="{'btn-primary': !intyg.vidarebefordrad, 'btn-secondary' : intyg.vidarebefordrad}"
               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
-              ng-click="openMailDialog(intyg)">
+              ng-click="openMailDialog(intyg)"
+              wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}">
           <span class="glyphicon glyphicon-share-alt"
                 ng-class="{'forward-active': !intyg.vidarebefordrad, 'forward-inactive': intyg.vidarebefordrad}"></span>
       </button>
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST" class="center">
-      <wc-checkbox-wrapper>
-      <input class="vidarebefordrad-checkbox" ng-attr-id="vidarebefordra_{{intyg.intygId}}" type="checkbox" ng-disabled="intyg.updateState.vidarebefordraInProgress" ng-model="intyg.vidarebefordrad"
-             ng-change="onNotifyChange(intyg)" />
-        <label ng-attr-for="vidarebefordra_{{intyg.intygId}}">&nbsp;</label>
-      <span ng-if="intyg.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
-      </wc-checkbox-wrapper>
-
+      <div wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}">
+        <wc-checkbox-wrapper>
+        <input class="vidarebefordrad-checkbox" ng-attr-id="vidarebefordra_{{intyg.intygId}}" type="checkbox" ng-disabled="intyg.updateState.vidarebefordraInProgress" ng-model="intyg.vidarebefordrad"
+               ng-change="onNotifyChange(intyg)" />
+          <label ng-attr-for="vidarebefordra_{{intyg.intygId}}">&nbsp;</label>
+        <span ng-if="intyg.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+        </wc-checkbox-wrapper>
+      </div>
     </td>
     <td class="unbreakable">{{getTypeName(intyg.intygType)}}</td>
     <td><span dynamic-label key="intyg.status.{{intyg.status}}"></span></td>
