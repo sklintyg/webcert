@@ -98,7 +98,7 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
         // För NetID Access Server signering så behöver vi göra en XMLDSig signatur
         // inklusive en ordentlig digest av canoniserad XML.
         // Börja med att konvertera intyget till XML-format
-        String xml = utkastModelToXmlConverterService.utkastToXml(utkast);
+        // String xml = utkastModelToXmlConverterService.utkastToXml(utkast);
         // SignatureType signatureType = xmldSigService.prepareSignature(xml);
         byte[] digestValue = "temp".getBytes(Charset.forName("UTF-8"));
         SignResponse response;
