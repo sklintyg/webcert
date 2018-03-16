@@ -265,16 +265,22 @@ public class ArendeServiceImpl implements ArendeService {
                 isCorrectEnhet(user),
                 isQuestion()));
 
-        final List<Arende> arendenToForward = arendeRepository.findByIntygsId(intygsId)
-                .stream()
-                .filter(filter)
-                .peek(arende -> authoritiesValidator
-                        .given(user, arende.getIntygTyp())
-                        .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
-                        .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
-                        .orThrow())
-                .peek(Arende::setArendeToVidareBerordrat)
-                .collect(Collectors.toList());
+        final List<Arende> arendenToForward = arendeRepository.save(
+                arendeRepository.findByIntygsId(intygsId)
+                        .stream()
+                        .filter(filter)
+                        .peek(arende -> authoritiesValidator
+                                .given(user, arende.getIntygTyp())
+                                .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
+                                .orThrow())
+                        .peek(Arende::setArendeToVidareBerordrat)
+                        .collect(Collectors.toList()));
+
+        if (arendenToForward.isEmpty()) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                        "Could not find any arende related to IntygsId: " + intygsId);
+        }
 
         return getArendeConversationViewList(intygsId, arendenToForward);
     }
