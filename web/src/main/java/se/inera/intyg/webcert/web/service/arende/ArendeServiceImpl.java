@@ -76,28 +76,20 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.S
 import javax.xml.bind.JAXBException;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional("jpaTransactionManager")
 public class ArendeServiceImpl implements ArendeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
+    private static Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
 
-    private static final List<String> BLACKLISTED = Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID,
+    private static List<String> BLACKLISTED = Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID,
             TsDiabetesEntryPoint.MODULE_ID);
 
-    private static final List<ArendeAmne> VALID_VARD_AMNEN = Arrays.asList(
+    private static List<ArendeAmne> VALID_VARD_AMNEN = Arrays.asList(
             ArendeAmne.AVSTMN,
             ArendeAmne.KONTKT,
             ArendeAmne.OVRIGT);
@@ -110,10 +102,6 @@ public class ArendeServiceImpl implements ArendeService {
 
     private static Predicate<Arende> isCorrectEnhet(WebCertUser user) {
         return a -> user.getIdsOfSelectedVardenhet().contains(a.getEnhetId());
-    }
-
-    private static Predicate<Arende> composePredicate(Stream<Predicate<Arende>> predicates) {
-        return predicates.reduce(p -> true, Predicate::and);
     }
 
     @Value("${sendmessagetofk.logicaladdress}")
@@ -257,18 +245,15 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     @Transactional
-    public List<ArendeConversationView> setForwarded(final String intygsId) {
+    public List<ArendeConversationView> setForwarded(String intygsId) {
 
-        final WebCertUser user = webcertUserService.getUser();
+        WebCertUser user = webcertUserService.getUser();
 
-        final Predicate<Arende> filter = composePredicate(Stream.of(
-                isCorrectEnhet(user),
-                isQuestion()));
-
-        final List<Arende> arendenToForward = arendeRepository.save(
+        List<Arende> arendenToForward = arendeRepository.save(
                 arendeRepository.findByIntygsId(intygsId)
                         .stream()
-                        .filter(filter)
+                        .filter(isCorrectEnhet(user))
+                        .filter(isQuestion())
                         .peek(arende -> authoritiesValidator
                                 .given(user, arende.getIntygTyp())
                                 .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
@@ -341,9 +326,9 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    public List<ArendeConversationView> getArenden(final String intygsId) {
-        final WebCertUser user = webcertUserService.getUser();
-        final List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId);
+    public List<ArendeConversationView> getArenden(String intygsId) {
+        WebCertUser user = webcertUserService.getUser();
+        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId);
 
         arendeList.stream()
             .findFirst()
@@ -357,7 +342,7 @@ public class ArendeServiceImpl implements ArendeService {
                         SekretessStatus.TRUE.equals(patientDetailsResolver.getSekretessStatus(pn)))
                     .orThrow());
 
-        final List<Arende> filteredArendeList = arendeList.stream()
+        List<Arende> filteredArendeList = arendeList.stream()
                 .filter(isCorrectEnhet(user))
                 .collect(Collectors.toList());
 
@@ -430,7 +415,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     private boolean passesSekretessCheck(String patientId, String intygsTyp, WebCertUser user,
             Map<Personnummer, SekretessStatus> sekretessStatusMap) {
-        final SekretessStatus sekretessStatus = sekretessStatusMap.get(new Personnummer(patientId));
+        SekretessStatus sekretessStatus = sekretessStatusMap.get(new Personnummer(patientId));
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
             return false;
@@ -528,12 +513,12 @@ public class ArendeServiceImpl implements ArendeService {
         }
     }
 
-    private List<ArendeConversationView> getArendeConversationViewList(final String intygsId, final List<Arende> arendeList) {
+    private List<ArendeConversationView> getArendeConversationViewList(String intygsId, List<Arende> arendeList) {
 
-        final List<AnsweredWithIntyg> kompltToIntyg = AnsweredWithIntygUtil.
+        List<AnsweredWithIntyg> kompltToIntyg = AnsweredWithIntygUtil.
                 findAllKomplementForGivenIntyg(intygsId, utkastRepository);
 
-        final List<ArendeDraft> arendeDraftList = arendeDraftService.listAnswerDrafts(intygsId);
+        List<ArendeDraft> arendeDraftList = arendeDraftService.listAnswerDrafts(intygsId);
 
         return arendeViewConverter.buildArendeConversations(
                 intygsId,
@@ -577,7 +562,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private Arende lookupArende(String meddelandeId) {
-        final Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
+        Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
 
         if (arende == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,

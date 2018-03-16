@@ -86,9 +86,9 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsId}/vidarebefordrad")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response setForwarded(@PathParam("intygsId") final String intygsId) {
-        LOGGER.debug("Set arende {} as forwared true", intygsId);
+        LOGGER.debug("Set arende {} as forwarded true", intygsId);
 
-        final List<ArendeConversationView> response = arendeService.setForwarded(intygsId);
+        List<ArendeConversationView> response = arendeService.setForwarded(intygsId);
         return Response.ok(response).build();
     }
 
