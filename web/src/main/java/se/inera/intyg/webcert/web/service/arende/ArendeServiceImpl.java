@@ -91,12 +91,12 @@ import java.util.stream.Collectors;
 @Transactional("jpaTransactionManager")
 public class ArendeServiceImpl implements ArendeService {
 
-    private static Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
 
-    private static List<String> BLACKLISTED = Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID,
+    private static final List<String> BLACKLISTED = Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID,
             TsDiabetesEntryPoint.MODULE_ID);
 
-    private static List<ArendeAmne> VALID_VARD_AMNEN = Arrays.asList(
+    private static final List<ArendeAmne> VALID_VARD_AMNEN = Arrays.asList(
             ArendeAmne.AVSTMN,
             ArendeAmne.KONTKT,
             ArendeAmne.OVRIGT);
