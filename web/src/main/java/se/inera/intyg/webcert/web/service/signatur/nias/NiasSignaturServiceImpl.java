@@ -99,8 +99,8 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
         // inklusive en ordentlig digest av canoniserad XML.
         // Börja med att konvertera intyget till XML-format
         String xml = utkastModelToXmlConverterService.utkastToXml(utkast);
-        SignatureType signatureType = xmldSigService.prepareSignature(xml);
-        byte[] digestValue = signatureType.getSignedInfo().getReference().get(0).getDigestValue();
+        //SignatureType signatureType = xmldSigService.prepareSignature(xml);
+        byte[] digestValue = "temp".getBytes();//signatureType.getSignedInfo().getReference().get(0).getDigestValue();
 
         SignResponse response;
         try {
@@ -118,7 +118,7 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
         // the mechanism already present for SITHS
         String orderRef = response.getSignResult();
 
-        startAsyncNiasCollectPoller(orderRef, draftHash.getId(), signatureType);
+        startAsyncNiasCollectPoller(orderRef, draftHash.getId(), new SignatureType());
         return draftHash;
     }
 
