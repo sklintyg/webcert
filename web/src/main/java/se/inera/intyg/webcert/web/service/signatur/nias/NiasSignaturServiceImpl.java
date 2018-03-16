@@ -91,7 +91,7 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
 
         // Try to use personnummer. If not possible, use hsaId instead. This is a temporary hack for testing.
         String personId = webCertUser.getPersonId() != null ? webCertUser.getPersonId() : webCertUser.getHsaId();
-      //  validatePersonId(personId);
+        // validatePersonId(personId);
 
         SignaturTicket draftHash = signaturService.createDraftHash(intygId, utkast.getVersion());
 
@@ -99,9 +99,8 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
         // inklusive en ordentlig digest av canoniserad XML.
         // Börja med att konvertera intyget till XML-format
         String xml = utkastModelToXmlConverterService.utkastToXml(utkast);
-        //SignatureType signatureType = xmldSigService.prepareSignature(xml);
-        byte[] digestValue = "temp".getBytes(Charset.forName("UTF-8"));//signatureType.getSignedInfo().getReference().get(0).getDigestValue();
-
+        // SignatureType signatureType = xmldSigService.prepareSignature(xml);
+        byte[] digestValue = "temp".getBytes(Charset.forName("UTF-8"));
         SignResponse response;
         try {
             String result = netiDAccessServerSoap.sign(personId, "Inera Webcert: Signera intyg " + utkast.getIntygsId(),
