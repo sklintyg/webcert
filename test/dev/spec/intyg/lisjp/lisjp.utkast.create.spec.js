@@ -38,6 +38,7 @@ describe('Create and Sign lisjp utkast', function() {
 
     describe('smittskydd', function() {
         beforeAll(function() {
+            ValjIntygPage.get();
             specHelper.createUtkastForPatient('191212121212', 'Läkarintyg för sjukpenning');
         });
 

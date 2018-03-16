@@ -24,8 +24,9 @@ var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var IntygPage = wcTestTools.pages.intyg.luse.intyg;
+var ValjIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-describe('Create and Sign luse utkast', function() {
+fdescribe('Create and Sign luse utkast', function() {
 
     var utkastId = null,
         data = null;
@@ -33,10 +34,15 @@ describe('Create and Sign luse utkast', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+
+        
     });
 
     describe('Fyll i intyget', function() {
+        beforeAll(function() {
+            ValjIntygPage.get();
+            specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+        });
 
         it('Spara undan intygsId från URL', function() {
             UtkastPage.disableAutosave();
