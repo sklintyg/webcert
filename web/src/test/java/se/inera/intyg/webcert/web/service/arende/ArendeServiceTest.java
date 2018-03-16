@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -133,6 +135,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private StatisticsGroupByUtil statisticsGroupByUtil;
+
+    @Mock
+    private WebCertUser webCertUser;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -675,7 +680,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = WebCertServiceException.class)
     public void setForwardedArendeNotFoundTest() {
         try {
-            service.setForwarded(MEDDELANDE_ID, true);
+            service.setForwarded(INTYG_ID);
         } finally {
             verify(arendeRepository, never()).save(any(Arende.class));
             verifyZeroInteractions(notificationService);
@@ -684,31 +689,19 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void setForwardedTrueTest() {
-        Arende arende = buildArende(MEDDELANDE_ID, null);
-        when(arendeRepository.findOneByMeddelandeId(MEDDELANDE_ID)).thenReturn(arende);
-        service.setForwarded(MEDDELANDE_ID, true);
+        final Arende arende = buildArende(MEDDELANDE_ID, ENHET_ID);
+        final Arende vidareBefordrat = arende;
+        arende.setArendeToVidareBerordrat();
 
-        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
-        verify(arendeRepository).save(arendeCaptor.capture());
-        verify(arendeRepository).findBySvarPaId(MEDDELANDE_ID); // lookup answers for response
-        verify(arendeRepository).findByPaminnelseMeddelandeId(MEDDELANDE_ID); // lookup reminders for response
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(ImmutableList.of(arende));
+        when(webcertUserService.getUser()).thenReturn(createUser());
+        when(arendeRepository.save(anyListOf(Arende.class))).thenReturn(ImmutableList.of(vidareBefordrat));
 
-        assertEquals(true, arendeCaptor.getValue().getVidarebefordrad());
-        verifyZeroInteractions(notificationService);
-    }
+        final List<ArendeConversationView> arendeConversationViews = service.setForwarded(INTYG_ID);
 
-    @Test
-    public void setForwardedFalseTest() {
-        Arende arende = buildArende(MEDDELANDE_ID, null);
-        when(arendeRepository.findOneByMeddelandeId(MEDDELANDE_ID)).thenReturn(arende);
-        service.setForwarded(MEDDELANDE_ID, false);
+        assertTrue(arendeConversationViews.stream()
+                .allMatch(arendeConversationView -> arendeConversationView.getFraga().getVidarebefordrad()));
 
-        ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
-        verify(arendeRepository).save(arendeCaptor.capture());
-        verify(arendeRepository).findBySvarPaId(MEDDELANDE_ID); // lookup answers for response
-        verify(arendeRepository).findByPaminnelseMeddelandeId(MEDDELANDE_ID); // lookup reminders for response
-
-        assertEquals(false, arendeCaptor.getValue().getVidarebefordrad());
         verifyZeroInteractions(notificationService);
     }
 
@@ -1369,6 +1362,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setTimestamp(timestamp);
         List<MedicinsktArende> komplettering = new ArrayList<>();
         arende.setIntygsId(intygId);
+        arende.setIntygTyp(INTYG_TYP);
         arende.setPatientPersonId(PATIENT_ID.getPersonnummer());
         arende.setSigneratAv("Signatur");
         arende.setSistaDatumForSvar(senasteHandelse.plusDays(7).toLocalDate());
@@ -1404,9 +1398,16 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+        user.setOrigin(UserOriginType.NORMAL.name());
         user.setHsaId("testuser");
         user.setNamn("test userman");
+
+        Feature feature = new Feature();
+        feature.setName(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
+        feature.setGlobal(true);
+        feature.setIntygstyper(ImmutableList.of(INTYG_TYP));
+
+        user.setFeatures(ImmutableMap.of(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, feature));
 
         Vardenhet vardenhet = new Vardenhet(ENHET_ID, "enhet");
 

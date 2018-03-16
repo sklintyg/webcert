@@ -25,6 +25,7 @@ knownPrivileges:
   - &kp030 FORNYA_INTYG
   - &kp070 FILTRERA_PA_LAKARE
   - &kp140 HANTERA_SEKRETESSMARKERAD_PATIENT
+  - &kp050 VIDAREBEFORDRA_FRAGASVAR
 
 # De roller som systemet har
 knownRoles:
@@ -96,7 +97,11 @@ privileges:
     requestOrigins:
       - *ro010 # NORMAL
       - *ro020 # DJUPINTEGRATION
-
+  - &p050
+    name: *kp050
+    desc: Vidarebefordra frågasvar
+    intygstyper:
+    requestOrigins:
 # Roller
 roles:
   - &r010
@@ -112,6 +117,8 @@ roles:
       - <<: *p030 # FORNYA_INTYG
         intygstyper:
           - ts-bas
+      - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
+        intygstyper: # IMPLICIT_ALLA
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare

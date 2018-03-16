@@ -327,6 +327,10 @@ public class Arende {
         this.vidarebefordrad = vidarebefordrad;
     }
 
+    public void setArendeToVidareBerordrat() {
+        this.vidarebefordrad = true;
+    }
+
     public String getVardaktorName() {
         return vardaktorName;
     }

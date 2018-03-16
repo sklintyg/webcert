@@ -40,7 +40,7 @@ public interface ArendeService {
 
     ArendeConversationView answer(String svarPaMeddelandeId, String meddelande);
 
-    ArendeConversationView setForwarded(String meddelandeId, boolean vidarebefordrad);
+    List<ArendeConversationView> setForwarded(String intygsId);
 
     ArendeConversationView openArendeAsUnhandled(String meddelandeId);
 

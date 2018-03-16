@@ -75,11 +75,11 @@ public class SecurityConfigurationLoaderTest {
     public void loadConfigurationAndAssertTypeOfObjects() {
         AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
-        assertTrue(configuration.getRequestOrigins().size() == 4);
-        assertTrue(configuration.getPrivileges().size() == 7);
-        assertTrue(configuration.getRoles().size() == 4);
-        assertTrue(configuration.getTitles().size() == 2);
-        assertTrue(configuration.getTitleCodes().size() == 4);
+        assertEquals(4,configuration.getRequestOrigins().size());
+        assertEquals(8,configuration.getPrivileges().size());
+        assertEquals(4,configuration.getRoles().size());
+        assertEquals(2,configuration.getTitles().size());
+        assertEquals(4,configuration.getTitleCodes().size());
 
         // Assert that lists are of specific types
         try {

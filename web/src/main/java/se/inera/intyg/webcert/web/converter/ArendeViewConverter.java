@@ -69,7 +69,7 @@ public class ArendeViewConverter {
     }
 
     private static boolean conversationContainsFraga(List<Arende> thread) {
-        return thread.stream().filter(a -> getArendeType(a) == ArendeType.FRAGA).findAny().isPresent();
+        return thread.stream().anyMatch(a -> getArendeType(a) == ArendeType.FRAGA);
     }
 
     private static ArendeType getArendeType(Arende arende) {
