@@ -124,7 +124,7 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                         signatureType.setKeyInfo(keyInfo);
 
                         // Perform validation against XSD.
-                        xmldSigService.validate(signatureType);
+                        // xmldSigService.validate(signatureType);
 
                         signaturService.clientNiasSignature(transactionId, signatureType, resp.getUserInfo().getCertificate(), webCertUser);
                         LOG.info("NetiD Access Server Signature was successfully persisted and ticket updated.");
