@@ -69,7 +69,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "meddelandeId", internId).body(Boolean.TRUE)
+                .contentType(ContentType.JSON).pathParams("intygsId", intygId).body(Boolean.TRUE)
                 .expect().statusCode(200)
                 .when().post("moduleapi/arende/{intygsId}/vidarebefordrad")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-list-schema.json"));
