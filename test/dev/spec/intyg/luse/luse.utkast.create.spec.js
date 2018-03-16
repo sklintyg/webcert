@@ -26,7 +26,7 @@ var UtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var IntygPage = wcTestTools.pages.intyg.luse.intyg;
 var ValjIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-fdescribe('Create and Sign luse utkast', function() {
+describe('Create and Sign luse utkast', function() {
 
     var utkastId = null,
         data = null;
@@ -35,7 +35,7 @@ fdescribe('Create and Sign luse utkast', function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
 
-        
+
     });
 
     describe('Fyll i intyget', function() {
