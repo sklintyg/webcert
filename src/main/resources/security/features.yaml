@@ -96,7 +96,6 @@ features:
     desc: Förnya intyg
     global: true
     intygstyper:
-      - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
       - *ki040 # LUSE

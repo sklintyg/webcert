@@ -134,8 +134,7 @@ privileges:
   - &p030
     name: *kp030
     desc: Förnya intyg
-    intygstyper: # EJ ts-intyg
-      - *ki010 # fk7263
+    intygstyper: # EJ ts-intyg eller fk7263
       - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
@@ -182,7 +181,6 @@ privileges:
     name: *kp060
     desc: Besvara fråga om komplettering
     intygstyper:
-      - *ki010 # fk7263
       - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
@@ -226,7 +224,6 @@ privileges:
     name: *kp120
     desc: Svara med nytt intyg
     intygstyper:
-      - *ki010 # fk7263
       - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
@@ -307,6 +304,15 @@ roles:
               - *ki080 # db
               - *ki090 # doi
           - <<: *ro020 # DJUPINTEGRATION
+            intygstyper: # EJ fk7263
+              - *ki020 # ts-bas
+              - *ki030 # ts-diabetes
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
+              - *ki080 # db
+              - *ki090 # doi
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -485,7 +491,6 @@ roles:
               - *ki040
       - <<: *p031 # ERSATTA_INTYG
         intygstyper:
-          - *ki010
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -518,7 +523,6 @@ roles:
               - *ki010
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         intygstyper:
-          - *ki010
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -591,7 +595,6 @@ roles:
               - *ki010
       - <<: *p120 # SVARA_MED_NYTT_INTYG
         intygstyper:
-          - *ki010
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
