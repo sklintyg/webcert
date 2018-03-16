@@ -100,7 +100,7 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
         // Börja med att konvertera intyget till XML-format
         String xml = utkastModelToXmlConverterService.utkastToXml(utkast);
         //SignatureType signatureType = xmldSigService.prepareSignature(xml);
-        byte[] digestValue = "temp".getBytes();//signatureType.getSignedInfo().getReference().get(0).getDigestValue();
+        byte[] digestValue = "temp".getBytes(Charset.forName("UTF-8"));//signatureType.getSignedInfo().getReference().get(0).getDigestValue();
 
         SignResponse response;
         try {
