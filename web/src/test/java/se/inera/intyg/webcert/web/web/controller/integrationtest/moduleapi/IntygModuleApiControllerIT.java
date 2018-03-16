@@ -59,7 +59,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testGetFk7263Intyg() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "lisjp";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -125,7 +125,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testSendSignedIntyg() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "lisjp";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         signeraUtkastWithTestabilityApi(intygsId);
 
@@ -143,7 +143,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testRevokeSignedIntyg() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "lisjp";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         signeraUtkastWithTestabilityApi(intygsId);
 
@@ -162,7 +162,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testRevokeSignedIntygWithoutPrivilegeFails() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "lisjp";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         signeraUtkastWithTestabilityApi(intygsId);
 
@@ -185,7 +185,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testGetIntygFromDifferentCareUnitWithCoherentJournalingFlagSuccess() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .expect().statusCode(HttpServletResponse.SC_FOUND)
@@ -201,7 +201,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects().follow(false).and().pathParam("intygsId", intygsId)
                 .expect().statusCode(HttpServletResponse.SC_OK)
-                .when().get("moduleapi/intyg/fk7263/{intygsId}")
+                .when().get("moduleapi/intyg/lisjp/{intygsId}")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
@@ -212,7 +212,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testGetIntygFromDifferentCareUnitWithoutCoherentJournalingFlagFail() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .expect().statusCode(HttpServletResponse.SC_FOUND)
@@ -227,7 +227,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects().follow(false).and().pathParam("intygsId", intygsId)
                 .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-                .when().get("moduleapi/intyg/fk7263/{intygsId}")
+                .when().get("moduleapi/intyg/lisjp/{intygsId}")
                 .then()
                 .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
                 .body("message", not(isEmptyString()));
@@ -240,13 +240,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         changeOriginTo("DJUPINTEGRATION");
 
-        String utkastId = createUtkast("fk7263", personnummer);
+        String utkastId = createUtkast("lisjp", personnummer);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "lisjp");
         pathParams.put("intygsId", utkastId);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -256,7 +256,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .body("intygsUtkastId", not(isEmptyString()))
                 .body("intygsUtkastId", not(equalTo(utkastId)))
-                .body("intygsTyp", equalTo("fk7263"));
+                .body("intygsTyp", equalTo("lisjp"));
     }
 
     @Test
@@ -264,7 +264,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
 
         // Lakare role has the FORNYA_INTYG priviledge, but the privilege is restricted to origintype=NORMAL /
         // DJUPINTEGRERAD.
@@ -275,7 +275,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "lisjp");
         pathParams.put("intygsId", utkastId);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -296,13 +296,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         changeOriginTo("DJUPINTEGRATION");
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(null);
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "lisjp");
         pathParams.put("intygsId", utkastId);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -318,7 +318,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testCreateRenewalBasedOnIntygFromDifferentCareUnitWithCoherentJournalingSuccess() throws IOException {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
 
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
@@ -336,7 +336,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "lisjp");
         pathParams.put("intygsId", intygsId);
 
         String newIntygsId = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -346,14 +346,14 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .body("intygsUtkastId", not(isEmptyString()))
                 .body("intygsUtkastId", not(equalTo(intygsId)))
-                .body("intygsTyp", equalTo("fk7263"))
+                .body("intygsTyp", equalTo("lisjp"))
                 .extract()
                 .path("intygsUtkastId");
 
         // Check that the copy contains the correct stuff
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get("moduleapi/intyg/fk7263/" + newIntygsId)
+                .when().get("moduleapi/intyg/lisjp/" + newIntygsId)
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(LEONIE_KOEHL.getHsaId()))
@@ -364,7 +364,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testCreateRenewalBasedOnIntygFromDifferentCareUnitWithCoherentJournalingFail() throws IOException {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        String intygsId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
 
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
@@ -381,7 +381,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "lisjp");
         pathParams.put("intygsId", intygsId);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -400,13 +400,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         changeOriginTo("DJUPINTEGRATION");
 
-        String intygsId = createSignedIntyg("fk7263", personnummer);
+        String intygsId = createSignedIntyg("lisjp", personnummer);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "lisjp");
         pathParams.put("intygsId", intygsId);
 
         final Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -416,7 +416,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .body("intygsUtkastId", not(isEmptyString()))
                 .body("intygsUtkastId", not(equalTo(intygsId)))
-                .body("intygsTyp", equalTo("fk7263")).extract().response();
+                .body("intygsTyp", equalTo("lisjp")).extract().response();
 
         JsonPath intygJson = new JsonPath(response.body().asString());
 
@@ -425,14 +425,14 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         // Verify that the new draft has correct relations
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get(MODULEAPI_UTKAST_BASE + "/fk7263/" + utkastId).then()
+                .when().get(MODULEAPI_UTKAST_BASE + "/lisjp/" + utkastId).then()
                 .body("relations.parent.intygsId", equalTo(intygsId))
                 .body("relations.parent.relationKod", equalTo(RelationKod.ERSATT.name()));
 
         // Verify the original certficate has a child relationship
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get("moduleapi/intyg/fk7263/" + intygsId).then()
+                .when().get("moduleapi/intyg/lisjp/" + intygsId).then()
                 .body("relations.latestChildRelations.replacedByUtkast.intygsId", equalTo(utkastId))
                 .body("relations.latestChildRelations.replacedByUtkast.relationKod", equalTo(RelationKod.ERSATT.name()));
 

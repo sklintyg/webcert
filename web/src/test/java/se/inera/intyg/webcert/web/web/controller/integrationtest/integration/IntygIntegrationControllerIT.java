@@ -55,7 +55,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         changeOriginTo("DJUPINTEGRATION");
 
@@ -73,7 +73,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("/visa/intyg/{intygsId}")
                 .then()
-                .header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"))
+                .header(HttpHeaders.LOCATION, endsWith("/ts-bas/edit/" + utkastId + "/"))
                 .header(XFRAME_OPTIONS_HEADER, equalToIgnoringCase("DENY"));
     }
 
@@ -85,12 +85,12 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         changeOriginTo("DJUPINTEGRATION");
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "ts-bas");
         pathParams.put("intygsId", utkastId);
 
         Map<String, String> formParams = new HashMap<>();
@@ -103,7 +103,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().formParams(formParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().post("/visa/intyg/{intygsTyp}/{intygsId}")
-                .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"));
+                .then().header(HttpHeaders.LOCATION, endsWith("/ts-bas/edit/" + utkastId + "/"));
     }
 
     /**
@@ -115,7 +115,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createSignedIntyg("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         changeOriginTo("DJUPINTEGRATION");
 
@@ -123,7 +123,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().pathParam("intygsId", intygsId)
                 .and().queryParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
-                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "/"));
+                .header(HttpHeaders.LOCATION, endsWith("/intyg/ts-bas/" + intygsId + "/"));
     }
 
     @Test
@@ -131,10 +131,10 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createSignedIntyg("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "ts-bas");
         pathParams.put("intygsId", intygsId);
 
         changeOriginTo("DJUPINTEGRATION");
@@ -143,7 +143,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().pathParams(pathParams)
                 .and().formParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsTyp}/{intygsId}").then()
-                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "/"));
+                .header(HttpHeaders.LOCATION, endsWith("/intyg/ts-bas/" + intygsId + "/"));
     }
 
     /**
@@ -306,15 +306,15 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
     }
 
     /**
-     * Verify that the utkast patientId info is updated with supplied parameters as part of the fk7263 djupintegreration
+     * Verify that the utkast patientId info is updated with supplied parameters as part of the ts-bas djupintegreration
      * link redirect process.
      */
     @Test
-    public void testOnlyPatientIdDetailsUpdatedFromJournalSystemUtkastFk7263() {
+    public void testOnlyPatientIdDetailsUpdatedFromJournalSystemUtkastTsBas() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
@@ -340,12 +340,12 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}")
                 .then()
-                .header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"));
+                .header(HttpHeaders.LOCATION, endsWith("/ts-bas/edit/" + utkastId + "/"));
 
         // ..after following the link - the draft should have updated patient id and fullstandigtNamn
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
-                .when().get("moduleapi/utkast/fk7263/" + utkastId)
+                .when().get("moduleapi/utkast/ts-bas/" + utkastId)
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
                 .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")));
@@ -481,7 +481,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
@@ -511,7 +511,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 

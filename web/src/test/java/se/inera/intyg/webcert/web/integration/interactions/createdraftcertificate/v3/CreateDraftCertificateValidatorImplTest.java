@@ -57,30 +57,37 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     private CreateDraftCertificateValidatorImpl validator;
 
     @Test
-    public void testValidate() {
+    public void testDeprecatedDoesNotValidate() {
         ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true));
+        assertTrue(result.hasErrors());
+    }
+
+    @Test
+    public void testValidate() {
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "förnamn",
                 "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertFalse(result.hasErrors());
     }
 
     @Test
     public void testValidateInvalidIntygsTyp() {
-        when(moduleRegistry.moduleExists(FK7263.toLowerCase())).thenReturn(false);
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "förnamn",
+        when(moduleRegistry.moduleExists(LUSE.toLowerCase())).thenReturn(false);
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "förnamn",
                 "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientEfternamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, null, "förnamn",
+        ResultValidator result = validator.validate(buildIntyg(LUSE, null, "förnamn",
                 "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientFornamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", null,
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", null,
                 "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
@@ -88,7 +95,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidatePatientPersonIdMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
                         "fullständigt namn", "enhetsId", "enhetsnamn", true, null));
         assertTrue(result.hasErrors());
     }
@@ -96,7 +103,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidatePatientPersonIdExtensionMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
                         "fullständigt namn", "enhetsId", "enhetsnamn", true, ""));
         assertTrue(result.hasErrors());
     }
@@ -104,7 +111,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidatePatientPersonnummerOk() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
                         "fullständigt namn", "enhetsId", "enhetsnamn", true, "191212121212"));
         assertFalse(result.hasErrors());
     }
@@ -112,7 +119,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidatePatientSamordningsnummerOk() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
                         "fullständigt namn", "enhetsId", "enhetsnamn", true, "198001910002"));
         assertFalse(result.hasErrors());
     }
@@ -120,44 +127,44 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidatePatientInvalidPersonnummer() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
                         "fullständigt namn", "enhetsId", "enhetsnamn", true, "190101010101"));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalFullstandigtnamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "fornamn",
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
                 null, "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "fornamn",
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
                 "fullständigt namn", "enhetsId", "enhetsnamn", false));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetsIdMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "fornamn",
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
                 "fullständigt namn", null, "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetsnamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "fornamn",
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
                 "fullständigt namn", "enhetsId", null, true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateFeatureNotActive() {
-        when(authoritiesHelper.isFeatureActive(eq(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST), eq(FK7263.toLowerCase())))
+        when(authoritiesHelper.isFeatureActive(eq(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST), eq(LUSE.toLowerCase())))
                 .thenReturn(false);
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "förnamn",
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "förnamn",
                 "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }

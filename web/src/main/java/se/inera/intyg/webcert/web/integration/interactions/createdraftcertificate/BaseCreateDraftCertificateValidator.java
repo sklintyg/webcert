@@ -19,8 +19,11 @@
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
 import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -40,6 +43,8 @@ import java.util.Objects;
  * Created by eriklupander on 2017-09-19.
  */
 public abstract class BaseCreateDraftCertificateValidator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BaseCreateDraftCertificateValidator.class);
 
     @Autowired
     protected IntygModuleRegistry moduleRegistry;
@@ -108,8 +113,21 @@ public abstract class BaseCreateDraftCertificateValidator {
     }
 
     protected void validateModuleSupport(ResultValidator errors, String moduleId) {
-        if (!moduleRegistry.moduleExists(moduleId) || !authoritiesHelper
-                .isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, moduleId)) {
+        if (!moduleRegistry.moduleExists(moduleId)) {
+            errors.addError("Intyg {0} is not supported", moduleId);
+        }
+
+        try {
+            if (moduleRegistry.getIntygModule(moduleId).isDeprecated()) {
+                errors.addError("Intyg of type {0} has been deprecated and is no longer possible to issue.", moduleId);
+                return;
+            }
+        } catch (ModuleNotFoundException n) {
+            LOG.error("Module {} not found while validating module support", moduleId);
+            errors.addError("Intyg {0} is not supported", moduleId);
+            return;
+        }
+        if (!authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, moduleId)) {
             errors.addError("Intyg {0} is not supported", moduleId);
         }
     }

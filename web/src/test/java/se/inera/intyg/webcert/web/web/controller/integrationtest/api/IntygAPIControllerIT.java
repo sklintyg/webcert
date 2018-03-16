@@ -64,7 +64,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
 
         ListIntygEntry[] intygArray =
                 given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER)
@@ -77,7 +77,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
 
         assertEquals(utkastId, intygArray[0].getIntygId());
         assertEquals(DEFAULT_PATIENT_PERSONNUMMER, intygArray[0].getPatientId().getPersonnummer());
-        assertEquals("fk7263", intygArray[0].getIntygType());
+        assertEquals("lisjp", intygArray[0].getIntygType());
     }
 
     @Test
@@ -85,10 +85,10 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "lisjp");
         pathParams.put("intygsId", utkastId);
         pathParams.put("version", "0");
 
@@ -106,7 +106,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
 
         assertEquals(utkastId, updatedIntyg.getIntygId());
         assertEquals(DEFAULT_PATIENT_PERSONNUMMER, updatedIntyg.getPatientId().getPersonnummer());
-        assertEquals("fk7263", updatedIntyg.getIntygType());
+        assertEquals("lisjp", updatedIntyg.getIntygType());
 
         // it's been updated, so version should have been incremented
         assertEquals(1, updatedIntyg.getVersion());

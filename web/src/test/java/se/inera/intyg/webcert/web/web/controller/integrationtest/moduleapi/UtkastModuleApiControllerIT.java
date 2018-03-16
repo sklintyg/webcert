@@ -18,20 +18,24 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
+import io.swagger.util.Json;
 import org.junit.Test;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
-import se.inera.intyg.common.fk7263.model.internal.PrognosBedomning;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -57,7 +61,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testGetDraft() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -71,7 +75,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
@@ -96,7 +100,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testThatGetDraftBelongingToDifferentCareUnitFails() {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
@@ -120,7 +124,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testSaveDraft() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -143,7 +147,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testValidateDraft() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -167,7 +171,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testDiscardDraft() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -195,7 +199,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testSigneraUtkastInvalidState() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -355,7 +359,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     private Intyg createIntyg() throws IOException {
-        String intygsTyp = "fk7263";
+        String intygsTyp = "lisjp";
 
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
@@ -370,19 +374,36 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String version = rootNode.get("version").asText();
 
         ObjectNode content = (ObjectNode) rootNode.get("content");
+
         content.put("avstangningSmittskydd", true);
-        content.put("tjanstgoringstid", "40");
-        content.put("ressattTillArbeteEjAktuellt", true);
-        content.put("prognosBedomning", PrognosBedomning.arbetsformagaPrognosJa.toString());
-        content.putObject("nedsattMed100");
-        ObjectNode node = (ObjectNode) content.get("nedsattMed100");
-        node.put("from", "2016-01-19");
-        node.put("tom", "2016-01-25");
+        content.putArray("diagnoser");
+
+        ArrayNode diagnoser = (ArrayNode) content.get("diagnoser");
+        ObjectNode diagnos = JsonNodeFactory.instance.objectNode();
+        diagnos.put("diagnosBeskrivning", "Klämskada");
+        diagnos.put("diagnosKodSystem", "ICD_10_SE");
+        diagnos.put("diagnosKod", "S47");
+
+        diagnoser.add(diagnos);
+
+        content.putArray("sjukskrivningar");
+        ArrayNode sjukskrivningar = (ArrayNode) content.get("sjukskrivningar");
+        ObjectNode sjukskrivning = new ObjectNode(JsonNodeFactory.instance);
+
+        sjukskrivning.putObject("period");
+        ObjectNode period = (ObjectNode) sjukskrivning.get("period");
+        period.put("from", "2016-01-19");
+        period.put("tom", "2016-01-25");
+
+        sjukskrivning.put("sjukskrivningsgrad", "TRE_FJARDEDEL");
+        sjukskrivningar.add(sjukskrivning);
 
         responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(content)
+                .log().all()
                 .expect().statusCode(200)
-                .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
+                .when()
+                .put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
                 .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
 

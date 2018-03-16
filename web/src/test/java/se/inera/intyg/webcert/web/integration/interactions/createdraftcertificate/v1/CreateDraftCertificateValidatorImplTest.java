@@ -63,34 +63,40 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     private CreateDraftCertificateValidatorImpl validator;
 
     @Test
-    public void testValidate() {
+    public void testDeprecatedDoesNotValidate() {
         ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+        assertTrue(result.hasErrors());
+    }
+
+    @Test
+    public void testValidate() {
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertFalse(result.hasErrors());
     }
 
     @Test
     public void testValidateInvalidIntygsTyp() {
-        when(moduleRegistry.moduleExists(FK7263)).thenReturn(false);
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
+        when(moduleRegistry.moduleExists(LUSE)).thenReturn(false);
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientEfternamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, null, "förnamn", "fullständigt namn", "enhetsnamn", true));
+        ResultValidator result = validator.validate(buildIntyg(LUSE, null, "förnamn", "fullständigt namn", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientFornamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", null, "fullständigt namn", "enhetsnamn", true));
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", null, "fullständigt namn", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientPersonIdMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn", null, "fullständigt namn", "hosHsaId", "enhetsnamn", "enhetHsaId",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn", null, "fullständigt namn", "hosHsaId", "enhetsnamn", "enhetHsaId",
                         true));
         assertTrue(result.hasErrors());
     }
@@ -99,14 +105,14 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testValidatePatientPersonIdExtensionMissing() {
         ResultValidator result = validator
                 .validate(
-                        buildIntyg(FK7263, "efternamn", "förnamn", "", "fullständigt namn", "hosHsaId", "enhetsnamn", "enhetHsaId", true));
+                        buildIntyg(LUSE, "efternamn", "förnamn", "", "fullständigt namn", "hosHsaId", "enhetsnamn", "enhetHsaId", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientPersonnummerOk() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", "hosHsaId", "enhetsnamn",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", "hosHsaId", "enhetsnamn",
                         "enhetHsaId", true));
         assertFalse(result.hasErrors());
     }
@@ -114,7 +120,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidatePatientSamordningsnummerOk() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn", "19800191-0002", "fullständigt namn", "hosHsaId", "enhetsnamn",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn", "19800191-0002", "fullständigt namn", "hosHsaId", "enhetsnamn",
                         "enhetHsaId", true));
         assertFalse(result.hasErrors());
     }
@@ -122,21 +128,21 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidatePatientInvalidPersonnummer() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn", "19010101-0101", "fullständigt namn", "hosHsaId", "enhetsnamn",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn", "19010101-0101", "fullständigt namn", "hosHsaId", "enhetsnamn",
                         "enhetHsaId", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalFullstandigtnamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "fornamn", null, "enhetsnamn", true));
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn", null, "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHosPersonalPersonalIdMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", null, "enhetsnamn", "enhetHsaId",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", null, "enhetsnamn", "enhetHsaId",
                         true));
         assertTrue(result.hasErrors());
     }
@@ -144,27 +150,27 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidateHosPersonalPersonalIdExtensionMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", "", "enhetsnamn", "enhetHsaId",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", "", "enhetsnamn", "enhetHsaId",
                         true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "fornamn", "fullständigt namn", "enhetsnamn", false));
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn", "fullständigt namn", "enhetsnamn", false));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetsnamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "fornamn", "fullständigt namn", null, true));
+        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn", "fullständigt namn", null, true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateEnhetEnhetsIdMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", "hosHsaId", "enhetsnamn", null,
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", "hosHsaId", "enhetsnamn", null,
                         true));
         assertTrue(result.hasErrors());
     }
@@ -172,7 +178,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidateEnhetEnhetsIdExtensionMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(FK7263, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", "hosHsaId", "enhetsnamn", "",
+                .validate(buildIntyg(LUSE, "efternamn", "förnamn", "19121212-1212", "fullständigt namn", "hosHsaId", "enhetsnamn", "",
                         true));
         assertTrue(result.hasErrors());
     }

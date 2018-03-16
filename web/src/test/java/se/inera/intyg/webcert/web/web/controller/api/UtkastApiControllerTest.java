@@ -27,7 +27,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -99,41 +103,57 @@ public class UtkastApiControllerTest {
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
     @InjectMocks
     private UtkastApiController utkastController;
 
     @Before
-    public void setup() {
+    public void setup() throws ModuleNotFoundException {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
+        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(new IntygModule("luse", "", "", "", "", "", "", "","", false));
+        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(new IntygModule("fk7263", "", "", "", "", "", "", "","", true));
+
         Map<String, Map<String, Boolean>> hasPrevious = new HashMap<>();
         Map<String, Boolean> hasPreviousIntyg = new HashMap<>();
-        hasPreviousIntyg.put("fk7263", true);
+        hasPreviousIntyg.put("luse", true);
         hasPrevious.put("intyg", hasPreviousIntyg);
         when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any())).thenReturn(hasPrevious);
 
     }
-
     @Test
-    public void testCreateUtkast() {
+    public void testCreateUtkastFailsForDeprecated() {
         String intygsTyp = "fk7263";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         Response response = utkastController.createUtkast(intygsTyp, buildRequest("fk7263"));
+        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testCreateUtkast() {
+        String intygsTyp = "luse";
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+
+        Response response = utkastController.createUtkast(intygsTyp, buildRequest("luse"));
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testCreateUtkastSetsPatientFullName() {
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
-        Response response = utkastController.createUtkast(intygsTyp, buildRequest("fk7263"));
+        Response response = utkastController.createUtkast(intygsTyp, buildRequest("luse"));
         assertEquals(OK.getStatusCode(), response.getStatus());
 
         ArgumentCaptor<CreateNewDraftRequest> requestCaptor = ArgumentCaptor.forClass(CreateNewDraftRequest.class);
@@ -145,7 +165,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testCreateUtkastSetsPatientFullNameWithoutMiddlename() {
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
@@ -153,7 +173,7 @@ public class UtkastApiControllerTest {
         // Fake PU service being down
         when(patientDetailsResolver.resolvePatient(PATIENT_PERSONNUMMER, intygsTyp)).thenReturn(null);
 
-        CreateUtkastRequest utkastRequest = buildRequest("fk7263");
+        CreateUtkastRequest utkastRequest = buildRequest("luse");
         utkastRequest.setPatientMellannamn(null); // no middlename
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
         assertEquals(OK.getStatusCode(), response.getStatus());
@@ -167,7 +187,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testCreateUtkastFornamnOk() {
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
@@ -180,7 +200,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testCreateUtkastFornamnTooLong() {
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
@@ -193,7 +213,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testCreateUtkastEfternamnOk() {
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
@@ -206,7 +226,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testCreateUtkastEfternamnTooLong() {
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
@@ -219,14 +239,14 @@ public class UtkastApiControllerTest {
 
     @Test(expected = AuthoritiesException.class)
     public void createUtkastWithoutPrivilegeSkrivIntygFails() {
-        String intygsTyp = "fk7263";
+        String intygsTyp = "luse";
         setupUser("", intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        utkastController.createUtkast(intygsTyp, buildRequest("fk7263"));
+        utkastController.createUtkast(intygsTyp, buildRequest("luse"));
     }
 
     @Test
     public void testFilterDraftsForUnit() {
-        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, Fk7263EntryPoint.MODULE_ID,
+        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
                 AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.filterIntyg(any()))
@@ -241,7 +261,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testFilterDraftsForUnitSkipsSekretessIntygForUserWithoutAuthorithy() {
-        setupUser("", Fk7263EntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        setupUser("", LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         Map<Personnummer, SekretessStatus> sekretessMap = mock(Map.class);
         when(sekretessMap.get(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
@@ -261,7 +281,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testFilterDraftsForUnitSkipAllIntygWithUndefinedSekretessStatus() {
-        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, Fk7263EntryPoint.MODULE_ID,
+        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
                 AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         Map<Personnummer, SekretessStatus> sekretessMap = mock(Map.class);
@@ -280,7 +300,7 @@ public class UtkastApiControllerTest {
 
     @Test
     public void testGetPrevious() {
-        setupUser("", "fk7263");
+        setupUser("", "luse");
 
         Utkast utkast1 = buildUtkast(PATIENT_PERSONNUMMER);
         utkast1.setStatus(UtkastStatus.SIGNED);
@@ -299,7 +319,7 @@ public class UtkastApiControllerTest {
         assertNotNull(response);
         Map<String, Map<String, Boolean>> responseBody = (Map<String, Map<String, Boolean>>) response.readEntity(HashMap.class);
         assertEquals(1, responseBody.size());
-        assertTrue(responseBody.get("intyg").get("fk7263"));
+        assertTrue(responseBody.get("intyg").get("luse"));
     }
 
     private QueryIntygParameter buildQueryIntygParameter() {
@@ -349,7 +369,7 @@ public class UtkastApiControllerTest {
 
     private Utkast buildUtkast(Personnummer personnr) {
         Utkast utkast = new Utkast();
-        utkast.setIntygsTyp("fk7263");
+        utkast.setIntygsTyp("luse");
         utkast.setVardgivarId("456");
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
         utkast.setSenastSparadAv(new VardpersonReferens());

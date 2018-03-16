@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.config.LogConfig;
 import com.jayway.restassured.filter.session.SessionFilter;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
@@ -41,6 +42,9 @@ import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +52,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import static com.jayway.restassured.RestAssured.config;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static java.util.Arrays.asList;
@@ -67,7 +72,7 @@ public abstract class BaseRestIntegrationTest {
     protected static final String DEFAULT_UTKAST_PATIENT_FORNAMN = "Nollett";
     protected static final String DEFAULT_UTKAST_PATIENT_EFTERNAMN = "Nollettsson";
     protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
-    protected static final String DEFAULT_INTYGSTYP = "fk7263";
+    protected static final String DEFAULT_INTYGSTYP = "lisjp";
 
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";
@@ -98,8 +103,9 @@ public abstract class BaseRestIntegrationTest {
      * Common setup for all tests
      */
     @Before
-    public void setupBase() {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    public void setupBase() throws FileNotFoundException {
+        LogConfig logconfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
+        RestAssured.config().logConfig(logconfig);
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl");
     }
 

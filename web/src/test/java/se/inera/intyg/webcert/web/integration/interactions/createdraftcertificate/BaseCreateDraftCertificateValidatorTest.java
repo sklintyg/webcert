@@ -27,7 +27,9 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -46,6 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -55,6 +58,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
 
     protected static final String FK7263 = Fk7263EntryPoint.MODULE_ID;
     protected static final String TSBAS = TsBasEntryPoint.MODULE_ID;
+    protected static final String LUSE = LuseEntryPoint.MODULE_ID;
 
     private static List<String> ALL_INTYG_TYPES = Arrays.asList(Fk7263EntryPoint.MODULE_ID,
             TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
@@ -72,19 +76,30 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
     protected AuthoritiesHelper authoritiesHelper;
 
     @Before
-    public void setup() {
+    public void setup() throws ModuleNotFoundException {
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, FK7263.toLowerCase())).thenReturn(true);
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, TSBAS.toLowerCase())).thenReturn(true);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase())).thenReturn(true);
+
         when(authoritiesHelper.getIntygstyperAllowedForAvliden())
                 .thenReturn(Arrays.asList(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
                 .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
         when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
         when(moduleRegistry.moduleExists(TsBasEntryPoint.MODULE_ID)).thenReturn(true);
+        when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
+
+        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(buildIntygModule(FK7263, true));
+        when(moduleRegistry.getIntygModule(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(TSBAS, false));
+        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(LUSE, false));
 
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>(ALL_INTYG_TYPES));
 
         user = buildUser();
+    }
+
+    private IntygModule buildIntygModule(String id, boolean deprecated) {
+        return new IntygModule(id, "", "", "", "", "", "", "", "", deprecated);
     }
 
     protected WebCertUser buildUser() {

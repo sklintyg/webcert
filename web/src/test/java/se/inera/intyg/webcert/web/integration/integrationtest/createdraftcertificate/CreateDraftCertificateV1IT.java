@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.integration.integrationtest.createdraftcertificate;
 
 import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.stringtemplate.v4.STGroupFile;
 import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
 import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
 import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 
@@ -38,6 +40,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -46,9 +49,11 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
 
     private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
     private static final String CREATE_DRAFT_CERTIFICATE_V1_0 = "services/create-draft-certificate/v1.0";
-    private static final String FK_7263 = "fk7263";
+    private static final String TS_BAS = "ts-bas";
+    private static final String FK7263 = "fk7263";
     private static final String DEFAULT_LAKARE_HSAID = "SE4815162344-1B02";
     private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";
+    private static final String DEPRECATED_ERROR_MSG = "Intyg of type %s has been deprecated and is no longer possible to issue.";
     BodyExtractorFilter responseBodyExtractorFilter;
     private ST requestTemplate;
     private STGroup templateGroup;
@@ -80,10 +85,10 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     }
 
     @Test
-    public void testCreateFk7263Draft() throws IOException {
+    public void testCreateTsBasDraft() throws IOException {
         
         given().cookie("ROUTEID", ".1")
-                .body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
+                .body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
@@ -95,11 +100,28 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     }
 
     @Test
+    public void testCreateDeprecatedGivesCorrectErrorMessage() {
+        Response resp = given().cookie("ROUTEID", ".1")
+                .filter(responseBodyExtractorFilter)
+                .body(createRequestBody(FK7263, DEFAULT_LAKARE_HSAID))
+                .when()
+                .post(CREATE_DRAFT_CERTIFICATE_V1_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .extract().response();
+
+        CreateDraftCertificateResponseType responseBody = resp.getBody().as(CreateDraftCertificateResponseType.class);
+        assertEquals(String.format(DEPRECATED_ERROR_MSG, FK7263), responseBody.getResult().getResultText());
+
+    }
+
+    @Test
     public void testMatchesSchema() throws IOException {
         given().cookie("ROUTEID", ".1")
                 .filter(
                 responseBodyExtractorFilter)
-                .body(createRequestBody(FK_7263, DEFAULT_LAKARE_HSAID))
+                .body(createRequestBody(TS_BAS, DEFAULT_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()
@@ -145,7 +167,7 @@ public class CreateDraftCertificateV1IT extends BaseWSIntegrationTest {
     @Test
     public void testCreateDraftFailsWithValidationErrorWhenNoMiUOnUnit() {
         given().cookie("ROUTEID", ".1")
-                .body(createRequestBody(FK_7263, OTHER_LAKARE_HSAID))
+                .body(createRequestBody(TS_BAS, OTHER_LAKARE_HSAID))
                 .when()
                 .post(CREATE_DRAFT_CERTIFICATE_V1_0)
                 .then()

@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.integration.integrationtest.createdraftcertificate;
 
 import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.response.Response;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.stringtemplate.v4.STGroupFile;
 import se.inera.intyg.webcert.web.integration.integrationtest.BaseWSIntegrationTest;
 import se.inera.intyg.webcert.web.integration.integrationtest.BodyExtractorFilter;
 import se.inera.intyg.webcert.web.integration.integrationtest.ClasspathSchemaResourceResolver;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
@@ -37,6 +39,7 @@ import java.io.InputStream;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -49,6 +52,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     private static final String LUSE = "LUSE";
     private static final String TS_BAS = "TSTRK1007";
     private static final String TS_DIABETES = "TSTRK1031";
+    private static final String FK7263 = "FK7263";
 
     private static final String BASE = "Envelope.Body.CreateDraftCertificateResponse.";
     private static final String CREATE_DRAFT_CERTIFICATE_V3_0 = "services/create-draft-certificate/v3.0";
@@ -56,6 +60,7 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
 
     private static final String DEFAULT_LAKARE_HSAID = "IFV1239877878-1049";
     private static final String OTHER_LAKARE_HSAID = "SE4815162344-1B01";
+    private static final String DEPRECATED_ERROR_MSG = "Intyg of type %s has been deprecated and is no longer possible to issue.";
 
     BodyExtractorFilter responseBodyExtractorFilter;
 
@@ -83,6 +88,23 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     private String createRequestBody(String intygstyp, String lakareHsaId) {
         requestTemplate.add("data", new IntygsData(intygstyp, lakareHsaId));
         return requestTemplate.render();
+    }
+
+    @Test
+    public void testCreateDeprecatedGivesCorrectErrorMessage() {
+        Response resp = given().cookie("ROUTEID", ".1")
+                .filter(responseBodyExtractorFilter)
+                .body(createRequestBody(FK7263, DEFAULT_LAKARE_HSAID))
+                .when()
+                .post(CREATE_DRAFT_CERTIFICATE_V3_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .extract().response();
+
+        CreateDraftCertificateResponseType responseBody = resp.getBody().as(CreateDraftCertificateResponseType.class);
+        assertEquals(String.format(DEPRECATED_ERROR_MSG, FK7263.toLowerCase()), responseBody.getResult().getResultText());
+
     }
 
     @Test

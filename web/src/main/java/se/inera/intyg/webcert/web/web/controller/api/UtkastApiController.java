@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -83,6 +85,9 @@ public class UtkastApiController extends AbstractApiController {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     /**
      * Create a new draft.
      */
@@ -91,6 +96,15 @@ public class UtkastApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
+        try {
+            if (moduleRegistry.getIntygModule(intygsTyp).isDeprecated()) {
+                LOG.error("Request for deprecated module {}", intygsTyp);
+                return Response.status(Status.BAD_REQUEST).build();
+            }
+        } catch (ModuleNotFoundException e) {
+            LOG.error("Request for unknown module {}", intygsTyp);
+            return Response.status(Status.BAD_REQUEST).build();
+        }
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
@@ -98,6 +112,7 @@ public class UtkastApiController extends AbstractApiController {
                 .orThrow();
 
         final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer());
+
         if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     "Could not fetch sekretesstatus for patient from PU service");
