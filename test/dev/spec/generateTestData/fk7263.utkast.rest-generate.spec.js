@@ -19,14 +19,22 @@
 
 'use strict';
 var wcTestTools = require('webcert-testtools');
-var restHelper = wcTestTools.helpers.rest;
+var restTestdataHelper = wcTestTools.helpers.restTestdata;
+var intygGenerator = wcTestTools.intygGenerator;
+var testdataHelper = wcTestTools.helpers.testdata;
 
-xdescribe('Generate fk utkast', function() {
+describe('Generate fk utkast', function() {
+
     it('should generate an fk7263 utkast', function() {
-        restHelper.createUtkast('fk7263').then(function(response){
-            var utkast = response.body;
-            var intygsId = utkast.intygsId;
-            expect(intygsId).not.toBe(null);
-        });
+        var utkastData = {
+            'contents': intygGenerator.getIntygJson({
+                'intygType': 'fk7263',
+                'intygId': testdataHelper.generateTestGuid()
+            }),
+            'utkastStatus': 'DRAFT_INCOMPLETE',
+            'revoked': false
+        };
+        restTestdataHelper.createWebcertIntyg(utkastData);
     });
+
 });
