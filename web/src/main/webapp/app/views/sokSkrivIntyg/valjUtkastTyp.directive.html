@@ -23,7 +23,7 @@
                     alert-message-id="{{viewState.createErrorMessageKey}}">
   </wc-alert-message>
 
-  <wc-alert-message id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType] && isNormalOrigin()"
+  <wc-alert-message id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType]"
                     alert-severity="warning"
                     class="col-lg-7">
     {{resolveIntygReplacedText(intygTypeModel.intygType)}}

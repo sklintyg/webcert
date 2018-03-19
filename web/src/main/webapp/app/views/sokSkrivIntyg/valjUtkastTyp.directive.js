@@ -1,6 +1,6 @@
 angular.module('webcert').directive('wcValjUtkastTyp',
-    ['webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.UserModel', 'common.messageService', 'common.featureService',
-    function(ViewState, IntygTypeSelectorModel, UserModel, messageService, featureService) {
+    ['webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.messageService', 'common.featureService',
+    function(ViewState, IntygTypeSelectorModel, messageService, featureService) {
         'use strict';
 
         return {
@@ -12,10 +12,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                 scope.intygReplacement = {
                     'fk7263':'lisjp'
                 };
-                scope.isNormalOrigin = function () {
-                    //Closure needed, due to 'this' reference in UserModel.isNormalOrigin().
-                    return UserModel.isNormalOrigin();
-                };
+
                 scope.resolveIntygReplacedText = function (selectedIntygType) {
                     var selectedIntyg = IntygTypeSelectorModel.intygTypes.filter(function (intygType) {
                         return (intygType.id === selectedIntygType);
@@ -36,7 +33,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                 };
                 scope.showCreateUtkast = function () {
                     return !(IntygTypeSelectorModel.intygType === 'default' ||
-                        (scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()) ||
+                        (scope.intygReplacement[IntygTypeSelectorModel.intygType]) ||
                         scope.isUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
                         scope.isUniqueGlobal(IntygTypeSelectorModel.intygType));
                 };
