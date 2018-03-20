@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.arende;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,6 +111,12 @@ public class ArendeServiceImpl implements ArendeService {
     private static Predicate<Arende> isCorrectEnhet(WebCertUser user) {
         return a -> user.getIdsOfSelectedVardenhet().contains(a.getEnhetId());
     }
+
+    private static Predicate<Arende> isCorrectAmne(ArendeAmne arendeAmne) {
+        return a -> a.getAmne().equals(arendeAmne);
+    }
+
+    private Comparator<Arende> byTimestamp = (left, right) -> left.getTimestamp().isBefore(right.getTimestamp()) ? -1 : 1;
 
     @Value("${sendmessagetofk.logicaladdress}")
     private String sendMessageToFKLogicalAddress;
@@ -227,27 +234,72 @@ public class ArendeServiceImpl implements ArendeService {
                     + ") for saving answer");
         }
 
-        // Implement Business Rule FS-005, FS-006
-        WebCertUser user = webcertUserService.getUser();
-        if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())
-                && !authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Arende with id "
-                    + svarPaMeddelandeId + " and amne (" + svarPaMeddelande.getAmne()
-                    + ") can only be answered by user that is Lakare");
+        if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Arende with id "
+                    + svarPaMeddelandeId + " has invalid Amne(" + svarPaMeddelande.getAmne()
+                    + ") for saving answer");
         }
+
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
                 webcertUserService.getUser().getNamn());
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
-        // Implement Business Rule FS-045
-        if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())) {
-            closeCompletionsAsHandled(svarPaMeddelande.getIntygsId(), svarPaMeddelande.getIntygTyp());
-        }
-
         arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
                 arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId), null);
+    }
+
+    @Override
+    @Transactional
+    public List<ArendeConversationView> answerKomplettering(final String intygsId, final String meddelande) {
+
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(intygsId));
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(meddelande));
+
+        WebCertUser user = webcertUserService.getUser();
+
+        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId)
+                .stream()
+                .filter(isCorrectEnhet(user))
+                .filter(isQuestion())
+                .filter(isCorrectAmne(ArendeAmne.KOMPLT))
+                .collect(Collectors.toList());
+
+        Arende latestKomplArende = arendeList
+                .stream()
+                .max(byTimestamp)
+                .orElseThrow(() -> new IllegalArgumentException("No arende of type KOMPLT exist for intyg: " + intygsId));
+
+        verifyEnhetsAuth(latestKomplArende.getEnhetId(), false);
+
+        boolean verified = authoritiesValidator
+                .given(user, latestKomplArende.getIntygTyp())
+                .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
+                .isVerified();
+
+        if (!verified) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Arende with id "
+                    + latestKomplArende.getId() + " and amne (" + latestKomplArende.getAmne()
+                    + ") can only be answered by user that is Lakare");
+        }
+
+        Arende answer = ArendeConverter.createAnswerFromArende(
+                meddelande,
+                latestKomplArende,
+                LocalDateTime.now(systemClock),
+                user.getNamn());
+
+        Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE);
+
+        List<Arende> updatedArendeList = arendeList
+                .stream()
+                .map(this::closeArendeAsHandled)
+                .collect(Collectors.toList());
+
+        updatedArendeList.add(saved);
+
+        return getArendeConversationViewList(intygsId, updatedArendeList);
     }
 
     @Override

@@ -26,6 +26,7 @@ knownPrivileges:
   - &kp070 FILTRERA_PA_LAKARE
   - &kp140 HANTERA_SEKRETESSMARKERAD_PATIENT
   - &kp050 VIDAREBEFORDRA_FRAGASVAR
+  - &kp060 BESVARA_KOMPLETTERINGSFRAGA
 
 # De roller som systemet har
 knownRoles:
@@ -102,6 +103,12 @@ privileges:
     desc: Vidarebefordra frågasvar
     intygstyper:
     requestOrigins:
+  - &p060
+    name: *kp060
+    desc: Besvara fråga om komplettering
+    intygstyper:
+    requestOrigins: # Implicit alla
+
 # Roller
 roles:
   - &r010
@@ -118,6 +125,8 @@ roles:
         intygstyper:
           - ts-bas
       - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
+        intygstyper: # IMPLICIT_ALLA
+      - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         intygstyper: # IMPLICIT_ALLA
   - &r020
     name: *kr020 # PRIVATLAKARE

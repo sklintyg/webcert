@@ -82,6 +82,16 @@ public class ArendeModuleApiController extends AbstractApiController {
         return Response.ok(response).build();
     }
 
+    @PUT
+    @Path("/{intygsId}/besvara")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response answer(@PathParam("intygsId") final String intygsId, final String svarsText) {
+        LOGGER.debug("Answer arenden for intyg {}", intygsId);
+        final List<ArendeConversationView> response = arendeService.answerKomplettering(intygsId, svarsText);
+        return Response.ok(response).build();
+    }
+
     @POST
     @Path("/{intygsId}/vidarebefordrad")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)

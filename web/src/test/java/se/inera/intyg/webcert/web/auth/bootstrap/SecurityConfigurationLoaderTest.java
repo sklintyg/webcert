@@ -76,7 +76,7 @@ public class SecurityConfigurationLoaderTest {
         AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
         assertEquals(4,configuration.getRequestOrigins().size());
-        assertEquals(8,configuration.getPrivileges().size());
+        assertEquals(9,configuration.getPrivileges().size());
         assertEquals(4,configuration.getRoles().size());
         assertEquals(2,configuration.getTitles().size());
         assertEquals(4,configuration.getTitleCodes().size());
