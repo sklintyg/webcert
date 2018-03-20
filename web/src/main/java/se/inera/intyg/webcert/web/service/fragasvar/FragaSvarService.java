@@ -49,7 +49,7 @@ public interface FragaSvarService {
      * Create an answer for an existing question.
      */
     FragaSvar saveSvar(Long frageSvarId, String svarsText);
-    
+
     /**
      * Create a new FragaSvar instance for a certificate and send it to external receiver (FK).
      */
