@@ -21,6 +21,10 @@ package se.inera.intyg.webcert.web.service.arende;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +91,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -290,12 +295,14 @@ public class ArendeServiceImpl implements ArendeService {
                 LocalDateTime.now(systemClock),
                 user.getNamn());
 
-        processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE);
+        Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
         List<Arende> updatedArendeList = arendeList
                 .stream()
                 .map(this::closeArendeAsHandled)
                 .collect(Collectors.toList());
+
+        updatedArendeList.add(saved);
 
         return getArendeConversationViewList(intygsId, updatedArendeList);
     }
