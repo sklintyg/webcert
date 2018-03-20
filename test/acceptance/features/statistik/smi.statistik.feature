@@ -1,12 +1,12 @@
 # language: sv
 
-@REGRESSIONSTEST @REGRESSIONSTESTSTATISTIK @STATISTIK @SMI @NOTREADY
+@STATISTIK
 Egenskap: Regressionstest på Statistiktjänsten med ökad test teckning.
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 
 @MAKULERA @VERKSAMHETSSTATISTIK @LISJP
-Scenario: Ett nyskapat och makulerat FK7263 intyg ska finnas och senare tas bort från Statistiktjänsten
+Scenario: Ett nyskapat och makulerat Läkarintyg för sjukpenning intyg ska finnas och senare tas bort från Statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
@@ -86,7 +86,7 @@ Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i S
     Och laddar om sidan
     Så ska totala "samma som ovan" diagnoser som finns vara "2" extra
 
-@STATISTIKAPIET @FRAGASVAR @LISJP
+@STATISTIKAPIET @FRAGASVAR @LISJP @NOTREADY
 Scenariomall: Statistik - <beskrivning> <ämne>  ska finnas i statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
