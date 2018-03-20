@@ -51,6 +51,16 @@ public interface FragaSvarService {
     FragaSvar saveSvar(Long frageSvarId, String svarsText);
 
     /**
+     * Create an answer with type Komplettering and set all frågasvar related to
+     * the intyg to status = closed
+     *
+     * @param intygsId the Id of the related Intyg
+     * @param svarsText the komplettering svarsText
+     * @return List of fragasvar with the new status and created answer
+     */
+    List<FragaSvar> saveSvarKomplettering(String intygsId, String svarsText);
+
+    /**
      * Create a new FragaSvar instance for a certificate and send it to external receiver (FK).
      */
     FragaSvar saveNewQuestion(String intygId, String typ, Amne amne, String frageText);
@@ -58,7 +68,7 @@ public interface FragaSvarService {
     /**
      * Set the dispatch state for the specified {@link FragaSvar} entity.
      */
-    FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched);
+    List<FragaSvar> setVidareBefordrad(String intygsId);
 
     /**
      * A FragaSvar is set as handled.

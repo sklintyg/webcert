@@ -495,7 +495,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fraga);
 
         // test call
-        service.setDispatchState(fraga.getInternReferens(), true);
+        service.setVidareBefordrad(fraga.getInternReferens(), true);
 
         verify(fragasvarRepositoryMock).findOne(any(Long.class));
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));

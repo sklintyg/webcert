@@ -26,10 +26,10 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DispatchState;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -73,20 +73,22 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     }
 
     @PUT
-    @Path("/{intygsTyp}/{fragasvarId}/hanterad")
+    @Path("/{intygsId}/besvara")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response setDispatchState(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId,
-            DispatchState dispatchState) {
+    public Response answer(@PathParam("intygsId") final String intygsId, final String svarsText) {
+        LOG.debug("Answer frågasvar for intyg {}", intygsId);
+        final List<FragaSvar> response = fragaSvarService.saveSvarKomplettering(intygsId, svarsText);
+        return Response.ok(response).build();
+    }
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
-                .orThrow();
-
-        LOG.debug("Set DispatchState for question {}, isDispatched: {}", frageSvarId, dispatchState.isDispatched());
-        FragaSvar fragaSvarResponse = fragaSvarService.setDispatchState(frageSvarId, dispatchState.isDispatched());
-        return Response.ok(fragaSvarResponse).build();
+    @POST
+    @Path("/{intygsId}/vidarebefordrad")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response setDispatchState(@PathParam("intygsId") final String intygsId) {
+        LOG.debug("Set vidarebefordra for all frågasvar related to IntygsId {}", intygsId);
+        return Response.ok(fragaSvarService.setVidareBefordrad(intygsId)).build();
     }
 
     @POST
