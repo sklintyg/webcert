@@ -703,7 +703,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testCheckIfPersonHasExistingIntyg() {
-        final String personId = "191212121212";
+        final String personId = "19121212-1212";
         final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
         final String vardgivareId = "vardgivarid";
 
@@ -721,16 +721,16 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
                         .map(a -> new IntygModule(a, null, null, null, null, "", null, null, null, false)).collect(
                         Collectors.toList()));
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
-        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personId, activeModules))
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), activeModules))
                 .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Map<String, Boolean>> res = draftService.checkIfPersonHasExistingIntyg(createPnr(personId), createUser());
+        Map<String, Map<String, Boolean>> res = draftService.checkIfPersonHasExistingIntyg(personnummer, createUser());
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db"));
         assertFalse(res.get("intyg").get("doi"));
 
-        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(personId), eq(activeModules));
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(personnummer.getPersonnummerWithDash()), eq(activeModules));
     }
 
     private Patient getUpdatedPatient() {

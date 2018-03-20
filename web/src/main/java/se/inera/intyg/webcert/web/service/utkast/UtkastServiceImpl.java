@@ -182,7 +182,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     public Map<String, Map<String, Boolean>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
-        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
+        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
                 authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                         AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
 
@@ -455,6 +455,7 @@ public class UtkastServiceImpl implements UtkastService {
 
                 // Spara undan det gamla personnummret temporärt
                 webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
+
             } catch (ModuleException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                         "Patient details on Utkast " + draftId + " could not be updated", e);
