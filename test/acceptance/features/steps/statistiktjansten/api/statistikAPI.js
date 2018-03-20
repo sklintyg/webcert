@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, protractor*/
+/* globals logger, protractor, browser*/
 'use strict';
 var request = require('request');
+var helpers = require('../../helpers');
 
 var defaultRESTAPIOptions = {
     url: process.env.STATISTIKTJANST_URL + '/api/',
@@ -62,12 +63,19 @@ module.exports = {
         return apiRequest(options);
     },
     getMeddelandenPerAmne: function(vardgivare, filter) {
-        var options = defaultRESTAPIOptions;
-        options.url = options.url + 'verksamhet/getMeddelandenPerAmne?vgid=' + vardgivare;
+        /*var options = defaultRESTAPIOptions;
+        options.url = process.env.STATISTIKTJANST_URL + '/api/' + 'verksamhet/getMeddelandenPerAmne?vgid=' + vardgivare;;
+
+        console.log(options.url);
+        console.log('https://statistik.ip30.nordicmedtest.se/api/verksamhet/getMeddelandenPerAmne?vgid=TSTNMT2321000156-107M');
+
+
         if (filter) {
             options.url += '&filter=' + filter;
         }
-        return apiRequest(options);
+        return apiRequest(options);*/
+        browser.ignoreSynchronization = true;
+        return helpers.getUrl(process.env.STATISTIKTJANST_URL + '/api/' + 'verksamhet/getMeddelandenPerAmne?vgid=' + vardgivare);
     },
     getMeddelandenPerAmneLandsting: function() {
 

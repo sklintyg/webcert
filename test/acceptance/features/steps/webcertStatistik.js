@@ -42,6 +42,8 @@ var diagnosKategorier = wcTestTools.testdata.diagnosKategorier;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 var statistikAPI = require('./statistiktjansten/api/statistikAPI.js');
 
+var monthNames = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+
 /*
  *	Stödfunktioner
  *
@@ -58,6 +60,32 @@ global.statistik = {
     tempArr: []
 };
 
+var vardgivare = 'TSTNMT2321000156-107M';
+var dateLabel = monthNames[new Date().getMonth()] + ' ' + (1900 + new Date().getYear());
+
+var subjects = {
+    'Meddelande per ämne': {
+        url: process.env.STATISTIKTJANST_URL + '/#/verksamhet/meddelandenPerAmne?vgid=' + vardgivare,
+        labels: dateLabel,
+        column: {
+            'AVSTMN': {
+                totalt: 4,
+                kvinnor: 5,
+                man: 6
+            },
+            'OVRIGT': {
+                totalt: 10,
+                kvinnor: 11,
+                man: 12
+            }
+        }
+    },
+    'Meddelanden per ämne och landsting': {
+        url: process.env.STATISTIKTJANST_URL + '/#/verksamhet/meddelandenPerAmneOchLandsting?vgid=' + vardgivare,
+        labels: 'todo'
+    }
+};
+
 function slumpaDiagnosKod(diagnosKod) {
 
     if (diagnosKod === 'slumpad') {
@@ -71,6 +99,54 @@ function slumpaDiagnosKod(diagnosKod) {
     return diagnosKod;
 
 }
+
+function forvantatAntal(antal, modifier, diff) {
+    if (modifier === 'extra') {
+        return parseInt(antal, 10) + parseInt(diff, 10);
+    } else if (modifier === 'mindre') {
+        return parseInt(antal, 10) - parseInt(diff, 10);
+    } else {
+        throw ('test steget förväntar sig extra eller mindre variabel.');
+    }
+}
+
+function mergeTables() {
+    //Function for merging two UI tables into one object.
+    var tempArr = [];
+    var table = {};
+    return element.all(by.css('.table-condensed')).all(by.tagName('tr')).then(function(arr) {
+        arr.forEach(function(entry, index) {
+            //var secondIndex = index - arr.length / 2;
+
+            entry.getText().then(function(data) {
+                if (arr.length / 2 > index) {
+                    tempArr.push(data);
+                } else {
+                    table[tempArr.shift()] = data;
+                }
+            });
+        });
+        return table;
+    });
+}
+
+function getColumnDataFromTable(table, subject, column) {
+    var data = table[subjects[subject].labels].split(' ');
+    console.log('data');
+    console.log(data);
+
+    var values = {};
+    values.totalt = parseInt(data[subjects[subject].column[column].totalt], 10);
+    values.man = parseInt(data[subjects[subject].column[column].man], 10);
+    values.kvinnor = parseInt(data[subjects[subject].column[column].kvinnor], 10);
+
+    console.log('values');
+    console.log(values);
+
+    return values;
+}
+
+
 
 /*
  *	Test steg
@@ -118,6 +194,36 @@ Given(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnosKod) {
         return lisjpUtkastPage.angeDiagnos(diagnos);
     });
 });
+
+Given(/^jag går till statistiksidan för "([^"]*)"$/, function(sida) {
+    var url = '';
+    switch (sida) {
+        case 'Meddelande per ämne':
+            url = process.env.STATISTIKTJANST_URL + '/#/verksamhet/meddelandenPerAmne?vgid=' + vardgivare;
+            break;
+        case 'Meddelanden per ämne och landsting':
+            url = process.env.STATISTIKTJANST_URL + '/#/verksamhet/meddelandenPerAmneOchLandsting?vgid=' + vardgivare;
+            break;
+    }
+
+
+    return helpers.getUrl(url);
+});
+
+Given(/^jag kollar värdena i tabellen$/, function() {
+    //spara undan gamla tabellen
+    global.statistik.oldTable = global.statistik.table;
+
+    return mergeTables().then(function(table) {
+        global.statistik.table = table;
+        console.log('global.statistik.table');
+        console.log(global.statistik.table);
+        console.log('global.statistik.oldTable');
+        console.log(global.statistik.oldTable);
+        return;
+    });
+});
+
 
 Given(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagnosKod) {
     diagnosKod = slumpaDiagnosKod(diagnosKod);
@@ -214,19 +320,18 @@ Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchE
     });
 });
 
+Then(/^ska "([^"]*)" i "([^"]*)" vara "([^"]*)" (extra|mindre)$/, function(column, typ, antal, modifier) {
 
-Then(/^ska "([^"]*)" i "([^"]*)" vara en (extra|mindre)$/, function(modifier) {
 
-    function forvantatAntal(antal) {
-        if (modifier === 'extra') {
-            return antal + 1;
-        } else if (modifier === 'mindre') {
-            return antal - 1;
-        } else {
-            throw ('test steget förväntar sig extra eller mindre variabel.');
-        }
-    }
-    return expect(global.statistik.tempArr[0]).to.equal(forvantatAntal(global.statistik.tempArr[1]));
+    var nyaVarden = getColumnDataFromTable(global.statistik.table, typ, column);
+
+    var gammlaVarden = getColumnDataFromTable(global.statistik.oldTable, typ, column);
+    var forvantatVarde = {};
+    forvantatVarde.totalt = forvantatAntal(gammlaVarden.totalt, modifier, antal);
+    forvantatVarde.man = forvantatAntal(gammlaVarden.man, modifier, antal);
+    forvantatVarde.kvinna = forvantatAntal(gammlaVarden.kvinna, modifier, antal);
+
+    return expect(nyaVarden.totalt).to.equal(forvantatVarde.totalt);
 });
 
 
@@ -246,27 +351,17 @@ Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|m
 
     var nuvarandeStatistik = global.statistik.nrOfSjukfall;
 
-    function raknaUtForvantatAntal(antal) {
-        if (modifier === 'extra') {
-            return antal + parseInt(nrOfIntyg, 10);
-        } else if (modifier === 'mindre') {
-            return antal - parseInt(nrOfIntyg, 10);
-        } else {
-            throw ('test steget förväntar sig extra eller mindre variabel.');
-        }
-    }
-
     if (!diagnosKod || !nrOfIntyg) {
         throw ('diagnosKod och nrOfIntyg får inte vara tomma.');
     } else {
         logger.silly('nuvarandeStatistik.totalt: ' + nuvarandeStatistik.totalt);
-        nuvarandeStatistik.totalt = raknaUtForvantatAntal(nuvarandeStatistik.totalt);
+        nuvarandeStatistik.totalt = forvantatAntal(nuvarandeStatistik.totalt, modifier, nrOfIntyg);
         logger.silly('nuvarandeStatistik.totalt: ' + nuvarandeStatistik.totalt);
 
         if (gender === 'man') {
-            nuvarandeStatistik.man = raknaUtForvantatAntal(nuvarandeStatistik.man);
+            nuvarandeStatistik.man = forvantatAntal(nuvarandeStatistik.man, modifier, nrOfIntyg);
         } else if (gender === 'kvinna') {
-            nuvarandeStatistik.kvinna = raknaUtForvantatAntal(nuvarandeStatistik.kvinna);
+            nuvarandeStatistik.kvinna = forvantatAntal(nuvarandeStatistik.kvinna, modifier, nrOfIntyg);
         } else {
             throw ('Kunde inte fastställa kön på person: ' + global.person);
         }

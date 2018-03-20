@@ -87,7 +87,7 @@ Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i S
     Så ska totala "samma som ovan" diagnoser som finns vara "2" extra
 
 @STATISTIKAPIET @FRAGASVAR @LISJP
-Scenariomall: <beskrivning> statistik ska finnas i statistiktjänsten
+Scenariomall: Statistik - <beskrivning> <ämne>  ska finnas i statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
@@ -99,15 +99,16 @@ Scenariomall: <beskrivning> statistik ska finnas i statistiktjänsten
 	Och Försäkringskassan ställer en "<ämne>" fråga om intyget
 	Och jag svarar på frågan
 	Så ska det synas vem som svarat
-	Och jag går in på en patient
 	
 	När jag går in på Statistiktjänsten
 	Och jag är inloggad som läkare i Statistiktjänsten
-	Och jag hämtar "<beskrivning>" från Statistik APIet - <APIrequest>
+	Och jag går till statistiksidan för "<beskrivning>"
+	Och jag kollar värdena i tabellen
 	
 	Och jag anropar statitisk-APIet processIntyg
-	Och jag hämtar "<beskrivning>" från Statistik APIet - <APIrequest>
-    Så ska "<ämne>" i "<beskrivning>" vara en extra
+	Och jag går till statistiksidan för "<beskrivning>"
+	Och jag kollar värdena i tabellen
+    Så ska "<ämne>" i "<beskrivning>" vara "1" extra
 	
 @MeddelandenPerAmne
 Exempel:
