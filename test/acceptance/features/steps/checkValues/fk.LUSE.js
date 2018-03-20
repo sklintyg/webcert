@@ -120,7 +120,7 @@ function checkOvrigaUpplysningar(ovriga) {
 }
 
 function checkKontaktMedFk(kontakt) {
-    return expect(lusePage.kontaktFK.value.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(kontakt));
+    return expect(lusePage.kontaktFK.value.getText()).to.eventually.contain(testdataHelper.boolTillJaEllerEjAngivet(kontakt));
 }
 
 function checkTillaggsfragor(fragor) {
