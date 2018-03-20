@@ -31,12 +31,7 @@ import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
 
@@ -287,7 +282,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(200)
                 .when().get("moduleapi/utkast/luse/" + utkastId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-                .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")));
+                .body("content.grundData.patient.personId", equalTo(formatPersonnummer(queryParams.get("alternatePatientSSn"))));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
@@ -348,7 +343,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("moduleapi/utkast/ts-bas/" + utkastId)
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-                .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")));
+                .body("content.grundData.patient.personId", equalTo(formatPersonnummer(queryParams.get("alternatePatientSSn"))));
 
                 // INTYG-4086: Vi vet ännu inte huruvida man skall kunna uppdatera patientens namn via parametrar...
                 // .body("content.grundData.patient.fullstandigtNamn", isEmptyOrNullString());

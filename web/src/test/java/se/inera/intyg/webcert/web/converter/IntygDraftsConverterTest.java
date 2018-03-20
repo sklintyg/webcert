@@ -76,7 +76,7 @@ public class IntygDraftsConverterTest {
         String updatedSignedBy = "Dr Dengroth";
         String updatedSignedByHsaId = "HSA1234";
 
-        Personnummer patientId = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+        Personnummer patientId = Personnummer.createPersonnummer("19121212-1212").get();
 
         List<Utkast> utkastList = Collections.singletonList(TestIntygFactory.createUtkast(id, modfied, type, updatedSignedBy,
                 updatedSignedByHsaId, UtkastStatus.DRAFT_COMPLETE, patientId));
@@ -316,7 +316,7 @@ public class IntygDraftsConverterTest {
         utkast.getSenastSparadAv().setHsaId(sparadAvHsaId);
         utkast.setSkapadAv(vardpersonReferens);
         utkast.getSkapadAv().setHsaId(skapadAvHsaId);
-        utkast.setPatientPersonnummer(Personnummer.createValidatedPersonnummer("20121212-1211").get());
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("20121212-1211").get());
 
         Signatur signatur = mock(Signatur.class);
         utkast.setSignatur(signatur);

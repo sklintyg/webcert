@@ -56,7 +56,7 @@ public class RegisterTSBasResponderStub implements RegisterTSBasResponderInterfa
         CertificateHolder certificate = new CertificateHolder();
         certificate.setId(source.getIntyg().getIntygsId());
         certificate.setType(source.getIntyg().getIntygsTyp());
-        certificate.setCivicRegistrationNumber(Personnummer.createValidatedPersonnummer(
+        certificate.setCivicRegistrationNumber(Personnummer.createPersonnummer(
                 source.getIntyg().getGrundData().getPatient().getPersonId().getExtension()).get());
         certificate.setSignedDate(
                 LocalDateTime.parse(source.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));

@@ -66,7 +66,7 @@ public class MonitoringLogServiceImplTest {
     private static final Amne AMNE = Amne.ARBETSTIDSFORLAGGNING;
     private static final String PERSON_ID = "19121212-1212";
 
-    private static final Personnummer PERSON_NUMMER = Personnummer.createValidatedPersonnummer(PERSON_ID).get();
+    private static final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer(PERSON_ID).get();
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;

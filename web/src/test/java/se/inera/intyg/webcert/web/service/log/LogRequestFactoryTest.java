@@ -43,7 +43,7 @@ public class LogRequestFactoryTest {
     private static final String vardgivarid = "vardgivarid";
     private static final String vardgivarnamn = "vardgivarnamn";
 
-    private static final Personnummer patientPersonnummer = Personnummer.createValidatedPersonnummer(patientId).get();
+    private static final Personnummer patientPersonnummer = Personnummer.createPersonnummer(patientId).get();
 
     @Test
     public void testCreateLogRequestFromUtkast() {

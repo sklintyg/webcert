@@ -61,7 +61,7 @@ public class PersonnummerChecksumValidatorTest {
 
     private void parameterizedValidateTest(String pnr, boolean errorExpected) {
         ResultValidator errors = ResultValidator.newInstance();
-        PersonnummerChecksumValidator.validate(Personnummer.createValidatedPersonnummer(pnr).orElse(null), errors);
+        PersonnummerChecksumValidator.validate(Personnummer.createPersonnummer(pnr).orElse(null), errors);
         if (errorExpected) {
             assertTrue(errors.hasErrors());
         } else {

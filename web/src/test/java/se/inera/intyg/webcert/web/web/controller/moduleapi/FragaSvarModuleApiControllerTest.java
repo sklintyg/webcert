@@ -88,7 +88,7 @@ public class FragaSvarModuleApiControllerTest {
         List<FragaSvarView> fragaSvarViewList = new ArrayList<>();
 
         IntygsReferens intygsReferens = mock(IntygsReferens.class);
-        when(intygsReferens.getPatientId()).thenReturn(Personnummer.createValidatedPersonnummer("191212121212").get());
+        when(intygsReferens.getPatientId()).thenReturn(Personnummer.createPersonnummer("191212121212").get());
 
         FragaSvar fs = mock(FragaSvar.class);
         when(fs.getIntygsReferens()).thenReturn(intygsReferens);

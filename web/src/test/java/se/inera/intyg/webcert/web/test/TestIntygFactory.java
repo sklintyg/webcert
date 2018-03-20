@@ -77,7 +77,7 @@ public final class TestIntygFactory {
 
     public static Utkast createUtkast(String id, LocalDateTime lastUpdated) {
         return createUtkast(id, lastUpdated, "A Type", "A Person", "HSA1234",
-                UtkastStatus.DRAFT_COMPLETE, Personnummer.createValidatedPersonnummer("19121212-1212").get());
+                UtkastStatus.DRAFT_COMPLETE, Personnummer.createPersonnummer("19121212-1212").get());
     }
 
     public static Utkast createUtkast(String id, LocalDateTime lastUpdated, String type, String modifiedBy, String modifiedByHsaId,

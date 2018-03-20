@@ -62,7 +62,7 @@ public class AvtalServiceImpl implements AvtalService {
         }
         godkantAvtalRepository.approveAvtal(userId, latestAvtalVersion);
         monitoringLogService.logPrivatePractitionerTermsApproved(userId,
-                Personnummer.createValidatedPersonnummer(personId).orElse(null), latestAvtalVersion);
+                Personnummer.createPersonnummer(personId).orElse(null), latestAvtalVersion);
     }
 
     @Override

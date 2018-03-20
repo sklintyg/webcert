@@ -99,7 +99,7 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
 
     private GetPrivatePractitionerResponseType getGetPrivatePractitionerResponseTypeForPnr(GetPrivatePractitionerType parameters) {
         String id = parameters.getPersonalIdentityNumber();
-        Personnummer personnummer = Personnummer.createValidatedPersonnummer(id).orElse(null);
+        Personnummer personnummer = Personnummer.createPersonnummer(id).orElse(null);
         GetPrivatePractitionerResponseType response = new GetPrivatePractitionerResponseType();
 
         // if matching -- create error response

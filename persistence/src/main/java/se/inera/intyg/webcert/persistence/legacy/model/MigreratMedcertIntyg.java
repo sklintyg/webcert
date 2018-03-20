@@ -122,7 +122,7 @@ public class MigreratMedcertIntyg {
     }
 
     public Personnummer getPatientPersonnummer() {
-        return Personnummer.createValidatedPersonnummer(patientPersonnummer).orElse(null);
+        return Personnummer.createPersonnummer(patientPersonnummer).orElse(null);
     }
 
     public void setPatientPersonnummer(Personnummer patientPersonnummer) {

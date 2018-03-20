@@ -57,7 +57,7 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
         certificate.setId(parameters.getIntyg().getIntygsId());
         certificate.setType(parameters.getIntyg().getIntygsTyp());
         certificate.setCivicRegistrationNumber(Personnummer
-                        .createValidatedPersonnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension())
+                        .createPersonnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension())
                         .orElse(null));
         certificate.setSignedDate(
                 LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));

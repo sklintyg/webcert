@@ -94,7 +94,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final Instant FIXED_TIME_INSTANT = Instant.ofEpochSecond(FIXED_TIME_NANO / 1_000_000, FIXED_TIME_NANO % 1_000_000);
 
-    private static final Personnummer PATIENT_ID = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
 
     private static final String INTYG_ID = "intyg-1";
     private static final String INTYG_TYP = "luse";

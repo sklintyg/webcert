@@ -167,7 +167,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         fs.setAmne(Amne.ARBETSTIDSFORLAGGNING);
         fs.setFrageText("Frågetext");
         fs.setIntygsReferens(new IntygsReferens(intygId, typ,
-                Personnummer.createValidatedPersonnummer(personnummer).get(), "Api Restman", now));
+                Personnummer.createPersonnummer(personnummer).get(), "Api Restman", now));
         fs.setStatus(Status.PENDING_INTERNAL_ACTION);
         fs.setFrageSkickadDatum(now);
         fs.setMeddelandeRubrik("Meddelanderubrik");

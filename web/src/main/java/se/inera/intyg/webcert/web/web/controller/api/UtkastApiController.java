@@ -224,7 +224,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
         Map<String, Map<String, Boolean>> res = utkastService
-                .checkIfPersonHasExistingIntyg(Personnummer.createValidatedPersonnummer(personnummer).get(),
+                .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
                         getWebCertUserService().getUser());
         return Response.ok(res).build();
     }

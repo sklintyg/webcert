@@ -26,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -153,7 +152,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         // The only result should match the utkast we created in the setup
         Assert.assertEquals(utkastId, queryResponse.getResults().get(0).getIntygId());
         Assert.assertEquals("ts-bas", queryResponse.getResults().get(0).getIntygType());
-        Assert.assertEquals(DEFAULT_PATIENT_PERSONNUMMER, queryResponse.getResults().get(0).getPatientId().getPersonnummer());
+        Assert.assertEquals(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER), queryResponse.getResults().get(0).getPatientId().getPersonnummer());
     }
 
     @Test

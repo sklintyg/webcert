@@ -137,7 +137,7 @@ public class FragaSvarConverter {
         if (source.getPatient() != null) {
             intygsReferens.setPatientNamn(source.getPatient().getFullstandigtNamn());
             intygsReferens.setPatientId(Personnummer
-                    .createValidatedPersonnummer(source.getPatient().getPersonId().getExtension())
+                    .createPersonnummer(source.getPatient().getPersonId().getExtension())
                     .orElse(null));
         }
 

@@ -74,7 +74,7 @@ public class IntygsReferens {
     }
 
     public Personnummer getPatientId() {
-        return Personnummer.createValidatedPersonnummer(patientId).orElse(null);
+        return Personnummer.createPersonnummer(patientId).orElse(null);
     }
 
     public void setPatientId(Personnummer patientId) {

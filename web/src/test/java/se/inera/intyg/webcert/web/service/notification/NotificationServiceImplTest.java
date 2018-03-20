@@ -87,7 +87,7 @@ public class NotificationServiceImplTest {
     private static final String SIGNED_BY_HSA_ID = "signedByHsaId";
     private static final String ARENDE_ID = "arendeId";
 
-    private static final Personnummer PATIENT_ID = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
 
     private static final Long FRAGASVAR_ID = 1L;
 

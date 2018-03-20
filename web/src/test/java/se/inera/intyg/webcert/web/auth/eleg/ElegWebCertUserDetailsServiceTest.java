@@ -212,7 +212,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         return hoSPersonType;
     }
     private PersonSvar buildPersonSvar(boolean sekretessMarkerad, PersonSvar.Status status) {
-        Personnummer personnummer = Personnummer.createValidatedPersonnummer(PERSON_ID).get();
+        Personnummer personnummer = Personnummer.createPersonnummer(PERSON_ID).get();
         Person person = new Person(personnummer, sekretessMarkerad, false, "fornamn","",
                 "Efternamn", "gatan", "12345", "postort");
         return new PersonSvar(person, status);

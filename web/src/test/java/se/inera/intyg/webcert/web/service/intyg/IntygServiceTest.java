@@ -139,7 +139,7 @@ public class IntygServiceTest {
     private static final String REFERENCE = "reference";
     private static final String PERSON_ID = "19121212-1212";
 
-    private static final Personnummer PERSNR = Personnummer.createValidatedPersonnummer(PERSON_ID).get();
+    private static final Personnummer PERSNR = Personnummer.createPersonnummer(PERSON_ID).get();
 
     private ListCertificatesForCareResponseType listResponse;
     private VardpersonReferens vardpersonReferens;

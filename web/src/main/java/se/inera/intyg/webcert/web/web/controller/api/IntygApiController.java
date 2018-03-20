@@ -211,7 +211,7 @@ public class IntygApiController extends AbstractApiController {
     }
 
     private Personnummer createPnr(String pnr) {
-        return Personnummer.createValidatedPersonnummer(pnr)
+        return Personnummer.createPersonnummer(pnr)
                 .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
                         String.format("Cannot create Personnummer object with invalid personId %s", pnr)));
     }

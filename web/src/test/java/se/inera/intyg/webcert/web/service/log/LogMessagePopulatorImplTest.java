@@ -69,7 +69,7 @@ public class LogMessagePopulatorImplTest {
 
     private LogRequest buildLogRequest(String additionalInfo) {
         LogRequest logRequest = new LogRequest();
-        logRequest.setPatientId(Personnummer.createValidatedPersonnummer("19121212-1212").get());
+        logRequest.setPatientId(Personnummer.createPersonnummer("19121212-1212").get());
         logRequest.setAdditionalInfo(additionalInfo);
         return logRequest;
     }

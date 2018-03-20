@@ -55,7 +55,7 @@ public class ReceiveQuestionResponderImplTest {
 
     private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
 
-    private static final Personnummer PATIENT_ID = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
 
     @Spy
     private FragaSvarConverter converter = new FragaSvarConverter();

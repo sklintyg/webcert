@@ -493,7 +493,7 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     private Optional<Personnummer> createOptPnr(String personId) {
-        return Personnummer.createValidatedPersonnummer(personId);
+        return Personnummer.createPersonnummer(personId);
     }
 
 }

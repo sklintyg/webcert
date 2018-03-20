@@ -56,7 +56,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
 
     @Test
     public void testListCertificatesForCareWithQA() {
-        final Personnummer personnummer = Personnummer.createValidatedPersonnummer("191212121212").get();
+        final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
         final String enhet = "enhetHsaId";
         final LocalDate deadline = LocalDate.of(2017, 1, 1);
         final String reference = "ref";

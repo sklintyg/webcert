@@ -194,7 +194,7 @@ public class NotificationMessageFactoryTest {
         utkast.setIntygsTyp(INTYGS_TYP);
         utkast.setEnhetsId("SE12345678-1000");
         utkast.setEnhetsNamn("Vårdenhet 1");
-        utkast.setPatientPersonnummer(Personnummer.createValidatedPersonnummer("19121212-1212").get());
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
         utkast.setPatientFornamn("Tolvan");
         utkast.setPatientEfternamn("Tolvansson");
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);

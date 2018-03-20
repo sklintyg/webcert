@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class IntygApiControllerTest {
 
-    private static final Personnummer PNR = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+    private static final Personnummer PNR = Personnummer.createPersonnummer("19121212-1212").get();
 
     private static final String ENHET_ID = "ABC123";
 

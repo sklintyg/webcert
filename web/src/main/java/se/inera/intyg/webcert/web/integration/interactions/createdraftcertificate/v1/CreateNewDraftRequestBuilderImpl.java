@@ -58,7 +58,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
 
     private Patient createPatient(se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient patientType) {
         Patient patient = new Patient();
-        patient.setPersonId(Personnummer.createValidatedPersonnummer(patientType.getPersonId().getExtension()).get());
+        patient.setPersonId(Personnummer.createPersonnummer(patientType.getPersonId().getExtension()).get());
         patient.setFornamn(joinNames(patientType.getFornamn()));
         patient.setMellannamn(joinNames(patientType.getMellannamn()));
         patient.setEfternamn(patientType.getEfternamn());

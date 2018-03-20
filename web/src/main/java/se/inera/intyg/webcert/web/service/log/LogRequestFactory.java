@@ -92,7 +92,7 @@ public final class LogRequestFactory {
     public static LogRequest createLogRequestFromUser(WebCertUser user, String patientId) {
         LogRequest request = new LogRequest();
 
-        request.setPatientId(Personnummer.createValidatedPersonnummer(patientId).get());
+        request.setPatientId(Personnummer.createPersonnummer(patientId).get());
         request.setPatientName("");
 
         request.setIntygCareUnitId(user.getValdVardenhet().getId());

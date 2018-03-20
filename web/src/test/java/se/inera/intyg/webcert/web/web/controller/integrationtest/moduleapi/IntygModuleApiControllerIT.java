@@ -67,7 +67,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
+                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
 
         deleteUtkast(intygsId);
     }
@@ -84,7 +84,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
+                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
 
         deleteUtkast(intygsId);
     }
@@ -101,7 +101,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
+                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
 
         deleteUtkast(intygsId);
     }
@@ -205,7 +205,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
+                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
     }
 
     @Test
@@ -357,7 +357,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
                 .body("contents.grundData.skapadAv.personId", equalTo(LEONIE_KOEHL.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(DEFAULT_PATIENT_PERSONNUMMER));
+                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
     }
 
     @Test
@@ -533,7 +533,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     private Personnummer createPnr(String personId) {
-        return Personnummer.createValidatedPersonnummer(personId)
+        return Personnummer.createPersonnummer(personId)
                 .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 

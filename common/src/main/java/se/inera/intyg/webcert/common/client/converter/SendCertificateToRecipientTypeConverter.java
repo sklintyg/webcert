@@ -66,7 +66,7 @@ public final class SendCertificateToRecipientTypeConverter {
     }
 
     private static Personnummer createPnr(String personId) {
-        return Personnummer.createValidatedPersonnummer(personId)
+        return Personnummer.createPersonnummer(personId)
                 .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 }

@@ -522,7 +522,7 @@ public class ArendeViewConverterTest {
         skapadAv.setPersonId(skapadavPersonId);
         grundData.setSkapadAv(skapadAv);
         Patient patient = new Patient();
-        Personnummer personId = Personnummer.createValidatedPersonnummer(patientPersonId).get();
+        Personnummer personId = Personnummer.createPersonnummer(patientPersonId).get();
         patient.setPersonId(personId);
         grundData.setPatient(patient);
         grundData.setSigneringsdatum(timeStamp);

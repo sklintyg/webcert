@@ -69,7 +69,7 @@ public class FragaSvarRepositoryTest {
     private LocalDateTime SVAR_SENT_DATE = LocalDateTime.parse("2013-04-01T12:00:00");
 
     private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk7263",
-            Personnummer.createValidatedPersonnummer("19121212-1212").get(),"Sven Persson", FRAGA_SENT_DATE);
+            Personnummer.createPersonnummer("19121212-1212").get(),"Sven Persson", FRAGA_SENT_DATE);
 
     private static String ENHET_1_ID = "ENHET_1_ID";
     private static String ENHET_2_ID = "ENHET_2_ID";
@@ -191,7 +191,7 @@ public class FragaSvarRepositoryTest {
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
         saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk",
-                Personnummer.createValidatedPersonnummer("19121212-1212").get(), "Sven Persson", FRAGA_SENT_DATE));
+                Personnummer.createPersonnummer("19121212-1212").get(), "Sven Persson", FRAGA_SENT_DATE));
         fragasvarRepository.save(saved);
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_4_ID));

@@ -193,7 +193,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private Personnummer createPnr(HoSPersonType hosPerson) {
-        return Personnummer.createValidatedPersonnummer(hosPerson.getPersonId().getExtension())
+        return Personnummer.createPersonnummer(hosPerson.getPersonId().getExtension())
                 .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                         String.format("Can't determine sekretesstatus for invalid personId %s", hosPerson.getPersonId().getExtension())));
     }

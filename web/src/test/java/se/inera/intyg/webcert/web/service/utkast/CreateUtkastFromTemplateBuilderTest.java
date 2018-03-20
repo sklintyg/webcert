@@ -77,7 +77,7 @@ public class CreateUtkastFromTemplateBuilderTest {
     private static final String INTYG_TYPE_1 = "db";
     private static final String INTYG_TYPE_2 = "doi";
 
-    private static final Personnummer PATIENT_SSN = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+    private static final Personnummer PATIENT_SSN = Personnummer.createPersonnummer("19121212-1212").get();
 
     private static final String PATIENT_FNAME = "Adam";
     private static final String PATIENT_MNAME = "Bertil";

@@ -220,7 +220,7 @@ public class ArendeConverterTest {
         utkast.setVardgivarNamn(vardgivareName);
         utkast.setIntygsId(intygsId);
         utkast.setIntygsTyp(intygsTyp);
-        utkast.setPatientPersonnummer(Personnummer.createValidatedPersonnummer(patientPersonId).get());
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
         when(hsaEmployeeService.getEmployee(signeratAv, null)).thenReturn(createHsaResponse(givenName, surname));

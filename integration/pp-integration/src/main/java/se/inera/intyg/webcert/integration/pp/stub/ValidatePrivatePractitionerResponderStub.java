@@ -51,7 +51,7 @@ public class ValidatePrivatePractitionerResponderStub implements ValidatePrivate
         validate(parameters);
 
         String id = parameters.getPersonalIdentityNumber();
-        Personnummer personnummer = Personnummer.createValidatedPersonnummer(id).orElse(null);
+        Personnummer personnummer = Personnummer.createPersonnummer(id).orElse(null);
         ValidatePrivatePractitionerResponseType response = new ValidatePrivatePractitionerResponseType();
         HoSPersonType person = personStub.get(id);
 

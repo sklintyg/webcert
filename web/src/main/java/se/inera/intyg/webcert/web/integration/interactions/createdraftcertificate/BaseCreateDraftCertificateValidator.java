@@ -57,7 +57,7 @@ public abstract class BaseCreateDraftCertificateValidator {
     private AuthoritiesHelper authoritiesHelper;
 
     protected Optional<Personnummer> createPersonnummer(ResultValidator errors, String personId) {
-        Optional<Personnummer> personnummer = Personnummer.createValidatedPersonnummer(personId);
+        Optional<Personnummer> personnummer = Personnummer.createPersonnummer(personId);
         if (!personnummer.isPresent()) {
             errors.addError("Cannot create Personnummer object with invalid personId {0}", personId);
         }

@@ -806,7 +806,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private Personnummer createPnr(String personId) {
-        return Personnummer.createValidatedPersonnummer(personId)
+        return Personnummer.createPersonnummer(personId)
                 .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer: " + personId));
     }
 

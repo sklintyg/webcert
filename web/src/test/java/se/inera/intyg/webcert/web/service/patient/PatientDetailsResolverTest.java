@@ -62,7 +62,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PatientDetailsResolverTest {
 
-    private static final Personnummer PNR = Personnummer.createValidatedPersonnummer("191212121212").get();
+    private static final Personnummer PNR = Personnummer.createPersonnummer("191212121212").get();
 
     private static final String FNAMN = "Tolvan";
     private static final String MNAMN = "Sexan";

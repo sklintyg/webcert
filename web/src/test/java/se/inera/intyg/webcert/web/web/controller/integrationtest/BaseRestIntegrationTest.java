@@ -32,35 +32,22 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-import static com.jayway.restassured.RestAssured.config;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
@@ -226,7 +213,7 @@ public abstract class BaseRestIntegrationTest {
         JsonPath draft = new JsonPath(response.body().asString());
         JsonPath model = new JsonPath(draft.getString("model"));
 
-        assertEquals(patientPersonNummer, model.getString("grundData.patient.personId"));
+        assertEquals(formatPersonnummer(patientPersonNummer), model.getString("grundData.patient.personId"));
 
         final String utkastId = model.getString("id");
         assertTrue(utkastId.length() > 0);
@@ -296,7 +283,7 @@ public abstract class BaseRestIntegrationTest {
         utkastRequest.setIntygType(intygsType);
         utkastRequest.setPatientFornamn(DEFAULT_UTKAST_PATIENT_FORNAMN);
         utkastRequest.setPatientEfternamn(DEFAULT_UTKAST_PATIENT_EFTERNAMN);
-        utkastRequest.setPatientPersonnummer(Personnummer.createValidatedPersonnummer(patientPersonNummer).get());
+        utkastRequest.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonNummer).get());
         utkastRequest.setPatientPostadress("Blåbärsvägen 14");
         utkastRequest.setPatientPostort("Molnet");
         utkastRequest.setPatientPostnummer("44837");
@@ -396,7 +383,7 @@ public abstract class BaseRestIntegrationTest {
         fs.setAmne(Amne.ARBETSTIDSFORLAGGNING);
         fs.setFrageText(DEFAULT_FRAGE_TEXT);
         fs.setIntygsReferens(new IntygsReferens(intygId, typ,
-                Personnummer.createValidatedPersonnummer(personnummer).get(), "Api Restman", now));
+                Personnummer.createPersonnummer(personnummer).get(), "Api Restman", now));
         fs.setStatus(Status.PENDING_INTERNAL_ACTION);
         fs.setFrageSkickadDatum(now);
         fs.setMeddelandeRubrik("Meddelanderubrik");
@@ -500,6 +487,20 @@ public abstract class BaseRestIntegrationTest {
         // arende.setSistaDatumForSvar(now.toLocalDate().plusDays(7));
         return arende;
 
+    }
+
+    /**
+     * Return a personnummer on the form yyyyMMddNNNN
+     *
+     * @param patientPersonnummer the patient id
+     * @return a formatted personnummer
+     */
+    protected String formatPersonnummer(String patientPersonnummer) {
+        Personnummer personnummer = Personnummer
+                .createPersonnummer(patientPersonnummer)
+                .orElseThrow(() -> new IllegalArgumentException("Could not create personnummer with id: " + patientPersonnummer));
+
+        return personnummer.getPersonnummer();
     }
 
     /**

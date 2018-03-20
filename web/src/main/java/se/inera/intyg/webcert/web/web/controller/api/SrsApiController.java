@@ -229,7 +229,7 @@ public class SrsApiController extends AbstractApiController {
     }
 
     private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
-        return Personnummer.createValidatedPersonnummer(personId)
+        return Personnummer.createPersonnummer(personId)
                 .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
 

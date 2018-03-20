@@ -47,7 +47,7 @@ public final class UtkastTestUtil {
     public static final String HOS_PERSON3_ID = "SE123484628";
     public static final String HOS_PERSON3_NAMN = "Dr. Johan Steen";
 
-    public static final Personnummer PERSON_NUMMER = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+    public static final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer("19121212-1212").get();
     public static final String PERSON_FORNAMN = "Tolvan";
     public static final String PERSON_MELLANNAMN = "Svensson";
     public static final String PERSON_EFTERNAMN = "Tolvansson";

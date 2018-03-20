@@ -356,7 +356,7 @@ public class UtkastModuleApiControllerTest {
         utkast.setModel(UTKAST_MODEL);
         utkast.setIntygsTyp(intygType);
         utkast.setIntygsId(intygId);
-        utkast.setPatientPersonnummer(Personnummer.createValidatedPersonnummer(UTKAST_PERSONNUMMER).get());
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer(UTKAST_PERSONNUMMER).get());
         return utkast;
     }
 

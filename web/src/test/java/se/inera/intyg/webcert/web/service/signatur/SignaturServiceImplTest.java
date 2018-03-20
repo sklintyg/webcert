@@ -575,7 +575,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSkapadAv(vardperson);
         utkast.setSenastSparadAv(vardperson);
         utkast.setEnhetsId(enhetsId);
-        utkast.setPatientPersonnummer(Personnummer.createValidatedPersonnummer(personId).get());
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer(personId).get());
 
         return utkast;
     }

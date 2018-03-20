@@ -148,7 +148,7 @@ public class ArendeListItemConverterTest {
         FragaSvar res = new FragaSvar();
         res.setFrageStallare(fragestallare);
         res.setIntygsReferens(new IntygsReferens(intygsId, intygsTyp,
-                Personnummer.createValidatedPersonnummer(patientId).get(), null, null));
+                Personnummer.createPersonnummer(patientId).get(), null, null));
         res.setInternReferens(internReferens);
         res.setFrageSkickadDatum(senasteHandelse);
         Vardperson vp = new Vardperson();

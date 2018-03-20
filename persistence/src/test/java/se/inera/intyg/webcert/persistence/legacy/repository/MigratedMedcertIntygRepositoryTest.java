@@ -51,7 +51,7 @@ public class MigratedMedcertIntygRepositoryTest {
         intyg1.setIntygsTyp("fk7263");
         intyg1.setMigreradFran("landtinget");
         intyg1.setPatientNamn("Test Testsson");
-        intyg1.setPatientPersonnummer(Personnummer.createValidatedPersonnummer("19121212-1212").get());
+        intyg1.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
         intyg1.setSkapad(LocalDateTime.parse("2013-03-01T11:11:11"));
         intyg1.setSkickad(LocalDateTime.parse("2013-03-01T12:34:56"));
         intyg1.setUrsprung("APPLICATION");

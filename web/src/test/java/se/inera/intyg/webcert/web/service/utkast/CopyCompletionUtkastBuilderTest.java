@@ -80,7 +80,7 @@ public class CopyCompletionUtkastBuilderTest {
 
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final Personnummer PATIENT_SSN = Personnummer.createValidatedPersonnummer("19121212-1212").get();
+    private static final Personnummer PATIENT_SSN = Personnummer.createPersonnummer("19121212-1212").get();
 
     private static final String PATIENT_FNAME = "Adam";
     private static final String PATIENT_MNAME = "Bertil";

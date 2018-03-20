@@ -140,7 +140,7 @@ public class SendNotificationStrategyTest {
         utkast.setIntygsTyp(intygsTyp);
         utkast.setEnhetsId(enhetsId);
         utkast.setEnhetsNamn("Vårdenheten");
-        utkast.setPatientPersonnummer(Personnummer.createValidatedPersonnummer("19121212-1212").get());
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
         utkast.setPatientFornamn("Tolvan");
         utkast.setPatientEfternamn("Tolvansson");
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);

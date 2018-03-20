@@ -85,7 +85,7 @@ public class IntygStore {
 
     private Personnummer createPnr(String personId) {
         return Personnummer
-                .createValidatedPersonnummer(personId)
+                .createPersonnummer(personId)
                 .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 

@@ -125,7 +125,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         String intygsTyp = utkastsParams.getTypAvUtlatande().getCode().toLowerCase();
         Personnummer personnummer = Personnummer
-                .createValidatedPersonnummer(utkastsParams.getPatient().getPersonId().getExtension())
+                .createPersonnummer(utkastsParams.getPatient().getPersonId().getExtension())
                 .orElseThrow(() -> new WebCertServiceException(
                         WebCertServiceErrorCodeEnum.PU_PROBLEM,
                         "Failed to create valid personnummer for createDraft reques"));

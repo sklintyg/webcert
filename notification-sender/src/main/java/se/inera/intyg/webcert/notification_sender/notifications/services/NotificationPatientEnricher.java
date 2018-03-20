@@ -56,7 +56,7 @@ public class NotificationPatientEnricher {
         case "luae_na":
         case "luae_fs":
         case "lisjp":
-            Personnummer personnummer = Personnummer.createValidatedPersonnummer(
+            Personnummer personnummer = Personnummer.createPersonnummer(
                     intyg.getPatient().getPersonId().getExtension())
                     .orElseThrow(() -> new IllegalArgumentException("Cannot parse personnummer"));
 

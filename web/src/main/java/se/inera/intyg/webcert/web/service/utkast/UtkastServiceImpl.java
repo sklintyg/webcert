@@ -436,7 +436,8 @@ public class UtkastServiceImpl implements UtkastService {
         Optional<Personnummer> optionalPnr = Optional.ofNullable(request.getPersonnummer());
         Optional<Personnummer> optionalDraftPnr = Optional.ofNullable(draftPatient.getPersonId());
 
-        if (SamordningsnummerValidator.isSamordningsNummer(optionalPnr) && !isHashEqual(optionalPnr, optionalDraftPnr)) {
+        if ((optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr))
+            && !isHashEqual(optionalPnr, optionalDraftPnr)) {
 
             String oldPersonId = optionalDraftPnr.get().getPersonnummer();
 

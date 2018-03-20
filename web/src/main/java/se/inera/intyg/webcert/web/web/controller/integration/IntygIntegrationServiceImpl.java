@@ -73,7 +73,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
                 .orThrow();
 
         String alternatePatientSSn = user.getParameters().getAlternateSsn();
-        Personnummer personnummer = Personnummer.createValidatedPersonnummer(alternatePatientSSn).orElse(null);
+        Personnummer personnummer = Personnummer.createPersonnummer(alternatePatientSSn).orElse(null);
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(personnummer, draftId, draftVersion);
         utkastService.updatePatientOnDraft(request);
     }
