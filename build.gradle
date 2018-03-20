@@ -10,6 +10,9 @@ ext {
     infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
 
     commonsIoVersion = "2.4"
+
+    schemasContractVersion = "2.1.6"
+
     funktionstjansterGrpSchemasVersion = "1.0.3"
     intygClinicalprocessSchemasVersion = "1.0.9"
     ppSchemasVersion = "1.0.4"

@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.web.integration.validators;
 
+import org.junit.Test;
+import se.inera.intyg.schemas.contract.Personnummer;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
-import se.inera.intyg.schemas.contract.Personnummer;
 
 public class PersonnummerChecksumValidatorTest {
 
@@ -62,7 +61,7 @@ public class PersonnummerChecksumValidatorTest {
 
     private void parameterizedValidateTest(String pnr, boolean errorExpected) {
         ResultValidator errors = ResultValidator.newInstance();
-        PersonnummerChecksumValidator.validate(new Personnummer(pnr), errors);
+        PersonnummerChecksumValidator.validate(Personnummer.createPersonnummer(pnr).orElse(null), errors);
         if (errorExpected) {
             assertTrue(errors.hasErrors());
         } else {

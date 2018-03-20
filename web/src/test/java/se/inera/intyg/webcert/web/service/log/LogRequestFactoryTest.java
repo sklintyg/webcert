@@ -19,26 +19,22 @@
 package se.inera.intyg.webcert.web.service.log;
 
 import org.junit.Test;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LogRequestFactoryTest {
 
     private static final String intygsId = "intygsId";
-    private static final Personnummer patientPersonnummer = new Personnummer("personId");
+    private static final String patientId = "20121212-1212";
     private static final String patientFornamn = "fornamn";
     private static final String patientMellannamn = "mellannamn";
     private static final String patientEfternamn = "efternamn";
@@ -46,6 +42,8 @@ public class LogRequestFactoryTest {
     private static final String enhetsnamn = "enhetsnamn";
     private static final String vardgivarid = "vardgivarid";
     private static final String vardgivarnamn = "vardgivarnamn";
+
+    private static final Personnummer patientPersonnummer = Personnummer.createPersonnummer(patientId).get();
 
     @Test
     public void testCreateLogRequestFromUtkast() {
@@ -73,6 +71,7 @@ public class LogRequestFactoryTest {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygsId);
         utkast.setIntygsTyp("ts-bas");
+        utkast.setPatientPersonnummer(patientPersonnummer);
 
         LogRequest res = LogRequestFactory.createLogRequestFromUtkast(utkast, true);
 
@@ -83,14 +82,12 @@ public class LogRequestFactoryTest {
 
     @Test
     public void testCreateLogRequestFromUtlatande() {
-        final String intygsId = "intygsId";
-        final Personnummer patientPersonnummer = new Personnummer("personId");
-        final String patientNamn = "fornamn mellannamn efternamn";
-        final String enhetsid = "enhetsid";
-        final String enhetsnamn = "enhetsnamn";
-        final String vardgivarid = "vardgivarid";
-        final String vardgivarnamn = "vardgivarnamn";
+        final String patientNamn = Arrays.asList(patientFornamn, patientMellannamn, patientEfternamn)
+                .stream()
+                .collect(Collectors.joining(" "));
+
         Utlatande utlatande = mock(Utlatande.class);
+
         GrundData grundData = new GrundData();
         grundData.setPatient(new Patient());
         grundData.getPatient().setPersonId(patientPersonnummer);

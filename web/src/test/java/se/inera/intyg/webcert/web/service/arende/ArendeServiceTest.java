@@ -92,9 +92,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final LocalDateTime JANUARY = LocalDateTime.parse("2013-01-12T11:22:11");
     private static final LocalDateTime FEBRUARY = LocalDateTime.parse("2013-02-12T11:22:11");
     private static final LocalDateTime DECEMBER_YEAR_9999 = LocalDateTime.parse("9999-12-11T10:22:00");
+
     private static final long FIXED_TIME_NANO = 1456329300599000L;
+
     private static final Instant FIXED_TIME_INSTANT = Instant.ofEpochSecond(FIXED_TIME_NANO / 1_000_000, FIXED_TIME_NANO % 1_000_000);
-    private static final Personnummer PATIENT_ID = new Personnummer("19121212-1212");
+
+    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
+
     private static final String INTYG_ID = "intyg-1";
     private static final String INTYG_TYP = "luse";
     private static final String ENHET_ID = "enhet";
@@ -374,16 +378,21 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void createQuestionTest() throws CertificateSenderException {
         LocalDateTime now = LocalDateTime.now();
         Utkast utkast = buildUtkast();
+
         when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+
         Arende arende = new Arende();
         arende.setSenasteHandelse(now);
+
         ArendeConversationView result = service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
+
         assertNotNull(result.getFraga());
         assertNull(result.getSvar());
         assertEquals(FIXED_TIME_INSTANT,
                 result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+
         verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
         verify(arendeRepository).save(any(Arende.class));
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyBoolean());
@@ -1388,18 +1397,23 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         ArendeListItem arende = new ArendeListItem();
         arende.setIntygId(INTYG_ID);
         arende.setReceivedDate(receivedDate);
+        arende.setPatientId(PATIENT_ID.getPersonnummer());
 
         return arende;
     }
 
     private Utkast buildUtkast() {
         final String signeratAv = "signeratAv";
+
         Utkast utkast = new Utkast();
         utkast.setIntygsId(INTYG_ID);
         utkast.setSkapadAv(new VardpersonReferens());
         utkast.getSkapadAv().setHsaId(signeratAv);
         utkast.setSignatur(mock(Signatur.class));
+        utkast.setPatientPersonnummer(PATIENT_ID);
+
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
+
         return utkast;
     }
 

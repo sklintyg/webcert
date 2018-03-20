@@ -190,12 +190,12 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logPULookup(Personnummer personNummer, String result) {
-        logEvent(MonitoringEvent.PU_LOOKUP, Personnummer.getPnrHashSafe(personNummer), result);
+        logEvent(MonitoringEvent.PU_LOOKUP, Personnummer.getPersonnummerHashSafe(personNummer), result);
     }
 
     @Override
     public void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion) {
-        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, Personnummer.getPnrHashSafe(personId), avtalVersion);
+        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, Personnummer.getPersonnummerHashSafe(personId), avtalVersion);
     }
 
     @Override
@@ -261,7 +261,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logSetSrsConsent(Personnummer personnummer, boolean consent) {
-        logEvent(MonitoringEvent.SRS_CONSENT_SET, personnummer.getPnrHash(), consent);
+        logEvent(MonitoringEvent.SRS_CONSENT_SET, personnummer.getPersonnummerHash(), consent);
     }
 
     @Override

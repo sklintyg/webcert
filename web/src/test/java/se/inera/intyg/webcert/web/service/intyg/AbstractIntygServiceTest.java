@@ -153,7 +153,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
     protected Patient buildPatient(boolean sekretessMarkering, boolean avliden) {
         Patient patient = new Patient();
-        patient.setPersonId(new Personnummer("19121212-1212"));
+        patient.setPersonId(Personnummer.createPersonnummer("19121212-1212").get());
         patient.setFornamn("fornamn");
         patient.setMellannamn("mellannamn");
         patient.setEfternamn("efternamn");

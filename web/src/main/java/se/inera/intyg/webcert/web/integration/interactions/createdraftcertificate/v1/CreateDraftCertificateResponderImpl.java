@@ -124,9 +124,10 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         user.changeValdVardenhet(invokingUnitHsaId);
 
         String intygsTyp = utkastsParams.getTypAvUtlatande().getCode().toLowerCase();
-        Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(
-                utkastsParams.getPatient().getPersonId().getExtension()).orElseThrow(() ->
-                new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+        Personnummer personnummer = Personnummer
+                .createPersonnummer(utkastsParams.getPatient().getPersonId().getExtension())
+                .orElseThrow(() -> new WebCertServiceException(
+                        WebCertServiceErrorCodeEnum.PU_PROBLEM,
                         "Failed to create valid personnummer for createDraft reques"));
 
         final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);

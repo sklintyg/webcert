@@ -137,7 +137,7 @@ public class UtkastRepositoryTest {
 
         GroupableItem resObjs = result.get(0);
         assertThat(resObjs.getEnhetsId(), equalTo(UtkastTestUtil.ENHET_1_ID));
-        assertThat(resObjs.getPersonnummer(), equalTo(PERSON_NUMMER.getPersonnummer()));
+        assertThat(resObjs.getPersonnummer(), equalTo(PERSON_NUMMER.getPersonnummerWithDash()));
         assertThat(resObjs.getIntygsTyp(), equalTo("fk7263"));
     }
 
@@ -151,7 +151,7 @@ public class UtkastRepositoryTest {
 
         List<String> enhetsIds = Arrays.asList(UtkastTestUtil.ENHET_1_ID);
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(PERSON_NUMMER.getPersonnummer(),
+        List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(PERSON_NUMMER.getPersonnummerWithDash(),
                 enhetsIds, statuses, allIntygsTyper());
 
         assertThat(results.size(), is(2));
@@ -168,7 +168,7 @@ public class UtkastRepositoryTest {
 
         String vardgivarId = UtkastTestUtil.ENHET_1_ID;
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-        List<Utkast> results = utkastRepository.findDraftsByPatientAndVardgivareAndStatus(PERSON_NUMMER.getPersonnummer(),
+        List<Utkast> results = utkastRepository.findDraftsByPatientAndVardgivareAndStatus(PERSON_NUMMER.getPersonnummerWithDash(),
                 vardgivarId, statuses, allIntygsTyper());
 
         assertThat(results.size(), is(2));
@@ -295,7 +295,7 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.INTYGSTYP_LISJP));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastTestUtil.INTYGSTYP_DB));
 
-        List<Utkast> res = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(UtkastTestUtil.PERSON_NUMMER.getPersonnummer(),
+        List<Utkast> res = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(UtkastTestUtil.PERSON_NUMMER.getPersonnummerWithDash(),
                 Sets.newHashSet(UtkastTestUtil.INTYGSTYP_FK7263, UtkastTestUtil.INTYGSTYP_DB));
         assertNotNull(res);
         assertEquals(2, res.size());

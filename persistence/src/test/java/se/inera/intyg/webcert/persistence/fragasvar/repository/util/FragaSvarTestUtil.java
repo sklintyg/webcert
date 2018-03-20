@@ -18,13 +18,16 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.repository.util;
 
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.model.Status;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
-
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
-import se.inera.intyg.webcert.persistence.model.Status;
 
 public final class FragaSvarTestUtil {
 
@@ -38,8 +41,8 @@ public final class FragaSvarTestUtil {
     private static final LocalDateTime SVAR_SIGN_DATE = LocalDateTime.parse("2014-10-21T11:11:11");
     private static final LocalDateTime SVAR_SENT_DATE = LocalDateTime.parse("2014-10-21T12:00:00");
 
-    private static final IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk7263", new Personnummer("19121212-1212"),
-            "Sven Persson", FRAGE_SENT_DATE);
+    private static final IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk7263",
+            Personnummer.createPersonnummer("19121212-1212").get(), "Sven Persson", FRAGE_SENT_DATE);
 
     public static String ENHET_1_ID = "ENHET_TEST_1_ID";
     public static String ENHET_2_ID = "ENHET_TEST_2_ID";

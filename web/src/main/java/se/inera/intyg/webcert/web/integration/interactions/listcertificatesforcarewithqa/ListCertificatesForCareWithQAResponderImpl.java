@@ -54,7 +54,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         ListCertificatesForCareWithQAResponseType response = new ListCertificatesForCareWithQAResponseType();
         List list = new List();
         IntygWithNotificationsRequest.Builder builder = new IntygWithNotificationsRequest.Builder()
-                .setPersonnummer(new Personnummer(request.getPersonId().getExtension()));
+                .setPersonnummer(Personnummer.createPersonnummer(request.getPersonId().getExtension()).get());
 
         if (!request.getEnhetsId().isEmpty()) {
             builder = builder.setEnhetId(request.getEnhetsId().stream().map(HsaId::getExtension).collect(Collectors.toList()));

@@ -18,27 +18,24 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import javax.ws.rs.core.Response;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PersonuppgifterResponse;
+
+import javax.ws.rs.core.Response;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PersonApiControllerTest {
@@ -54,7 +51,7 @@ public class PersonApiControllerTest {
 
     @Test
     public void testGetPersonuppgifter() {
-        Personnummer personnummer = new Personnummer("19121212-1212");
+        Personnummer personnummer = createPnr("19121212-1212");
 
         when(puService.getPerson(any(Personnummer.class))).thenReturn(new PersonSvar(
                 new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
@@ -79,7 +76,7 @@ public class PersonApiControllerTest {
 
     @Test
     public void testGetPersonuppgifterSekretess() {
-        Personnummer personnummer = new Personnummer("19121212-1212");
+        Personnummer personnummer = createPnr("19121212-1212");
 
         when(puService.getPerson(any(Personnummer.class))).thenReturn(new PersonSvar(
                 new Person(personnummer, true, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
@@ -104,7 +101,7 @@ public class PersonApiControllerTest {
 
     @Test
     public void testGetPersonuppgifterMissingPerson() {
-        Personnummer personnummer = new Personnummer("18121212-1212");
+        Personnummer personnummer = createPnr("19010101-0101");
 
         when(puService.getPerson(any(Personnummer.class))).thenReturn(new PersonSvar(null, PersonSvar.Status.NOT_FOUND));
 
@@ -119,4 +116,10 @@ public class PersonApiControllerTest {
 
         verify(mockMonitoringService).logPULookup(personnummer, "NOT_FOUND");
     }
+
+    private Personnummer createPnr(String personId) {
+        return Personnummer.createPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
+
 }

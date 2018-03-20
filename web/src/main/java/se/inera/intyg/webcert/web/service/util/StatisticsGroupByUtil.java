@@ -74,9 +74,9 @@ public class StatisticsGroupByUtil {
         }
         WebCertUser user = webCertUserService.getUser();
         Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(
-                results.stream().map(r -> r.getPersonnummer()).map(pnr -> new Personnummer(pnr)).collect(Collectors.toList()));
+                results.stream().map(r -> r.getPersonnummer()).map(pnr -> createPnr(pnr)).collect(Collectors.toList()));
 
-        results.stream().forEach(item -> item.setSekretessStatus(sekretessStatusMap.get(new Personnummer(item.getPersonnummer()))));
+        results.stream().forEach(item -> item.setSekretessStatus(sekretessStatusMap.get(createPnr(item.getPersonnummer()))));
 
         return results.stream()
                 .filter(item -> item.getSekretessStatus() != SekretessStatus.UNDEFINED)
@@ -85,6 +85,11 @@ public class StatisticsGroupByUtil {
                                 item.getSekretessStatus() == SekretessStatus.TRUE)
                         .isVerified())
                 .collect(Collectors.groupingBy(GroupableItem::getEnhetsId, Collectors.counting()));
+    }
+
+    private Personnummer createPnr(String pnr) {
+        return Personnummer.createPersonnummer(pnr)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + pnr));
     }
 
 }

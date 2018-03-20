@@ -218,6 +218,33 @@ function fillInDiagnoskod(diagnos) {
  *
  */
 
+let containsRequiredSymbol = () => el =>
+    el.all(by.css('.required'))
+    .filter(el => el.getText()
+        .then(t => t === '*')).isPresent();
+
+let findSectionsWithRequiredFields = () => element
+    .all(by.css('.card'))
+    .filter(containsRequiredSymbol())
+    .all(by.css('h3'))
+    .map(el => el.getText()
+        .then(t => t.replace('*', '').replace('\n', ''))); // Ta bort skräptecken
+
+let findErrorMessages = () => element.all(by.repeater('category in categories')).map(k => k.getText());
+
+Given(/^att textfält i intyget är rensade$/, () => element.all(by.css('input[type=text]')).each(i => i.clear()));
+
+Then(/^ska alla valideringsfel visas$/, () => {
+    Promise.all([findSectionsWithRequiredFields(), // expected
+        findErrorMessages() // actual
+    ]).then(result => {
+        let expected = result[0];
+        let actual = result[1];
+        logger.info('Expected: ' + expected);
+        logger.info('Actual: ' + actual);
+        expect(actual).to.eql(expected);
+    }).catch(message => fail(message));
+});
 
 Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
     return fillInDiagnoskod({

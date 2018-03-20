@@ -38,14 +38,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
@@ -53,14 +46,10 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 
 /**
  * Controller exposing services to be used by modules.
@@ -362,15 +351,12 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateReplacementCopyRequest req = new CreateReplacementCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson, coherentJournaling);
 
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, parameters);
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
+
         return req;
     }
 
@@ -380,17 +366,30 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
 
-        IntegrationParameters parameters = userService.getUser().getParameters();
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, userService.getUser().getParameters());
 
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
+
+        return req;
+    }
+
+    private void setDeepIntegrationFlagOnRequest(AbstractCreateCopyRequest req) {
         if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
             LOG.debug("Setting djupintegrerad flag on request to true");
             req.setDjupintegrerad(true);
         }
-        return req;
+    }
+
+    private void addPersonnummerToRequest(AbstractCreateCopyRequest req, IntegrationParameters parameters) {
+        if (parameters != null) {
+            Optional<Personnummer> optionalPnr = createOptPnr(parameters.getAlternateSsn());
+            if (isNewValidPatientPersonId(optionalPnr)) {
+                LOG.debug("Adding new personnummer to request");
+                req.setNyttPatientPersonnummer(optionalPnr.get());
+            }
+        }
     }
 
     private CreateUtkastFromTemplateRequest createUtkastFromDifferentIntygTypeRequest(String orgIntygsId, String newIntygsTyp,
@@ -402,16 +401,12 @@ public class IntygModuleApiController extends AbstractApiController {
         CreateUtkastFromTemplateRequest req = new CreateUtkastFromTemplateRequest(orgIntygsId, newIntygsTyp, patient,
                 hosPerson, orgIntygsTyp);
 
-        IntegrationParameters parameters = userService.getUser().getParameters();
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, userService.getUser().getParameters());
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
+
         return req;
     }
 
@@ -422,16 +417,11 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patient, hosPerson);
 
-        IntegrationParameters parameters = userService.getUser().getParameters();
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, userService.getUser().getParameters());
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
 
         return req;
     }
@@ -497,8 +487,13 @@ public class IntygModuleApiController extends AbstractApiController {
                 .orThrow();
     }
 
-    private boolean isNewValidPatientPersonId(Personnummer newPersonnummer) {
-        return (newPersonnummer != null && (Personnummer.createValidatedPersonnummerWithDash(newPersonnummer).isPresent()
-                || SamordningsnummerValidator.isSamordningsNummer(newPersonnummer)));
+    private boolean isNewValidPatientPersonId(Optional<Personnummer> newPersonnummer) {
+        return (newPersonnummer != null
+                && (newPersonnummer.isPresent() || SamordningsnummerValidator.isSamordningsNummer(newPersonnummer)));
     }
+
+    private Optional<Personnummer> createOptPnr(String personId) {
+        return Personnummer.createPersonnummer(personId);
+    }
+
 }

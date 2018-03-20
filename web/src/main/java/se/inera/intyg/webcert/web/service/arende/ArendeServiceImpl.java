@@ -392,7 +392,7 @@ public class ArendeServiceImpl implements ArendeService {
         arendeList.stream()
             .findFirst()
             .map(Arende::getPatientPersonId)
-            .map(personNummer -> Personnummer.createValidatedPersonnummerWithDash(personNummer)
+            .map(personNummer -> Personnummer.createPersonnummer(personNummer)
                     .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer when querying for arenden.")))
             .ifPresent(pn -> authoritiesValidator
                     .given(user)
@@ -449,7 +449,7 @@ public class ArendeServiceImpl implements ArendeService {
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
         Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(results.stream()
-                .map(ali -> new Personnummer(ali.getPatientId()))
+                .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
                 .collect(Collectors.toList()));
 
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
@@ -474,7 +474,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     private boolean passesSekretessCheck(String patientId, String intygsTyp, WebCertUser user,
             Map<Personnummer, SekretessStatus> sekretessStatusMap) {
-        SekretessStatus sekretessStatus = sekretessStatusMap.get(new Personnummer(patientId));
+
+        final SekretessStatus sekretessStatus =
+                sekretessStatusMap.get(Personnummer.createPersonnummer(patientId).get());
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
             return false;
@@ -488,7 +490,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     private boolean hasSekretessStatus(ArendeListItem ali, SekretessStatus sekretessStatus,
             Map<Personnummer, SekretessStatus> sekretessStatusMap) {
-        return sekretessStatusMap.get(new Personnummer(ali.getPatientId())) == sekretessStatus;
+        return sekretessStatusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get()) == sekretessStatus;
     }
 
     @Override

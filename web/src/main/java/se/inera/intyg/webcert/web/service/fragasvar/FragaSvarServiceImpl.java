@@ -255,7 +255,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
             if (sekretessStatus == SekretessStatus.UNDEFINED) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, "Cannot list fraga/svar for '"
-                        + intygsId + "'. PU service unavailable or personnummer " + pnr.getPnrHash() + " not valid");
+                        + intygsId + "'. PU service unavailable or personnummer " + pnr.getPersonnummerHash() + " not valid");
             }
 
             authoritiesValidator.given(user, intygsTyp)

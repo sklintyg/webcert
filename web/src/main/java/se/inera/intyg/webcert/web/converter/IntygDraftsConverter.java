@@ -144,7 +144,13 @@ public class IntygDraftsConverter {
         entry.setStatus(findLatestStatus(source.getStatus()).name());
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
-        entry.setPatientId(new Personnummer(source.getPatient().getPersonId().getExtension()));
+        entry.setPatientId(createPnr(source.getPatient().getPersonId().getExtension()));
         return entry;
     }
+
+    private Personnummer createPnr(String personId) {
+        return Personnummer.createPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
+
 }

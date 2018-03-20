@@ -61,7 +61,8 @@ public class AvtalServiceImpl implements AvtalService {
             throw new IllegalStateException("Cannot approve private practitioner avtal, no avtal exists in the database.");
         }
         godkantAvtalRepository.approveAvtal(userId, latestAvtalVersion);
-        monitoringLogService.logPrivatePractitionerTermsApproved(userId, new Personnummer(personId), latestAvtalVersion);
+        monitoringLogService.logPrivatePractitionerTermsApproved(userId,
+                Personnummer.createPersonnummer(personId).orElse(null), latestAvtalVersion);
     }
 
     @Override

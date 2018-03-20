@@ -33,6 +33,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static se.inera.intyg.common.support.Constants.ARBETSPLATS_KOD_OID;
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
@@ -95,11 +96,11 @@ public final class ConvertToFKTypes {
         PatientType pt = new PatientType();
 
         String root = PERSON_ID_OID;
-        if (SamordningsnummerValidator.isSamordningsNummer(ir.getPatientId())) {
+        if (SamordningsnummerValidator.isSamordningsNummer(Optional.ofNullable(ir.getPatientId()))) {
             root = SAMORDNING_ID_OID;
         }
 
-        pt.setPersonId(toII(root, ir.getPatientId().getPersonnummer()));
+        pt.setPersonId(toII(root, ir.getPatientId().getPersonnummerWithDash()));
 
         lu.setPatient(pt);
         lu.setSigneringsTidpunkt(ir.getSigneringsDatum());

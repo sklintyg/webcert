@@ -53,7 +53,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         ResultValidator errors = ResultValidator.newInstance();
 
         String personId = intyg.getPatient().getPersonId().getExtension();
-        Personnummer personnummer = createPersonnummer(errors, personId);
+        Personnummer personnummer = createPersonnummer(errors, personId).orElse(null);
         if (errors.hasErrors()) {
             return errors;
         }

@@ -64,7 +64,8 @@ public class RegisterMedicalCertificateResponderStub implements RegisterMedicalC
         CertificateHolder certificate = new CertificateHolder();
         certificate.setId(source.getLakarutlatande().getLakarutlatandeId());
         certificate.setType(source.getLakarutlatande().getTypAvUtlatande());
-        certificate.setCivicRegistrationNumber(new Personnummer(source.getLakarutlatande().getPatient().getPersonId().getExtension()));
+        certificate.setCivicRegistrationNumber(
+                Personnummer.createPersonnummer(source.getLakarutlatande().getPatient().getPersonId().getExtension()).get());
         certificate.setSignedDate(source.getLakarutlatande().getSigneringsdatum());
         certificate.setCareUnitId(source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getEnhetsId().getExtension());
         certificate.setCareUnitName(source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getEnhetsnamn());
@@ -74,4 +75,5 @@ public class RegisterMedicalCertificateResponderStub implements RegisterMedicalC
                 source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
         return certificate;
     }
+
 }

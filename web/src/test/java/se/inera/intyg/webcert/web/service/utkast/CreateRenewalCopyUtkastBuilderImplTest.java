@@ -18,15 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,22 +61,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
 @RunWith(MockitoJUnitRunner.class)
 public class CreateRenewalCopyUtkastBuilderImplTest {
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
-
     private static final String INTYG_JSON = "A bit of text representing json";
-
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final Personnummer PATIENT_SSN = new Personnummer("19121212-1212");
     private static final String PATIENT_FNAME = "Adam";
     private static final String PATIENT_MNAME = "Bertil";
     private static final String PATIENT_LNAME = "Caesarsson";
 
-    private static final Personnummer PATIENT_NEW_SSN = new Personnummer("19121212-1414");
+    private static final Personnummer PATIENT_SSN = createPnr("19121212-1212");
+    private static final Personnummer PATIENT_NEW_SSN = createPnr("19121212-1414");
 
     private static final String VARDENHET_ID = "SE00001234-5678";
     private static final String VARDENHET_NAME = "Vårdenheten 1";
@@ -395,4 +389,10 @@ public class CreateRenewalCopyUtkastBuilderImplTest {
         user.setValdVardgivare(vGivare);
         return user;
     }
+
+    private static Personnummer createPnr(String personId) {
+        return Personnummer.createPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
+
 }

@@ -75,9 +75,9 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
     @Before
     public void setup() {
-        Personnummer pnr1 = Personnummer.createValidatedPersonnummerWithDash(PNR1).get();
-        Personnummer pnr2 = Personnummer.createValidatedPersonnummerWithDash(PNR2).get();
-        Personnummer pnr3 = Personnummer.createValidatedPersonnummerWithDash(PNR3).get();
+        Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
+        Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
+        Personnummer pnr3 = Personnummer.createPersonnummer(PNR3).get();
 
         Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
         sekrMap.put(pnr1, SekretessStatus.FALSE);
@@ -106,8 +106,8 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
         when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
 
-        Personnummer pnr1 = Personnummer.createValidatedPersonnummerWithDash(PNR1).get();
-        Personnummer pnr2 = Personnummer.createValidatedPersonnummerWithDash(PNR2).get();
+        Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
+        Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
 
         Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
         sekrMap.put(pnr1, SekretessStatus.FALSE);

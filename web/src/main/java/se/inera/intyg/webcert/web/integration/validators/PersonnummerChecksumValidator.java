@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.web.integration.validators;
 
+import se.inera.intyg.common.support.validate.ValidatorUtil;
+import se.inera.intyg.schemas.contract.Personnummer;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.validate.ValidatorUtil;
 
 public final class PersonnummerChecksumValidator {
 
@@ -36,18 +35,18 @@ public final class PersonnummerChecksumValidator {
     }
 
     public static void validate(Personnummer personnummer, ResultValidator errors) {
-        String pnr = null;
-        try {
-            pnr = personnummer.getNormalizedPnr();
-        } catch (InvalidPersonNummerException e) {
-            errors.addError(e.getMessage());
+        if (personnummer == null) {
+            errors.addError("Cannot validate null");
             return;
         }
+
+        String pnr = personnummer.getPersonnummer();
         Matcher m = PERSONNUMMER_PATTERN.matcher(pnr);
         if (!m.matches()) {
-            errors.addError(String.format("Could not parse the SSN '%s' (format should be 'yyyyMMdd-nnnn')", pnr));
+            errors.addError(String.format("Cannot validate Personnummer '%s' (format should be 'yyyyMMddnnnn')", pnr));
             return;
         }
+
         String dateString = m.group(PERSONNUMMER_DATE_GROUP);
         String nnn = m.group(PERSONNUMMER_BIRTHNUMBER_GROUP);
         int mod10 = Integer.parseInt(m.group(PERSONNUMMER_CHECKSUM_GROUP));

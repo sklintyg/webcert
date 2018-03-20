@@ -18,22 +18,25 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import java.util.*;
-
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.ImmutableSet;
-
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.*;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.FkKontaktType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.KompletteringType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author andreaskaltenbach
@@ -133,7 +136,9 @@ public class FragaSvarConverter {
 
         if (source.getPatient() != null) {
             intygsReferens.setPatientNamn(source.getPatient().getFullstandigtNamn());
-            intygsReferens.setPatientId(new Personnummer(source.getPatient().getPersonId().getExtension()));
+            intygsReferens.setPatientId(Personnummer
+                    .createPersonnummer(source.getPatient().getPersonId().getExtension())
+                    .orElse(null));
         }
 
         intygsReferens.setSigneringsDatum(source.getSigneringsTidpunkt());

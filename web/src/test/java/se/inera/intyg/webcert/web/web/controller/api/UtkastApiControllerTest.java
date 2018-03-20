@@ -80,19 +80,14 @@ import static org.mockito.Mockito.when;
 public class UtkastApiControllerTest {
 
     private static final String PATIENT_EFTERNAMN = "Tolvansson";
-
     private static final String PATIENT_FORNAMN = "Tolvan";
-
     private static final String PATIENT_MELLANNAMN = "Von";
-
-    private static final Personnummer PATIENT_PERSONNUMMER = new Personnummer("19121212-1212");
-    private static final Personnummer PATIENT_PERSONNUMMER_PU_SEKRETESS = new Personnummer("20121212-1212");
-
     private static final String PATIENT_POSTADRESS = "Testadress";
-
     private static final String PATIENT_POSTNUMMER = "12345";
-
     private static final String PATIENT_POSTORT = "Testort";
+
+    private static final Personnummer PATIENT_PERSONNUMMER = createPnr("19121212-1212");
+    private static final Personnummer PATIENT_PERSONNUMMER_PU_SEKRETESS = createPnr("20121212-1212");
 
     @Mock
     private UtkastService utkastService;
@@ -413,4 +408,10 @@ public class UtkastApiControllerTest {
         enhet.setArbetsplatskod("000000");
         return enhet;
     }
+
+    private static Personnummer createPnr(String personId) {
+        return Personnummer.createPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
+
 }

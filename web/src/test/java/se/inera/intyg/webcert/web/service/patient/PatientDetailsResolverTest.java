@@ -62,7 +62,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PatientDetailsResolverTest {
 
-    private static final Personnummer PNR = Personnummer.createValidatedPersonnummerWithDash("191212121212").get();
+    private static final Personnummer PNR = Personnummer.createPersonnummer("191212121212").get();
+
     private static final String FNAMN = "Tolvan";
     private static final String MNAMN = "Sexan";
     private static final String LNAMN = "Tolvansson";
@@ -602,7 +603,6 @@ public class PatientDetailsResolverTest {
     }
 
     private Person buildPerson() {
-        return new Person(Personnummer.createValidatedPersonnummerWithDash("19121212-1212").get(),
-                false, PU_AVLIDEN, FNAMN, MNAMN, LNAMN, POST_ADDR, POST_NR, POST_ORT);
+        return new Person(PNR,false, PU_AVLIDEN, FNAMN, MNAMN, LNAMN, POST_ADDR, POST_NR, POST_ORT);
     }
 }

@@ -140,7 +140,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
-            message.setStringProperty(Constants.PERSON_ID, personId.getPersonnummerWithoutDash());
+            message.setStringProperty(Constants.PERSON_ID, personId.getPersonnummer());
             message.setStringProperty(Constants.RECIPIENT, recipientId);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
             if (delay) {

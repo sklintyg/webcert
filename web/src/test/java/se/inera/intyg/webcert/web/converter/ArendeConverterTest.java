@@ -18,28 +18,10 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -60,6 +42,18 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Part;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
+
+import javax.xml.ws.WebServiceException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeConverterTest {
@@ -226,7 +220,7 @@ public class ArendeConverterTest {
         utkast.setVardgivarNamn(vardgivareName);
         utkast.setIntygsId(intygsId);
         utkast.setIntygsTyp(intygsTyp);
-        utkast.setPatientPersonnummer(new Personnummer(patientPersonId));
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
         when(hsaEmployeeService.getEmployee(signeratAv, null)).thenReturn(createHsaResponse(givenName, surname));

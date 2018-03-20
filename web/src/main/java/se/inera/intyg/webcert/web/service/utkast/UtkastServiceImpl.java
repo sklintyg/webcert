@@ -25,11 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.services.texts.IntygTextsService;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -64,24 +60,13 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -170,22 +155,6 @@ public class UtkastServiceImpl implements UtkastService {
         return savedUtkast;
     }
 
-    private LogUser createLogUser(CreateNewDraftRequest request) {
-        HoSPersonal hosPerson = request.getHosPerson();
-
-        String personId = hosPerson.getPersonId();
-        String vardenhetId = hosPerson.getVardenhet().getEnhetsid();
-        String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
-
-        return new LogUser.Builder(personId, vardenhetId, vardgivareId)
-                .userName(hosPerson.getFullstandigtNamn())
-                .userTitle(hosPerson.getTitel())
-                .userAssignment(hosPerson.getMedarbetarUppdrag())
-                .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
-                .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
-                .build();
-    }
-
     @Override
     public String getQuestions(String intygsTyp, String version) {
         String questionsAsJson = intygTextsService.getIntygTexts(intygsTyp, version);
@@ -213,7 +182,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     public Map<String, Map<String, Boolean>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
-        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
+        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
                 authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                         AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
 
@@ -462,19 +431,21 @@ public class UtkastServiceImpl implements UtkastService {
         final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp());
 
         // INTYG-4086
-        Personnummer personId = request.getPersonnummer();
         Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
-        if (personId != null
-                && (Personnummer.createValidatedPersonnummerWithDash(personId).isPresent()
-                || SamordningsnummerValidator.isSamordningsNummer(personId))
-                && !personId.getPnrHash().equals(draftPatient.getPersonId().getPnrHash())) {
 
-            String oldPersonId = draftPatient.getPersonId().getPersonnummer();
+        Optional<Personnummer> optionalPnr = Optional.ofNullable(request.getPersonnummer());
+        Optional<Personnummer> optionalDraftPnr = Optional.ofNullable(draftPatient.getPersonId());
+
+        if ((optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr))
+            && !isHashEqual(optionalPnr, optionalDraftPnr)) {
+
+            String oldPersonId = optionalDraftPnr.get().getPersonnummer();
 
             // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar
             // personnumret -
             // vilka regler gäller då för namn och adress? Samma regler som i PatientDetailsResolverImpl?
-            draftPatient.setPersonId(personId);
+            draftPatient.setPersonId(optionalPnr.get());
+
             try {
                 String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), draftPatient);
                 updateUtkastModel(utkast, updatedModel);
@@ -484,6 +455,7 @@ public class UtkastServiceImpl implements UtkastService {
 
                 // Spara undan det gamla personnummret temporärt
                 webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
+
             } catch (ModuleException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                         "Patient details on Utkast " + draftId + " could not be updated", e);
@@ -535,6 +507,22 @@ public class UtkastServiceImpl implements UtkastService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsHsaId);
         }
+    }
+
+    private LogUser createLogUser(CreateNewDraftRequest request) {
+        HoSPersonal hosPerson = request.getHosPerson();
+
+        String personId = hosPerson.getPersonId();
+        String vardenhetId = hosPerson.getVardenhet().getEnhetsid();
+        String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
+
+        return new LogUser.Builder(personId, vardenhetId, vardgivareId)
+                .userName(hosPerson.getFullstandigtNamn())
+                .userTitle(hosPerson.getTitel())
+                .userAssignment(hosPerson.getMedarbetarUppdrag())
+                .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
+                .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
+                .build();
     }
 
     private ModuleApi getModuleApi(String intygsTyp) {
@@ -632,6 +620,14 @@ public class UtkastServiceImpl implements UtkastService {
 
     private int getSafeLength(String str) {
         return Strings.nullToEmpty(str).trim().length();
+    }
+
+    private boolean isHashEqual(Optional<Personnummer> thiz, Optional<Personnummer> that) {
+        if (thiz.isPresent() && that.isPresent()) {
+            return thiz.get().getPersonnummerHash().equals(that.get().getPersonnummerHash());
+        }
+
+        return false;
     }
 
     private boolean isTheDraftStillADraft(UtkastStatus utkastStatus) {

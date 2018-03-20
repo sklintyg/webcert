@@ -18,13 +18,11 @@
  */
 package se.inera.intyg.webcert.persistence.legacy.model;
 
-import java.time.LocalDateTime;
+import org.hibernate.annotations.Type;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 import javax.persistence.*;
-
-import org.hibernate.annotations.Type;
-
-import se.inera.intyg.schemas.contract.Personnummer;
+import java.time.LocalDateTime;
 
 /**
  * Entity for a Medcert certificate migrated into Webcert.
@@ -124,7 +122,7 @@ public class MigreratMedcertIntyg {
     }
 
     public Personnummer getPatientPersonnummer() {
-        return new Personnummer(patientPersonnummer);
+        return Personnummer.createPersonnummer(patientPersonnummer).orElse(null);
     }
 
     public void setPatientPersonnummer(Personnummer patientPersonnummer) {

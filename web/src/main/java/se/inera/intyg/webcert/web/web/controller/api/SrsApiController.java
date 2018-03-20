@@ -106,7 +106,7 @@ public class SrsApiController extends AbstractApiController {
         try {
             Utdatafilter filter = buildUtdatafilter(prediktion, atgard, statistik);
             SrsResponse response = srsService
-                    .getSrs(userService.getUser(), intygId, new Personnummer(personnummer), diagnosisCode, filter, questions);
+                    .getSrs(userService.getUser(), intygId, createPnr(personnummer), diagnosisCode, filter, questions);
             if (prediktion) {
                 logService.logShowPrediction(personnummer);
                 monitoringLog.logSrsInformationRetreived(diagnosisCode, intygId);
@@ -143,7 +143,7 @@ public class SrsApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
-            Personnummer p = new Personnummer(personnummer);
+            Personnummer p = createPnr(personnummer);
             Samtyckesstatus response = srsService.getConsent(hsaId, p);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException e) {
@@ -163,7 +163,7 @@ public class SrsApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
-            Personnummer p = new Personnummer(personnummer);
+            Personnummer p = createPnr(personnummer);
             ResultCodeEnum result = srsService.setConsent(hsaId, p, consent);
             monitoringLog.logSetSrsConsent(p, consent);
             return Response.ok(result).build();
@@ -227,5 +227,11 @@ public class SrsApiController extends AbstractApiController {
             }
         }
     }
+
+    private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
+        return Personnummer.createPersonnummer(personId)
+                .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
+    }
+
 }
 //CHECKSTYLE:ON ParameterNumber

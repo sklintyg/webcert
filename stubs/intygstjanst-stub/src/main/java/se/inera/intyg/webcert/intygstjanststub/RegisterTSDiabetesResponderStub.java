@@ -18,17 +18,18 @@
  */
 package se.inera.intyg.webcert.intygstjanststub;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
-import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.*;
+import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesResponderInterface;
+import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesResponseType;
+import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesType;
 import se.inera.intygstjanster.ts.services.v1.ResultCodeType;
 import se.inera.intygstjanster.ts.services.v1.ResultatTyp;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by eriklupander on 2015-06-10.
@@ -55,8 +56,9 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
         CertificateHolder certificate = new CertificateHolder();
         certificate.setId(parameters.getIntyg().getIntygsId());
         certificate.setType(parameters.getIntyg().getIntygsTyp());
-        certificate.setCivicRegistrationNumber(
-                new Personnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension()));
+        certificate.setCivicRegistrationNumber(Personnummer
+                        .createPersonnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension())
+                        .orElse(null));
         certificate.setSignedDate(
                 LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         certificate.setCareUnitId(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsId().getExtension());

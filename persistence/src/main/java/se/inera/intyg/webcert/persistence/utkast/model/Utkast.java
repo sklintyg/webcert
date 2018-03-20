@@ -228,11 +228,11 @@ public class Utkast {
     }
 
     public Personnummer getPatientPersonnummer() {
-        return new Personnummer(patientPersonnummer);
+        return Personnummer.createPersonnummer(patientPersonnummer).get();
     }
 
     public void setPatientPersonnummer(Personnummer patientPersonnummer) {
-        this.patientPersonnummer = patientPersonnummer != null ? DaoUtil.formatPnrForPersistence(patientPersonnummer) : null;
+        this.patientPersonnummer = DaoUtil.formatPnrForPersistence(patientPersonnummer);
     }
 
     public String getPatientFornamn() {

@@ -57,7 +57,8 @@ public class PersonAPIControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", PATIENT_PERSONNUMMER)
                 .expect().statusCode(200)
                 .when().get("api/person/{personNummer}").then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-person-response-schema.json"))
-                .body("person.personnummer", equalTo(PATIENT_PERSONNUMMER))
+                .body("person.personnummer", equalTo(formatPersonnummer(PATIENT_PERSONNUMMER)))
                 .body("status", equalTo(PersonSvar.Status.FOUND.name()));
     }
+
 }
