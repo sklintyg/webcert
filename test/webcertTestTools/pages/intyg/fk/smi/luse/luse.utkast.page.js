@@ -43,13 +43,13 @@ var LuseUtkast = BaseSmiUtkast._extend({
 
         this.underlag = {
             ett: {
-                datum: element(by.id('underlag-0-datum'))
+                datum: element(by.id('datepicker_underlag[0].datum'))
             },
             tva: {
-                datum: element(by.id('underlag-1-datum'))
+                datum: element(by.id('datepicker_underlag[1].datum'))
             },
             tre: {
-                datum: element(by.id('underlag-2-datum'))
+                datum: element(by.id('datepicker_underlag[2].datum'))
             }
 
         };
