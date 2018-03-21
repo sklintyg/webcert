@@ -292,11 +292,11 @@ module.exports.changingFields = function(isSMIIntyg, intygShortcode, clearFlag) 
  *
  */
 
-Given(/^jag fyller i alla nödvändiga fält för intyget$/, function() {
-    if (!intyg.typ) {
+Given(/^jag fyller i alla nödvändiga fält för intyget(?:\s"([^"]*)")?$/, function(intygsTyp) {
+    if (!intyg.typ && !intygsTyp) {
         throw 'intyg.typ odefinierad.';
     } else {
-        global.intyg = generateIntygByType(intyg.typ, intyg.id);
+        global.intyg = generateIntygByType(intygsTyp || intyg.typ, intyg.id);
         logger.silly(intyg);
         return fillIn(global.intyg);
     }

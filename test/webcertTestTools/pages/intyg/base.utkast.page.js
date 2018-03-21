@@ -59,6 +59,7 @@ var BaseUtkast = JClass._extend({
         this.patientNamnPersonnummerFd = element(by.css('.old-person-id'));
         /*this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande')); Finns inte i 6.0? */
         this.klartAttSigneraStatus = element(by.id('intygstatus1'));
+        this.utkastStatus = element(by.id('intygstatus1'));
         this.sparatStatus = element(by.id('intygstatus2'));
 
         this.enhetensAdress = {

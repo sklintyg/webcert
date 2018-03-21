@@ -9,13 +9,18 @@ Scenariomall: Alla sektioner som är markerade med obligatoriska fält ska gener
     Och jag går in på att skapa ett "<intyg>" intyg
     Och att textfält i intyget är rensade
     När jag klickar på signera-knappen
-    Så ska alla valideringsfel visas
+    Så ska alla sektioner innehållandes valideringsfel listas
+    Och ska statusmeddelande att obligatoriska uppgifter saknas visas
+    När jag fyller i alla nödvändiga fält för intyget "<intyg>"
+    Så ska inga valideringsfel listas
+    Och ska statusmeddelande att intyget är klart att signera visas
 
 Exempel:
   | intyg                                                             |
   | Transportstyrelsens läkarintyg                                    |
   | Transportstyrelsens läkarintyg, diabetes                          |
-  | Dödsbevis                                                         |
+  #| Dödsbevis                                                         |
+  #| Dödsorsaksintyg                                                   |
   | Läkarintyg för sjukpenning                                        |
   | Läkarutlåtande för aktivitetsersättning vid förlängd skolgång     |
   | Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga |

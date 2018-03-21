@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals pages,intyg,protractor,wcTestTools,Promise,logger*/
+/*globals pages,intyg,protractor,wcTestTools,Promise,logger,assert*/
 
 
 'use strict';
 /*jshint newcap:false */
-//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli deprecated. (klarade inte att ignorera i grunt-task)
 
 
 /*
@@ -43,6 +43,7 @@ var luseUtkastPage = pages.intyg.luse.utkast;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 var tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
+var utkastPage = pages.intyg.base.utkast;
 
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var helpers = require('./helpers');
@@ -224,17 +225,17 @@ let containsRequiredSymbol = () => el =>
         .then(t => t === '*')).isPresent();
 
 let findSectionsWithRequiredFields = () => element
-    .all(by.css('.card'))
-    .filter(containsRequiredSymbol())
-    .all(by.css('h3'))
+    .all(by.css('.card')) // Sektion..
+    .filter(containsRequiredSymbol()) // ..som har asterisk..
+    .all(by.css('h3')) // ..ta fram rubrik..
     .map(el => el.getText()
-        .then(t => t.replace('*', '').replace('\n', ''))); // Ta bort skräptecken
+        .then(t => t.replace('*', '').replace('\n', ''))); // ..och ta bort skräptecken
 
 let findErrorMessages = () => element.all(by.repeater('category in categories')).map(k => k.getText());
 
 Given(/^att textfält i intyget är rensade$/, () => element.all(by.css('input[type=text]')).each(i => i.clear()));
 
-Then(/^ska alla valideringsfel visas$/, () => {
+Then(/^ska alla sektioner innehållandes valideringsfel listas$/, () => {
     Promise.all([findSectionsWithRequiredFields(), // expected
         findErrorMessages() // actual
     ]).then(result => {
@@ -243,26 +244,36 @@ Then(/^ska alla valideringsfel visas$/, () => {
         logger.info('Expected: ' + expected);
         logger.info('Actual: ' + actual);
         expect(actual).to.eql(expected);
-    }).catch(message => fail(message));
+    }).catch(msg => assert.fail(msg));
 });
+
+Then(/^ska inga valideringsfel listas$/, () =>
+    findErrorMessages().then(errors => {
+        errors.forEach(logger.info);
+        return expect(errors).to.be.empty;
+    }));
+
+
+Then(/^ska statusmeddelande att obligatoriska uppgifter saknas visas$/, () => expect(utkastPage.utkastStatus.getText()).to.eventually.contain('Obligatoriska uppgifter saknas'));
+
+Then(/^ska statusmeddelande att intyget är klart att signera visas$/, () => expect(utkastPage.utkastStatus.getText()).to.eventually.contain('Klart att signera'));
 
 Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
     return fillInDiagnoskod({
         kod: dKod
     });
-
-
 });
+
 Given(/^jag fyller i diagnoskod$/, function() {
     var diagnos = testdataHelpers.shuffle(testdata.fmb.fmbInfo.diagnoser)[0];
     return fillInDiagnoskod(diagnos);
 
 });
+
 Given(/^jag fyller i diagnoskod utan egen FMB info$/, function() {
     var diagnos = testdataHelpers.shuffle(testdata.fmb.utanEgenFMBInfo.diagnoser)[0];
     return fillInDiagnoskod(diagnos);
 });
-
 
 Given(/^ska rätt info gällande FMB visas$/, function() {
 
