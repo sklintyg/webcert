@@ -60,7 +60,6 @@ Scenario: Statusuppdateringar vid fråga från FK
 Scenario: Statusuppdateringar vid fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
-    Så ska ett info-meddelande visa "Det går därför inte att ställa frågor om intyget."
     Och jag skickar intyget till Försäkringskassan
 
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
