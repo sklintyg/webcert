@@ -37,6 +37,7 @@
   &:hover,
   &:focus,
   &:active,
+  &:active:focus,
   &.active {
     background-color: $btn-common-hover-background-color;
     border-color: $btn-common-hover-background-color;
@@ -50,6 +51,7 @@
   &:hover,
   &:focus,
   &:active,
+  &:active:focus,
   &.active {
     &:disabled {
       background-color: $wc-color-13;
