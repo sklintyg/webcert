@@ -88,26 +88,13 @@ function createBody(intygstyp, callback) {
     global.intyg.typ = intygstyp;
 
     var body, path;
-    var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
-    var isTSIntyg = helpers.isTSIntyg(intygstyp);
 
-    if (isSMIIntyg || isTSIntyg) {
-        path = '/services/create-draft-certificate/v3.0?wsdl';
-        body = soapMessageBodies.CreateDraftCertificateV3(
-            global.user,
-            intygstyp
-        );
+    path = '/services/create-draft-certificate/v3.0?wsdl';
+    body = soapMessageBodies.CreateDraftCertificateV3(
+        global.user,
+        intygstyp
+    );
 
-    } else {
-        path = '/services/create-draft-certificate/v1.0?wsdl';
-        body = soapMessageBodies.CreateDraftCertificate(
-            global.user.hsaId,
-            global.user.forNamn + ' ' + global.user.efterNamn,
-            global.user.enhetId,
-            'Enhetsnamn',
-            global.person.id
-        );
-    }
     logger.silly(body);
     var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
     url = url.replace('https', 'http');

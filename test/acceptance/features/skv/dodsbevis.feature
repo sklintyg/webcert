@@ -4,10 +4,10 @@
 Egenskap: Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida
-		  Givet jag har makulerat tidigare "Dödsbevis" intyg för "första" testpatienten
-		  Givet jag har makulerat tidigare "Dödsorsaksintyg" intyg för "första" testpatienten
+		  Givet jag har raderat alla intyg och utkast för "första" "Dödsbevis" testpatienten
+		  Givet jag har raderat alla intyg och utkast för "första" "Dödsorsaksintyg" testpatienten
 		  Och att jag är inloggad som läkare
-		  När jag går in på "första" testpatienten
+		  När jag går in på "första" testpatienten för "Dödsbevis"
 
 @signera
 Scenario: Kan signera dödsbevisintyg 

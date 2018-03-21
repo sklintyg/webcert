@@ -4,7 +4,7 @@
 Egenskap: Dödsorsaksintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
-		  Givet jag har makulerat tidigare "Dödsorsaksintyg" intyg för "andra" testpatienten
+		  Givet jag har raderat alla intyg och utkast för "andra" "Dödsorsaksintyg" testpatienten
 		  Och att jag är inloggad som läkare
 		  När jag går in på "andra" testpatienten
 

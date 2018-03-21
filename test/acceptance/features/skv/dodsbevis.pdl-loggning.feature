@@ -4,9 +4,9 @@
 Egenskap: GE-005 - PDL-loggning för Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida
-		  Givet jag har makulerat tidigare "Dödsbevis" intyg för "tredje" testpatienten
+		  Givet jag har raderat alla intyg och utkast för "tredje" "Dödsbevis" testpatienten
 		  Och att jag är inloggad som läkare
-		  Och jag går in på "tredje" testpatienten
+		  Och jag går in på "tredje" testpatienten för "Dödsbevis"
 		  
 #1 #4
 # Första ändring per ändringssession ska loggas
@@ -35,7 +35,7 @@ Scenario: GE-005 - Öppna Dödsbevis
 @olika-vårdgivare @skriv-ut @utskrift @läsa
 Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska PDL-loggas
 		Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
-		Och att vårdsystemet skapat ett intygsutkast för "Dödsbevis"
+		Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
 		Och jag går in på intygsutkastet via djupintegrationslänk
 		Och jag fyller i alla nödvändiga fält för intyget
 		Och jag signerar intyget
@@ -55,7 +55,7 @@ Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska
 #5 #7
 @skriv-ut @utskrift
 Scenario: GE-005 - Skriv ut Dödsbevis
-		När att vårdsystemet skapat ett intygsutkast för "Dödsbevis"
+		När att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
 		Och jag går in på utkastet
 		Och jag skriver ut utkastet
 		Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Utkastet utskrivet"
