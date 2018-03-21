@@ -157,9 +157,10 @@
 
 .modal-header {
   h3 {
+    @extend %wc-typo-02;
+    color: $wc-color-07;
     padding: 0;
     line-height: 1.78;
-    font-weight: 500;
   }
 
   .material-icons {
