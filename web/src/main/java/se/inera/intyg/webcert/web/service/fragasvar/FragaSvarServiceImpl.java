@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.fragasvar;
 
 // CHECKSTYLE:OFF LineLength
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +93,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -110,6 +112,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT,
             Amne.OVRIGT);
+
+    private static Predicate<FragaSvar> isCorrectAmne(Amne amne) {
+        return a -> a.getAmne().equals(amne);
+    }
 
     private static final FragaSvarSenasteHandelseDatumComparator SENASTE_HANDELSE_DATUM_COMPARATOR = new FragaSvarSenasteHandelseDatumComparator();
 
@@ -295,11 +301,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Implement Business Rule FS-005, FS-006
         WebCertUser user = webCertUserService.getUser();
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())
-                && !authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
-                    + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
-                    + ") can only be answered by user that is Lakare");
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id "
+                    + fragaSvar.getInternReferens().toString() + " has invalid Amne(" + fragaSvar.getAmne()
+                    + ") for saving answer");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -314,42 +319,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         FragaSvar saved = fragaSvarRepository.save(fragaSvar);
 
-        // Send to external party (FK)
-        SendMedicalCertificateAnswerType sendType = new SendMedicalCertificateAnswerType();
-
-        AnswerToFkType answer = FKAnswerConverter.convert(saved);
-        sendType.setAnswer(answer);
-
-        AttributedURIType logicalAddress = new AttributedURIType();
-        logicalAddress.setValue(sendAnswerToFkLogicalAddress);
-
-        SendMedicalCertificateAnswerResponseType response;
-        try {
-            response = sendAnswerToFKClient.sendMedicalCertificateAnswer(logicalAddress, sendType);
-        } catch (SOAPFaultException e) {
-            LOGGER.error("Failed to send answer to FK, error was: " + e.getMessage());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, e.getMessage());
-        }
-
-        if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
-            LOGGER.error("Failed to send answer to FK, result was " + response.getResult().getErrorText());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
-                    .getErrorText());
-        }
-
-        monitoringService.logAnswerSent(saved.getExternReferens(), saved.getInternReferens(),
-                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardAktorHsaId(),
-                saved.getAmne());
-
-        // Notify stakeholders
-        sendNotification(saved, NotificationEvent.NEW_ANSWER_FROM_CARE);
+        sendFragaSvarToExternalParty(saved);
 
         arendeDraftService.delete(fragaSvar.getIntygsReferens().getIntygsId(), Long.toString(fragaSvar.getInternReferens()));
-
-        // Implement Business Rule FS-045
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
-            closeCompletionsAsHandled(fragaSvar.getIntygsReferens().getIntygsId());
-        }
 
         return saved;
     }
@@ -449,12 +421,21 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    public FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched) {
-        // Look up entity in repository
-        FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
-        // Set & save new vidarebefordrad state
-        fragaSvar.setVidarebefordrad(isDispatched);
-        return fragaSvarRepository.save(fragaSvar);
+    public List<FragaSvar> setVidareBefordrad(final String intygsId) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(intygsId), "intygsId may not be null or empty");
+
+        final WebCertUser user = webCertUserService.getUser();
+
+        final List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygsId)
+                .stream()
+                .peek(fs -> authoritiesValidator.given(user, fs.getIntygsReferens().getIntygsTyp())
+                        .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                        .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
+                        .orThrow())
+                .peek(FragaSvar::setToVidareBefordrad)
+                .collect(Collectors.toList());
+
+        return fragaSvarRepository.save(fragaSvarList);
     }
 
     @Override
@@ -669,5 +650,39 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Intygstyp '" + intygsTyp
                     + "' stödjer ej fragasvar.");
         }
+    }
+
+    private void sendFragaSvarToExternalParty(final FragaSvar fragaSvar) {
+
+        // Send to external party (FK)
+        SendMedicalCertificateAnswerType sendType = new SendMedicalCertificateAnswerType();
+
+        AnswerToFkType answer = FKAnswerConverter.convert(fragaSvar);
+        sendType.setAnswer(answer);
+
+        AttributedURIType logicalAddress = new AttributedURIType();
+        logicalAddress.setValue(sendAnswerToFkLogicalAddress);
+
+        SendMedicalCertificateAnswerResponseType response;
+        try {
+            response = sendAnswerToFKClient.sendMedicalCertificateAnswer(logicalAddress, sendType);
+        } catch (SOAPFaultException e) {
+            LOGGER.error("Failed to send answer to FK, error was: " + e.getMessage());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, e.getMessage());
+        }
+
+        if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
+            LOGGER.error("Failed to send answer to FK, result was " + response.getResult().getErrorText());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
+                    .getErrorText());
+        }
+
+        monitoringService.logAnswerSent(fragaSvar.getExternReferens(), fragaSvar.getInternReferens(),
+                (fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getVardAktorHsaId(),
+                fragaSvar.getAmne());
+
+        // Notify stakeholders
+        sendNotification(fragaSvar, NotificationEvent.NEW_ANSWER_FROM_CARE);
+
     }
 }

@@ -58,7 +58,7 @@ public interface FragaSvarService {
     /**
      * Set the dispatch state for the specified {@link FragaSvar} entity.
      */
-    FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched);
+    List<FragaSvar> setVidareBefordrad(String intygsId);
 
     /**
      * A FragaSvar is set as handled.

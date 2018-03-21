@@ -19,7 +19,10 @@
 package se.inera.intyg.webcert.web.service.fragasvar;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -46,6 +49,7 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -91,13 +95,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -486,22 +493,19 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     @Test
     public void testSetVidareBefordradOK() {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
-        // set it to false initially
-        fraga.setVidarebefordrad(false);
 
-        when(fragasvarRepositoryMock.findOne(any(Long.class))).thenReturn(fraga);
+        when(webCertUserService.getUser()).thenReturn(createUser());
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(any(String.class))).thenReturn(ImmutableList.of(fraga));
 
-        ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
-        when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fraga);
+        assertFalse(fraga.getVidarebefordrad());
+        List<FragaSvar> fragaSvarList = service.setVidareBefordrad(fraga.getIntygsReferens().getIntygsId());
 
-        // test call
-        service.setDispatchState(fraga.getInternReferens(), true);
-
-        verify(fragasvarRepositoryMock).findOne(any(Long.class));
-        verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
+        verify(fragasvarRepositoryMock).save(anyListOf(FragaSvar.class));
         verifyZeroInteractions(notificationServiceMock);
 
-        assertEquals(true, capture.getValue().getVidarebefordrad());
+        assertTrue(fragaSvarList
+                .stream()
+                .allMatch(FragaSvar::getVidarebefordrad));
     }
 
     @Test
@@ -539,6 +543,28 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         assertEquals(Status.CLOSED, result.getStatus());
         assertNotNull(result.getSvarSkickadDatum());
         verify(arendeDraftService).delete(INTYG_ID, Long.toString(1L));
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testAnswerKomplNotPermitted() {
+
+        FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
+        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+
+        SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
+        wsResponse.setResult(ResultOfCallUtil.okResult());
+
+        when(webCertUserService.getUser()).thenReturn(createUser());
+
+        when(fragasvarRepositoryMock.findByIntygsReferensIntygsId(any(String.class))).thenReturn(ImmutableList.of(fragaSvar));
+        when(fragasvarRepositoryMock.save(any(FragaSvar.class))).thenReturn(fragaSvar);
+
+        when(sendAnswerToFKClientMock.sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
+
+        service.saveSvar(fragaSvar.getInternReferens(), "svarsText");
+
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -752,7 +778,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     }
 
     @Test
-    public void testSaveSvarForKompletteringAuthorized() {
+    @Ignore
+    public void testSaveSvarForKompletteringAuthorized() { //TODO: remove
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
 
@@ -792,7 +819,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     }
 
     @Test
-    public void testSaveSvarForKompletteringClosesAllCompletionsAsHandled() {
+    @Ignore
+    public void testSaveSvarForKompletteringClosesAllCompletionsAsHandled() { //TODO: remove
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
         fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
@@ -1263,6 +1291,14 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         user.setOrigin("NORMAL");
         user.setHsaId("testuser");
         user.setNamn("test userman");
+
+        Feature feature = new Feature();
+        feature.setName(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
+        feature.setGlobal(true);
+        feature.setIntygstyper(ImmutableList.of("fk7263"));
+
+        user.setFeatures(ImmutableMap.of(
+                AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, feature));
 
         Vardenhet vardenhet = new Vardenhet("enhet", "Enhet");
 

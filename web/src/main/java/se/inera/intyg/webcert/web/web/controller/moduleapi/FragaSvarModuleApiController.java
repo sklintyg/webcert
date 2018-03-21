@@ -29,7 +29,6 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DispatchState;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -72,21 +71,13 @@ public class FragaSvarModuleApiController extends AbstractApiController {
         return Response.ok(fragaSvarResponse).build();
     }
 
-    @PUT
-    @Path("/{intygsTyp}/{fragasvarId}/hanterad")
+    @POST
+    @Path("/{intygsId}/vidarebefordrad")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response setDispatchState(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId,
-            DispatchState dispatchState) {
-
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
-                .orThrow();
-
-        LOG.debug("Set DispatchState for question {}, isDispatched: {}", frageSvarId, dispatchState.isDispatched());
-        FragaSvar fragaSvarResponse = fragaSvarService.setDispatchState(frageSvarId, dispatchState.isDispatched());
-        return Response.ok(fragaSvarResponse).build();
+    public Response setDispatchState(@PathParam("intygsId") final String intygsId) {
+        LOG.debug("Set vidarebefordra for all frågasvar related to IntygsId {}", intygsId);
+        return Response.ok(fragaSvarService.setVidareBefordrad(intygsId)).build();
     }
 
     @POST

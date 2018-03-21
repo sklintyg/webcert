@@ -653,8 +653,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).findByIntygsId(INTYG_ID);
         verify(arendeDraftService, times(3)).delete(eq(INTYG_ID), anyString());
 
-        verify(arendeRepository, times(5)).save(any(Arende.class));
-
         assertTrue(result.stream()
                 .map(ArendeConversationView::getFraga)
                 .allMatch(f -> f.getStatus() == Status.CLOSED));

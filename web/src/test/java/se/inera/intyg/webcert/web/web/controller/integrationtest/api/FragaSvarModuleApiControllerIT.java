@@ -69,18 +69,15 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void testSetDispatchState() {
+    public void testSetAsVidarebefordrad() {
         sessionId = getAuthSession(DEFAULT_LAKARE);
-        String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
-        int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
-
-        DispatchState state = new DispatchState();
-        state.setDispatched(true);
+        String intygsId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
+        int internId = createQuestion(DEFAULT_INTYGSTYP, intygsId, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON).pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body(state)
-                .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/hanterad").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
+                .contentType(ContentType.JSON).pathParams("intygsId", intygsId)
+                .expect().statusCode(200).when().post("moduleapi/fragasvar/{intygsId}/vidarebefordrad").then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-list-schema.json"));
         deleteQuestion(internId);
     }
 
