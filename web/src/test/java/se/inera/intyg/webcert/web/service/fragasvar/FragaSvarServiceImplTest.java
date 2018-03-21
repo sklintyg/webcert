@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import web/src/test/java/se/inera/intyg/webcert/web/service/fragasvar/FragaSvarServiceImplTest.javacom.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
@@ -500,7 +500,11 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         assertFalse(fraga.getVidarebefordrad());
 
         // test call
+<<<<<<< HEAD
         List<FragaSvar> fragaSvarList = service.setVidareBefordrad(fraga.getIntygsReferens().getIntygsId());
+=======
+        service.setVidareBefordrad(fraga.getInternReferens(), true);
+>>>>>>> INTYG-5739: logik för att hantera vidarebefordra och svara med komplettering för 'legacyflödet'
 
         verify(fragasvarRepositoryMock).save(anyListOf(FragaSvar.class));
         verifyZeroInteractions(notificationServiceMock);
