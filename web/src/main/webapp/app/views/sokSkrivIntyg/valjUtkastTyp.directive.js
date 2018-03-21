@@ -5,7 +5,9 @@ angular.module('webcert').directive('wcValjUtkastTyp',
 
         return {
             restrict: 'E',
-            scope: {},
+            scope: {
+                viewState: '='
+            },
             templateUrl: '/app/views/sokSkrivIntyg/valjUtkastTyp.directive.html',
             link: function(scope, element, attrs) {
                 scope.intygTypeModel = IntygTypeSelectorModel.build();
@@ -32,19 +34,31 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                     }
                 };
                 scope.showCreateUtkast = function () {
-                    return !(IntygTypeSelectorModel.intygType === 'default' ||
-                        (scope.intygReplacement[IntygTypeSelectorModel.intygType]) ||
-                        scope.isUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
-                        scope.isUniqueGlobal(IntygTypeSelectorModel.intygType));
+                    // Måste ha valt en intygstyp
+                    // Intygstypen får inte vara deprecated
+                    // Måste uppfylla ev unikhetskrav för intyg/utkast inom/utom vg
+                    return IntygTypeSelectorModel.intygType !== 'default' &&
+                        !scope.intygReplacement[IntygTypeSelectorModel.intygType] &&
+                        scope.passesUniqueIntygWithinCareGiverCheck(IntygTypeSelectorModel.intygType) &&
+                        scope.passesUniqueUtkastWithinCareGiverCheck(IntygTypeSelectorModel.intygType) &&
+                        scope.passedUniqueGlobalCheck(IntygTypeSelectorModel.intygType);
                 };
-                scope.isUniqueWithinCareGiver = function (intygType) {
+
+                // Har intygstypen begränsning som säger att inga andra intyg av typen får finnas på samma vg för patienten?
+                scope.passesUniqueIntygWithinCareGiverCheck = function (intygType) {
                     var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG_INOM_VG, intygType);
-                    return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType];
+                    return featureActive ? !IntygTypeSelectorModel.previousIntygWarnings[intygType] : true;
                 };
-    
-                scope.isUniqueGlobal = function (intygType) {
+                // Har intygstypen begränsning som säger att inga andra utkast av typen får finnas på samma vg för patienten?
+                scope.passesUniqueUtkastWithinCareGiverCheck = function (intygType) {
+                    var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_UTKAST_INOM_VG, intygType);
+                    return featureActive ? !IntygTypeSelectorModel.previousUtkastWarnings[intygType] : true;
+                };
+
+                // Har intygstypen begränsning som säger att inga andra intyg av typen får finnas utfärdade på någon vg för patienten?
+                scope.passedUniqueGlobalCheck = function (intygType) {
                     var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG, intygType);
-                    return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType] !== undefined;
+                    return featureActive ? IntygTypeSelectorModel.previousIntygWarnings[intygType] === undefined : true;
                 };
             }
         };

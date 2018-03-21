@@ -142,13 +142,13 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 createDraftRequestPayload.patientPostadress = PatientModel.postadress;
                 createDraftRequestPayload.patientPostnummer = PatientModel.postnummer;
                 createDraftRequestPayload.patientPostort = PatientModel.postor;
+                Viewstate.createErrorMessageKey = undefined;
 
                 UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
-                    Viewstate.createErrorMessageKey = undefined;
                     $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId + '/', true);
                 }, function(error) {
-                    $log.debug('Create draft failed: ' + error.message);
-                    if (error.errorCode === 'PU_PROBLEM') {
+                    $log.debug('Create draft failed: ' + error);
+                    if (error && error.errorCode === 'PU_PROBLEM') {
                         Viewstate.createErrorMessageKey = 'error.pu_problem';
                     } else {
                         Viewstate.createErrorMessageKey = 'error.failedtocreateintyg';
