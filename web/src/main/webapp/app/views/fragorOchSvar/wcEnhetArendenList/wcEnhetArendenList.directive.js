@@ -35,6 +35,9 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             controller: function($scope) {
 
                 $scope.listModel = enhetArendenListModel;
+
+                var vidarebefordraArendeMailModel = null;
+
                 updateArenden(null, {startFrom: 0});
 
                 // When other directives want to request list update
@@ -86,31 +89,25 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 // Handle vidarebefordra dialog
                 $scope.openMailDialog = function(arende) {
                     $timeout(function() {
-                        ArendeVidarebefordraHelper.handleVidareBefodradToggle(arende, $scope.onVidareBefordradChange);
+                        ArendeVidarebefordraHelper.handleVidareBefodradToggle($scope.onVidareBefordradChange);
                     }, 1000);
 
                     // Launch mail client
-                    var arendeMailModel = {
+                    vidarebefordraArendeMailModel = {
                         intygId: arende.intygId,
-                        intygType: arende.intygTyp,
-                        enhetsnamn: arende.enhetsnamn,
-                        vardgivarnamn: arende.vardgivarnamn
+                        intygType: arende.intygTyp
                     };
-                    $window.location = ArendeVidarebefordraHelper.buildMailToLink(arendeMailModel);
+                    $window.location = ArendeVidarebefordraHelper.buildMailToLink(vidarebefordraArendeMailModel);
                 };
 
-                $scope.onVidareBefordradChange = function(arende) {
-                    arende.updateInProgress = true;
-                    $log.debug('onVidareBefordradChange: fragaSvarId: ' + arende.meddelandeId + ' intysTyp: ' +
-                        arende.intygTyp);
-                    ArendeProxy.setVidarebefordradState(arende.meddelandeId, arende.intygTyp,
-                        arende.vidarebefordrad, function(result) {
-                            arende.updateInProgress = false;
-
-                            if (result !== null) {
-                                arende.vidarebefordrad = result.fraga.vidarebefordrad;
-                            } else {
-                                arende.vidarebefordrad = !arende.vidarebefordrad;
+                $scope.onVidareBefordradChange = function() {
+                    $log.debug('onVidareBefordradChange: intygId: ' + vidarebefordraArendeMailModel.intygId + ' intysTyp: ' +
+                        vidarebefordraArendeMailModel.intygType);
+                    ArendeProxy.setVidarebefordradState(
+                        vidarebefordraArendeMailModel.intygId,
+                        vidarebefordraArendeMailModel.intygType,
+                        function(result) {
+                            if (!result) {
                                 dialogService
                                     .showErrorMessageDialog('Kunde inte markera/avmarkera frågan som ' +
                                         'vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. ' +

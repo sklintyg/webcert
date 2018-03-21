@@ -51,12 +51,7 @@
           </td>
           <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
             <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
-              <wc-checkbox-wrapper>
-              <input ng-attr-id="vidarebefordra_arende_{{arende.meddelandeId}}" type="checkbox" ng-disabled="arende.updateInProgress"
-                     ng-model="arende.vidarebefordrad" ng-change="onVidareBefordradChange(arende)" />
-                <label ng-attr-for="vidarebefordra_arende_{{arende.meddelandeId}}">&nbsp;</label>
-                                    <span ng-if="arende.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
-              </wc-checkbox-wrapper>
+              <div ng-if="arende.vidarebefordrad"><i class="material-icons">check</i></div>
             </div>
           </td>
           <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
