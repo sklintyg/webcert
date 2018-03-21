@@ -122,7 +122,7 @@ Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalM
     return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
 });
 
-Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typText, typ) {
+Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typ) {
 
     if (typ && intyg.typ !== typ) {
         logger.silly('Intygstyp är inte ' + typ);
