@@ -31,7 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-describe('svarameddelande - arende on luse intyg', function() {
+xdescribe('svarameddelande - arende on luse intyg', function() {
 
     var intygId;
     var meddelandeId = 'luse-arende-komplt';
