@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.service.fragasvar;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.MoreCollectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +87,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -326,51 +324,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         arendeDraftService.delete(fragaSvar.getIntygsReferens().getIntygsId(), Long.toString(fragaSvar.getInternReferens()));
 
         return saved;
-    }
-
-    @Override
-    public List<FragaSvar> saveSvarKomplettering(String intygsId, String svarsText) {
-
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(intygsId), "intygsId may not be null or empty");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(svarsText), "svarsText may not be null or empty");
-
-        final WebCertUser user = webCertUserService.getUser();
-
-        final List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygsId)
-                .stream()
-                .filter(isCorrectAmne(Amne.KOMPLETTERING_AV_LAKARINTYG))
-                .peek(fs -> authoritiesValidator.given(user, fs.getIntygsReferens().getIntygsTyp())
-                        .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
-                        .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
-                        .orThrow())
-                .collect(Collectors.toList());
-
-        final FragaSvar latestFragaSvar = fragaSvarList
-                .stream()
-                .sorted(Comparator.comparing(FragaSvar::getFrageSkickadDatum))
-                .collect(MoreCollectors.onlyElement());
-
-        LocalDateTime now = LocalDateTime.now();
-
-        latestFragaSvar.setVardAktorHsaId(user.getHsaId());
-        latestFragaSvar.setVardAktorNamn(user.getNamn());
-        latestFragaSvar.setSvarsText(svarsText);
-        latestFragaSvar.setSvarSkickadDatum(now);
-        latestFragaSvar.setStatus(Status.CLOSED);
-        latestFragaSvar.setSvarSigneringsDatum(now);
-
-        FragaSvar saved = fragaSvarRepository.save(latestFragaSvar);
-
-        sendFragaSvarToExternalParty(saved);
-
-        List<FragaSvar> updatedFragaSvarList = fragaSvarList
-                .stream()
-                .map(this::closeQuestionAsHandled)
-                .collect(Collectors.toList());
-
-        updatedFragaSvarList.add(saved);
-
-        return fragaSvarRepository.save(fragaSvarList);
     }
 
     @Override

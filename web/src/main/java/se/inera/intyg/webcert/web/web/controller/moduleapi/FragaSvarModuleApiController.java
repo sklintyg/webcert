@@ -71,16 +71,6 @@ public class FragaSvarModuleApiController extends AbstractApiController {
         return Response.ok(fragaSvarResponse).build();
     }
 
-    @PUT
-    @Path("/{intygsId}/besvara")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response answer(@PathParam("intygsId") final String intygsId, final String svarsText) {
-        LOG.debug("Answer frågasvar for intyg {}", intygsId);
-        final List<FragaSvar> response = fragaSvarService.saveSvarKomplettering(intygsId, svarsText);
-        return Response.ok(response).build();
-    }
-
     @POST
     @Path("/{intygsId}/vidarebefordrad")
     @Consumes(MediaType.APPLICATION_JSON)

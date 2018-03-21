@@ -545,8 +545,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         verify(arendeDraftService).delete(INTYG_ID, Long.toString(1L));
     }
 
-    @Test
-    public void testAnswerKompl() {
+    @Test(expected = WebCertServiceException.class)
+    public void testAnswerKomplNotPermitted() {
 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
@@ -563,11 +563,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(sendAnswerToFKClientMock.sendMedicalCertificateAnswer(any(AttributedURIType.class),
                 any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
 
-        List<FragaSvar> fragaSvarList = service.saveSvarKomplettering(fragaSvar.getIntygsReferens().getIntygsId(), "svarsText");
-
-        assertTrue(fragaSvarList
-                .stream()
-                .allMatch(fs -> fs.getStatus() == Status.CLOSED));
+        service.saveSvar(fragaSvar.getInternReferens(), "svarsText");
 
     }
 
