@@ -119,7 +119,7 @@ function checkOvrigaUpplysningar(ovriga) {
 }
 
 function checkKontaktMedFk(kontakt) {
-    return expect(luaenaPage.kontaktFK.value.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(kontakt));
+    return expect(luaenaPage.kontaktFK.value.getText()).to.eventually.contain(testdataHelper.boolTillJaEllerEjAngivet(kontakt));
 }
 //
 // function checkTillaggsfragor(fragor) {

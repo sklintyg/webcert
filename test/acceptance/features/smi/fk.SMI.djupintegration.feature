@@ -28,7 +28,7 @@ Scenario: PS-003 - Patienten har fått ett nytt personnummer
     Och jag signerar intyget
     Så ska intyget visa det nya person-id:numret
 
-@RESERVNUMMER @PS-007
+@RESERVNUMMER @PS-007 @WAITINGFORFIX @INTYG-5743
 Scenario: PS-007 - Patienten har fått ett reservnummer
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg med samordningsnummer eller personnummer
 	Och jag går in på intygsutkastet via djupintegrationslänk
