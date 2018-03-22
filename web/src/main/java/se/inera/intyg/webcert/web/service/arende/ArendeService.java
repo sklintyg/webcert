@@ -75,4 +75,11 @@ public interface ArendeService {
     Arende getArende(String meddelandeId);
 
     Map<String, Long> getNbrOfUnhandledArendenForCareUnits(List<String> allUnitIds, Set<String> intygsTyper);
+
+    /**
+     * Return the ID of the most recent message for the care unit currently logged in to.
+     * @param intygsId
+     * @return
+     */
+    String getLatestMeddelandeIdForCurrentCareUnit(String intygsId);
 }

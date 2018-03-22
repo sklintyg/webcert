@@ -31,6 +31,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
@@ -63,6 +64,9 @@ public class IntygModuleApiController extends AbstractApiController {
     private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);
 
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
+
+    @Autowired
+    private ArendeService arendeService;
 
     @Autowired
     private IntygService intygService;
@@ -197,12 +201,11 @@ public class IntygModuleApiController extends AbstractApiController {
      * Create a copy that completes an existing certificate.
      */
     @POST
-    @Path("/{intygsTyp}/{intygsId}/{meddelandeId}/komplettera")
+    @Path("/{intygsTyp}/{intygsId}/komplettera")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
-            @PathParam("intygsId") String orgIntygsId,
-            @PathParam("meddelandeId") String meddelandeId) {
+            @PathParam("intygsId") String orgIntygsId) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
@@ -215,6 +218,8 @@ public class IntygModuleApiController extends AbstractApiController {
             LOG.error("Request to create completion of '{}' is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
+
+        String meddelandeId = arendeService.getLatestMeddelandeIdForCurrentCareUnit(orgIntygsId);
 
         CreateCompletionCopyRequest serviceRequest = createCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
         CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
@@ -415,7 +420,8 @@ public class IntygModuleApiController extends AbstractApiController {
         HoSPersonal hosPerson = createHoSPersonFromUser();
         Patient patient = createPatientFromCopyIntygRequest(copyRequest);
 
-        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patient, hosPerson);
+        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId,
+                patient, hosPerson, copyRequest.getKommentar());
 
         // Add new personnummer to request
         addPersonnummerToRequest(req, userService.getUser().getParameters());

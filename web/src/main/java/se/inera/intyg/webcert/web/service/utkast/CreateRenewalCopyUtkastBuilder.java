@@ -26,6 +26,8 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 
 @Component
@@ -44,8 +46,10 @@ public class CreateRenewalCopyUtkastBuilder extends AbstractUtkastBuilder<Create
     }
 
     @Override
-    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
-            throws ModuleException {
+    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
+                                      Person person, Relation relation, String newDraftCopyId) throws ModuleException {
+        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
+
         return moduleApi.createRenewalFromTemplate(draftCopyHolder, template);
     }
 

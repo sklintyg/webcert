@@ -41,6 +41,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
@@ -115,6 +116,8 @@ public class IntygModuleApiControllerTest {
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
     private AuthoritiesHelper authoritiesHelper;
+    @Mock
+    private ArendeService arendeService;
 
     @InjectMocks
     private IntygModuleApiController moduleApiController = new IntygModuleApiController();
@@ -141,6 +144,7 @@ public class IntygModuleApiControllerTest {
     public void setup() {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patient);
+        when(arendeService.getLatestMeddelandeIdForCurrentCareUnit(anyString())).thenReturn("messageId");
     }
 
     @Test
@@ -577,7 +581,7 @@ public class IntygModuleApiControllerTest {
                 .thenReturn(new CreateCompletionCopyResponse(CERTIFICATE_TYPE, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
-        Response response = moduleApiController.createCompletion(request, CERTIFICATE_TYPE, CERTIFICATE_ID, meddelandeId);
+        Response response = moduleApiController.createCompletion(request, CERTIFICATE_TYPE, CERTIFICATE_ID);
 
         verify(copyUtkastService).createCompletion(any());
         verifyNoMoreInteractions(copyUtkastService);
@@ -601,7 +605,7 @@ public class IntygModuleApiControllerTest {
         when(webcertUserService.getUser()).thenReturn(user);
 
         try {
-            moduleApiController.createCompletion(null, CERTIFICATE_TYPE, null, null);
+            moduleApiController.createCompletion(null, CERTIFICATE_TYPE, null);
         } finally {
             verifyZeroInteractions(copyUtkastService);
         }
@@ -616,7 +620,7 @@ public class IntygModuleApiControllerTest {
         when(webcertUserService.getUser()).thenReturn(user);
 
         try {
-            moduleApiController.createCompletion(null, CERTIFICATE_TYPE, null, null);
+            moduleApiController.createCompletion(null, CERTIFICATE_TYPE, null);
         } finally {
             verifyZeroInteractions(copyUtkastService);
         }
@@ -632,7 +636,7 @@ public class IntygModuleApiControllerTest {
         when(webcertUserService.getUser()).thenReturn(user);
 
         try {
-            moduleApiController.createCompletion(new CopyIntygRequest(), CERTIFICATE_TYPE, null, null);
+            moduleApiController.createCompletion(new CopyIntygRequest(), CERTIFICATE_TYPE, null);
         } finally {
             verifyZeroInteractions(copyUtkastService);
         }

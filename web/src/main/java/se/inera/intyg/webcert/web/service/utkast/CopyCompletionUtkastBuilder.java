@@ -26,8 +26,14 @@ import com.google.common.base.Strings;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Relation;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 
 @Component
@@ -57,4 +63,15 @@ public class CopyCompletionUtkastBuilder extends AbstractUtkastBuilder<CreateCom
         }
         return null;
     }
+
+    @Override
+    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
+                                      Person person, Relation relation, String newDraftCopyId) throws ModuleException {
+        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
+        CreateCompletionCopyRequest retyped = (CreateCompletionCopyRequest) copyRequest;
+
+        return moduleApi.createNewInternalFromTemplate(draftCopyHolder, template, retyped.getKommentar());
+    }
+
+
 }

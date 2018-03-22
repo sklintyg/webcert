@@ -93,6 +93,7 @@ public class CopyUtkastServiceImplTest {
     private static final String HOSPERSON_NAME = "Dr Börje Dengroth";
 
     private static final String MEDDELANDE_ID = "13";
+    private static final String KOMMENTAR = "Kommentar";
 
     @Mock
     private UtkastRepository mockUtkastRepository;
@@ -554,7 +555,7 @@ public class CopyUtkastServiceImplTest {
     }
 
     private CreateCompletionCopyRequest buildCompletionRequest() {
-        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, patient, hoSPerson);
+        return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, patient, hoSPerson, KOMMENTAR);
     }
 
     private CreateRenewalCopyRequest buildRenewalRequest() {

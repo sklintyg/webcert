@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.arende;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -259,17 +260,9 @@ public class ArendeServiceImpl implements ArendeService {
 
         WebCertUser user = webcertUserService.getUser();
 
-        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId)
-                .stream()
-                .filter(isCorrectEnhet(user))
-                .filter(isQuestion())
-                .filter(isCorrectAmne(ArendeAmne.KOMPLT))
-                .collect(Collectors.toList());
+        List<Arende> arendeList = getKompletteringarForIntygsId(intygsId, user);
 
-        Arende latestKomplArende = arendeList
-                .stream()
-                .max(byTimestamp)
-                .orElseThrow(() -> new IllegalArgumentException("No arende of type KOMPLT exist for intyg: " + intygsId));
+        Arende latestKomplArende = getLatestKomplArende(intygsId, arendeList);
 
         verifyEnhetsAuth(latestKomplArende.getEnhetId(), false);
 
@@ -300,6 +293,23 @@ public class ArendeServiceImpl implements ArendeService {
         updatedArendeList.add(saved);
 
         return getArendeConversationViewList(intygsId, updatedArendeList);
+    }
+
+    @NotNull
+    private Arende getLatestKomplArende(String intygsId, List<Arende> arendeList) {
+        return arendeList
+                .stream()
+                .max(byTimestamp)
+                .orElseThrow(() -> new IllegalArgumentException("No arende of type KOMPLT exist for intyg: " + intygsId));
+    }
+
+    private List<Arende> getKompletteringarForIntygsId(String intygsId, WebCertUser user) {
+        return arendeRepository.findByIntygsId(intygsId)
+                .stream()
+                .filter(isCorrectEnhet(user))
+                .filter(isQuestion())
+                .filter(isCorrectAmne(ArendeAmne.KOMPLT))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -560,6 +570,14 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<GroupableItem> results = arendeRepository.getUnhandledByEnhetIdsAndIntygstyper(vardenheterIds, intygsTyper);
         return statisticsGroupByUtil.toSekretessFilteredMap(results);
+    }
+
+    @Override
+    public String getLatestMeddelandeIdForCurrentCareUnit(String intygsId) {
+        WebCertUser user = webcertUserService.getUser();
+        List<Arende> arendeList = getKompletteringarForIntygsId(intygsId, user);
+
+        return getLatestKomplArende(intygsId, arendeList).getMeddelandeId();
     }
 
     @VisibleForTesting
