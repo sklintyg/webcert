@@ -120,6 +120,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Value("${sendanswertofk.logicaladdress}")
     private String sendAnswerToFkLogicalAddress;
 
+    @Value("${fk7263.send.medical.certificate.answer.force.fullstandigtnamn}")
+    private String forceFullstandigtNamn;
+
     @Autowired
     private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
 
@@ -319,6 +322,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         SendMedicalCertificateAnswerType sendType = new SendMedicalCertificateAnswerType();
 
         AnswerToFkType answer = FKAnswerConverter.convert(saved);
+
+        // INTYG-4447: Temporary hack to mitigate problems in Anpassningsplattform requiring fullstandigtNamn to be present.
+        // Remove ASAP.
+        if ("true".equalsIgnoreCase(forceFullstandigtNamn)) {
+            answer.getLakarutlatande().getPatient().setFullstandigtNamn("---");
+        }
         sendType.setAnswer(answer);
 
         AttributedURIType logicalAddress = new AttributedURIType();
