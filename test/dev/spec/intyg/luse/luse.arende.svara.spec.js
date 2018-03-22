@@ -30,7 +30,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-xdescribe('answer arende on luse intyg', function() {
+describe('answer arende on luse intyg', function() {
 
     var intygId;
     var meddelandeId = 'luse-arende-avstmn';
@@ -77,14 +77,15 @@ xdescribe('answer arende on luse intyg', function() {
         });
 
         it('fill text', function() {
-            var arende = LuseIntygPage.getAnswerBox(meddelandeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
-            expect(arende.isDisplayed()).toBeTruthy();
+            LuseIntygPage.getAnswerButton(meddelandeId).click();
+            LuseIntygPage.getAnswerBox(meddelandeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
         });
 
         it('push answer button and make sure answered arende is now in the handled list', function() {
-            LuseIntygPage.getAnswerButton(meddelandeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = handled list
+            LuseIntygPage.getSendAnswerButton(meddelandeId).click().then(function() {
+                var arende = LuseIntygPage.getArendeById(false, meddelandeId);
                 expect(arende.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.getArendeAdministrativaSvarTextById(meddelandeId).getText()).toBe('Låt oss slänga in ett svar och se vad som händer.');
             });
         });
     });

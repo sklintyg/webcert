@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 09/06/15.
  */
-/*globals browser,beforeAll,afterAll*/
+/*globals browser,beforeAll,afterAll,protractor*/
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
@@ -28,7 +28,7 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('Skapa ärende luse intyg', function() {
+describe('Skapa ärende luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var meddelandeId;
@@ -61,6 +61,8 @@ xdescribe('Skapa ärende luse intyg', function() {
 
         it('should make sure message that intyg must be sent to create new arenden is shown', function() {
             expect(LuseIntygPage.arendeIntygNotSentYetMessage.isDisplayed()).toBeTruthy();
+            expect(LuseIntygPage.arendeFilterKompletteringsbegaran.isPresent()).toBeFalsy();
+            expect(LuseIntygPage.arendeFilterAdministrativafragor.isPresent()).toBeFalsy();
         });
     });
 
@@ -68,22 +70,27 @@ xdescribe('Skapa ärende luse intyg', function() {
         it('click send intyg', function() {
             LuseIntygPage.send().then(function(){
                 expect(LuseIntygPage.skicka.statusSent.isDisplayed()).toBeTruthy();
-                expect(LuseIntygPage.getNewArendeBtn().isPresent()).toBeTruthy();
+                expect(LuseIntygPage.arendeIntygNotSentYetMessage.isPresent()).toBeFalsy();
+                LuseIntygPage.arendeFilterAdministrativafragor.click();
+                expect(LuseIntygPage.arendeText.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.arendeAmne.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.arendeSend.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.arendeSend.isEnabled()).toBeFalsy();
             });
         });
     });
 
     describe('send new arende', function() {
         it('open new arende panel', function() {
-            LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function() {
-                var first = element.all(by.model('arendeListItem.arende.fraga.vidarebefordrad')).first();
-                first.getAttribute('id').then(function(id) {
-                    var firstPart = id.substring(0,27);
-                    var secondPart = id.substring(27);
-                    expect(firstPart).toBe('unhandled-mark-as-notified-');
-                    meddelandeId = secondPart;
-                });
-                expect(LuseIntygPage.arendeSentMessage.isDisplayed()).toBeTruthy();
+            LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function(arendeId) {
+                // When arende is sent the textarea and subject should be cleared
+                expect(LuseIntygPage.arendeText.getText()).toBe('');
+                expect(LuseIntygPage.arendeAmneSelected.getText()).toBe('Välj typ av fråga');
+                expect(LuseIntygPage.arendeSend.isEnabled()).toBeFalsy();
+
+                expect(LuseIntygPage.getArendeAdministrativaFragorAmneById(arendeId)).toBe('Övrigt');
+                expect(LuseIntygPage.getArendeAdministrativaFragorTextById(arendeId)).toBe('Här kommer en liten fråga till FK');
+                expect(LuseIntygPage.getArendeHandledCheckbox(arendeId).getAttribute('checked')).toBeFalsy();
             });
         });
     });

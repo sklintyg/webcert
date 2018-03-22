@@ -69,12 +69,14 @@ var BaseIntyg = JClass._extend({
         this.arendeIntygNotSentYetMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
         this.arendeSentMessage = element(by.id('arende-is-sent-to-fk-message-text'));
 
-        this.getNewArendeBtn = function() {
-            return element(by.id(this.scrollIntoView('askArendeBtn')));
-        };
+        this.arendeFilterKompletteringsbegaran = element(by.id('arende-filter-kompletteringsbegaran'));
+        this.arendeFilterAdministrativafragor = element(by.id('arende-filter-administrativafragor'));
+
+        this.arendePanel = element(by.css('arende-panel'));
 
         this.arendeText = element(by.id('arendeNewModelText'));
         this.arendeAmne = element(by.id('new-question-topic'));
+        this.arendeAmneSelected = element(by.id('new-question-topic-selected-item-label'));
         this.arendeSend = element(by.id('sendArendeBtn'));
 
         // Statusmeddelanden vid namn/adressändring vid djupintegration
@@ -181,17 +183,20 @@ var BaseIntyg = JClass._extend({
         });
     },
     sendNewArende: function(arendeText, arendeAmne) {
-        var self = this;
-        return this.getNewArendeBtn().click().then(function() {
-            return pageHelpers.moveAndSendKeys(self.arendeText, arendeText).then(function() {
-                return self.arendeValjAmne(arendeAmne).then(function() {
-                    return self.arendeSend.click();
-                });
-            });
+        this.arendeFilterAdministrativafragor.click();
+        pageHelpers.moveAndSendKeys(this.arendeText, arendeText);
+        this.arendeValjAmne(arendeAmne);
+        this.arendeSend.click();
+
+        return this.arendePanel.all(by.css('.card')).first().getAttribute('id').then(function(id) {
+            return Promise.resolve(id.substring('arende-administrativaFragor-'.length));
         });
     },
     arendeValjAmne: function(val) {
-        return this.arendeAmne.all(by.css('option[label="' + val + '"]')).click();
+        this.arendeAmne.click();
+        this.arendeAmne.all(by.css('.plate div')).getByText(val).then(function(elm) {
+            elm.click();
+        });
     },
     hasState: function(states, state) {
         for (var a = 0; a < states.length; a++) {
@@ -201,12 +206,24 @@ var BaseIntyg = JClass._extend({
         }
         return false;
     },
-    getArendeById: function(handled, id) {
-        var subgroup = 'unhandled';
-        if (handled) {
-            subgroup = 'handled';
+    getArendeById: function(komplettering, id) {
+        var subgroup = 'administrativaFragor';
+        if (komplettering) {
+            subgroup = 'komplettering';
         }
         return element(by.id('arende-' + subgroup + '-' + id));
+    },
+    getArendeAdministrativaFragorAmneById: function(id) {
+        return element(by.css('#arende-panel-header-amne-' + id)).getText();
+    },
+    getArendeAdministrativaFragorTextById: function(id) {
+        return element(by.css('#administrativaFragor-arende-fragetext-' + id)).getText();
+    },
+    getArendeAdministrativaSvarTextById: function(id) {
+        return element(by.css('#administrativaFragor-arende-svartext-' + id)).getText();
+    },
+    getArendeHandledCheckbox: function(id) {
+        return element(by.css('#handleCheck-' + id));
     },
     getIntygHasKompletteringMessage: function() {
         return element(by.css('#intygstatus1 [data-intyg-status-code="is-006"]'));
@@ -214,10 +231,13 @@ var BaseIntyg = JClass._extend({
     getIntygKompletteringFrageText: function(frageId, index) {
         return element(by.id('inline-komplettering-' + frageId + '-' + index));
     },
+    getAnswerButton: function(id) {
+        return element(by.id(this.scrollIntoView('arende-answer-button-' + id)));
+    },
     getAnswerBox: function(id) {
         return element(by.id('answerText-' + id));
     },
-    getAnswerButton: function(id) {
+    getSendAnswerButton: function(id) {
         return element(by.id(this.scrollIntoView('sendAnswerBtn-' + id)));
     },
     getKompletteringDisabledSign: function(id) {
