@@ -112,56 +112,42 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT,
             Amne.OVRIGT);
+    private static final FragaSvarSenasteHandelseDatumComparator SENASTE_HANDELSE_DATUM_COMPARATOR = new FragaSvarSenasteHandelseDatumComparator();
+    @Value("${sendquestiontofk.logicaladdress}")
+    private String sendQuestionToFkLogicalAddress;
+    @Value("${sendanswertofk.logicaladdress}")
+    private String sendAnswerToFkLogicalAddress;
+    @Value("${fk7263.send.medical.certificate.answer.force.fullstandigtnamn}")
+    private String forceFullstandigtNamn;
+    @Autowired
+    private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
+    @Autowired
+    private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
+    @Autowired
+    private FragaSvarRepository fragaSvarRepository;
+    @Autowired
+    private IntygService intygService;
+    @Autowired
+    private WebCertUserService webCertUserService;
+    @Autowired
+    private AuthoritiesHelper authoritiesHelper;
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private MonitoringLogService monitoringService;
+    @Autowired
+    private UtkastRepository utkastRepository;
+    @Autowired
+    private ArendeDraftService arendeDraftService;
+    @Autowired
+    private StatisticsGroupByUtil statisticsGroupByUtil;
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     private static Predicate<FragaSvar> isCorrectAmne(Amne amne) {
         return a -> a.getAmne().equals(amne);
     }
-
-    private static final FragaSvarSenasteHandelseDatumComparator SENASTE_HANDELSE_DATUM_COMPARATOR = new FragaSvarSenasteHandelseDatumComparator();
-
-    @Value("${sendquestiontofk.logicaladdress}")
-    private String sendQuestionToFkLogicalAddress;
-
-    @Value("${sendanswertofk.logicaladdress}")
-    private String sendAnswerToFkLogicalAddress;
-
-    @Autowired
-    private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
-
-    @Autowired
-    private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
-
-    @Autowired
-    private FragaSvarRepository fragaSvarRepository;
-
-    @Autowired
-    private IntygService intygService;
-
-    @Autowired
-    private WebCertUserService webCertUserService;
-
-    @Autowired
-    private AuthoritiesHelper authoritiesHelper;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private MonitoringLogService monitoringService;
-
-    @Autowired
-    private UtkastRepository utkastRepository;
-
-    @Autowired
-    private ArendeDraftService arendeDraftService;
-
-    @Autowired
-    private StatisticsGroupByUtil statisticsGroupByUtil;
-
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
-
-    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     public FragaSvar processIncomingQuestion(FragaSvar fragaSvar) {
@@ -389,8 +375,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Send to external party (FK)
         SendMedicalCertificateQuestionType sendType = new SendMedicalCertificateQuestionType();
         QuestionToFkType question = FKQuestionConverter.convert(saved);
-        sendType.setQuestion(question);
 
+        // INTYG-4447: Temporary hack to mitigate problems in Anpassningsplattform requiring fullstandigtNamn to be present.
+        // Remove ASAP.
+        if ("true".equalsIgnoreCase(forceFullstandigtNamn)) {
+            question.getLakarutlatande().getPatient().setFullstandigtNamn("---");
+        }
+
+        sendType.setQuestion(question);
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendQuestionToFkLogicalAddress);
 
@@ -659,6 +651,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         AnswerToFkType answer = FKAnswerConverter.convert(fragaSvar);
         sendType.setAnswer(answer);
+
+        // INTYG-4447: Temporary hack to mitigate problems in Anpassningsplattform requiring fullstandigtNamn to be present.
+        // Remove ASAP.
+        if ("true".equalsIgnoreCase(forceFullstandigtNamn)) {
+            answer.getLakarutlatande().getPatient().setFullstandigtNamn("---");
+        }
 
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendAnswerToFkLogicalAddress);
