@@ -427,8 +427,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Send to external party (FK)
         SendMedicalCertificateQuestionType sendType = new SendMedicalCertificateQuestionType();
         QuestionToFkType question = FKQuestionConverter.convert(saved);
-        sendType.setQuestion(question);
 
+        // INTYG-4447: Temporary hack to mitigate problems in Anpassningsplattform requiring fullstandigtNamn to be present.
+        // Remove ASAP.
+        if ("true".equalsIgnoreCase(forceFullstandigtNamn)) {
+            question.getLakarutlatande().getPatient().setFullstandigtNamn("---");
+        }
+
+        sendType.setQuestion(question);
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendQuestionToFkLogicalAddress);
 
