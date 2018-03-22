@@ -277,23 +277,6 @@ Given(/^jag verifierar att URL:en är samma som den sparade länken$/, function(
     });
 });
 
-Given(/^jag trycker på knappen med texten "([^"]*)"$/, function(BtnText) {
-    return element(by.cssContainingText('.btn', BtnText)).sendKeys(protractor.Key.SPACE);
-});
-
-Given(/^jag trycker på checkboxen med texten "([^"]*)"$/, function(BtnText) {
-    return element(by.cssContainingText('label.checkbox', BtnText)).sendKeys(protractor.Key.SPACE);
-});
-
-Given(/^jag anger "([^"]*)" i valet "([^"]*)"$/, (svar, text) => {
-    browser.ignoreSynchronization = true;
-    return element.all(by.cssContainingText('.ue-fraga', text))
-        .all(by.cssContainingText('wc-radio-wrapper', svar))
-        .all(by.tagName('input')).first().click()
-        .then(() => browser.ignoreSynchronization = false);
-});
-
-
 Given(/^jag går in på healthcheck\-sidan$/, function() {
     browser.ignoreSynchronization = true;
     return helpers.getUrl('healthcheck.jsp');
