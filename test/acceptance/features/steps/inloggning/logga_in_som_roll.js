@@ -218,6 +218,9 @@ Given(/^att jag loggar in som läkare utan medarbetaruppdrag$/, function() {
     };
     browser.ignoreSynchronization = true;
     return pages.welcome.get()
+		.then(function() {
+            return helpers.removeAlerts();
+        })
         .then(function() {
             return helpers.mediumDelay();
         })

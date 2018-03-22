@@ -6,7 +6,7 @@ Egenskap: Samordningsnummer
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 
-@smi
+@smi @WAITINGFORFIX @INTYG-5811
 Scenario: Det ska gå att öppna ett signerat SMI-intyg i Mina intyg för en patient med samordningsnummer
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient med samordningsnummer

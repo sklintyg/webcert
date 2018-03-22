@@ -116,6 +116,7 @@ function loginIfSessionUsed() {
             origin: global.user.origin
         });
     } else {
+        logger.silly('Använder tidigare session');
         return Promise.resolve('Använder tidigare session');
     }
 }

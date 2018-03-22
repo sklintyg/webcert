@@ -52,15 +52,6 @@ function checkConsoleErrors() {
     }
 }
 
-function removeAlerts() {
-    return browser.wait(EC.alertIsPresent(), 1000).then(function() {
-        return browser.switchTo().alert().accept();
-    }, function() {
-        // Ingen dialogruta hittad, allt är frid och fröjd.*/
-        return;
-    });
-}
-
 const {
     setDefaultTimeout, // jshint ignore:line
     Before, // jshint ignore:line
@@ -143,7 +134,7 @@ global.externalPageLinks = [];
         })
         .then(function() {
             // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
-            return removeAlerts();
+            return helpers.removeAlerts();
         });
 
 });*/
@@ -209,12 +200,7 @@ After(function(testCase) {
                 var url = 'about:blank';
                 return helpers.getUrl(url);
             })
-            .then(function() {
-                return browser.sleep(1000);
-            })
-            .then(function() {
-                return removeAlerts();
-            }).then(function() {
+			.then(function() {
                 world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
                 return browser.sleep(1000);
             }).then(function() {
@@ -233,9 +219,7 @@ After(function(testCase) {
                 var url = 'about:blank';
                 return helpers.getUrl(url);
             })
-            .then(function() {
-                return removeAlerts();
-            }).then(function() {
+			.then(function() {
                 return browser.sleep(1000);
             }).then(function() {
                 return browser.refresh();

@@ -44,6 +44,8 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     if (!secondBrowser) {
         browser.ignoreSynchronization = true;
         return pages.welcome.get().then(function() {
+            return helpers.removeAlerts();
+        }).then(function() {
             return helpers.mediumDelay();
         }).then(function() {
             return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
