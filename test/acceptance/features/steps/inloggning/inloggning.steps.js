@@ -179,6 +179,8 @@ Given(/^jag går in på en( annan)? patient$/, function(annan) {
     }
 });
 
+Given(/^jag går in på en patient med personnummer "(\d{12})"$/, pnr => gotoPatient(testpatienter.filter(pat => pat.id === pnr)[0]));
+
 Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
     var alertWarnings = element.all(by.css('.alert-warning'));
     var warnings = [];

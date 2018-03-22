@@ -233,6 +233,8 @@ let findSectionsWithRequiredFields = () => element
 
 let findErrorMessages = () => element.all(by.repeater('category in categories')).map(k => k.getText());
 
+let findValidationErrorsWithText = text => element.all(by.cssContainingText('div .validation-error', text));
+
 Given(/^att textfält i intyget är rensade$/, () => element.all(by.css('input[type=text]')).each(i => i.clear()));
 
 Then(/^ska alla sektioner innehållandes valideringsfel listas$/, () => {
@@ -247,9 +249,11 @@ Then(/^ska alla sektioner innehållandes valideringsfel listas$/, () => {
     }).catch(msg => assert.fail(msg));
 });
 
+Then(/^ska valideringsfel i sektion "([^"]*)" visas$/, sektion => expect(findErrorMessages()).to.eventually.include(sektion));
+
 Then(/^ska inga valideringsfel listas$/, () =>
     findErrorMessages().then(errors => {
-        errors.forEach(logger.info);
+        errors.forEach(logger.warn);
         return expect(errors).to.be.empty;
     }));
 
@@ -257,6 +261,9 @@ Then(/^ska inga valideringsfel listas$/, () =>
 Then(/^ska statusmeddelande att obligatoriska uppgifter saknas visas$/, () => expect(utkastPage.utkastStatus.getText()).to.eventually.contain('Obligatoriska uppgifter saknas'));
 
 Then(/^ska statusmeddelande att intyget är klart att signera visas$/, () => expect(utkastPage.utkastStatus.getText()).to.eventually.contain('Klart att signera'));
+
+Then(/^ska "(\d+)" valideringsfel visas med texten "([^"]+)"$/, (antal, text) =>
+    expect(findValidationErrorsWithText(text).count()).to.eventually.equal(Number.parseInt(antal, 10)));
 
 Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
     return fillInDiagnoskod({
@@ -340,60 +347,6 @@ Given(/^ska valideringsfelet "([^"]*)" visas "([^"]*)" gånger$/, function(arg1,
     });
 
 });
-
-Given(/^ska alla (standard|utökade) valideringsfel för "([^"]*)" visas*$/, function(arg1, intygsTyp) {
-    var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
-        return elm.getText();
-    });
-    if (arg1 === 'standard' && intygsTyp === 'Transportstyrelsens läkarintyg, diabetes') {
-        return alertTexts.then(function(result) {
-            // logger.silly(result);
-            expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['1', '4']);
-            expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
-            expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('4');
-            expect(antalAvLoop(result, 'Minst en behandling måste väljas.')).to.equal('1');
-        });
-    }
-    if (arg1 === 'utökade' && intygsTyp === 'Transportstyrelsens läkarintyg, diabetes') {
-        return alertTexts.then(function(result) {
-            // logger.silly(result);
-            expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['7', '10']);
-            expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('2');
-            expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('7');
-            expect(antalAvLoop(result, 'År då behandling med insulin påbörjades måste anges.')).to.equal('1');
-        });
-    }
-    if (arg1 === 'standard' && intygsTyp === 'Transportstyrelsens läkarintyg') {
-        return alertTexts.then(function(result) {
-            // logger.silly(result);
-            expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['3', '6']);
-            expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
-            expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('24');
-        });
-    }
-    if (arg1 === 'utökade' && intygsTyp === 'Transportstyrelsens läkarintyg') {
-        return alertTexts.then(function(result) {
-            // logger.silly(result);
-            expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['10', '13']);
-            expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
-            expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('20');
-        });
-    }
-});
-
-Given(/^ska inga valideringsfel visas$/, function() {
-    var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
-        return elm.getText();
-    });
-    return alertTexts.then(function(result) {
-        // logger.silly(result);
-        result.forEach(function(n) {
-            // logger.silly(n += 'H');
-            expect(n.length).to.be.at.most(1);
-        });
-    });
-});
-
 
 Given(/^jag fyller i text i insulin\-datum fältet$/, function() {
     return tsdUtkastPage.fillInAllmant({

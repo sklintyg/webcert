@@ -284,18 +284,12 @@ Given(/^jag trycker på checkboxen med texten "([^"]*)"$/, function(BtnText) {
     return element(by.cssContainingText('label.checkbox', BtnText)).sendKeys(protractor.Key.SPACE);
 });
 
-Given(/^jag anger "([^"]*)" i valet "([^"]*)"$/, function(svar, text) {
-
-    var tr = element(by.cssContainingText('tr', text));
-
-    if (svar === 'Ja') {
-        return tr.all(by.css('td')).get(0).element(by.css('input')).sendKeys(protractor.Key.SPACE);
-    } else if (svar === 'Typ 2') {
-        var typVal = tr.all(by.css('td')).get(2).all(by.css('input')).get(1);
-        return typVal.sendKeys(protractor.Key.SPACE);
-    } else {
-        return tr.all(by.css('td')).get(1).element(by.css('input')).sendKeys(protractor.Key.SPACE);
-    }
+Given(/^jag anger "([^"]*)" i valet "([^"]*)"$/, (svar, text) => {
+    browser.ignoreSynchronization = true;
+    return element.all(by.cssContainingText('.ue-fraga', text))
+        .all(by.cssContainingText('wc-radio-wrapper', svar))
+        .all(by.tagName('input')).first().click()
+        .then(() => browser.ignoreSynchronization = false);
 });
 
 

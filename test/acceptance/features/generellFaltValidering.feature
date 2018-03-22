@@ -1,8 +1,7 @@
 # language: sv
-@FALT_VALIDERING
+@FALTVALIDERING
 Egenskap: Generella valideringsegenskaper som gäller samtliga intyg
 
-@WIP
 Scenariomall: Alla sektioner som är markerade med obligatoriska fält ska generera valideringsfel när de inte är ifyllda.
     Givet att jag är inloggad som läkare
     Och jag går in på en patient
