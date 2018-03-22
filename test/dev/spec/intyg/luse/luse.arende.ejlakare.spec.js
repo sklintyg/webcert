@@ -36,13 +36,14 @@ xdescribe('ej lakare - arende on luse intyg', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
+
         var testData = {
             'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
             'utkastStatus': 'SIGNED',
             'revoked': false
         };
 
-        // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
+        // If were not ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
         browser.ignoreSynchronization = true;
         specHelper.setUserRole('VARDADMINISTRATOR').then(function() {
             browser.ignoreSynchronization = false;
