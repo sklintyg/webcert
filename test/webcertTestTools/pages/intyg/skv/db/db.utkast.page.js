@@ -103,6 +103,9 @@ var DbUtkast = BaseSkvUtkast._extend({
             knapp: element(by.id('createFromTemplateBtn')),
             fortsatt: element(by.id('button1ersatt-dialog'))
         };
+        this.makulera = {
+            bekrafta: element(by.id('button1makulera-dialog'))
+        };
     },
     angeIdentitetStyrktGenom: function angeIdentitetStyrktGenom(identitetStyrktGenom) {
         var identitetStyrktGenomElm = this.identitetStyrktGenom.inputText;
@@ -118,7 +121,7 @@ var DbUtkast = BaseSkvUtkast._extend({
             });
         } else {
             return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function() {
-                return moveAndSendKeys(dodsdatumElm.inteSakert.year.dropDown, protractor.Key.SPACE);
+                return dodsdatumElm.inteSakert.year.dropDown.click();
             }).then(function() {
                 return browser.sleep(500);
             }).then(function() {

@@ -163,8 +163,9 @@ var doiUtkast = BaseSocUtkast._extend({
             });
         } else {
             return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function() {
-                return moveAndSendKeys(dodsdatumElm.inteSakert.year.dropDown, protractor.Key.SPACE);
+                return dodsdatumElm.inteSakert.year.dropDown.click();
             }).then(function() {
+                //Väntar på drop-down att öppnas
                 return browser.sleep(500);
             }).then(function() {
                 return dodsdatumElm.inteSakert.year.options.getByText(dodsdatum.inteSakert.year);
@@ -173,6 +174,7 @@ var doiUtkast = BaseSocUtkast._extend({
             }).then(function() {
                 if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
                     return dodsdatumElm.inteSakert.month.dropDown.click().then(function() {
+                        //Väntar på drop-down att öppnas
                         return browser.sleep(500);
                     }).then(function() {
                         return dodsdatumElm.inteSakert.month.options.getByText(dodsdatum.inteSakert.month);
@@ -228,7 +230,9 @@ var doiUtkast = BaseSocUtkast._extend({
         }).then(function() {
             browser.ignoreSynchronization = false;
             return utlatandeOmDodsorsakElm.a.specifikation.dropDown.click().then(function() {
-
+                //Väntar på drop-down att öppnas
+                return browser.sleep(1000);
+            }).then(function() {
                 if (dodsorsak.a.tillstandSpec === 'Akut') {
                     return utlatandeOmDodsorsakElm.a.specifikation.akut.click();
                 } else if (dodsorsak.a.tillstandSpec === 'Kronisk') {
@@ -238,8 +242,6 @@ var doiUtkast = BaseSocUtkast._extend({
                 } else {
                     throw ('Klarade inte att matcha ' + dodsorsak.a.tillstandSpec);
                 }
-            }).then(function() {
-                //return browser.sleep(10000);
             }).then(function() {
                 browser.ignoreSynchronization = true;
                 return;

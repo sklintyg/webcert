@@ -52,7 +52,8 @@ exports.config = {
         require: ['./features/steps/*']
     },
     onPrepare: function() {
-        browser.manage().window().setSize(1600, 1000);
+		// Stor skärm på höjden för att slippa scrolla
+        browser.manage().window().setSize(1600, 20000); 
         //http://chaijs.com/
         global.chai = require('chai');
 

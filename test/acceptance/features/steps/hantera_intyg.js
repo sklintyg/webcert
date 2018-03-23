@@ -101,6 +101,9 @@ function makuleraIntyget() {
             return helpers.largeDelay(); // fix för animering
         })
         .then(function() {
+            if (helpers.isDBDOIIntyg(intyg.typ)) {
+                return moveAndSendKeys(pages.intyg.skv.db.utkast.makulera.bekrafta, protractor.Key.SPACE);
+            }
             return fkIntygPage.pickMakuleraOrsak();
         })
         .then(function() {

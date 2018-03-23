@@ -323,6 +323,10 @@ module.exports = {
         }
         return null;
     },
+    isDBDOIIntyg: function(intygsType) {
+        var regex = /(Dödsbevis|Dödsorsaksintyg)/g;
+        return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
+    },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;

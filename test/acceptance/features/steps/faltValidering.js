@@ -240,11 +240,6 @@ function fillInDiagnoskod(diagnos) {
     }
 }
 
-/*
- *	Test steg
- *
- */
-
 let containsRequiredSymbol = () => el =>
     el.all(by.css('.required'))
     .filter(el => el.getText()
@@ -331,6 +326,11 @@ let fyllText = fieldtype => {
         }
     }
 };
+
+/*
+ *	Test steg
+ *
+ */
 
 Given(/^att textfält i intyget är rensade$/, () => element.all(by.css('input[type=text]')).each(i => i.clear()));
 

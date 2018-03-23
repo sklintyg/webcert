@@ -173,7 +173,8 @@ After(function(testCase) {
         frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
         frontEndJS += 'body.appendChild(div);';
 
-        return browser.executeScript(frontEndJS).then(function() {
+        return browser.executeScript(frontEndJS)
+            .then(function() {
                 return browser.takeScreenshot();
             }).then(function(png) {
                 var ssPath = './node_modules/common-testtools/cucumber-html-report/';

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, logger, JSON, Promise,intyg,protractor, browser */
+/* globals pages, logger, JSON, Promise,intyg, browser */
 
 'use strict';
 var utkastPage;
@@ -70,7 +70,7 @@ module.exports = {
     },
     fillIn: function(intyg) {
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        return this.fillInEnhetAdress().then(() => this.setPatientAdressIfNotGiven()).then(() => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB));
+        return this.fillInEnhetAdress().then(() => this.setPatientAdressIfNotGiven()).then(() => browser.driver.switchTo().activeElement());
     }
 
 };
