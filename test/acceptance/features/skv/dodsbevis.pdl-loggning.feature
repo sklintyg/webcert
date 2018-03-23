@@ -56,7 +56,7 @@ Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska
 @skriv-ut @utskrift
 Scenario: GE-005 - Skriv ut Dödsbevis
 		När att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
-		Och jag går in på utkastet
+		Och jag går in på intyget via djupintegrationslänk
 		Och jag skriver ut utkastet
 		Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Utkastet utskrivet"
 		

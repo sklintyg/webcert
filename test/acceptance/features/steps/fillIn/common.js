@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, logger, JSON, Promise,intyg,protractor */
+/* globals pages, logger, JSON, Promise,intyg,protractor, browser */
 
 'use strict';
 var utkastPage;
@@ -32,17 +32,16 @@ module.exports = {
             });
     },
     setPatientAdressIfNotGiven: function() {
+        var isSMI = helpers.isSMIIntyg(global.intyg.typ);
 
-        var isFk = false;
-        //IF FK (Fk7263 or SMI)
-        if (global.intyg.typ.indexOf('7263') !== -1) {
-            isFk = true;
-        } else if (helpers.isSMIIntyg(global.intyg.typ)) {
-            isFk = true;
-        }
+        // Regler som bör stämmas av med krav:
+        // SMI har inte patientadress i och med sekretessmarkering
+        // TS har patientadress
+        // DO/DOI har patientadress, men bara om patientadress saknas i PU (våra test-patienter har inte adress i PU för DB/DOI)
+        // Djupintegration har inte adress
 
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        if (global.person.adress && global.person.adress.postadress && !isFk && global.user.origin !== 'DJUPINTEGRATION') {
+        if (global.person.adress && global.person.adress.postadress && !isSMI && global.user.origin !== 'DJUPINTEGRATION') {
             return utkastPage.angePatientAdress(global.person.adress).then(function() {
                 logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
             }, function(reason) {
@@ -50,7 +49,7 @@ module.exports = {
             });
         } else {
             logger.info('Ingen patientadress ändras');
-            if (!isFk && global.user.origin !== 'DJUPINTEGRATION') {
+            if (!isSMI && global.user.origin !== 'DJUPINTEGRATION') {
                 global.person.adress = {};
                 return Promise.all([
                     utkastPage.patientAdress.postAdress.getText().then(function(text) {
@@ -71,7 +70,7 @@ module.exports = {
     },
     fillIn: function(intyg) {
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        return this.fillInEnhetAdress().then(() => this.setPatientAdressIfNotGiven()).then(() => element(by.tagName('input')).sendKeys(protractor.Key.TAB));
+        return this.fillInEnhetAdress().then(() => this.setPatientAdressIfNotGiven()).then(() => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB));
     }
 
 };

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise, protractor*/
+/*globals element,by, Promise, protractor, browser*/
 'use strict';
 
 var BaseSkvUtkast = require('../skv.base.utkast.page.js');
@@ -99,7 +99,10 @@ var DbUtkast = BaseSkvUtkast._extend({
             postOrt: element(by.id('grundData-skapadAv-vardenhet-postort')),
             enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         };
-        this.skrivDoiKnapp = element(by.id('createFromTemplateBtn'));
+        this.skrivDoi = {
+            knapp: element(by.id('createFromTemplateBtn')),
+            fortsatt: element(by.id('button1ersatt-dialog'))
+        };
     },
     angeIdentitetStyrktGenom: function angeIdentitetStyrktGenom(identitetStyrktGenom) {
         var identitetStyrktGenomElm = this.identitetStyrktGenom.inputText;
@@ -114,26 +117,28 @@ var DbUtkast = BaseSkvUtkast._extend({
                 return moveAndSendKeys(dodsdatumElm.sakert.datePicker, dodsdatum.sakert.datum);
             });
         } else {
-            return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE)
-                .then(function() {
-                    return dodsdatumElm.inteSakert.year.dropDown.click().then(function() {
-                        return dodsdatumElm.inteSakert.year.options.getByText(dodsdatum.inteSakert.year)
-                            .then(function(elm) {
-                                return elm.click();
-                            });
+            return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function() {
+                return moveAndSendKeys(dodsdatumElm.inteSakert.year.dropDown, protractor.Key.SPACE);
+            }).then(function() {
+                return browser.sleep(500);
+            }).then(function() {
+                return dodsdatumElm.inteSakert.year.options.getByText(dodsdatum.inteSakert.year);
+            }).then(function(elm) {
+                return elm.click();
+            }).then(function() {
+                if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
+                    return dodsdatumElm.inteSakert.month.dropDown.click().then(function() {
+                        return browser.sleep(500);
+                    }).then(function() {
+                        return dodsdatumElm.inteSakert.month.options.getByText(dodsdatum.inteSakert.month);
+                    }).then(function(monthElm) {
+                        return monthElm.click();
+                    }).then(function() {
+                        return moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
                     });
-                })
-                .then(function() {
-                    return dodsdatumElm.inteSakert.month.dropDown.click()
-                        .then(function() {
-                            return dodsdatumElm.inteSakert.month.options.getByText(dodsdatum.inteSakert.month).then(function(monthElm) {
-                                return monthElm.click()
-                                    .then(function() {
-                                        return moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
-                                    });
-                            });
-                        });
-                });
+                }
+                return;
+            });
         }
     },
     angeDodsPlats: function angeDodsPlats(dodsPlats) {

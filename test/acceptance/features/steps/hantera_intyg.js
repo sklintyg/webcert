@@ -132,7 +132,12 @@ Then(/^klickar jag på knappen "([^"]*)"$/, function(knapp) {
     if (knapp === 'Skriv dödsorsaksintyg') {
         intyg.typ = 'Dödsorsaksintyg';
 
-        return pages.intyg.skv.db.utkast.skrivDoiKnapp.click().then(function() {
+        return moveAndSendKeys(pages.intyg.skv.db.utkast.skrivDoi.knapp, protractor.Key.SPACE).then(function() {
+            return helpers.mediumDelay();
+        }).then(function() {
+            return moveAndSendKeys(pages.intyg.skv.db.utkast.skrivDoi.fortsatt, protractor.Key.SPACE);
+        }).then(function() {
+
             return browser.getCurrentUrl().then(function(text) {
                 global.dbIntyg = intyg;
 

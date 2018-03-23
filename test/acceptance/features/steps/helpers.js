@@ -33,10 +33,10 @@ var moveAndSendKeys = require('common-testtools').protractorHelpers.moveAndSendK
 module.exports = {
     getUrl: function(url) {
         var largeDelay = this.largeDelay;
-		var removeAlerts = this.removeAlerts;
+        var removeAlerts = this.removeAlerts;
         logger.info('Går till url:' + url);
 
-       
+
         return browser.get(url).then(function() {
             return removeAlerts();
         }).then(function() {

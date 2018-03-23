@@ -25,7 +25,6 @@ var testTools = require('common-testtools');
 testTools.protractorHelpers.init('certificate-content-container');
 
 var moveAndSendKeys = testTools.protractorHelpers.moveAndSendKeys;
-var scrollElm = testTools.protractorHelpers.scrollContainer;
 
 var doiUtkast = BaseSocUtkast._extend({
     init: function init() {
@@ -42,9 +41,14 @@ var doiUtkast = BaseSocUtkast._extend({
             },
             inteSakert: {
                 checkbox: element(by.id('dodsdatumSakertNo')),
-                month: element(by.css('#dodsdatum-month > .dropdown-label > span')),
-                year: element(by.css('#dodsdatum-year > .dropdown-label > span')),
-                options: element.all(by.css('.ui-select-choices-row-inner')),
+                month: {
+                    dropDown: element(by.id('dodsdatum-month')),
+                    options: element(by.id('dodsdatum-month')).all(by.css('span'))
+                },
+                year: {
+                    dropDown: element(by.id('dodsdatum-year')),
+                    options: element(by.id('dodsdatum-year')).all(by.css('span'))
+                },
                 antraffadDod: element(by.id('datepicker_antraffatDodDatum'))
             }
         };
@@ -153,40 +157,33 @@ var doiUtkast = BaseSocUtkast._extend({
     angeDodsdatum: function angeDodsdatum(dodsdatum) {
         var dodsdatumElm = this.dodsdatum;
 
-        console.log(dodsdatum.sakert);
-
         if (dodsdatum.sakert) {
             return moveAndSendKeys(dodsdatumElm.sakert.checkbox, protractor.Key.SPACE).then(function() {
                 return moveAndSendKeys(dodsdatumElm.sakert.datePicker, dodsdatum.sakert.datum);
             });
         } else {
-            console.log(dodsdatum.inteSakert);
-            return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE)
-                .then(function() {
-                    return dodsdatumElm.inteSakert.year.click().then(function() {
-                        return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.year)
-                            .then(function(elm) {
-                                return elm.click();
-                            });
+            return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function() {
+                return moveAndSendKeys(dodsdatumElm.inteSakert.year.dropDown, protractor.Key.SPACE);
+            }).then(function() {
+                return browser.sleep(500);
+            }).then(function() {
+                return dodsdatumElm.inteSakert.year.options.getByText(dodsdatum.inteSakert.year);
+            }).then(function(elm) {
+                return elm.click();
+            }).then(function() {
+                if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
+                    return dodsdatumElm.inteSakert.month.dropDown.click().then(function() {
+                        return browser.sleep(500);
+                    }).then(function() {
+                        return dodsdatumElm.inteSakert.month.options.getByText(dodsdatum.inteSakert.month);
+                    }).then(function(monthElm) {
+                        return monthElm.click();
+                    }).then(function() {
+                        return moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
                     });
-                })
-                .then(function() {
-                    if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
-                        return dodsdatumElm.inteSakert.month.click()
-                            .then(function() {
-                                return dodsdatumElm.inteSakert.options.getByText(dodsdatum.inteSakert.month).then(function(monthElm) {
-                                    return scrollElm(monthElm, 2)
-                                        .then(function() {
-                                            return monthElm.click();
-                                        })
-                                        .then(function() {
-                                            return moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
-                                        });
-                                });
-                            });
-                    }
-                    return;
-                });
+                }
+                return;
+            });
         }
     },
     angeDodsPlats: function angeDodsPlats(dodsPlats) {

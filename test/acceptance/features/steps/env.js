@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, logger, protractor */
+/* globals browser, logger */
 'use strict';
 /*jshint newcap:false */
 
@@ -25,7 +25,6 @@ var fs = require('fs');
 
 var hasFoundConsoleErrors = false;
 var duplicateIds = [];
-var EC = protractor.ExpectedConditions;
 var helpers = require('./helpers');
 
 function writeScreenShot(data, filename, cb) {
@@ -200,7 +199,7 @@ After(function(testCase) {
                 var url = 'about:blank';
                 return helpers.getUrl(url);
             })
-			.then(function() {
+            .then(function() {
                 world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
                 return browser.sleep(1000);
             }).then(function() {
@@ -219,7 +218,7 @@ After(function(testCase) {
                 var url = 'about:blank';
                 return helpers.getUrl(url);
             })
-			.then(function() {
+            .then(function() {
                 return browser.sleep(1000);
             }).then(function() {
                 return browser.refresh();

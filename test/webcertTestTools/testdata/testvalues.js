@@ -193,14 +193,6 @@ module.exports = {
             postnummer: '10000'
         },
         kon: 'kvinna'
-    }, {
-        id: '199912172393',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-        kon: 'man'
     }],
     dedikeradeTestPatienter: {
         medSyfte: {
@@ -238,7 +230,7 @@ module.exports = {
                 },
                 kon: 'kvinna'
             }, {
-                id: '199912192391',
+                id: '199912172393',
                 adress: {
                     postadress: 'Norra storgatan 30',
                     postort: 'Katthult',
@@ -259,7 +251,13 @@ module.exports = {
             'sekretessmarkering': [{
                 id: '199912192391',
                 namn: '',
-                efternamn: ''
+                efternamn: '',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'man'
             }]
         }
     },
