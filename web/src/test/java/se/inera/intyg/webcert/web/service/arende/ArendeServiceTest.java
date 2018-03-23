@@ -655,6 +655,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         assertTrue(result.stream()
                 .map(ArendeConversationView::getFraga)
+                .filter(f -> f.getAmne() == ArendeAmne.KOMPLT)
                 .allMatch(f -> f.getStatus() == Status.CLOSED));
 
         assertNotNull(result.stream()

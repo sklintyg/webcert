@@ -18,9 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBException;
+
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +40,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
@@ -75,20 +92,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
-import javax.xml.bind.JAXBException;
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional("jpaTransactionManager")
 public class ArendeServiceImpl implements ArendeService {
@@ -104,6 +107,36 @@ public class ArendeServiceImpl implements ArendeService {
             ArendeAmne.OVRIGT);
 
     private Clock systemClock = Clock.systemDefaultZone();
+    private Comparator<Arende> byTimestamp = (left, right) -> left.getTimestamp().isBefore(right.getTimestamp()) ? -1 : 1;
+    @Value("${sendmessagetofk.logicaladdress}")
+    private String sendMessageToFKLogicalAddress;
+    @Autowired
+    private ArendeRepository arendeRepository;
+    @Autowired
+    private UtkastRepository utkastRepository;
+    @Autowired
+    private WebCertUserService webcertUserService;
+    @Autowired
+    private AuthoritiesHelper authoritiesHelper;
+    @Autowired
+    private MonitoringLogService monitoringLog;
+    @Autowired
+    private ArendeViewConverter arendeViewConverter;
+    @Autowired
+    private HsaEmployeeService hsaEmployeeService;
+    @Autowired
+    private FragaSvarService fragaSvarService;
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private CertificateSenderService certificateSenderService;
+    @Autowired
+    private ArendeDraftService arendeDraftService;
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+    @Autowired
+    private StatisticsGroupByUtil statisticsGroupByUtil;
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     private static Predicate<Arende> isQuestion() {
         return a -> a.getSvarPaId() == null;
@@ -116,52 +149,6 @@ public class ArendeServiceImpl implements ArendeService {
     private static Predicate<Arende> isCorrectAmne(ArendeAmne arendeAmne) {
         return a -> a.getAmne().equals(arendeAmne);
     }
-
-    private Comparator<Arende> byTimestamp = (left, right) -> left.getTimestamp().isBefore(right.getTimestamp()) ? -1 : 1;
-
-    @Value("${sendmessagetofk.logicaladdress}")
-    private String sendMessageToFKLogicalAddress;
-
-    @Autowired
-    private ArendeRepository arendeRepository;
-
-    @Autowired
-    private UtkastRepository utkastRepository;
-
-    @Autowired
-    private WebCertUserService webcertUserService;
-
-    @Autowired
-    private AuthoritiesHelper authoritiesHelper;
-
-    @Autowired
-    private MonitoringLogService monitoringLog;
-
-    @Autowired
-    private ArendeViewConverter arendeViewConverter;
-
-    @Autowired
-    private HsaEmployeeService hsaEmployeeService;
-
-    @Autowired
-    private FragaSvarService fragaSvarService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private CertificateSenderService certificateSenderService;
-
-    @Autowired
-    private ArendeDraftService arendeDraftService;
-
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
-
-    @Autowired
-    private StatisticsGroupByUtil statisticsGroupByUtil;
-
-    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     public Arende processIncomingMessage(Arende arende) {
@@ -260,7 +247,8 @@ public class ArendeServiceImpl implements ArendeService {
 
         WebCertUser user = webcertUserService.getUser();
 
-        List<Arende> arendeList = getKompletteringarForIntygsId(intygsId, user);
+        List<Arende> allArende = getArendeForIntygId(intygsId, user);
+        List<Arende> arendeList = filterKompletteringar(allArende);
 
         Arende latestKomplArende = getLatestKomplArende(intygsId, arendeList);
 
@@ -285,14 +273,13 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
-        List<Arende> updatedArendeList = arendeList
+        arendeList
                 .stream()
-                .map(this::closeArendeAsHandled)
-                .collect(Collectors.toList());
+                .forEach(this::closeArendeAsHandled);
 
-        updatedArendeList.add(saved);
+        allArende.add(saved);
 
-        return getArendeConversationViewList(intygsId, updatedArendeList);
+        return getArendeConversationViewList(intygsId, allArende);
     }
 
     @NotNull
@@ -303,12 +290,18 @@ public class ArendeServiceImpl implements ArendeService {
                 .orElseThrow(() -> new IllegalArgumentException("No arende of type KOMPLT exist for intyg: " + intygsId));
     }
 
-    private List<Arende> getKompletteringarForIntygsId(String intygsId, WebCertUser user) {
+    private List<Arende> filterKompletteringar(List<Arende> list) {
+        return list
+                .stream()
+                .filter(isQuestion())
+                .filter(isCorrectAmne(ArendeAmne.KOMPLT))
+                .collect(Collectors.toList());
+    }
+
+    private List<Arende> getArendeForIntygId(String intygsId, WebCertUser user) {
         return arendeRepository.findByIntygsId(intygsId)
                 .stream()
                 .filter(isCorrectEnhet(user))
-                .filter(isQuestion())
-                .filter(isCorrectAmne(ArendeAmne.KOMPLT))
                 .collect(Collectors.toList());
     }
 
@@ -332,8 +325,8 @@ public class ArendeServiceImpl implements ArendeService {
                         .collect(Collectors.toList()));
 
         if (arendenToForward.isEmpty()) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                        "Could not find any arende related to IntygsId: " + intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "Could not find any arende related to IntygsId: " + intygsId);
         }
 
         return getArendeConversationViewList(intygsId, arendenToForward);
@@ -397,25 +390,21 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
         WebCertUser user = webcertUserService.getUser();
-        List<Arende> arendeList = arendeRepository.findByIntygsId(intygsId);
+        List<Arende> arendeList = getArendeForIntygId(intygsId, user);
 
         arendeList.stream()
-            .findFirst()
-            .map(Arende::getPatientPersonId)
-            .map(personNummer -> Personnummer.createPersonnummer(personNummer)
-                    .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer when querying for arenden.")))
-            .ifPresent(pn -> authoritiesValidator
-                    .given(user)
-                    .privilegeIf(
-                        AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                        SekretessStatus.TRUE.equals(patientDetailsResolver.getSekretessStatus(pn)))
-                    .orThrow());
+                .findFirst()
+                .map(Arende::getPatientPersonId)
+                .map(personNummer -> Personnummer.createPersonnummer(personNummer)
+                        .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer when querying for arenden.")))
+                .ifPresent(pn -> authoritiesValidator
+                        .given(user)
+                        .privilegeIf(
+                                AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                                SekretessStatus.TRUE.equals(patientDetailsResolver.getSekretessStatus(pn)))
+                        .orThrow());
 
-        List<Arende> filteredArendeList = arendeList.stream()
-                .filter(isCorrectEnhet(user))
-                .collect(Collectors.toList());
-
-        return getArendeConversationViewList(intygsId, filteredArendeList);
+        return getArendeConversationViewList(intygsId, arendeList);
     }
 
     @Override
@@ -485,8 +474,7 @@ public class ArendeServiceImpl implements ArendeService {
     private boolean passesSekretessCheck(String patientId, String intygsTyp, WebCertUser user,
             Map<Personnummer, SekretessStatus> sekretessStatusMap) {
 
-        final SekretessStatus sekretessStatus =
-                sekretessStatusMap.get(Personnummer.createPersonnummer(patientId).get());
+        final SekretessStatus sekretessStatus = sekretessStatusMap.get(Personnummer.createPersonnummer(patientId).get());
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
             return false;
@@ -575,7 +563,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public String getLatestMeddelandeIdForCurrentCareUnit(String intygsId) {
         WebCertUser user = webcertUserService.getUser();
-        List<Arende> arendeList = getKompletteringarForIntygsId(intygsId, user);
+        List<Arende> arendeList = filterKompletteringar(getArendeForIntygId(intygsId, user));
 
         return getLatestKomplArende(intygsId, arendeList).getMeddelandeId();
     }
@@ -594,8 +582,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     private List<ArendeConversationView> getArendeConversationViewList(String intygsId, List<Arende> arendeList) {
 
-        List<AnsweredWithIntyg> kompltToIntyg = AnsweredWithIntygUtil.
-                findAllKomplementForGivenIntyg(intygsId, utkastRepository);
+        List<AnsweredWithIntyg> kompltToIntyg = AnsweredWithIntygUtil.findAllKomplementForGivenIntyg(intygsId, utkastRepository);
 
         List<ArendeDraft> arendeDraftList = arendeDraftService.listAnswerDrafts(intygsId);
 
