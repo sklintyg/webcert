@@ -72,6 +72,16 @@ var BaseIntyg = JClass._extend({
         this.arendeFilterKompletteringsbegaran = element(by.id('arende-filter-kompletteringsbegaran'));
         this.arendeFilterAdministrativafragor = element(by.id('arende-filter-administrativafragor'));
 
+        this.kompletteraIntygButton = element(by.id('komplettera-intyg'));
+        this.kanInteKompletteraButton = element(by.id('kan-inte-komplettera'));
+        this.kanInteKompletteraModalAnledning1 = element(by.id('komplettering-modal-dialog-anledning-1'));
+        this.kanInteKompletteraModalOvrigaUpplysningar = element(by.id('komplettering-modal-dialog-ovriga-upplysningar'));
+        this.kanInteKompletteraModalAnledning2 = element(by.id('komplettering-modal-dialog-anledning-2'));
+        this.kanInteKompletteraModalMeddelandeText = element(by.id('komplettering-modal-dialog-meddelandetext'));
+        this.kanInteKompletteraModalSkickaSvarButton = element(by.id('komplettering-modal-dialog-send-answer-button'));
+        this.kompletteringBesvaradesMedMeddelandeAlert = element(by.id('arende-komplettering-besvarades-med-meddelande-alert'));
+        this.uthoppKompletteraLink = element(by.id('arende-komplettering-uthopp-link'));
+
         this.arendePanel = element(by.css('arende-panel'));
 
         this.arendeText = element(by.id('arendeNewModelText'));
@@ -209,7 +219,7 @@ var BaseIntyg = JClass._extend({
     getArendeById: function(komplettering, id) {
         var subgroup = 'administrativaFragor';
         if (komplettering) {
-            subgroup = 'komplettering';
+            subgroup = 'kompletteringar';
         }
         return element(by.id('arende-' + subgroup + '-' + id));
     },
@@ -245,27 +255,6 @@ var BaseIntyg = JClass._extend({
     },
     markArendeAsHandled: function(id) {
         return element(by.id('handleCheck-' + id));
-    },
-    getOnlyLakareCanKompletteraSign: function(id) {
-        return element(by.id('answerDisabledReasonPanel-' + id));
-    },
-    getKompletteraIntygButton: function(id) {
-        return element(by.id(this.scrollIntoView('komplettera-intyg-' + id)));
-    },
-    getUthoppKompletteraSvaraButton: function(id) {
-        return element(by.id(this.scrollIntoView('uthopp-svara-med-meddelande-' + id)));
-    },
-    getKompletteraIntygFortsattPaIntygsutkastButton: function(id) {
-        return element(by.id(this.scrollIntoView('komplettera-open-utkast-' + id)));
-    },
-    getKanInteKompletteraButton: function(id) {
-        return element(by.id(this.scrollIntoView('kan-inte-komplettera-' + id)));
-    },
-    getKompletteringsDialogLamnaOvrigaUpplysningar: function() {
-        return element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button'));
-    },
-    getKompletteringsDialogSvaraMedMeddelandeButton: function() {
-        return element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
     },
     waitUntilIntygInIT: function(intygsId) {
         browser.wait(function() {
