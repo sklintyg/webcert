@@ -22,10 +22,12 @@
           <img ng-show="viewState.loading" ng-src="/img/ajax-loader-small-green.gif"/> Fortsätt
         </button>
       </div>
-      <div class="error" ng-show="pnrForm.pnr.$invalid && pnrForm.pnr.$touched && pnrForm.pnr.$viewValue != ''">
-        Du måste ange ett giltigt personnummer
+      <div class="error">
+        <div ng-show="pnrForm.pnr.$invalid && pnrForm.pnr.$touched && pnrForm.pnr.$viewValue != ''">
+          Du måste ange ett giltigt personnummer
+        </div>
+        <wc-alert-message id="puerror" ng-if="viewState.errorid" alert-message-id="{{viewState.errorid}}" alert-severity="danger"></wc-alert-message>
       </div>
-      <wc-alert-message id="puerror" ng-if="viewState.errorId" alert-message-id="{{viewState.errorid}}" alert-severity="danger"></wc-alert-message>
     </div>
 
   </form>
