@@ -1358,6 +1358,26 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     }
 
+    @Test
+    public void testGetLatestMeddelandeIdForCurrentCareUnit() {
+        Arende kompl = buildArende(MEDDELANDE_ID, ENHET_ID);
+        kompl.setAmne(ArendeAmne.KOMPLT);
+        List<Arende> arendeList = Collections.singletonList(kompl);
+
+        when(webcertUserService.getUser()).thenReturn(createUser());
+        when(arendeRepository.findByIntygsId(eq(INTYG_ID))).thenReturn(arendeList);
+
+        assertEquals(MEDDELANDE_ID, service.getLatestMeddelandeIdForCurrentCareUnit(INTYG_ID));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetLatestMeddelandeIdForCurrentCareUnitFailsWithNoKOMPLArende() {
+        when(webcertUserService.getUser()).thenReturn(createUser());
+
+        service.getLatestMeddelandeIdForCurrentCareUnit(INTYG_ID);
+        fail();
+    }
+
     private Arende buildArende(String meddelandeId, String enhetId) {
         return buildArende(meddelandeId, INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), enhetId);
     }
