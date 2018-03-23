@@ -67,12 +67,13 @@
                           id="fornyaBtn-{{intyg.intygId}}"
                           class="btn btn-secondary"
                           ng-if="isRenewalAllowed(intyg)"
-                          ng-click="fornyaIntyg(intyg)"
+                          ng-click="fornyaIntygBtnPopOver=false;fornyaIntyg(intyg)"
                           uib-popover="{{ resolveTooltipText(intyg) }}"
                           popover-trigger="mouseenter"
                           popover-popup-delay="300"
                           popover-append-to-body="true"
-                          popover-placement="auto top">
+                          popover-placement="auto top"
+                          popover-is-open="fornyaIntygBtnPopOver">
                     {{messageService.getProperty('common.fornya')}}
                   </button>
                 </td>
