@@ -255,7 +255,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         utkast.setRelationKod(relation.getRelationKod());
     }
 
-    protected CreateDraftCopyHolder createModuleRequestForCopying(AbstractCreateCopyRequest copyRequest, Person person, Relation relation, String newDraftCopyId) {
+    protected CreateDraftCopyHolder createModuleRequestForCopying(AbstractCreateCopyRequest copyRequest, Person person, Relation relation,
+            String newDraftCopyId) {
         LOG.debug("Created id '{}' for the new copy", newDraftCopyId);
 
         CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, copyRequest.getHosPerson(), relation);

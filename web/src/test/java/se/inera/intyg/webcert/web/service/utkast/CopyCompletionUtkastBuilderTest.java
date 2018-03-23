@@ -190,7 +190,7 @@ public class CopyCompletionUtkastBuilderTest {
         assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
 
         ArgumentCaptor<CreateDraftCopyHolder> requestCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
-        verify(mockModuleApi).createNewInternalFromTemplate(requestCaptor.capture(), any(), eq(KOMMENTAR));
+        verify(mockModuleApi).createCompletionFromTemplate(requestCaptor.capture(), any(), eq(KOMMENTAR));
 
         // verify full name is set
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
@@ -253,7 +253,7 @@ public class CopyCompletionUtkastBuilderTest {
         copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false, false);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
-        verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), any(), eq(KOMMENTAR));
+        verify(mockModuleApi).createCompletionFromTemplate(createDraftCopyHolderCaptor.capture(), any(), eq(KOMMENTAR));
 
         assertNotNull(createDraftCopyHolderCaptor.getValue());
         assertEquals(meddelandeId, createDraftCopyHolderCaptor.getValue().getRelation().getMeddelandeId());
@@ -287,7 +287,7 @@ public class CopyCompletionUtkastBuilderTest {
         copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false, false);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
-        verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), any(), eq(KOMMENTAR));
+        verify(mockModuleApi).createCompletionFromTemplate(createDraftCopyHolderCaptor.capture(), any(), eq(KOMMENTAR));
 
         assertNotNull(createDraftCopyHolderCaptor.getValue());
         assertEquals(meddelandeId, createDraftCopyHolderCaptor.getValue().getRelation().getMeddelandeId());

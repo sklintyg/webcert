@@ -70,7 +70,7 @@ public class CopyCompletionUtkastBuilder extends AbstractUtkastBuilder<CreateCom
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
         CreateCompletionCopyRequest retyped = (CreateCompletionCopyRequest) copyRequest;
 
-        return moduleApi.createNewInternalFromTemplate(draftCopyHolder, template, retyped.getKommentar());
+        return moduleApi.createCompletionFromTemplate(draftCopyHolder, template, retyped.getKommentar());
     }
 
 
