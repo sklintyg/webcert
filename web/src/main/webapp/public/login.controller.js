@@ -23,7 +23,9 @@
 
 // TODO: Används nu endast av error.jsp, ta bort om denna refaktoreras bort.
 
-angular.module('webcert.pub.login', ['ui.bootstrap', 'common.dynamiclink'])
+angular.module('common', []);
+
+angular.module('webcert.pub.login', ['ui.bootstrap', 'common.dynamiclink', 'common'])
     .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', 'dynamicLinkService', function($scope, $sce, $uibModal, $window, $http, dynamicLinkService) {
         'use strict';
         var expand = $sce.trustAsHtml('Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
