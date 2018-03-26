@@ -39,7 +39,6 @@ const {
 var testTools = require('common-testtools');
 testTools.protractorHelpers.init();
 
-var luseUtkastPage = pages.intyg.luse.utkast;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
 var tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
@@ -54,7 +53,6 @@ var testdataHelpers = wcTestTools.helpers.testdata;
 var synVarTSD = tsdUtkastPage.syn;
 var synVarBAS = tsBasUtkastPage.syn;
 
-var anhorigIgnoreKeys = ['forsakringsmedicinsktBeslutsstodBeskrivning', 'arbetstidsforlaggning', 'arbetsresor', 'formagaTrotsBegransningBeskrivning', 'prognos'];
 var synVarArrayTSD = [synVarTSD.hoger.utan, synVarTSD.hoger.med, synVarTSD.vanster.utan, synVarTSD.vanster.med, synVarTSD.binokulart.utan, synVarTSD.binokulart.med];
 var synVarArrayBAS = [synVarBAS.hoger.utan, synVarBAS.hoger.med, synVarBAS.vanster.utan, synVarBAS.vanster.med, synVarBAS.binokulart.utan, synVarBAS.binokulart.med];
 
@@ -73,7 +71,9 @@ let valideringsVal = {
         ],
         text: [
             'diabetes-årtal',
-            'alla synfält'
+            'alla synfält',
+            'datum',
+            'postnummer'
         ]
     },
     'Transportstyrelsens läkarintyg': {
@@ -90,7 +90,26 @@ let valideringsVal = {
         checkboxar: [
             'Taxi'
         ],
-        text: []
+        text: [
+            'postnummer'
+        ]
+    },
+    'Läkarintyg för sjukpenning': {
+        radioknappar: {
+            'Prognos för arbetsförmåga utifrån aktuellt undersökningstillfälle': 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning inom',
+        },
+        checkboxar: [
+            'Annat',
+            'Nuvarande arbete',
+            '25 procent',
+            '50 procent',
+            '75 procent',
+            '100 procent',
+        ],
+        text: [
+            'postnummer',
+            'datum'
+        ]
     }
 };
 
@@ -100,22 +119,6 @@ let valideringsVal = {
  *
  */
 
-
-function populateFieldArray(object, ignoreKeys) {
-    var re = [];
-    if (object) {
-        for (var key in object) {
-            if (object.hasOwnProperty(key)) {
-                var index = (typeof ignoreKeys !== 'undefined') ? ignoreKeys.indexOf(key) : -1;
-                if (index === -1) {
-
-                    re.push(object[key]);
-                }
-            }
-        }
-    }
-    return re;
-}
 
 function synLoop(array, keyToSend) {
     var promiseArray = [];
@@ -275,55 +278,21 @@ let checkboxVal = text => {
 };
 
 let fyllText = fieldtype => {
-    /*jshint maxcomplexity:12 */
-
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-
-    if (intyg.typ === 'Läkarintyg för sjukpenning' && fieldtype === 'underlag-datum') {
-        logger.warn('andraMedicinskaUtredningar finns inte för LISJP //TODO: byt ut underlag-datum till något annat, här och i helpers.');
-    }
-
-    var date = helpers.randomTextString().substring(0, 4);
-
-    if (isSMIIntyg) {
-        switch (fieldtype) {
-            case 'kännedom-datum':
-                return luseUtkastPage.baseratPa.kannedomOmPatient.datum.typeKeys(date);
-            case 'underlag-datum':
-                return luseUtkastPage.andraMedicinskaUtredningar.finns.JA.typeKeys(protractor.Key.SPACE).then(function() {
-                    return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.underlag))[0].datum.typeKeys(date);
-                });
-            case 'slumpat-datum':
-                return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.baseratPa, ['anhorigBeskrivning', 'kannedomOmPatient']))[0].datum.typeKeys(date);
-            case 'postnummer':
-                return luseUtkastPage.enhetensAdress.postNummer.clear().then(function() {
-                    return luseUtkastPage.enhetensAdress.postNummer.typeKeys('111111');
-                });
-            case 'arbetsförmåga-datum':
-                var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
-                return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].typeKeys(date);
-            default:
-                return logger.warn('Klarade inte att matcha fieldtype');
-        }
-    } else {
-        switch (fieldtype) {
-            case 'diabetes-årtal':
-                return tsdUtkastPage.allmant.diabetesyear.sendKeys('1000').then(function() {
-                    return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys('1000', protractor.Key.TAB);
-                });
-            case 'UndersökningsDatum':
-                return fkUtkastPage.baserasPa.minUndersokning.datum.typeKeys('10/12-2017').then(function() {
-                    logger.info('Fyller i felaktigt formaterat datum: 10/12-2017');
-                    return helpers.enter.perform();
-                });
-            case 'alla synfält':
-                return populateSyn(fieldtype);
-            case 'slumpat synfält':
-                return populateSyn(fieldtype);
-            default:
-                //return fkUtkastPage.diagnosKod.typeKeys(date); //TODO default borde vara felhantering
-                return logger.warn(`Klarade inte att matcha fieldtype ${fieldtype}`);
-        }
+    switch (fieldtype) {
+        case 'datum':
+            return element.all(by.css('.wc-datepicker-wrapper input')).each(el => el.sendKeys('2jfesk'));
+        case 'postnummer':
+            return utkastPage.enhetensAdress.postNummer.typeKeys('1111').then(() => utkastPage.enhetensAdress.postNummer.typeKeys('111111'));
+        case 'diabetes-årtal':
+            return tsdUtkastPage.allmant.diabetesyear.sendKeys('1000').then(function() {
+                return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys('1000', protractor.Key.TAB);
+            });
+        case 'alla synfält':
+            return populateSyn(fieldtype);
+        case 'slumpat synfält':
+            return populateSyn(fieldtype);
+        default:
+            return logger.error(`Klarade inte att matcha fieldtype ${fieldtype}`);
     }
 };
 
@@ -368,14 +337,14 @@ let chainCheckboxActions = intyg => valideringsVal[intyg].checkboxar
 let chainRadiobuttonActions = intyg => () => Object.keys(valideringsVal[intyg].radioknappar)
     .reduce((prev, text) => prev.then(() => radioknappVal(valideringsVal[intyg].radioknappar[text], text)), Promise.resolve());
 
-let chainTextFieldActions = intyg => () => valideringsVal[intyg].text
+let chainTextFieldActions = intyg => valideringsVal[intyg].text
     .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
 
 When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg =>
     chainCheckboxActions(intyg)
-    .then(chainRadiobuttonActions(intyg))
-    .then(chainTextFieldActions(intyg)));
+    .then(chainRadiobuttonActions(intyg)));
 
+When(/^jag fyller i textfält med felaktiga värden i "([^"]+)"$/, intyg => chainTextFieldActions(intyg));
 
 
 Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
@@ -463,37 +432,6 @@ Given(/^jag fyller i text i insulin\-datum fältet$/, function() {
         return tsdUtkastPage.allmant.insulinbehandlingsperiod.typeKeys(protractor.Key.TAB);
     });
 });
-
-Given(/^jag tar bort information i "([^"]*)" fältet$/, function(fieldtype) {
-    if (fieldtype === 'diabetes-allmant') {
-        return tsdUtkastPage.allmant.diabetesyear.clear().then(function() {
-            return tsdUtkastPage.allmant.insulinbehandlingsperiod.clear().then(function() {
-                return tsdUtkastPage.allmant.insulinbehandlingsperiod.typeKeys(protractor.Key.TAB).then(function() {
-                    return element(by.cssContainingText('label.checkbox', 'Insulin')).typeKeys(protractor.Key.SPACE);
-                });
-
-            });
-        });
-    }
-    if (fieldtype === 'synfälten' && intyg.typ === 'Transportstyrelsens läkarintyg') {
-        return tsBasUtkastPage.syn.hoger.utan.clear().then(function() {
-            return tsBasUtkastPage.syn.hoger.med.clear().then(function() {
-                return tsBasUtkastPage.syn.vanster.utan.clear().then(function() {
-                    return tsBasUtkastPage.syn.vanster.med.clear().then(function() {
-                        return tsBasUtkastPage.syn.binokulart.utan.clear().then(function() {
-                            return tsBasUtkastPage.syn.binokulart.med.clear().then(function() {
-
-                            });
-                        });
-                    });
-                });
-
-            });
-        });
-    }
-
-});
-
 
 Given(/^jag lägger till fältet "([^"]*)"$/, function(fieldtype) {
 
