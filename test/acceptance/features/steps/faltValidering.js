@@ -110,6 +110,20 @@ let valideringsVal = {
             'postnummer',
             'datum'
         ]
+    },
+    'Läkarutlåtande för sjukersättning': {
+        radioknappar: {
+            'Är utlåtandet även baserat på andra medicinska utredningar eller underlag?': 'Ja',
+            'Finns skäl till att revidera/uppdatera tidigare satt diagnos?': 'Ja',
+            '': 'Ja',
+        },
+        checkboxar: [
+            'Annat',
+        ],
+        text: [
+            'postnummer',
+            'datum'
+        ]
     }
 };
 
@@ -118,8 +132,6 @@ let valideringsVal = {
  *	Stödfunktioner
  *
  */
-
-
 function synLoop(array, keyToSend) {
     var promiseArray = [];
 
@@ -280,9 +292,11 @@ let checkboxVal = text => {
 let fyllText = fieldtype => {
     switch (fieldtype) {
         case 'datum':
-            return element.all(by.css('.wc-datepicker-wrapper input')).each(el => el.sendKeys('2jfesk'));
+            return element.all(by.css('.wc-datepicker-wrapper input')).each(el => el.clear().then(() => el.sendKeys('2jfesk')));
         case 'postnummer':
-            return utkastPage.enhetensAdress.postNummer.typeKeys('1111').then(() => utkastPage.enhetensAdress.postNummer.typeKeys('111111'));
+            return utkastPage.enhetensAdress.postNummer.clear()
+                .then(() => utkastPage.enhetensAdress.postNummer.typeKeys('1111'))
+                .then(() => utkastPage.enhetensAdress.postNummer.typeKeys('111111'));
         case 'diabetes-årtal':
             return tsdUtkastPage.allmant.diabetesyear.sendKeys('1000').then(function() {
                 return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys('1000', protractor.Key.TAB);
