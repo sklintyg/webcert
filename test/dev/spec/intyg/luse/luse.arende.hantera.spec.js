@@ -28,7 +28,7 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('answer arende on luse intyg', function() {
+describe('answer arende on luse intyg', function() {
 
     var intygId = 'luse-arende-intyg-1';
     var arendeId = 'luse-arende-avstmn-hantera';
@@ -64,20 +64,20 @@ xdescribe('answer arende on luse intyg', function() {
 
     describe('answer arende', function() {
         it('make sure pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, arendeId);
+            var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('mark arende as handled', function() {
             LuseIntygPage.markArendeAsHandled(arendeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(true, arendeId); // true = handled list
+                var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
                 expect(arende.isDisplayed()).toBeTruthy();
             });
         });
 
         it('mark arende as unhandled', function() {
             LuseIntygPage.markArendeAsHandled(arendeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(false, arendeId); // false = unhandled list
+                var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
                 expect(arende.isDisplayed()).toBeTruthy();
             });
         });
