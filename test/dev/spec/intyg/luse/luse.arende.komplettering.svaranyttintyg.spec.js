@@ -29,7 +29,7 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var LuseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var intygGenerator = wcTestTools.intygGenerator;
 
-xdescribe('svaranyttintyg - arende on luse intyg', function() {
+describe('svaranyttintyg - arende on luse intyg', function() {
 
     var utkastId;
     var intygId = 'luse-arende-intyg-2';
@@ -67,8 +67,8 @@ xdescribe('svaranyttintyg - arende on luse intyg', function() {
     });
 
     afterAll(function() {
-        restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.deleteArende(meddelandeId);
+        restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.deleteUtkast(utkastId);
     });
 
@@ -81,13 +81,12 @@ xdescribe('svaranyttintyg - arende on luse intyg', function() {
 
     describe('make sure', function() {
         it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, meddelandeId);
+            var arende = LuseIntygPage.getArendeById(true, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
 
         });
 
         it('should display message that intyg has komplettering', function() {
-            browser.sleep(10000);
             expect(LuseIntygPage.getIntygHasKompletteringMessage().isDisplayed()).toBeTruthy();
         });
 
@@ -97,7 +96,8 @@ xdescribe('svaranyttintyg - arende on luse intyg', function() {
         });
 
         it('click svara pa komplettering', function() {
-            LuseIntygPage.getKompletteraIntygButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteringUtkastLink.isPresent()).toBeFalsy();
+            LuseIntygPage.kompletteraIntygButton.click();
         });
 
         it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
@@ -115,8 +115,8 @@ xdescribe('svaranyttintyg - arende on luse intyg', function() {
         it('Is showing the Fortsatt button in arende view', function() {
             LuseIntygPage.get(intygId);
             expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(LuseIntygPage.getKompletteraIntygFortsattPaIntygsutkastButton(meddelandeId).isDisplayed()).toBeTruthy();
-            LuseIntygPage.getKompletteraIntygFortsattPaIntygsutkastButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteringUtkastLink.isPresent()).toBeTruthy();
+            LuseIntygPage.kompletteringUtkastLink.click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
         });
     });

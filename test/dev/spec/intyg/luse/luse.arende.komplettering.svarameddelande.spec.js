@@ -31,7 +31,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 var restUtil = wcTestTools.restUtil;
 var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
-xdescribe('svarameddelande - arende on luse intyg', function() {
+describe('svarameddelande - arende on luse intyg', function() {
 
     var intygId;
     var meddelandeId = 'luse-arende-komplt';
@@ -83,12 +83,12 @@ xdescribe('svarameddelande - arende on luse intyg', function() {
 
     describe('make sure', function() {
         it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, meddelandeId);
+            var arende = LuseIntygPage.getArendeById(true, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('click svara pa komplettering', function() {
-            LuseIntygPage.getKompletteraIntygButton(meddelandeId).click();
+            LuseIntygPage.kompletteraIntygButton.click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
             LuseUtkastPage.radera.knapp.click();
             LuseUtkastPage.radera.bekrafta.click();
@@ -96,17 +96,20 @@ xdescribe('svarameddelande - arende on luse intyg', function() {
         });
 
         it('click svara med meddelande', function() {
-            LuseIntygPage.getKanInteKompletteraButton(meddelandeId).click();
+            LuseIntygPage.kanInteKompletteraButton.click();
             expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
-            LuseIntygPage.getKompletteringsDialogSvaraMedMeddelandeButton().click();
-            expect(LuseIntygPage.getAnswerButton(meddelandeId).isDisplayed()).toBeTruthy();
+            expect(LuseIntygPage.kanInteKompletteraModalMeddelandeText.isPresent()).toBeFalsy();
+            LuseIntygPage.kanInteKompletteraModalAnledning2.click();
+            expect(LuseIntygPage.kanInteKompletteraModalMeddelandeText.isDisplayed()).toBeTruthy();
         });
 
         it('push answer button and make sure answered arende is now in the handled list', function() {
-            LuseIntygPage.getAnswerBox(meddelandeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
-            LuseIntygPage.getAnswerButton(meddelandeId).sendKeys(protractor.Key.SPACE).then(function() {
-                var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = handled list
+            LuseIntygPage.kanInteKompletteraModalMeddelandeText.sendKeys('Låt oss slänga in ett svar och se vad som händer.');
+            LuseIntygPage.kanInteKompletteraModalSkickaSvarButton.click().then(function() {
+                var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = komplettering list
                 expect(arende.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.getKompletteringSvarTextById(meddelandeId)).toBe('Låt oss slänga in ett svar och se vad som händer.');
+                expect(LuseIntygPage.kompletteringBesvaradesMedMeddelandeAlert.isDisplayed()).toBeTruthy();
             });
         });
 

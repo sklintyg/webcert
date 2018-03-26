@@ -80,6 +80,7 @@ var BaseIntyg = JClass._extend({
         this.kanInteKompletteraModalMeddelandeText = element(by.id('komplettering-modal-dialog-meddelandetext'));
         this.kanInteKompletteraModalSkickaSvarButton = element(by.id('komplettering-modal-dialog-send-answer-button'));
         this.kompletteringBesvaradesMedMeddelandeAlert = element(by.id('arende-komplettering-besvarades-med-meddelande-alert'));
+        this.kompletteringUtkastLink = element(by.id('komplettera-open-utkast'));
         this.uthoppKompletteraLink = element(by.id('arende-komplettering-uthopp-link'));
 
         this.arendePanel = element(by.css('arende-panel'));
@@ -237,6 +238,9 @@ var BaseIntyg = JClass._extend({
     },
     getIntygHasKompletteringMessage: function() {
         return element(by.css('#intygstatus1 [data-intyg-status-code="is-006"]'));
+    },
+    getKompletteringSvarTextById: function(id) {
+        return element(by.css('#kompletteringar-arende-svartext-' + id)).getText();
     },
     getIntygKompletteringFrageText: function(frageId, index) {
         return element(by.id('inline-komplettering-' + frageId + '-' + index));
