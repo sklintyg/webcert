@@ -2,10 +2,11 @@
 @avliden
 Egenskap: Avliden patient
 
+@PS-001
   Scenario: Varning om patient är avliden
      Givet att jag är inloggad som läkare
      När jag går in på en patient som är avliden
-     Så ska jag varnas om att "Patienten har avlidit"
+     Så ska jag varnas om att "Patienten är avliden"
 
 # TODO: Skriv om detta och sätt patient till avliden via APIet för avliden
  @skicka-till-FK @integration @notReady
