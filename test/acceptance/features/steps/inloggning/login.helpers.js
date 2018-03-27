@@ -30,6 +30,7 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
 
+    logger.silly(global.user);
 
     //Lägg till en adress för vårdenheten
     global.user.enhetsAdress = {
