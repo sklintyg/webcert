@@ -190,16 +190,6 @@
             </c:otherwise>
           </c:choose>
 
-          <!--
-            <c:catch>
-              Error:
-              <c:out value="${pageContext.errorData.throwable.message}" />,
-              Stacktrace:
-              <c:forEach items="${pageContext.errorData.throwable.stackTrace}" var="element">
-                <c:out value="${element}" />,
-              </c:forEach>
-            </c:catch>
-          -->
         </div>
       </div>
     </div>
