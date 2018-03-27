@@ -96,5 +96,27 @@ module.exports = {
             'postnummer',
             'datum'
         ]
+    },
+    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga': {
+        radioknappar: {
+            'Är utlåtandet även baserat på andra medicinska utredningar eller underlag?': 'Ja',
+            'Finns skäl till att revidera/uppdatera tidigare satt diagnos?': 'Ja'
+        },
+        checkboxar: [
+            'Annat',
+            'Intellektuell funktion',
+            'Kommunikation och social interaktion',
+            'Uppmärksamhet, koncentration och exekutiv funktion',
+            'Annan psykisk funktion',
+            'Sinnesfunktioner och smärta',
+            'Balans, koordination och motorik',
+            'Annan kroppslig funktion'
+        ],
+        text: [
+            'postnummer',
+            'datum'
+        ]
     }
+
+
 };

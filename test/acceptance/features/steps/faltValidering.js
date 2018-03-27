@@ -248,6 +248,7 @@ let fyllText = fieldtype => {
 
 Given(/^att textfält i intyget är rensade$/, () => element.all(by.css('input[type=text]')).each(i => i.clear()));
 
+
 Then(/^ska alla sektioner innehållandes valideringsfel listas$/, () => {
     Promise.all([findSectionsWithRequiredFields(), // expected
         findErrorMessages() // actual
@@ -276,7 +277,7 @@ Then(/^ska statusmeddelande att intyget är klart att signera visas$/, () => exp
 Then(/^ska "(\d+)" valideringsfel visas med texten "([^"]+)"$/, (antal, text) =>
     expect(findValidationErrorsWithText(text).count()).to.eventually.equal(Number.parseInt(antal, 10)));
 
-let chainCheckboxActions = intyg => () => valideringsVal[intyg].checkboxar
+let chainCheckboxActions = intyg => valideringsVal[intyg].checkboxar
     .reduce((prev, text) => prev.then(() => checkboxVal(text)), Promise.resolve());
 
 let chainRadiobuttonActions = intyg => () => Object.keys(valideringsVal[intyg].radioknappar)
@@ -286,13 +287,7 @@ let chainTextFieldActions = intyg => valideringsVal[intyg].text
     .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
 
 When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg =>
-    utkastPage.angeEnhetAdress({
-        postadress: '',
-        postort: '',
-        postnummer: '',
-        telefon: ''
-    })
-    .then(chainCheckboxActions(intyg))
+    chainCheckboxActions(intyg)
     .then(chainRadiobuttonActions(intyg)));
 
 When(/^jag fyller i textfält med felaktiga värden i "([^"]+)"$/, intyg => chainTextFieldActions(intyg));
