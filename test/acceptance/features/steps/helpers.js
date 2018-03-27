@@ -118,6 +118,30 @@ module.exports = {
             return testdata.soc.doi.getRandom(id);
         }
     },
+    fetch: {
+        kompletteringar: function() {
+            logger.silly('Hämtar meddelande-id:n för kompletteringar');
+            var panels = fkLusePage.qaPanels;
+            var attributes = panels.kompletteringar.map(function(elm) {
+                return Promise.all([
+                    elm.getAttribute('id'),
+                    elm.element(by.css('.fraga-status-header')).getText()
+                ]);
+            });
+            return attributes;
+        },
+        administrativafragor: function() {
+            logger.silly('Hämtar meddelande-id:n för administrativafragor');
+            var panels = fkLusePage.qaPanels;
+            var attributes = panels.kompletteringar.map(function(elm) {
+                return Promise.all([
+                    elm.getAttribute('id'),
+                    elm.element(by.css('.fraga-status-header')).getText()
+                ]);
+            });
+            return attributes;
+        }
+    },
     fetchMessageIds: function(intygtyp) {
         logger.silly('Hämtar meddelande-id:n');
 
@@ -128,42 +152,38 @@ module.exports = {
         }
         var panels = fkLusePage.qaPanels;
 
-        if (!panels) {
-            return Promise.resolve('Inga frågor hittades');
-        } else {
-            var messageIdAttributes = panels.map(function(elm) {
-                return Promise.all([
-                    elm.getAttribute('id'),
-                    elm.element(by.css('.fraga-status-header')).getText()
-                ]);
-            });
 
-            return messageIdAttributes.then(function(result) {
-                for (var i = 0; i < result.length; i++) {
-                    var messageId, messageAmne;
-                    var idAttr = result[i][0];
-                    var headerText = result[i][1];
-                    var isHandled = false;
+        var messageIdAttributes = panels.map(function(elm) {
+            return Promise.all([
+                elm.getAttribute('id'),
+                elm.element(by.css('.fraga-status-header')).getText()
+            ]);
+        });
 
-                    messageId = idAttr.replace('arende-unhandled-', '');
+        return messageIdAttributes.then(function(result) {
+            for (var i = 0; i < result.length; i++) {
+                var messageId, messageAmne;
+                var idAttr = result[i][0];
+                var headerText = result[i][1];
+                var isHandled = false;
 
-                    //Är ärende hanterat?
-                    isHandled = (messageId.indexOf('arende-handled') === 0);
-                    messageId = messageId.replace('arende-handled-', '');
+                messageId = idAttr.replace('arende-unhandled-', '');
 
-                    //Fånga ämne
-                    messageAmne = sh(headerText);
+                //Är ärende hanterat?
+                isHandled = (messageId.indexOf('arende-handled') === 0);
+                messageId = messageId.replace('arende-handled-', '');
 
-                    logger.info('Meddelanden som finns på intyget: ' + messageId + ', ' + messageAmne + ' Hanterad:' + isHandled);
-                    intyg.messages.push({
-                        id: messageId,
-                        amne: messageAmne,
-                        isHandled: isHandled
-                    });
-                }
-            });
-        }
+                //Fånga ämne
+                messageAmne = sh(headerText);
 
+                logger.info('Meddelanden som finns på intyget: ' + messageId + ', ' + messageAmne + ' Hanterad:' + isHandled);
+                intyg.messages.push({
+                    id: messageId,
+                    amne: messageAmne,
+                    isHandled: isHandled
+                });
+            }
+        });
     },
     stripTrailingSlash: function(str) {
         if (str.substr(-1) === '/') {

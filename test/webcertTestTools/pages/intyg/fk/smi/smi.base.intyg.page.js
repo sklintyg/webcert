@@ -30,13 +30,10 @@ var FkBaseIntyg = require('../fk.base.intyg.page.js');
 var BaseSmiIntygPage = FkBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
-
         this.certficate = element(by.id('certificate'));
         this.notSentMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
-
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.ovrigt = element(by.id('ovrigt'));
-
         this.baseratPa = {
             minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
             journaluppgifter: element(by.id('journaluppgifter')),
@@ -46,9 +43,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             annatBeskrivning: element(by.id('annatGrundForMUBeskrivning')),
             personligKannedom: element(by.id('kannedomOmPatient'))
         };
-
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
-
         this.diagnoser = {
             getDiagnos: function(index) {
                 index = index || 0;
@@ -61,7 +56,6 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             nyBedomningDiagnosgrund: element(by.id('nyBedomningDiagnosgrund')),
             diagnosForNyBedomning: element(by.id('diagnosForNyBedomning'))
         };
-
         this.funktionsnedsattning = {
             intellektuell: element(by.id('funktionsnedsattningIntellektuell')),
             kommunikation: element(by.id('funktionsnedsattningKommunikation')),
@@ -71,16 +65,13 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             balans: element(by.id('funktionsnedsattningBalansKoordination')),
             annanKropsligFunktion: element(by.id('funktionsnedsattningAnnan'))
         };
-
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
-
         this.behandling = {
             avslutad: element(by.id('avslutadBehandling')),
             pagaende: element(by.id('pagaendeBehandling')),
             planerad: element(by.id('planeradBehandling')),
             substansintag: element(by.id('substansintag'))
         };
-
         this.medicinskaForutsattningar = {
             kanUtvecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
             kanGoraTrotsBegransning: element(by.id('formagaTrotsBegransning')),
@@ -88,7 +79,6 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
             trotsBegransningar: element(by.id('formagaTrotsBegransning')),
             forslagTillAtgard: element(by.id('forslagTillAtgard'))
         };
-
         this.andraMedicinskaUtredningar = {
             value: element(by.id('underlagFinns')),
             field: element(by.id('form_underlagFinns')),
@@ -100,17 +90,16 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
                 };
             }
         };
-
         this.ovrigaUpplysningar = element(by.id('ovrigt'));
-
         this.kontaktFK = {
             value: element(by.id('kontaktMedFk')),
             onskas: element(by.id('form_kontaktMedFk')),
             anledning: element(by.id('anledningTillKontakt'))
         };
-
-        this.qaPanels = element.all(by.css('.arende-panel'));
-
+        this.qaPanels = {
+            kompletteringar: element(by.id('arende-kompletteringar-section')),
+            administrativafragor: element(by.id('arende-administrativafragor-section'))
+        };
         this.tillaggsfragor = {
             getFraga: function(id) {
                 return element(by.id('tillaggsfragor-' + id));
@@ -126,7 +115,6 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         this.kompletteraMedNyttIntygButton = element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button'));
         this.kompletteraMedFortsattPaIntygsutkastButton = element(by.id('komplettering-modal-dialog-goToUtkast-button'));
         this.kompletteraMedMeddelandeButton = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
-
     },
 
     verifieraBaseratPa: function(data) {

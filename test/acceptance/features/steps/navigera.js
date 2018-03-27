@@ -74,9 +74,6 @@ function gotoIntyg(intygstyp, origin, addToUrl) {
     return loginIfSessionUsed().then(function() {
         return helpers.getUrl(url)
             .then(function() {
-                return helpers.removeAlerts();
-            })
-            .then(function() {
                 return expect(element(by.id('wcHeader')).isPresent()).to.eventually.equal(true);
             }).then(function() {
                 helpers.injectConsoleTracing();
@@ -86,20 +83,15 @@ function gotoIntyg(intygstyp, origin, addToUrl) {
                     enhetSelectorLink.isPresent().then(function(isPresent) {
                         if (isPresent) {
                             return enhetSelectorLink.click().then(function() {
-                                return helpers.pageReloadDelay().then(function() { //sleep eftersom vi directas via säkerhetstjänsten
-                                    return helpers.fetchMessageIds(intyg.typ);
-                                });
+                                return helpers.pageReloadDelay(); //sleep eftersom vi directas via säkerhetstjänsten
                             });
                         } else {
-                            return helpers.pageReloadDelay().then(function() { //sleep eftersom vi directas via säkerhetstjänsten
-                                return helpers.fetchMessageIds(intyg.typ);
-                            });
+                            return helpers.pageReloadDelay();
                         }
 
                     });
-                } else {
-                    return helpers.fetchMessageIds(intyg.typ);
                 }
+                return;
             });
     });
 }
