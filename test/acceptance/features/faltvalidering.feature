@@ -25,7 +25,7 @@ Exempel:
   | Läkarutlåtande för aktivitetsersättning vid förlängd skolgång     |
   | Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga |
 
-@F.VAL-030 @F.VAL-001 @WIP
+@F.VAL-030 @F.VAL-001
 Scenariomall: Expanderar intyget så maximalt antal fält blir synliga och kontrollera att olika typer av valideringsfel visas för olika fält i olika intyg.
   Givet att jag är inloggad som läkare
   Och jag går in på en patient med personnummer "190007179815"
@@ -51,18 +51,19 @@ Scenariomall: Expanderar intyget så maximalt antal fält blir synliga och kontr
   Och ska "<datum_hypoglykemi>" valideringsfel visas med texten "Tidpunkt för allvarlig hypoglykemi under vaken tid måste anges som åååå-mm-dd, och får inte vara tidigare än ett år tillbaka eller senare än dagens datum."
   Och ska "<underlag>" valideringsfel visas med texten "Du måste ange ett underlag."
   Och ska "<utredning_info>" valideringsfel visas med texten "Du måste ange var Försäkringskassan kan få information om utredningen."
+  Och ska "<funk_debut>" valideringsfel visas med texten "Funktionsnedsättningens debut och utveckling måste fyllas i."
+  Och ska "<funk_påverkan>" valideringsfel visas med texten "Funktionsnedsättningens påverkan måste fyllas i."
   
-
 Exempel:
-  | intyg                                                             | tomt | ett_alternativ | minst_ett_alternativ | synintervall | år_födelse  | år_1900 | postnummer | datum | datum_hypoglykemi  | diagnos | åtgärder | minst_en_rad | underlag | utredning_info |
-  | Läkarintyg för sjukpenning                                        | 9    | 1              | 0                    | 0            | 0           | 0       | 2          | 12     | 0                  | 1       | 1        | 0            | 0        | 0             |
-  | Transportstyrelsens läkarintyg, diabetes                          | 5    | 9              | 0                    | 6            | 1           | 1       | 2          | 0     | 1                  | 0       | 0        | 0            | 0        | 0             |
-  | Transportstyrelsens läkarintyg                                    | 10   | 22             | 1                    | 0            | 0           | 0       | 2          | 0     | 0                  | 0       | 0        | 0            | 0        | 0             |
-  | Läkarutlåtande för sjukersättning                                 | 7    | 0              | 1                    | 0            | 0           | 0       | 2          | 8     | 0                  | 1       | 0        | 1            | 3        | 3             |
-  #| Läkarutlåtande för aktivitetsersättning vid förlängd skolgång     | 9    | 1              | 0                    | 0            | 0           | 0       | 2          | 7     | 0                  | 1       | 1        | 0            | 0        | 0             |
-  #| Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga | 9    | 1              | 0                    | 0            | 0           | 0       | 2          | 7     | 0                  | 1       | 1        | 0            | 0        | 0             |
+  | intyg                                                             | tomt | ett_alternativ | minst_ett_alternativ | synintervall | år_födelse  | år_1900 | postnummer | datum | datum_hypoglykemi  | diagnos | åtgärder | minst_en_rad | underlag | utredning_info | funk_debut | funk_påverkan |
+  | Läkarintyg för sjukpenning                                        | 13   | 1              | 0                    | 0            | 0           | 0       | 2          | 12    | 0                  | 1       | 1        | 0            | 0        | 0             | 0          | 0             |
+  | Transportstyrelsens läkarintyg, diabetes                          | 9    | 9              | 0                    | 6            | 1           | 1       | 2          | 0     | 1                  | 0       | 0        | 0            | 0        | 0             | 0          | 0             |
+  | Transportstyrelsens läkarintyg                                    | 14   | 22             | 1                    | 0            | 0           | 0       | 2          | 0     | 0                  | 0       | 0        | 0            | 0        | 0             | 0          | 0             |
+  | Läkarutlåtande för sjukersättning                                 | 11   | 0              | 1                    | 0            | 0           | 0       | 2          | 8     | 0                  | 1       | 0        | 1            | 3        | 3             | 0          | 0             |
+  | Läkarutlåtande för aktivitetsersättning vid förlängd skolgång     | 6    | 0              | 0                    | 0            | 0           | 0       | 1          | 8     | 0                  | 1       | 0        | 1            | 3        | 3             | 1          | 1             |
+  #| Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga | 13    | 1              | 0                    | 0            | 0           | 0       | 2          | 7     | 0                  | 1       | 1        | 0            | 0        | 0             | 0          | 0             |
 
-@F.Val-044
+@F.VAL-044
 Scenario: F.Val-044 - Intyget kan inte signeras om slut är före startdatum
     Givet att jag är inloggad som läkare
     Och jag går in på en patient

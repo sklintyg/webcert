@@ -56,76 +56,7 @@ var synVarBAS = tsBasUtkastPage.syn;
 var synVarArrayTSD = [synVarTSD.hoger.utan, synVarTSD.hoger.med, synVarTSD.vanster.utan, synVarTSD.vanster.med, synVarTSD.binokulart.utan, synVarTSD.binokulart.med];
 var synVarArrayBAS = [synVarBAS.hoger.utan, synVarBAS.hoger.med, synVarBAS.vanster.utan, synVarBAS.vanster.med, synVarBAS.binokulart.utan, synVarBAS.binokulart.med];
 
-let valideringsVal = {
-    'Transportstyrelsens läkarintyg, diabetes': {
-        radioknappar: {
-            'a) Ögonläkarintyg kommer att skickas in separat': 'Nej',
-            'b) Förekommer hypoglykemier med tecken på nedsatt hjärnfunktion (neuroglukopena symtom) som bedöms kunna innebära en trafiksäkerhetsrisk?': 'Ja',
-            'd) Har patienten haft allvarlig hypoglykemi (som krävt hjälp av annan för att hävas) under det senaste året?': 'Nej',
-            'e) Har patienten haft allvarlig hypoglykemi i trafiken under det senaste året?': 'Ja',
-            'g) Har patienten haft allvarlig hypoglykemi (som krävt hjälp av annan för att hävas) under vaken tid det senaste året?': 'Ja'
-        },
-        checkboxar: [
-            'Insulin',
-            'Taxi'
-        ],
-        text: [
-            'diabetes-årtal',
-            'alla synfält',
-            'datum',
-            'postnummer'
-        ]
-    },
-    'Transportstyrelsens läkarintyg': {
-        radioknappar: {
-            'Har patienten diabetes?': 'Ja',
-            'Vilken typ?': 'Typ 2',
-            'a) Har patienten någon sjukdom eller funktionsnedsättning som påverkar rörligheten och som medför att fordon inte kan köras på ett trafiksäkert sätt?': 'Ja',
-            'c) Föreligger viktiga riskfaktorer för stroke (tidigare stroke eller TIA, förhöjt blodtryck, förmaksflimmer eller kärlmissbildning)?': 'Ja',
-            'a) Finns journaluppgifter, anamnestiska uppgifter, resultat av laboratorieprover eller andra tecken på missbruk eller beroende av alkohol, narkotika eller läkemedel?': 'Ja',
-            'c) Pågår regelbundet läkarordinerat bruk av läkemedel som kan innebära en trafiksäkerhetsrisk?': 'Ja',
-            'Har patienten vårdats på sjukhus eller haft kontakt med läkare med anledning av fälten 1-13?': 'Ja',
-            'Har patienten någon stadigvarande medicinering?': 'Ja'
-        },
-        checkboxar: [
-            'Taxi'
-        ],
-        text: [
-            'postnummer'
-        ]
-    },
-    'Läkarintyg för sjukpenning': {
-        radioknappar: {
-            'Prognos för arbetsförmåga utifrån aktuellt undersökningstillfälle': 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning inom',
-        },
-        checkboxar: [
-            'Annat',
-            'Nuvarande arbete',
-            '25 procent',
-            '50 procent',
-            '75 procent',
-            '100 procent',
-        ],
-        text: [
-            'postnummer',
-            'datum'
-        ]
-    },
-    'Läkarutlåtande för sjukersättning': {
-        radioknappar: {
-            'Är utlåtandet även baserat på andra medicinska utredningar eller underlag?': 'Ja',
-            'Finns skäl till att revidera/uppdatera tidigare satt diagnos?': 'Ja',
-            '': 'Ja',
-        },
-        checkboxar: [
-            'Annat',
-        ],
-        text: [
-            'postnummer',
-            'datum'
-        ]
-    }
-};
+let valideringsVal = require('./faltvalidering_testdata.js');
 
 
 /*
@@ -345,7 +276,7 @@ Then(/^ska statusmeddelande att intyget är klart att signera visas$/, () => exp
 Then(/^ska "(\d+)" valideringsfel visas med texten "([^"]+)"$/, (antal, text) =>
     expect(findValidationErrorsWithText(text).count()).to.eventually.equal(Number.parseInt(antal, 10)));
 
-let chainCheckboxActions = intyg => valideringsVal[intyg].checkboxar
+let chainCheckboxActions = intyg => () => valideringsVal[intyg].checkboxar
     .reduce((prev, text) => prev.then(() => checkboxVal(text)), Promise.resolve());
 
 let chainRadiobuttonActions = intyg => () => Object.keys(valideringsVal[intyg].radioknappar)
@@ -355,7 +286,13 @@ let chainTextFieldActions = intyg => valideringsVal[intyg].text
     .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
 
 When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg =>
-    chainCheckboxActions(intyg)
+    utkastPage.angeEnhetAdress({
+        postadress: '',
+        postort: '',
+        postnummer: '',
+        telefon: ''
+    })
+    .then(chainCheckboxActions(intyg))
     .then(chainRadiobuttonActions(intyg)));
 
 When(/^jag fyller i textfält med felaktiga värden i "([^"]+)"$/, intyg => chainTextFieldActions(intyg));
