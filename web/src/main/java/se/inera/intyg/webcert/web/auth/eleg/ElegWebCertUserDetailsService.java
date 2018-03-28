@@ -181,7 +181,12 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private void decorateWebcertUserWithSekretessMarkering(WebCertUser webCertUser, HoSPersonType hosPerson) {
         // Make sure we have a valid personnr to work with..
-        Personnummer personNummer = createPnr(hosPerson);
+        Personnummer personNummer =  Personnummer
+                .createPersonnummer(hosPerson.getPersonId().getExtension())
+                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        String.format("Can't determine sekretesstatus for invalid personId %s",
+                                hosPerson.getPersonId().getExtension())));
+
         PersonSvar person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
             webCertUser.setSekretessMarkerad(person.getPerson().isSekretessmarkering());
@@ -190,12 +195,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
                     String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
                             personNummer.getPersonnummerWithDash()));
         }
-    }
-
-    private Personnummer createPnr(HoSPersonType hosPerson) {
-        return Personnummer.createPersonnummer(hosPerson.getPersonId().getExtension())
-                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        String.format("Can't determine sekretesstatus for invalid personId %s", hosPerson.getPersonId().getExtension())));
     }
 
     private void decorateWebCertUserWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {
