@@ -51,6 +51,7 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
@@ -84,36 +85,26 @@ import javax.xml.soap.SOAPFault;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.*;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
     private static final String INTYG_ID = "<intygsId>";
+    private static final String PATIENT_ID = "19121212-1212";
+
+    private static final Personnummer PNR = Personnummer.createPersonnummer(PATIENT_ID).get();
 
     private static final LocalDateTime JANUARY = LocalDateTime.parse("2013-01-12T11:22:11");
     private static final LocalDateTime MAY = LocalDateTime.parse("2013-05-01T11:11:11");
@@ -146,6 +137,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
     private AuthoritiesHelper authoritiesHelper;
+    @Mock
+    private FragaSvarRepository fragaSvarRepository;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -185,6 +178,29 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     }
 
+    @Test
+    public void testNumberOfUnhandledFragaSvarForCareUnits() {
+        List<GroupableItem> queryResult = new ArrayList<>();
+
+        when(webCertUserService.getUser()).thenReturn(createUser());
+        when(fragaSvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(anyList(), anySet())).thenReturn(queryResult);
+
+        Map<String, Long> resultMap = new HashMap<>();
+        resultMap.put("HSA1", 2L);
+
+        when(statisticsGroupByUtil.toSekretessFilteredMap(queryResult)).thenReturn(resultMap);
+
+        Map<String, Long> result = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList(
+                "HSA1", "HSA2"),
+                Stream.of("fk7263").collect(Collectors.toSet()));
+
+        verify(fragaSvarRepository, times(1)).getUnhandledWithEnhetIdsAndIntygstyper(anyList(), anySet());
+        verify(statisticsGroupByUtil, times(1)).toSekretessFilteredMap(queryResult);
+
+        assertEquals(1, result.size());
+        assertEquals(2L, result.get("HSA1").longValue());
+    }
+
     private FragaSvar buildFragaSvar(Long id, LocalDateTime fragaSkickadDatum, LocalDateTime svarSkickadDatum) {
         FragaSvar f = new FragaSvar();
         f.setStatus(Status.PENDING_INTERNAL_ACTION);
@@ -198,7 +214,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         IntygsReferens intygsReferens = new IntygsReferens();
         intygsReferens.setIntygsId(INTYG_ID);
         intygsReferens.setIntygsTyp("fk7263");
-        intygsReferens.setPatientId(PATIENT_ID);
+        intygsReferens.setPatientId(PNR);
         f.setIntygsReferens(intygsReferens);
         f.setKompletteringar(new HashSet<>());
         f.setVardperson(new Vardperson());
@@ -219,7 +235,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         IntygsReferens intygsReferens = new IntygsReferens();
         intygsReferens.setIntygsId(INTYG_ID);
         intygsReferens.setIntygsTyp("fk7263");
-        intygsReferens.setPatientId(PATIENT_ID);
+        intygsReferens.setPatientId(PNR);
         f.setIntygsReferens(intygsReferens);
         f.setKompletteringar(new HashSet<>());
         f.setVardperson(new Vardperson());
@@ -286,7 +302,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     @Test(expected = WebCertServiceException.class)
     public void testGetFragaSvarWithSekretessPatientForVardadminThrowsException() {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         List<FragaSvar> fragaSvarList = new ArrayList<>();
         fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
         fragaSvarList.add(buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now()));
@@ -295,6 +310,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         // the second question/answer pair was sent to a unit out of the current user's range -> has to be filtered
         fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
 
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1")).thenReturn(new ArrayList<>(fragaSvarList));
         when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
 
@@ -303,7 +319,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     @Test(expected = WebCertServiceException.class)
     public void testGetFragaSvarWithPuFailsForVardadminThrowsException() {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
         List<FragaSvar> fragaSvarList = new ArrayList<>();
         fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
         fragaSvarList.add(buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now()));
@@ -312,6 +327,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         // the second question/answer pair was sent to a unit out of the current user's range -> has to be filtered
         fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
 
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
         when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1")).thenReturn(new ArrayList<>(fragaSvarList));
         when(webCertUserService.getUser()).thenReturn(createUser());
 
@@ -436,7 +452,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), false))
                 .thenReturn(getRevokedIntygContentHolder());
         when(webCertUserService.getUser()).thenReturn(createUser());
-
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
 
         // test call
@@ -505,6 +520,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
+
         // mock ws ok response
         SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
         wsResponse.setResult(ResultOfCallUtil.okResult());
@@ -579,7 +595,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
         when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp(), false))
                 .thenReturn(getRevokedIntygContentHolder());
-
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
 
@@ -1106,9 +1121,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     }
 
     private WebCertUser createUser() {
-
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-
         return buildUserOfRole(role);
     }
 

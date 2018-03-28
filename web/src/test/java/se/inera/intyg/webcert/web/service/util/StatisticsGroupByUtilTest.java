@@ -51,6 +51,11 @@ import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-08-30.
+ *
+ * NOT:
+ * Intygen TS-BAS och TS-DIABETES får ej skrivas på patienter som
+ * har SekretessStatus.TRUE. De intygen ska med andra ord inte
+ * räknas med.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup {
@@ -63,6 +68,8 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
     private static final String FK7263 = "fk7263";
     private static final String TSBAS = "ts-bas";
+
+    private static final String PNR_INVALID = "thiswillnotwork";
 
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
@@ -83,6 +90,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
         sekrMap.put(pnr1, SekretessStatus.FALSE);
         sekrMap.put(pnr2, SekretessStatus.TRUE);
         sekrMap.put(pnr3, SekretessStatus.FALSE);
+
         when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
     }
 
@@ -149,7 +157,6 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
         when(webCertUserService.getUser()).thenReturn(createUser());
 
-
         List<GroupableItem> queryResult = new ArrayList<>();
         queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
         queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
@@ -207,8 +214,35 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
         assertEquals(0, result.size());
     }
 
-    private WebCertUser buildUserOfRole(Role role) {
+    @Test
+    public void testFilterInvalidPersonnummer() {
+        List<GroupableItem> queryResult = new ArrayList<>();
+        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+        queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
+        queryResult.add(new GroupableItem("id-3", HSA1, null, FK7263));
+        queryResult.add(new GroupableItem("id-4", HSA1, "", TSBAS));
+        queryResult.add(new GroupableItem("id-5", HSA2, "thisisainvalidparameter", FK7263));
 
+        List<Personnummer> result = testee.getPersonummerList(queryResult);
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testFilterInvalidGroupableItems() {
+        List<GroupableItem> queryResult = new ArrayList<>();
+        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+        queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
+        queryResult.add(new GroupableItem("id-3", HSA1, null, FK7263));
+        queryResult.add(new GroupableItem("id-4", HSA1, "", TSBAS));
+        queryResult.add(new GroupableItem("id-5", HSA2, "thisisainvalidparameter", FK7263));
+
+        List<GroupableItem> result = testee.getFilteredGroupableItemList(queryResult);
+
+        assertEquals(2, result.size());
+    }
+
+    private WebCertUser buildUserOfRole(Role role) {
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
@@ -228,9 +262,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
     }
 
     private WebCertUser createUser() {
-
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-
         return buildUserOfRole(role);
     }
 }

@@ -84,7 +84,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private UtkastRepository utkastRepository;
 
     @Autowired
-    private PUService personUppgiftsService;
+    private PUService puService;
 
     @Autowired
     @Qualifier("copyCompletionUtkastBuilder")
@@ -481,7 +481,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         LOG.debug("Refreshing person data to use for the copy");
 
-        PersonSvar personSvar = personUppgiftsService.getPerson(patientPersonnummer);
+        PersonSvar personSvar = getPersonSvar(patientPersonnummer);
 
         if (PersonSvar.Status.ERROR.equals(personSvar.getStatus())) {
             LOG.error("An error occured when using '{}' to lookup person data");
@@ -493,6 +493,15 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
 
         return personSvar.getPerson();
+    }
+
+    private PersonSvar getPersonSvar(Personnummer personnummer) {
+        if (personnummer == null) {
+            String errMsg = "No personnummer present. Unable to make a call to PUService";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, errMsg);
+        }
+
+        return puService.getPerson(personnummer);
     }
 
     private void checkIntegreradEnhet(CopyUtkastBuilderResponse builderResponse) {

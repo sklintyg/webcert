@@ -30,7 +30,6 @@ import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -48,6 +47,7 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -63,6 +63,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
@@ -72,47 +73,35 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
+
+    private static final long UTKAST_VERSION = 1;
+    private static final long INTYG_VERSION = 2;
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final long UTKAST_VERSION = 1;
-    private static final long INTYG_VERSION = 2;
     private static final String UTKAST_ENHETS_ID = "hsa123";
-
     private static final String USER_REFERENCE = "some-ref";
+
     private static final String REFERENS = "referens";
+
+    private static final String PERSON_ID = "19121212-1212";
+
+    private static final Personnummer PERSONNUMMER = createPnr(PERSON_ID);
 
     @Mock
     private UtkastRepository mockUtkastRepository;
@@ -134,6 +123,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
     private ReferensService referensService;
+    @Mock
+    private StatisticsGroupByUtil statisticsGroupByUtil;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -154,10 +145,13 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private HoSPersonal hoSPerson;
     private Patient defaultPatient;
 
+    private static Personnummer createPnr(String personId) {
+        return Personnummer.createPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer: " + personId));
+    }
+
     @Before
     public void setup() {
-        Personnummer personnummer = createPnr("19121212-1212");
-
         hoSPerson = new HoSPersonal();
         hoSPerson.setPersonId("AAA");
         hoSPerson.setFullstandigtNamn("Dr Dengroth");
@@ -165,7 +159,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         hoSPerson.getSpecialiteter().add("Ortoped");
 
         defaultPatient = new Patient();
-        defaultPatient.setPersonId(personnummer);
+        defaultPatient.setPersonId(PERSONNUMMER);
         defaultPatient.setFornamn("fornamn");
         defaultPatient.setMellannamn("mellannamn");
         defaultPatient.setPostadress("pa1");
@@ -193,8 +187,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         hoSPerson.setVardenhet(vardenhet);
 
-        utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson, personnummer);
-        signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson, personnummer);
+        utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson, PERSONNUMMER);
+        signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson, PERSONNUMMER);
 
     }
 
@@ -472,7 +466,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
-        grunddata.setPatient(buildPatient("19121212-1212", "Tolvan", "Tolvansson"));
+        grunddata.setPatient(buildPatient(PERSON_ID, "Tolvan", "Tolvansson"));
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         utkast.setPatientFornamn("Inte Tolvan");
@@ -635,7 +629,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
-        grunddata.setPatient(buildPatient("19121212-1212", null, "Tolvansson"));
+        grunddata.setPatient(buildPatient(PERSON_ID, null, "Tolvansson"));
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         utkast.setPatientFornamn(utkastFornamn);
@@ -699,30 +693,50 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testCheckIfPersonHasExistingIntyg() {
-        final String personId = "19121212-1212";
+        final String personId = PERSON_ID;
         final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
         final String vardgivareId = "vardgivarid";
 
-        Personnummer personnummer = createPnr(personId);
-
-        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, "", null, personnummer);
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
         db1.setVardgivarId("other");
-        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, "", null, personnummer);
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
         db2.setVardgivarId(vardgivareId);
-        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, "", null, personnummer);
+        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
         doi.setVardgivarId("other");
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
-        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), activeModules))
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
                 .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Map<String, Boolean>> res = draftService.checkIfPersonHasExistingIntyg(personnummer, createUser());
+        Map<String, Map<String, Boolean>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db"));
         assertFalse(res.get("intyg").get("doi"));
 
-        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(personnummer.getPersonnummerWithDash()), eq(activeModules));
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()), eq(activeModules));
+    }
+
+    @Test
+    public void testNumberOfUnsignedDraftsByCareUnits() {
+        List<GroupableItem> queryResult = new ArrayList<>();
+
+        when(userService.getUser()).thenReturn(createUser());
+        when(mockUtkastRepository.getIntygWithStatusesByEnhetsId(anyList(), anyList(), anySet())).thenReturn(queryResult);
+
+        Map<String, Long> resultMap = new HashMap<>();
+        resultMap.put("HSA1", 2L);
+
+        when(statisticsGroupByUtil.toSekretessFilteredMap(queryResult)).thenReturn(resultMap);
+
+        Map<String, Long> result = draftService.getNbrOfUnsignedDraftsByCareUnits(Arrays.asList("HSA1", "HSA2"));
+
+        verify(mockUtkastRepository, times(1)).getIntygWithStatusesByEnhetsId(anyList(), anyList(), anySet());
+        verify(statisticsGroupByUtil, times(1)).toSekretessFilteredMap(queryResult);
+
+        assertEquals(1, result.size());
+        assertEquals(2L, result.get("HSA1").longValue());
+
     }
 
     private Patient getUpdatedPatient() {
@@ -795,11 +809,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
 
         return user;
-    }
-
-    private Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer: " + personId));
     }
 
 }

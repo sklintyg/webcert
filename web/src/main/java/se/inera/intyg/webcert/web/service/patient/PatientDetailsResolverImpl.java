@@ -33,6 +33,8 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.converters.IntygsTypToInternal;
@@ -122,7 +124,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     @Override
     public SekretessStatus getSekretessStatus(Personnummer personNummer) {
-        PersonSvar person = puService.getPerson(personNummer);
+        PersonSvar person = getPersonSvar(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
             if (person.getPerson().isSekretessmarkering()) {
                 return SekretessStatus.TRUE;
@@ -160,7 +162,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     @Override
     public boolean isAvliden(Personnummer personnummer) {
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
         boolean avlidenPU = personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
 
         WebCertUser user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
@@ -183,6 +185,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     private PersonSvar getPersonSvar(Personnummer personnummer) {
+        if (personnummer == null) {
+            String errMsg = "No personnummer present. Unable to make a call to PUService";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, errMsg);
+        }
+
         return puService.getPerson(personnummer);
     }
 
