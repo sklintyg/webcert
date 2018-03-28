@@ -239,7 +239,9 @@ Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via
     return gotoIntyg(intygstyp, origin);
 });
 
-
+Given(/^jag trycker på knappen med texten "([^"]*)"$/, function(BtnText) { 
+    return element(by.cssContainingText('.btn', BtnText)).sendKeys(protractor.Key.SPACE); 
+}); 
 
 When(/^jag går in på intyget via djupintegrationslänk och har parametern "([^"]*)" satt till "([^"]*)"$/, function(param, paramValue) {
     return gotoIntyg('intyget', ' via djupintegrationslänk', param + '=' + paramValue);
