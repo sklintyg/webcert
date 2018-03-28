@@ -25,7 +25,7 @@ Scenario: Kontrollera att vårdadmin inte kan se eller öppna något signerat in
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
-	Så ska jag varnas om att "Patienten har en sekretessmarkering."
+	Så ska jag varnas om att "Patienten har en sekretessmarkering"
 	
 	När jag skickar intyget till Försäkringskassan
 	Och Försäkringskassan ställer en "OVRIGT" fråga om intyget
