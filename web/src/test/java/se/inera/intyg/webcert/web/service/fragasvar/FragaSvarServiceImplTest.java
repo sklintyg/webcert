@@ -137,8 +137,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
     private AuthoritiesHelper authoritiesHelper;
-    @Mock
-    private FragaSvarRepository fragaSvarRepository;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -182,8 +180,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     public void testNumberOfUnhandledFragaSvarForCareUnits() {
         List<GroupableItem> queryResult = new ArrayList<>();
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
-        when(fragaSvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(anyList(), anySet())).thenReturn(queryResult);
+        when(fragasvarRepositoryMock.getUnhandledWithEnhetIdsAndIntygstyper(anyList(), anySet())).thenReturn(queryResult);
 
         Map<String, Long> resultMap = new HashMap<>();
         resultMap.put("HSA1", 2L);
@@ -194,7 +191,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
                 "HSA1", "HSA2"),
                 Stream.of("fk7263").collect(Collectors.toSet()));
 
-        verify(fragaSvarRepository, times(1)).getUnhandledWithEnhetIdsAndIntygstyper(anyList(), anySet());
+        verify(fragasvarRepositoryMock, times(1)).getUnhandledWithEnhetIdsAndIntygstyper(anyList(), anySet());
         verify(statisticsGroupByUtil, times(1)).toSekretessFilteredMap(queryResult);
 
         assertEquals(1, result.size());
