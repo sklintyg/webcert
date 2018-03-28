@@ -48,7 +48,6 @@ var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 var tsDiabetesUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 var dbUtkastPage = wcTestTools.pages.intyg.skv.db.utkast;
 var doiUtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
-var shuffle = wcTestTools.helpers.testdata.shuffle;
 var moveAndSendKeys = helpers.moveAndSendKeys;
 
 var td = wcTestTools.testdata;
@@ -379,14 +378,23 @@ Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
     return fillIn(global.intyg);
 });
 
-When(/^anger ett slutdatum som är tidigare än startdatum$/, function() {
-    var utkastPage = pages.getUtkastPageByType(intyg.typ);
-    var nedsatthet = shuffle(['nedsattMed25', 'nedsattMed50', 'nedsattMed75', 'nedsattMed100'])[0];
-    logger.info('nedsatthet : ' + nedsatthet);
-    global.intyg.arbetsformaga = {};
-    global.intyg.arbetsformaga[nedsatthet] = {
-        from: '2017-03-27',
-        tom: '2016-04-01'
-    };
-    return utkastPage.angeArbetsformaga(intyg.arbetsformaga);
-});
+When(/^jag anger slutdatum som är tidigare än startdatum$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+        nedsattMed25: {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        },
+        nedsattMed50: {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        },
+        nedsattMed75: {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        },
+        nedsattMed100: {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        },
+    })
+);

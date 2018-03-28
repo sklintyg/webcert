@@ -457,5 +457,8 @@ module.exports = {
         }
         logger.info('intygURL: ' + url);
         return url;
+    },
+    uniqueItemsInArray: function(value, index, self) {
+        return self.indexOf(value) === index;
     }
 };

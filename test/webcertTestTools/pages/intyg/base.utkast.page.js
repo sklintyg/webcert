@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 02-12-15.
  */
-/*globals browser,protractor, Promise*/
+/*globals browser,protractor, Promise, logger*/
 'use strict';
 
 var pageHelpers = require('../pageHelper.util.js');
@@ -148,6 +148,23 @@ var BaseUtkast = JClass._extend({
         ]);
 
 
+    },
+    radioknappVal: function(val, text) {
+        browser.ignoreSynchronization = true;
+        logger.info(`Svarar ${val} i frågan ${text}`);
+        return element.all(by.cssContainingText('.ue-fraga', text))
+            .all(by.cssContainingText('wc-radio-wrapper', val))
+            .all(by.tagName('input')).first().click()
+            .then(() => browser.ignoreSynchronization = false);
+    },
+
+    checkboxVal: function(text) {
+        logger.info(`Bockar i ${text}`);
+        browser.ignoreSynchronization = true;
+        return element.all(by.css('.ue-fraga'))
+            .all(by.cssContainingText('wc-checkbox-wrapper', text))
+            .all(by.tagName('input')).first().click()
+            .then(() => browser.ignoreSynchronization = false);
     }
 });
 

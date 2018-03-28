@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, logger, JSON, Promise,intyg, browser */
+/* globals pages, logger, JSON, Promise,intyg, browser, protractor */
 
 'use strict';
 var utkastPage;
@@ -41,6 +41,7 @@ module.exports = {
         // Djupintegration har inte adress
 
         utkastPage = pages.getUtkastPageByType(intyg.typ);
+
         if (global.person.adress && global.person.adress.postadress && !isSMI && global.user.origin !== 'DJUPINTEGRATION') {
             return utkastPage.angePatientAdress(global.person.adress).then(function() {
                 logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
@@ -70,7 +71,9 @@ module.exports = {
     },
     fillIn: function(intyg) {
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        return this.fillInEnhetAdress().then(() => this.setPatientAdressIfNotGiven()).then(() => browser.driver.switchTo().activeElement());
+        return this.fillInEnhetAdress()
+            .then(() => this.setPatientAdressIfNotGiven())
+            .then(() => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB));
     }
 
 };
