@@ -93,6 +93,7 @@ public class NotificationPatientEnricherTest {
         verify(puService, times(1)).getPerson(any(Personnummer.class));
 
         Patient p = intyg.getPatient();
+
         assertEquals("191212121212", p.getPersonId().getExtension());
         assertEquals("", p.getFornamn());
         assertEquals("", p.getMellannamn());
