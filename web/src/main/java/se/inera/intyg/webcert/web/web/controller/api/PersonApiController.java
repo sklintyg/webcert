@@ -73,7 +73,7 @@ public class PersonApiController extends AbstractApiController {
 
     private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
+                .orElseThrow(() -> new InvalidPersonNummerException("Could not create Personnummer object from personId: " + personId));
     }
 
 }
