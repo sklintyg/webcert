@@ -59,7 +59,7 @@ public class NotificationPatientEnricher {
             String personId = intyg.getPatient().getPersonId().getExtension();
             Personnummer personnummer = Personnummer
                     .createPersonnummer(personId)
-                    .orElseThrow(() -> new IllegalArgumentException("Cannot create Personummer object from personId: " + personId ));
+                    .orElseThrow(() -> new IllegalArgumentException("Cannot create Personummer object from personId: " + personId));
 
             PersonSvar personSvar = puService.getPerson(personnummer);
             if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
