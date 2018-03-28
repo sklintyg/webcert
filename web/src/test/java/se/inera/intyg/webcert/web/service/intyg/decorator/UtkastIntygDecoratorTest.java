@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -38,7 +38,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 /**
@@ -70,7 +72,7 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testNotAWebcertIntygDoesNotAddAnyStatuses() {
-        when(utkastRepository.findOne(anyString())).thenReturn(null);
+        when(utkastRepository.findOne(any())).thenReturn(null);
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -113,7 +115,7 @@ public class UtkastIntygDecoratorTest {
     public void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
         signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
         signedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(anyString())).thenReturn(signedUtkast);
+        when(utkastRepository.findOne(isNull())).thenReturn(signedUtkast);
         CertificateResponse response = buildCertificateResponse();
         response.getMetaData().getStatus().add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
@@ -124,7 +126,7 @@ public class UtkastIntygDecoratorTest {
     @Test
     public void testSentStatusIsAddedFromUtkast() {
         signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(anyString())).thenReturn(signedUtkast);
+        when(utkastRepository.findOne(isNull())).thenReturn(signedUtkast);
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -139,7 +141,7 @@ public class UtkastIntygDecoratorTest {
     public void testRevokedStatusIsAddedFromUtkast() {
         signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
         signedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(anyString())).thenReturn(signedUtkast);
+        when(utkastRepository.findOne(isNull())).thenReturn(signedUtkast);
 
         CertificateResponse response = buildCertificateResponse();
 

@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -72,14 +72,32 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -222,15 +240,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
                 "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         Utlatande utlatande = mock(Utlatande.class);
-        GrundData grunddata = new GrundData();
-        grunddata.setSkapadAv(new HoSPersonal());
-        grunddata.setPatient(defaultPatient);
-
-        when(utlatande.getGrundData()).thenReturn(grunddata);
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
     }
 
@@ -249,7 +259,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createUser();
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(userService.getUser()).thenReturn(user);
 
         draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
 
@@ -270,7 +279,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createUser();
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(userService.getUser()).thenReturn(user);
 
         try {
             draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion() - 1);
@@ -417,7 +425,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         ValidationMessage valMsg = new ValidationMessage("a", "field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(INTYG_JSON)).thenReturn(validationResponse);
 
@@ -548,11 +555,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
         draftService.updatePatientOnDraft(request);
 
@@ -583,11 +587,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
         draftService.updatePatientOnDraft(request);
 
@@ -611,8 +612,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         grunddata.setPatient(defaultPatient);
         grunddata.setSkapadAv(new HoSPersonal());
-
-        when(utlatande.getGrundData()).thenReturn(grunddata);
 
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
@@ -663,7 +662,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testValidateValidDraftWithWarningsIncludesWarningsInResponse() throws ModuleException, ModuleNotFoundException {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(buildValidationResponse());
         DraftValidation validationResult = draftService.validateDraft(INTYG_ID, INTYG_TYPE, utkast.getModel());
@@ -674,7 +672,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testSetKlarForSigneraStatusMessageSent() {
         WebCertUser user = createUser();
-        when(userService.hasAuthenticationContext()).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOneByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(utkast);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
@@ -690,13 +687,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForLakare() {
-        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString())).thenReturn(new HashSet<>());
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForInvalidIntygsTyp() {
-        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
                 .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
@@ -716,10 +712,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, "", null, personnummer);
         doi.setVardgivarId("other");
 
-        when(moduleRegistry.listAllModules()).thenReturn(
-                Arrays.asList("lisjp", "db", "doi").stream()
-                        .map(a -> new IntygModule(a, null, null, null, null, "", null, null, null, false)).collect(
-                        Collectors.toList()));
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), activeModules))
                 .thenReturn(Arrays.asList(db1, db2, doi));

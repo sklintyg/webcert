@@ -20,9 +20,11 @@ package se.inera.intyg.webcert.integration.tak.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
@@ -52,13 +54,16 @@ import java.util.stream.Stream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TakServiceImplTest {
 
     private static final String NTJP_ID = "1";
@@ -120,8 +125,7 @@ public class TakServiceImplTest {
 
     @Test
     public void testSuccess() {
-        when(consumer.doLookup(anyString(), anyString(), anyString())).thenReturn(buildTakLogicalAddress("29"));
-
+        doReturn(buildTakLogicalAddress("29")).when(consumer).doLookup(isNull(), anyString(), isNull());
         assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user).isValid());
     }
 
@@ -178,19 +182,20 @@ public class TakServiceImplTest {
 
     @Test
     public void testSuccessEvenThoughTimeout() {
-        when(consumer.doLookup(anyString(), anyString(), anyString())).thenAnswer((Answer<TakLogicalAddress[]>) invocation -> {
+        when(consumer.doLookup(isNull(), anyString(), isNull())).thenAnswer((Answer<TakLogicalAddress[]>) invocation -> {
             Thread.sleep(1500);
             return buildTakLogicalAddress("28");
         });
 
-        assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user).isValid());
+        boolean result = impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_1, user).isValid();
+
+        assertTrue(result);
     }
 
     @Test
     public void testCorrectErrorMessageForReceiveAnswer() {
         setupIds();
         setupMockUpdate();
-        when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(buildTakLogicalAddress("15"));
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("16"));
 
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(new TakLogicalAddress[] {});
@@ -222,7 +227,6 @@ public class TakServiceImplTest {
     public void testCorrectErrorMessageForSendMessageToCare() {
         setupIds();
         setupMockUpdate();
-        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("16"));
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V1_ID))).thenReturn(buildTakLogicalAddress("16"));
 
         when(consumer.doLookup(anyString(), anyString(), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(new TakLogicalAddress[] {});

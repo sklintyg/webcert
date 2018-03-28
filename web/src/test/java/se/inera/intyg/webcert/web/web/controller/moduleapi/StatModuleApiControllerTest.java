@@ -18,27 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anySetOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.ws.rs.core.Response;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,9 +25,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -67,6 +45,26 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
+
+import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
@@ -154,9 +152,9 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
 
         mockUser.setValdVardenhet(ve2);
 
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet())).thenReturn(fragaSvarStatsMap);
+        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet())).thenReturn(arendeStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
 
@@ -178,9 +176,9 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
 
         mockUser.setValdVardenhet(ve3);
 
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet())).thenReturn(fragaSvarStatsMap);
+        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet())).thenReturn(arendeStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
 
@@ -202,9 +200,9 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
 
         mockUser.setValdVardenhet(ve4);
 
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet())).thenReturn(fragaSvarStatsMap);
+        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet())).thenReturn(arendeStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
 
@@ -230,9 +228,9 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
 
         mockUser.setValdVardenhet(ve1);
 
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet())).thenReturn(fragaSvarStatsMap);
+        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet())).thenReturn(arendeStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
 
@@ -262,10 +260,6 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
     @Test
     public void testWebcertUserIsNull() {
         when(webCertUserService.getUser()).thenReturn(null);
-
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyListOf(String.class), anySetOf(String.class))).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
         assertNotNull(response);

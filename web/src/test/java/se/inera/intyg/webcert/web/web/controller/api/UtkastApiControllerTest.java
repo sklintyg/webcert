@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -68,10 +68,11 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -107,7 +108,6 @@ public class UtkastApiControllerTest {
     @Before
     public void setup() throws ModuleNotFoundException {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
-        when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER_PU_SEKRETESS))).thenReturn(SekretessStatus.TRUE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
         when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(new IntygModule("luse", "", "", "", "", "", "", "","", false));
         when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(new IntygModule("fk7263", "", "", "", "", "", "", "","", true));
@@ -123,8 +123,6 @@ public class UtkastApiControllerTest {
     public void testCreateUtkastFailsForDeprecated() {
         String intygsTyp = "fk7263";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-        when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         Response response = utkastController.createUtkast(intygsTyp, buildRequest("fk7263"));
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
@@ -198,8 +196,6 @@ public class UtkastApiControllerTest {
         String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
-
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
         utkastRequest.setPatientFornamn(Strings.repeat("a", 256));
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
@@ -223,8 +219,6 @@ public class UtkastApiControllerTest {
     public void testCreateUtkastEfternamnTooLong() {
         String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-        when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
         utkastRequest.setPatientEfternamn(Strings.repeat("a", 256));

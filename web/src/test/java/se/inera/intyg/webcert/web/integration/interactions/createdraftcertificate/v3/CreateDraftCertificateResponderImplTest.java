@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -60,12 +60,11 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,7 +82,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     private static final String UTKAST_TYPE = "fk7263";
     private static final String UTKAST_JSON = "A bit of text representing json";
     @Mock
-    PatientDetailsResolver patientDetailsResolver;
+    private PatientDetailsResolver patientDetailsResolver;
     @Mock
     private UtkastService mockUtkastService;
     @Mock
@@ -106,8 +105,6 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     public void setup() {
         super.setup();
         when(mockValidator.validateApplicationErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(ResultValidator.newInstance());
-        when(mockIntegreradeEnheterService.getSchemaVersion(any(String.class), any(String.class)))
-                .thenReturn(Optional.of(SchemaVersion.VERSION_3));
         when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
     }
 
@@ -145,11 +142,9 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
     @Test
     public void testCreateDraftCertificateTakningNotOK() {
-        CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(createVardenhet(createVardgivare()));
         CreateDraftCertificateType certificateType = createCertificateType();
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
 

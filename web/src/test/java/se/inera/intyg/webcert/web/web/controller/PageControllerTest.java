@@ -23,9 +23,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.servlet.ModelAndView;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -80,7 +79,6 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testRedirectToIntygNoUnitFoundForIntyg() {
-        when(webCertUserService.getUser()).thenReturn(createMockUser(false));
         when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn(null);
         ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
         assertEquals(404, result.getStatusCode().value());

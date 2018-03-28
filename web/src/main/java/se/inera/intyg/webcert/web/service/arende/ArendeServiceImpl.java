@@ -436,10 +436,7 @@ public class ArendeServiceImpl implements ArendeService {
                 // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
                 // they want to display this information to the user. We cannot do this without a database access, hence
                 // we do it after the convertToDto
-                .map(item -> {
-                    item.setPaminnelse(!arendeRepository.findByPaminnelseMeddelandeId(item.getMeddelandeId()).isEmpty());
-                    return item;
-                })
+                .peek(item -> item.setPaminnelse(!arendeRepository.findByPaminnelseMeddelandeId(item.getMeddelandeId()).isEmpty()))
                 .collect(Collectors.toList());
 
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);

@@ -23,14 +23,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -55,10 +51,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -97,9 +94,13 @@ public class IntygIntegrationControllerTest {
         when(uriBuilder.fragment(anyString())).thenReturn(uriBuilder);
         when(uriBuilder.buildFromMap(any())).thenReturn(URI.create(""));
 
-        when(integrationService.prepareRedirectToIntyg(anyString(), anyString(), anyObject()))
+        when(integrationService.prepareRedirectToIntyg(anyString(), anyString(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
         when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+
+        testee.setUrlBaseTemplate("baseTemplate");
+        testee.setUrlIntygFragmentTemplate("intygTemplate");
+        testee.setUrlUtkastFragmentTemplate("utkastTemplate");
     }
 
     @Test
@@ -122,9 +123,6 @@ public class IntygIntegrationControllerTest {
 
     @Test
     public void referenceNotPersistedIfNotSupplied() {
-        when(referensService.referensExists(eq(INTYGSID))).thenReturn(false);
-
-        String ref = "referens";
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
                 null, null, false, false, false, false);
 
@@ -135,7 +133,7 @@ public class IntygIntegrationControllerTest {
 
         assertEquals(Response.Status.TEMPORARY_REDIRECT.getStatusCode(), res.getStatus());
 
-        verify(referensService, times(0)).saveReferens(eq(INTYGSID), eq(ref));
+        verify(referensService, times(0)).saveReferens(eq(INTYGSID), or(isNull(), any()));
     }
 
     @Test

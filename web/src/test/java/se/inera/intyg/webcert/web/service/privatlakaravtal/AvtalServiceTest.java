@@ -18,28 +18,27 @@
  */
 package se.inera.intyg.webcert.web.service.privatlakaravtal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -84,7 +83,6 @@ public class AvtalServiceTest {
     @Test
     public void testUserHasApprovedOldAvtal() {
         when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_2);
-        when(godkantAvtalRepository.userHasApprovedAvtal(USER_ID, AVTAL_VERSION_1)).thenReturn(false);
         boolean approved = avtalService.userHasApprovedLatestAvtal(USER_ID);
         assertFalse(approved);
     }
@@ -94,7 +92,7 @@ public class AvtalServiceTest {
         when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
         avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
         verify(godkantAvtalRepository, times(1)).approveAvtal(anyString(), anyInt());
-        verify(monitoringLogService, times(1)).logPrivatePractitionerTermsApproved(anyString(), any(Personnummer.class), anyInt());
+        verify(monitoringLogService, times(1)).logPrivatePractitionerTermsApproved(anyString(), isNull(), anyInt());
     }
 
     @Test(expected = IllegalStateException.class)

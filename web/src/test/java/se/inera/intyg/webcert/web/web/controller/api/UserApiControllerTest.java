@@ -20,13 +20,14 @@ package se.inera.intyg.webcert.web.web.controller.api;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -35,22 +36,19 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
-import javax.servlet.http.HttpSession;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class UserApiControllerTest {
 
     @InjectMocks
@@ -156,7 +154,7 @@ public class UserApiControllerTest {
 
         userApiController.logoutUserAfterTimeout();
 
-        verify(webCertUserService).scheduleSessionRemoval(eq(sessionId), any(HttpSession.class));
+        verify(webCertUserService).scheduleSessionRemoval(eq(sessionId), isNull());
     }
 
     @Test

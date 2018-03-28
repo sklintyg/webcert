@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.db.model.internal.DbUtlatande;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -46,13 +46,15 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -521,12 +523,6 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
         when(freeWebCertUser.getValdVardenhet()).thenReturn(buildVardenhet());
 
-
-        List<Utkast> drafts = new ArrayList<>();
-        when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
-                anySet())).thenReturn(drafts);
-
-
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
         assertEquals(FNAMN, patient.getFornamn());
@@ -586,7 +582,6 @@ public class PatientDetailsResolverTest {
 
     private List<Utkast> buildSosDBDrafts() {
         Utkast u1 = mock(Utkast.class);
-        when(u1.getSenastSparadDatum()).thenReturn(LocalDateTime.now().minusDays(1));
         when(u1.getModel()).thenReturn("the model");
         ArrayList<Utkast> utkastList = new ArrayList<>();
         utkastList.add(u1);

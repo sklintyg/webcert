@@ -56,10 +56,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -130,19 +130,16 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
-        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
         when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class))).thenReturn(Optional.empty());
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
-        doNothing().when(intygRelationHelper).decorateIntygListWithRelations(anyList());
 
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
-        //when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(), any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
     }
 
-    private CertificateMetaData buildCertificateMetaData() {
+    protected CertificateMetaData buildCertificateMetaData() {
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<>());
         Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
@@ -163,10 +160,4 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         return patient;
 
     }
-
-    @Before
-    public void setupDefaultAuthorization() {
-        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(false);
-    }
-
 }

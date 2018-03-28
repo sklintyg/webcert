@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
@@ -70,20 +70,7 @@ public class SendNotificationStrategyTest {
     public void setupIntegreradeEnheter() {
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_FK)).thenReturn(Optional.of(SchemaVersion.VERSION_1));
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2, INTYG_FK)).thenReturn(Optional.empty());
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_3, INTYG_FK)).thenReturn(Optional.of(SchemaVersion.VERSION_1));
         when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE)).thenReturn(Optional.of(SchemaVersion.VERSION_3));
-    }
-
-    @Before
-    public void setupUtkastRepository() {
-        Utkast utkast1 = createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1);
-        Utkast utkast2 = createUtkast(INTYG_ID_2, INTYG_FK, ENHET_2);
-        Utkast utkast3 = createUtkast(INTYG_ID_3, INTYG_TS, ENHET_3);
-        Utkast utkast4 = createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4);
-        when(mockUtkastRepository.findOne(INTYG_ID_1)).thenReturn(utkast1);
-        when(mockUtkastRepository.findOne(INTYG_ID_2)).thenReturn(utkast2);
-        when(mockUtkastRepository.findOne(INTYG_ID_3)).thenReturn(utkast3);
-        when(mockUtkastRepository.findOne(INTYG_ID_4)).thenReturn(utkast4);
     }
 
     @Test

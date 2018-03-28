@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -38,7 +37,6 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -79,9 +77,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -138,13 +135,6 @@ public class IntygModuleApiControllerTest {
         List<Status> status = new ArrayList<>();
         status.add(new Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
-    }
-
-    @Before
-    public void setup() {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patient);
-        when(arendeService.getLatestMeddelandeIdForCurrentCareUnit(anyString())).thenReturn("messageId");
     }
 
     @Test
@@ -205,7 +195,6 @@ public class IntygModuleApiControllerTest {
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
-        when(content.getUtlatande()).thenReturn(utlatande);
         when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(false))).thenReturn(content);
 
         Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);
@@ -224,7 +213,6 @@ public class IntygModuleApiControllerTest {
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
-        when(content.getUtlatande()).thenReturn(utlatande);
         when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp), eq(true))).thenReturn(content);
 
         Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);
@@ -291,7 +279,6 @@ public class IntygModuleApiControllerTest {
 
         setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
 
-        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING, intygType)).thenReturn(true);
         when(intygService.revokeIntyg(CERTIFICATE_ID, intygType, revokeMessage, revokeReason)).thenReturn(IntygServiceResult.OK);
 
         RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
@@ -313,8 +300,6 @@ public class IntygModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
                 AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING);
 
-        when(intygService.revokeIntyg(CERTIFICATE_ID, intygType, revokeMessage, revokeReason)).thenReturn(IntygServiceResult.OK);
-
         RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
         param.setMessage(revokeMessage);
         param.setReason(revokeReason);
@@ -329,7 +314,6 @@ public class IntygModuleApiControllerTest {
 
         setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
 
-        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING, intygType)).thenReturn(false);
         when(intygService.revokeIntyg(CERTIFICATE_ID, intygType, revokeMessage, revokeReason)).thenReturn(IntygServiceResult.OK);
 
         RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();

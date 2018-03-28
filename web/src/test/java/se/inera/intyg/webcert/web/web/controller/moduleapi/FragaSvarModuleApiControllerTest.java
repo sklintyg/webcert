@@ -24,13 +24,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
@@ -88,13 +87,10 @@ public class FragaSvarModuleApiControllerTest {
         List<FragaSvarView> fragaSvarViewList = new ArrayList<>();
 
         IntygsReferens intygsReferens = mock(IntygsReferens.class);
-        when(intygsReferens.getPatientId()).thenReturn(Personnummer.createPersonnummer("191212121212").get());
 
         FragaSvar fs = mock(FragaSvar.class);
-        when(fs.getIntygsReferens()).thenReturn(intygsReferens);
 
         FragaSvarView fsw = mock(FragaSvarView.class);
-        when(fsw.getFragaSvar()).thenReturn(fs);
         fragaSvarViewList.add(fsw);
         return fragaSvarViewList;
     }

@@ -23,11 +23,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -46,10 +45,11 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -143,7 +143,7 @@ public class IntygModuleFacadeTest {
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetCertificateModuleException() throws Exception {
-        when(moduleApi.getCertificate(anyString(), anyString(), eq(HSVARD_RECIPIENT_ID))).thenThrow(new ModuleException());
+        when(moduleApi.getCertificate(anyString(), isNull(), eq(HSVARD_RECIPIENT_ID))).thenThrow(new ModuleException());
         moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE);
     }
 
@@ -164,7 +164,7 @@ public class IntygModuleFacadeTest {
 
     @Test(expected = ModuleException.class)
     public void testRegisterCertificateModuleException() throws Exception {
-        doThrow(new ModuleException()).when(moduleApi).registerCertificate(anyString(), anyString());
+        doThrow(new ModuleException()).when(moduleApi).registerCertificate(any(), any());
         moduleFacade.registerCertificate(CERTIFICATE_TYPE, INT_JSON);
     }
 
@@ -183,7 +183,7 @@ public class IntygModuleFacadeTest {
 
     @Test(expected = ModuleException.class)
     public void testGetRevokeCertificateRequestModuleException() throws Exception {
-        when(moduleApi.createRevokeRequest(any(Utlatande.class), any(HoSPersonal.class), anyString())).thenThrow(new ModuleException());
+        when(moduleApi.createRevokeRequest(isNull(), isNull(), anyString())).thenThrow(new ModuleException());
         moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, null, null, "message");
     }
 

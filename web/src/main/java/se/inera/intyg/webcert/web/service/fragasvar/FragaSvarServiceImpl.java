@@ -205,20 +205,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Filter questions to that current user only sees questions issued to
         // units with active employment role
-        Iterator<FragaSvar> iterator = fragaSvarList.iterator();
-        while (iterator.hasNext()) {
-            FragaSvar fragaSvar = iterator.next();
-
-            if (fragaSvar.getVardperson() != null && !hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId())) {
-                iterator.remove();
-            }
-        }
+        fragaSvarList.removeIf(fragaSvar ->
+                fragaSvar.getVardperson() != null && !hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId()));
 
         // Finally sort by senasteHandelseDatum
         // We do the sorting in code, since we need to sort on a derived
         // property and not a direct entity persisted
         // property in which case we could have used an order by in the query.
-        Collections.sort(fragaSvarList, SENASTE_HANDELSE_DATUM_COMPARATOR);
+        fragaSvarList.sort(SENASTE_HANDELSE_DATUM_COMPARATOR);
 
         List<ArendeDraft> drafts = arendeDraftService.listAnswerDrafts(intygId);
 
@@ -285,8 +279,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + ") for saving answer");
         }
 
-        // Implement Business Rule FS-005, FS-006
-        WebCertUser user = webCertUserService.getUser();
         if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " has invalid Amne(" + fragaSvar.getAmne()
@@ -294,6 +286,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         LocalDateTime now = LocalDateTime.now();
+        WebCertUser user = webCertUserService.getUser();
 
         // Ok, lets save the answer
         fragaSvar.setVardAktorHsaId(user.getHsaId());
@@ -400,9 +393,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logQuestionSent(fraga.getExternReferens(), fraga.getInternReferens(),
-                (fraga.getIntygsReferens() == null) ? null : fraga.getIntygsReferens().getIntygsId(), fraga.getVardAktorHsaId(),
-                fraga.getAmne());
+        monitoringService.logQuestionSent(saved.getExternReferens(), saved.getInternReferens(),
+                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardAktorHsaId(),
+                saved.getAmne());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.NEW_QUESTION_FROM_CARE);
@@ -561,7 +554,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     }
 
-    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+    private void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
         if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);

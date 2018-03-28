@@ -18,12 +18,15 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -44,8 +47,9 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,6 +59,23 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @InjectMocks
     private CreateDraftCertificateValidatorImpl validator;
+
+    @Before
+    public void setup() throws ModuleNotFoundException {
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase())).thenReturn(true);
+
+        when(moduleRegistry.getModuleIdFromExternalId(anyString()))
+                .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
+        when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
+        when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
+
+        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(buildIntygModule(FK7263, true));
+        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(LUSE, false));
+
+        when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>(ALL_INTYG_TYPES));
+
+        user = buildUser();
+    }
 
     @Test
     public void testDeprecatedDoesNotValidate() {
@@ -173,7 +194,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testValidationOfPersonnummerDoesNotExistInPU() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
                 .thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
 
         ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
                 "fullständigt namn", "enhetsId", "enhetsnamn", true), user);

@@ -47,8 +47,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -60,7 +60,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
     protected static final String TSBAS = TsBasEntryPoint.MODULE_ID;
     protected static final String LUSE = LuseEntryPoint.MODULE_ID;
 
-    private static List<String> ALL_INTYG_TYPES = Arrays.asList(Fk7263EntryPoint.MODULE_ID,
+    protected static List<String> ALL_INTYG_TYPES = Arrays.asList(Fk7263EntryPoint.MODULE_ID,
             TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
             LisjpEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
             LuaenaEntryPoint.MODULE_ID, DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
@@ -75,7 +75,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
     @Mock
     protected AuthoritiesHelper authoritiesHelper;
 
-    @Before
+//    @Before
     public void setup() throws ModuleNotFoundException {
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, FK7263.toLowerCase())).thenReturn(true);
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, TSBAS.toLowerCase())).thenReturn(true);
@@ -98,7 +98,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         user = buildUser();
     }
 
-    private IntygModule buildIntygModule(String id, boolean deprecated) {
+    protected IntygModule buildIntygModule(String id, boolean deprecated) {
         return new IntygModule(id, "", "", "", "", "", "", "", "", deprecated);
     }
 

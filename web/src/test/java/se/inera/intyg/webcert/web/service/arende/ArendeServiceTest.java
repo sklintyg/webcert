@@ -24,15 +24,23 @@ import com.google.common.collect.MoreCollectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.*;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserDetails;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -72,19 +80,42 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -103,6 +134,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final String INTYG_TYP = "luse";
     private static final String ENHET_ID = "enhet";
     private static final String MEDDELANDE_ID = "meddelandeId";
+    public static final String INTYG = "INTYG_ID";
 
     @Mock
     private ArendeRepository arendeRepository;
@@ -123,9 +155,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private ArendeViewConverter arendeViewConverter;
 
     @Mock
-    private HsaEmployeeService hsaEmployeeService;
-
-    @Mock
     private FragaSvarService fragaSvarService;
 
     @Mock
@@ -143,22 +172,21 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private StatisticsGroupByUtil statisticsGroupByUtil;
 
-    @Mock
-    private WebCertUser webCertUser;
-
     @InjectMocks
     private ArendeServiceImpl service;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() {
         service.setMockSystemClock(Clock.fixed(FIXED_TIME_INSTANT, ZoneId.systemDefault()));
 
         // always return the Arende that is saved
-        when(arendeRepository.save(any(Arende.class))).thenAnswer(invocation -> (Arende) invocation.getArguments()[0]);
+        when(arendeRepository.save(any(Arende.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        Map<String, SekretessStatus> map = mock(Map.class);
-        when(map.get(anyString())).thenReturn(SekretessStatus.FALSE);
-        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(map);
+        Map<Personnummer, SekretessStatus> map = mock(Map.class);
+        when(map.get(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        doReturn(map).when(patientDetailsResolver).getSekretessStatusForList(anyList());
+
     }
 
     @Test
@@ -318,7 +346,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testProcessIncomingMessageCertificateNotFound() {
-        when(utkastRepository.findOne(anyString())).thenReturn(null);
         try {
             service.processIncomingMessage(new Arende());
             fail("Should throw");
@@ -332,7 +359,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testProcessIncomingMessageCertificateNotSigned() {
-        when(utkastRepository.findOne(anyString())).thenReturn(new Utkast());
+        when(utkastRepository.findOne(isNull())).thenReturn(new Utkast());
         try {
             service.processIncomingMessage(new Arende());
             fail("Should throw");
@@ -346,7 +373,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testProcessIncomingMessageMEDDELANDE_IDNotUnique() {
-        when(arendeRepository.findOneByMeddelandeId(anyString())).thenReturn(new Arende());
+        when(arendeRepository.findOneByMeddelandeId(isNull())).thenReturn(new Arende());
         try {
             service.processIncomingMessage(new Arende());
             fail("Should throw");
@@ -362,7 +389,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testProcessIncomingMessageThrowsExceptionIfCertificateIsRevoked() throws WebCertServiceException {
         Utkast utkast = buildUtkast();
         utkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        when(utkastRepository.findOne(isNull())).thenReturn(utkast);
         try {
             service.processIncomingMessage(new Arende());
             fail("Should throw");
@@ -379,32 +406,33 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         LocalDateTime now = LocalDateTime.now();
         Utkast utkast = buildUtkast();
 
-        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
-        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        doReturn(utkast).when(utkastRepository).findOne(anyString());
+
+        when(webcertUserService.isAuthorizedForUnit(isNull(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
 
         Arende arende = new Arende();
         arende.setSenasteHandelse(now);
 
-        ArendeConversationView result = service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
+        ArendeConversationView result = service.createMessage(INTYG, ArendeAmne.KONTKT, "rubrik", "meddelande");
 
         assertNotNull(result.getFraga());
         assertNull(result.getSvar());
         assertEquals(FIXED_TIME_INSTANT,
                 result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
-        verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
+        verify(webcertUserService).isAuthorizedForUnit(isNull(), anyBoolean());
         verify(arendeRepository).save(any(Arende.class));
-        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyBoolean());
+        verify(monitoringLog).logArendeCreated(anyString(), isNull(), isNull(), any(ArendeAmne.class), anyBoolean());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_CARE);
-        verify(arendeDraftService).delete("INTYG_ID", null);
+        verify(arendeDraftService).delete(INTYG, null);
     }
 
     @Test
     public void createQuestionInvalidAmneTest() {
         try {
-            service.createMessage("INTYG_ID", ArendeAmne.KOMPLT, "rubrik", "meddelande");
+            service.createMessage(INTYG, ArendeAmne.KOMPLT, "rubrik", "meddelande");
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getErrorCode());
@@ -418,7 +446,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void createQuestionCertificateDoesNotExistTest() {
         when(utkastRepository.findOne(anyString())).thenReturn(null);
         try {
-            service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            service.createMessage(INTYG, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
@@ -432,7 +460,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void createQuestionCertificateNotSignedTest() {
         when(utkastRepository.findOne(anyString())).thenReturn(new Utkast());
         try {
-            service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            service.createMessage(INTYG, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
@@ -449,7 +477,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         utkast.setIntygsTyp("fk7263");
         when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         try {
-            service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            service.createMessage(INTYG, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE, e.getErrorCode());
@@ -464,9 +492,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Utkast utkast = new Utkast();
         utkast.setSignatur(new Signatur());
         when(utkastRepository.findOne(anyString())).thenReturn(utkast);
-        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(false);
         try {
-            service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            service.createMessage(INTYG, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("should throw exception");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, e.getErrorCode());
@@ -482,7 +509,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         utkast.setAterkalladDatum(LocalDateTime.now());
         when(utkastRepository.findOne(anyString())).thenReturn(utkast);
         try {
-            service.createMessage("INTYG_ID", ArendeAmne.KONTKT, "rubrik", "meddelande");
+            service.createMessage(INTYG, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("Should throw");
         } catch (WebCertServiceException e) {
             assertEquals(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED, e.getErrorCode());
@@ -495,22 +522,27 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void answerTest() throws CertificateSenderException {
         final String svarPaMeddelandeId = "svarPaMeddelandeId";
+
         Arende fraga = buildArende(svarPaMeddelandeId, null);
         fraga.setAmne(ArendeAmne.OVRIGT);
         fraga.setSenasteHandelse(LocalDateTime.now());
         fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
         fraga.setPatientPersonId("191212121212");
+
         when(arendeRepository.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
-        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        when(webcertUserService.isAuthorizedForUnit(isNull(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
+
         ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
+
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
         assertEquals(FIXED_TIME_INSTANT,
                 result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
-        verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
+
+        verify(webcertUserService).isAuthorizedForUnit(isNull(), anyBoolean());
         verify(arendeRepository, times(2)).save(any(Arende.class));
-        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyBoolean());
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), isNull(), any(ArendeAmne.class), anyBoolean());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         verify(arendeDraftService).delete(INTYG_ID, svarPaMeddelandeId);
@@ -544,7 +576,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende fraga = new Arende();
         fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
         when(arendeRepository.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
-        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         try {
             service.answer(svarPaMeddelandeId, "svarstext");
         } finally {
@@ -561,7 +592,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
         fraga.setAmne(ArendeAmne.PAMINN);
         when(arendeRepository.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
-        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
         try {
             service.answer(svarPaMeddelandeId, "svarstext");
         } finally {
@@ -578,8 +608,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
         fraga.setAmne(ArendeAmne.KOMPLT);
         when(arendeRepository.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
-        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
-        when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         try {
             service.answer(svarPaMeddelandeId, "svarstext");
         } finally {
@@ -640,7 +668,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         otherSubject.setAmne(ArendeAmne.AVSTMN);
         otherSubject.setPatientPersonId("191212121212");
 
-        when(arendeRepository.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
         when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays.asList(fraga, komplt1, otherSubject, komplt2));
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
 
@@ -674,15 +701,15 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
         fraga.setPatientPersonId("191212121212");
         when(arendeRepository.findOneByMeddelandeId(svarPaMeddelandeId)).thenReturn(fraga);
-        when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
+        when(webcertUserService.isAuthorizedForUnit(isNull(), anyBoolean())).thenReturn(true);
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         ArendeConversationView result = service.answer(svarPaMeddelandeId, "svarstext");
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
         assertEquals(FIXED_TIME_INSTANT,
                 result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
-        verify(webcertUserService).isAuthorizedForUnit(anyString(), anyBoolean());
-        verify(monitoringLog).logArendeCreated(anyString(), anyString(), anyString(), any(ArendeAmne.class), anyBoolean());
+        verify(webcertUserService).isAuthorizedForUnit(isNull(), anyBoolean());
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), isNull(), any(ArendeAmne.class), anyBoolean());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
@@ -713,7 +740,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(ImmutableList.of(arende));
         when(webcertUserService.getUser()).thenReturn(createUser());
-        when(arendeRepository.save(anyListOf(Arende.class))).thenReturn(ImmutableList.of(vidareBefordrat));
+        when(arendeRepository.save(anyList())).thenReturn(ImmutableList.of(vidareBefordrat));
 
         final List<ArendeConversationView> arendeConversationViews = service.setForwarded(INTYG_ID);
 
@@ -895,7 +922,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         when(webcertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(true);
         when(arendeRepository.findSigneratAvByEnhet(selectedUnit)).thenReturn(repoResult);
-        when(fragaSvarService.getFragaSvarHsaIdByEnhet(eq(null))).thenReturn(new ArrayList<>());
 
         List<Lakare> res = service.listSignedByForUnits(selectedUnit.get(0));
 
@@ -993,7 +1019,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1), null));
 
         when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-        when(arendeRepository.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1017,23 +1042,23 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testFilterArendeFiltersOutNonVerifiedSekretessPatients() {
         WebCertUser webCertUser = createUser();
 
-        // when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
-        Map<String, SekretessStatus> map = mock(Map.class);
-        when(map.get(anyString())).thenReturn(SekretessStatus.UNDEFINED);
-        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(map);
+        Map<Personnummer, SekretessStatus> map = mock(Map.class);
+        when(map.get(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
+        doReturn(map).when(patientDetailsResolver).getSekretessStatusForList(anyList());
+
 
         when(webcertUserService.getUser()).thenReturn(webCertUser);
-        when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
+        when(webcertUserService.isAuthorizedForUnit(any(), eq(true))).thenReturn(true);
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1), null));
 
         when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-        when(arendeRepository.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1064,7 +1089,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1), null));
 
         when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-        when(arendeRepository.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1095,7 +1119,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1), null));
 
         when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-        when(arendeRepository.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1127,7 +1150,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1), null));
 
         when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-        when(arendeRepository.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1154,14 +1176,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testFilterArendeSelection() {
         when(webcertUserService.getUser()).thenReturn(createUser());
-        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString())).thenReturn(new HashSet<>());
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), any())).thenReturn(new HashSet<>());
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1), null));
 
         when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-        when(arendeRepository.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size() + 1);
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1178,9 +1199,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(webcertUserService).getUser();
 
-        verify(arendeRepository).filterArende(any(Filter.class));
+        verify(arendeRepository, atLeastOnce()).filterArende(any(Filter.class));
         // verify(arendeRepository).filterArendeCount(any(Filter.class));
-        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+        verify(fragaSvarService).filterFragaSvar(any());
 
         assertEquals(1, response.getResults().size());
         // assertEquals(4, response.getTotalCount());
@@ -1203,8 +1224,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         queryResults.add(arendeWithPaminnelse);
 
         when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-        when(arendeRepository.filterArendeCount(any(Filter.class))).thenReturn(queryResults.size());
-        when(arendeRepository.findByPaminnelseMeddelandeId(eq(MEDDELANDE_ID))).thenReturn(Arrays.asList(new Arende()));
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1345,8 +1364,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         List<GroupableItem> queryResult = new ArrayList<>();
 
-        when(webcertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
-        when(arendeRepository.getUnhandledByEnhetIdsAndIntygstyper(anyList(), anySet())).thenReturn(queryResult);
         Map<String, Long> resultMap = new HashMap<>();
         resultMap.put("abc-123", 2L);
 

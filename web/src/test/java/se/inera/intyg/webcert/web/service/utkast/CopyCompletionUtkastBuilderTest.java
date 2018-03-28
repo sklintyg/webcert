@@ -25,7 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -66,9 +66,12 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyCompletionUtkastBuilderTest {
@@ -157,7 +160,6 @@ public class CopyCompletionUtkastBuilderTest {
 
     @Before
     public void expectCallToWebcertUserService() {
-        when(webcertUserService.getUser()).thenReturn(createWebcertUser());
         when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true)).thenReturn(true);
     }
 
@@ -172,10 +174,8 @@ public class CopyCompletionUtkastBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
-
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails,
                 true, false, false);
@@ -210,10 +210,8 @@ public class CopyCompletionUtkastBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
-
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails,
                 true, false, false);
@@ -238,8 +236,7 @@ public class CopyCompletionUtkastBuilderTest {
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
         when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(createIntygContentHolder());
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
-        when(mockModuleApi.validateDraft(anyString()))
+        when(mockModuleApi.validateDraft(isNull()))
                 .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
 
@@ -271,11 +268,9 @@ public class CopyCompletionUtkastBuilderTest {
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(createOriginalUtkast());
-        when(mockModuleApi.validateDraft(anyString()))
+        when(mockModuleApi.validateDraft(isNull()))
                 .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
-        when(webcertUserService.isAuthorizedForUnit(any(String.class), any(boolean.class))).thenReturn(true);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId(meddelandeId);

@@ -18,16 +18,24 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.io.ClassPathResource;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
+import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -36,15 +44,21 @@ import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeExcep
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
@@ -77,6 +91,21 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Override
     @Before
+    public void setupMocks() throws Exception {
+        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        CertificateMetaData metaData = buildCertificateMetaData();
+        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+        when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
+
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
+        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
+        when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
+    }
+
+    @Before
     public void setupDefaultAuthorization() {
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), eq(true))).thenReturn(true);
     }
@@ -85,7 +114,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     public void testRevokeIntyg() throws Exception {
 
         when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
 
         // do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
@@ -104,7 +132,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeIntygThatHasAlreadyBeenRevokedFails() throws IntygModuleFacadeException {
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(revokedUtkast);
         when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(new IntygModuleFacadeException(""));
         // Do the call
         try {

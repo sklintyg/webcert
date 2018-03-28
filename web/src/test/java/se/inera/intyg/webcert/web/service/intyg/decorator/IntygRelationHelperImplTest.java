@@ -18,16 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
-/**
- * Created by eriklupander on 2017-05-18.
- */
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.IntygRelations;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponseType;
@@ -51,8 +47,9 @@ import java.util.stream.Stream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -82,7 +79,7 @@ public class IntygRelationHelperImplTest {
 
     @Test
     public void testGetRelationsForIntygNothingInIT() {
-        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(),
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
                 any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
@@ -91,7 +88,7 @@ public class IntygRelationHelperImplTest {
 
     @Test
     public void testGetRelationsForIntygNothingInITWithMergeFromWebcert() {
-        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(),
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
                 any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
 
         Relations webcertRelations = new Relations();
@@ -120,7 +117,7 @@ public class IntygRelationHelperImplTest {
 
     @Test
     public void testGetRelationsForIntygOneInIT() {
-        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(),
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
                 any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
@@ -130,7 +127,7 @@ public class IntygRelationHelperImplTest {
 
     @Test
     public void testGetRelationsForIntygOneParentInIT() {
-        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(),
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
                 any(ListRelationsForCertificateType.class))).thenReturn(buildResponseWithParent());
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
@@ -141,7 +138,7 @@ public class IntygRelationHelperImplTest {
 
     @Test
     public void testGetRelationsForIntygOneInITAndTwoFromWebcert() {
-        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(),
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
                 any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(buildWebcertRelations());
 
@@ -153,7 +150,7 @@ public class IntygRelationHelperImplTest {
 
     @Test
     public void testGetRelationsForIntygOneInITAndThreeFromWebcertIncludingParent() {
-        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(),
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
                 any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(buildWebcertRelationsWithParent());
 
@@ -165,7 +162,7 @@ public class IntygRelationHelperImplTest {
 
     @Test
     public void testDecorate() {
-        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(anyString(),
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
                 any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(buildWebcertRelationsWithParent());
         List<ListIntygEntry> listIntygEntries = buildList();
@@ -178,7 +175,6 @@ public class IntygRelationHelperImplTest {
 
     @Test
     public void testDecorateWithEmptyList() {
-        when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(buildWebcertRelationsWithParent());
         List<ListIntygEntry> listIntygEntries = new ArrayList<>();
         testee.decorateIntygListWithRelations(listIntygEntries);
         verifyZeroInteractions(listRelationsForCertificateResponderInterface);

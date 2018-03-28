@@ -48,7 +48,7 @@ ext {
     xmlToolingVersion = "1.3.2"
     xmlUnitVersion = "1.4"
 
-    mockitoVersion = "1.9.0"
+    mockitoVersion = "2.16.0"
     springockitoVersion = "1.0.8"
     mysqlVersion = "5.1.40"
     h2Version = "1.3.176"

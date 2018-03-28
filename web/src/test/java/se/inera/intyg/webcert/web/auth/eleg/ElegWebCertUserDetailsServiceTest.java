@@ -26,7 +26,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opensaml.saml2.core.NameID;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.saml.SAMLCredential;
@@ -58,8 +58,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
@@ -104,13 +104,12 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         MockHttpServletRequest request = mockHttpServletRequest("/any/path");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
         // AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
         testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
         // when(authoritiesResolver.getRole(anyString())).thenReturn(role);
-        when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
-        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
+        when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
+        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(true);
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
         expectedPreferences.put("some", "setting");
         when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
@@ -169,7 +168,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Test
     public void testNotValidPrivatePractitionerThrowsException() {
         reset(ppService);
-        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(false);
+        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(false);
 
         thrown.expect(PrivatePractitionerAuthorizationException.class);
 
@@ -179,8 +178,8 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Test
     public void testNotFoundInHSAThrowsException() {
         reset(ppService);
-        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
-        when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(null);
+        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(true);
+        when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(null);
 
         thrown.expect(HsaServiceException.class);
 

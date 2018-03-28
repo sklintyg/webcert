@@ -23,7 +23,7 @@ import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -57,19 +57,18 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
-
-    @Override
-    @Before
-    public void setupDefaultAuthorization() {
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), eq(true))).thenReturn(true);
-    }
 
     @Before
     public void setupIntyg() throws Exception {
@@ -79,7 +78,17 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test
     public void testSendIntyg() throws Exception {
+        final String completionMeddelandeId = "meddelandeId";
+
         WebCertUser webCertUser = createUser();
+
+        Utlatande completionUtlatande = utlatande;
+        completionUtlatande.getGrundData().setRelation(new Relation());
+        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
+
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
@@ -97,17 +106,12 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testSendIntygFailsForRevokedCertificate() throws Exception {
-        WebCertUser webCertUser = createUser();
-
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
         CertificateMetaData metaData = new CertificateMetaData();
         metaData.setStatus(new ArrayList<>());
 
-        CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, true);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
-        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
+        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(utlatande);
 
         intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         verifyZeroInteractions(logService);
@@ -115,7 +119,16 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testSendIntygFailsForReplacedCertificate() throws Exception {
+        final String completionMeddelandeId = "meddelandeId";
+
         WebCertUser webCertUser = createUser();
+
+        Utlatande completionUtlatande = utlatande;
+        completionUtlatande.getGrundData().setRelation(new Relation());
+        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
@@ -129,7 +142,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
-        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
+        when(moduleFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
 
         intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         verifyZeroInteractions(logService);
@@ -140,7 +153,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         final String completionMeddelandeId = "meddelandeId";
 
         WebCertUser webCertUser = createUser();
-
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
@@ -148,7 +161,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().setRelation(new Relation());
         completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(completionUtlatande);
+        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
 
         when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED)))).thenReturn(Optional.empty());
@@ -165,11 +178,20 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test
     public void testSendIntygReturnsInfo() throws Exception {
+        final String completionMeddelandeId = "meddelandeId";
+
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.infoResult("Info text"));
 
         WebCertUser webCertUser = createUser();
 
+        Utlatande completionUtlatande = utlatande;
+        completionUtlatande.getGrundData().setRelation(new Relation());
+        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
+
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
@@ -186,8 +208,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     @Test
     public void testSendIntygPDLLogServiceFailingWithRuntimeException() throws Exception {
 
-        doThrow(new RuntimeException("")).when(logService).logSendIntygToRecipient(any(LogRequest.class));
-
         try {
             intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
             fail("RuntimeException expected");
@@ -199,10 +219,17 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() throws IOException {
-        WebCertUser webCertUser = createUser();
+        final String completionMeddelandeId = "meddelandeId";
+
+        Utlatande completionUtlatande = utlatande;
+        completionUtlatande.getGrundData().setRelation(new Relation());
+        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
+
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
         try {
@@ -215,10 +242,18 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() throws Exception {
+        final String completionMeddelandeId = "meddelandeId";
         intygService.setSekretessmarkeringStartDatum(LocalDateTime.now().plusMonths(1L));
 
         WebCertUser webCertUser = createUser();
 
+        Utlatande completionUtlatande = utlatande;
+        completionUtlatande.getGrundData().setRelation(new Relation());
+        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
+
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));

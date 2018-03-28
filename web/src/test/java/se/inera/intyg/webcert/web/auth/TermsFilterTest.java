@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -34,15 +34,13 @@ import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.servlet.FilterChain;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -120,8 +118,6 @@ public class TermsFilterTest extends AuthoritiesConfigurationTestSetup {
         when(session.getAttribute(SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);
-
-        when(request.getRequestDispatcher(anyString())).thenReturn(mock(RequestDispatcher.class));
 
         filter.doFilterInternal(request, response, filterChain);
         verify(response, times(1)).sendRedirect(anyString());
