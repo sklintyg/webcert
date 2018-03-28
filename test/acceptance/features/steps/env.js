@@ -144,8 +144,8 @@ Before(function() {
     logger.info('Återställer globala variabler');
     global.person = {};
     global.intyg = {};
-    global.meddelanden = []; //{typ:'', id:''}
     global.user = {};
+    global.ursprungligtIntyg = {};
     hasFoundConsoleErrors = false;
     duplicateIds = [];
 

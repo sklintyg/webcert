@@ -49,28 +49,39 @@ var testdataHelper = wcTestTools.helpers.testdata;
  *
  */
 
-function kontrolleraKompletteringsFragaHanterad(id) {
-    var selector = 'arende-handled-' + id;
-    logger.info('Letar efter element med id ' + selector);
-    return expect(element(by.id(selector)).isPresent()).to.eventually.be.ok;
-}
 
-function kontrolleraKompletteringsFragaOHanterad(id) {
-    var selector = 'arende-unhandled-' + id;
-    logger.info('Letar efter element med id ' + selector);
-    return expect(element(by.id(selector)).isPresent()).to.eventually.be.ok;
-}
+let qaElements = {
+    komplettering: {
+        fraga(id) {
+            let obj = {};
+            obj.hanterad = element(by.id('arende-handled-' + id));
+            obj.ohanterad = element(by.id('arende-unhandled-' + id));
+            return obj;
+        },
+        button: element(by.id('komplettera-intyg'))
+    },
+    administrativFraga: {
+        fraga: {
+
+        },
+        svar: {
+
+        },
+        vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
+    }
+};
 
 function sendQuestionToFK(amne, cb) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     logger.silly('isSMIIntyg : ' + isSMIIntyg);
 
-    var fragaText = 'En ' + amne + '-fråga ' + testdataHelper.generateTestGuid();
+    var testString = testdataHelper.generateTestGuid();
+    var fragaText = 'En ' + amne + '-fråga';
 
     // if (isSMIIntyg) {
 
     lisjpUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
-    lisjpUtkastPage.arendeQuestion.text.sendKeys(fragaText);
+    lisjpUtkastPage.arendeQuestion.text.sendKeys(fragaText + ' ' + testString);
     lisjpUtkastPage.selectQuestionTopic(amne);
 
     lisjpUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
@@ -80,11 +91,12 @@ function sendQuestionToFK(amne, cb) {
         var splitIndex = element[0].length + element[1].length + 2;
         var fragaId = result.substr(splitIndex, result.length);
 
-        global.meddelanden.push({
+        global.intyg.messages.unshift({
             typ: 'Fråga',
             amne: helpers.subjectCodes[amne],
             id: fragaId,
-            text: fragaText
+            text: fragaText,
+            testString: testString
         });
 
         logger.debug('Frågans ID: ' + fragaId);
@@ -120,13 +132,7 @@ Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, f
 });
 Given(/^jag väljer att svara med ett nytt intyg$/, function() {
     helpers.updateEnhetAdressForNewIntyg();
-    var page = fkIntygPage;
-    //var utkast = fkUtkastPage;
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-    if (isSMIIntyg) {
-        page = fkLusePage;
-        //utkast = luseUtkastPage;
-    }
+    var page = fkLusePage;
 
 
     if (!intyg.messages || intyg.messages.length <= 0) {
@@ -170,22 +176,18 @@ Given(/^ska det inte finnas en knapp med texten "([^"]*)"$/, function(texten) {
 });
 
 Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
-    var fragaText;
+    var fragaDeltext;
 
     if (typ === 'intygs') {
-        fragaText = global.intyg.guidcheck;
+        fragaDeltext = global.intyg.messages[0].testString;
     } else {
-        fragaText = global.ursprungligtIntyg.guidcheck;
+        fragaDeltext = global.ursprungligtIntyg.messages[0].testString;
     }
 
-    var page = fkIntygPage;
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-    if (isSMIIntyg) {
-        page = fkLusePage;
-    }
+    var page = fkLusePage;
 
-    logger.silly('Letar efter fråga som innehåller text: ' + fragaText);
-    return expect(page.getQAElementByText(fragaText).panel.isPresent()).to.become(true);
+    logger.silly('Letar efter fråga som innehåller text: ' + fragaDeltext);
+    return expect(page.getQAElementByText(fragaDeltext).panel.isPresent()).to.become(true);
 });
 
 
@@ -217,8 +219,8 @@ Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() 
 
 Given(/^jag ska kunna svara med textmeddelande/, function() {
     browser.ignoreSynchronization = false;
-    var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.guidcheck).panel;
-    var textSvar = 'Ett kompletteringssvar: ' + global.intyg.guidcheck;
+    var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.messages[0].testString).panel;
+    var textSvar = 'Ett kompletteringssvar: ' + global.intyg.messages[0].testString;
 
     var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-default', 'Kan inte komplettera')).sendKeys(protractor.Key.SPACE)
         .then(function() {
@@ -260,32 +262,20 @@ Given(/^jag ska kunna svara med textmeddelande/, function() {
 
 var messageID;
 Given(/^jag svarar på frågan$/, function() {
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    var messageID = intyg.messages[0].id;
 
     return browser.refresh()
         .then(function() {
-            return helpers.fetchMessageIds(intyg.typ);
-        })
-        .then(function() {
-            logger.silly(intyg.messages);
-            logger.silly(global.meddelanden);
-            for (var k = 0; k < intyg.messages.length; k++) {
-                logger.info('jämför: ' + intyg.messages[k].amne + ' och ' + helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg));
-                var amneMatcharSkickadFraga = helpers.splitHeader(intyg.messages[k].amne) === helpers.getSubjectFromCode(global.meddelanden[0].amne, !isSMIIntyg);
-                if (amneMatcharSkickadFraga && !intyg.messages[k].isHandled) {
-                    messageID = intyg.messages[k].id;
-                }
-            }
-            return fkIntygPage.sendAnswerForMessageID(messageID, 'Ett svar till FK, ' + global.intyg.guidcheck);
+            return fkIntygPage.sendAnswerForMessageID(messageID, 'Ett svar till FK, på frågan: ' + global.intyg.messages[0].testString);
         });
 });
 
 Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
-    return kontrolleraKompletteringsFragaHanterad(messageID);
+    return expect(qaElements.komplettering.fraga(messageID).hanterad.isPresent()).to.eventually.be.ok;
 });
 
 Given(/^ska jag se påminnelsen på intygssidan$/, function() {
-    var fragaText = global.intyg.guidcheck;
+    var fragaText = global.intyg.messages[0].testString;
     var panel = element(by.cssContainingText('.arende-panel', fragaText));
     return browser.refresh()
         .then(function() {
@@ -303,191 +293,96 @@ Given(/^ska jag se påminnelsen på intygssidan$/, function() {
         });
 });
 
-Given(/^jag markerar frågan från Försäkringskassan som hanterad$/, function(callback) {
-    fkIntygPage.markMessageAsHandled(intyg.messages[0].id).then(callback);
-});
-
-Given(/^jag markerar svaret från Försäkringskassan (?:.*) hanterat$/, function() {
-
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-    if (isSMIIntyg) {
-        var messageId;
-        logger.silly(global.meddelanden);
-        for (var k = 0; k < global.meddelanden.length; k++) {
-            if (global.meddelanden[k].typ === 'Fråga') {
-                messageId = global.meddelanden[k].id;
-            }
-        }
-        return element(by.id('handleCheck-' + messageId)).sendKeys(protractor.Key.SPACE);
-    } else {
-        return browser.refresh()
-            .then(function() {
-                return helpers.fetchMessageIds(intyg.typ);
-            })
-            .then(function() {
-                return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
-            });
-    }
-
-
-
+Given(/^jag markerar svaret från Försäkringskassan som hanterad$/, function() {
+    return browser.refresh()
+        .then(function() {
+            return helpers.fetchMessageIds(intyg.typ);
+        })
+        .then(function() {
+            return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
+        });
 });
 
 Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
-    global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
     var url;
     var body;
     var amneCode = amne;
 
-    var isSMIIntyg;
-    if (intyg && intyg.typ) {
-        isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-    }
+    body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne, testdataHelper.generateTestGuid(), amneCode);
+    logger.silly(body);
+    var path = '/send-message-to-care/v2.0?wsdl';
+    url = process.env.INTYGTJANST_URL + path;
+    url = url.replace('https', 'http');
 
-    if (isSMIIntyg) {
-        body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
-        logger.silly(body);
-        var path = '/send-message-to-care/v2.0?wsdl';
-        url = process.env.INTYGTJANST_URL + path;
-        url = url.replace('https', 'http');
-
-        soap.createClient(url, function(err, client) {
-            logger.info(url);
-            if (err) {
-                callback(err);
-            } else {
-                client.SendMessageToCare(body, function(err, result, resBody) {
-                    logger.silly(resBody);
-                    var resultcode = result.result.resultCode;
-                    logger.info('ResultCode: ' + resultcode);
-                    logger.silly(result);
-                    if (resultcode !== 'OK') {
-                        logger.info(result);
-                        callback('ResultCode: ' + resultcode + '\n' + resBody);
-                    } else {
-                        logger.info('ResultCode: ' + resultcode);
-                        logger.silly(JSON.stringify(result));
-
-                        browser.refresh().then(function() {
-                            callback(err);
-                        });
-                    }
-                });
-            }
-        });
-    } else {
-        amneCode = amne; //helpers.subjectCodesFK7263[amne];
-        url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
-        url = url.replace('https', 'http');
-
-        body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
-            global.person.id,
-            global.user,
-            'Enhetsnamn',
-            global.intyg.id,
-            amneCode,
-            'nytt meddelande: ' + global.intyg.guidcheck);
-        logger.silly(body);
-        soap.createClient(url, function(err, client) {
-            if (err) {
-                callback(err);
-            }
-
-            client.ReceiveMedicalCertificateQuestion(body, function(err, result, resBody) {
-                global.meddelanden.push({
-                    typ: 'Fråga',
-                    amne: amne
-                });
+    soap.createClient(url, function(err, client) {
+        logger.info(url);
+        if (err) {
+            callback(err);
+        } else {
+            client.SendMessageToCare(body, function(err, result, resBody) {
+                logger.silly(resBody);
                 var resultcode = result.result.resultCode;
+                logger.info('ResultCode: ' + resultcode);
+                logger.silly(result);
                 if (resultcode !== 'OK') {
                     logger.info(result);
                     callback('ResultCode: ' + resultcode + '\n' + resBody);
                 } else {
+                    logger.info('ResultCode: ' + resultcode);
+                    logger.silly(JSON.stringify(result));
                     browser.refresh().then(function() {
                         callback(err);
                     });
                 }
             });
-        });
-    }
+        }
+    });
 });
 
 Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
-
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     var url = '';
     var body = '';
 
-    if (isSMIIntyg) {
 
-        global.intyg.guidcheck = testdataHelper.generateTestGuid();
+    body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ', testdataHelper.generateTestGuid(), false);
+    logger.silly(body);
+    var path = '/send-message-to-care/v2.0?wsdl';
+    url = process.env.INTYGTJANST_URL + path;
+    url = url.replace('https', 'http');
 
-        body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ' + global.intyg.guidcheck, false);
-        logger.silly(body);
-        var path = '/send-message-to-care/v2.0?wsdl';
-        url = process.env.INTYGTJANST_URL + path;
-        url = url.replace('https', 'http');
-
-        soap.createClient(url, function(err, client) {
-            logger.info(url);
-            if (err) {
-                callback(err);
-            } else {
-                client.SendMessageToCare(body, function(err, result, resBody) {
-                    logger.silly(resBody);
-                    if (err) {
-                        callback(err);
-                    } else {
-                        var resultcode = result.result.resultCode;
-                        logger.info('ResultCode: ' + resultcode);
-                        // logger.silly(result);
-                        if (resultcode !== 'OK') {
-                            logger.info(result);
-                            callback('ResultCode: ' + resultcode + '\n' + resBody);
-                        } else {
-                            logger.info('ResultCode: ' + resultcode);
-                            callback();
-                        }
-
-                    }
-                });
-            }
-        });
-
-
-    } else {
-        url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-answer/v1.0?wsdl';
-        url = url.replace('https', 'http');
-        soap.createClient(url, function(err, client) {
-            if (err) {
-                callback(err);
-            } else {
-                body = soapMessageBodies.ReceiveMedicalCertificateAnswer(
-                    global.person.id,
-                    global.user.hsaId,
-                    global.user.forNamn + '' + global.user.efterNamn,
-                    global.user.enhetId,
-                    'WebCert Enhet 1',
-                    'Enhetsnamn',
-                    global.meddelanden[0].id
-                );
-                logger.silly(body);
-                client.ReceiveMedicalCertificateAnswer(body, function(err, result, body) {
+    soap.createClient(url, function(err, client) {
+        logger.info(url);
+        if (err) {
+            callback(err);
+        } else {
+            client.SendMessageToCare(body, function(err, result, resBody) {
+                logger.silly(resBody);
+                if (err) {
                     callback(err);
-                });
-            }
+                } else {
+                    var resultcode = result.result.resultCode;
+                    logger.info('ResultCode: ' + resultcode);
+                    // logger.silly(result);
+                    if (resultcode !== 'OK') {
+                        logger.info(result);
+                        callback('ResultCode: ' + resultcode + '\n' + resBody);
+                    } else {
+                        logger.info('ResultCode: ' + resultcode);
+                        callback();
+                    }
 
-        });
-
-    }
+                }
+            });
+        }
+    });
 });
 
 Given(/^jag markerar frågan från vården som hanterad$/, function() {
     var fragaText;
-    for (var k = 0; k < global.meddelanden.length; k++) {
-        if (global.meddelanden[k].typ === 'Fråga') {
-            fragaText = global.meddelanden[k].text;
+    for (var i = 0; i < global.intyg.messages.length; i++) {
+        if (global.intyg.messages[i].typ === 'Fråga') {
+            fragaText = global.intyg.messages[i].text;
         }
     }
     return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).sendKeys(protractor.Key.SPACE);
@@ -543,7 +438,7 @@ Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function()
 });
 
 Given(/^jag väljer att visa intyget med frågan$/, function() {
-    logger.silly(global.meddelanden);
+    logger.silly(global.intyg.messages);
     var atgard = 'Svara';
 
     logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
@@ -648,14 +543,13 @@ Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lak
 
 Given(/^ska jag se min fråga under ohanterade frågor$/, function() {
     var messageId;
-    logger.silly(global.meddelanden);
-    for (var k = 0; k < global.meddelanden.length; k++) {
-        if (global.meddelanden[k].typ === 'Fråga') {
-            messageId = global.meddelanden[k].id;
+    logger.silly(global.intyg.messages);
+    for (var k = 0; k < global.intyg.messages.length; k++) {
+        if (global.intyg.messages[k].typ === 'Fråga') {
+            messageId = global.intyg.messages[k].id;
         }
     }
-    return kontrolleraKompletteringsFragaOHanterad(messageId);
-
+    return expect(qaElements.komplettering.fraga(messageID).ohanterad.isPresent()).to.eventually.be.ok;
 });
 
 Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function(callback) {
@@ -666,7 +560,7 @@ Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, func
 });
 
 Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
-    return expect(element(by.id('unhandled-vidarebefordraEjHanterad')).isPresent()).to.eventually.be.ok;
+    return expect(qaElements.administrativFraga.vidarebefordra.isPresent()).to.eventually.be.ok;
 });
 Then(/^ska det synas vem som svarat$/, function() {
     var name = global.user.forNamn + ' ' + global.user.efterNamn;

@@ -56,7 +56,7 @@ Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/
     var elm;
 
     if (typ === 'frågan') {
-        elm = 'wc-sekretessmarkering-icon-' + global.meddelanden[0].id;
+        elm = 'wc-sekretessmarkering-icon-' + global.intyg.messages[0].id;
         logger.silly(elm);
     } else if (typ === 'intyget') {
         //Annars kollar vi efter 'icon+intyg' elemenetet
@@ -68,9 +68,7 @@ Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/
 });
 
 Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
-    global.intyg.guidcheck = testdataHelper.generateTestGuid();
-
-    var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne) + ' ' + global.intyg.guidcheck, amne);
+    var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne), testdataHelper.generateTestGuid(), amne);
     logger.silly(body);
     var path = '/send-message-to-care/v2.0?wsdl';
     var url = process.env.INTYGTJANST_URL + path;

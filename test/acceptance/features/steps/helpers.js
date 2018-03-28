@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata,intyg,logger,pages,Promise,browser,commonTools, person, protractor*/
+/*global testdata, logger, pages, Promise, browser, commonTools, person, protractor*/
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
@@ -142,7 +142,8 @@ module.exports = {
             return attributes;
         }
     },
-    fetchMessageIds: function(intygtyp) {
+    /* Deptricated*/
+    /*fetchMessageIds: function(intygtyp) {
         logger.silly('Hämtar meddelande-id:n');
 
         // var isSMIIntyg = this.isSMIIntyg(intygtyp);
@@ -184,7 +185,7 @@ module.exports = {
                 });
             }
         });
-    },
+    },*/
     stripTrailingSlash: function(str) {
         if (str.substr(-1) === '/') {
             return str.substr(0, str.length - 1);
