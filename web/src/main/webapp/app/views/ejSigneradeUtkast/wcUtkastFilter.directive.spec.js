@@ -50,8 +50,11 @@ describe('wcUtkastFilterSpec', function() {
             $provide.value('common.statService', jasmine.createSpyObj('common.statService', [ 'refreshStat' ]));
         }]);
 
-        inject(['$rootScope', '$compile', '$cookies', '$httpBackend', 'webcert.UtkastFilterModel',
-            function($rootScope, $compile, _$cookies_, _$httpBackend_, _utkastFilterModel_) {
+        inject(['$rootScope', '$compile', '$cookies', '$httpBackend', 'webcert.UtkastFilterModel', '$templateCache',
+            function($rootScope, $compile, _$cookies_, _$httpBackend_, _utkastFilterModel_, $templateCache) {
+
+                $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
+
                 $cookies = _$cookies_;
                 $httpBackend = _$httpBackend_;
                 utkastFilterModel = _utkastFilterModel_;

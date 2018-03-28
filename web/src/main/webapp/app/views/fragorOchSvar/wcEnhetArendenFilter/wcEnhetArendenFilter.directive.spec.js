@@ -35,12 +35,14 @@ describe('wcEnhetArendenFilter', function() {
             $provide.value('webcert.vardenhetFilterModel', {});
         }]);
 
-        inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService',
-            function(_$rootScope_, _$compile_, _enhetArendenFilterModel_, _enhetArendenFilterService_) {
+        inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService', '$httpBackend',
+            function(_$rootScope_, _$compile_, _enhetArendenFilterModel_, _enhetArendenFilterService_, _$httpBackend_) {
                 $rootScope = _$rootScope_;
                 $compile = _$compile_;
                 enhetArendenFilterModel = _enhetArendenFilterModel_;
                 enhetArendenFilterService = _enhetArendenFilterService_;
+
+                _$httpBackend_.expectGET('/api/fragasvar/lakare').respond(200, []);
 
                 $scope = $rootScope.$new();
                 element = $compile('<wc-enhet-arenden-filter></wc-enhet-arenden-filter>')($scope);

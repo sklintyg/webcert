@@ -129,8 +129,10 @@ describe('wcEnhetArendenList', function() {
             $provide.value('$window', $window);
         }]);
 
-        inject(['$rootScope', '$compile', '$q', '$location', '$timeout', 'common.ArendeProxy', 'webcert.enhetArendenListModel', 'webcert.enhetArendenListService',
-            function(_$rootScope_, _$compile_, _$q_, _$location_, _$timeout_, _ArendeProxy_, _enhetArendenListModel_, _enhetArendenListService_) {
+        inject(['$rootScope', '$compile', '$q', '$location', '$timeout', 'common.ArendeProxy', 'webcert.enhetArendenListModel', 'webcert.enhetArendenListService', '$templateCache',
+            function(_$rootScope_, _$compile_, _$q_, _$location_, _$timeout_, _ArendeProxy_, _enhetArendenListModel_, _enhetArendenListService_, $templateCache) {
+
+                $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
 
                 $rootScope = _$rootScope_;
                 $compile = _$compile_;

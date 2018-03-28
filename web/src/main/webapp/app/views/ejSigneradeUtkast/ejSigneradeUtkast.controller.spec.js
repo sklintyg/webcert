@@ -32,6 +32,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
 
     beforeEach(function() {
 
+        module('htmlTemplates');
         module('webcertTest');
         module('webcert', ['$provide', function($provide) {
 
@@ -56,8 +57,11 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
 
-        inject(['$rootScope', '$httpBackend', '$controller', '$timeout', 'mockResponse', 'webcert.UtkastFilterModel',
-            function($rootScope, _$httpBackend_, _$controller_, _$timeout_, _mockResponse_, _utkastFilterModel_) {
+        inject(['$rootScope', '$httpBackend', '$controller', '$timeout', 'mockResponse', 'webcert.UtkastFilterModel', '$templateCache',
+            function($rootScope, _$httpBackend_, _$controller_, _$timeout_, _mockResponse_, _utkastFilterModel_, $templateCache) {
+
+                $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
+
                 $scope = $rootScope.$new();
                 $scope.filterFormElement = {
                     'filter-changedate-from': { $error: {}},

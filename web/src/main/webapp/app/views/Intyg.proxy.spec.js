@@ -25,6 +25,7 @@ describe('IntygProxy', function() {
     var featureService;
     var dialogService;
 
+    beforeEach(angular.mock.module('htmlTemplates'));
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
         featureService = {
@@ -60,10 +61,12 @@ describe('IntygProxy', function() {
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.IntygProxy', '$httpBackend',
-        function(_IntygProxy_, _$httpBackend_) {
+    beforeEach(angular.mock.inject(['webcert.IntygProxy', '$httpBackend', '$templateCache',
+        function(_IntygProxy_, _$httpBackend_, $templateCache) {
             $httpBackend = _$httpBackend_;
             IntygProxy = _IntygProxy_;
+
+            $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
         }]));
 
     describe('#getUtkastForPatient', function() {

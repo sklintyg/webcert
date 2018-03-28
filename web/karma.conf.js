@@ -22,7 +22,6 @@ module.exports = function(config) {
     'use strict';
 
     var SRC_DIR = 'src/main/webapp/app/';
-    var TEST_DIR = SRC_DIR;
 
     config.set({
 
@@ -65,13 +64,13 @@ module.exports = function(config) {
             'src/main/webapp/bower_components/angular-mocks/angular-mocks.js',
 
             // Load these first
-            TEST_DIR + 'app-test.js',
-            TEST_DIR + 'utils/*.js',
+            SRC_DIR + 'app-test.js',
+            SRC_DIR + 'utils/*.js',
 
             { pattern: SRC_DIR + '**/app.test.js' },
             { pattern: SRC_DIR + '**/views/**/*.js' },
             { pattern: SRC_DIR + '**/views/**/*.html' },
-            { pattern: TEST_DIR + '**/views/**/*.spec.js' }
+            { pattern: SRC_DIR + '**/views/**/*.spec.js' }
         ],
 
         exclude: [ SRC_DIR + '**/*.page.js', SRC_DIR + 'app.js', SRC_DIR + 'app.min.js' ],
@@ -97,7 +96,7 @@ module.exports = function(config) {
         // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
         // - PhantomJS
         // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-        browsers: [ 'Chrome' ],
+        browsers: [ 'PhantomJS' ],
 
         // If browser does not capture in given timeout [ms], kill it
         captureTimeout: 60000,
@@ -107,8 +106,6 @@ module.exports = function(config) {
 
         plugins: [
             'karma-jasmine',
-            'karma-chrome-launcher',
-            'karma-firefox-launcher',
             'karma-phantomjs-launcher',
             'karma-mocha-reporter',
             'karma-ng-html2js-preprocessor'

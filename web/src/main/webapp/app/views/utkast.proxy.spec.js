@@ -33,6 +33,7 @@ describe('UtkastProxy', function() {
         'patientPostnummer':'12345','patientPostort':'Staden'
     };
 
+    beforeEach(angular.mock.module('htmlTemplates'));
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
         featureService = {
@@ -83,13 +84,15 @@ describe('UtkastProxy', function() {
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', 'common.messageService',
-        function(_UtkastProxy_, _$httpBackend_, _messageService_) {
+    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', 'common.messageService', '$templateCache',
+        function(_UtkastProxy_, _$httpBackend_, _messageService_, $templateCache) {
             UtkastProxy = _UtkastProxy_;
             $httpBackend = _$httpBackend_;
             _messageService_.getProperty = function() {
                 return 'Välj typ av intyg';
             };
+
+            $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
         }]));
 
     describe('#createUtkast', function() {
