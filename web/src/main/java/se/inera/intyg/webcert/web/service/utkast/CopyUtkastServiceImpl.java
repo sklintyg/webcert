@@ -472,24 +472,26 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private Person refreshPatientDetailsFromPUService(AbstractCreateCopyRequest copyRequest) {
 
-        Personnummer patientPersonnummer = copyRequest.getPatient().getPersonId();
+        Personnummer personnummer;
 
         if (copyRequest.containsNyttPatientPersonnummer()) {
-            patientPersonnummer = copyRequest.getNyttPatientPersonnummer();
             LOG.debug("Request contained a new personnummer to use for the copy");
+            personnummer = copyRequest.getNyttPatientPersonnummer();
+        } else {
+            personnummer = copyRequest.getPatient().getPersonId();
         }
 
         LOG.debug("Refreshing person data to use for the copy");
-
-        PersonSvar personSvar = getPersonSvar(patientPersonnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
 
         if (PersonSvar.Status.ERROR.equals(personSvar.getStatus())) {
-            LOG.error("An error occured when using '{}' to lookup person data");
+            LOG.error("An error occured when using '{}' to lookup person data", personnummer.getPersonnummerHash());
             return null;
         } else if (PersonSvar.Status.NOT_FOUND.equals(personSvar.getStatus())) {
-            LOG.error("No person data was found using '{}' to lookup person data", patientPersonnummer);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No person data found using '"
-                    + patientPersonnummer + "'");
+            LOG.error("No person data was found using '{}' to lookup person data", personnummer.getPersonnummerHash());
+            throw new WebCertServiceException(
+                    WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "No person data found using '" + personnummer.getPersonnummerHash() + "'");
         }
 
         return personSvar.getPerson();
@@ -498,7 +500,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private PersonSvar getPersonSvar(Personnummer personnummer) {
         if (personnummer == null) {
             String errMsg = "No personnummer present. Unable to make a call to PUService";
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, errMsg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, errMsg);
         }
 
         return puService.getPerson(personnummer);
@@ -514,6 +516,5 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 utkastCopy.getVardgivarNamn());
 
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
-
     }
 }
