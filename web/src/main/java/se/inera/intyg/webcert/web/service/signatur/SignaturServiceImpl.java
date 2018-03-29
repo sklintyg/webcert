@@ -18,7 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.signatur;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import javax.persistence.OptimisticLockException;
+import javax.xml.bind.JAXB;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -26,6 +37,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
+
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -36,6 +51,7 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.xmldsig.model.SignatureType;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -57,17 +73,8 @@ import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturData;
-
-import javax.persistence.OptimisticLockException;
-import javax.xml.bind.JAXB;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class SignaturServiceImpl implements SignaturService {
@@ -78,6 +85,9 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    @Autowired
+    private UtkastService utkastService;
 
     @Autowired
     private PagaendeSigneringRepository pagaendeSigneringRepository;
@@ -105,6 +115,7 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private ASN1Util asn1Util;
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     public SignaturTicket ticketStatus(String ticketId) {
@@ -177,8 +188,6 @@ public class SignaturServiceImpl implements SignaturService {
                     "Unable to sign certificate: " + e.getMessage());
         }
     }
-
-
 
     private WebCertUser getWebcertUserForSignering() {
         IntygUser user = webCertUserService.getUser();
@@ -385,6 +394,9 @@ public class SignaturServiceImpl implements SignaturService {
 
         // Fetch the certificate
         Utkast utkast = getUtkastForSignering(intygsId, ticket.getVersion(), user);
+
+        validateUniqueIntyg(user, utkast.getIntygsTyp(), utkast.getPatientPersonnummer());
+
         // Create and persist signature
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
@@ -489,6 +501,22 @@ public class SignaturServiceImpl implements SignaturService {
             return new String(Hex.encodeHex(digest));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    private void validateUniqueIntyg(WebCertUser user, String intygsTyp, Personnummer patientPersonnummer) {
+        boolean verified = authoritiesValidator.given(user, intygsTyp)
+                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG)
+                .isVerified();
+
+        if (verified) {
+            List<Utkast> intygList = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(
+                    patientPersonnummer.getPersonnummer(),
+                    ImmutableSet.of(intygsTyp));
+            if (!intygList.isEmpty()) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_INTYG_EXISTS,
+                        "Signed intyg of type " + intygsTyp + " already exists.");
+            }
         }
     }
 }
