@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, intyg, browser, logger, Promise */
+/* globals protractor, intyg, browser, logger, Promise, wcTestTools */
 
 'use strict';
 /*jshint newcap:false */
@@ -39,28 +39,13 @@ const {
 
 var helpers = require('./helpers');
 var intygURL = helpers.intygURL;
+var baseIntygPage = wcTestTools.pages.intyg.base.intyg;
 
 /*
  *	Stödfunktioner
  *
  */
 
-function checkIfButtonIsUsable(btnId, shouldBePresent) {
-    return expect(element(by.id(btnId)).isPresent()).to.become(shouldBePresent)
-        .then(function(val) {
-            logger.info('OK - ' + btnId + ' - present: ' + shouldBePresent);
-        }, function(val) {
-            logger.silly('NOK - ' + btnId + ' - expected isPresent to be:' + shouldBePresent);
-            logger.silly('Maybe its just not displayed? Checking..');
-
-            return expect(element(by.id(btnId)).isDisplayed()).to.become(shouldBePresent)
-                .then(function(val) {
-                    logger.info('OK - ' + btnId + ' - isDisplayed: ' + shouldBePresent);
-                }, function(val) {
-                    throw ('NOK - ' + btnId + ' - expected isDisplayed to be:' + shouldBePresent);
-                });
-        });
-}
 
 /*
  *	Test steg
@@ -130,28 +115,29 @@ Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)
     }
 
     buttons = buttons.split(',');
-    var shouldBePresent = typeof(inte) === 'undefined';
+    var shouldBeDisplayed = typeof(inte) === 'undefined';
     var promiseArr = [];
     buttons.forEach(function(button) {
 
         switch (button) {
             case 'skicka':
-                promiseArr.push(checkIfButtonIsUsable('sendBtn', shouldBePresent));
+                promiseArr.push(expect(baseIntygPage.skicka.knapp.isDisplayed()).to.become(shouldBeDisplayed));
                 break;
                 /*case 'kopiera':
-                    promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
+                    promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBeDisplayed));
                     break;*/
             case 'ersätta':
-                promiseArr.push(checkIfButtonIsUsable('ersattBtn', shouldBePresent));
+                promiseArr.push(expect(baseIntygPage.replace.button.isDisplayed()).to.become(shouldBeDisplayed));
                 break;
             case 'förnya':
-                promiseArr.push(checkIfButtonIsUsable('fornyaBtn', shouldBePresent));
+                promiseArr.push(expect(baseIntygPage.fornya.button.isDisplayed()).to.become(shouldBeDisplayed));
                 break;
             case 'makulera':
-                promiseArr.push(checkIfButtonIsUsable('makuleraBtn', shouldBePresent));
+                promiseArr.push(expect(baseIntygPage.makulera.btn.isDisplayed()).to.become(shouldBeDisplayed));
                 break;
             case 'fråga/svar':
-                promiseArr.push(checkIfButtonIsUsable('askArendeBtn', shouldBePresent));
+                promiseArr.push(expect(baseIntygPage.fragaSvar.menyAlternativ.administrativFraga.isDisplayed()).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(baseIntygPage.fragaSvar.menyAlternativ.komplettering.isDisplayed()).to.become(shouldBeDisplayed));
                 break;
             default:
                 throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');

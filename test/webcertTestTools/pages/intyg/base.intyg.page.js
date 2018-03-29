@@ -83,12 +83,25 @@ var BaseIntyg = JClass._extend({
         this.kompletteringUtkastLink = element(by.id('komplettera-open-utkast'));
         this.uthoppKompletteraLink = element(by.id('arende-komplettering-uthopp-link'));
 
-        this.arendePanel = element(by.css('arende-panel'));
-
-        this.arendeText = element(by.id('arendeNewModelText'));
-        this.arendeAmne = element(by.id('new-question-topic'));
-        this.arendeAmneSelected = element(by.id('new-question-topic-selected-item-label'));
-        this.arendeSend = element(by.id('sendArendeBtn'));
+        this.fragaSvar = {
+            meddelande: function(messageId) {
+                var obj = {};
+                obj.frageText = element(by.id('kompletteringar-arende-fragetext-' + messageId));
+                obj.komplettering = {
+                    hanterad: element(by.id('arende-handled-' + messageId)),
+                    ohanterad: element(by.id('arende-unhandled-' + messageId)),
+                    button: element(by.id('komplettera-intyg'))
+                };
+                obj.administrativFraga = {
+                    vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
+                };
+                return obj;
+            },
+            menyAlternativ: {
+                administrativFraga: element(by.id('arende-filter-administrativafragor')),
+                komplettering: element(by.id('arende-filter-kompletteringsbegaran'))
+            }
+        };
 
         // Statusmeddelanden vid namn/adressändring vid djupintegration
         this.statusNameChanged = element(by.id('intyg-djupintegration-name-changed'));

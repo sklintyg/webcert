@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, browser, protractor, logger, JSON, wcTestTools, Promise, person*/
+/* globals intyg, browser, protractor, logger, JSON, wcTestTools, Promise, person*/
 
 'use strict';
 /*jshint newcap:false */
@@ -36,10 +36,10 @@ const {
 } = require('cucumber');
 
 
-var fkIntygPage = pages.intyg.fk['7263'].intyg;
-var fkLusePage = pages.intyg.luse.intyg;
-var lisjpUtkastPage = pages.intyg.lisjp.utkast;
-var baseUtkastPage = pages.intyg.base.utkast;
+var fkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
+var fkLusePage = wcTestTools.pages.intyg.luse.intyg;
+var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
+var baseUtkastPage = wcTestTools.pages.intyg.base.utkast;
 var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
@@ -374,7 +374,7 @@ Given(/^jag markerar frågan från vården som hanterad$/, function() {
 
 
 Given(/^jag går till sidan Frågor och svar$/, function() {
-    return pages.fragorOchSvar.get().then(function() {
+    return wcTestTools.pages.fragorOchSvar.get().then(function() {
         return helpers.pageReloadDelay();
     });
 });
@@ -391,7 +391,7 @@ Given(/^ska frågan inte finnas i listan$/, function() {
 var matchingQARow;
 Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
     logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
-    return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
+    return wcTestTools.pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
         return row.all(by.css('td')).getText().then(function(text) {
             logger.silly(text);
             if (person.id.indexOf('-') === -1) {
@@ -426,7 +426,7 @@ Given(/^jag väljer att visa intyget med frågan$/, function() {
     var atgard = 'Svara';
 
     logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
-    return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
+    return wcTestTools.pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
         return row.all(by.css('td')).getText().then(function(text) {
             logger.silly(text);
             var hasPersonnummer = (text.indexOf(person.id) > -1);
@@ -471,9 +471,9 @@ Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
             return Promise.resolve('Filter visas redan');
         }
     }).then(function() {
-        return pages.fragorOchSvar.atgardSelect.element(by.cssContainingText('option', atgard))
+        return wcTestTools.pages.fragorOchSvar.atgardSelect.element(by.cssContainingText('option', atgard))
             .sendKeys(protractor.Key.SPACE).then(function() {
-                return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE).then(function() {
+                return wcTestTools.pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE).then(function() {
                     return helpers.smallDelay;
                 });
             });
@@ -489,7 +489,7 @@ Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
 
 
 Given(/^ska jag se flera frågor$/, function() {
-    return pages.fragorOchSvar.qaTable.all(by.css('tr')).count().then(function(count) {
+    return wcTestTools.pages.fragorOchSvar.qaTable.all(by.css('tr')).count().then(function(count) {
         return expect(count).to.be.above(1); // mer än 1 pga att table-header är en rad
     });
 });
@@ -506,7 +506,7 @@ Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
         return element(by.id('qp-lakareSelector'))
             .element(by.cssContainingText('option', lakare)).click()
             .then(function() {
-                return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
+                return wcTestTools.pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
             });
 
     });
@@ -515,7 +515,7 @@ Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
 
 Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lakare) {
     logger.silly('Kontrollerar att varje rad innehåller texten ' + lakare);
-    return pages.fragorOchSvar.qaTable.all(by.css('tr')).getText()
+    return wcTestTools.pages.fragorOchSvar.qaTable.all(by.css('tr')).getText()
         .then(function(textArr) {
             var text = textArr.join('\n');
             logger.info(text);

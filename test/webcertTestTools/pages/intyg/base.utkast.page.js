@@ -65,6 +65,10 @@ var BaseUtkast = JClass._extend({
                     vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
                 };
                 return obj;
+            },
+            menyAlternativ: {
+                administrativFraga: element(by.id('arende-filter-administrativafragor')),
+                komplettering: element(by.id('arende-filter-kompletteringsbegaran'))
             }
         };
         this.newTextVersionAlert = element(by.id('newTextVersion'));

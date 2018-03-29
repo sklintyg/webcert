@@ -67,7 +67,10 @@ Scenario: GE-003 - Parametrar i djupintegrationslänk, och intygsdelning mellan 
     Så ska det finnas knappar för "förnya"
     Och ska det inte finnas knappar för "ersätta,makulera"
 	
-    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-107P"
+	Givet jag skickar intyget till Försäkringskassan
+	#Behövs för att kontrollera att fråga/svar inte visas vid SJF = false
+	
+    Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-107P"
 	När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "false"
 	Så ska det inte finnas knappar för "ersätta,makulera,fråga/svar"
 	Så ska det finnas knappar för "förnya" om intygstyp är "Läkarintyg för sjukpenning"
@@ -79,6 +82,7 @@ Scenario: GE-003 - Det ska vara möjligt att gå in på utkast och intyg utan in
 	Och jag väljer vårdenheten "TSTNMT2321000156-INT2"
     Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan
 	
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 	När jag går in på intyget utan integrations parametrar
