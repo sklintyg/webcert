@@ -578,6 +578,7 @@ var FkBaseUtkast = BaseUtkast._extend({
             }
         });
     },
+    /*TODO getQAElementByText depricated ?*/
     getQAElementByText: function(containingText) {
         var panel = element(by.cssContainingText('.qa-panel', containingText));
         return {

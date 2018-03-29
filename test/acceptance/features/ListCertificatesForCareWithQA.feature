@@ -70,7 +70,7 @@ Scenario: DI-027 - Hämta fråga/svar händelser för frågor från vården
     Så ska responsen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska responsen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
 
-    När jag markerar svaret från Försäkringskassan som hanterat
+    När jag markerar svaret från Försäkringskassan som hanterad
     Och jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten
     Så ska responsen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska responsen visa skickade frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1

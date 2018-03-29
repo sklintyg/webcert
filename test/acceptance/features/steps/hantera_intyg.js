@@ -125,7 +125,15 @@ function raderaUtkastet() {
  *	Test steg
  *
  */
+Given(/^ska det finnas en länk med texten "([^"]*)"$/, function(txt) {
+    return expect(element(by.cssContainingText('a', txt)).isPresent()).to.eventually.be.true;
+});
 
+Given(/^jag klickar på länk med texten "([^"]*)"$/, function(txt) {
+    return element(by.cssContainingText('a', txt)).click().then(function() {
+        return helpers.pageReloadDelay();
+    });
+});
 
 Given(/^jag signerar intyget$/, function() {
     return signeraUtkast();

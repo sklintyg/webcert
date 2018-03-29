@@ -39,37 +39,17 @@ const {
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
 var lisjpUtkastPage = pages.intyg.lisjp.utkast;
+var baseUtkastPage = pages.intyg.base.utkast;
 var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
+var messageID;
 
 /*
  *	Stödfunktioner
  *
  */
-
-
-let qaElements = {
-    komplettering: {
-        fraga(id) {
-            let obj = {};
-            obj.hanterad = element(by.id('arende-handled-' + id));
-            obj.ohanterad = element(by.id('arende-unhandled-' + id));
-            return obj;
-        },
-        button: element(by.id('komplettera-intyg'))
-    },
-    administrativFraga: {
-        fraga: {
-
-        },
-        svar: {
-
-        },
-        vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
-    }
-};
 
 function sendQuestionToFK(amne, cb) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
@@ -120,6 +100,8 @@ function hamtaAllaTraffar() {
         }
     });
 }
+
+
 
 /*
  *	Test steg
@@ -177,17 +159,20 @@ Given(/^ska det inte finnas en knapp med texten "([^"]*)"$/, function(texten) {
 
 Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
     var fragaDeltext;
+    var page;
 
     if (typ === 'intygs') {
+        console.log('WAHTS!?');
+        messageID = global.intyg.messages[0].id;
         fragaDeltext = global.intyg.messages[0].testString;
+        page = fkLusePage;
     } else {
+        console.log('OK OK OK ');
+        messageID = global.ursprungligtIntyg.messages[0].id;
         fragaDeltext = global.ursprungligtIntyg.messages[0].testString;
+        page = baseUtkastPage;
     }
-
-    var page = fkLusePage;
-
-    logger.silly('Letar efter fråga som innehåller text: ' + fragaDeltext);
-    return expect(page.getQAElementByText(fragaDeltext).panel.isPresent()).to.become(true);
+    return expect(page.fragaSvar.meddelande(messageID).frageText.getText()).to.eventually.contain(fragaDeltext);
 });
 
 
@@ -260,7 +245,6 @@ Given(/^jag ska kunna svara med textmeddelande/, function() {
         });
 });
 
-var messageID;
 Given(/^jag svarar på frågan$/, function() {
     var messageID = intyg.messages[0].id;
 
@@ -271,7 +255,7 @@ Given(/^jag svarar på frågan$/, function() {
 });
 
 Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
-    return expect(qaElements.komplettering.fraga(messageID).hanterad.isPresent()).to.eventually.be.ok;
+    return expect(baseUtkastPage.fragaSvar.meddelande(messageID).komplettering.hanterad.isPresent()).to.eventually.be.ok;
 });
 
 Given(/^ska jag se påminnelsen på intygssidan$/, function() {
@@ -293,7 +277,7 @@ Given(/^ska jag se påminnelsen på intygssidan$/, function() {
         });
 });
 
-Given(/^jag markerar svaret från Försäkringskassan som hanterad$/, function() {
+Given(/^jag markerar (?:svaret|frågan) från Försäkringskassan som( INTE)? hanterad$/, function() {
     return browser.refresh()
         .then(function() {
             return helpers.fetchMessageIds(intyg.typ);
@@ -467,7 +451,7 @@ Given(/^jag lämnar intygssidan$/, function() {
 });
 
 Given(/^ska jag få dialogen "([^"]*)"$/, function(text) {
-    return expect(element(by.cssContainingText('.modal-dialog', text)).isPresent()).to.eventually.be.ok;
+    return expect(element(by.cssContainingText('.modal-dialog', text)).isPresent()).to.eventually.become(true);
 });
 
 Given(/^jag väljer valet att markera som hanterade$/, function() {
@@ -549,7 +533,7 @@ Given(/^ska jag se min fråga under ohanterade frågor$/, function() {
             messageId = global.intyg.messages[k].id;
         }
     }
-    return expect(qaElements.komplettering.fraga(messageID).ohanterad.isPresent()).to.eventually.be.ok;
+    return expect(baseUtkastPage.fragaSvar.meddelande(messageID).komplettering.ohanterad.isPresent()).to.eventually.become(true);
 });
 
 Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function(callback) {
@@ -560,7 +544,7 @@ Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, func
 });
 
 Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
-    return expect(qaElements.administrativFraga.vidarebefordra.isPresent()).to.eventually.be.ok;
+    return expect(baseUtkastPage.fragaSvar.meddelande(messageID).administrativFraga.vidarebefordra.isPresent()).to.eventually.become(true);
 });
 Then(/^ska det synas vem som svarat$/, function() {
     var name = global.user.forNamn + ' ' + global.user.efterNamn;

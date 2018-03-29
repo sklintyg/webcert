@@ -75,7 +75,7 @@ Scenario: Statusuppdateringar vid fråga från vården
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
-    Och jag markerar svaret från Försäkringskassan som hanterat
+    Och jag markerar svaret från Försäkringskassan som hanterad
 
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
@@ -157,7 +157,7 @@ Scenario: Testa att statusuppdateringar fungerar efter intyget är förnyat
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
-    Och jag markerar svaret från Försäkringskassan som hanterat
+    Och jag markerar svaret från Försäkringskassan som hanterad
 
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
@@ -195,7 +195,7 @@ Scenario: Testa att statusuppdateringar fungerar efter intyget är ersatt
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
 
-    Och jag markerar svaret från Försäkringskassan som hanterat
+    Och jag markerar svaret från Försäkringskassan som hanterad
 
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0

@@ -52,6 +52,21 @@ var BaseUtkast = JClass._extend({
         this.skrivUtBtn = element(by.id('skriv-ut-utkast'));
         this.signingDoctorName = element(by.id('signingDoctor'));
 
+        this.fragaSvar = {
+            meddelande: function(messageId) {
+                var obj = {};
+                obj.frageText = element(by.id('kompletteringar-arende-fragetext-' + messageId));
+                obj.komplettering = {
+                    hanterad: element(by.id('arende-handled-' + messageId)),
+                    ohanterad: element(by.id('arende-unhandled-' + messageId)),
+                    button: element(by.id('komplettera-intyg'))
+                };
+                obj.administrativFraga = {
+                    vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
+                };
+                return obj;
+            }
+        };
         this.newTextVersionAlert = element(by.id('newTextVersion'));
         this.backBtn = element(by.id('tillbakaButton'));
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
