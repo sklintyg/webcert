@@ -18,18 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.signatur;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-
-import javax.persistence.OptimisticLockException;
-import javax.xml.bind.JAXB;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -37,10 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
-
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -73,8 +59,19 @@ import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturData;
+
+import javax.persistence.OptimisticLockException;
+import javax.xml.bind.JAXB;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class SignaturServiceImpl implements SignaturService {
@@ -85,9 +82,6 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private UtkastRepository utkastRepository;
-
-    @Autowired
-    private UtkastService utkastService;
 
     @Autowired
     private PagaendeSigneringRepository pagaendeSigneringRepository;
@@ -132,22 +126,19 @@ public class SignaturServiceImpl implements SignaturService {
      * Called from the Controller when initiating a client (e.g. NetID) signature. Rewritten in INTYG-5048 so
      * <i>starting</i> a signature process does NOT mutate the Utkast in any way. Instead, a temporary intyg JSON model
      * including the signatureDate and signing identity is stored in a {@link PagaendeSignering} entity.
-     *
+     * <p>
      * Once the signing has been completed
      * (see {@link SignaturServiceImpl#createAndPersistSignature(Utkast, SignaturTicket, String, WebCertUser)}) the
      * hash, intygsId and version from the JSON model in the PagaendeSignatur is validated and if everything works out,
      * the final state is written to the Utkast table.
-     *
+     * <p>
      * If the user for some reason failed to finish the signing (cancelled in NetID etc.), the Utkast table won't be
      * affected or contain a signingDate even though it wasn't signed. A stale entry may remain in PAGAENDE_SIGNERING
      * but since those cannot be reused such entries can remain there indefinitely or until cleaned up by a janitor
      * task.
      *
-     * @param intygId
-     *            The id of the draft to generate signing ticket for
-     * @param version
-     *            version
-     *
+     * @param intygId The id of the draft to generate signing ticket for
+     * @param version version
      * @return
      */
     @Override
@@ -305,11 +296,11 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
 
-        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
-                utkast.getRelationKod());
-
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
+
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
+                utkast.getRelationKod());
 
         // Notify stakeholders when certificate has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
@@ -325,6 +316,9 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     private SignaturTicket createAndPersistSignature(Utkast utkast, SignaturTicket ticket, String rawSignature, WebCertUser user) {
+
+        validateUniqueIntyg(user, utkast.getIntygsTyp(), utkast.getPatientPersonnummer());
+
         PagaendeSignering pagaendeSignering = pagaendeSigneringRepository.findOne(ticket.getPagaendeSigneringId());
         if (pagaendeSignering == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
@@ -395,8 +389,6 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the certificate
         Utkast utkast = getUtkastForSignering(intygsId, ticket.getVersion(), user);
 
-        validateUniqueIntyg(user, utkast.getIntygsTyp(), utkast.getPatientPersonnummer());
-
         // Create and persist signature
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
@@ -429,14 +421,14 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
 
-        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
-                utkast.getRelationKod());
-
         // Create and persist the new signature
         StringWriter sw = new StringWriter();
         JAXB.marshal(signatureType, sw);
         String rawSignaturXml = sw.toString();
         ticket = createAndPersistSignature(utkast, ticket, rawSignaturXml, user);
+
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
+                utkast.getRelationKod());
 
         // Notify stakeholders when certificate has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
@@ -511,8 +503,11 @@ public class SignaturServiceImpl implements SignaturService {
 
         if (verified) {
             List<Utkast> intygList = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(
-                    patientPersonnummer.getPersonnummer(),
-                    ImmutableSet.of(intygsTyp));
+                    patientPersonnummer.getPersonnummerWithDash(),
+                    ImmutableSet.of(intygsTyp))
+                    .stream()
+                    .filter(u -> u.getSignatur() != null)
+                    .collect(Collectors.toList());
             if (!intygList.isEmpty()) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_INTYG_EXISTS,
                         "Signed intyg of type " + intygsTyp + " already exists.");
