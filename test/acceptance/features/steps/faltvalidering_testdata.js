@@ -122,14 +122,7 @@ module.exports = {
 
     meddelanden: [ // Listan kommer ifrån https://inera-certificate.atlassian.net/wiki/spaces/IT/pages/320176155/Valideringsmeddelanden
         'Postnummer måste anges med fem siffror.',
-        'ICD-10 kod saknas på diagnos. (Fält 2)',
-        'Fritextfältet som hör till alternativet Övrigt måste fyllas i. (Fält 6a)',
-        'Datum för nedsatt med 100% har angetts med felaktigt format (Fält 8b). Datum ska fyllas i åååå-mm-dd.',
         'Datum får inte ligga för långt fram eller tillbaka i tiden.',
-        'Datum för nedsatt med 75% har angetts med felaktigt format (Fält 8b). Datum ska fyllas i åååå-mm-dd.',
-        'Datum för nedsatt med 50% har angetts med felaktigt format (Fält 8b). Datum ska fyllas i åååå-mm-dd.',
-        'Datum för nedsatt med 25% har angetts med felaktigt format (Fält 8b). Datum ska fyllas i åååå-mm-dd.',
-        'Tvådatumintervallmed överlappande datum har angetts. (Fält 8b)',
         'Sjukskrivningsperiod med överlappande datum har angetts.',
         'Får inte vara senare än "Min undersökning av patienten"',
         'Får inte vara senare än "Anhörigs beskrivning av patienten".',

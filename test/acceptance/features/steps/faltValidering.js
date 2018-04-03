@@ -143,7 +143,7 @@ Then(/^ska alla valideringsmeddelanden finnas med i listan över godkända medde
     })
 );
 
-Given(/^att textfält i intyget är rensade$/, () => element.all(by.css('input[type=text]')).each(i => i.clear()));
+Given(/^att textfält i intyget är rensade$/, () => element.all(by.css('input[type=text]')).filter(el => el.isEnabled()).each(i => i.clear()));
 
 Then(/^ska alla sektioner innehållandes valideringsfel listas$/, () =>
     Promise.all([findSectionsWithRequiredFields(), // expected
@@ -153,8 +153,11 @@ Then(/^ska alla sektioner innehållandes valideringsfel listas$/, () =>
         let actual = result[1];
         logger.info('Expected: ' + expected);
         logger.info('Actual: ' + actual);
-        expect(actual).to.eql(expected);
-    }).catch(msg => assert.fail(msg))
+        expect(actual).to.have.members(expected);
+    }).catch(msg => {
+        logger.error(msg);
+        assert.fail(msg);
+    })
 );
 
 Then(/^ska valideringsfel i sektion "([^"]*)" visas$/, sektion => expect(findErrorMessages()).to.eventually.include(sektion));

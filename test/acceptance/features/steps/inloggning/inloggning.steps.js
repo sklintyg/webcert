@@ -127,9 +127,9 @@ Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjäns
 
 });
 
-Then(/^jag går in på "([^"]*)" testpatienten för "([^"]*)"$/, function(index, testSyfte) {
+Then(/^jag går in på (?:"([^"]*)" )?testpatienten för "([^"]*)"$/, function(index, testSyfte) {
     var testvalues = wcTestTools.testdata.values;
-    var patient = testvalues.dedikeradeTestPatienter.medSyfte[testSyfte][helpers.getIntFromTxt(index)];
+    var patient = testvalues.dedikeradeTestPatienter.medSyfte[testSyfte][helpers.getIntFromTxt(index || 'första')];
     return gotoPatient(patient);
 });
 

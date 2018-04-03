@@ -44,10 +44,10 @@ module.exports = {
 
         if (global.person.adress && global.person.adress.postadress && !isSMI && global.user.origin !== 'DJUPINTEGRATION') {
             return utkastPage.angePatientAdress(global.person.adress).then(function() {
-                logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
+                logger.info('OK - setPatientAdress: ' + JSON.stringify(global.person.adress));
             }, function(reason) {
-                throw ('FEL, setPatientAdress,' + reason);
-            });
+                throw ('FEL - setPatientAdress: ' + reason);
+            }).catch(msg => logger.warn(msg));
         } else {
             logger.info('Ingen patientadress ändras');
             if (!isSMI && global.user.origin !== 'DJUPINTEGRATION') {
