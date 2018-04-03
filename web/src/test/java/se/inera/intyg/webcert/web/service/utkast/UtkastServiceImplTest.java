@@ -557,7 +557,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository, never()).save(any(Utkast.class));
         verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
-        assertEquals("", user.getParameters().getBeforeAlternateSsn());
+        assertEquals(defaultPatient.getPersonId().getPersonnummer(), user.getParameters().getBeforeAlternateSsn());
     }
 
     @Test
@@ -589,7 +589,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository, never()).save(any(Utkast.class));
         verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
-        assertEquals("", user.getParameters().getBeforeAlternateSsn());
+        assertEquals(defaultPatient.getPersonId().getPersonnummer(), user.getParameters().getBeforeAlternateSsn());
     }
 
     @Test(expected = WebCertServiceException.class)
