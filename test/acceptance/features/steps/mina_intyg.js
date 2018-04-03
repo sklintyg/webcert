@@ -70,34 +70,28 @@ Given(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
     });
 });
 
-Given(/^jag går till Mina intyg för patienten$/, function(callback) {
+Given(/^jag går till Mina intyg för patienten$/, function() {
     browser.ignoreSynchronization = true;
-    helpers.getUrl(process.env.MINAINTYG_URL + '/web/sso?guid=' + global.person.id);
-    // element(by.id('guid')).sendKeys(global.person.id);
-    // element(by.css('input.btn')).sendKeys(protractor.Key.SPACE).then(function() {
-
-    // Detta behövs pga att Mina intyg är en extern sida
-    browser.sleep(3000);
-
-    // Om samtyckesruta visas
-    element(by.id('consentTerms')).isPresent().then(function(result) {
-        if (result) {
+    return helpers.getUrl(process.env.MINAINTYG_URL + '/web/sso?guid=' + global.person.id).then(function() {
+        // Om samtyckesruta visas
+        return element(by.id('consentTerms')).isPresent();
+    }).then(function(present) {
+        if (present) {
             logger.info('Lämnar samtycke..');
-            element(by.id('giveConsentCheckbox')).sendKeys(protractor.Key.SPACE)
+            return element(by.id('giveConsentCheckbox')).sendKeys(protractor.Key.SPACE)
                 .then(function() {
                     browser.ignoreSynchronization = false;
-                    return browser.sleep(3000);
+                    return helpers.largeDelay();
                 }).then(function() {
                     element(by.id('giveConsentButton')).sendKeys(protractor.Key.SPACE);
                     browser.ignoreSynchronization = false;
-                    return browser.sleep(3000);
-                }).then(callback);
+                    return helpers.largeDelay();
+                });
         } else {
             browser.ignoreSynchronization = false;
-            callback();
+            return;
         }
     });
-    //  });
 });
 
 Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
@@ -130,7 +124,7 @@ Given(/^ska intygets information i Mina intyg vara den jag angett$/, function(ca
 
 Given(/^jag loggar ut ur Mina intyg$/, function() {
     return element(by.id('mvklogoutLink')).sendKeys(protractor.Key.SPACE).then(function() {
-        browser.sleep(3000);
+        return helpers.hugeDelay();
     });
 
 });

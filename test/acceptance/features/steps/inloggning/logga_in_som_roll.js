@@ -58,12 +58,19 @@ function checkUserOrigin() {
 
 function performUserCheck(userconfig) {
     browser.ignoreSynchronization = true;
-    helpers.getUrl('testability/user/' + userconfig + '/');
-    var attribute = element(by.css('pre')).getText();
-    browser.navigate().back();
-    browser.sleep(1000);
-    browser.ignoreSynchronization = false;
-    return attribute;
+    let attributes;
+
+    return helpers.getUrl('testability/user/' + userconfig + '/').then(function() {
+        attributes = element(by.css('pre')).getText();
+        return;
+    }).then(function() {
+        return browser.navigate().back();
+    }).then(function() {
+        browser.ignoreSynchronization = false;
+        return helpers.largeDelay();
+    }).then(function() {
+        return attributes;
+    });
 }
 
 /*

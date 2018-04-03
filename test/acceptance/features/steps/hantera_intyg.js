@@ -58,33 +58,29 @@ function signeraUtkast() {
         return Promise.resolve();
     };
 
+    var ejKomplettEL = element(by.cssContainingText('h3', 'Utkastet saknar uppgifter i följande avsnitt'));
+
     return uppdateraAdressOmErsattandeIntyg().then(function() {
-        return browser.sleep(1).then(function() { // fix för nåt med animering?
+        return helpers.tinyDelay();
+    }).then(function() { // fix för nåt med animering?
 
-            return expect(fkUtkastPage.klartAttSigneraStatus.getText()).to.eventually.contain('Klart')
-                .then(function() {
-                    return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
-                })
-                .then(function() {
-                    // Verifiera att det inte finns valideringsfel
-                    var ejKomplettEL = element(by.cssContainingText('h3', 'Utkastet saknar uppgifter i följande avsnitt'));
-                    return expect(ejKomplettEL.isPresent()).to.become(false)
-                        .then(function(val) {
-                            //Elementet finns inte i DOM
-                            return Promise.resolve();
-                        }, function(val) {
-                            //Om elementet finns tillgänligt på sidan så ska det iallafall inte vara synligt!
-                            return expect(ejKomplettEL.isDisplayed()).to.become(false)
-                                .then(function() {
-                                    return Promise.resolve('Elementet är inte tillgänligt och inte synligt');
-                                }, function() {
-                                    throw ('Utkastet är inte komplett och kunde inte signeras. Se screenshot' + '\n' + val);
+        return expect(fkUtkastPage.klartAttSigneraStatus.getText()).to.eventually.contain('Klart');
 
-                                });
-
-                        });
-                });
-        });
+    }).then(function() {
+        return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
+    }).then(function() {
+        // Verifiera att det inte finns valideringsfel
+        return expect(ejKomplettEL.isPresent()).to.become(false);
+    }).then(function(val) {
+        //Elementet finns inte i DOM
+        return Promise.resolve();
+    }, function(val) {
+        //Om elementet finns tillgänligt på sidan så ska det iallafall inte vara synligt!
+        return expect(ejKomplettEL.isDisplayed()).to.become(false);
+    }).then(function() {
+        return Promise.resolve('Elementet är inte tillgänligt och inte synligt');
+    }, function() {
+        throw ('Utkastet är inte komplett och kunde inte signeras. Se screenshot');
     });
 }
 

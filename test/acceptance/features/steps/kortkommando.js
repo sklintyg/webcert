@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals pages, wcTestTools,logger,browser,protractor*/
+/*globals pages, wcTestTools,logger,protractor*/
 
 'use strict';
 /*jshint newcap:false */
@@ -37,7 +37,7 @@ const {
 
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var testdataHelper = wcTestTools.helpers.testdata;
-
+var helpers = require('./helpers');
 
 
 /*
@@ -75,13 +75,15 @@ Given(/^jag fyller i kortkommando som till och med datum$/, function() {
     logger.info('Kortkommando:' + shortcode);
 
     return fkUtkastPage.nedsatt[key].tom.sendKeys(shortcode).then(function() {
-        return fkUtkastPage.nedsatt[key].tom.sendKeys(protractor.Key.TAB).then(function() {
-            return browser.sleep(1000).then(function() {
-                return fkUtkastPage.nedsatt[key].tom.getAttribute('value').then(function(dateValue) {
-                    date = dateValue;
-                });
-            });
+        return fkUtkastPage.nedsatt[key].tom.sendKeys(protractor.Key.TAB);
+    }).then(function() {
+        return helpers.largeDelay();
+    }).then(function() {
+        return fkUtkastPage.nedsatt[key].tom.getAttribute('value').then(function(dateValue) {
+            date = dateValue;
         });
+
+
     });
 });
 

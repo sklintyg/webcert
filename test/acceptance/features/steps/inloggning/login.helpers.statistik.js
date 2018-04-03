@@ -72,9 +72,6 @@ module.exports = {
                 function(err) {
                     return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
                 });
-            // browser.sleep(3000).then(function() {
-            //     return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn);
-            // });
         });
 
     }

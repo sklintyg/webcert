@@ -31,8 +31,10 @@ function sh(value) {
 var moveAndSendKeys = require('common-testtools').protractorHelpers.moveAndSendKeys;
 
 module.exports = {
+
     getUrl: function(url) {
         var largeDelay = this.largeDelay;
+        var hugeDelay = this.hugeDelay;
         var removeAlerts = this.removeAlerts;
         logger.info('Går till url:' + url);
 
@@ -45,7 +47,7 @@ module.exports = {
             return browser.getCurrentUrl();
         }).then(function(currentUrl) {
             logger.silly('currentUrl: ' + currentUrl);
-            return browser.sleep(1);
+            return hugeDelay(); // Vänta på att intyg/utkast laddas in.
         });
     },
     removeAlerts: function() {
@@ -57,6 +59,9 @@ module.exports = {
         });
     },
     moveAndSendKeys: moveAndSendKeys,
+    tinyDelay: function() {
+        return browser.sleep(10);
+    },
     smallDelay: function() {
         return browser.sleep(100);
     },
@@ -65,6 +70,9 @@ module.exports = {
     },
     largeDelay: function() {
         return browser.sleep(1000);
+    },
+    hugeDelay: function() {
+        return browser.sleep(3000);
     },
     pageReloadDelay: function() {
         return browser.sleep(5000);

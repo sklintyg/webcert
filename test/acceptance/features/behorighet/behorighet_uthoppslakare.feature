@@ -5,6 +5,7 @@ Egenskap: Behörigheter för en uthoppsläkare
 Bakgrund: Inloggad som uthoppsläkare
    Givet att jag är inloggad som uthoppsläkare
 
+@testability
 Scenario: Inloggad som uthoppsläkare
    Så ska jag ha rollen "LAKARE"
    Och jag ska ha origin "UTHOPP"

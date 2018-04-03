@@ -201,8 +201,7 @@ After(function(testCase) {
                 return helpers.getUrl(url);
             })
             .then(function() {
-                world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
-                return browser.sleep(1000);
+                return world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
             }).then(function() {
                 logger.silly('browser.refresh');
                 return browser.refresh();
@@ -211,19 +210,16 @@ After(function(testCase) {
     } else {
         logger.silly('Rensar session-storage');
         return browser.executeScript('window.sessionStorage.clear();').then(function() {
-                return checkConsoleErrors();
-            }).then(function() {
-                logger.silly('Rensar local-storage');
-                return browser.executeScript('window.localStorage.clear();');
-            }).then(function() {
-                var url = 'about:blank';
-                return helpers.getUrl(url);
-            })
-            .then(function() {
-                return browser.sleep(1000);
-            }).then(function() {
-                return browser.refresh();
-            });
+            return checkConsoleErrors();
+        }).then(function() {
+            logger.silly('Rensar local-storage');
+            return browser.executeScript('window.localStorage.clear();');
+        }).then(function() {
+            var url = 'about:blank';
+            return helpers.getUrl(url);
+        }).then(function() {
+            return browser.refresh();
+        });
     }
 });
 
