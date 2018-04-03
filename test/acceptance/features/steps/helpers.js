@@ -31,7 +31,15 @@ function sh(value) {
 var moveAndSendKeys = require('common-testtools').protractorHelpers.moveAndSendKeys;
 
 module.exports = {
-
+    elementIsUsable: function(elm) {
+        return elm.isDisplayed().then(function(val) {
+            //OK
+            return val;
+        }, function(val) {
+            // Fånga fel om elementet inte finns. Kontrollera om det finns.
+            return elm.isPresent();
+        });
+    },
     getUrl: function(url) {
         var largeDelay = this.largeDelay;
         var hugeDelay = this.hugeDelay;

@@ -61,14 +61,14 @@ Scenario: GE-003 - Parametrar i djupintegrationslänk, och intygsdelning mellan 
     När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
     Så ska jag varnas om att "Patienten är avliden"
     Så ska det inte finnas knappar för "ersätta,förnya"
+	
+	Givet jag skickar intyget till Försäkringskassan
+	#Behövs för att kontrollera att fråga/svar inte visas vid SJF = false
 
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
     När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
     Så ska det finnas knappar för "förnya"
     Och ska det inte finnas knappar för "ersätta,makulera"
-	
-	Givet jag skickar intyget till Försäkringskassan
-	#Behövs för att kontrollera att fråga/svar inte visas vid SJF = false
 	
     Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-107P"
 	När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "false"

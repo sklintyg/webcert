@@ -118,31 +118,26 @@ Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)
     var shouldBeDisplayed = typeof(inte) === 'undefined';
     var promiseArr = [];
     buttons.forEach(function(button) {
-
         switch (button) {
             case 'skicka':
-                promiseArr.push(expect(baseIntygPage.skicka.knapp.isDisplayed()).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.skicka.knapp)).to.become(shouldBeDisplayed));
                 break;
-                /*case 'kopiera':
-                    promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBeDisplayed));
-                    break;*/
             case 'ersätta':
-                promiseArr.push(expect(baseIntygPage.replace.button.isDisplayed()).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.replace.button)).to.become(shouldBeDisplayed));
                 break;
             case 'förnya':
-                promiseArr.push(expect(baseIntygPage.fornya.button.isDisplayed()).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.fornya.button)).to.become(shouldBeDisplayed));
                 break;
             case 'makulera':
-                promiseArr.push(expect(baseIntygPage.makulera.btn.isDisplayed()).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.makulera.btn)).to.become(shouldBeDisplayed));
                 break;
             case 'fråga/svar':
-                promiseArr.push(expect(baseIntygPage.fragaSvar.administrativFraga.menyVal.isDisplayed()).to.become(shouldBeDisplayed));
-                promiseArr.push(expect(baseIntygPage.fragaSvar.komplettering.menyVal.isDisplayed()).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.fragaSvar.administrativFraga.menyVal)).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.fragaSvar.komplettering.menyVal)).to.become(shouldBeDisplayed));
                 break;
             default:
                 throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');
         }
-
     });
     return Promise.all(promiseArr);
 });
