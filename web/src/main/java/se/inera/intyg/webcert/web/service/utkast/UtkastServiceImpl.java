@@ -436,10 +436,15 @@ public class UtkastServiceImpl implements UtkastService {
         Optional<Personnummer> optionalPnr = Optional.ofNullable(request.getPersonnummer());
         Optional<Personnummer> optionalDraftPnr = Optional.ofNullable(draftPatient.getPersonId());
 
+        if (optionalDraftPnr.isPresent()) {
+            // Spara undan det gamla personnummret temporärt
+            String oldPersonId = optionalDraftPnr.get().getPersonnummer();
+            webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
+        }
+
         if ((optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr))
             && !isHashEqual(optionalPnr, optionalDraftPnr)) {
 
-            String oldPersonId = optionalDraftPnr.get().getPersonnummer();
 
             // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar
             // personnumret -
@@ -452,9 +457,6 @@ public class UtkastServiceImpl implements UtkastService {
                 saveDraft(utkast);
                 monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
                 sendNotification(utkast, Event.CHANGED);
-
-                // Spara undan det gamla personnummret temporärt
-                webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
 
             } catch (ModuleException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,

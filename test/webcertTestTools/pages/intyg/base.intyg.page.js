@@ -128,7 +128,8 @@ var BaseIntyg = JClass._extend({
 
         this.selectUtskriftButton = element(by.id('intyg-header-dropdown-select-pdf-type'));
 
-
+        this.newPersonIdMessage = element(by.id('wc-new-person-id-message'));
+        this.newPersonIdMessageText = element(by.id('wc-new-person-id-message-text'));
     },
     get: function(intygId) {
         browser.get('/#/intyg/' + this.intygType + '/' + intygId + '/');

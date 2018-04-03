@@ -93,6 +93,9 @@ var BaseUtkast = JClass._extend({
             postNummer: element(by.id('grundData-patient-postnummer')),
             postOrt: element(by.id('grundData-patient-postort'))
         };
+
+        this.newPersonIdMessage = element(by.id('wc-new-person-id-message'));
+        this.newPersonIdMessageText = element(by.id('wc-new-person-id-message-text'));
     },
     get: function(intygType, intygId) {
         browser.get('/#/' + intygType + '/edit/' + intygId + '/');
