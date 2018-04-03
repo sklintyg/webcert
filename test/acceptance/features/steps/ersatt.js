@@ -136,8 +136,8 @@ Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)
                 promiseArr.push(expect(baseIntygPage.makulera.btn.isDisplayed()).to.become(shouldBeDisplayed));
                 break;
             case 'fråga/svar':
-                promiseArr.push(expect(baseIntygPage.fragaSvar.menyAlternativ.administrativFraga.isDisplayed()).to.become(shouldBeDisplayed));
-                promiseArr.push(expect(baseIntygPage.fragaSvar.menyAlternativ.komplettering.isDisplayed()).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(baseIntygPage.fragaSvar.administrativFraga.menyVal.isDisplayed()).to.become(shouldBeDisplayed));
+                promiseArr.push(expect(baseIntygPage.fragaSvar.komplettering.menyVal.isDisplayed()).to.become(shouldBeDisplayed));
                 break;
             default:
                 throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');

@@ -61,14 +61,15 @@ var BaseUtkast = JClass._extend({
                     ohanterad: element(by.id('arende-unhandled-' + messageId)),
                     button: element(by.id('komplettera-intyg'))
                 };
-                obj.administrativFraga = {
-                    vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
-                };
                 return obj;
             },
-            menyAlternativ: {
-                administrativFraga: element(by.id('arende-filter-administrativafragor')),
-                komplettering: element(by.id('arende-filter-kompletteringsbegaran'))
+            administrativFraga: {
+                menyVal: element(by.id('arende-filter-administrativafragor')),
+                nyfraga: element(by.id('')),
+                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
+            },
+            komplettering: {
+                menyVal: element(by.id('arende-filter-kompletteringsbegaran'))
             }
         };
         this.newTextVersionAlert = element(by.id('newTextVersion'));

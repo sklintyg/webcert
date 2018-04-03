@@ -40,12 +40,15 @@ var fkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 var fkLusePage = wcTestTools.pages.intyg.luse.intyg;
 var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var baseUtkastPage = wcTestTools.pages.intyg.base.utkast;
+//var baseIntygPage = wcTestTools.pages.intyg.base.intyg;
 var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
 var messageID;
 
+var testTools = require('common-testtools');
+testTools.protractorHelpers.init();
 /*
  *	Stödfunktioner
  *
@@ -60,11 +63,12 @@ function sendQuestionToFK(amne, cb) {
 
     // if (isSMIIntyg) {
 
-    lisjpUtkastPage.arendeQuestion.newArendeButton.sendKeys(protractor.Key.SPACE);
-    lisjpUtkastPage.arendeQuestion.text.sendKeys(fragaText + ' ' + testString);
+    // TODO use baseIntygPage.fragaSvar. instead
+    lisjpUtkastPage.arendeQuestion.newArendeButton.typeKeys(protractor.Key.SPACE);
+    lisjpUtkastPage.arendeQuestion.text.typeKeys(fragaText + ' ' + testString);
     lisjpUtkastPage.selectQuestionTopic(amne);
 
-    lisjpUtkastPage.arendeQuestion.sendButton.sendKeys(protractor.Key.SPACE);
+    lisjpUtkastPage.arendeQuestion.sendButton.typeKeys(protractor.Key.SPACE);
 
     lisjpUtkastPage.arendePanel.getAttribute('id').then(function(result) {
         var element = result.split('-');
@@ -86,7 +90,7 @@ function sendQuestionToFK(amne, cb) {
 function hamtaAllaTraffar() {
     return element(by.id('hamtaFler')).isDisplayed().then(function(present) {
         if (present) {
-            return helpers.moveAndSendKeys(element(by.id('hamtaFler')), protractor.Key.SPACE).then(function() {
+            return helpers.moveAndtypeKeys(element(by.id('hamtaFler')), protractor.Key.SPACE).then(function() {
                 return helpers.smallDelay();
             });
         } else {
@@ -108,9 +112,8 @@ function hamtaAllaTraffar() {
  *
  */
 
-Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
-    sendQuestionToFK(amne, callback);
-
+Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne) {
+    return sendQuestionToFK(amne);
 });
 Given(/^jag väljer att svara med ett nytt intyg$/, function() {
     helpers.updateEnhetAdressForNewIntyg();
@@ -195,7 +198,7 @@ Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text)
 });
 
 Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() {
-    return element(by.id('uthopp-svara-med-meddelande-' + global.intyg.messages[0].id)).sendKeys(protractor.Key.SPACE)
+    return element(by.id('uthopp-svara-med-meddelande-' + global.intyg.messages[0].id)).typeKeys(protractor.Key.SPACE)
         .then(function() {
             return helpers.pageReloadDelay();
         });
@@ -207,25 +210,25 @@ Given(/^jag ska kunna svara med textmeddelande/, function() {
     var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.messages[0].testString).panel;
     var textSvar = 'Ett kompletteringssvar: ' + global.intyg.messages[0].testString;
 
-    var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-default', 'Kan inte komplettera')).sendKeys(protractor.Key.SPACE)
+    var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-default', 'Kan inte komplettera')).typeKeys(protractor.Key.SPACE)
         .then(function() {
             return helpers.largeDelay();
         })
         .then(function() {
-            return fkIntygPage.komplettera.dialog.svaraMedMeddelandeButton.sendKeys(protractor.Key.SPACE);
+            return fkIntygPage.komplettera.dialog.svaraMedMeddelandeButton.typeKeys(protractor.Key.SPACE);
         })
         .then(function() {
             return helpers.largeDelay();
         })
         .then(function() {
-            return kompletteringsFraga.element(by.model('arendeSvar.meddelande')).sendKeys(textSvar);
+            return kompletteringsFraga.element(by.model('arendeSvar.meddelande')).typeKeys(textSvar);
 
         })
         .then(function() {
             return helpers.largeDelay();
         })
         .then(function() {
-            return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).sendKeys(protractor.Key.SPACE);
+            return kompletteringsFraga.element(by.partialButtonText('Skicka svar')).typeKeys(protractor.Key.SPACE);
 
         })
         .then(function() {
@@ -369,7 +372,7 @@ Given(/^jag markerar frågan från vården som hanterad$/, function() {
             fragaText = global.intyg.messages[i].text;
         }
     }
-    return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).sendKeys(protractor.Key.SPACE);
+    return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).typeKeys(protractor.Key.SPACE);
 });
 
 
@@ -417,7 +420,7 @@ Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function()
     return btn.getAttribute('id').then(function(id) {
         logger.info('knapp-id: ' + id);
         buttonId = id;
-        return btn.sendKeys(protractor.Key.SPACE);
+        return btn.typeKeys(protractor.Key.SPACE);
     });
 });
 
@@ -439,7 +442,7 @@ Given(/^jag väljer att visa intyget med frågan$/, function() {
         return btn.getAttribute('id').then(function(id) {
             logger.info('knapp-id: ' + id);
             buttonId = id;
-            return btn.sendKeys(protractor.Key.SPACE);
+            return btn.typeKeys(protractor.Key.SPACE);
         });
 
 
@@ -455,7 +458,7 @@ Given(/^ska jag få dialogen "([^"]*)"$/, function(text) {
 });
 
 Given(/^jag väljer valet att markera som hanterade$/, function() {
-    return element(by.cssContainingText('button', 'Hanterade')).sendKeys(protractor.Key.SPACE);
+    return element(by.cssContainingText('button', 'Hanterade')).typeKeys(protractor.Key.SPACE);
 });
 
 Given(/^ska den tidigare raden inte finnas kvar i tabellen för Frågor och svar$/, function() {
@@ -466,14 +469,14 @@ Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
     var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
     return showFilter.isPresent().then(function(isPresent) {
         if (isPresent) {
-            return showFilter.sendKeys(protractor.Key.SPACE);
+            return showFilter.typeKeys(protractor.Key.SPACE);
         } else {
             return Promise.resolve('Filter visas redan');
         }
     }).then(function() {
         return wcTestTools.pages.fragorOchSvar.atgardSelect.element(by.cssContainingText('option', atgard))
-            .sendKeys(protractor.Key.SPACE).then(function() {
-                return wcTestTools.pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE).then(function() {
+            .typeKeys(protractor.Key.SPACE).then(function() {
+                return wcTestTools.pages.fragorOchSvar.searchBtn.typeKeys(protractor.Key.SPACE).then(function() {
                     return helpers.smallDelay;
                 });
             });
@@ -498,7 +501,7 @@ Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
     var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
     return showFilter.isPresent().then(function(isPresent) {
         if (isPresent) {
-            return showFilter.sendKeys(protractor.Key.SPACE);
+            return showFilter.typeKeys(protractor.Key.SPACE);
         } else {
             return Promise.resolve('Filter visas redan');
         }
@@ -506,7 +509,7 @@ Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
         return element(by.id('qp-lakareSelector'))
             .element(by.cssContainingText('option', lakare)).click()
             .then(function() {
-                return wcTestTools.pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
+                return wcTestTools.pages.fragorOchSvar.searchBtn.typeKeys(protractor.Key.SPACE);
             });
 
     });
@@ -544,7 +547,7 @@ Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, func
 });
 
 Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
-    return expect(baseUtkastPage.fragaSvar.meddelande(messageID).administrativFraga.vidarebefordra.isPresent()).to.eventually.become(true);
+    return expect(baseUtkastPage.fragaSvar.administrativFraga.vidarebefordra.isPresent()).to.eventually.become(true);
 });
 Then(/^ska det synas vem som svarat$/, function() {
     var name = global.user.forNamn + ' ' + global.user.efterNamn;

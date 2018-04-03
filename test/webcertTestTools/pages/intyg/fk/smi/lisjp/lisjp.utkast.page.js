@@ -91,20 +91,6 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             },
             arbetsresor: element(by.id('form_arbetsresor')).element(by.css('input[type=checkbox]')),
             formagaTrotsBegransningBeskrivning: element(by.id('formagaTrotsBegransning')),
-            // prognos: {
-            //     typ: {
-            //         1: element(by.id('prognos.typ-1')),
-            //         3: element(by.id('prognos.typ-3')),
-            //         4: element(by.id('prognos.typ-4')),
-            //         5: element(by.id('prognos.typ-5'))
-            //     },
-            //     dagarTillArbete: {
-            //         30: element(by.id('prognos.dagarTillArbete-1')),
-            //         60: element(by.id('prognos.dagarTillArbete-2')),
-            //         90: element(by.id('prognos.dagarTillArbete-3')),
-            //         180: element(by.id('prognos.dagarTillArbete-4'))
-            //     }
-            // }
             prognos: {
                 form: element(by.id('form_prognos')),
                 inom: element(by.css('#prognosDagarTillArbete-1-typ > div.plate')),
@@ -117,13 +103,13 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             aktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderAktuelltBeskrivning'))
 
         };
-        this.arendeQuestion = {
+        /*this.arendeQuestion = {
             newArendeButton: element(by.id('askArendeBtn')),
             text: element(by.id('arendeNewModelText')),
             topic: element(by.id('new-question-topic')),
             kontakt: element(by.cssContainingText('option', 'Kontakt')),
             sendButton: element(by.id('sendArendeBtn'))
-        };
+        };*/
         this.arbetslivsinriktadeAtgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
         var panel = element(by.css('.arende-panel'));
         this.arendePanel = panel;
