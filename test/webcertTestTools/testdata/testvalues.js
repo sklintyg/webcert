@@ -58,14 +58,6 @@ module.exports = {
         id: '190007179815', // Har adress i PU
         kon: 'man'
     }, {
-        id: '190001289818',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-        kon: 'man'
-    }, {
         id: '199004242385',
         adress: {
             postadress: 'Norra storgatan 30',
@@ -252,6 +244,15 @@ module.exports = {
                 id: '199912192391',
                 namn: '',
                 efternamn: '',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'man'
+            }],
+            'Fältvalidering': [{
+                id: '190001289818',
                 adress: {
                     postadress: 'Norra storgatan 30',
                     postort: 'Katthult',

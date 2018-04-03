@@ -208,10 +208,10 @@ Given(/^att jag har raderat alla utkast för "([^"]*)" via testAPI$/, function(p
 });
 
 
-Given(/^jag har raderat alla intyg och utkast för "([^"]*)" "([^"]*)" testpatienten$/, function(testPatientBeskrivning, testSyfte) {
+Given(/^jag har raderat alla intyg och utkast för (?:"([^"]*)?" )?"([^"]*)" testpatienten$/, function(testPatientBeskrivning, testSyfte) {
     var testvalues = wcTestTools.testdata.values;
 
-    var patient = testvalues.dedikeradeTestPatienter.medSyfte[testSyfte][helpers.getIntFromTxt(testPatientBeskrivning)];
+    var patient = testvalues.dedikeradeTestPatienter.medSyfte[testSyfte][helpers.getIntFromTxt(testPatientBeskrivning || 'första')];
     console.log(patient);
 
     return Promise.all([

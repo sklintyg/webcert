@@ -175,26 +175,25 @@ var BaseUtkast = JClass._extend({
             })
         ]);
     },
-    angePatientAdress: function(adressObj) {
 
+    angePatientAdress: function(adressObj) {
         var postAddrEL = this.patientAdress.postAdress;
         var postNummerEL = this.patientAdress.postNummer;
         var postOrtEL = this.patientAdress.postOrt;
-
-        return Promise.all([
-            postAddrEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postAddrEL, adressObj.postadress);
-            }),
-            postNummerEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postNummerEL, adressObj.postnummer);
-            }),
-            postOrtEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postOrtEL, adressObj.postort);
-            }),
-        ]);
-
-
+        return Promise.all([postAddrEL.isEnabled(), postNummerEL.isEnabled(), postOrtEL.isEnabled()]).then(values => {
+                if (values[0] && values[1] && values[2]) {
+                    return Promise.resolve();
+                } else {
+                    return Promise.reject('Kan inte fylla i adress - adressfält inaktiverade');
+                }
+            }).then(() => postAddrEL.clear())
+            .then(() => pageHelpers.moveAndSendKeys(postAddrEL, adressObj.postadress))
+            .then(() => postNummerEL.clear())
+            .then(() => pageHelpers.moveAndSendKeys(postNummerEL, adressObj.postnummer))
+            .then(() => postOrtEL.clear())
+            .then(() => pageHelpers.moveAndSendKeys(postOrtEL, adressObj.postort));
     },
+
     radioknappVal: function(val, text) {
         browser.ignoreSynchronization = true;
         logger.info(`Svarar ${val} i frågan ${text}`);

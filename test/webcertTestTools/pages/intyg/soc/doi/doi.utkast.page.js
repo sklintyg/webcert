@@ -76,9 +76,7 @@ var doiUtkast = BaseSocUtkast._extend({
                 datum: element(by.id('orsak--datum')),
                 specifikation: {
                     dropDown: element(by.id('orsak--specifikation')),
-                    akut: element(by.id('ui-select-choices-row-0-1')),
-                    kronisk: element(by.id('ui-select-choices-row-0-2')),
-                    uppgiftSaknas: element(by.id('ui-select-choices-row-0-3'))
+                    options: element(by.id('orsak--specifikation')).all(by.css('span'))
                 }
             },
             b: {
@@ -86,9 +84,7 @@ var doiUtkast = BaseSocUtkast._extend({
                 datum: element(by.id('orsak-0-datum')),
                 specifikation: {
                     dropDown: element(by.id('orsak-0-specifikation')),
-                    akut: element(by.id('ui-select-choices-row-2-1')),
-                    kronisk: element(by.id('ui-select-choices-row-2-2')),
-                    uppgiftSaknas: element(by.id('ui-select-choices-row-2-3'))
+                    options: element(by.id('orsak-0-specifikation')).all(by.css('span'))
                 }
             },
             c: {
@@ -96,9 +92,7 @@ var doiUtkast = BaseSocUtkast._extend({
                 datum: element(by.id('orsak-1-datum')),
                 specifikation: {
                     dropDown: element(by.id('orsak-1-specifikation')),
-                    akut: element(by.id('ui-select-choices-row-3-1')),
-                    kronisk: element(by.id('ui-select-choices-row-3-2')),
-                    uppgiftSaknas: element(by.id('ui-select-choices-row-3-3'))
+                    options: element(by.id('orsak-1-specifikation')).all(by.css('span'))
                 }
             },
             d: {
@@ -106,9 +100,7 @@ var doiUtkast = BaseSocUtkast._extend({
                 datum: element(by.id('orsak-2-datum')),
                 specifikation: {
                     dropDown: element(by.id('orsak-2-specifikation')),
-                    akut: element(by.id('ui-select-choices-row-4-1')),
-                    kronisk: element(by.id('ui-select-choices-row-4-2')),
-                    uppgiftSaknas: element(by.id('ui-select-choices-row-4-3'))
+                    options: element(by.id('orsak-2-specifikation')).all(by.css('span'))
                 }
             },
             andraSjukdomarSkador: {
@@ -116,9 +108,7 @@ var doiUtkast = BaseSocUtkast._extend({
                 datum: element(by.id('orsak-multi-0-datum')),
                 specifikation: {
                     dropDown: element(by.id('orsak-0-specifikation')),
-                    akut: element(by.id('ui-select-choices-row-1-1')),
-                    kronisk: element(by.id('ui-select-choices-row-1-2')),
-                    uppgiftSaknas: element(by.id('ui-select-choices-row-1-3'))
+                    options: element(by.id('orsak-0-specifikation')).all(by.css('span'))
                 }
             }
         };
@@ -233,18 +223,11 @@ var doiUtkast = BaseSocUtkast._extend({
                 //Väntar på drop-down att öppnas
                 return browser.sleep(1000);
             }).then(function() {
-                if (dodsorsak.a.tillstandSpec === 'Akut') {
-                    return utlatandeOmDodsorsakElm.a.specifikation.akut.click();
-                } else if (dodsorsak.a.tillstandSpec === 'Kronisk') {
-                    return utlatandeOmDodsorsakElm.a.specifikation.kronisk.click();
-                } else if (dodsorsak.a.tillstandSpec === 'Uppgift saknas') {
-                    return utlatandeOmDodsorsakElm.a.specifikation.uppgiftSaknas.click();
-                } else {
-                    throw ('Klarade inte att matcha ' + dodsorsak.a.tillstandSpec);
-                }
+                return utlatandeOmDodsorsakElm.a.specifikation.options.getByText(dodsorsak.a.tillstandSpec);
+            }).then(function(elm) {
+                return elm.click();
             }).then(function() {
                 browser.ignoreSynchronization = true;
-                return;
             });
         });
     },
@@ -274,39 +257,38 @@ var doiUtkast = BaseSocUtkast._extend({
     angeDodsorsaksuppgifterna: function angeDodsorsaksuppgifterna(dodsorsaksuppgifter) {
         var dodsorsaksuppgifterElm = this.dodsorsaksuppgifter;
 
-        return new Promise(function(resolve) {
-            resolve();
-        }).then(function() {
-            if (dodsorsaksuppgifter.foreDoden === true) {
-                return moveAndSendKeys(dodsorsaksuppgifterElm.foreDoden, protractor.Key.SPACE);
-            } else {
-                return;
-            }
-        }).then(function() {
-            if (dodsorsaksuppgifter.efterDoden === true) {
-                return moveAndSendKeys(dodsorsaksuppgifterElm.efterDoden, protractor.Key.SPACE);
-            } else {
-                return;
-            }
-        }).then(function() {
-            if (dodsorsaksuppgifter.kliniskObduktion === true) {
-                return moveAndSendKeys(dodsorsaksuppgifterElm.kliniskObduktion, protractor.Key.SPACE);
-            } else {
-                return;
-            }
-        }).then(function() {
-            if (dodsorsaksuppgifter.rattsmedicinskObduktion === true) {
-                return moveAndSendKeys(dodsorsaksuppgifterElm.rattsmedicinskObduktion, protractor.Key.SPACE);
-            } else {
-                return;
-            }
-        }).then(function() {
-            if (dodsorsaksuppgifter.rattsmedicinskBesiktning === true) {
-                return moveAndSendKeys(dodsorsaksuppgifterElm.rattsmedicinskBesiktning, protractor.Key.SPACE);
-            } else {
-                return;
-            }
-        });
+        return Promise.resolve()
+            .then(function() {
+                if (dodsorsaksuppgifter.foreDoden === true) {
+                    return moveAndSendKeys(dodsorsaksuppgifterElm.foreDoden, protractor.Key.SPACE);
+                } else {
+                    return;
+                }
+            }).then(function() {
+                if (dodsorsaksuppgifter.efterDoden === true) {
+                    return moveAndSendKeys(dodsorsaksuppgifterElm.efterDoden, protractor.Key.SPACE);
+                } else {
+                    return;
+                }
+            }).then(function() {
+                if (dodsorsaksuppgifter.kliniskObduktion === true) {
+                    return moveAndSendKeys(dodsorsaksuppgifterElm.kliniskObduktion, protractor.Key.SPACE);
+                } else {
+                    return;
+                }
+            }).then(function() {
+                if (dodsorsaksuppgifter.rattsmedicinskObduktion === true) {
+                    return moveAndSendKeys(dodsorsaksuppgifterElm.rattsmedicinskObduktion, protractor.Key.SPACE);
+                } else {
+                    return;
+                }
+            }).then(function() {
+                if (dodsorsaksuppgifter.rattsmedicinskBesiktning === true) {
+                    return moveAndSendKeys(dodsorsaksuppgifterElm.rattsmedicinskBesiktning, protractor.Key.SPACE);
+                } else {
+                    return;
+                }
+            });
     }
 });
 
