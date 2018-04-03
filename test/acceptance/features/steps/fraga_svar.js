@@ -40,7 +40,7 @@ var fkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
 var fkLusePage = wcTestTools.pages.intyg.luse.intyg;
 var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var baseUtkastPage = wcTestTools.pages.intyg.base.utkast;
-//var baseIntygPage = wcTestTools.pages.intyg.base.intyg;
+var baseIntygPage = wcTestTools.pages.intyg.base.intyg;
 var helpers = require('./helpers');
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
@@ -165,12 +165,10 @@ Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(
     var page;
 
     if (typ === 'intygs') {
-        console.log('WAHTS!?');
         messageID = global.intyg.messages[0].id;
         fragaDeltext = global.intyg.messages[0].testString;
         page = fkLusePage;
     } else {
-        console.log('OK OK OK ');
         messageID = global.ursprungligtIntyg.messages[0].id;
         fragaDeltext = global.ursprungligtIntyg.messages[0].testString;
         page = baseUtkastPage;
@@ -253,7 +251,7 @@ Given(/^jag svarar på frågan$/, function() {
 
     return browser.refresh()
         .then(function() {
-            return fkIntygPage.sendAnswerForMessageID(messageID, 'Ett svar till FK, på frågan: ' + global.intyg.messages[0].testString);
+            return baseIntygPage.fragaSvar.meddelande(messageID).administrativFraga.svaraMedTxt('Ett svar till FK, på frågan: ' + global.intyg.messages[0].testString);
         });
 });
 

@@ -51,7 +51,6 @@ var BaseUtkast = JClass._extend({
         };
         this.skrivUtBtn = element(by.id('skriv-ut-utkast'));
         this.signingDoctorName = element(by.id('signingDoctor'));
-
         this.fragaSvar = {
             meddelande: function(messageId) {
                 var obj = {};
@@ -61,12 +60,22 @@ var BaseUtkast = JClass._extend({
                     ohanterad: element(by.id('arende-unhandled-' + messageId)),
                     button: element(by.id('komplettera-intyg'))
                 };
+                obj.administrativFraga = {
+                    svaraMedTxt: function(text) {
+                        return element(by.id('arende-answer-button-' + messageId)).typeKeys(protractor.Key.SPACE).then(function() {
+                            return element(by.id('answerText-' + messageId)).typeKeys(text);
+                        }).then(function() {
+                            return element(by.id('sendAnswerBtn-' + messageId)).typeKeys(protractor.Key.SPACE);
+                        });
+                    }
+                };
                 return obj;
             },
             administrativFraga: {
                 menyVal: element(by.id('arende-filter-administrativafragor')),
                 nyfraga: element(by.id('')),
-                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
+                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad')),
+
             },
             komplettering: {
                 menyVal: element(by.id('arende-filter-kompletteringsbegaran'))

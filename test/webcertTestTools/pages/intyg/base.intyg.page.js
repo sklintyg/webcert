@@ -24,7 +24,9 @@
 'use strict';
 
 var JClass = require('jclass');
-var testdataHelper = require('common-testtools').testdataHelper;
+var testTools = require('common-testtools');
+var testdataHelper = testTools.testdataHelper;
+testTools.protractorHelpers.init();
 var shuffle = testdataHelper.shuffle;
 var restUtil = require('../../util/rest.util.js');
 var pageHelpers = require('../pageHelper.util.js');
@@ -97,17 +99,28 @@ var BaseIntyg = JClass._extend({
                     ohanterad: element(by.id('arende-unhandled-' + messageId)),
                     button: element(by.id('komplettera-intyg'))
                 };
+                obj.administrativFraga = {
+                    svaraMedTxt: function(text) {
+                        return element(by.id('arende-answer-button-' + messageId)).typeKeys(protractor.Key.SPACE).then(function() {
+                            return element(by.id('answerText-' + messageId)).typeKeys(text);
+                        }).then(function() {
+                            return element(by.id('sendAnswerBtn-' + messageId)).typeKeys(protractor.Key.SPACE);
+                        });
+                    }
+                };
                 return obj;
             },
             administrativFraga: {
                 menyVal: element(by.id('arende-filter-administrativafragor')),
                 nyfraga: element(by.id('')),
-                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
+                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad')),
+
             },
             komplettering: {
                 menyVal: element(by.id('arende-filter-kompletteringsbegaran'))
             }
         };
+
         // Statusmeddelanden vid namn/adressändring vid djupintegration
         this.statusNameChanged = element(by.id('intyg-djupintegration-name-changed'));
         this.statusAddressChanged = element(by.id('intyg-djupintegration-address-changed'));
