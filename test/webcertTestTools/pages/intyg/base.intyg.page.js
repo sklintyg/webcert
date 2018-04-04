@@ -112,9 +112,13 @@ var BaseIntyg = JClass._extend({
             },
             administrativFraga: {
                 menyVal: element(by.id('arende-filter-administrativafragor')),
-                nyfraga: element(by.id('')),
-                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad')),
-
+                nyfraga: {
+                    text: element(by.id('arendeNewModelText')),
+                    topic: element(by.id('new-question-topic')),
+                    kontakt: element(by.cssContainingText('option', 'Kontakt')),
+                    sendButton: element(by.id('sendArendeBtn'))
+                },
+                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
             },
             komplettering: {
                 menyVal: element(by.id('arende-filter-kompletteringsbegaran'))

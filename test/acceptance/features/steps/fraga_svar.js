@@ -54,7 +54,7 @@ testTools.protractorHelpers.init();
  *
  */
 
-function sendQuestionToFK(amne, cb) {
+function sendQuestionToFK(amne) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     logger.silly('isSMIIntyg : ' + isSMIIntyg);
 
@@ -64,16 +64,20 @@ function sendQuestionToFK(amne, cb) {
     // if (isSMIIntyg) {
 
     // TODO use baseIntygPage.fragaSvar. instead
-    lisjpUtkastPage.arendeQuestion.newArendeButton.typeKeys(protractor.Key.SPACE);
-    lisjpUtkastPage.arendeQuestion.text.typeKeys(fragaText + ' ' + testString);
-    lisjpUtkastPage.selectQuestionTopic(amne);
-
-    lisjpUtkastPage.arendeQuestion.sendButton.typeKeys(protractor.Key.SPACE);
-
-    lisjpUtkastPage.arendePanel.getAttribute('id').then(function(result) {
+    return baseUtkastPage.fragaSvar.administrativFraga.menyVal.click().then(function() {
+        return baseUtkastPage.fragaSvar.administrativFraga.nyfraga.text.typeKeys(fragaText + ' ' + testString);
+    }).then(function() {
+        return baseUtkastPage.selectQuestionTopic(amne);
+    }).then(function() {
+        return baseUtkastPage.fragaSvar.administrativFraga.nyfraga.sendButton.typeKeys(protractor.Key.SPACE);
+    }).then(function() {
+        return lisjpUtkastPage.arendePanel.getAttribute('id');
+    }).then(function(result) {
         var element = result.split('-');
         var splitIndex = element[0].length + element[1].length + 2;
         var fragaId = result.substr(splitIndex, result.length);
+
+        logger.debug('Frågans ID: ' + fragaId);
 
         global.intyg.messages.unshift({
             typ: 'Fråga',
@@ -82,9 +86,8 @@ function sendQuestionToFK(amne, cb) {
             text: fragaText,
             testString: testString
         });
-
-        logger.debug('Frågans ID: ' + fragaId);
-    }).then(cb);
+        return;
+    });
 }
 
 function hamtaAllaTraffar() {

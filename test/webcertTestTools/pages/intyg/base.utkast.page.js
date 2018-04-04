@@ -51,6 +51,13 @@ var BaseUtkast = JClass._extend({
         };
         this.skrivUtBtn = element(by.id('skriv-ut-utkast'));
         this.signingDoctorName = element(by.id('signingDoctor'));
+        this.arendeQuestion = {
+            newArendeButton: element(by.id('askArendeBtn')),
+            text: element(by.id('arendeNewModelText')),
+            topic: element(by.id('new-question-topic')),
+            kontakt: element(by.cssContainingText('option', 'Kontakt')),
+            sendButton: element(by.id('sendArendeBtn'))
+        };
         this.fragaSvar = {
             meddelande: function(messageId) {
                 var obj = {};
@@ -73,9 +80,13 @@ var BaseUtkast = JClass._extend({
             },
             administrativFraga: {
                 menyVal: element(by.id('arende-filter-administrativafragor')),
-                nyfraga: element(by.id('')),
-                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad')),
-
+                nyfraga: {
+                    text: element(by.id('arendeNewModelText')),
+                    topic: element(by.id('new-question-topic')),
+                    kontakt: element(by.cssContainingText('option', 'Kontakt')),
+                    sendButton: element(by.id('sendArendeBtn'))
+                },
+                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
             },
             komplettering: {
                 menyVal: element(by.id('arende-filter-kompletteringsbegaran'))
@@ -123,6 +134,9 @@ var BaseUtkast = JClass._extend({
     },
     signeraButtonClick: function() {
         return pageHelpers.moveAndSendKeys(this.signeraButton, protractor.Key.SPACE);
+    },
+    selectQuestionTopic: function(amne) {
+        this.arendeQuestion.topic.element(by.cssContainingText('option', amne)).click();
     },
     getMissingInfoMessagesCount: function() {
         return this.showMissingInfoList.all(by.tagName('a')).then(function(items) {
