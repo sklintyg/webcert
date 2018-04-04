@@ -82,7 +82,7 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
     private void populateActivityArgsWithAdditionalInformationIfApplicable(LogRequest logRequest, PdlLogMessage logMsg) {
         if (!Strings.isNullOrEmpty(logRequest.getAdditionalInfo())) {
             if (!Strings.isNullOrEmpty(logMsg.getActivityArgs()) && !logMsg.getActivityArgs().equals(logRequest.getAdditionalInfo())) {
-                logMsg.setActivityArgs(logMsg.getActivityArgs() + "\n" + logRequest.getAdditionalInfo());
+                logMsg.setActivityArgs(logMsg.getActivityArgs() + ". " + logRequest.getAdditionalInfo());
             } else {
                 logMsg.setActivityArgs(logRequest.getAdditionalInfo());
             }

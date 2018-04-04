@@ -45,7 +45,7 @@ public class LogMessagePopulatorImplTest {
     public void testActivityArgsAppendedFromAdditionalInfoWhenActivityArgsExists() {
         PdlLogMessage logMessage = testee.populateLogMessage(buildLogRequest(ADDITIONAL_INFO), buildPdlLogMessage(ACTIVITY_ARGS),
                 buildLogUser());
-        assertEquals(ACTIVITY_ARGS + "\n" + ADDITIONAL_INFO, logMessage.getActivityArgs());
+        assertEquals(ACTIVITY_ARGS + ". " + ADDITIONAL_INFO, logMessage.getActivityArgs());
     }
 
     @Test
