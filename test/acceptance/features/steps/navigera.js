@@ -80,7 +80,7 @@ function gotoIntyg(intygstyp, origin, addToUrl) {
                 global.sessionUsed = true;
                 if (!usingCreateDraft2) { // om djupintegration v1 så kommer det fram uppdragsval
                     var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + global.user.enhetId + '-link'));
-                    enhetSelectorLink.isPresent().then(function(isPresent) {
+                    return enhetSelectorLink.isPresent().then(function(isPresent) {
                         if (isPresent) {
                             return enhetSelectorLink.click().then(function() {
                                 return helpers.pageReloadDelay(); //sleep eftersom vi directas via säkerhetstjänsten
@@ -245,7 +245,6 @@ Given(/^jag trycker på knappen med texten "([^"]*)"$/, function(BtnText) {
 
 When(/^jag går in på intyget via djupintegrationslänk och har parametern "([^"]*)" satt till "([^"]*)"$/, function(param, paramValue) {
     return gotoIntyg('intyget', ' via djupintegrationslänk', param + '=' + paramValue);
-
 });
 
 Given(/^jag går till ej signerade utkast$/, function() {
