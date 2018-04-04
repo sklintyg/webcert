@@ -2,28 +2,39 @@
   <h3 class="modal-title">Inloggning med SITHS-kort</h3>
 </div>
 <div class="modal-body">
-  <p>Du som arbetar i en organisation som är ansluten till HSA-katalogen samt har medarbetaruppdrag ”Vård och behandling” loggar in med SITHS-kort. </p>
+  <p>
+    Du som arbetar i en organisation som är ansluten till HSA-katalogen samt har medarbetaruppdrag ”Vård och behandling” loggar in med SITHS-kort.
+  </p>
   
   <a class="internal" ng-click="sithsExpanded = !sithsExpanded">Problem med inloggning med SITHS-kort?
     <i ng-if="sithsExpanded" class="material-icons">expand_less</i><i ng-if="!sithsExpanded" class="material-icons">expand_more</i></a>
   <div ng-if="sithsExpanded">
-    <p>Om du inte kan logga in i Webcert med ditt SITHS-kort prova att gå igenom punkterna nedan för att ta reda på vad
-      problemet kan bero på. </p>
+    <p>
+      Om du inte kan logga in i Webcert med ditt SITHS-kort prova att gå igenom punkterna nedan för att ta reda på vad problemet kan bero på.
+    </p>
     <ol>
-      <li>Kontrollera att din webbläsare stödjer Webcerts tekniska krav (se avsnittet Tekniska krav) och att du har rätt
-        version av NetID installerat (kontakta din lokala IT-support).
+      <li>
+        Kontrollera att din webbläsare stödjer Webcerts tekniska krav (se avsnittet Tekniska krav) och
+        att du har rätt version av NetID installerat (kontakta din lokala IT-support).
       </li>
       <li>Starta om datorn och gör sedan om inloggningsproceduren.</li>
-      <li>Avseende SITHS-kortet</li>
+      <li>Avseende SITHS-kortet:</li>
       <ul>
-        <li>kontrollera att det sitter rätt i kortläsaren</li>
-        <li>prova att läsa in kortet på nytt (högerklicka på NetID-ikonen och välj ”Läs in kortet på nytt”)</li>
-        <li>kontrollera att du inte har några problem med att använda ditt SITHS-kort i övrigt (till exempel i Pascal)
+        <li>
+          Kontrollera att det sitter rätt i kortläsaren.
         </li>
-        <li>kontrollera om SITHS-kortets certifikat är giltigt (om du inte vet hur du gör det, kontakta din lokala
-          IT-support).
+        <li>
+          Prova att läsa in kortet på nytt (högerklicka på NetID-ikonen och välj ”Läs in kortet på nytt”).
         </li>
-        <li>kontrollera att du har valt rätt certifikat.</li>
+        <li>
+          Kontrollera att du inte har några problem med att använda ditt SITHS-kort i övrigt (till exempel i Pascal).
+        </li>
+        <li>
+          Kontrollera om SITHS-kortets certifikat är giltigt (om du inte vet hur du gör det, kontakta din lokala IT-support).
+        </li>
+        <li>
+          Kontrollera att du har valt rätt certifikat.
+        </li>
       </ul>
       <li>Rensa webbläsarens temporära internetfiler (cache) (se avsnittet Rensa temporära internetfiler).</li>
       <li>Kontrollera att det fungerar för en annan användare att logga in i Webcert på samma dator.</li>
@@ -32,35 +43,36 @@
       </li>
       <li>Om Citrix används, prova att logga in på en dator utan Citrix.</li>
     </ol>
+
     <h4>Rensa temporära internetfiler (cache)</h4>
-  
-    <p><h4 style="color:#28b4c4;">Internet Explorer 11</h4>
+    <p>
+      Gäller för Internet Explorer 11
+    </p>
     <ol>
-      <li>Tryck på Verktyg överst i webbläsaren.</li>
+      <li>Klicka på Verktyg överst i webbläsaren.</li>
       <li>Välj Internetalternativ.</li>
       <li>Välj Ta bort webbhistorik.</li>
       <li>Markera kryssrutan Temporära internetfiler.</li>
-      <li>Tryck på Ta bort.</li>
+      <li>Klicka på Ta bort.</li>
     </ol>
-    </p>
-  
-    <p>
+
     <h4>Tekniska krav</h4>
-    Webcert är utvecklat för Internet Explorer 11 och senare versioner. Webcert kan fungera även med andra webbläsare men
-    det finns ökad risk att problem uppstår.
+    <p>
+      Webcert är utvecklat för Internet Explorer 11 och senare versioner.
+      Webcert kan fungera även med andra webbläsare men det finns risk för att problem uppstår.
     </p>
-    <p><b>
-      Kontakta din lokala IT-support om din felsökning inte leder till att du kan logga in, eller om du behöver hjälp med
-      att genomföra ovanstående felsökning. Lokal support kontaktar vid behov Ineras kundservice.
-    </b></p>
-  
-    <p>När du kontaktar din lokala support underlättar det om du har följande information till hands:
+
+    <h4>Kontakt IT-support</h4>
+    <p>
+      Kontakta din lokala IT-support om din felsökning inte leder till att du kan logga in, eller om du behöver hjälp med att genomföra ovanstående felsökning.
+      Lokal support kontaktar vid behov Ineras kundservice.
+    </p>
+    <p>När du kontaktar din lokala support underlättar det om du har följande information till hands:</p>
     <ol>
-      <li>tidpunkt för inloggningsförsök</li>
-      <li>ditt HSA-Id (användare)</li>
-      <li>eventuellt felmeddelande</li>
+      <li>Tidpunkt för inloggningsförsök.</li>
+      <li>Ditt HSA-Id (användare).</li>
+      <li>Eventuellt felmeddelande.</li>
     </ol>
-    </p>
   </div>
 </div>
 <div class="modal-footer">
