@@ -36,6 +36,12 @@
     "target": "_blank"
   },
   {
+    "key": "bankid",
+    "url": "https://www.bankid.com",
+    "text": "https://www.bankid.com",
+    "target": "_blank"
+  },
+  {
     "key": "testSiths",
     "url": "https://test.siths.se/",
     "text": "test.siths.se",
