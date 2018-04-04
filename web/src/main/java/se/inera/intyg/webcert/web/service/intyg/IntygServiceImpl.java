@@ -407,6 +407,7 @@ public class IntygServiceImpl implements IntygService {
     private boolean userIsDjupintegreradWithSjf() {
         WebCertUser user = webCertUserService.getUser();
         return user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())
+                && user.getParameters() != null
                 && user.getParameters().isSjf();
     }
 
