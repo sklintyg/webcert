@@ -1,11 +1,6 @@
 <div id="skapa-valj-patient" wc-authority feature="HANTERA_INTYGSUTKAST" class="webcert-workarea-page centered-constrained-content container-fluid">
 
   <form name="pnrForm" ng-submit="loadPatient()" novalidate autocomplete="off">
-    <wc-alert-message wc-authority request-origin="DJUPINTEGRATION"
-                      alert-severity="warning">
-      <h1 class="error">DJUPINTEGRERAD testläge</h1>
-      <span class="error">OBS! Dashboard i djupintegrerat läge är EJ tillgängligt i prod-miljö, den finns endast för att vid behov underlätta utveckling/testning.</span>
-    </wc-alert-message>
     <div class="form-group sokSkrivIntygWrapper">
       <label for="pnr" class="control-label">Patientens personnummer</label>
 
