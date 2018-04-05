@@ -116,6 +116,14 @@ exports.config = {
         //isVerbose: true, // jasmine 1.3 only
         //includeStackTrace: true // jasmine 1.3 only
     },
+
+    // Setup the report before any tests start
+    beforeLaunch: function() {
+        return new Promise(function(resolve){
+            screenshotReporter.beforeLaunch(resolve);
+        });
+    },
+
     onPrepare: function() {
         // implicit and page load timeouts
         //browser.manage().timeouts().pageLoadTimeout(40000);
@@ -198,6 +206,13 @@ exports.config = {
 
         browser.addMockModule('disableNgAnimate', disableNgAnimate);
         browser.addMockModule('disableCssAnimate', disableCssAnimate);
+    },
+
+    // Close the report after all tests finish
+    afterLaunch: function(exitCode) {
+        return new Promise(function(resolve){
+            screenshotReporter.afterLaunch(resolve.bind(this, exitCode));
+        });
     }
 };
 
