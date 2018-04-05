@@ -48,7 +48,7 @@ describe('INTYG-4083: Create partially complete tsbas utkast and mark as ready t
                     utkastId = id;
                 });
 
-                data = wcTestTools.testdata.ts.bas.getRandom(utkastId);
+                data = wcTestTools.testdata.ts.bas.get(utkastId);
             });
         });
 
@@ -93,7 +93,7 @@ describe('INTYG-4083: Create partially complete tsbas utkast and mark as ready t
                                         // Detta borde kunna göras snyggare med jsonPath...
                                         for (var a = 0; a < data.body.length; a++) {
                                             var statusUppdatering = data.body[a];
-                                            if (statusUppdatering.intyg['intygs-id'].extension === utkastId &&
+                                            if (statusUppdatering.intyg.intygsId.extension === utkastId &&
                                                     statusUppdatering.handelse.handelsekod.code === 'KFSIGN') {
                                                 return true;
                                             }
@@ -107,7 +107,7 @@ describe('INTYG-4083: Create partially complete tsbas utkast and mark as ready t
                                     // Detta borde kunna göras snyggare med jsonPath...
                                     for (var a = 0; a < data.body.length; a++) {
                                         var statusUppdatering = data.body[a];
-                                        if (statusUppdatering.intyg['intygs-id'].extension === utkastId &&
+                                        if (statusUppdatering.intyg.intygsId.extension === utkastId &&
                                             statusUppdatering.ref === 'some-reference') {
                                             return true;
                                         }

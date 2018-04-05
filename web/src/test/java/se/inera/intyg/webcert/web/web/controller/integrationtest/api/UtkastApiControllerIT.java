@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -276,5 +276,14 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(200)
                 .when().get("api/utkast/questions/{intygsTyp}/{version}")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-texter.json"));
+    }
+
+    @Test
+    public void testGetPrevious() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParams("personnummer", "191212121212")
+                .expect().statusCode(200)
+                .when().get("api/utkast/previousIntyg/{personnummer}")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-previousIntyg.json"));
     }
 }

@@ -5,7 +5,7 @@ grunt {
 }
 
 node {
-    version = '6.6.0'
+    version = '6.11.3'
     download = true
     distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
     workDir = projectDir
@@ -14,7 +14,11 @@ node {
 
 tasks.npmInstall.inputs.files("$projectDir/webcertTestTools/package.json")
 
-task protractorTests(type: NodeTask, dependsOn: npmInstall) {
+tasks.yarn {
+    outputs.upToDateWhen { false }
+}
+
+task protractorTests(type: NodeTask, dependsOn: yarn) {
     outputs.upToDateWhen { false }
     def environment = System.properties['protractor.env'] ?: "dev"
 

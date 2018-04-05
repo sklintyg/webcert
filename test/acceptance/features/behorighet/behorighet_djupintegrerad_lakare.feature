@@ -31,7 +31,7 @@ Scenario: Signera ett ts-intyg
    Så ska det finnas en knapp för att skriva ut intyget
 
 
-@komplettera @svara @fk7263 @waitingForFix
+@komplettera @svara @fk7263
 Scenario: Besvara kompletteringsfråga
    ###### TODO ändra till att testa med lisjp intyg ##########################
    #När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"           -

@@ -54,7 +54,7 @@ Scenario: Makulera SMI intyg
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
-@fornya @notReady
+@fornya
 Scenario: Förnya SMI intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Och jag förnyar intyget

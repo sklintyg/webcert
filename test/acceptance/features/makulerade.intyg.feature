@@ -18,7 +18,7 @@ Scenario: Det ska inte gå att förnya ett makulerat FK7263 intyg
   Och jag makulerar intyget
   Så ska det inte finnas en knapp med texten "Förnya"
 
-@SMI-förnya-knapp
+@smi-förnya-knapp
 Scenario: Det ska gå att förnya slumpat och makulerat SMI-intyg
    När jag går in på ett slumpat SMI-intyg med status "Signerat"
    Och jag skickar intyget till Försäkringskassan

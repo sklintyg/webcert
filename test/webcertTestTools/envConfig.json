@@ -74,9 +74,13 @@
     "ip40": {
         "WEBCERT_URL": "https://webcert.ip40.nordicmedtest.sjunet.org/",
         "MINAINTYG_URL": "https://minaintyg.ip40.nordicmedtest.sjunet.org",
+        "REHABSTOD_URL": "https://rehabstod.ip40.nordicmedtest.sjunet.org/",
         "INTYGTJANST_URL": "https://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate",
+        "STATISTIKTJANST_URL": "https://statistik.ip40.nordicmedtest.sjunet.org",
         "DATABASE_NAME": "webcert_ip40",
-        "DATABASE_HOST": "mysql.sm.nordicmedtest.se",
+        "STAT_DATABASE_NAME": "statistik_ip40",
+        "SM_DATABASE_HOST": "mysql.sm.nordicmedtest.se",
+        "DATABASE_HOST": "mysql.ip40.nordicmedtest.se",
         "DATABASE_USER": "intyg_autotest",
         "SELENIUM_ADDRESS": ""
     }, "local": {

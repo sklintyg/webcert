@@ -46,7 +46,7 @@ describe('Create and Sign luae_na utkast', function() {
                 specHelper.getUtkastIdFromUrl().then(function(id) {
                     utkastId = id;
                 });
-                data = wcTestTools.testdata.fk.LUAE_NA.getRandom(utkastId);
+                data = wcTestTools.testdata.fk.LUAE_NA.get(utkastId);
             });
 
 
@@ -84,18 +84,20 @@ describe('Create and Sign luae_na utkast', function() {
         });
 
         it('Signera intyget', function() {
-            UtkastPage.whenSigneraButtonIsEnabled().then(function() {
-                browser.sleep(1000).then(function() {
-                    UtkastPage.signeraButtonClick();
+            UtkastPage.whenSigneraButtonIsEnabled();
 
-                    browser.sleep(1000).then(function() {
-                        expect(IntygPage.isAt()).toBeTruthy();
-                    });
-                });
-            });
+            UtkastPage.signeraButtonClick();
+
+            expect(IntygPage.isAt()).toBeTruthy();
         });
 
         it('Verifiera intyg', function() {
+            // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
+            // upplysningar ännu.
+            // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
+            IntygPage.waitUntilIntygInIT(utkastId);
+            browser.refresh();
+
             IntygPage.whenCertificateLoaded().then(function() {
                 IntygPage.verify(data);
             });

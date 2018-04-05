@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,9 +41,11 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -52,6 +54,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -78,7 +81,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -118,6 +123,8 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
 
+    @Autowired
+    private WebcertFeatureService featureService;
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -165,12 +172,12 @@ public class UtkastServiceImpl implements UtkastService {
         String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
 
         return new LogUser.Builder(personId, vardenhetId, vardgivareId)
-            .userName(hosPerson.getFullstandigtNamn())
-            .userTitle(hosPerson.getTitel())
-            .userAssignment(hosPerson.getMedarbetarUppdrag())
-            .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
-            .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
-            .build();
+                .userName(hosPerson.getFullstandigtNamn())
+                .userTitle(hosPerson.getTitel())
+                .userAssignment(hosPerson.getMedarbetarUppdrag())
+                .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
+                .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
+                .build();
     }
 
     @Override
@@ -196,6 +203,18 @@ public class UtkastServiceImpl implements UtkastService {
             saveDraft(utkast);
             LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
         }
+    }
+
+    @Override
+    public Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
+        return utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
+                authoritiesHelper.getIntygstyperForModuleFeature(user, WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG))
+                .stream()
+                .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
+                .filter(utkast -> utkast.getAterkalladDatum() == null)
+                .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
+                        Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                                Collectors.reducing(false, (a, b) -> a || b))));
     }
 
     private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {
@@ -426,7 +445,7 @@ public class UtkastServiceImpl implements UtkastService {
         Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
         if (personId != null
                 && (Personnummer.createValidatedPersonnummerWithDash(personId).isPresent()
-                        || SamordningsnummerValidator.isSamordningsNummer(personId))
+                || SamordningsnummerValidator.isSamordningsNummer(personId))
                 && !personId.getPnrHash().equals(draftPatient.getPersonId().getPnrHash())) {
 
             String oldPersonId = draftPatient.getPersonId().getPersonnummer();
@@ -451,7 +470,6 @@ public class UtkastServiceImpl implements UtkastService {
         } else {
             LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
         }
-
     }
 
     @Override
@@ -682,10 +700,6 @@ public class UtkastServiceImpl implements UtkastService {
 
             GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson).getGrundData();
 
-            // INTYG-4086: Make sure we never save unwanted patient information to the backend.
-            // Patient updatedPatientForSaving = patientDetailsResolver.updatePatientForSaving(grundData.getPatient(),
-            // utkast.getIntygsTyp());
-
             Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
             HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
@@ -709,11 +723,11 @@ public class UtkastServiceImpl implements UtkastService {
     /**
      * See INTYG-3077 - when autosaving we make sure that the columns for fornamn, mellannamn and efternamn match
      * whatever values that are present in the actual utkast model.
-     *
+     * <p>
      * In the rare occurance that a patient has a name change after the initial utkast was created - e.g. the utkast
      * was continued on at a subsequent date - this method makes sure that the three "metadata" 'name' columns in the
      * INTYG table reflects the actual model.
-     *
+     * <p>
      * The one exception is when the utkast is of type fk7263 and copied from Intygstjänsten (or have an ancestor which
      * is created as a copy of an intyg in Intygstjänsten). In this case the JSON will not have a fornamn and we cannot
      * save null in UTKAST.PATIENT_FORNAMN.

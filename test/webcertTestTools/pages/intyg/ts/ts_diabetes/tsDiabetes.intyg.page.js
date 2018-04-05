@@ -113,7 +113,7 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
         }
 
     },
-    verifieraSynintyg : function(synintyg) {
+    verifieraSynintyg: function(synintyg) {
         expect(this.synIntyg.getText()).toBe(synintyg.a);
     },
     verify: function(data) {

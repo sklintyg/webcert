@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +26,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
@@ -39,8 +36,19 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserApiControllerTest {
 
@@ -68,7 +76,7 @@ public class UserApiControllerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
     }
 
     @Test
@@ -159,4 +167,31 @@ public class UserApiControllerTest {
         Mockito.verify(featureService, times(0)).setFeature(anyString(), anyString());
     }
 
+    @Test
+    public void testLogout() {
+        String sessionId = "sessionId";
+        ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
+
+        when(attributes.getSessionId()).thenReturn(sessionId);
+
+        RequestContextHolder.setRequestAttributes(attributes);
+
+        userApiController.logoutUserAfterTimeout();
+
+        verify(webCertUserService).scheduleSessionRemoval(eq(sessionId), any(HttpSession.class));
+    }
+
+    @Test
+    public void testLogoutCancel() {
+        String sessionId = "sessionId";
+        ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
+
+        when(attributes.getSessionId()).thenReturn(sessionId);
+
+        RequestContextHolder.setRequestAttributes(attributes);
+
+        userApiController.cancelLogout();
+
+        verify(webCertUserService).cancelScheduledLogout(sessionId);
+    }
 }

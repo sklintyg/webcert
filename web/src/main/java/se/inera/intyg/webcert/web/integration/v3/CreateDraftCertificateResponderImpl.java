@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,24 +18,37 @@
  */
 package se.inera.intyg.webcert.web.integration.v3;
 
+import com.google.common.base.Joiner;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.tak.model.TakResult;
+import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.v3.builder.CreateNewDraftRequestBuilder;
 import se.inera.intyg.webcert.web.integration.v3.validator.CreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponderInterface;
@@ -46,6 +59,8 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
+import java.util.Map;
+
 @SchemaValidation
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -53,9 +68,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private UtkastService utkastService;
-
-    @Autowired
-    private HsaPersonService hsaPersonService;
 
     @Autowired
     private CreateNewDraftRequestBuilder draftRequestBuilder;
@@ -72,6 +84,18 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     @Autowired
     private WebcertUserDetailsService webcertUserDetailsService;
 
+    @Autowired
+    private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
+    @Lazy
+    @Autowired
+    private TakService takService;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
 
@@ -83,6 +107,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         IntygUser user;
         try {
             user = webcertUserDetailsService.loadUserByHsaId(invokingUserHsaId);
+
         } catch (Exception e) {
             return createMIUErrorResponse(utkastsParams);
         }
@@ -105,13 +130,44 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         if (!HoSPersonHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent()) {
             return createMIUErrorResponse(utkastsParams);
         }
+
         user.changeValdVardenhet(invokingUnitHsaId);
+
+        String intygsTyp =
+                moduleRegistry.getModuleIdFromExternalId(utkastsParams.getTypAvIntyg().getCode());
+
+        Personnummer personnummer = Personnummer.createValidatedPersonnummerWithDash(
+                utkastsParams.getPatient().getPersonId().getExtension()).orElseThrow(() ->
+                new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        "Failed to create valid personnummer for createDraft reques"));
+        SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
+
+        if (AuthoritiesHelperUtil.mayNotCreateUtkastForSekretessMarkerad(sekretessStatus, user, intygsTyp)) {
+            return createErrorResponse("Intygstypen " + intygsTyp.toUpperCase()
+                    + " kan inte utfärdas för patienter med sekretessmarkering", ErrorIdType.APPLICATION_ERROR);
+        }
+
+        Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
+        String uniqueErrorString = AuthoritiesHelperUtil.validateMustBeUnique(user, intygsTyp, intygstypToBoolean);
+        if (!uniqueErrorString.isEmpty()) {
+            return createErrorResponse(uniqueErrorString, ErrorIdType.APPLICATION_ERROR);
+        }
+
+        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.TAK_KONTROLL).isVerified()) {
+            // Check if invoking health care unit has required TAK
+            TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsTyp, SchemaVersion.VERSION_3, user);
+            if (!takResult.isValid()) {
+                String error = Joiner.on("; ").join(takResult.getErrorMessages());
+                return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
+            }
+        }
 
         // Create the draft
         Utkast utkast = createNewDraft(utkastsParams, user);
 
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId);
     }
+
 
     private Utkast createNewDraft(Intyg utkastRequest, IntygUser user) {
 
@@ -198,5 +254,4 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         integreradeEnheterRegistry.putIntegreradEnhet(integreradEnhet, false, true);
     }
-
 }

@@ -26,6 +26,18 @@ var fkValues = require('./testvalues.js').fk;
 var today = testdataHelper.dateFormat(new Date());
 
 module.exports = {
+    get: function(intygsID) {
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
+        return {"id":intygsID,"typ":"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång",
+            "baseratPa":{"minUndersokningAvPatienten":"2017-09-27","journaluppgifter":"2017-09-27","anhorigsBeskrivning":"2017-09-27","annat":"2017-09-27","annatBeskrivning":"ÄMk9NcgukFxTMaAn","personligKannedom":"2017-09-27"},
+            "andraMedicinskaUtredningar":[{"underlag":"Neuropsykiatriskt utlåtande","datum":"2016-04-09","infoOmUtredningen":"mÄwwO67piLrbeåID"}],
+            "diagnos":{"diagnoser":[{"kod":"Z720B","bakgrund":"gwskchi5p1LmåzHÖ"}]},
+            "funktionsnedsattning":{"debut":"TTIÅhTZFFÄHjLbOk","paverkan":"Ö502ZH0bVTLSåijx"},
+            "ovrigt":"åbw0KhHaTjcQgzbÅ",
+            "kontaktMedFk":false};
+    },
     getRandom: function(intygsID) {
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();

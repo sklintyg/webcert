@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Relation;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -55,6 +56,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest> implements CopyUtkastBuilder<T> {
@@ -92,10 +94,18 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             boolean coherentJournaling, boolean enforceEnhet) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
+        String originalIntygsTyp = copyRequest.getOriginalIntygTyp();
         String intygsTyp = copyRequest.getTyp();
 
-        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, intygsTyp, coherentJournaling);
+        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, originalIntygsTyp, coherentJournaling);
 
+        ModuleApi orgModuleApi = moduleRegistry.getModuleApi(originalIntygsTyp);
+        Utlatande orgUtlatande;
+        try {
+            orgUtlatande = orgModuleApi.getUtlatandeFromJson(signedIntygHolder.getContents());
+        } catch (IOException e) {
+            throw new ModuleException("Could not convert orignal certificate to Utlatande", e);
+        }
         GrundData grundData = signedIntygHolder.getUtlatande().getGrundData();
         se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
 
@@ -118,7 +128,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
-        String draftCopyJson = getInternalModel(signedIntygHolder.getContents(), moduleApi, draftCopyHolder);
+        String draftCopyJson = getInternalModel(orgUtlatande, moduleApi, draftCopyHolder);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
@@ -157,6 +167,13 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
         Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
+        ModuleApi orgModuleApi = moduleRegistry.getModuleApi(copyRequest.getOriginalIntygTyp());
+        Utlatande orgUtlatande;
+        try {
+            orgUtlatande = orgModuleApi.getUtlatandeFromJson(orgUtkast.getModel());
+        } catch (IOException e) {
+            throw new ModuleException("Could not convert original certificate to Utlatande", e);
+        }
 
         // Perform enhets auth if coherent journaling is not active.
         if (!coherentJournaling || enforceEnhet) {
@@ -174,18 +191,18 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         LOG.debug("Populating copy with details from Utkast '{}'", orignalIntygsId);
 
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(orgUtkast.getIntygsTyp());
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(copyRequest.getTyp());
 
         // Set relation to null if not applicable
         Relation relation = createRelation(copyRequest);
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
 
-        String draftCopyJson = getInternalModel(orgUtkast.getModel(), moduleApi, draftCopyHolder);
+        String draftCopyJson = getInternalModel(orgUtlatande, moduleApi, draftCopyHolder);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), orgUtkast.getIntygsTyp(), addRelation, relation,
+        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), copyRequest.getTyp(), addRelation, relation,
                 draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
@@ -209,9 +226,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         }
     }
 
-    protected String getInternalModel(String jsonModel, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
+    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
             throws ModuleException {
-        return moduleApi.createNewInternalFromTemplate(draftCopyHolder, jsonModel);
+        return moduleApi.createNewInternalFromTemplate(draftCopyHolder, template);
     }
 
     protected Utkast buildUtkastCopy(T copyRequest, String utkastId, String utkastTyp, boolean addRelation, Relation relation,
@@ -223,7 +240,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         utkast.setStatus(utkastStatus);
         utkast.setModel(draftCopyJson);
 
-        if (addRelation) {
+        if (addRelation && relation != null) {
             enrichWithRelation(utkast, relation);
         }
 

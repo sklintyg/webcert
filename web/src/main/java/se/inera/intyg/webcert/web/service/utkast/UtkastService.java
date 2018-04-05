@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -56,4 +58,15 @@ public interface UtkastService {
     String getQuestions(String intygsTyp, String version);
 
     void setKlarForSigneraAndSendStatusMessage(String intygsId, String intygsTyp);
+
+    /**
+     * Fairly specialized method to check if a person has existing Intyg of the same type.
+     * Returns a Map of IntygsTyp to Boolean, where Boolean indicates that a previous Intyg of the same type exists
+     * within the same caregiver.
+     *
+     * @param personnummer the personnummer of the patient to check for existing intyg
+     * @param user         the intended creator of the certificate or the logged in user
+     * @return
+     */
+    Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,10 +22,8 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeaturesFactory;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 
-import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.*;

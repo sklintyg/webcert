@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.validator.BaseCreateDraftCertificateValidatorImplTest;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;
@@ -197,16 +197,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
     }
-
-    @Test
-    public void testValidatePuNotAvailable() {
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
-        ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(FK7263, "efternamn", "förnamn", "fullständigt namn", "enhetsnamn", true), user);
-        assertTrue(result.hasErrors());
-        verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
-    }
-
 
     private Intyg buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,
             String enhetsnamn,

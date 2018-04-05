@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('UnhandledQACtrlSpec', function() {
+describe('FragorOchSvarCtrlSpec', function() {
     'use strict';
 
     var $controller;
@@ -175,11 +175,11 @@ describe('UnhandledQACtrlSpec', function() {
                 $timeout = _$timeout_;
                 $controller = _$controller_;
                 $cookies = _$cookies_;
-                $controller('webcert.UnhandledQACtrl', { $scope: $scope });
+                $controller('webcert.FragorOchSvarCtrl', { $scope: $scope });
             }]);
     });
 
-    describe('UnhandledQACtrl listing and filtering of QAs ', function() {
+    describe('FragorOchSvarCtrl listing and filtering of QAs ', function() {
 
         it('should get and fill currentList with 3 entries when savedFilterQuery is not set', function() {
             $cookies.remove('savedFilterQuery');
@@ -224,7 +224,7 @@ describe('UnhandledQACtrlSpec', function() {
         });
     });
 
-    describe('UnhandledQACtrl set active unit message', function() {
+    describe('FragorOchSvarCtrl set active unit message', function() {
 
         beforeEach(function() {
             spyOn($location, 'url').and.callThrough();
@@ -245,7 +245,7 @@ describe('UnhandledQACtrlSpec', function() {
         });
     });
 
-    describe('UnhandledQACtrl QA forwarding', function() {
+    describe('FragorOchSvarCtrl QA forwarding', function() {
 
         it('should change forwarded state on a QA when clicking a forward checkbox', function() {
             $scope.onVidareBefordradChange(testQAResponse.results[0]);

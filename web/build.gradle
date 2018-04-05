@@ -10,7 +10,7 @@ grunt {
 }
 
 node {
-    version = '6.6.0'
+    version = '6.11.3'
     download = true
     distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
     workDir = projectDir
@@ -83,12 +83,13 @@ task restAssuredTest(type: Test) {
 }
 
 gretty {
-    integrationTestTask = null
     contextPath = '/'
-    httpPort = 9088
-    scanInterval = 0
-
     contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
+    integrationTestTask = null
+    scanInterval = 0
+    httpPort = 9088
+    debugPort = 5007
+    debugSuspend = false
 
     def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
 
@@ -116,6 +117,7 @@ configurations {
 dependencies {
     compile project(':fmb-integration')
     compile project(':pp-integration')
+    compile project(':tak-integration')
     compile project(':notification-sender')
     compile project(':fk-stub')
     compile project(':notification-stub')
@@ -134,6 +136,7 @@ dependencies {
     compile "se.inera.intyg.infra:common-cache-metrics:${infraVersion}"
     compile "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     compile "se.inera.intyg.infra:grp-stub:${infraVersion}"
+    compile "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"

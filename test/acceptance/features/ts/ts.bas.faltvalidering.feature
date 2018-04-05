@@ -14,7 +14,7 @@ Scenario: Validerar alla fält i TS bas intyget
 	Så ska alla standard valideringsfel för "Transportstyrelsens läkarintyg" visas
 
 	När jag anger "Ja" i valet "Har patienten diabetes?"
-	Så ska valideringsfelet "Du måste välja ett alternativ." visas "23" gånger
+	Så ska valideringsfelet "Du måste välja ett alternativ." visas "24" gånger
 
 	När jag trycker på checkboxen med texten "Taxi"
 	Och jag anger "Ja" i valet "a) Har patienten någon sjukdom eller funktionsnedsättning som påverkar rörligheten och som medför att fordon inte kan köras på ett trafiksäkert sätt?"
@@ -26,6 +26,9 @@ Scenario: Validerar alla fält i TS bas intyget
 	Och jag anger "Ja" i valet "Har patienten någon stadigvarande medicinering?"
 	Så ska alla utökade valideringsfel för "Transportstyrelsens läkarintyg" visas
 
+	Så jag trycker på checkboxen med texten "Taxi"
+	#Återstället tidigare test-steg
+	
 	När jag fyller i text i "alla synfält" fältet
 	Och jag byter fokus från fält
 	Så ska valideringsfelet "Måste ligga i intervallet 0,0 till 2,0." visas "6" gånger

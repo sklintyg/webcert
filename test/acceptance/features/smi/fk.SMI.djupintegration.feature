@@ -1,5 +1,5 @@
 # language: sv
-@djupintegration @SMI
+@djupintegration @smi
 Egenskap: Djupintegration SMI intyg
 
 Bakgrund: Jag är inloggad som djupintegrerad läkare
@@ -12,7 +12,7 @@ Scenario: Informera om patienten har bytt namn
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag går in på intygsutkastet via djupintegrationslänk med annat namn
-    Så ska ett info-meddelande visa "Observera att patientens namn har ändrats sedan det här intyget utfärdades."
+    Så ska ett info-meddelande visa "Observera att namnet som visas i intyget har hämtats från den nationella personuppgiftstjänsten och skiljer sig åt från det som är lagrat i journalsystemet"
 
 @nytt-personnummer
 Scenario: Patienten har fått ett nytt personnummer
@@ -42,7 +42,7 @@ Scenario: Patienten har fått ett reservnummer
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
-@parametrar @intygsdelning-vårdenhet @notReady @Kristina(step: Så ska jag varnas om att "Patienten har avlidit")
+@parametrar @intygsdelning-vårdenhet
 Scenario: Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenheter
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk

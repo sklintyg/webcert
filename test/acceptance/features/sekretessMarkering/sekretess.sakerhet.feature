@@ -46,9 +46,10 @@ Scenario: Läkare ska kunna makulera intyg med s-markering
 	Så ska det finnas en knapp med texten "Makulera"
 
 	
-@ts @bas
+@ts @bas @notReady
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts bas
 	När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
+	#felar på att elementet inte hittas i drop-down listan. TODO testfall ska uppdateras
 	Så ska jag varnas om att "Behörighet saknas"
 	
 	När att vårdsystemet skapat ett intygsutkast för slumpat TS-intyg
@@ -56,26 +57,33 @@ Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts ba
 	Och jag går in på intyget
 	Så ska jag varnas om att "Behörighet saknas"
 
-@ts @diabetes
+@ts @diabetes @notReady
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts diabetes
 	När jag går in på att skapa ett "Transportstyrelsens, diabetes" intyg
+	#felar på att elementet inte hittas i drop-down listan. TODO testfall ska uppdateras
 	Så ska jag varnas om att "Behörighet saknas"
 	
+@rehabstod @rehabKoordinator
+Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
+	Givet vårdenhet ska vara "VG_TestAutomation - TestEnhet2"
+	#TSTNMT2321000156-107Q
+	
+	#Säkerställer att det finns ett lisjp intyg på patienten.
+	När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+		
+	#Säkerställer att det finns ett fk7263 intyg på patienten.
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263"
+	Och jag går in på utkastet
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan
+		
+	När jag är inloggad som rehabkoordinator
+	Och jag väljer enhet "TSTNMT2321000156-107Q"
+	Och jag går till pågående sjukfall i Rehabstöd
+	Så ska jag inte se patientens personnummer bland pågående sjukfall
 
-#@djupintegration
-#Scenario: Djupintegrerat: SJF flaggan ger inte några extra rättigheter om patienten är sekrettessmarkerad.
-#Går in på vårdenhet A
-#Går in på patient som är sekretessmarkerad
-#Skapar intyg x
-#Går in på vårdenhet B med SJF=true
-#Så ska ett felmedelande visas
-
-#@Rehabstod
-#Scenario: Rehabkordinator ska inte kunna se sekrettessmarkerade intyg.
-#Logga in som läkare, så ska du se S-markerat intyg med namn: "Sekretessmarkerad patient"
-#Logga in som Rehabkordinator, så ska du inte se intyget
-
-#LÅG PRIO:
+#LÅG PRIO / Manuella Tester:
 
 #@ts
 #Scenario: TS-intyg Översiktssidan ska inte lista intyg med sekretessmarkerade patienter
@@ -88,7 +96,7 @@ Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts di
 
 #@Uthopp
 #Scenario: Uthopp
-#Testa att intyg som är skapat med registerCertificate och skickat till FK kan hämtas från intygstjänsten och visas i webcert. #kristina
+#Inga tester krävs - inga krav påvärkar (efter att FK7263 är bortplockat)
 
 #@Statistik
 #Scenario: Statistik

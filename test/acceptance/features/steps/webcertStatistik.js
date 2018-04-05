@@ -28,7 +28,7 @@ var diagnosKategorier = wcTestTools.testdata.diagnosKategorier;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
 
 var restAPIOptions = {
-    url: process.env.WEBCERT_URL + '/api/testsupport/processIntyg',
+    url: process.env.STATISTIKTJANST_URL + '/api/testsupport/processIntyg',
     method: 'POST',
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -72,14 +72,14 @@ module.exports = function() {
 
     this.Given(/^jag går in på Statistiktjänsten$/, function() {
         global.statistik.intygsId = intyg.id;
-        var url = process.env.STATISTIKTJANST_URL + '/#/fakelogin';
+        var url = process.env.STATISTIKTJANST_URL + '/#!/fakelogin';
         return browser.get(url).then(function() {
             logger.info('Går till url: ' + url);
         });
     });
 
     this.Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
-        // Setting rehabstod to new bas url
+        // Setting Statistiktjänsten to new bas url
         browser.baseUrl = process.env.STATISTIKTJANST_URL;
         // VG_TestAutomation => TSTNMT2321000156-107M => TSTNMT2321000156-107Q
         var userObj = {
@@ -299,9 +299,9 @@ module.exports = function() {
                 if (error || message.statusCode >= 400) {
                     logger.info('Request error:', error);
                     if (message) {
-                        logger.info('Error message:', message.statusCode, message.statusMessage /*, body*/ );
+                        logger.error('Error message: ' + message.statusCode, message.statusMessage /*, body*/ );
                     }
-                    defer.fulfill({
+                    defer.reject({
                         error: error,
                         message: message
                     });

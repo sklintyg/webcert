@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -71,12 +71,6 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
         return DiagnosResponseType.OK.equals(response.getResultat());
     }
 
-    /*
-     * The given code may represent a group of multiple diagnosis codes, and thus generate a list of matches instead of
-     * only one. This means that the mapping is no longer 1:1. In that case, as well as in the case where there is no
-     * match, description will be set to "" since we do not wish to interpret what is being delivered to us - we only
-     * wish to forward the information.
-     */
     @Override
     public String getDescriptionFromDiagnosKod(String code, String codeSystemStr) {
         DiagnosResponse response = diagnosService.getDiagnosisByCode(code, codeSystemStr);

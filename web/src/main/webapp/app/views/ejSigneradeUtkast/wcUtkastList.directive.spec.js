@@ -36,6 +36,8 @@ describe('wcUtkastListSpec', function() {
             var statService = jasmine.createSpyObj('common.statService', ['refreshStat']);
             $provide.value('common.statService', statService);
 
+            $provide.value('PersonIdFormatterFilter', function(){});
+
             utkastNotifyService =
                 jasmine.createSpyObj('common.UtkastNotifyService', ['onNotifyChange', 'notifyUtkast']);
             $provide.value('common.UtkastNotifyService', utkastNotifyService);
@@ -74,7 +76,7 @@ describe('wcUtkastListSpec', function() {
         });
     });
 
-    describe('UnsignedCertCtrl QA forwarding', function() {
+    describe('EjSigneradeUtkastCtrl QA forwarding', function() {
 
         it('should change forwarded state on a utkast when clicking a forward checkbox', function() {
             element.isolateScope().onNotifyChange(mockResponse.utkast);

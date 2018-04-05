@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -294,6 +294,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.SRS_CLICKED);
     }
 
+    @Override
+    public void logGetSrsForDiagnose(String diagnosisCode) {
+        logEvent(MonitoringEvent.SRS_GET_SRS_FOR_DIAGNOSIS_CODE, diagnosisCode);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -358,7 +363,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         SRS_SHOWN("SRS shown"),
         SRS_ATGARD_CLICKED("SRS atgard clicked"),
         SRS_STATISTIK_CLICKED("SRS statistik clicked"),
-        SRS_CLICKED("SRS clicked");
+        SRS_CLICKED("SRS clicked"),
+        SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'");
 
         private final String msg;
 

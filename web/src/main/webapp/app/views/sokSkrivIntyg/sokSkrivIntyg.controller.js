@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.ChoosePatientCtrl',
-    [ '$scope', '$state', 'webcert.SokSkrivValjUtkastService',
-        function($scope, $state, Service) {
+angular.module('webcert').controller('webcert.SokSkrivIntygCtrl',
+    [ '$scope', '$state', '$filter', 'webcert.SokSkrivValjUtkastService',
+        function($scope, $state, $filter, Service) {
             'use strict';
             var viewState = {
                 loading: false,
@@ -50,7 +50,9 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
                 $scope.viewState.loading = true;
                 Service.lookupPatient($scope.personnummer).then(function(patientResult) {
                     $scope.viewState.loading = false;
-                    $state.go('webcert.create-choose-certtype-index', { 'patientId': patientResult.personnummer});
+                    $state.go('webcert.create-choose-certtype-index', {
+                        'patientId': $filter('PersonIdFormatter')(patientResult.personnummer)
+                    });
                 }, function(errorId) {
                     $scope.viewState.loading = false;
                     $scope.viewState.errorid = errorId;

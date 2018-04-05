@@ -33,10 +33,14 @@ angular.module('webcert').controller('normal.EnhetsvalPageCtrl',
                     function onUnitSelected(enhet) {
                         //persist unit selection - then close dialog and transition to original destination
                         UserService.setValdVardenhet(enhet, function() {
+                            dialogInstance.close();
+                            dialogInstance = undefined;
                             $state.go($stateParams.destinationState.name, {}, {
                                 location: 'replace'
                             });
                         }, function() {
+                            dialogInstance.close();
+                            dialogInstance = undefined;
                             //Not much we can do here - redirect to error page
                             $window.location.href = '/error.jsp?reason=login.failed';
                         });

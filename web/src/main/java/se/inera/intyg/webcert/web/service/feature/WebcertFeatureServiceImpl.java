@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,6 +45,7 @@ import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.infra.security.common.service.PilotService;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 
 /**
  * Service that keeps track of active features of Webcert and installed modules.
@@ -161,7 +162,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isFeatureActive(se.inera.intyg.webcert.web.service.feature.
+     * @see WebcertFeatureService#isFeatureActive(se.inera.intyg.webcert.web.service.feature.
      * WebcertFeature)
      */
     @Override
@@ -172,7 +173,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isFeatureActive(java.lang.String)
+     * @see WebcertFeatureService#isFeatureActive(java.lang.String)
      */
     @Override
     public boolean isFeatureActive(String featureName) {
@@ -183,7 +184,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#isModuleFeatureActive(java.lang.String,
+     * @see WebcertFeatureService#isModuleFeatureActive(java.lang.String,
      * java.lang.String)
      */
     @Override
@@ -199,7 +200,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
     /*
      * (non-Javadoc)
      *
-     * @see se.inera.intyg.webcert.web.service.feature.WebcertFeatureService#getActiveFeatures()
+     * @see WebcertFeatureService#getActiveFeatures()
      */
     @Override
     public Set<String> getActiveFeatures(String... hsaIds) {

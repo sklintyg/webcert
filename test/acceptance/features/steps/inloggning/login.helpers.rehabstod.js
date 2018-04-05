@@ -47,6 +47,7 @@ var logInAsUserRehabstod = function(userObj, roleName, skipCookieConsent) {
 module.exports = {
     logInAsUserRehabstod: logInAsUserRehabstod,
     logInAsUserRoleRehabstod: function(userObj, roleName, skipCookieConsent) {
+        logger.info('Loggar in som ' + roleName);
         console.log(userObj);
         global.user.roleName = roleName;
 

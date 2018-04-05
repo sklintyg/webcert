@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,18 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import java.util.List;
-
 import org.apache.commons.lang3.tuple.Pair;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
+import se.inera.intyg.webcert.web.service.intyg.dto.*;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+
+import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -93,13 +88,15 @@ public interface IntygService {
      * Handle a signed completion, i.e., send the certificate to its recipient and close all pending completion QA /
      * Arende as handled.
      */
-    void handleSignedCompletion(Utkast utkast, String recipient);
+    void handleAfterSigned(Utkast utkast);
 
     /**
      * Retrieves the hsaId of the vardenhet this intyg is issued on.
      *
      * @param intygId
+     *            the certificate identifier
      * @param intygsTyp
+     *            the certificate type
      * @return
      *         The HSA Id of the vardenhet where the intyg was created/issued.
      */
@@ -131,4 +128,14 @@ public interface IntygService {
      * @return
      */
     List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request);
+
+    /**
+     * Gets the certificate's type from Intygstjanst. Method might return null
+     *
+     *
+     * @param intygsId
+     *            the certificate identifier
+     * @return the certificate type
+     */
+    String getIntygsTyp(String intygsId);
 }

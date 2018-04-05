@@ -27,9 +27,9 @@
 var jsonDisplay = element(by.id('userJsonDisplay'));
 
 module.exports = {
-    loginButton:element(by.id('loginBtn')),
+    loginButton: element(by.id('loginBtn')),
     get: function() {
-        return browser.get('welcome.html');
+        return browser.get(process.env.WEBCERT_URL + 'welcome.html');
     },
     isAt: function() {
         return this.loginButton.isDisplayed();
@@ -70,9 +70,9 @@ module.exports = {
             this.disableCookieConsentBanner();
         }
 
-		
+
         if (!secondBrowser) {
-			var loginButton = this.loginButton;
+            var loginButton = this.loginButton;
             return jsonDisplay.clear().sendKeys(userJson).then(function() {
                 return loginButton.click();
             });

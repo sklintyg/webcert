@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise, protractor, browser*/
+/*globals element,by, Promise*/
 'use strict';
 
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
+var pageHelpers = require('../../../../pageHelper.util.js');
 
 var LuaefsUtkast = BaseSmiUtkast._extend({
     init: function init() {
@@ -83,18 +84,14 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
     angeFunktionsnedsattning: function(funktionsnedsattning) {
         var fn = this.funktionsnedsattning;
 
-        var promisesArr = [];
-        promisesArr.push(fn.debut.sendKeys(funktionsnedsattning.debut));
-        promisesArr.push(fn.paverkan.sendKeys(funktionsnedsattning.paverkan));
-
-        return Promise.all(promisesArr);
+		return pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut)
+		.then(function(){
+			return pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan)
+		});
     },
 
     get: function get(intygId) {
         get._super.call(this, 'luae_fs', intygId);
-    },
-    isAt: function isAt() {
-        return isAt._super.call(this);
     }
 });
 

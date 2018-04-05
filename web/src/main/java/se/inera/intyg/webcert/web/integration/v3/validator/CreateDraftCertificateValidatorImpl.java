@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,7 +34,7 @@ import se.inera.intyg.webcert.web.integration.validator.BaseCreateDraftCertifica
 import se.inera.intyg.webcert.web.integration.validator.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.integration.validator.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validator.ResultValidator;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;

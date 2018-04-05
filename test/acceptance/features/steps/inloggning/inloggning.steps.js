@@ -40,22 +40,27 @@ function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänst
     global.person = patient;
 
     if (global.user.origin !== 'DJUPINTEGRATION') {
-        element(by.id('menu-skrivintyg')).click();
-        browser.sleep(1000);
+        element(by.id('menu-skrivintyg')).click().then(function() {
+            return helpers.smallDelay();
+        });
     }
-    sokSkrivIntygPage.selectPersonnummer(person.id);
-    logger.info('Går in på patient ' + person.id);
-    //Patientuppgifter visas
-    var patientUppgifter = sokSkrivIntygPage.sokSkrivIntygForm;
-    return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id));
+    return sokSkrivIntygPage.selectPersonnummer(person.id).then(function() {
+        logger.info('Går in på patient ' + person.id);
+        //Patientuppgifter visas
+        var patientUppgifter = sokSkrivIntygPage.sokSkrivIntygForm;
+        return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id)).then(function() {
+            return helpers.smallDelay();
+        });
+    });
+
 }
 
-function gotoPerson(patient, callback) { //förutsätter inte att personen finns i PU-tjänsten
+function gotoPerson(patient) { //förutsätter inte att personen finns i PU-tjänsten
     global.person = patient;
 
-    sokSkrivIntygPage.selectPersonnummer(person.id);
     logger.info('Går in på patient ' + person.id);
-    callback();
+    return sokSkrivIntygPage.selectPersonnummer(person.id);
+
 }
 
 var forkedBrowser;
@@ -65,18 +70,16 @@ function setForkedBrowser(forkedBrowser2) {
     forkedBrowser = forkedBrowser2;
 }
 
-function gotoIntygUtkast(intygtyp, cb) {
+function gotoIntygUtkast(intygtyp) {
     intyg.typ = intygtyp;
-    Promise.all([
+    return Promise.all([
         sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp),
         sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
     ]).then(function() {
         // Spara intygsid för kommande steg
-        browser.getCurrentUrl().then(function(text) {
+        return browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-2)[0];
-            logger.info('intyg.id: ' + intyg.id, function() {
-                cb();
-            });
+            return logger.info('intyg.id: ' + intyg.id);
         });
     });
 }
@@ -96,11 +99,11 @@ module.exports = function() {
     });
 
 
-    this.Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum, callback) {
+    this.Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum) {
         if (typAvNum === 'samordningsnummer') {
-            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0], callback); //personnummret finns inte med i PU-tjänsten
+            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0]); //personnummret finns inte med i PU-tjänsten
         } else {
-            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterEjPU)[0], callback);
+            return gotoPerson(testdataHelpers.shuffle(testdata.values.patienterEjPU)[0]);
         }
 
     });
@@ -157,27 +160,27 @@ module.exports = function() {
         });
     });
 
-    this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp, callback) {
+    this.Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
         intyg.typ = intygsTyp;
-        gotoIntygUtkast(intyg.typ, callback);
+        return gotoIntygUtkast(intyg.typ);
 
     });
 
-    this.Given(/^jag går in på att skapa ett slumpat intyg$/, function(callback) {
+    this.Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
         intyg.typ = testdataHelpers.shuffle([
             'Läkarutlåtande för sjukersättning',
             'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-            'Läkarintyg FK 7263',
+            //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
             'Transportstyrelsens läkarintyg',
             'Transportstyrelsens läkarintyg, diabetes'
         ])[0];
         console.log('intyg.typ: ' + intyg.typ);
-        gotoIntygUtkast(intyg.typ, callback);
+        return gotoIntygUtkast(intyg.typ);
 
     });
 
-    this.Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function(callback) {
+    this.Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
         intyg.typ = testdataHelpers.shuffle([
             //'Läkarintyg för sjukpenning',
             'Läkarutlåtande för sjukersättning',
@@ -185,16 +188,14 @@ module.exports = function() {
             'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
         ])[0];
         console.log('intyg.typ: ' + intyg.typ);
-        Promise.all([
+        return Promise.all([
             sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
             sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
         ]).then(function() {
             // Spara intygsid för kommande steg
-            browser.getCurrentUrl().then(function(text) {
+            return browser.getCurrentUrl().then(function(text) {
                 intyg.id = text.split('/').slice(-2)[0];
-                logger.info('intyg.id: ' + intyg.id, function() {
-                    callback();
-                });
+                return logger.info('intyg.id: ' + intyg.id);
             });
         });
     });
@@ -334,21 +335,43 @@ module.exports = function() {
         });
     });
 
-    this.Then(/^ska jag varnas om att "([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
+    this.Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
+        var promiseArr = [];
+        var elementArray = [
+            element(by.id('wc-avliden-text-' + person.id.replace(/(\d{8})(\d{4})/, '$1-$2'))), //.patient-alert? db/doi?
+            element(by.id('intyg-load-error')), //?
+            element(by.id('error-panel')) //Behörighet saknas => sekretessmarkering
+        ];
 
-        var elmCss;
-        if (nyttFonster) {
-            elmCss = '.modal-body';
-        } else {
-            elmCss = '.patient-alert';
-        }
+        return element.all(by.css('.modal-body')).map(function(elm) { //nyttFonster => sekretessmarkering
+            return elementArray.push(elm);
+        }).then(function() {
+            return element.all(by.css('.patient-alert')).map(function(elm) {
+                return elementArray.push(elm);
 
-        return element.all(by.css(elmCss)).map(function(data) {
-            return data.getText();
-        }).then(function(theMsg) {
-            return expect(theMsg.join('\n')).to.contain(msg);
+            });
+        }).then(function() {
+            elementArray.forEach(function(elm, index) {
+                elm.isPresent().then(function(present) {
+                    if (present) {
+                        elm.getText().then(function(theMsg) {
+                            if (theMsg !== '') {
+                                return promiseArr.push(expect(theMsg).to.contain(msg));
+                            } else {
+                                Promise.resolve();
+                            }
+                        });
+
+                    } else {
+                        Promise.resolve();
+                    }
+                });
+            });
+        }).then(function() {
+            return promiseArr.push(expect(promiseArr.length).to.be.at.least(1)); // vikitigt så att vi inte får passed när inga felmeddelanden visas.
+        }).then(function() {
+            return Promise.all(promiseArr);
         });
-
     });
 
     this.Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {

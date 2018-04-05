@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,10 +18,33 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
+import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -33,40 +56,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
-import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
-import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
-import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * API controller for REST services concerning certificate drafts.
  *
  * @author npet
- *
  */
 @Path("/utkast")
 @Api(value = "utkast", description = "REST API för utkasthantering", produces = MediaType.APPLICATION_JSON)
@@ -81,10 +80,13 @@ public class UtkastApiController extends AbstractApiController {
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     @Autowired
-    private UtkastService intygDraftService;
+    private UtkastService utkastService;
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
 
     /**
      * Create a new draft.
@@ -120,9 +122,29 @@ public class UtkastApiController extends AbstractApiController {
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
+        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
+                || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
+                intygsTyp))) {
+
+            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(request.getPatientPersonnummer(),
+                    getWebCertUserService().getUser());
+
+            Boolean exists = intygstypToBoolean.get(intygsTyp);
+
+            if (exists != null) {
+                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                    return Response.status(Status.BAD_REQUEST).build();
+                } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
+                        .getName(), intygsTyp)) {
+                    return Response.status(Status.BAD_REQUEST).build();
+                }
+            }
+
+        }
+
         CreateNewDraftRequest serviceRequest = createServiceRequest(request);
 
-        Utkast utkast = intygDraftService.createNewDraft(serviceRequest);
+        Utkast utkast = utkastService.createNewDraft(serviceRequest);
         LOG.debug("Created a new draft of type '{}' with id '{}'", intygsTyp, utkast.getIntygsId());
 
         return Response.ok().entity(utkast).build();
@@ -136,7 +158,7 @@ public class UtkastApiController extends AbstractApiController {
 
         LOG.debug("Requesting questions for '{}' with version '{}'.", intygsTyp, version);
 
-        String questions = intygDraftService.getQuestions(intygsTyp, version);
+        String questions = utkastService.getQuestions(intygsTyp, version);
 
         return Response.ok().entity(questions).build();
     }
@@ -173,9 +195,18 @@ public class UtkastApiController extends AbstractApiController {
         WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
-        List<Lakare> lakareWithDraftsByEnhet = intygDraftService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
+        List<Lakare> lakareWithDraftsByEnhet = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
 
         return Response.ok().entity(lakareWithDraftsByEnhet).build();
+    }
+
+    @GET
+    @Path("/previousIntyg/{personnummer}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
+        Map<String, Boolean> res = utkastService
+                .checkIfPersonHasExistingIntyg(new Personnummer(personnummer), getWebCertUserService().getUser());
+        return Response.ok(res).build();
     }
 
     private CreateNewDraftRequest createServiceRequest(CreateUtkastRequest req) {
@@ -235,7 +266,7 @@ public class UtkastApiController extends AbstractApiController {
         filter.setPageSize(null);
 
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter
-                .convertUtkastsToListIntygEntries(intygDraftService.filterIntyg(filter));
+                .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter));
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
@@ -266,7 +297,6 @@ public class UtkastApiController extends AbstractApiController {
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
     }
-
 
     private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user) {
         final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patientId);

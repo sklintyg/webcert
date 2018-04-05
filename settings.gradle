@@ -12,6 +12,7 @@ include ':webcert-persistence'
 include ':notification-sender'
 include ':pp-integration'
 include ':fmb-integration'
+include ':tak-integration'
 include ':fk-stub'
 include ':intygstjanst-stub'
 include ':mail-stub'
@@ -25,6 +26,7 @@ project(':webcert-persistence').projectDir = "$rootDir/persistence" as File
 project(':notification-sender').projectDir = "$rootDir/notification-sender" as File
 project(':pp-integration').projectDir = "$rootDir/integration/pp-integration" as File
 project(':fmb-integration').projectDir = "$rootDir/integration/fmb-integration" as File
+project(':tak-integration').projectDir = "$rootDir/integration/tak-integration" as File
 project(':fk-stub').projectDir = "$rootDir/stubs/fk-stub" as File
 project(':intygstjanst-stub').projectDir = "$rootDir/stubs/intygstjanst-stub" as File
 project(':mail-stub').projectDir = "$rootDir/stubs/mail-stub" as File
@@ -32,3 +34,4 @@ project(':notification-stub').projectDir = "$rootDir/stubs/notification-stub" as
 project(':webcert-web').projectDir = "$rootDir/web" as File
 project(':webcert-liquibase-runner').projectDir = "$rootDir/tools/liquibase-runner" as File
 project(':webcert-protractor').projectDir = "$rootDir/test" as File
+

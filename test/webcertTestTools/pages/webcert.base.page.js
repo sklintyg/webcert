@@ -20,6 +20,7 @@
 /**
  * Created by bennysce on 17-12-15.
  */
+/*globals browser*/
 'use strict';
 
 var JClass = require('jclass');
@@ -49,6 +50,12 @@ var WebcertBasePage = JClass._extend({
 
         this.cookieConsentBtnId = 'cookie-usage-consent-btn';
 
+    },
+    isAt: function() {
+        var at = this.at;
+        return browser.wait(function() {
+            return at.isPresent();
+        }, 5000);
     },
     getDoctorText: function() {
         return this.doctor.getText();

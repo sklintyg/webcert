@@ -6,14 +6,14 @@ import scala.concurrent.duration._
 
 class SkrivSigneraSkickaIntyg extends Simulation {
 
-  val testpersonnummer = csv("data/testpersonnummer_skatteverket.cvs").circular
+  val testpersonnummer = csv("data/testpersonnummer_skatteverket_subset.cvs").circular
 
   val scn = scenario("SkrivSigneraSkicka")
     .exec(Login.loginAs("Leonie"))
     .exec(http("Get user details")
       .get("/siths.jsp"))
     .pause(50 milliseconds)
-    .repeat(10, "i") {
+    .repeat(10) {
       feed(testpersonnummer)
         .exec(http("Dashboard")
           .get("/web/dashboard#/unhandled-qa.html")
@@ -28,7 +28,9 @@ class SkrivSigneraSkickaIntyg extends Simulation {
           .post("/api/utkast/fk7263")
           .headers(Headers.json)
           .body(StringBody("""{"intygType":"fk7263","patientPersonnummer":"${personNr}","patientFornamn":"test","patientEfternamn":"test"}"""))
-          .check(jsonPath("$.intygsId").saveAs("intyg")))
+            .check(
+              status.is(200),
+              jsonPath("$.intygsId").saveAs("intyg")))
         .exec(http("Get draft certificate")
           .get("/moduleapi/utkast/fk7263/${intyg}")
           .headers(Headers.json))
@@ -83,5 +85,16 @@ class SkrivSigneraSkickaIntyg extends Simulation {
       .get("/logout")
       .headers(Headers.default))
 
+  before {
+    println("Boostrapping PU")
+    Utils.injectPersonsIntoPU("testpersonnummer_skatteverket_subset.cvs", 0)
+  }
+
   setUp(scn.inject(rampUsers(100) over (120 seconds)).protocols(Conf.httpConf))
+
+  after {
+    println("Cleanup test data")
+    Utils.removePersonsFromPU("testpersonnummer_skatteverket_subset.cvs", 0)
+  }
+
 }

@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.patient;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,13 +37,13 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -34,10 +52,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anySet;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -95,23 +110,23 @@ public class PatientDetailsResolverTest {
     public void init() {
         when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
         when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParameters());
-        when(integratedWebCertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
+        when(integratedWebCertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
 
         when(freeWebCertUser.getParameters()).thenReturn(null);
-        when(freeWebCertUser.getOrigin()).thenReturn(WebCertUserOriginType.NORMAL.name());
+        when(freeWebCertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
     }
 
     private IntegrationParameters buildIntegrationParameters() {
         IntegrationParameters params = new IntegrationParameters("ref", "hospname", "20121212-1212", INTEGR_FNAMN, INTEGR_MNAMN,
                 INTEGR_LNAMN,
-                INTEGR_POST_ADDR, INTEGR_POST_NR, INTEGR_POST_ORT, false, true, false, true);
+                INTEGR_POST_ADDR, INTEGR_POST_NR, INTEGR_POST_ORT, false, INTEGR_AVLIDEN, false, true);
         return params;
     }
 
     private IntegrationParameters buildIntegrationParametersWithNullAddress() {
         IntegrationParameters params = new IntegrationParameters("ref", "hospname", "20121212-1212", INTEGR_FNAMN, INTEGR_MNAMN,
                 INTEGR_LNAMN,
-                null, null, null, false, true, false, true);
+                null, null, null, false, INTEGR_AVLIDEN, false, true);
         return params;
     }
 
@@ -288,10 +303,10 @@ public class PatientDetailsResolverTest {
     // (DB har nästan exakt samma regler som TS)
 
     /**
-     * Dödsbevis - integration - PU: Namn + meta från PU, adress från INTEGR
+     * Dödsbevis - integration - PU: Namn + meta från PU == allt hämtas från PU
      */
     @Test
-    public void testSOSDBIntygIntegrationWithPuOk() {
+    public void testSOSDBIntygIntegrationWithPuOkShouldIgnoreIntegrationParameters() {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -300,36 +315,15 @@ public class PatientDetailsResolverTest {
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
         assertEquals(LNAMN, patient.getEfternamn());
-        assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
-        assertEquals(INTEGR_POST_NR, patient.getPostnummer());
-        assertEquals(INTEGR_POST_ORT, patient.getPostort());
+        assertEquals(POST_ADDR, patient.getPostadress());
+        assertEquals(POST_NR, patient.getPostnummer());
+        assertEquals(POST_ORT, patient.getPostort());
         assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
     /**
-     * Dödsbevis - integration - PU: Namn + meta från PU, adress från PU
-     */
-    @Test
-    public void testSOSDBIntygIntegrationWithPuOkButAddressMissingFromIntegration() {
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
-        when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
-        when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParametersWithNullAddress());
-
-        Patient patient = testee.resolvePatient(PNR, "db");
-        assertEquals(PNR, patient.getPersonId());
-        assertEquals(FNAMN, patient.getFornamn());
-        assertEquals(MNAMN, patient.getMellannamn());
-        assertEquals(LNAMN, patient.getEfternamn());
-        assertEquals(null, patient.getPostadress());
-        assertEquals(null, patient.getPostnummer());
-        assertEquals(null, patient.getPostort());
-        assertEquals(PU_AVLIDEN, patient.isAvliden());
-        assertEquals(false, patient.isSekretessmarkering());
-    }
-
-    /**
-     * Dödsbevis + integration + EJ PU, allt som går skall hämtas från parametrar.
+     * Dödsbevis + integration + EJ PU, inget kan hämtas
      */
     @Test
     public void testSOSDBIntygIntegrationWithPuUnavailable() {
@@ -337,15 +331,7 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
         Patient patient = testee.resolvePatient(PNR, "db");
-        assertEquals(PNR, patient.getPersonId());
-        assertEquals(INTEGR_FNAMN, patient.getFornamn());
-        assertEquals(INTEGR_MNAMN, patient.getMellannamn());
-        assertEquals(INTEGR_LNAMN, patient.getEfternamn());
-        assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
-        assertEquals(INTEGR_POST_NR, patient.getPostnummer());
-        assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(INTEGR_AVLIDEN, patient.isAvliden());
-        assertEquals(false, patient.isSekretessmarkering());
+        assertNull(patient);
     }
 
     /**
@@ -409,7 +395,7 @@ public class PatientDetailsResolverTest {
         assertEquals(DB_POST_ADDR, patient.getPostadress());
         assertEquals(DB_POST_NR, patient.getPostnummer());
         assertEquals(DB_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -446,7 +432,7 @@ public class PatientDetailsResolverTest {
 
 
     /**
-     * DOI - Integration. DB saknas, PU finns. Namn och adress från PU.
+     * DOI - Integration. DB saknas, PU finns == allt från PU
      */
     @Test
     public void testSosDoiIntygIntegrationWithNoDBIntygAndPuOk() throws ModuleNotFoundException, IOException {
@@ -465,15 +451,15 @@ public class PatientDetailsResolverTest {
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
         assertEquals(LNAMN, patient.getEfternamn());
-        assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
-        assertEquals(INTEGR_POST_NR, patient.getPostnummer());
-        assertEquals(INTEGR_POST_ORT, patient.getPostort());
+        assertEquals(POST_ADDR, patient.getPostadress());
+        assertEquals(POST_NR, patient.getPostnummer());
+        assertEquals(POST_ORT, patient.getPostort());
         assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
     /**
-     * DOI - Integration. DB saknas, PU saknas. Rubbet från Integration
+     * DOI - Integration. DB saknas, PU saknas == Ingen info
      */
     @Test
     public void testSosDoiIntygIntegrationWithNoDBIntygAndPuUnavailable() throws ModuleNotFoundException, IOException {
@@ -481,22 +467,12 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getValdVardgivare()).thenReturn(new Vardgivare("vg-1", "vardgivare-1"));
 
-
         List<Utkast> drafts = new ArrayList<>();
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
                 anySet())).thenReturn(drafts);
 
-
         Patient patient = testee.resolvePatient(PNR, "doi");
-        assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
-        assertEquals(INTEGR_FNAMN, patient.getFornamn());
-        assertEquals(INTEGR_MNAMN, patient.getMellannamn());
-        assertEquals(INTEGR_LNAMN, patient.getEfternamn());
-        assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
-        assertEquals(INTEGR_POST_NR, patient.getPostnummer());
-        assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(INTEGR_AVLIDEN, patient.isAvliden());
-        assertEquals(false, patient.isSekretessmarkering());
+        assertNull(patient);
     }
 
 
@@ -627,6 +603,6 @@ public class PatientDetailsResolverTest {
 
     private Person buildPerson() {
         return new Person(Personnummer.createValidatedPersonnummerWithDash("19121212-1212").get(),
-                false, false, FNAMN, MNAMN, LNAMN, POST_ADDR, POST_NR, POST_ORT);
+                false, PU_AVLIDEN, FNAMN, MNAMN, LNAMN, POST_ADDR, POST_NR, POST_ORT);
     }
 }

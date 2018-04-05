@@ -50,11 +50,10 @@ xdescribe('Testa sekretessmarkering för vårdadmin', function() {
         });
     });
 
-    it('login through the welcome page with default user', function() {
+    it('login through the welcome page with vardadmin user', function() {
 
         WelcomePage.get();
-        WelcomePage.login('sture-adminsson_TSTNMT2321000156-1077');
-
+        WelcomePage.login('IFV1239877878-104N_IFV1239877878-1045');
         specHelper.waitForAngularTestability();
     });
 
@@ -72,7 +71,7 @@ xdescribe('Testa sekretessmarkering för vårdadmin', function() {
 
         it('Räkna antal obesvarade frågor i headern innan vi sekretessmarkerat', function() {
             element(by.css('a[ng-href="/web/dashboard#/unhandled-qa"]')).click();
-            expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('19');
+            expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
         });
 
         it('Räkna antal ej signerade utkast i headern innan vi sekretessmarkerat', function() {
@@ -97,7 +96,7 @@ xdescribe('Testa sekretessmarkering för vårdadmin', function() {
 
         it('Räkna antal obesvarade frågor i headern innan vi sekretessmarkerat', function() {
             element(by.css('a[ng-href="/web/dashboard#/unhandled-qa"]')).click();
-            expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('3');
+            expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
         });
 
         it('Räkna antal ej signerade utkast i headern innan vi sekretessmarkerat', function() {

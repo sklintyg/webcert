@@ -19,11 +19,13 @@ Scenario: När samtycke är givet och ytterligare frågor besvarade ska informat
     Så ska en fråga om samtycke visas
     När jag anger att patienten samtycker till SRS
     Och jag fyller i ytterligare svar för SRS
+    Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
     Så ska prediktion från SRS-tjänsten visas
     Och ska åtgärdsförslag från SRS-tjänsten visas
     När jag trycker på fliken "Statistik"
-    Så ska en statistikbild från SRS-tjänsten visas
+    Så ska en statistikbild från SRS-tjänsten visas för en diagnoskod som "finns i SRS"
+	#Testet går igenom men ingen bild visas.
 
 
 @SRS-US-W01 @allmänt
@@ -51,7 +53,7 @@ Scenario: Patient som inte givit samtycke ska ha samtyckesfrågan förifyllt som
     Och jag fyllt i diagnoskod som "finns i SRS"
     När jag klickar på knappen för SRS
     Så ska en fråga om samtycke visas
-    Och frågan om samtycke ska vara förifylld med "Nej"
+    Och frågan om samtycke ska inte vara förifylld med "Nej"
 
 @SRS-US-W01 @allmänt
 Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
@@ -61,14 +63,12 @@ Scenario: Användaren ska kunna visa och dölja UI-komponenter som hör till SRS
     Så ska knappen för SRS vara i läge "stängd"
     När jag klickar på knappen för SRS
     Och ska en frågepanel för SRS "visas"
-    Och ska en pil med texten "Visa mindre" visas
-    När jag klickar på pilen
-    Så ska frågepanelen för SRS vara "minimerad"
-    Och ska en pil med texten "Visa mer" visas
     När jag klickar på pilen
     Så ska frågepanelen för SRS vara "maximerad"
+    När jag klickar på pilen för att minimera
+    Så ska frågepanelen för SRS vara "minimerad"
 
-@SRS-US-W02 @åtgärder
+@SRS-US-W02 @åtgärder @OBS-åtgärder @REK-åtgärder
 Scenario: Användaren ska kunna ta del av åtgärdsförslag från SRS
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
@@ -96,24 +96,24 @@ Scenario: När statistikbild för en viss diagnoskod saknas ska användaren info
     Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas
 
 @SRS-US-W04 @prediktion
-@notReady
 Scenario: När prediktion inte kan ges ska korrekt felmeddelande visas
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "saknar prediktion"
     Och jag klickar på knappen för SRS
+    Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
     Så ska felmeddelandet "finns ingen SRS-information för detta fält" visas
 
 @SRS-US-W04 @prediktion
-@notReady
 Scenario: Prediktion ska kunna visa ingen förhöjd risk
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
-    När jag fyller i diagnoskod som "för ingen förhöjd risk"
+    När jag fyller i diagnoskod som "inte har förhöjd risk"
     Och jag klickar på knappen för SRS
+    Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
-    Så ska meddelandet "Ingen förhöjd risk" visas
+    Så ska jag få prediktion "Ingen förhöjd risk"
 
 @SRS-US-W04 @prediktion
 @notReady
@@ -123,10 +123,9 @@ Scenario: Prediktion ska kunna visa förhöjd risk
     När jag fyller i diagnoskod som "har förhöjd risk"
     Och jag klickar på knappen för SRS
     Och jag trycker på knappen "Visa"
-    Så ska meddelandet "Förhöjd risk" visas
+    Så ska jag varnas om "Förhöjd risk"
 
 @SRS-US-W06 @hjälpinformation @samtycke
-@notReady
 Scenario: Som användare vill jag få hjälpinformation (samtycke)
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
@@ -137,19 +136,18 @@ Scenario: Som användare vill jag få hjälpinformation (samtycke)
     Så ska en ny sida öppnas och urlen innehålla "samtycke"
 
 @SRS-US-W06 @hjälpinformation @prediktionsmodell
-@notReady
 Scenario: Som användare vill jag få hjälpinformation (prediktionsmodell)
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
     När jag fyller i diagnoskod som "finns i SRS"
     Och jag klickar på knappen för SRS
+    Och jag klickar på pilen
     Och jag trycker på knappen "Visa"
     Och jag klickar på knappen "?" vid prediktionsmeddelandet
     Och jag klickar på knappen "Läs mer" vid prediktionsmeddelandet
     Så ska en ny sida öppnas och urlen innehålla "prediktionsmodell"
 
 @SRS-US-W06 @hjälpinformation @åtgärder
-@notReady
 Scenario: Som användare vill jag få hjälpinformation (åtgärder)
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263
@@ -159,7 +157,6 @@ Scenario: Som användare vill jag få hjälpinformation (åtgärder)
     Så ska en ny sida öppnas och urlen innehålla diagnoskod som "finns i SRS"
 
 @SRS-US-W06 @hjälpinformation @statistik
-@notReady
 Scenario: Som användare vill jag få hjälpinformation (statistik)
     Givet en patient som "har givit samtycke" till SRS
     Och att jag befinner mig på ett nyskapat Läkarintyg FK 7263

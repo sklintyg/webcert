@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,7 +47,7 @@ public class SendMedicalCertificateAnswerValidator {
         if (answerType.getFraga() == null) {
             validationErrors.add("No Answer fraga element found!");
         } else {
-            if (Strings.isNullOrEmpty(answerType.getFraga().getMeddelandeText())) {
+            if (answerType.getFraga().getMeddelandeText() == null) {
                 validationErrors.add("No Answer fraga meddelandeText elements found or set!");
             }
             if (answerType.getFraga().getSigneringsTidpunkt() == null) {

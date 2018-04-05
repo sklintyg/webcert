@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,16 +28,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Utdatafilter;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
+import se.inera.intyg.infra.integration.srs.model.SrsForDiagnosisResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsService;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -187,6 +188,21 @@ public class SrsApiController extends AbstractApiController {
                 .features(WebcertFeature.SRS)
                 .orThrow();
         return Response.ok(srsService.getAllDiagnosisCodes()).build();
+    }
+
+    @GET
+    @Path("/atgarder/{diagnosisCode}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get SRS info for diagnosecode", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    public Response getSrsForDiagnosisCodes(@PathParam("diagnosisCode") String diagnosisCode) {
+        authoritiesValidator.given(getWebCertUserService().getUser())
+                .features(WebcertFeature.SRS)
+                .orThrow();
+
+        final SrsForDiagnosisResponse srsForDiagnose = srsService.getSrsForDiagnose(diagnosisCode);
+        monitoringLog.logGetSrsForDiagnose(diagnosisCode);
+
+        return Response.ok(srsForDiagnose).build();
     }
 
     private Utdatafilter buildUtdatafilter(boolean prediktion, boolean atgard, boolean statistik) {

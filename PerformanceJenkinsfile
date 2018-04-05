@@ -1,0 +1,28 @@
+#!groovy
+
+stage('checkout webcert') {
+    node {
+        git url: "https://github.com/sklintyg/webcert.git", branch: GIT_BRANCH
+        util.run { checkout scm }
+    }
+}
+
+stage('build') {
+    node {
+        dir("performanceTests") {
+            sh("../gradlew build")
+        }
+    }
+}
+
+stage('gatling') {
+    node {
+        dir("performanceTests") {
+            try {
+                sh("../gradlew gatling -Dcertificate.baseUrl=https://webcert.inera.nordicmedtest.se")
+            } finally {
+                gatlingArchive()
+            }
+        }
+    }
+}

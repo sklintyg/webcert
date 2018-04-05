@@ -18,7 +18,7 @@ Scenario: Statusuppdateringar då SMI-intyg skickas till Försäkringskassan
     När jag skickar intyget till Försäkringskassan
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
-@makulera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@makulera
 Scenario: Statusuppdateringar då SMI-intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -27,7 +27,7 @@ Scenario: Statusuppdateringar då SMI-intyg makuleras
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
-@radera @waitingForFix @waitingForFixIn-5.4 @INTYG-4506
+@radera
 Scenario: Statusuppdateringar då SMI-intyg raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar intyget

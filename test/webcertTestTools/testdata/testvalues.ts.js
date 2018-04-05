@@ -163,8 +163,11 @@ var tsValues = {
         return hypoObj;
     },
     getRandomBehandling: function() {
-        var behandlingObj = {
-            typer: shuffle(tsValues.diabetesbehandlingtyper.slice(0)).slice(0, Math.floor(Math.random() * tsValues.diabetesbehandlingtyper.length) + 1)
+		var start = Math.floor(Math.random() * tsValues.diabetesbehandlingtyper.length);
+		var end = Math.floor(Math.random() * (tsValues.diabetesbehandlingtyper.length + 1)) + start; // +1 kompenserar för att end inte är inkluderat i splice.
+        
+		var behandlingObj = {
+            typer: tsValues.diabetesbehandlingtyper.slice(start, end)
         };
 
         // Om Insulinbehanling så måste startår anges

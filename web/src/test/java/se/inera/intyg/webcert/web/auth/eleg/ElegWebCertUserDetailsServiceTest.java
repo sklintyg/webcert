@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,24 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -35,30 +53,25 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
+import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
-
-import java.util.Collections;
-import java.util.HashSet;
-
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
  * Created by eriklupander on 2015-06-25.
@@ -70,30 +83,27 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private static final String REMOTE_ENTITY_ID = "remoteEntityId";
     private static final String HSA_ID = "191212121212";
     private static final String PERSON_ID = "197705232382";
-
-    @Mock
-    private HsaPersonService hsaPersonService;
-
-    @Mock
-    private PPService ppService;
-
-    @Mock
-    private WebcertFeatureService webcertFeatureService;
-
-    @Mock
-    private AvtalService avtalService;
-
-    @Mock
-    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
-
-    @Mock
-    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
+    @Mock
+    private HsaPersonService hsaPersonService;
+    @Mock
+    private PPService ppService;
+    @Mock
+    private WebcertFeatureService webcertFeatureService;
+    @Mock
+    private AvtalService avtalService;
+    @Mock
+    private PUService puService;
+    @Mock
+    private AnvandarPreferenceRepository anvandarPreferenceRepository;
+    @Mock
+    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
+    @Mock
+    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
     @InjectMocks
     private ElegWebCertUserDetailsService testee;
+    private Map<String, String> expectedPreferences = new HashMap<>();
 
     @BeforeClass
     public static void readSamlAssertions() throws Exception {
@@ -107,24 +117,67 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
-        //AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
+        // AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
         testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
-        //when(authoritiesResolver.getRole(anyString())).thenReturn(role);
+        // when(authoritiesResolver.getRole(anyString())).thenReturn(role);
         when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
         when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
         when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
+        expectedPreferences.put("some", "setting");
+        when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
+
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false, PersonSvar.Status.FOUND));
+
     }
 
     @Test
     public void testSuccessfulLogin() {
-        Object o = testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
-        assertNotNull(o);
+        WebCertUser user =  (WebCertUser) testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertNotNull(user);
+        assertFalse(user.isSekretessMarkerad());
+        assertEquals(expectedPreferences, user.getAnvandarPreference());
 
         // WEBCERT-2028
         verify(avtalService, times(1)).userHasApprovedLatestAvtal(anyString());
     }
+
+    @Test
+    public void testSuccessfulLoginSekretessMarkerad() {
+        reset(puService);
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true, PersonSvar.Status.FOUND));
+
+        WebCertUser user =  (WebCertUser) testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertNotNull(user);
+        assertTrue(user.isSekretessMarkerad());
+
+        // WEBCERT-2028
+        verify(avtalService, times(1)).userHasApprovedLatestAvtal(anyString());
+    }
+
+    @Test
+    public void testLoginPUErrorThrowsException() {
+        reset(puService);
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true, PersonSvar.Status.ERROR));
+
+        thrown.expect(HsaServiceException.class);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
+    @Test
+    public void testLoginPUNotFoundThrowsException() {
+        reset(puService);
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true, PersonSvar.Status.NOT_FOUND));
+
+        thrown.expect(HsaServiceException.class);
+
+        testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+    }
+
 
     @Test
     public void testNotValidPrivatePractitionerThrowsException() {
@@ -171,6 +224,11 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
         return hoSPersonType;
     }
+    private PersonSvar buildPersonSvar(boolean sekretessMarkerad, PersonSvar.Status status) {
+        Person person = new Person(new Personnummer(PERSON_ID), sekretessMarkerad, false, "fornamn","",
+                "Efternamn", "gatan", "12345", "postort");
+        return new PersonSvar(person, status);
+    }
 
     private MockHttpServletRequest mockHttpServletRequest(String requestURI) {
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -184,6 +242,5 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
         return request;
     }
-
 
 }

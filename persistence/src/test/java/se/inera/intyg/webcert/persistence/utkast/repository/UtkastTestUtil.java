@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -53,12 +53,19 @@ public final class UtkastTestUtil {
     public static final String PERSON_EFTERNAMN = "Tolvansson";
 
     public static final String INTYGSTYP_FK7263 = "fk7263";
+    public static final String INTYGSTYP_LISJP = "lisjp";
+    public static final String INTYGSTYP_DB = "db";
 
     public static final String MODEL = "This is the JSON model of this Intyg "
             + "with some interesting scandinavian characters like Å, Ä and ö added";
 
     public static Utkast buildUtkast(String enhetsId) {
         return buildUtkast(enhetsId, UtkastStatus.DRAFT_INCOMPLETE, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
+                PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
+    }
+
+    public static Utkast buildUtkast(String enhetsId, String type) {
+        return buildUtkast(enhetsId, UtkastStatus.DRAFT_INCOMPLETE, type, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
                 PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
 

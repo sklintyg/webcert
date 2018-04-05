@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,6 +32,7 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -46,6 +47,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
@@ -56,9 +58,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.decorator.IntygRelationHelper;
@@ -75,10 +77,10 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
@@ -90,30 +92,17 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static se.inera.intyg.common.support.modules.support.feature.ModuleFeature.SIGNERA_SKICKA_DIREKT;
 
 /**
  * @author andreaskaltenbach
@@ -187,6 +176,8 @@ public class IntygServiceTest {
     @Mock
     private UtkastIntygDecorator utkastIntygDecorator;
 
+    @Mock
+    private WebcertFeatureService featureService;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -234,7 +225,7 @@ public class IntygServiceTest {
         set.add("fk7263");
 
         when(webCertUserService.getUser()).thenReturn(webcertUser);
-        when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.NORMAL.name());
+        when(webcertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
         when(webcertUser.getParameters()).thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
@@ -711,7 +702,7 @@ public class IntygServiceTest {
         // Set up user
         IntegrationParameters parameters = new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false,
                 false, false);
-        when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
+        when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters()).thenReturn(parameters);
 
         final Utkast draft = getDraft(CERTIFICATE_ID);
@@ -733,7 +724,8 @@ public class IntygServiceTest {
         final String intygId = "intygId";
         final String intygTyp = "intygTyp";
         final String relationIntygId = "relationIntygId";
-        final String recipient = "recipient";
+        final String recipient = new Fk7263EntryPoint().getDefaultRecipient();
+
         final Personnummer personnummer = new Personnummer("19121212-1212");
 
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
@@ -753,13 +745,54 @@ public class IntygServiceTest {
         when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED))))
                         .thenReturn(Optional.empty());
+        when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
 
-        intygService.handleSignedCompletion(utkast, recipient);
+        intygService.handleAfterSigned(utkast);
 
         verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient));
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
+        verify(notificationService).sendNotificationForIntygSent(intygId, USER_REFERENCE);
+        ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
+        verify(intygRepository).save(utkastCaptor.capture());
+        assertNotNull(utkastCaptor.getValue().getSkickadTillMottagareDatum());
+        assertEquals(recipient, utkastCaptor.getValue().getSkickadTillMottagare());
+    }
+
+    @Test
+    public void testHandleSignedWithSigneraSkickaDirekt() throws Exception {
+        final String intygId = "intygId";
+        final String intygTyp = "intygTyp";
+        final String relationIntygId = "relationIntygId";
+        final String recipient = new Fk7263EntryPoint().getDefaultRecipient();
+
+        final Personnummer personnummer = new Personnummer("19121212-1212");
+
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        utlatande.setId(intygId);
+        utlatande.setTyp(intygTyp);
+        utlatande.getGrundData().getPatient().setPersonId(personnummer);
+
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygId);
+        utkast.setIntygsTyp(intygTyp);
+        utkast.setModel(json);
+
+        when(intygRepository.findOne(intygId)).thenReturn(utkast);
+        when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
+        when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
+                eq(Arrays.asList(UtkastStatus.SIGNED))))
+                .thenReturn(Optional.empty());
+        when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
+        when(featureService.isModuleFeatureActive(SIGNERA_SKICKA_DIREKT.getName(), intygTyp)).thenReturn(true);
+
+        intygService.handleAfterSigned(utkast);
+
+        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient));
+        verify(mockMonitoringService).logIntygSent(intygId, recipient);
+        verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
+        verify(arendeService, never()).closeCompletionsAsHandled(relationIntygId, intygTyp);
         verify(notificationService).sendNotificationForIntygSent(intygId, USER_REFERENCE);
         ArgumentCaptor<Utkast> utkastCaptor = ArgumentCaptor.forClass(Utkast.class);
         verify(intygRepository).save(utkastCaptor.capture());
@@ -796,7 +829,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Arrays.asList(handelse));
@@ -833,7 +866,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(eq(personnummer), eq(enhetList), eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
@@ -871,7 +904,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
@@ -912,7 +945,7 @@ public class IntygServiceTest {
         ArendeCount sent = new ArendeCount(1, 2, 3, 4);
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "")));
+        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(intygType, "", "", "", "", "", "", "")));
         when(intygRepository.findDraftsByPatientAndVardgivareAndStatus(eq(personnummer), eq(vardgivarId),
                 eq(Arrays.asList(UtkastStatus.values())),
                 eq(Collections.singleton(intygType)))).thenReturn(Arrays.asList(getDraft(intygId)));
@@ -938,7 +971,7 @@ public class IntygServiceTest {
 
     @Test
     public void testDeceasedIsNotSetForAlivePatientDjupintegration() {
-        when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
+        when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters())
                 .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -947,7 +980,7 @@ public class IntygServiceTest {
 
     @Test
     public void testDeceasedIsSetForDeadPatientDjupintegration() {
-        when(webcertUser.getOrigin()).thenReturn(WebCertUserOriginType.DJUPINTEGRATION.name());
+        when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters())
                 .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true));
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, true));

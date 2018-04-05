@@ -17,23 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise,browser,protractor*/
+/*globals element, by, Promise*/
 'use strict';
-
 var BaseSmiUtkast = require('../smi.base.utkast.page.js');
+var pageHelpers = require('../../../../pageHelper.util.js');
 
-function checkAndSendTextToForm(checkboxEL, textEL, text) {
-    return checkboxEL.sendKeys(protractor.Key.SPACE).then(function() {
-        return browser.sleep(1000).then(function() {
-            return textEL.sendKeys(text)
-                .then(function() {
-                    logger.debug('OK - Angav: ' + text);
-                }, function(reason) {
-                    throw ('FEL - Angav: ' + text + ' ' + reason);
-                });
-        });
-    });
-}
 
 var LuseUtkast = BaseSmiUtkast._extend({
     init: function init() {
@@ -92,43 +80,32 @@ var LuseUtkast = BaseSmiUtkast._extend({
             }
         };
     },
-    angeAktivitetsbegransning: function(aktivitetsbegransning) {
-        return this.aktivitetsbegransning.sendKeys(aktivitetsbegransning);
+	angeAktivitetsbegransning: function(aktivitetsbegransning) {
+        return pageHelpers.moveAndSendKeys(this.aktivitetsbegransning, aktivitetsbegransning);
     },
-
     angeMedicinskaForutsattningar: function(forutsattningar) {
         return Promise.all([
-            this.medicinskaForutsattningar.utecklasOverTid.sendKeys(forutsattningar.utecklasOverTid),
-            this.medicinskaForutsattningar.trotsBegransningar.sendKeys(forutsattningar.trotsBegransningar)
-        ]);
-    },
-    angeFunktionsnedsattning: function(nedsattning) {
-        var fn = this.funktionsnedsattning;
-        return Promise.all([
-            checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell),
-            checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation),
-            checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration),
-            checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk),
-            checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal),
-            checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination),
-            checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan)
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.utecklasOverTid, forutsattningar.utecklasOverTid),
+            pageHelpers.moveAndSendKeys(this.medicinskaForutsattningar.trotsBegransningar, forutsattningar.trotsBegransningar)
         ]);
     },
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
-        return Promise.all([
-            mb.avslutad.text.sendKeys(behandling.avslutad),
-            mb.pagaende.text.sendKeys(behandling.pagaende),
-            mb.planerad.text.sendKeys(behandling.planerad),
-            mb.substansintag.text.sendKeys(behandling.substansintag)
-        ]);
+
+        return pageHelpers.moveAndSendKeys(mb.avslutad.text, behandling.avslutad)
+		.then(function(){
+			return pageHelpers.moveAndSendKeys(mb.pagaende.text, behandling.pagaende);
+		})
+		.then(function(){
+			return pageHelpers.moveAndSendKeys(mb.planerad.text, behandling.planerad)
+		})
+		.then(function(){
+			return pageHelpers.moveAndSendKeys(mb.substansintag.text, behandling.substansintag);
+		});
     },
 
     get: function get(intygId) {
         get._super.call(this, 'luse', intygId);
-    },
-    isAt: function isAt() {
-        return isAt._super.call(this);
     }
 });
 

@@ -1,6 +1,22 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.integration;
-
-import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableSet;
 import org.mockito.Mock;
@@ -9,33 +25,21 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeature;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.Mockito.when;
+
 /**
  * Created by eriklupander on 2017-09-27.
  */
 public abstract class BaseCreateDraftCertificateTest {
-
-    protected static final String FK7263 = "fk7263";
-    protected static final String TSBAS = "ts-bas";
-
-    protected static final String LOGICAL_ADDR = "1234567890";
-
-    protected static final String USER_HSAID = "SE1234567890";
-    protected static final String UNIT_HSAID = "SE0987654321";
-    protected static final String CAREGIVER_HSAID = "SE0000112233";
-
-    protected static final String UTKAST_ID = "abc123";
-    protected static final String UTKAST_VERSION = "1";
-    protected static final String UTKAST_TYPE = "fk7263";
-    protected static final String UTKAST_JSON = "A bit of text representing json";
 
     public static final String FULLSTANDIGT_NAMN = "Abel Baker";
     public static final String INVARTES_MEDICIN = "Invärtes medicin";
@@ -43,8 +47,16 @@ public abstract class BaseCreateDraftCertificateTest {
     public static final String TITLE_NAME = "Läkare";
     public static final String ALLMAN_MEDICIN = "Allmänmedicin";
     public static final String MEDARBETARUPPDRAG = "Vård och behandling";
-
-
+    protected static final String FK7263 = "fk7263";
+    protected static final String TSBAS = "ts-bas";
+    protected static final String LOGICAL_ADDR = "1234567890";
+    protected static final String USER_HSAID = "SE1234567890";
+    protected static final String UNIT_HSAID = "SE0987654321";
+    protected static final String CAREGIVER_HSAID = "SE0000112233";
+    protected static final String UTKAST_ID = "abc123";
+    protected static final String UTKAST_VERSION = "1";
+    protected static final String UTKAST_TYPE = "fk7263";
+    protected static final String UTKAST_JSON = "A bit of text representing json";
     @Mock
     protected WebcertUserDetailsService webcertUserDetailsService;
 
@@ -62,8 +74,9 @@ public abstract class BaseCreateDraftCertificateTest {
                 createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
         user.setFeatures(ImmutableSet
                 .of(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + FK7263,
-                        WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + TSBAS));
-        user.setOrigin(WebCertUserOriginType.DJUPINTEGRATION.name());
+                        WebcertFeature.HANTERA_INTYGSUTKAST.getName() + "." + TSBAS, WebcertFeature.TAK_KONTROLL.getName(),
+                        WebcertFeature.TAK_KONTROLL.getName() + "." + FK7263, WebcertFeature.TAK_KONTROLL.getName() + "." + TSBAS));
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         user.setBefattningar(Arrays.asList(TITLE_CODE));
         user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
         user.setTitel(TITLE_NAME);
@@ -82,7 +95,7 @@ public abstract class BaseCreateDraftCertificateTest {
         Privilege priv = new Privilege();
         priv.setName(privilege);
         RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(WebCertUserOriginType.DJUPINTEGRATION.name());
+        requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
         requestOrigin.setIntygstyper(Arrays.asList(FK7263, TSBAS));
         priv.setRequestOrigins(Arrays.asList(requestOrigin));
         priv.setIntygstyper(Arrays.asList(FK7263, TSBAS));

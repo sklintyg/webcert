@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Relation;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -43,9 +44,9 @@ public class CreateRenewalCopyUtkastBuilder extends AbstractUtkastBuilder<Create
     }
 
     @Override
-    protected String getInternalModel(String jsonModel, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
+    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
             throws ModuleException {
-        return moduleApi.createRenewalFromTemplate(draftCopyHolder, jsonModel);
+        return moduleApi.createRenewalFromTemplate(draftCopyHolder, template);
     }
 
 }

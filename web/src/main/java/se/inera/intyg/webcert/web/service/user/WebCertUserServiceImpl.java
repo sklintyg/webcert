@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,10 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -30,26 +33,40 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.infra.security.common.service.Feature;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import javax.servlet.http.HttpSession;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
 
+    @VisibleForTesting
+    ConcurrentHashMap<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
+
     @Autowired
     private CommonAuthoritiesResolver authoritiesResolver;
 
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
+
+    @Autowired
+    private ThreadPoolTaskScheduler scheduler;
+
+    @Value("${logout.timeout.seconds}")
+    private int logoutTimeout;
 
     @Override
     public boolean hasAuthenticationContext() {
@@ -149,16 +166,36 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     /**
      * Note - this is just a proxy for accessing {@link CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet(IntygUser, String)}.
      *
-     * @param enhetId
-     *      HSA-id of a vardenhet or mottagning.
-     * @return
-     *      True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
+     * @param enhetId HSA-id of a vardenhet or mottagning.
+     * @return True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
      */
     @Override
     public boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetId) {
         return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(getUser(), enhetId);
     }
-    // - - - - - Package scope - - - - -
+
+    @Override
+    public void cancelScheduledLogout(String sessionId) {
+        ScheduledFuture task = taskMap.get(sessionId);
+        if (task != null) {
+            task.cancel(false);
+            LOG.debug("Canceling removal of session {}", sessionId);
+            taskMap.remove(sessionId);
+        }
+    }
+
+    @Override
+    public void scheduleSessionRemoval(String sessionId, HttpSession session) {
+        ScheduledFuture<?> task = scheduler.schedule(() -> {
+            LOG.debug("Removing session {}", sessionId);
+            if (session != null) {
+                session.invalidate();
+            }
+            taskMap.remove(sessionId);
+        }, Date.from(Instant.now().plusSeconds(logoutTimeout)));
+        taskMap.putIfAbsent(sessionId, task);
+        LOG.debug("Scheduled removal of session {}", sessionId);
+    }
 
     boolean checkIfAuthorizedForUnit(WebCertUser user, String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
         if (user == null) {
@@ -166,11 +203,13 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
 
         String origin = user.getOrigin();
-        if (origin.equals(WebCertUserOriginType.DJUPINTEGRATION.name())) {
+        if (origin.equals(UserOriginType.DJUPINTEGRATION.name())) {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
+        } else if (origin.equals(UserOriginType.READONLY.name())) {
+            return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, enhetsHsaId);
         } else {
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
         }

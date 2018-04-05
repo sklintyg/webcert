@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,7 +23,7 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.ws.rs.GET;
@@ -114,7 +114,8 @@ public class UserResource {
     @Path("/parameters/sjf")
     public Response setSjf() {
         webCertUserService.getUser()
-                .setParameters(new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false, true));
+            .setParameters(
+                new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false, true));
         return Response.ok().build();
     }
 

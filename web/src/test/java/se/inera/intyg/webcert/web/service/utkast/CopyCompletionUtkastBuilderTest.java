@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -173,9 +173,9 @@ public class CopyCompletionUtkastBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails,
@@ -191,7 +191,7 @@ public class CopyCompletionUtkastBuilderTest {
         assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
 
         ArgumentCaptor<CreateDraftCopyHolder> requestCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
-        verify(mockModuleApi).createNewInternalFromTemplate(requestCaptor.capture(), anyString());
+        verify(mockModuleApi).createNewInternalFromTemplate(requestCaptor.capture(), any());
 
         // verify full name is set
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
@@ -211,9 +211,9 @@ public class CopyCompletionUtkastBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails,
@@ -239,21 +239,22 @@ public class CopyCompletionUtkastBuilderTest {
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
         when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(createIntygContentHolder());
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
         when(mockModuleApi.validateDraft(anyString()))
-                .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
+                .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId(meddelandeId);
         copyRequest.setTyp(intygsTyp);
+        copyRequest.setOriginalIntygTyp(intygsTyp);
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
         copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false, false);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
-        verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), anyString());
+        verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), any());
 
         assertNotNull(createDraftCopyHolderCaptor.getValue());
         assertEquals(meddelandeId, createDraftCopyHolderCaptor.getValue().getRelation().getMeddelandeId());
@@ -272,21 +273,22 @@ public class CopyCompletionUtkastBuilderTest {
         when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(createOriginalUtkast());
         when(mockModuleApi.validateDraft(anyString()))
-                .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>()));
+                .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), anyString())).thenReturn(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
         when(webcertUserService.isAuthorizedForUnit(any(String.class), any(boolean.class))).thenReturn(true);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId(meddelandeId);
         copyRequest.setTyp(intygsTyp);
+        copyRequest.setOriginalIntygTyp(intygsTyp);
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
         copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false, false);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
-        verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), anyString());
+        verify(mockModuleApi).createNewInternalFromTemplate(createDraftCopyHolderCaptor.capture(), any());
 
         assertNotNull(createDraftCopyHolderCaptor.getValue());
         assertEquals(meddelandeId, createDraftCopyHolderCaptor.getValue().getRelation().getMeddelandeId());

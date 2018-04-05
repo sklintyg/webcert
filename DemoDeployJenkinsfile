@@ -1,6 +1,7 @@
 #!groovy
 
-def baseVersion = "5.3.*"
+def baseVersion = "5.4.0.*"
+def logsenderBaseVersion = "5.4.0.*"
 
 stage('checkout tools') {
     node {
@@ -54,9 +55,10 @@ stage('provision') {
 stage('deploy') {
     node {
         util.run({
-                def itVersion = util.latestVersion("se/inera/intyg/webcert/webcert-web", baseVersion)
+                def wcVersion = util.latestVersion("se/inera/intyg/webcert/webcert-web", baseVersion)
+                def logsenderVersion = util.latestVersion("se/inera/intyg/logsender/logsender", logsenderBaseVersion)
 
-                ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.106", deploy_from_repo: "true"],
+                ansiblePlaybook(extraVars: [version: "${wcVersion}", ansible_ssh_host: "164.40.180.106", deploy_from_repo: "true", config_version: "WC-5.4", logsender_version: "${logsenderVersion}"],
                                 installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/demo', playbook: 'ansible/deploy.yml')
 
                 util.waitForServer('https://demo.webcert.intygstjanster.se/version.jsp')

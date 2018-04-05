@@ -66,15 +66,13 @@ function antalAvLoop(array, str1) {
 }
 
 function synLoop(array, keyToSend) {
-    var counter = 0;
-    array.forEach(function(el) {
-        el.sendKeys(keyToSend);
-        counter++;
-        if (counter === array.length) {
-            return Promise.resolve();
-        }
+    var promiseArray = [];
 
+    array.forEach(function(el) {
+        promiseArray.push(helpers.moveAndSendKeys(el, keyToSend));
     });
+
+    return Promise.all(promiseArray);
     // synVar.binokulart.med.sendKeys(protractor.Key.TAB);
 }
 
@@ -180,7 +178,7 @@ function checkFMB(fmbDiagnos) {
 
 
 function fillInDiagnoskod(diagnos) {
-    logger.info('Anger diagnos:', diagnos);
+    logger.info('Anger diagnos:', diagnos.kod);
     global.tmpDiagnos = diagnos;
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     if (isSMIIntyg) {
@@ -238,10 +236,10 @@ module.exports = function() {
 
         }
 
-        promiseArray.push(expect(page.fmbButtons.falt2.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt4.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt5.isDisplayed()).to.become(false));
-        promiseArray.push(expect(page.fmbButtons.falt8.isDisplayed()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt2.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt4.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt5.isPresent()).to.become(false));
+        promiseArray.push(expect(page.fmbButtons.falt8.isPresent()).to.become(false));
 
 
         return Promise.all(promiseArray);
@@ -249,28 +247,18 @@ module.exports = function() {
     });
 
     this.Given(/^ska valideringsfelet "([^"]*)" visas$/, function(fel) {
-        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
+        return element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
-        });
-        return alertTexts.then(function(result) {
-            console.log(result);
+        }).then(function(result) {
+            logger.silly(result);
             return expect(result.join('\n')).to.have.string(fel);
         });
     });
-    /*  this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
-        var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
-            return elm.getText();
-        });
-        return alertTexts.then(function(result) {
-            // console.log(result);
-            return expect(result.join('\n')).to.not.have.string(fel);
-        });
-    });*/
     this.Given(/^ska valideringsfelet "([^"]*)"  inte visas$/, function(fel) {
-        element.all(by.css('.alert-danger')).map(function(elm) {
+        return element.all(by.css('.alert-danger')).map(function(elm) {
             return elm.getText();
         }).then(function(result) {
-            // console.log(result);
+            logger.silly(result);
             return expect(result.join('\n')).to.not.have.string(fel);
         });
     });
@@ -313,8 +301,7 @@ module.exports = function() {
                 // console.log(result);
                 expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['3', '6']);
                 expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
-                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('23');
-                expect(antalAvLoop(result, 'Ett alternativ måste anges.')).to.equal('1');
+                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('24');
             });
         }
         if (arg1 === 'utökade' && intygsTyp === 'Transportstyrelsens läkarintyg') {
@@ -322,8 +309,7 @@ module.exports = function() {
                 // console.log(result);
                 expect(antalAvLoop(result, 'Fältet får inte vara tomt.')).to.be.oneOf(['10', '13']);
                 expect(antalAvLoop(result, 'Du måste välja minst ett alternativ.')).to.equal('3');
-                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('19');
-                expect(antalAvLoop(result, 'Ett alternativ måste anges.')).to.equal('1');
+                expect(antalAvLoop(result, 'Du måste välja ett alternativ.')).to.equal('20');
             });
         }
     });
@@ -371,7 +357,9 @@ module.exports = function() {
             return testdataHelpers.shuffle(populateFieldArray(luseUtkastPage.underlag))[0].datum.sendKeys(date);
 
         } else if (isSMIIntyg && fieldtype === 'postnummer') {
-            return luseUtkastPage.enhetensAdress.postNummer.sendKeys(date);
+            return luseUtkastPage.enhetensAdress.postNummer.clear().then(function() {
+                return luseUtkastPage.enhetensAdress.postNummer.sendKeys('111111');
+            });
         } else if (isSMIIntyg && fieldtype === 'arbetsförmåga-datum') {
             var arbetsfarmagaProcent = testdataHelpers.shuffle(populateFieldArray(lisjpUtkastPage.sjukskrivning, anhorigIgnoreKeys))[0];
             return testdataHelpers.shuffle([arbetsfarmagaProcent.fran, arbetsfarmagaProcent.till])[0].sendKeys(date);
@@ -382,8 +370,6 @@ module.exports = function() {
                     return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys(protractor.Key.TAB);
                 });
             });
-
-
 
 
 
@@ -448,34 +434,34 @@ module.exports = function() {
 
             case 'Arbete':
                 logger.info('Arbete switch');
-                return fkUtkastPage.nuvarandeArbete.sendKeys('Testare');
+                return helpers.moveAndSendKeys(fkUtkastPage.nuvarandeArbete, 'Testare');
 
             case 'Aktivitetsbegransning':
                 logger.info('Ändrar Aktivitetsbegransning');
-                return fkUtkastPage.aktivitetsBegransning.sendKeys('Aktivitetsbegransning');
+                return helpers.moveAndSendKeys(fkUtkastPage.aktivitetsBegransning, 'Aktivitetsbegransning');
 
             case 'Funktionsnedsattning':
                 logger.info('Ändrar Funktionsnedsattning');
-                return fkUtkastPage.funktionsNedsattning.sendKeys('Funktionsnedsättning');
+                return helpers.moveAndSendKeys(fkUtkastPage.funktionsNedsattning, 'Funktionsnedsättning');
 
             case 'Går ej att bedöma':
                 logger.info('Ändrar Går ej att bedöma');
                 return fkUtkastPage.prognos.GAR_EJ_ATT_BEDOMA.click();
 
             case 'Diagnoskod':
-                logger.info('Ändrar Aktivitetsbegransning switch');
-                return fkUtkastPage.diagnosKod.sendKeys('A00').then(function() {
+                logger.info('Ändrar Diagnoskod');
+                return helpers.moveAndSendKeys(fkUtkastPage.diagnosKod, 'A00').then(function() {
                     enter = browser.actions().sendKeys(protractor.Key.ENTER);
                     return enter.perform();
                 });
 
             case 'Arbetsförmåga':
                 logger.info('Ändrar arbetsförmåga');
-                return fkUtkastPage.nedsatt.med100.checkbox.sendKeys(protractor.Key.SPACE);
+                return helpers.moveAndSendKeys(fkUtkastPage.nedsatt.med100.checkbox, protractor.Key.SPACE);
 
             case 'Intyget baseras på Annat':
                 logger.info('Fyller i rätt datum: 2016-12-10 Annat ');
-                return fkUtkastPage.baserasPa.annat.datum.sendKeys('2016-12-10').then(function() {
+                return helpers.moveAndSendKeys(fkUtkastPage.baserasPa.annat.datum, '2016-12-10').then(function() {
                     enter = browser.actions().sendKeys(protractor.Key.ENTER);
                     return enter.perform();
                 });

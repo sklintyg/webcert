@@ -233,7 +233,7 @@
           },
           "type": "object"
         },
-        "KOPIERA_INTYG": {
+        "FORNYA_INTYG": {
           "additionalProperties": false,
           "properties": {
             "desc": {
@@ -690,6 +690,9 @@
     "privatLakareAvtalGodkand": {
       "type": "boolean"
     },
+    "sekretessMarkerad": {
+      "type": "boolean"
+    },
     "roles": {
       "additionalProperties": true,
       "properties": {},
@@ -848,6 +851,7 @@
   },
   "required": [
     "privatLakareAvtalGodkand",
+    "sekretessMarkerad",
     "hsaId",
     "namn",
     "titel",

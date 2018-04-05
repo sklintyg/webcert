@@ -20,12 +20,16 @@
 /**
  * Created by bennysce on 02-12-15.
  */
-/*globals browser, protractor,Promise*/
+/*globals browser, protractor, Promise, logger*/
 'use strict';
 
 var JClass = require('jclass');
 var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
+var restUtil = require('../../util/rest.util.js');
+var pageHelpers = require('../pageHelper.util.js');
+
+
 var BaseIntyg = JClass._extend({
     init: function() {
         this.intygType = null;
@@ -117,12 +121,12 @@ var BaseIntyg = JClass._extend({
                 reason = optionalOrsak;
             }
             logger.debug('Väljer orsak: ' + reason);
-            return element(by.cssContainingText('label', reason)).sendKeys(protractor.Key.SPACE)
+            return pageHelpers.moveAndSendKeys(element(by.cssContainingText('label', reason)), protractor.Key.SPACE)
                 .then(function() {
                     return browser.sleep(1500);
                 })
                 .then(function() {
-                    return makuleraDialog.element(by.css('textarea')).sendKeys('Beskrivning för ') + reason;
+                    return pageHelpers.moveAndSendKeys(makuleraDialog.element(by.css('textarea')), 'Beskrivning för ' + reason);
                 });
         });
     },
@@ -143,7 +147,10 @@ var BaseIntyg = JClass._extend({
         browser.get(url);
     },
     isAt: function() {
-        return this.at.isDisplayed();
+        var at = this.at;
+        return browser.wait(function() {
+            return at.isPresent();
+        }, 5000);
     },
     send: function() {
         var self = this;
@@ -171,7 +178,7 @@ var BaseIntyg = JClass._extend({
     sendNewArende: function(arendeText, arendeAmne) {
         var self = this;
         return this.newArendeBtn.click().then(function() {
-            return self.arendeText.sendKeys(arendeText).then(function() {
+            return pageHelpers.moveAndSendKeys(self.arendeText, arendeText).then(function() {
                 return self.arendeValjAmne(arendeAmne).then(function() {
                     return self.arendeSend.click();
                 });
@@ -221,7 +228,7 @@ var BaseIntyg = JClass._extend({
         return element(by.id('komplettera-intyg-' + id));
     },
     getUthoppKompletteraSvaraButton: function(id) {
-        return element(by.id('uthopp-svara-med-meddelande-'+id))
+        return element(by.id('uthopp-svara-med-meddelande-' + id));
     },
     getKompletteraIntygFortsattPaIntygsutkastButton: function(id) {
         return element(by.id('komplettera-open-utkast-' + id));
@@ -234,6 +241,29 @@ var BaseIntyg = JClass._extend({
     },
     getKompletteringsDialogSvaraMedMeddelandeButton: function() {
         return element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
+    },
+    waitUntilIntygInIT: function(intygsId) {
+        return browser.wait(function() {
+			var start = new Date();
+			
+            var innerDefer = protractor.promise.defer();
+            restUtil.getIntyg(intygsId).then(function(intygBody) {
+                if (intygBody.body) {
+					var end = new Date();
+					logger.warn('Time passed for intyg to be delivered to intygstjänsten: ' + (end - start) / 1000 + ' seconds')
+                    innerDefer.fulfill(true);
+					logger.info('Intyg har kommit till Intygstjänsten');
+                } else {
+					logger.warn('Intyg har INTE kommit till Intygstjänsten');
+					setTimeout(function() {
+						innerDefer.fulfill(false);
+					}, 1000);
+                }
+            }, function(error) {
+                innerDefer.reject(error);
+            });
+            return innerDefer.promise;
+        }, 60000);
     }
 });
 

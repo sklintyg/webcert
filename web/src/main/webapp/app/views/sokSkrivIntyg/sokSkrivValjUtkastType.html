@@ -41,11 +41,10 @@
                       <select id="intygType" class="form-control" name="intygType" ng-model="intygTypeModel.intygType"
                               ng-options="type.id as type.label for type in intygTypeModel.userIntygTypes"
                               wc-focus-me="viewState.focusFirstInput"
-                              ng-disabled="patientModel.avliden"></select>
+                              ng-disabled="intygTypeModel.userIntygTypes.length < 2"></select>
                       <span id="fortsattBtn">
                         <button id="intygTypeFortsatt" class="btn btn-success continue-btn" type="submit"
-                                ng-disabled="intygTypeModel.intygType == 'default' || patientModel.avliden || (intygReplacement[intygTypeModel.intygType] && isNormalOrigin())">Skapa intyg
-                        </button>
+                                ng-disabled="!showCreateUtkast()">Skapa intyg</button>
                       </span>
                     </div>
 
@@ -60,7 +59,12 @@
                     {{resolveIntygReplacedText(intygTypeModel.intygType)}}
                   </div>
 
-                  <div class="alert alert-info col-lg-7"
+                  <div id="intyg-exists-warning" ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] !== undefined" class="alert alert-warning col-lg-7">
+                      <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] === true" message key="{{intygTypeModel.intygType}}.warn.previouscertificate.samevg"></span>
+                      <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] === false" message key="{{intygTypeModel.intygType}}.warn.previouscertificate.differentvg"></span>
+                  </div>
+
+                  <div class="alert alert-info col-lg-7 text-8-lines"
                        ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
                        id="intygTypeWarning">
                     <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
@@ -139,8 +143,8 @@
                     </td>
                     <td ng-if="!patientModel.avliden">
                       <button type="button"
-                              wc-authority="KOPIERA_INTYG"
-                              feature="kopieraIntyg"
+                              wc-authority="FORNYA_INTYG"
+                              feature="fornyaIntyg"
                               intygstyp="{{intyg.intygType}}"
                               id="fornyaBtn-{{intyg.intygId}}"
                               class="btn btn-info"

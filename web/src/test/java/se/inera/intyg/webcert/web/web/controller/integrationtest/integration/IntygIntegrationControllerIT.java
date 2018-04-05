@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,21 +18,30 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 
-import com.jayway.restassured.RestAssured;
-import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
-import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.core.IsEqual.equalTo;
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+
+import com.jayway.restassured.RestAssured;
+
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
  * Created by marced on 16/12/15.
@@ -45,7 +54,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
      * Verify that a djupintegrerad lakare can use a utkast redirect link and gets redirected to the correct url.
      */
     @Test
-    public void testRedirectSuccessUtkast() {
+    public void testRedirectSuccessUtkastUsingGET() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -62,9 +71,41 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("enhet", "IFV1239877878-1042");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .pathParam("intygsId", utkastId).queryParams(queryParams)
+                .and().pathParams(pathParams)
+                .and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("/visa/intyg/{intygsId}")
+                .then()
+                .header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"))
+                .header(XFRAME_OPTIONS_HEADER, equalToIgnoringCase("DENY"));
+    }
+
+    /**
+     * Verify that a djupintegrerad lakare can use a utkast redirect link and gets redirected to the correct url.
+     */
+    @Test
+    public void testRedirectSuccessUtkastUsingPOST() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", utkastId);
+
+        Map<String, String> formParams = new HashMap<>();
+        formParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
+        formParams.put("responsibleHospName", "HrDoktor");
+        formParams.put("enhet", "IFV1239877878-1042");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+                .and().pathParams(pathParams)
+                .and().formParams(formParams)
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .when().post("/visa/intyg/{intygsTyp}/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("/fk7263/edit/" + utkastId + "/"));
     }
 
@@ -73,7 +114,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
      * different from an utkast link).
      */
     @Test
-    public void testRedirectSuccessSigneratIntyg() {
+    public void testRedirectSuccessSigneratIntygUsingGET() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -85,6 +126,26 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .and().pathParam("intygsId", intygsId)
                 .and().queryParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}").then()
+                .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "/"));
+    }
+
+    @Test
+    public void testRedirectSuccessSigneratIntygUsingPOST() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsId = createSignedIntyg("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsId", intygsId);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+                .and().pathParams(pathParams)
+                .and().formParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsTyp}/{intygsId}").then()
                 .header(HttpHeaders.LOCATION, endsWith("/intyg/fk7263/" + intygsId + "/"));
     }
 
@@ -169,7 +230,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("luse", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+        changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);
@@ -202,12 +263,6 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("moduleapi/utkast/luse/" + utkastId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
                 .body("content.grundData.patient.personId", equalTo(queryParams.get("alternatePatientSSn")));
-//                .body("content.grundData.patient.fornamn", isEmptyOrNullString()) //equalTo(queryParams.get("fornamn")))
-//                .body("content.grundData.patient.efternamn", isEmptyOrNullString()) //equalTo(queryParams.get("efternamn")))
-//                .body("content.grundData.patient.fullstandigtNamn", isEmptyOrNullString()) // INTYG-4086
-//                .body("content.grundData.patient.postadress", isEmptyOrNullString()) //equalTo(queryParams.get("postadress")))
-//                .body("content.grundData.patient.postnummer", isEmptyOrNullString()) //equalTo(queryParams.get("postnummer")))
-//                .body("content.grundData.patient.postort", isEmptyOrNullString()); //equalTo(queryParams.get("postort")));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
@@ -236,7 +291,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+        changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);
@@ -318,7 +373,8 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("enhet", "IFV1239877878-1042");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .and().pathParam("intygsId", intygsId).and().queryParams(queryParams)
+                .and().pathParam("intygsId", intygsId)
+                .and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + intygsId + "/"));
 
@@ -338,6 +394,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .body("parameters.postort", equalTo("patientpostort"));
     }
 
+
     /**
      * Verify that patientinformation is required for intygstyp luse
      */
@@ -350,14 +407,24 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects()
+                .follow(false)
                 .and().pathParam("intygsId", utkastId)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042")
-                .then().header(HttpHeaders.LOCATION,
-                        endsWith("/error.jsp?reason=missing-parameter&message=Missing+required+parameter+%27fornamn%27"));
-    }
+                .then().header(HttpHeaders.LOCATION, endsWith("/luse/edit/" + utkastId + "/"));
 
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/anvandare")
+                .prettyPeek()
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+                .body("parameters.alternateSsn", equalTo("x"))
+                .body("parameters.responsibleHospName", equalTo("x"))
+                .body("$", not(hasKey("parameters.fornamn")));
+    }
     /**
      * Verify that request without enhet is redirected to unit selection page.
      */
@@ -375,11 +442,19 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
         queryParams.put("responsibleHospName", "HrDoktor");
+        queryParams.put("fornamn", "nyaförnamnet");
+        queryParams.put("efternamn", "nyaefternamnet");
+        queryParams.put("mellannamn", "nyamellannamnet");
+        queryParams.put("postadress", "nyvägen 12");
+        queryParams.put("postnummer", "000001");
+        queryParams.put("postort", "sjukort");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .and().pathParam("intygsId", utkastId)
-                .expect().statusCode(HttpServletResponse.SC_MOVED_TEMPORARILY)
-                .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x")
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .redirects().follow(false)
+                .and().pathParams(pathParams)
+                .and().queryParams(queryParams)
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .when().get("visa/intyg/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("#/integration-enhetsval"));
     }
 
@@ -390,7 +465,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+        changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);
@@ -423,7 +498,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        changeOriginTo(WebCertUserOriginType.DJUPINTEGRATION.name());
+        changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
         Map<String, String> pathParams = new HashMap<>();
         pathParams.put("intygsId", utkastId);

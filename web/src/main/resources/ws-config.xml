@@ -78,10 +78,21 @@
         serviceClass="se.riv.clinicalprocess.healthcond.certificate.getCertificate.v2.GetCertificateResponderInterface"
         address="${intygstjanst.getcertificate.endpoint.url}">
     </jaxws:client>
+  </beans>
+
+  <!-- Clients NOT using NTJP -->
+  <beans>
+    <jaxws:client id="getCertificateTypeClient"
+        serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponderInterface"
+        address="${intygstjanst.getcertificatetype.endpoint.url}">
+    </jaxws:client>
+
     <jaxws:client id="listRelationsForCertificateClient" serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponderInterface"
         address="${intygstjanst.listrelationsforcertificate.endpoint.url}">
     </jaxws:client>
   </beans>
+
+
 
   <beans profile="!dev,wc-security-test">
     <!-- GRP API conduit (signering av utkast när inloggad med BanKID-varianterna) -->
@@ -131,8 +142,8 @@
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>
-          <!-- these filters ensure that a cipher suite with export-suitable 
-            or null encryption is used, but exclude anonymous Diffie-Hellman key change 
+          <!-- these filters ensure that a cipher suite with export-suitable
+            or null encryption is used, but exclude anonymous Diffie-Hellman key change
             as this is vulnerable to man-in-the-middle attacks -->
           <sec:include>.*_EXPORT_.*</sec:include>
           <sec:include>.*_EXPORT1024_.*</sec:include>

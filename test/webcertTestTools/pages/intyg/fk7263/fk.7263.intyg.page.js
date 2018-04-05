@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals protractor*/
+/*globals protractor, browser*/
 
 /**
  * Created by bennysce on 09/06/15.
@@ -36,21 +36,21 @@ var Fk7263Intyg = BaseIntyg._extend({
         this.field1 = {
             text: element(by.id('avstangningSmittskydd'))
         };
-		
-		//Fält 2 | Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga
-		//Fält 2 | Diagnoskod enligt ICD-10 (huvuddiagnos)
+
+        //Fält 2 | Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga
+        //Fält 2 | Diagnoskod enligt ICD-10 (huvuddiagnos)
         this.field2 = {
             diagnoskod: element(by.id('diagnosKod')),
             diagnosBeskrivning: element(by.id('diagnosBeskrivning'))
         };
-		
-		//Fält 3 | Aktuellt sjukdomsförlopp
+
+        //Fält 3 | Aktuellt sjukdomsförlopp
         this.field3 = {
             sjukdomsforlopp: element(by.id('sjukdomsforlopp'))
         };
-		
-		//Fält 4 | Funktionsnedsättningar – observationer, undersökningsfynd och utredningsresultat
-		//Fält 4 | Jag baserar uppgifterna på
+
+        //Fält 4 | Funktionsnedsättningar – observationer, undersökningsfynd och utredningsresultat
+        //Fält 4 | Jag baserar uppgifterna på
         this.field4 = {
             funktionsnedsattning: element(by.id('funktionsnedsattning'))
         };
@@ -63,37 +63,37 @@ var Fk7263Intyg = BaseIntyg._extend({
 
 
         };
-		
-		//Fält 5 | Aktivitetsbegränsning relaterat till diagnos (fält 2) och funktionsnedsättning (fält 4)
+
+        //Fält 5 | Aktivitetsbegränsning relaterat till diagnos (fält 2) och funktionsnedsättning (fält 4)
         this.field5 = {
             aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
         };
-		
-		//Fält 6a | Rekommendationer 
+
+        //Fält 6a | Rekommendationer 
         this.field6a = {
             kontaktArbetsformedlingen: element(by.id('rekommendationKontaktArbetsformedlingen')),
             kontaktForetagshalsovarden: element(by.id('rekommendationKontaktForetagshalsovarden')),
             ovrigt: element(by.id('rekommendationOvrigt')),
             rekommendationOvrigtBeskrivning: element(by.id('rekommendationOvrigt'))
         };
-		
-		//Fält 6b | Planerad eller pågående behandling eller åtgärd 
-		
-		// Fält 7 | Är arbetslivsinriktad rehabilitering aktuell?
+
+        //Fält 6b | Planerad eller pågående behandling eller åtgärd 
+
+        // Fält 7 | Är arbetslivsinriktad rehabilitering aktuell?
         this.field7 = {
             text: element(by.id('rehabilitering')),
-			block: element(by.id('rehabilitering'))
+            block: element(by.id('rehabilitering'))
         };
 
-		//Fält 8a | Patientens arbetsförmåga bedöms i förhållande till
+        //Fält 8a | Patientens arbetsförmåga bedöms i förhållande till
         this.field8a = {
             nuvarandeArbete: element(by.id('nuvarandeArbetsuppgifter')),
             nuvarandeArbeteText: element(by.id('nuvarandeArbetsuppgifter-text')),
             arbetsloshet: element(by.id('arbetsloshet')),
             foraldrarledighet: element(by.id('foraldrarledighet'))
         };
-		
-		//Fält 8b | Jag bedömer att patientens arbetsförmåga är
+
+        //Fält 8b | Jag bedömer att patientens arbetsförmåga är
         this.field8b = {
             nedsat25: {
                 from: element(by.id('nedsattMed25-row-col1')),
@@ -113,25 +113,25 @@ var Fk7263Intyg = BaseIntyg._extend({
             }
         };
 
-		//Fält 9 | Patientens arbetsförmåga bedöms nedsatt längre tid än den som det försäkringsmedicinska beslutsstödet anger, därför att
-		
-		//Fält 10 | Prognos – kommer patienten att få tillbaka sin arbetsförmåga i nuvarande arbete? (Gäller inte arbetslösa)
+        //Fält 9 | Patientens arbetsförmåga bedöms nedsatt längre tid än den som det försäkringsmedicinska beslutsstödet anger, därför att
+
+        //Fält 10 | Prognos – kommer patienten att få tillbaka sin arbetsförmåga i nuvarande arbete? (Gäller inte arbetslösa)
         this.field10 = {
             text: element(by.id('prognosBedomning'))
         };
 
-		//Fält 11 | Kan resor till och från arbetet med annat färdsätt än normalt göra det möjligt för patienten att återgå i arbete?
+        //Fält 11 | Kan resor till och från arbetet med annat färdsätt än normalt göra det möjligt för patienten att återgå i arbete?
         this.field11 = {
             text: element(by.id('resaTillArbetet')),
             block: element(by.id('resaTillArbetet'))
         };
 
-		//Fält 12 | Kontakt önskas med Försäkringskassan
+        //Fält 12 | Kontakt önskas med Försäkringskassan
         this.field12 = {
             text: element(by.id('kontaktMedFk'))
         };
-	
-		//Fält 13 | Övriga upplysningar och förtydliganden
+
+        //Fält 13 | Övriga upplysningar och förtydliganden
         this.field13 = {
             kommentar: element(by.id('kommentar'))
         };

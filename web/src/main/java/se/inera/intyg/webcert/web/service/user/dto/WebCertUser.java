@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.user.dto;
 
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class WebCertUser extends IntygUser {
         super(intygUser.getHsaId());
         this.privatLakareAvtalGodkand = intygUser.isPrivatLakareAvtalGodkand();
         this.personId = intygUser.getPersonId();
+        this.isSekretessMarkerad = intygUser.isSekretessMarkerad();
         this.namn = intygUser.getNamn();
         this.titel = intygUser.getTitel();
         this.forskrivarkod = intygUser.getForskrivarkod();

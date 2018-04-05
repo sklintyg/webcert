@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by */
+/*globals element, by, protractor */
 'use strict';
 
 /**
@@ -39,11 +39,6 @@ var FkBaseIntyg = BaseIntyg._extend({
             enhetsTelefon: element(by.id('vardperson_telefonnummer'))
         };
     },
-
-    isAt: function isAt() {
-        return isAt._super.call(this);
-    },
-
     //Locates the dynamic text based on text-key. see luaefs.dynamictexts.spec.js for example
     getDynamicLabelText: function(textKey) {
         return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
@@ -56,7 +51,7 @@ var FkBaseIntyg = BaseIntyg._extend({
             sendButton: panel.element(by.css('.btn-success'))
         };
     },
-	clickKompletteraIntyg: function(id) {
+    clickKompletteraIntyg: function(id) {
         return element(by.id('komplettera-intyg-' + id)).sendKeys(protractor.Key.SPACE);
     }
 });

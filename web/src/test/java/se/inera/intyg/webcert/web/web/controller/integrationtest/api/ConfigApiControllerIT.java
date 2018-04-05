@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,5 +45,16 @@ public class ConfigApiControllerIT extends BaseRestIntegrationTest {
                 .then().statusCode(200).and()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-links-schema.json"));
     }
+
+    @Test
+    public void testGetKommuner() {
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get("api/config/kommuner")
+                .then().statusCode(200).and()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-kommuner-schema.json"));
+    }
+
 
 }

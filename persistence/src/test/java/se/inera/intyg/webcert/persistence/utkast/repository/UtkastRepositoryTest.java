@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -286,5 +287,17 @@ public class UtkastRepositoryTest {
 
         Utkast res = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, "anotherIntygsTyp");
         assertNull(res);
+    }
+
+    @Test
+    public void testfindAllByPatientPersonnummerAndIntygsTypIn() {
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.INTYGSTYP_FK7263));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.INTYGSTYP_LISJP));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastTestUtil.INTYGSTYP_DB));
+
+        List<Utkast> res = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(UtkastTestUtil.PERSON_NUMMER.getPersonnummer(),
+                Sets.newHashSet(UtkastTestUtil.INTYGSTYP_FK7263, UtkastTestUtil.INTYGSTYP_DB));
+        assertNotNull(res);
+        assertEquals(2, res.size());
     }
 }

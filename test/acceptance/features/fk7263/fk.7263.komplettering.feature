@@ -25,7 +25,7 @@ Scenario: Ska kunna besvara komplettering med nytt FK7263-intyg
    När jag signerar intyget
    Så jag ska se den data jag angett för intyget
 
-@textsvar @waitingForFix
+@textsvar
 Scenario: Ska kunna besvara komplettering med textmeddelande
    Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
    Och jag går in på utkastet

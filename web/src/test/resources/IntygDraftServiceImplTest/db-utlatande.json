@@ -1,0 +1,51 @@
+{
+  "typ": "db",
+  "identitetStyrkt": "körkort",
+  "dodsdatumSakert": false,
+  "dodsdatum": "2017-01-01",
+  "antraffatDodDatum": "2017-01-02",
+  "dodsplatsKommun": "kommun",
+  "dodsplatsBoende": "SJUKHUS",
+  "barn": true,
+  "explosivImplantat": true,
+  "explosivAvlagsnat": true,
+  "undersokningYttre": "UNDERSOKNING_GJORT_KORT_FORE_DODEN",
+  "undersokningDatum": "2016-12-31",
+  "polisanmalan": true,
+  "textVersion": "1.0",
+  "grundData": {
+    "patient": {
+      "samordningsNummer": false,
+      "efternamn": "Olsson",
+      "fornamn": "Olivia",
+      "fullstandigtNamn": "Olivia Olsson",
+      "postadress": "Testgatan 1",
+      "postnummer": "111 11",
+      "postort": "Teststaden",
+      "personId": "19270310-4321"
+    },
+    "skapadAv": {
+      "vardenhet": {
+        "arbetsplatsKod": "45312",
+        "vardgivare": {
+          "vardgivarnamn": "Vårdgivaren",
+          "vardgivarid": "SE2321000016-39KJ"
+        },
+        "epost": "ve1@vg1.se",
+        "telefonnummer": "0812341234",
+        "postort": "Stadby",
+        "postnummer": "100 10",
+        "postadress": "Enhetsg. 1",
+        "enhetsnamn": "Vårdenheten",
+        "enhetsid": "SE2321000016-H489"
+      },
+      "specialiteter": [],
+      "befattningar": ["201010", "204510"],
+      "forskrivarKod": "09874321",
+      "fullstandigtNamn": "Karl Karlsson",
+      "personId": "SE2321000016-6G5R"
+    },
+    "signeringsdatum": "2015-12-07T15:48:05.000"
+  },
+  "id": "1234567"
+}

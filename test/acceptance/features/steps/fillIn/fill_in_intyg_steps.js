@@ -60,6 +60,7 @@ function changeField(intygShortcode, field, callback, clearFlag) {
                             console.log('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
                             callback();
                         }, function(reason) {
+                            console.trace(reason);
                             throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
                         });
                 });
@@ -159,9 +160,10 @@ function isValid(intygShortcode) {
 
 module.exports = function() {
     this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function() {
-        if (!global.intyg.typ) {
+        if (!intyg.typ) {
             throw 'intyg.typ odefinierad.';
         } else {
+            console.log(intyg);
             global.intyg = generateIntygByType(intyg.typ, intyg.id);
             console.log(intyg);
             return fillIn(global.intyg);
@@ -226,7 +228,9 @@ module.exports = function() {
         fkUtkastPage.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
             fkUtkastPage.funktionsNedsattning.sendKeys('Halt och lytt').then(function() {
                 fkUtkastPage.aktivitetsBegransning.sendKeys('Orkar inget').then(function() {
-                    fkUtkastPage.nuvarandeArbete.sendKeys('Stuveriarbetare').then(callback);
+                    fkUtkastPage.arbete.nuvarandeArbete.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
+                        fkUtkastPage.arbete.nuvarandeArbete.text.sendKeys('Stuveriarbetare').then(callback);
+                    });
                 });
             });
         });

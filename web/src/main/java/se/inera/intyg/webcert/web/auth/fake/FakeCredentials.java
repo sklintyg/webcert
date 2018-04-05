@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.auth.fake;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+
 import java.io.Serializable;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 
 /**
  * @author andreaskaltenbach
@@ -35,12 +35,13 @@ public class FakeCredentials implements Serializable {
     private static final String TANDLAKARE = "Tandläkare";
 
     private String hsaId;
+    private Boolean sekretessMarkerad;
     private String forNamn;
     private String efterNamn;
     private String enhetId;
     private String befattningsKod;
     private String forskrivarKod;
-    private String origin = WebCertUserOriginType.NORMAL.name();
+    private String origin = UserOriginType.NORMAL.name();
 
     private List<String> legitimeradeYrkesgrupper;
 
@@ -57,6 +58,7 @@ public class FakeCredentials implements Serializable {
         this.forskrivarKod = builder.forskrivarKod;
         this.origin = builder.origin;
         this.legitimeradeYrkesgrupper = builder.legitimeradeYrkesgrupper;
+        this.sekretessMarkerad = builder.sekretessMarkerad;
     }
 
     public String getBefattningsKod() {
@@ -89,6 +91,14 @@ public class FakeCredentials implements Serializable {
 
     public List<String> getLegitimeradeYrkesgrupper() {
         return legitimeradeYrkesgrupper;
+    }
+
+    public Boolean getSekretessMarkerad() {
+        return sekretessMarkerad;
+    }
+
+    public void setSekretessMarkerad(Boolean sekretessMarkerad) {
+        this.sekretessMarkerad = sekretessMarkerad;
     }
 
 
@@ -127,6 +137,7 @@ public class FakeCredentials implements Serializable {
         private String befattningsKod;
         private String forskrivarKod;
         private String origin;
+        private Boolean sekretessMarkerad;
         private List<String> legitimeradeYrkesgrupper;
 
         public FakeCredentialsBuilder(String hsaId, String enhetId) {
@@ -163,6 +174,11 @@ public class FakeCredentials implements Serializable {
             this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
             return this;
         }
+        public FakeCredentialsBuilder sekretessMarkerad(boolean sekretessMarkerad) {
+            this.sekretessMarkerad = sekretessMarkerad;
+            return this;
+        }
+
 
         public FakeCredentials build() {
             return new FakeCredentials(this);

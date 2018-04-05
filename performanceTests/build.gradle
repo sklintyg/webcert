@@ -1,37 +1,59 @@
 ext {
     gatlingVersion = '2.1.7'
-    gatlingBaseUrl = System.properties['certificate.baseUrl'] ?: "http://localhost:9088"
-    simulation = System.properties['gatlingSimulation']
+    gatlingBaseUrl = System.properties['certificate.baseUrl'] ?: 'http://localhost:9088'
+    simulation = System.properties['gatlingSimulation'] ?: 'SkrivSigneraSkickaIntyg'
 }
 
 apply plugin: 'scala'
 
-sourceSets {
-    performanceTests {
-        scala {
-            srcDirs = ['src/test/scala']
+sourceSets.test.output.classesDir = new File(buildDir, "classes/scala")
+
+task gatling(dependsOn: 'build') {
+    doLast {
+        logger.lifecycle(" ---- Executing all Gatling scenarios from: ${sourceSets.test.output.classesDir} ----")
+        sourceSets.test.output.classesDirs.singleFile.eachFileRecurse { file ->
+            if (file.isFile() && !isUtilFile(file)) {
+                def gatlingScenarioClass = (file.getPath() - (sourceSets.test.output.classesDir.getPath() + File.separator) - '.class')
+                        .replace(File.separator, '.')
+                javaexec {
+                    main = 'io.gatling.app.Gatling'
+                    jvmArgs "-DbaseUrl=${gatlingBaseUrl}"
+                    classpath = sourceSets.test.runtimeClasspath
+                    args '-sf', sourceSets.test.output,
+                            '-bf', sourceSets.test.output.classesDir,
+                            '-s', gatlingScenarioClass,
+                            '-rf', 'build/reports/gatling'
+                }
+            }
+        }
+        logger.lifecycle(" ---- Done executing all Gatling scenarios ----")
+    }
+}
+
+task gatlingSingleTest(dependsOn: 'build') {
+    doLast {
+        javaexec {
+            main = 'io.gatling.app.Gatling'
+            jvmArgs "-DbaseUrl=${gatlingBaseUrl}"
+            classpath = sourceSets.test.runtimeClasspath
+            args '-sf', sourceSets.test.output,
+                    '-bf', sourceSets.test.output.classesDir,
+                    '-s', "se.inera.webcert.$simulation",
+                    '-rf', 'build/reports/gatling'
         }
     }
 }
 
-task gatling(dependsOn: 'build') {
-    doLast {
-        javaexec {
-            main = 'io.gatling.app.Gatling'
-            classpath = sourceSets.test.output + sourceSets.test.runtimeClasspath
-            jvmArgs "-DbaseUrl=$gatlingBaseUrl"
-            args    '-sf', sourceSets.test.output,              //source folder
-            '-bf', sourceSets.test.output.classesDir,   //target folder where gatling will compile the simulation
-            '-s' , "se.inera.webcert.$simulation",      //The simulation to run
-            '-rf', 'build/reports/gatling'              //place to put the report
-        }
-    }
+static def isUtilFile(File file) {
+    return (file.name.contains("\$")  || file.name.startsWith("Conf") || file.name.startsWith("Headers") ||
+            file.name.startsWith("Login") || file.name.startsWith("Utils"))
 }
 
 dependencies {
     testCompile "io.gatling:gatling-app:${gatlingVersion}"
     testCompile "io.gatling:gatling-recorder:${gatlingVersion}"
     testCompile "io.gatling.highcharts:gatling-charts-highcharts:${gatlingVersion}"
+    testCompile "org.scalaj:scalaj-http_2.11:2.2.0"
 }
 
 repositories {

@@ -22,12 +22,13 @@
 'use strict';
 
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+var helpers = require('./helpers');
 
 module.exports = function() {
     this.Given(/^ska jag( inte)? se en varning om kakor$/, function(inte, callback) {
         var shouldBeVisible = (inte === undefined); //Om 'inte' finns med i stegnamnet
         console.log('shouldBeVisible:' + shouldBeVisible);
-        expect(sokSkrivIntygPage.cookie.consentBanner.isDisplayed()).to.eventually.equal(shouldBeVisible).then(function() {
+        expect(sokSkrivIntygPage.cookie.consentBanner.element(by.tagName('button')).isPresent()).to.eventually.equal(shouldBeVisible).then(function() {
             if (!inte) {
                 inte = '';
             }
@@ -42,8 +43,10 @@ module.exports = function() {
             .then(callback());
     });
 
-    this.Given(/^laddar om sidan$/, function(callback) {
-        browser.refresh().then(callback());
+    this.Given(/^laddar om sidan$/, function() {
+        return browser.refresh().then(function() {
+            return helpers.mediumDelay();
+        });
     });
 
 };

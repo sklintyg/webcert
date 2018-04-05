@@ -110,56 +110,20 @@ module.exports = function() {
     });
 
     function gotoIntyg(intygstyp, origin, addToUrl) {
-        var url;
         var usingCreateDraft2;
         if (intyg && intyg.typ) {
             usingCreateDraft2 = helpers.isSMIIntyg(intyg.typ) || helpers.isTSIntyg(intyg.typ);
         }
-        if (origin === ' via djupintegrationslänk') {
-            if (usingCreateDraft2) {
 
-                if (!person.adress) {
-                    person.adress = {
-                        postadress: 'Norra storgatan 30',
-                        postort: 'Katthult',
-                        postnummer: '10000'
-
-                    };
-                }
-                var intygShortCode = helpers.getAbbrev(intyg.typ);
-                intygShortCode = intygShortCode.toLowerCase();
-                console.log(intygShortCode);
-                url = process.env.WEBCERT_URL + 'visa/intyg/';
-                //url += intygShortCode +'/';
-                url += global.intyg.id;
-                url += '?';
-                url += 'fornamn=' + encodeURIComponent(person.forNamn) + '&';
-                url += 'efternamn=' + encodeURIComponent(person.efterNamn) + '&';
-                url += 'postadress=' + encodeURIComponent(person.adress.postadress) + '&';
-                url += 'postnummer=' + encodeURIComponent(person.adress.postnummer) + '&';
-                url += 'postort=' + encodeURIComponent(person.adress.postort) + '&';
-                url += 'enhet=' + global.user.enhetId + '&';
-
-
-            } else {
-                url = process.env.WEBCERT_URL + 'visa/intyg/' + global.intyg.id;
-                url = url + '?';
-                // url += 'enhet=' + global.user.enhetId + '&';
-            }
-        } else if (intygstyp === 'intyget' && origin === ' via uthoppslänk') {
-            url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';
-
-        } else if (intygstyp === 'intyget' && origin === undefined) {
-            url = intygURL(intyg.typ, intyg.id);
-            /*if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
-                url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + global.intyg.id;
-            } else {
-                url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.intyg.id;
-
-            }*/
-        } else {
-            logger.error('Okänd parameter origin: ' + origin + ', intygstyp: ' + intygstyp);
+        if (!person.adress) {
+            person.adress = {
+                postadress: 'Norra storgatan 30',
+                postort: 'Katthult',
+                postnummer: '10000'
+            };
         }
+
+        var url = getIntegrationUrl(origin);
 
         if (addToUrl) {
             url += addToUrl;
@@ -212,6 +176,49 @@ module.exports = function() {
                 });
         });
     }
+
+    function getIntegrationUrl(origin) {
+        var url;
+        var intygUrlShortCode = helpers.getPathShortcode(intyg.typ);
+
+        switch (origin) {
+            case ' via djupintegrationslänk':
+
+                intygUrlShortCode = intygUrlShortCode.toLowerCase();
+                console.log(intygUrlShortCode);
+                url = process.env.WEBCERT_URL + 'visa/intyg/';
+                url += intygUrlShortCode + '/';
+                url += global.intyg.id;
+                url += '?';
+                url += 'fornamn=' + encodeURIComponent(person.forNamn) + '&';
+                url += 'efternamn=' + encodeURIComponent(person.efterNamn) + '&';
+                url += 'postadress=' + encodeURIComponent(person.adress.postadress) + '&';
+                url += 'postnummer=' + encodeURIComponent(person.adress.postnummer) + '&';
+                url += 'postort=' + encodeURIComponent(person.adress.postort) + '&';
+                url += 'enhet=' + global.user.enhetId + '&';
+                break;
+            case ' utan integrations parametrar':
+                intygUrlShortCode = intygUrlShortCode.toLowerCase();
+                console.log(intygUrlShortCode);
+                url = process.env.WEBCERT_URL + 'visa/intyg/';
+                url += intygUrlShortCode + '/';
+                url += global.intyg.id;
+                break;
+
+            case ' via uthoppslänk':
+                url = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + global.intyg.id + '/questions';
+                break;
+            case undefined:
+                url = intygURL(intyg.typ, intyg.id);
+                break;
+            default:
+                url = intygURL(intyg.typ, intyg.id);
+                logger.error('Okänd parameter origin: ' + origin);
+        }
+        return url;
+
+    }
+
     this.When(/^jag går in på intyget via djupintegrationslänk och har parametern "([^"]*)" satt till "([^"]*)"$/, function(param, paramValue) {
         return gotoIntyg('intyget', ' via djupintegrationslänk', param + '=' + paramValue);
 

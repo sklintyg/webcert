@@ -39,6 +39,7 @@
   <security:http security="none" pattern="/api/modules/map"/>
   <security:http security="none" pattern="/api/modules/active"/>
   <security:http security="none" pattern="/api/config/links"/>
+  <security:http security="none" pattern="/api/config/kommuner"/>
   <security:http security="none" pattern="/css/**"/>
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/img/**"/>
@@ -119,6 +120,16 @@
     <constructor-arg ref="loggingSessionRegistry"/>
   </bean>
 
+  <!-- Custom xFrameOptionsHeaderWriter that conditionally will skip adding headers so that content may be loaded in an iframe  -->
+  <bean id="xFrameOptionsHeaderWriter" class="org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter">
+    <constructor-arg>
+      <bean class="org.springframework.security.web.util.matcher.AnyRequestMatcher"/>
+    </constructor-arg>
+    <constructor-arg>
+      <bean class="se.inera.intyg.webcert.web.auth.CustomXFrameOptionsHeaderWriter"/>
+    </constructor-arg>
+  </bean>
+
   <!-- =============================================================== -->
   <!-- Unsecured pages when not in production                          -->
   <!-- =============================================================== -->
@@ -173,6 +184,11 @@
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
         <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+
+        <security:headers>
+          <security:frame-options disabled="true"/>
+          <security:header ref="xFrameOptionsHeaderWriter"/>
+        </security:headers>
       </security:http>
 
       <security:authentication-manager alias="authenticationManager">
@@ -188,7 +204,7 @@
   <!-- ======================================================================== -->
   <beans profile="wc-security-test">
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" request-matcher="regex">
+    <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -196,6 +212,10 @@
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
     </security:http>
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
@@ -206,6 +226,10 @@
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
     </security:http>
 
     <security:authentication-manager alias="authenticationManager">
@@ -227,12 +251,16 @@
     </security:http>
 
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" request-matcher="regex">
+    <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
     </security:http>
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
@@ -241,6 +269,10 @@
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
     </security:http>
 
     <security:authentication-manager alias="authenticationManager">
@@ -287,11 +319,13 @@
     </bean>
 
     <!-- Decide which requests should be saved for redirection after successful login.
-         Triggers on: /web/* and deep-integration links /visa/* and /webcert/*
-         We don't want to save /api and /moduleapi requests since this will make the browser display the data. -->
+         Triggers on: /web/* and integration links /visa/* and /webcert/*
+         We don't want to save /api and /moduleapi requests since this will make the browser display the data.
+         Second constructor argument is set to null to match all HTTP methods.
+    -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
       <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*"/>
-      <constructor-arg index="1" value="GET"/>
+      <constructor-arg index="1"><null/></constructor-arg>
     </bean>
     <bean id="httpSessionRequestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
       <property name="requestMatcher" ref="saveRequestMatcher"/>

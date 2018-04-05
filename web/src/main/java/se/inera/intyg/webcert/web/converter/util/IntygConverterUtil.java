@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,14 +18,8 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
@@ -38,8 +32,14 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class IntygConverterUtil {
 
@@ -101,7 +101,8 @@ public final class IntygConverterUtil {
                     null, draft.getAterkalladDatum());
             statuses.add(status);
         }
-        if (draft.getSignatur() != null && draft.getSignatur().getSigneringsDatum() != null) {
+        if (draft.getStatus() == UtkastStatus.SIGNED && draft.getSignatur() != null
+                && draft.getSignatur().getSigneringsDatum() != null) {
             Status status = new Status(CertificateState.RECEIVED,
                     null, draft.getSignatur().getSigneringsDatum());
             statuses.add(status);

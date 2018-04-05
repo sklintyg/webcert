@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <texter typ="DOI" giltigFrom="2017-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <text id="KAT_1.RBK">Den avlidnes personuppgifter</text>
+    <text id="KAT_1.RBK">Kompletterande patientuppgifter</text>
     <text id="DFR_1.1.RBK">Identiteten styrkt genom</text>
     <text id="DFR_14.1.RBK">Land (om ej stadigvarande bosatt i Sverige)</text>
     <text id="KAT_2.RBK">Dödsdatum och dödsplats</text>
     <text id="FRG_2.RBK">Dödsdatum</text>
-    <text id="FRG_2.HLP">Om dödsdatum är säkert markeras "Säkert" och dödsdatum anges.
+    <text id="FRG_2.HLP"><![CDATA[Om dödsdatum är säkert, markera "Säkert" och ange dödsdatum.
+Om dödsdatumet inte kan faställas, ange då "Ej säkert".
+<ul>
+  <li>I detta fall, ange dödsdatumet så långt det är känt. Om år och/eller månad är okända, välj då "0000" för år och "00" för månad. Dagen kan inte anges för ett ej säkert dödsdatum och är därför satt till 00 per automatik.</li>
+  <li>Utöver dödsdatumet måste ett fullständigt datum anges för "Anträffad död".</li>
+</ul>]]></text>
 
-Om dödsdatum inte kan fastställas markeras "Ej säkert". Både dödsdatum och datum när kroppen påträffades måste då anges. Om uppgifter saknas för dödsdatums månad eller dag, ersätt siffrorna med 00. År måste anges.</text>
-    <text id="DFR_2.1.SVA_1">Säkert</text>
-    <text id="DFR_2.1.SVA_2">Ej säkert</text>
+    <text id="SVAR_SAKERT.RBK">Säkert</text>
+    <text id="SVAR_EJ_SAKERT.RBK">Ej säkert</text>
     <text id="DFR_2.2.RBK">Datum</text>
     <text id="DFR_2.3.RBK">Anträffad död</text>
     <text id="FRG_3.RBK">Dödsplats</text>
@@ -22,35 +26,35 @@ Särskilt boende: t.ex. äldrebostäder och institutioner
 Ordinärt boende: utesluter sådant boende som ingår i föregående kategori
 
 Annan/okänd: övrigt</text>
-    <text id="KV_DODSPLATS_BOENDE.SJUKHUS.RBK">Sjukhus</text>
-    <text id="KV_DODSPLATS_BOENDE.ORDINART_BOENDE.RBK">Ordinärt boende</text>
-    <text id="KV_DODSPLATS_BOENDE.SARSKILT_BOENDE.RBK">Särskilt boende</text>
-    <text id="KV_DODSPLATS_BOENDE.ANNAN.RBK">Annan/okänd</text>
+    <text id="DODSPLATS_BOENDE.SJUKHUS.RBK">Sjukhus</text>
+    <text id="DODSPLATS_BOENDE.ORDINART_BOENDE.RBK">Ordinärt boende</text>
+    <text id="DODSPLATS_BOENDE.SARSKILT_BOENDE.RBK">Särskilt boende</text>
+    <text id="DODSPLATS_BOENDE.ANNAN.RBK">Annan/okänd</text>
 
     <text id="KAT_3.RBK">Barn som avlidit senast 28 dygn efter födelsen</text>
     <text id="DFR_4.1.RBK">Avlidet inom 28 dygn efter födelsen</text>
+    <text id="DFR_4.1_INOM28.INFO">Det angivna dödsdatumet infaller inom 28 dagar efter födelsedatum. Fältet har därför förifyllts.</text>
+    <text id="DFR_4.1_EJ_INOM28.INFO">Det angivna dödsdatumet infaller inte inom 28 dagar efter födelsedatum. Fältet har därför förifyllts.</text>
     <text id="KAT_7.RBK">Läkarens utlåtande om dödsorsaken</text>
     <text id="KAT_7.1.RBK">Sjukdoms- eller skadeförlopp som ledde till den terminala dödsorsaken</text>
     <text id="FRG_8.RBK">Den terminala dödsorsaken var</text>
-    <text id="DFR_8.1.RBK">Beskrivning</text>
-    <text id="DFR_8.1.HLP">Den diagnos eller det tillstånd som ledde till den terminala dödsorsaken</text>
-    <text id="DFR_8.2.RBK">Ungefärlig debut</text>
-    <text id="KV_ORSAKSTYPER.PLOTSLIG.RBK">Akut</text>
-    <text id="KV_ORSAKSTYPER.KRONISK.RBK">Kronisk</text>
-    <text id="KV_ORSAKSTYPER.UPPGIFT_SAKNAS.RBK">Uppgift saknas</text>
+    <text id="FRG_8.HLP">Den diagnos eller det tillstånd som ledde till den terminala dödsorsaken</text>
+    <text id="DELAT_TEXT.BESKRIVNING.RBK">Beskrivning</text>
+    <text id="DELAT_TEXT.DEBUT.RBK">Ungefärlig debut</text>
+    <text id="DELAT_TEXT.SPECIFIKATION.RBK">Specificera tillståndet</text>
+
+    <text id="DELAD_SVAR.PLOTSLIG.RBK">Akut</text>
+    <text id="DELAD_SVAR.KRONISK.RBK">Kronisk</text>
+    <text id="DELAD_SVAR.UPPGIFT_SAKNAS.RBK">Uppgift saknas</text>
     <text id="FRG_9.RBK">Som var en följd av</text>
-    <text id="DFR_9.1.RBK">Beskrivning</text>
-    <text id="DFR_9.2.RBK">Ungefärlig debut</text>
     <text id="KAT_7.2.RBK">Andra sjukdomar eller skador som bidragit till dödsfallet</text>
     <text id="KAT_7.2.HLP">Ange en diagnos eller skada per fält i rangordning efter den betydelse de haft för dödsfallet, den allvarligaste först.</text>
-    <text id="DFR_10.1.RBK">Beskrivning</text>
-    <text id="DFR_10.2.RBK">Ungefärlig debut</text>
     <text id="KAT_8.RBK">Opererad inom fyra veckor före döden</text>
     <text id="KAT_8.HLP">Som operation räknas åtgärder enligt Socialstyrelsens "Klassifikationer av kirurgiska åtgärder, KKÅ".</text>
     <text id="DFR_11.1.RBK">Opererad inom 4 veckor före döden?</text>
-    <text id="KV_OMOPERATION.JA.RBK">Ja</text>
-    <text id="KV_OMOPERATION.NEJ.RBK">Nej</text>
-    <text id="KV_OMOPERATION.UPPGIFT_SAKNAS.RBK">Uppgift om operation saknas</text>
+    <text id="DFR_11.1.JA.RBK">Ja</text>
+    <text id="DFR_11.1.NEJ.RBK">Nej</text>
+    <text id="DFR_11.1.UPPGIFT_SAKNAS.RBK">Uppgift om operation saknas</text>
     <text id="DFR_11.2.RBK">Operationsdatum</text>
     <text id="DFR_11.3.RBK">Tillstånd som föranledde ingreppet</text>
     <text id="KAT_9.RBK">Skada/förgiftning</text>
@@ -66,19 +70,19 @@ förgiftning: vilken eller vilka substanser
 fall: t.ex. i trappa, från stege, halkat på mattkant
 drunkning: naturlig eller konstgjord vattensamling (t.ex. vattendrag, sjö, brunn, badkar), fall ned i vatten (t.ex. genom brunnslock) eller på annat sätt (t.ex. kramp vid simning)</text>
 
-    <text id="KV_ORSAK.OLYCKSFALL.RBK">Olycksfall</text>
-    <text id="KV_ORSAK.SJALVMORD.RBK">Självmord</text>
-    <text id="KV_ORSAK.AVSIKTLIGT_VALLAD.RBK">Avsiktligt vållad av annan</text>
-    <text id="KV_ORSAK.OKLART.RBK">Oklart om avsikt förelegat</text>
+    <text id="ORSAK.OLYCKSFALL.RBK">Olycksfall</text>
+    <text id="ORSAK.SJALVMORD.RBK">Självmord</text>
+    <text id="ORSAK.AVSIKTLIGT_VALLAD.RBK">Avsiktligt vållad av annan</text>
+    <text id="ORSAK.OKLART.RBK">Oklart om avsikt förelegat</text>
 
     <text id="KAT_10.RBK">Dödsorsaksuppgifterna grundar sig på</text>
     <text id="DFR_13.1.RBK">Ange vad dödsorsaksuppgifterna grundar sig på</text>
 
-    <text id="KV_DODSORSAKSUPPGIFTER.UNDERSOKNING_FORE_DODEN.RBK">Undersökning före döden</text>
-    <text id="KV_DODSORSAKSUPPGIFTER.UNDERSOKNING_EFTER_DODEN.RBK">Yttre undersökning efter döden</text>
-    <text id="KV_DODSORSAKSUPPGIFTER.KLINISK_OBDUKTION.RBK">Klinisk obduktion</text>
-    <text id="KV_DODSORSAKSUPPGIFTER.RATTSMEDICINSK_OBDUKTION.RBK">Rättsmedicinsk obduktion</text>
-    <text id="KV_DODSORSAKSUPPGIFTER.RATTSMEDICINSK_BESIKTNING.RBK">Rättsmedicinsk likbesiktning</text>
+    <text id="DODSORSAKSUPPGIFTER.UNDERSOKNING_FORE_DODEN.RBK">Undersökning före döden</text>
+    <text id="DODSORSAKSUPPGIFTER.UNDERSOKNING_EFTER_DODEN.RBK">Yttre undersökning efter döden</text>
+    <text id="DODSORSAKSUPPGIFTER.KLINISK_OBDUKTION.RBK">Klinisk obduktion</text>
+    <text id="DODSORSAKSUPPGIFTER.RATTSMEDICINSK_OBDUKTION.RBK">Rättsmedicinsk obduktion</text>
+    <text id="DODSORSAKSUPPGIFTER.RATTSMEDICINSK_BESIKTNING.RBK">Rättsmedicinsk likbesiktning</text>
 
     <text id="FRM_1.RBK">Bestämmelser om dödsorsaksintyg
 

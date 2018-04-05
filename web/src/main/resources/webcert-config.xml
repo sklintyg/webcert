@@ -33,6 +33,7 @@
   <import resource="security/securityContext.xml" />
   <import resource="classpath:/hsa-services-config.xml" />
   <import resource="classpath:/fmb-services-config.xml" />
+  <import resource="classpath:/tak-services-config.xml" />
   <import resource="classpath:/pu-services-config.xml" />
   <import resource="classpath:/srs-services-config.xml" />
   <import resource="classpath:/pu-ignite-config.xml" />
@@ -55,6 +56,9 @@
 
   <!-- Load dynamic link classes -->
   <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
+
+  <!-- Load postnummerservice classes -->
+  <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
 
   <beans>
     <!-- All config files must be present in other modes than dev -->
@@ -142,6 +146,7 @@
     <bean id="copyCompletionUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CopyCompletionUtkastBuilder"/>
     <bean id="createRenewalUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateRenewalCopyUtkastBuilder"/>
     <bean id="createReplacementUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateReplacementUtkastBuilder"/>
+    <bean id="createUtkastFromTemplateBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateUtkastFromTemplateBuilder"/>
 
     <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
 
@@ -166,9 +171,6 @@
     <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
     <bean id="termsFilter" class="se.inera.intyg.webcert.web.auth.TermsFilter"/>
 
-    <!-- Declare the IntegrationEnhetFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
-    <bean id="integrationEnhetFilter" class="se.inera.intyg.webcert.web.auth.IntegrationEnhetFilter"/>
-
     <!-- Eleg login redirect filter for easier URL handling in PP -->
     <bean id="elegRedirectFilter" class="se.inera.intyg.webcert.web.auth.eleg.ElegRedirectFilter" />
 
@@ -177,7 +179,7 @@
       class="se.inera.intyg.common.util.integration.json.CustomObjectMapper" />
 
     <bean id="jacksonJsonProvider"
-      class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+        class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
       <property name="mapper">
         <bean class="se.inera.intyg.common.util.integration.json.CustomObjectMapper" />
       </property>
@@ -189,7 +191,7 @@
 
     <!-- Handlers for REST services -->
     <bean id="webcertRestExceptionHandler"
-      class="se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler" />
+        class="se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler" />
 
     <bean id="localDateTimeHandler" class="se.inera.intyg.webcert.web.web.handlers.LocalDateTimeHandler" />
 

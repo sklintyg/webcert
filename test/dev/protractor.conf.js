@@ -39,6 +39,12 @@ var screenshotReporter = new HtmlScreenshotReporter({
 });
 
 exports.config = {
+    // Needed to start local seleniumserver with firefox
+    localSeleniumStandaloneOpts: {
+        jvmArgs: ["-Dwebdriver.gecko.driver=node_modules/protractor/node_modules/webdriver-manager/selenium/geckodriver-v0.19.0.exe"]
+    },
+    // Directconnect bypasses selenium and communicates directly with webdriver
+    directConnect: true,
     seleniumAddress: require('./../webcertTestTools/environment.js').envConfig.SELENIUM_ADDRESS,
     baseUrl: require('./../webcertTestTools/environment.js').envConfig.WEBCERT_URL,
 
@@ -69,8 +75,14 @@ exports.config = {
         version: '11',*/
 
         // Any other browser
-        browserName: 'firefox', // possible values: phantomjs, firefox, chrome
-        //'phantomjs.binary.path': require('phantomjs').path, // uncomment for phantomjs to work
+        browserName: 'chrome', // possible values: firefox, chrome
+
+        chromeOptions: {
+            args: [
+                /*"--headless", "--disable-gpu", */
+                "--window-size=1280,1024"
+            ]
+        },
 
         // Run parallell instances of same browser (combine with any browser above)
         shardTestFiles: false, // set to true to divide tests among instances

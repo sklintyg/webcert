@@ -28,6 +28,32 @@ var today = testdataHelper.dateFormat(new Date());
 
 
 module.exports = {
+    get: function(intygsID) {
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
+        return {
+            "id":intygsID,"typ":"Läkarutlåtande för sjukersättning",
+            "baseratPa":{"minUndersokningAvPatienten":"2017-09-27","journaluppgifter":"2017-09-27","anhorigsBeskrivning":"2017-09-27","annat":"2017-09-27",
+                "annatBeskrivning":"cGJeWFqWt5OD8lxu","personligKannedom":"2017-09-27"},
+            "andraMedicinskaUtredningar":false,
+            "diagnos":{"diagnoser":[{"kod":"D00","bakgrund":"4cÖ1nPFyåPUE9hjy"}],"narOchVarStalldesDiagnoserna":"hqÖGiCLIpAÄtk4LÅ",
+                "nyBedomning":true,"diagnosForNyBedomning":"pwXDLgigzÖiZs0A0"},
+            "sjukdomsForlopp":"wT0e1BYOsxb9q2ZI",
+            "funktionsnedsattning":{
+                "intellektuell":"Intelektuell funktionsnedsättningstext",
+                "kommunikation":"kommunikation funktionsnedsättningstext",
+                "koncentration":"koncentration funktionsnedsättningstext",
+                "psykisk":"psykisk funktionsnedsättningstext",
+                "synHorselTal":"synHorselTal funktionsnedsättningstext",
+                "balansKoordination":"balansKoordination funktionsnedsättningstext",
+                "annan":"annan funktionsnedsättningstext"},
+            "aktivitetsbegransning":"åGppJÄrFQRXb3g1C",
+            "medicinskbehandling":{"avslutad":"avslutad behandlings-text","pagaende":"pagaende behandlings-text",
+                "planerad":"planerad behandlings-text","substansintag":"substansintag behandlings-text"},
+            "medicinskaForutsattningar":{"utecklasOverTid":"gxKkxwT2reHis4EÅ","trotsBegransningar":"bTt2å4cwd3y96nåÅ"},
+            "ovrigt":"roHwZsfIRQVreywÖ","kontaktMedFk":false,"tillaggsfragor":[]};
+    },
     getRandom: function(intygsID) {
         var nyBedomningDiagnos = testdataHelper.randomTrueFalse();
         var diagnosForNyBedomning;

@@ -27,7 +27,22 @@ function sh(value) {
     return (value.search(/\s-\s/g) !== -1) ? value.split(/\s-\s/g)[0].replace('Ämne: ', '') : value.split(/\n/g)[0].replace('Ämne: ', '');
 }
 
+var moveAndSendKeys = require('common-testtools').uiHelpers.moveAndSendKeys;
+
 module.exports = {
+    moveAndSendKeys: moveAndSendKeys,
+    smallDelay: function() {
+        return browser.sleep(100);
+    },
+    mediumDelay: function() {
+        return browser.sleep(500);
+    },
+    largeDelay: function() {
+        return browser.sleep(1000);
+    },
+    hugeDelay: function() {
+        return browser.sleep(5000);
+    },
     insertDashInPnr: function(pnrString) {
         if (pnrString.indexOf('-') >= 0) {
             return pnrString;
@@ -35,7 +50,7 @@ module.exports = {
         return pnrString.slice(0, 8) + '-' + pnrString.slice(8);
     },
     intygShortcode: commonTools.helpers.intygShortcode,
-
+    intygUrlShortcode: commonTools.helpers.intygUrlShortcode,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
@@ -70,6 +85,10 @@ module.exports = {
             return testdata.fk.LUAE_NA.getRandom(id);
         } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
             return testdata.fk.LUAE_FS.getRandom(id);
+        } else if (typ === 'Dödsbevis') {
+            return testdata.skv.db.getRandom(id);
+        } else if (typ === 'Dödsorsaksintyg') {
+            return testdata.soc.doi.getRandom(id);
         }
     },
     fetchMessageIds: function(intygtyp) {
@@ -172,7 +191,14 @@ module.exports = {
         }
         return null;
     },
-
+    getPathShortcode: function(value) {
+        for (var key in this.intygUrlShortcode) {
+            if (this.intygUrlShortcode[key] === value) {
+                return key.toString();
+            }
+        }
+        return null;
+    },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;

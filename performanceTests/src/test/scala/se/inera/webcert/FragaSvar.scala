@@ -3,8 +3,10 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 import scala.concurrent.duration._
+import scala.collection.mutable.ListBuffer
 
 class FragaSvar extends Simulation {
+  var internReferenser = new ListBuffer[String]
 
   val intyg = csv("data/intyg.csv").circular
 
@@ -18,26 +20,30 @@ class FragaSvar extends Simulation {
           .post("/testability/fragasvar")
           .headers(Headers.json)
           .body(StringBody("""
-{"amne":"OVRIGT",
- "externReferens":"FK-${intygsId}",
- "frageSigneringsDatum":"2012-12-22T21:00:00.000",
- "frageSkickadDatum":"2013-01-01",
- "frageStallare":"FK",
- "frageText":"frageText",
- "intygsReferens":{"intygsId":"${intygsId}",
-	           "intygsTyp":"fk7263",
-		   "patientId":"${personNr}",
-		   "patientNamn":"${namn}",
-		   "signeringsDatum":"2012-12-23T21:00:00.000"},
- "meddelandeRubrik":"meddelandeRubrik",
- "status":"PENDING_INTERNAL_ACTION",
- "vardperson":{"enhetsId":"${enhetsId}",
-	       "enhetsnamn":"${enhetsNamn}",
-	       "vardgivarId": "${vardgivarId}",
-	       "vardgivarnamn" : "${vardgivarNamn}",
-	       "hsaId":"${vardPersonId}",
-	       "namn":"${vardPersonNamn}"}}"""))
+                    {"amne":"OVRIGT",
+                    "externReferens":"FK-${intygsId}",
+                    "frageSigneringsDatum":"2012-12-22T21:00:00.000",
+                    "frageSkickadDatum":"2013-01-01",
+                    "frageStallare":"FK",
+                    "frageText":"frageText",
+                    "intygsReferens":{"intygsId":"${intygsId}",
+                    "intygsTyp":"fk7263",
+                    "patientId":"${personNr}",
+                    "patientNamn":"${namn}",
+                    "signeringsDatum":"2012-12-23T21:00:00.000"},
+                    "meddelandeRubrik":"meddelandeRubrik",
+                    "status":"PENDING_INTERNAL_ACTION",
+                    "vardperson":{"enhetsId":"${enhetsId}",
+                    "enhetsnamn":"${enhetsNamn}",
+                    "vardgivarId": "${vardgivarId}",
+                    "vardgivarnamn" : "${vardgivarNamn}",
+                    "hsaId":"${vardPersonId}",
+                    "namn":"${vardPersonNamn}"}}"""))
           .check(jsonPath("$.internReferens").saveAs("internReferens-franfk")))
+        .exec(session => {
+          internReferenser += session("internReferens-franfk").as[String]
+          session
+        })
         .exec(http("Dashboard")
           .get("/web/dashboard#/unhandled-qa.html")
           .headers(Headers.default))
@@ -57,12 +63,21 @@ class FragaSvar extends Simulation {
           .put("/moduleapi/fragasvar/fk7263/${internReferens-franfk}/besvara")
           .body(StringBody("""SvarsText-${internReferens-franfk}"""))
           .headers(Headers.json))
-        .exec(http("Delete incoming question")
-          .delete("/testability/fragasvar/${internReferens-franfk}"))
     }
     .exec(http("Logout")
       .get("/logout")
       .headers(Headers.default))
 
+  before {
+    println("Boostrapping PU")
+    Utils.injectPersonsIntoPU("intyg.csv", 1)
+  }
+
   setUp(scn.inject(rampUsers(10) over (10 seconds)).protocols(Conf.httpConf))
+
+  after {
+    println("Cleanup test data")
+    Utils.deleteItemsFromUrl("/testability/fragasvar", internReferenser.toList)
+    Utils.removePersonsFromPU("intyg.csv", 1)
+  }
 }

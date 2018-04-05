@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.feature;
 
 import com.google.common.base.Joiner;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.security.common.service.PilotService;
+import se.inera.intyg.webcert.common.model.WebcertFeature;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +40,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -98,7 +99,7 @@ public class WebcertFeatureServiceTest {
         Map<String, Boolean> featuresMap = new HashMap<>();
         featureService.initWebcertFeatures(featuresMap);
         assertFalse(featuresMap.isEmpty());
-        assertEquals(11, featuresMap.size());
+        assertEquals(18, featuresMap.size());
     }
 
     @Test
@@ -107,7 +108,8 @@ public class WebcertFeatureServiceTest {
         featureService.initModuleFeatures(featuresMap);
 
         assertFalse(featuresMap.isEmpty());
-        assertEquals(18, featuresMap.size());
+
+        assertEquals(30, featuresMap.size());
 
         assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1)));
         assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2)));
@@ -131,7 +133,7 @@ public class WebcertFeatureServiceTest {
         featuresMap.put(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), Boolean.FALSE);
         featuresMap.put(WebcertFeature.HANTERA_FRAGOR.getName(), Boolean.FALSE);
         featuresMap.put(WebcertFeature.MAKULERA_INTYG.getName(), Boolean.TRUE);
-        featuresMap.put(WebcertFeature.KOPIERA_INTYG.getName(), Boolean.FALSE);
+        featuresMap.put(WebcertFeature.FORNYA_INTYG.getName(), Boolean.FALSE);
 
         Properties featureProps = new Properties();
         featureProps.setProperty(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), "true");
@@ -143,7 +145,7 @@ public class WebcertFeatureServiceTest {
         assertTrue(featuresMap.get(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
         assertTrue(featuresMap.get(WebcertFeature.HANTERA_FRAGOR.getName()));
         assertFalse(featuresMap.get(WebcertFeature.MAKULERA_INTYG.getName()));
-        assertFalse(featuresMap.get(WebcertFeature.KOPIERA_INTYG.getName()));
+        assertFalse(featuresMap.get(WebcertFeature.FORNYA_INTYG.getName()));
     }
 
     @Test
@@ -159,7 +161,7 @@ public class WebcertFeatureServiceTest {
         featureService.setFeatures(featureProps);
         featureService.initFeaturesMap();
 
-        assertEquals(29, featureService.getFeaturesMap().size());
+        assertEquals(48, featureService.getFeaturesMap().size());
 
         assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
         assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST));
@@ -201,7 +203,7 @@ public class WebcertFeatureServiceTest {
 
         Set<String> res = featureService.getActiveFeatures();
 
-        assertThat(res, contains("hanteraFragor", "hanteraFragor.m2", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
+        assertThat(res, Matchers.contains("hanteraFragor", "hanteraFragor.m2", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
         // Invoked twice because initFeaturesMap uses this to log active features..
         verify(pilotService, times(2)).getFeatures(eq(Collections.emptyList()));
     }
@@ -228,7 +230,7 @@ public class WebcertFeatureServiceTest {
 
         Set<String> res = featureService.getActiveFeatures(hsaId1, hsaId2);
 
-        assertThat(res, contains("hanteraFragor", "hanteraFragor.m1", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
+        assertThat(res, Matchers.contains("hanteraFragor", "hanteraFragor.m1", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
         verify(pilotService).getFeatures(eq(Arrays.asList(hsaId1, hsaId2)));
     }
 }

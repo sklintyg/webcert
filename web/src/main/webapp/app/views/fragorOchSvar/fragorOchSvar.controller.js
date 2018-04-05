@@ -20,7 +20,7 @@
 /*
  * Controller for logic related to listing questions and answers
  */
-angular.module('webcert').controller('webcert.UnhandledQACtrl',
+angular.module('webcert').controller('webcert.FragorOchSvarCtrl',
     ['$rootScope', '$cookies', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
         'common.fragaSvarCommonService', 'webcert.QuestionAnswer', 'common.ArendeProxy',
         'common.ArendeVidarebefordraHelper',

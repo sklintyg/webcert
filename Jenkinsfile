@@ -1,8 +1,9 @@
 #!groovy
 
-def buildVersion = "5.3.826"
-def commonVersion = "3.4.+"
-def infraVersion = "3.4.+"
+def buildVersion = "5.4.1.${BUILD_NUMBER}"
+def commonVersion = "3.5.1.+"
+def infraVersion = "3.5.1.+"
+def logsenderBaseVersion = "5.4.1.*" // Star is needed as this is a regexp
 
 stage('checkout') {
     node {
@@ -14,7 +15,7 @@ stage('checkout') {
 stage('build') {
     node {
         try {
-            shgradle "--refresh-dependencies clean build npmInstall camelTest testReport sonarqube -PcodeQuality -PcodeCoverage -DgruntColors=false \
+            shgradle "--refresh-dependencies clean build camelTest testReport sonarqube -PcodeQuality -PcodeCoverage -DgruntColors=false \
                   -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
@@ -26,8 +27,9 @@ stage('build') {
 
 stage('deploy') {
     node {
+        def logsenderVersion = util.latestVersion("se/inera/intyg/logsender/logsender", logsenderBaseVersion)
         util.run {
-            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false", config_version: "WC-5.3"], \
+            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false", logsender_version: "${logsenderVersion}", config_version: "WC-5.4"], \
                 installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/test', playbook: 'ansible/deploy.yml'
             util.waitForServer('https://webcert.inera.nordicmedtest.se/version.jsp')
         }
@@ -49,8 +51,10 @@ stage('restAssured') {
 stage('protractor') {
    node {
        try {
-           sh(script: 'sed -i -r "s,(e.code === \'ECONNRESET\'),e.code === \'ECONNRESET\' || e.code === \'ETIMEDOUT\'," test/node_modules/selenium-webdriver/http/index.js')// NMT magic
-           sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
+//           sh(script: 'sed -i -r "s,(e.code === \'ECONNRESET\'),e.code === \'ECONNRESET\' || e.code === \'ETIMEDOUT\'," test/node_modules/selenium-webdriver/http/index.js') // NMT magic
+//           sh(script: 'mkdir -p test/node_modules')
+//           sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
+//           sh(script: 'ln -s ../webcertTestTools test/node_modules/webcert-testtools')
            wrap([$class: 'Xvfb']) {
                shgradle "protractorTests -Dprotractor.env=build-server \
                      -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"

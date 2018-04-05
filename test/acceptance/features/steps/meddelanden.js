@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals logger, wcTestTools, intyg*/
+/*globals logger, wcTestTools, intyg, pages*/
 
 'use strict';
 var soap = require('soap');
@@ -47,37 +47,42 @@ module.exports = function() {
         global.intyg.guidcheck = testdataHelper.generateTestGuid();
 
         var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne) + ' ' + global.intyg.guidcheck, amne);
-        console.log(body);
         var path = '/send-message-to-care/v2.0?wsdl';
         var url = process.env.INTYGTJANST_URL + path;
         url = url.replace('https', 'http');
 
-        soap.createClient(url, function(err, client) {
-            logger.info(url);
-            if (err) {
-                callback(err);
-            } else {
-                client.SendMessageToCare(body, function(err, result, resBody) {
-                    console.log(resBody);
-                    if (err) {
-                        callback(err);
-                    } else {
-                        var resultcode = result.result.resultCode;
-                        logger.info('ResultCode: ' + resultcode);
-                        // console.log(result);
-                        if (resultcode !== 'OK') {
-                            logger.info(result);
-                            callback('ResultCode: ' + resultcode + '\n' + resBody);
+        pages.intyg.luse.intyg.waitUntilIntygInIT(intyg.id).then(function() {
+            logger.info('FK skickar ' + amne + ' till Enpoint: ' + url);
+            console.log(body);
+            soap.createClient(url, function(err, client) {
+                logger.info(url);
+                if (err) {
+                    callback(err);
+                } else {
+                    client.SendMessageToCare(body, function(err, result, resBody) {
+                        console.log(resBody);
+                        if (err) {
+                            logger.warn(err);
                         } else {
+                            var resultcode = result.result.resultCode;
                             logger.info('ResultCode: ' + resultcode);
-                            // console.log(JSON.stringify(result));
-                            callback();
-                        }
+                            // console.log(result);
+                            if (resultcode !== 'OK') {
+                                logger.info(result);
+                                callback('ResultCode: ' + resultcode + '\n' + resBody);
+                            } else {
+                                logger.info('ResultCode: ' + resultcode);
+                                // console.log(JSON.stringify(result));
+                                callback();
+                            }
 
-                    }
-                });
-            }
+                        }
+                    });
+                }
+            });
         });
+
+
     });
 
 

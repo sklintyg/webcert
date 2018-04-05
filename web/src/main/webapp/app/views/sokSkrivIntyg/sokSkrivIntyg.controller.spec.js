@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('ChoosePatientCtrl', function() {
+describe('SokSkrivIntygCtrl', function() {
     'use strict';
 
     var $controller;
@@ -43,6 +43,13 @@ describe('ChoosePatientCtrl', function() {
                 }
             };
             $provide.value('$state', jasmine.createSpyObj('$state', ['go']));
+
+            var mockFilter = function(personnummer) {
+                return personnummer;
+            };
+
+            $provide.value('PersonIdFormatterFilter', mockFilter);
+
             $provide.value('webcert.SokSkrivValjUtkastService', SokSkrivValjUtkastService);
         });
 
@@ -52,7 +59,7 @@ describe('ChoosePatientCtrl', function() {
             $q = _$q_;
             $state = _$state_;
             $controller = _$controller_;
-            $controller('webcert.ChoosePatientCtrl', {$scope: $scope});
+            $controller('webcert.SokSkrivIntygCtrl', {$scope: $scope});
         });
     });
 

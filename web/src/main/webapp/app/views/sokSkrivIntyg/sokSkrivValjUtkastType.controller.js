@@ -16,17 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
+angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
     ['$window', '$filter', '$log', '$scope', '$stateParams', '$state', '$location',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'common.IntygCopyActions', 'common.IntygFornyaRequestModel', 'common.IntygCopyRequestModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-        'common.messageService', 'common.UserModel',
+        'common.messageService', 'common.UserModel', 'common.authorityService', 'common.featureService',
+        'common.UtkastProxy',
 
         function($window, $filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             CommonIntygCopyActions, IntygFornyaRequestModel, IntygCopyRequestModel,
-            IntygProxy, UtkastProxy, Service, ObjectHelper, messageService, UserModel) {
+            IntygProxy, UtkastProxy, Service, ObjectHelper, messageService, UserModel,
+            authorityService, featureService, commonUtkastProxy) {
             'use strict';
 
             /**
@@ -39,7 +41,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.messageService = messageService;
             $scope.viewState = Viewstate.build();
 
-            $scope.intygReplacement = {};
+            $scope.intygReplacement = {
+                'fk7263':'lisjp'
+            };
 
             $scope.isNormalOrigin = function() {
                 //Closure needed, due to 'this' reference in UserModel.isNormalOrigin().
@@ -98,6 +102,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     IntygTypeSelectorModel.intygTypes = types;
                 });
 
+                // load warnings of previous certificates
+                commonUtkastProxy.getPrevious(PatientModel.personnummer, function(existing) {
+                    IntygTypeSelectorModel.previousIntygWarnings = existing;
+                });
+
                 // Load intyg for person with specified pnr
                 Viewstate.tidigareIntygLoading = true;
                 IntygProxy.getIntygForPatient(PatientModel.personnummer, function(data) {
@@ -112,11 +121,25 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 });
             }
 
-            $scope.isRenewalAllowed = function(intyg) {
+            $scope.isUniqueWithinCareGiver = function (intygType) {
+                var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG_INOM_VG, intygType);
+                return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType];
+            };
 
+            $scope.isUniqueGlobal = function (intygType) {
+                var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG, intygType);
+                return featureActive && IntygTypeSelectorModel.previousIntygWarnings[intygType] !== undefined;
+            };
+
+            $scope.isRenewalAllowed = function(intyg) {
+                var renewable = authorityService.isAuthorityActive(
+                    { requestOrigin: UserModel.user.origin,
+                        authority: UserModel.privileges.FORNYA_INTYG,
+                        intygstyp: intyg.intygType
+                });
                 var statusAllowed = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';
 
-                return !(intyg.intygsTyp === 'ts-bas' || intyg.intygsTyp ==='ts-diabetes') &&
+                return renewable &&
                     statusAllowed &&
                     !(intyg.relations.latestChildRelations.replacedByIntyg ||
                     intyg.relations.latestChildRelations.complementedByIntyg);
@@ -139,6 +162,13 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             /**
              * Exposed to scope
              */
+
+            $scope.showCreateUtkast = function() {
+                return !(IntygTypeSelectorModel.intygType === 'default' ||
+                    ($scope.intygReplacement[IntygTypeSelectorModel.intygType] && UserModel.isNormalOrigin()) ||
+                    $scope.isUniqueWithinCareGiver(IntygTypeSelectorModel.intygType) ||
+                    $scope.isUniqueGlobal(IntygTypeSelectorModel.intygType));
+            };
 
             $scope.updateIntygList = function() {
                 Viewstate.currentList =

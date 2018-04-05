@@ -24,7 +24,7 @@ describe(
 
         var $controller;
         var $scope;
-        var $uibModalSpy;
+        var $uibModal;
         var $window;
         var $windowSpy;
         var UserModel;
@@ -38,8 +38,7 @@ describe(
             module('webcert', [ '$provide', function($provide) {
 
                 $provide.value('common.UserModel', {});
-                $uibModalSpy = jasmine.createSpyObj('$uibModal', [ 'open' ]);
-                $provide.value('$uibModal', $uibModalSpy);
+                $provide.value('$uibModal', { open:function(){} });
 
                 $stateSpy = jasmine.createSpyObj('$state', [ 'go' ]);
                 $provide.value('$state', $stateSpy);
@@ -63,7 +62,9 @@ describe(
                     $window = _$window_;
                     UserModel = _UserModel_;
                     $controller = _$controller_;
+                    $uibModal = _$uibModal_;
 
+                    spyOn($uibModal, 'open').and.returnValue({ close: function() {} });
                 } ]);
 
         });
@@ -85,7 +86,8 @@ describe(
                 $scope.onUnitSelected({
                     id: '1234'
                 });
-                expect($uibModalSpy.open).toHaveBeenCalled();
+
+                expect($uibModal.open).toHaveBeenCalled();
                 expect(UserServiceMock.setValdVardenhet).toHaveBeenCalled();
                 expect($stateSpy.go).toHaveBeenCalledWith('originalState', {}, {location: 'replace'});
             });
@@ -100,7 +102,7 @@ describe(
                     id: '1234'
                 });
 
-                expect($uibModalSpy.open).toHaveBeenCalled();
+                expect($uibModal.open).toHaveBeenCalled();
                 expect(UserServiceMock.setValdVardenhet).toHaveBeenCalled();
                 expect($stateSpy.go).not.toHaveBeenCalled();
                 expect($windowSpy.location.href).toBe('/error.jsp?reason=login.failed');

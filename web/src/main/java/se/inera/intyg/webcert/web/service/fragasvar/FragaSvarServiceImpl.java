@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -342,7 +342,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
-            LOGGER.error("Failed to send answer to FK, result was " + response.getResult().toString());
+            LOGGER.error("Failed to send answer to FK, result was " + response.getResult().getErrorText());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
                     .getErrorText());
         }
@@ -428,14 +428,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         SendMedicalCertificateQuestionType sendType = new SendMedicalCertificateQuestionType();
         QuestionToFkType question = FKQuestionConverter.convert(saved);
 
-        // INTYG-4549: Temporary hack to mitigate problems in Anpassningsplattform requiring fullstandigtNamn to be present.
+        // INTYG-4447: Temporary hack to mitigate problems in Anpassningsplattform requiring fullstandigtNamn to be present.
         // Remove ASAP.
         if ("true".equalsIgnoreCase(forceFullstandigtNamn)) {
             question.getLakarutlatande().getPatient().setFullstandigtNamn("---");
         }
 
         sendType.setQuestion(question);
-
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendQuestionToFkLogicalAddress);
 

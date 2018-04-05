@@ -33,20 +33,23 @@ function writeScreenShot(data, filename, cb) {
     stream.on('finish', cb);
 }
 
-function checkConsoleErrors(cb) {
+function checkConsoleErrors() {
     if (hasFoundConsoleErrors) {
 
         // 500-error är ett godkänt fel i detta test, se INTYG-3524
         if (global.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
             logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
+            return;
         } else if (hasFoundConsoleErrors.indexOf('ID-dubletter') > -1) {
             logger.warn(hasFoundConsoleErrors);
+            return;
         } else {
             logger.error(hasFoundConsoleErrors);
             throw ('Hittade script-fel under körning');
         }
+    } else {
+        return;
     }
-    cb();
 }
 
 function removeAlerts() {
@@ -59,29 +62,32 @@ module.exports = function() {
     this.setDefaultTimeout(600 * 1000);
     global.externalPageLinks = [];
 
-    this.AfterStep(function(event, callback) {
+    this.AfterStep(function(event) {
         // Ibland dyker en dialogruta upp "du har osparade ändringar". Vi vill ignorera denna och gå vidare till nästa test.
         removeAlerts();
 
-        // Samla in alla externa länkar på aktuell sida
-        element.all(by.css('a')).each(function(link) {
-            link.getAttribute('href').then(function(href) {
-                if (href !== null &&
-                    href !== '' &&
-                    href.includes('javascript') !== true &&
-                    href.indexOf(process.env.WEBCERT_URL) === -1 &&
-                    href.indexOf(process.env.MINAINTYG_URL) === -1 &&
-                    href.indexOf(process.env.REHABSTOD_URL) === -1 &&
-                    href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
-                    global.externalPageLinks.indexOf(href) === -1) {
-                    console.log('Found one: ' + href);
-                    global.externalPageLinks.push(href);
-                }
+        return new Promise(function(resolve) {
+            //Kör promisekedja för AfterStep.
+            resolve();
+        }).then(function() {
+            // Samla in alla externa länkar på aktuell sida
+            return element.all(by.css('a')).each(function(link) {
+                return link.getAttribute('href').then(function(href) {
+                    if (href !== null &&
+                        href !== '' &&
+                        href.includes('javascript') !== true &&
+                        href.indexOf(process.env.WEBCERT_URL) === -1 &&
+                        href.indexOf(process.env.MINAINTYG_URL) === -1 &&
+                        href.indexOf(process.env.REHABSTOD_URL) === -1 &&
+                        href.indexOf(process.env.STATISTIKTJANST_URL) === -1 &&
+                        global.externalPageLinks.indexOf(href) === -1) {
+                        console.log('Found one: ' + href);
+                        global.externalPageLinks.push(href);
+                    }
+                });
             });
         }).then(function() {
-
             //Rapportera om ID-dubletter. Är inte rimligt att göra med protractor, kör front-end script istället.
-
             var frontEndScript = '';
 
             frontEndScript += 'if (window.jQuery) {';
@@ -96,23 +102,28 @@ module.exports = function() {
             frontEndScript += 'console.error(arr.length + "st ID-dubletter Hittade, " + JSON.stringify(arr));'; //använder console.error så plockas det upp i nästa steg som kollar efter error.
             frontEndScript += '}}';
 
-            browser.executeScript(frontEndScript);
-
-
-        }).then(function() {
-
-            //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
-            browser.executeScript('return window.errs;').then(function(v) {
-                if (v && v.length > 0) {
-                    hasFoundConsoleErrors = JSON.stringify(v);
-
-
-                    logger.error(hasFoundConsoleErrors);
-
-                }
-
+            return browser.getCurrentUrl().then(function() {
+                //Browser is open
+                return browser.executeScript(frontEndScript);
+            }).catch(function() {
+                //Browser was closed
+                return;
             });
-            callback();
+        }).then(function() {
+            return browser.getCurrentUrl().then(function() {
+                //Skriv ut script-fel, Kan inte kasta fel i AfterStep tyvärr
+                return browser.executeScript('return window.errs;').then(function(v) {
+                    if (v && v.length > 0) {
+                        hasFoundConsoleErrors = JSON.stringify(v);
+
+                        logger.error(hasFoundConsoleErrors);
+                        return;
+                    }
+                });
+            }).catch(function() {
+                //Browser was closed
+                return;
+            });
         });
 
     });
@@ -120,7 +131,7 @@ module.exports = function() {
     this.Before(function(scenario) {
         global.scenario = scenario;
 
-        //Återställ globala variabler
+        logger.info('Återställer globala variabler');
         global.person = {};
         global.intyg = {};
         global.meddelanden = []; //{typ:'', id:''}
@@ -129,11 +140,48 @@ module.exports = function() {
         duplicateIds = [];
     });
     //After scenario
-    this.After(function(scenario, callback) {
+    this.After(function(scenario) {
 
-        console.log('Rensar local-storage');
-        browser.executeScript('window.sessionStorage.clear();');
-        browser.executeScript('window.localStorage.clear();');
+        console.log('Rensar session-storage');
+        return browser.executeScript('window.sessionStorage.clear();').then(function() {
+            console.log('Rensar local-storage');
+            return browser.executeScript('window.localStorage.clear();');
+        }).then(function() {
+
+            if (scenario.isFailed()) {
+
+                var frontEndJS = 'var div = document.createElement("DIV"); ';
+                frontEndJS += 'div.style.position = "fixed";';
+                frontEndJS += 'div.style.height = (window.innerHeight - 2) + "px";';
+                frontEndJS += 'div.style.width = (window.innerWidth - 2) + "px";';
+                frontEndJS += 'div.style.border = "1px solid red";';
+                frontEndJS += 'div.style.top = "1px";';
+                frontEndJS += 'div.style.zIndex = "10000";';
+                frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
+                frontEndJS += 'body.appendChild(div);';
+
+                return browser.executeScript(frontEndJS).then(function() {
+                    return browser.takeScreenshot().then(function(png) {
+                        var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+                        var filename = 'screenshots/' + new Date().getTime() + '.png';
+                        return writeScreenShot(png, ssPath + filename, function() {
+                            return scenario.attach(filename, 'image/png', function(err) {
+                                if (err) {
+                                    throw err;
+                                }
+                                console.log('Skärmbild tagen: ' + filename);
+                                return checkConsoleErrors();
+                            });
+                        });
+                    });
+                });
+
+            } else {
+                return checkConsoleErrors();
+            }
+
+        });
+
 
         //Ska intyg rensas bort efter scenario? TODO: rensaBortIntyg används aldrig.
         /*var rensaBortIntyg = true;
@@ -143,24 +191,6 @@ module.exports = function() {
                 rensaBortIntyg = false;
             }
         }*/
-
-        if (scenario.isFailed()) {
-            browser.takeScreenshot().then(function(png) {
-                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-                var filename = 'screenshots/' + new Date().getTime() + '.png';
-                writeScreenShot(png, ssPath + filename, function() {
-                    scenario.attach(filename, 'image/png', function(err) {
-                        if (err) {
-                            throw err;
-                        }
-                        console.log('Skärmbild tagen: ' + filename);
-                        checkConsoleErrors(callback);
-                    });
-                });
-            });
-        } else {
-            checkConsoleErrors(callback);
-        }
 
 
 

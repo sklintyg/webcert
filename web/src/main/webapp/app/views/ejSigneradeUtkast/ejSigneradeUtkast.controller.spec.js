@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('UnsignedCertCtrlSpec', function() {
+describe('EjSigneradeUtkastCtrlSpec', function() {
     'use strict';
 
     var $controller;
@@ -74,7 +74,7 @@ describe('UnsignedCertCtrlSpec', function() {
                 emptyFilter = _utkastFilterModel_.build();
 
                 $httpBackend.expectGET('/api/utkast/').respond(200, mockResponse.utkastList);
-                $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
+                $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
                 $httpBackend.flush();
                 $timeout.flush();
             }]);
@@ -84,14 +84,14 @@ describe('UnsignedCertCtrlSpec', function() {
 
         it('should load utkast list on valid response', function() {
             $httpBackend.expectGET('/api/utkast/').respond(200, mockResponse.utkastList);
-            $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
+            $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
             $httpBackend.flush();
             $timeout.flush();
         });
 
         it('should update error message if loading fails', function() {
             $httpBackend.expectGET('/api/utkast/').respond(500);
-            $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
+            $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
             $httpBackend.flush();
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
         });
@@ -101,7 +101,7 @@ describe('UnsignedCertCtrlSpec', function() {
 
         it('should update error message if loading fails', function() {
             $httpBackend.expectGET('/api/utkast/').respond(500);
-            $controller('webcert.UnsignedCertCtrl', { $scope: $scope });
+            $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
             $httpBackend.flush();
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
         });

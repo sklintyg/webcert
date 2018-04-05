@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
@@ -25,9 +27,9 @@ import com.jayway.restassured.response.Response;
 import org.junit.Test;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.security.WebCertUserOriginType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
@@ -236,6 +238,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         final String personnummer = "19121212-1212";
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        changeOriginTo("DJUPINTEGRATION");
 
         String utkastId = createUtkast("fk7263", personnummer);
 
@@ -263,10 +266,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
-        // Lakare role has the KOPIERA_INTYG priviledge, but the privilege is restricted to origintype=NORMAL /
+        // Lakare role has the FORNYA_INTYG priviledge, but the privilege is restricted to origintype=NORMAL /
         // DJUPINTEGRERAD.
         // We change the current users origin to be uthop which should trigger an auth exception response.
-        changeOriginTo(WebCertUserOriginType.UTHOPP.name());
+        changeOriginTo(UserOriginType.UTHOPP.name());
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(new Personnummer(DEFAULT_PATIENT_PERSONNUMMER));
@@ -291,6 +294,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     public void testCreateRenewalBasedOnExistingUtkastWithInvalidPatientpersonNummer() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        changeOriginTo("DJUPINTEGRATION");
 
         String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
 
@@ -394,6 +398,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         final String personnummer = "19121212-1212";
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        changeOriginTo("DJUPINTEGRATION");
 
         String intygsId = createSignedIntyg("fk7263", personnummer);
 
@@ -434,6 +439,80 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
     }
 
+    @Test
+    public void testCreateUtkastFromTemplate() throws Exception {
+        final String personnummer = "19121212-1212";
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String dbIntyg = createDbIntyg(personnummer);
+
+        CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
+        copyIntygRequest.setPatientPersonnummer(new Personnummer(personnummer));
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsTyp", "db");
+        pathParams.put("intygsId", dbIntyg);
+        pathParams.put("newIntygsTyp", "doi");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+                .expect().statusCode(200)
+                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/{newIntygsTyp}/create")
+                .then()
+                .body("intygsUtkastId", not(isEmptyString()))
+                .body("intygsUtkastId", not(equalTo(dbIntyg)))
+                .body("intygsTyp", equalTo("doi"));
+    }
+
+    private String createDbIntyg(String personnummer) throws IOException {
+        String intygsTyp = "db";
+
+        String intygsId = createUtkast(intygsTyp, personnummer);
+
+        Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode rootNode = (ObjectNode) mapper.readTree(responseIntyg.body().asString());
+
+        String version = rootNode.get("version").asText();
+
+        ObjectNode content = (ObjectNode) rootNode.get("content");
+
+        content.put("identitetStyrkt", "körkort");
+        content.put("dodsdatumSakert", "false");
+        content.put("dodsdatum", "2017-01-01");
+        content.put("antraffatDodDatum", "2017-01-02");
+        content.put("dodsplatsKommun", "kommun");
+        content.put("dodsplatsBoende", "SJUKHUS");
+        content.put("barn", "true");
+        content.put("explosivImplantat", "true");
+        content.put("explosivAvlagsnat", "true");
+        content.put("undersokningYttre", "UNDERSOKNING_GJORT_KORT_FORE_DODEN");
+        content.put("undersokningDatum", "2016-12-31");
+        content.put("polisanmalan", "true");
+        content.put("avstangningSmittskydd", true);
+        content.put("tjanstgoringstid", "40");
+        content.put("ressattTillArbeteEjAktuellt", true);
+        content.putObject("nedsattMed100");
+        ObjectNode node = (ObjectNode) content.get("nedsattMed100");
+        node.put("from", "2016-01-19");
+        node.put("tom", "2016-01-25");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).body(content)
+                .expect().statusCode(200)
+                .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
+                .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
+
+        return intygsId;
+    }
+
+
     private void signeraUtkastWithTestabilityApi(String intygsId) {
         String completePath = "testability/intyg/" + intygsId + "/komplett";
         String signPath = "testability/intyg/" + intygsId + "/signerat";
@@ -452,5 +531,4 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
     private void deleteUtkast(String id) {
         given().contentType(ContentType.JSON).expect().statusCode(200).when().delete("testability/intyg/" + id);
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,16 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
+import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -41,6 +37,10 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class IntygModuleFacadeImpl implements IntygModuleFacade {
@@ -58,13 +58,15 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses,
             boolean isEmployer)
             throws IntygModuleFacadeException {
+        boolean isUtkast = isUtkast(statuses);
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             PdfResponse pdfResponse;
             if (!isEmployer) {
-                pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT);
+                pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, isUtkast);
             } else {
-                pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, Collections.emptyList());
+                pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, Collections.emptyList(),
+                        isUtkast);
             }
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException me) {
@@ -74,6 +76,11 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when generating PDF document from internal", intygType);
             throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
         }
+    }
+
+    // If there either are no statuses, or if there is no RECEIVED status, this intyg has not yet been signed.
+    private boolean isUtkast(List<Status> statuses) {
+        return statuses == null || statuses.stream().noneMatch(s -> s.getType() == CertificateState.RECEIVED);
     }
 
     @Override

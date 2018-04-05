@@ -70,6 +70,24 @@ function sendQuestionToFK(amne, cb) {
     }).then(cb);
 }
 
+function hamtaAllaTraffar() {
+    return element(by.id('hamtaFler')).isDisplayed().then(function(present) {
+        if (present) {
+            return helpers.moveAndSendKeys(element(by.id('hamtaFler')), protractor.Key.SPACE).then(function() {
+                return helpers.smallDelay();
+            });
+        } else {
+            return false;
+        }
+    }).then(function(loop) {
+        if (loop !== false) {
+            return hamtaAllaTraffar();
+        } else {
+            return;
+        }
+    });
+}
+
 module.exports = function() {
     this.Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne, callback) {
         sendQuestionToFK(amne, callback);
@@ -150,6 +168,13 @@ module.exports = function() {
         var komplettera = element(by.id('komplettera-intyg-' + global.intyg.messages[0].id));
 
         return expect(komplettera.isPresent()).to.become(false);
+
+    });
+
+    this.Given(/^ska svara med textmeddelande vara tillgängligt i dialogen/, function() {
+        var svaraMedMeddelande = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
+
+        return expect(svaraMedMeddelande.isDisplayed()).to.become(true);
 
     });
 
@@ -294,73 +319,76 @@ module.exports = function() {
         if (intyg && intyg.typ) {
             isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
         }
+        pages.intyg.luse.intyg.waitUntilIntygInIT(intyg.id).then(function() {
+            logger.info('FK skickar ' + amne);
+            if (isSMIIntyg) {
+                body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
+                console.log(body);
+                var path = '/send-message-to-care/v2.0?wsdl';
+                url = process.env.INTYGTJANST_URL + path;
+                url = url.replace('https', 'http');
 
-        if (isSMIIntyg) {
-            body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne + ' ' + global.intyg.guidcheck, amneCode);
-            console.log(body);
-            var path = '/send-message-to-care/v2.0?wsdl';
-            url = process.env.INTYGTJANST_URL + path;
-            url = url.replace('https', 'http');
+                soap.createClient(url, function(err, client) {
+                    logger.info(url);
+                    if (err) {
+                        callback(err);
+                    } else {
+                        client.SendMessageToCare(body, function(err, result, resBody) {
+                            console.log(resBody);
+                            var resultcode = result.result.resultCode;
+                            logger.info('ResultCode: ' + resultcode);
+                            console.log(result);
+                            if (resultcode !== 'OK') {
+                                logger.info(result);
+                                callback('ResultCode: ' + resultcode + '\n' + resBody);
+                            } else {
+                                logger.info('ResultCode: ' + resultcode);
+                                console.log(JSON.stringify(result));
 
-            soap.createClient(url, function(err, client) {
-                logger.info(url);
-                if (err) {
-                    callback(err);
-                } else {
-                    client.SendMessageToCare(body, function(err, result, resBody) {
-                        console.log(resBody);
+                                browser.refresh().then(function() {
+                                    callback(err);
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                amneCode = amne; //helpers.subjectCodesFK7263[amne];
+                url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
+                url = url.replace('https', 'http');
+
+                body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
+                    global.person.id,
+                    global.user,
+                    'Enhetsnamn',
+                    global.intyg.id,
+                    amneCode,
+                    'nytt meddelande: ' + global.intyg.guidcheck);
+                console.log(body);
+                soap.createClient(url, function(err, client) {
+                    if (err) {
+                        callback(err);
+                    }
+
+                    client.ReceiveMedicalCertificateQuestion(body, function(err, result, resBody) {
+                        global.meddelanden.push({
+                            typ: 'Fråga',
+                            amne: amne
+                        });
                         var resultcode = result.result.resultCode;
-                        logger.info('ResultCode: ' + resultcode);
-                        console.log(result);
                         if (resultcode !== 'OK') {
                             logger.info(result);
                             callback('ResultCode: ' + resultcode + '\n' + resBody);
                         } else {
-                            logger.info('ResultCode: ' + resultcode);
-                            console.log(JSON.stringify(result));
-
                             browser.refresh().then(function() {
                                 callback(err);
                             });
                         }
                     });
-                }
-            });
-        } else {
-            amneCode = amne; //helpers.subjectCodesFK7263[amne];
-            url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + '/services/receive-question/v1.0?wsdl';
-            url = url.replace('https', 'http');
-
-            body = soapMessageBodies.ReceiveMedicalCertificateQuestion(
-                global.person.id,
-                global.user,
-                'Enhetsnamn',
-                global.intyg.id,
-                amneCode,
-                'nytt meddelande: ' + global.intyg.guidcheck);
-            console.log(body);
-            soap.createClient(url, function(err, client) {
-                if (err) {
-                    callback(err);
-                }
-
-                client.ReceiveMedicalCertificateQuestion(body, function(err, result, resBody) {
-                    global.meddelanden.push({
-                        typ: 'Fråga',
-                        amne: amne
-                    });
-                    var resultcode = result.result.resultCode;
-                    if (resultcode !== 'OK') {
-                        logger.info(result);
-                        callback('ResultCode: ' + resultcode + '\n' + resBody);
-                    } else {
-                        browser.refresh().then(function() {
-                            callback(err);
-                        });
-                    }
                 });
-            });
-        }
+            }
+        });
+
     });
 
     this.Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
@@ -445,7 +473,9 @@ module.exports = function() {
 
 
     this.Given(/^jag går till sidan Frågor och svar$/, function() {
-        return pages.fragorOchSvar.get();
+        return pages.fragorOchSvar.get().then(function() {
+            return browser.sleep(1000); // En liten sleep p.g.a page-reload.
+        });
     });
 
     this.Given(/^ska frågan inte finnas i listan$/, function() {
@@ -459,12 +489,13 @@ module.exports = function() {
 
     var matchingQARow;
     this.Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
-
         logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
         return pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
             return row.all(by.css('td')).getText().then(function(text) {
                 console.log(text);
-
+                if (person.id.indexOf('-') === -1) {
+                    person.id = person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
+                }
                 var hasPersonnummer = (text.indexOf(person.id) > -1);
                 var hasAtgard = (text.indexOf(atgard) > -1);
                 return hasAtgard && hasPersonnummer;
@@ -476,8 +507,6 @@ module.exports = function() {
             } else {
                 return expect(rows).to.have.length.above(0);
             }
-
-
         });
     });
 
@@ -534,7 +563,7 @@ module.exports = function() {
 
     this.Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
         var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
-        showFilter.isPresent().then(function(isPresent) {
+        return showFilter.isPresent().then(function(isPresent) {
             if (isPresent) {
                 return showFilter.sendKeys(protractor.Key.SPACE);
             } else {
@@ -543,8 +572,16 @@ module.exports = function() {
         }).then(function() {
             return pages.fragorOchSvar.atgardSelect.element(by.cssContainingText('option', atgard))
                 .sendKeys(protractor.Key.SPACE).then(function() {
-                    return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE);
+                    return pages.fragorOchSvar.searchBtn.sendKeys(protractor.Key.SPACE).then(function() {
+                        return helpers.smallDelay;
+                    });
                 });
+        }).then(function() {
+            if (atgard === 'Visa alla ej hanterade') {
+                return hamtaAllaTraffar();
+            } else {
+                return;
+            }
         });
     });
 

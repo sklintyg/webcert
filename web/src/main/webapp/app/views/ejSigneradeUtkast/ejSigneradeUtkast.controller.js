@@ -20,7 +20,7 @@
 /*
  * Controller for logic related to listing unsigned certs
  */
-angular.module('webcert').controller('webcert.UnsignedCertCtrl',
+angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
     [ '$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
         function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
             'use strict';

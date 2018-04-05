@@ -23,6 +23,7 @@
 /*globals browser,protractor, Promise*/
 'use strict';
 
+var pageHelpers = require('../pageHelper.util.js');
 var JClass = require('jclass');
 var EC = protractor.ExpectedConditions;
 var BaseUtkast = JClass._extend({
@@ -72,7 +73,10 @@ var BaseUtkast = JClass._extend({
         browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId + '/');
     },
     isAt: function() {
-        return this.at.isDisplayed();
+        var at = this.at;
+        return browser.wait(function() {
+            return at.isPresent();
+        }, 5000);
     },
     isSigneraButtonEnabled: function() {
         return this.signeraButton.isEnabled();
@@ -81,7 +85,7 @@ var BaseUtkast = JClass._extend({
         return browser.wait(EC.elementToBeClickable(this.signeraButton), 5000);
     },
     signeraButtonClick: function() {
-        this.signeraButton.sendKeys(protractor.Key.SPACE);
+        return pageHelpers.moveAndSendKeys(this.signeraButton, protractor.Key.SPACE);
     },
     getMissingInfoMessagesCount: function() {
         return this.showMissingInfoList.all(by.tagName('a')).then(function(items) {
@@ -107,16 +111,16 @@ var BaseUtkast = JClass._extend({
 
         return Promise.all([
             postAddrEL.clear().then(function() {
-                return postAddrEL.sendKeys(adressObj.postadress);
+                return pageHelpers.moveAndSendKeys(postAddrEL, adressObj.postadress);
             }),
             postNummerEL.clear().then(function() {
-                return postNummerEL.sendKeys(adressObj.postnummer);
+                return pageHelpers.moveAndSendKeys(postNummerEL, adressObj.postnummer);
             }),
             postOrtEL.clear().then(function() {
-                return postOrtEL.sendKeys(adressObj.postort);
+                return pageHelpers.moveAndSendKeys(postOrtEL, adressObj.postort);
             }),
             enhetTelefonEL.clear().then(function() {
-                return enhetTelefonEL.sendKeys(adressObj.telefon);
+                return pageHelpers.moveAndSendKeys(enhetTelefonEL, adressObj.telefon);
             })
         ]);
     },
@@ -128,13 +132,13 @@ var BaseUtkast = JClass._extend({
 
         return Promise.all([
             postAddrEL.clear().then(function() {
-                return postAddrEL.sendKeys(adressObj.postadress);
+                return pageHelpers.moveAndSendKeys(postAddrEL, adressObj.postadress);
             }),
             postNummerEL.clear().then(function() {
-                return postNummerEL.sendKeys(adressObj.postnummer);
+                return pageHelpers.moveAndSendKeys(postNummerEL, adressObj.postnummer);
             }),
             postOrtEL.clear().then(function() {
-                return postOrtEL.sendKeys(adressObj.postort);
+                return pageHelpers.moveAndSendKeys(postOrtEL, adressObj.postort);
             }),
         ]);
 

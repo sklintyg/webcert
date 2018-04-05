@@ -48,7 +48,7 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                 specHelper.getUtkastIdFromUrl().then(function(id) {
                     utkastId = id;
                 });
-                data = wcTestTools.testdata.fk.LUAE_NA.getRandom(utkastId);
+                data = wcTestTools.testdata.fk.LUAE_NA.get(utkastId);
             });
         });
 
@@ -93,7 +93,7 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                                         // Detta borde kunna göras snyggare med jsonPath...
                                         for (var a = 0; a < data.body.length; a++) {
                                             var statusUppdatering = data.body[a];
-                                            if (statusUppdatering.intyg['intygs-id'].extension === utkastId &&
+                                            if (statusUppdatering.intyg.intygsId.extension === utkastId &&
                                                     statusUppdatering.handelse.handelsekod.code === 'KFSIGN') {
                                                 return true;
                                             }
@@ -107,7 +107,7 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
                                     // Detta borde kunna göras snyggare med jsonPath...
                                     for (var a = 0; a < data.body.length; a++) {
                                         var statusUppdatering = data.body[a];
-                                        if (statusUppdatering.intyg['intygs-id'].extension === utkastId &&
+                                        if (statusUppdatering.intyg.intygsId.extension === utkastId &&
                                             statusUppdatering.ref === 'some-reference') {
                                             return true;
                                         }

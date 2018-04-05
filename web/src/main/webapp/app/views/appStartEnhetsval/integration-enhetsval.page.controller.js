@@ -38,7 +38,7 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
                 if (uri.match(re)) {
                     return uri.replace(re, '$1' + key + '=' + value + '$2');
                 } else {
-                    var hash =  '';
+                    var hash = '';
                     if( uri.indexOf('#') !== -1 ){
                         hash = uri.replace(/.*#/, '#');
                         uri = uri.replace(/#.*/, '');
@@ -54,7 +54,8 @@ angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
 
             //When enhet is selected in dialog, redirect window to original destination + &enhet=<selected enhetsid>
             function onUnitSelected(enhet) {
-                $window.location.replace(buildTargetUri(baseDestUrl, enhet.id));
+                var uri = buildTargetUri(baseDestUrl, enhet.id);
+                $window.location.replace(uri);
             }
 
             $scope.onUnitSelected = onUnitSelected;

@@ -21,25 +21,44 @@
  * Created by BESA on 2015-11-25.
  * Holds helper functions for actions that are needed often in pages.
  */
-/*globals protractor, Promise */
+/*globals protractor, Promise, logger */
 'use strict';
 
+var testtools = require('common-testtools');
+
+var moveAndSendKeys;
+
+if (testtools.uiHelpers) {
+    moveAndSendKeys = testtools.uiHelpers.moveAndSendKeys;
+} else {
+    moveAndSendKeys = function(elm, keys, description) {
+        return elm.sendKeys(keys).then(function() {
+            return logger.silly('sendKeys OK - ' + description);
+        }, function(reason) {
+            console.trace(reason);
+            throw ('FEL, ' + description + ', ' + reason);
+        });
+    };
+}
+
 module.exports = {
+    moveAndSendKeys: moveAndSendKeys,
     clickAll: function(elementArray, elementTextsArray) {
         if (!elementTextsArray) {
             return Promise.resolve();
 
         }
-        // filter all elemenets matching elementTextsArray
         return elementArray.filter(function(elem) {
             return elem.getText().then(function(text) {
                 return (elementTextsArray.indexOf(text) >= 0);
             });
         }).then(function(filteredElements) {
-            //filteredElements is the list of filtered elements
-            for (var i = 0; i < filteredElements.length; i++) {
-                filteredElements[i].sendKeys(protractor.Key.SPACE);
-            }
+
+            return filteredElements.forEach(function(element, i) {
+                filteredElements[i].getText().then(function(description) {
+                    moveAndSendKeys(filteredElements[i], protractor.Key.SPACE, description);
+                });
+            });
         });
     },
     hasHogreKorkortsbehorigheter: function(korkortstyper) {
@@ -54,5 +73,8 @@ module.exports = {
         var td = require('./../testdata/testvalues.js').ts;
         var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
         return foundHogreBehorigheter.length > 0;
-    }
+    },
+	smallDelay : function() { return browser.sleep(100); },
+	mediumDelay : function() { return browser.sleep(500); },
+	largeDelay : function() { return browser.sleep(1000); }
 };

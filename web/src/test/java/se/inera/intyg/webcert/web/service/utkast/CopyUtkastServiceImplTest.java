@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,32 +50,22 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.security.WebCertUserOriginType.DJUPINTEGRATION;
+import static org.mockito.Mockito.*;
+import static se.inera.intyg.infra.security.common.model.UserOriginType.DJUPINTEGRATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -557,10 +547,6 @@ public class CopyUtkastServiceImplTest {
 
         return utkast;
     }
-
-//    private CreateNewDraftCopyRequest buildCopyRequest() {
-//        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
-//    }
 
     private CreateCompletionCopyRequest buildCompletionRequest() {
         return new CreateCompletionCopyRequest(INTYG_ID, INTYG_TYPE, MEDDELANDE_ID, patient, hoSPerson);

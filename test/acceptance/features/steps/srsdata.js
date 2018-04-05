@@ -37,8 +37,8 @@ module.exports = {
         'inte finns i SRS': 'A23',
         'har åtgärder': 'M54',
         'har förhöjd risk': '',
-        'inte har förhöjd risk': '',
-        'saknar prediktion': '',
+        'inte har förhöjd risk': 'M79',
+        'saknar prediktion': 'M79',
         'saknar statistik': 'S82',
         'saknar åtgärder': 'S82',
     },
@@ -68,7 +68,7 @@ module.exports = {
         'åtgärdslista 2': [
             'borsta tänderna',
             'inte vara uppe för länge',
-            'inte prata med främlingar'
+            'inte prata med främlingar.'
         ]
     },
 

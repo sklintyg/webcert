@@ -7,7 +7,7 @@ Egenskap: Avliden patient
      När jag går in på en patient som är avliden
      Så ska jag varnas om att "Patienten har avlidit"
 
-
+# TODO: Skriv om detta och sätt patient till avliden via APIet för avliden
  @skicka-till-FK @integration @notReady
  Scenario: Kan skicka och ställa frågor på intyg
      Givet att jag är inloggad som djupintegrerad läkare
@@ -44,4 +44,4 @@ Scenario: Kan svara på komplettering med ett nytt intyg
     Och jag väljer att svara med ett nytt intyg
     Så ska jag se kompletteringsfrågan på utkast-sidan
     Och jag signerar intyget
-    Så ska intygets status vara "Intyget är signerat, skickat och mottaget av Försäkringskassans system"
+    Så ska intygets status vara "Intyget är signerat och har skickats till Försäkringskassans system"

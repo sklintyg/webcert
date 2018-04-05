@@ -28,6 +28,7 @@ angular.module('webcert').factory('webcert.IntygTypeSelectorModel',
                     this.certificateTypeText = '';
                     this.intygTypes = []; // Format: { id: 'default', label: '' }
                     this.userIntygTypes = []; // Only the types the current user can actually access in this context.
+                    this.previousIntygWarnings = {};
                     return this;
                 }
             };

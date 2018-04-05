@@ -105,13 +105,18 @@ module.exports = function() {
     });
 
     //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
-    this.Given(/^(?:att )vårdsystemet skapat ett intygsutkast för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
-        function(smi, ts, samEllerPersonNummer, callback) {
-            global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-            if (samEllerPersonNummer) {
-                var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
-                global.person = testdataHelpers.shuffle(shuffladPID)[0];
+    this.Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
+        function(sammaPatient, smi, ts, samEllerPersonNummer, callback) {
+
+            if (!sammaPatient) {
+                global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+                if (samEllerPersonNummer) {
+                    var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
+                    global.person = testdataHelpers.shuffle(shuffladPID)[0];
+                }
             }
+
+
 
             logger.debug('SMI: ' + (smi));
             logger.debug('TS: ' + (ts));
@@ -136,6 +141,9 @@ module.exports = function() {
                     'Läkarintyg FK 7263',
                     'Transportstyrelsens läkarintyg',
                     'Transportstyrelsens läkarintyg, diabetes'
+                    //TODO aktivera DB-DOI
+                    //'Dödsbevis',
+                    //'Dödsorsaksintyg'
                 );
             }
 

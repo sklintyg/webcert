@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,6 +30,7 @@ import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -52,6 +53,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -59,12 +61,12 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
@@ -72,6 +74,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -79,6 +84,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -120,6 +126,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private AuthoritiesHelper authoritiesHelper;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
+    @Mock
+    private WebcertFeatureService featureService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -178,7 +186,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
 
-       // when(patientDetailsResolver.updatePatientForSaving(any(Patient.class), anyString())).thenReturn(defaultPatient);
     }
 
     @Test
@@ -431,7 +438,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         Patient newPatient = getUpdatedPatient();
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(),
+                utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -500,7 +508,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testUpdatePatientOnDraftSamePatientId() throws Exception {
         utkast.setEnhetsId(UTKAST_ENHETS_ID);
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(defaultPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(defaultPatient.getPersonId(), utkast.getIntygsId(),
+                utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -535,7 +544,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setEnhetsId("<unknownenhet>");
         Patient newPatient = getUpdatedPatient();
 
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(),
+                utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -557,7 +567,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verifyNoMoreInteractions(mockUtkastRepository, notificationService);
 
     }
-        @Test
+
+    @Test
     public void testSaveDoesNotUpdateOnEmptyFornamn() throws Exception {
         final String utkastFornamn = "fornamn";
         final String utkastEfternamn = "efternamn";
@@ -590,19 +601,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(utkast, times(0)).setPatientFornamn(null);
         verify(utkast, times(0)).setPatientEfternamn("Tolvansson");
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
-    }
-
-    private Patient getUpdatedPatient() {
-        Patient newPatient = new Patient();
-        newPatient.setEfternamn("updated lastName");
-        newPatient.setMellannamn("updated middle-name");
-        newPatient.setFornamn("updated firstName");
-        newPatient.setFullstandigtNamn("updated full name");
-        newPatient.setPersonId(new Personnummer("19121272-1212"));
-        newPatient.setPostadress("updated postal address");
-        newPatient.setPostnummer("1111111");
-        newPatient.setPostort("updated post city");
-        return newPatient;
     }
 
     @Test
@@ -645,6 +643,48 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
 
+    @Test
+    public void testCheckIfPersonHasExistingIntyg() {
+        final String personnummer = "191212121212";
+        final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
+        final String vardgivareId = "vardgivarid";
+
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, "", null);
+        db1.setVardgivarId("other");
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, "", null);
+        db2.setVardgivarId(vardgivareId);
+        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, "", null);
+        doi.setVardgivarId("other");
+        when(moduleRegistry.listAllModules()).thenReturn(
+                Arrays.asList("lisjp", "db", "doi").stream()
+                        .map(a -> new IntygModule(a, null, null, null, null, null, null, null)).collect(
+                        Collectors.toList()));
+        when(authoritiesHelper.getIntygstyperForModuleFeature(any(), any(), any())).thenReturn(activeModules);
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer, activeModules))
+                .thenReturn(Arrays.asList(db1, db2, doi));
+
+        Map<String, Boolean> res = draftService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer), createUser());
+
+        assertNotNull(res);
+        assertTrue(res.get("db"));
+        assertFalse(res.get("doi"));
+
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(personnummer), eq(activeModules));
+    }
+
+    private Patient getUpdatedPatient() {
+        Patient newPatient = new Patient();
+        newPatient.setEfternamn("updated lastName");
+        newPatient.setMellannamn("updated middle-name");
+        newPatient.setFornamn("updated firstName");
+        newPatient.setFullstandigtNamn("updated full name");
+        newPatient.setPersonId(new Personnummer("19121272-1212"));
+        newPatient.setPostadress("updated postal address");
+        newPatient.setPostnummer("1111111");
+        newPatient.setPostort("updated post city");
+        return newPatient;
+    }
+
     private ValidateDraftResponse buildValidationResponse() {
         return new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList(),
                 Collections.singletonList(new ValidationMessage("testfield", ValidationMessageType.WARN)));
@@ -658,7 +698,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         return p;
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
+            VardpersonReferens vardperson) {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);
@@ -699,5 +740,4 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         return user;
     }
-
 }
