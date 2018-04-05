@@ -37,10 +37,7 @@ describe('generate', function() {
             var intygData = {
                 'contents': intygGenerator.getIntygJson({'intygType': intygType, 'intygId': intygId}),
                 'utkastStatus': 'SIGNED',
-                'revoked': false,
-                'relations': [
-                    {'intygsId': intygId, 'status': 'INTYG'}
-                ]
+                'revoked': false
             };
             restTestdataHelper.createWebcertIntyg(intygData).then(function(response) {
                 logger.debug('Tried to create intyg ' + intygId);
