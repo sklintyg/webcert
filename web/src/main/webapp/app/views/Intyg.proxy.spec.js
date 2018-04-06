@@ -100,7 +100,7 @@ describe('IntygProxy', function() {
         it('should call onError if the list cannot be fetched from the server', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
-            $httpBackend.expectGET('/api/intyg/person/' + personId).respond(500);
+            $httpBackend.expectGET('/api/intyg/person/' + personId).respond(500, {'errorCode':'ERROR_CODE'});
 
             IntygProxy.getIntygForPatient(personId, onSuccess, onError);
             $httpBackend.flush();

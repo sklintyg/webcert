@@ -37,7 +37,7 @@ angular.module('webcert').factory('webcert.IntygProxy',
                 }, function(response) {
                     $log.error('error ' + response.status);
                     // Let calling code handle the error of no data response
-                    onError(response.status);
+                    onError(response.status, 'common.error.' + response.data.errorCode.toLowerCase());
                 });
             }
 

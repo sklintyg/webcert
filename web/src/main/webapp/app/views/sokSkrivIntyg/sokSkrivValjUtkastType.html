@@ -1,7 +1,6 @@
-<wc-patient-header></wc-patient-header>
-<div class="webcert-workarea-page centered-constrained-content container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST">
-
-  <wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading">
+<wc-patient-header data-has-privilege="hasPrivilege()"></wc-patient-header>
+<div class="webcert-workarea-page centered-constrained-content container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST" >
+  <wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading" ng-if="hasPrivilege()">
 
     <form name="certForm" ng-submit="createDraft()" novalidate autocomplete="off">
       <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"
@@ -20,5 +19,6 @@
     </div>
   </wc-spinner>
   <!-- load spinner end -->
-
+  <wc-alert-message ng-if="!hasPrivilege()"
+      alert-message-id="common.error.authorization_problem_sekretessmarkering" alert-severity="danger"></wc-alert-message>
 </div>
