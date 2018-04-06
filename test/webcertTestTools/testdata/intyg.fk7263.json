@@ -82,21 +82,21 @@
     "arbetsformagaPrognos" : "Skadan har förvärrats vid varje tillfälle patienten använt armen. Måste hållas i total stillhet tills läkningsprocessen kommit en bit på väg. Eventuellt kan utredning visa att operation är nödvändig för att läka skadan.",
 
     "nedsattMed25":{
-        "from" :"2017-04-01",
-        "tom" :"2017-05-31"
+        "from" :"2017-01-04",
+        "tom" :"2017-01-04"
     },
     "nedsattMed50":{
-        "from" :"2017-03-07",
-        "tom" :"2017-03-31"
+        "from" :"2017-01-03",
+        "tom" :"2017-01-03"
     },
     "nedsattMed75":{
-        "from" :"2017-02-14",
-        "tom" :"2017-03-06"
+        "from" :"2017-01-02",
+        "tom" :"2017-01-02"
     },
     "nedsattMed100":{
-        "from" :"2017-01-26",
-        "tom" :"2017-02-13"
+        "from" :"2017-01-01",
+        "tom" :"2017-01-01"
     },
-    "arbetsloshet" : true,
+    "arbetsloshet" : false,
     "foraldrarledighet" : true
 }
