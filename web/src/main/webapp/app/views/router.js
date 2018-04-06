@@ -152,7 +152,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
 
     $urlRouterProvider.when('', ['$window', 'common.UserModel', 'common.authorityService', 'common.featureService',
         function($window, UserModel, authorityService, featureService) {
-            if (UserModel.isLakare() &&
+            if ((UserModel.isLakare() || UserModel.isTandlakare() || UserModel.isPrivatLakare()) &&
                 authorityService.isAuthorityActive({feature: featureService.features.HANTERA_INTYGSUTKAST})) {
                 return '/create/index';
             } else if (authorityService.isAuthorityActive({feature: featureService.features.HANTERA_FRAGOR})) {
