@@ -7,12 +7,6 @@ Bakgrund:
     Och jag går in på testpatienten för "Fältvalidering"
     Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
 
-@F.VAL-044
-Scenario: Intyget kan inte signeras om slut är före startdatum
-    När jag anger slutdatum som är tidigare än startdatum
-    Och jag klickar på signera-knappen
-    Så ska "4" valideringsfel visas med texten "Startdatum får inte vara efter slutdatum."
-
 @F.VAL-005
 Scenario: Datum får inte ligga för långt fram eller bak i tiden
     När jag anger start- och slutdatum för långt bort i tiden
@@ -31,16 +25,25 @@ Scenario: Ogiltiga datum får inte anges
     Och jag klickar på signera-knappen
     Så ska "8" valideringsfel visas med texten "Ogiltigt datum."
 
-@F.VAL-042
+@F.VAL-042 @WIP
 Scenario: Period mer än 6 månader ska varnas för
     När jag anger start- och slutdatum med mer än 6 månaders mellanrum
-    Och jag klickar på signera-knappen
     Så ska "1" varningsmeddelande visas med texten "Det datum du angett innebär en period på mer än 6 månader. Du bör kontrollera att tidsperioderna är korrekta."
 
-@F.VAL-043
+@F.VAL-043 @WIP
 Scenario: Startdatum en vecka före dagens datum
     När jag anger startdatum mer än en vecka före dagens datum
-    Och jag klickar på signera-knappen
     Så ska "1" varningsmeddelanden visas med texten "Det startdatum du angett är mer än en vecka före dagens datum. Du bör kontrollera att tidsperioderna är korrekta."
+
+@F.VAL-044
+Scenario: Intyget kan inte signeras om slut är före startdatum
+    När jag anger slutdatum som är tidigare än startdatum
+    Och jag klickar på signera-knappen
+    Så ska "4" valideringsfel visas med texten "Startdatum får inte vara efter slutdatum."
+
+@F.VAL-046 @WIP
+Scenario: Undersökningsdatum i framtiden ska ge varning
+    När jag anger undersökningsdatum i framtiden
+    Så ska "4" varningsmeddelande visas med texten "Observera att du valt ett datum framåt i tiden."
 
 

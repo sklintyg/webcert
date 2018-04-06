@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals pages,intyg,protractor,wcTestTools,Promise,logger,assert*/
+/*globals pages, intyg, protractor, wcTestTools, Promise, logger, assert, browser*/
 
 
 'use strict';
@@ -125,6 +125,8 @@ let chainRadiobuttonActions = intygsTyp => () => Object.keys(valideringsVal[inty
 
 let chainTextFieldActions = intygsTyp => valideringsVal[intygsTyp].text
     .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
+
+let changeFocus = () => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB);
 
 
 
@@ -252,7 +254,7 @@ When(/^jag anger start- och slutdatum med mer än 6 månaders mellanrum$/, () =>
             from: '2015-03-27',
             tom: '2017-09-25'
         }
-    })
+    }).then(changeFocus)
 );
 
 When(/^jag anger startdatum mer än en vecka före dagens datum$/, () =>
@@ -261,7 +263,7 @@ When(/^jag anger startdatum mer än en vecka före dagens datum$/, () =>
             from: '2015-03-27',
             tom: '2017-09-25'
         }
-    })
+    }).then(changeFocus)
 );
 
 When(/^jag anger ogiltiga datum$/, () =>
@@ -283,4 +285,14 @@ When(/^jag anger ogiltiga datum$/, () =>
             tom: '2016-09-32'
         },
     })
+);
+
+When(/^jag anger undersökningsdatum i framtiden$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeBaseratPa({
+        minUndersokningAvPatienten: '2021-09-27',
+        journaluppgifter: '2021-09-27',
+        telefonkontakt: '2021-09-27',
+        annat: '2021-09-27',
+        annatBeskrivning: '',
+    }).then(changeFocus)
 );
