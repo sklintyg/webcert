@@ -115,7 +115,8 @@ public class IntygApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser())
                 .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
                         patientSekretess == SekretessStatus.TRUE)
-                .orThrow();
+                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
 
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
 

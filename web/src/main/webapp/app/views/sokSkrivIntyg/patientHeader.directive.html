@@ -4,7 +4,7 @@
       <i class="material-icons gutter-icon icon-wc-32">person</i>
       <h2 class="page-heading1">Patientuppgifter</h2>
       <h3 class="page-heading2" id="patientNamn">
-        {{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}} - {{patientModel.personnummer | PersonIdFormatter}}
+        <span ng-if="::hasPrivilege">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}} - </span>{{patientModel.personnummer | PersonIdFormatter}}
 
         <button class="btn btn-primary patient-button" type="button" ng-click="changePatient()"><i class="material-icons">swap_horiz</i> Byt patient</button>
       </h3>

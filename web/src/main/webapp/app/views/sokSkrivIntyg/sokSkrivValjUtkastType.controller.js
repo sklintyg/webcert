@@ -20,12 +20,12 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
     ['$filter', '$log', '$scope', '$stateParams', '$state', '$location',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-        'common.UtkastProxy',
+        'common.UtkastProxy', 'common.authorityService', 'common.UserModel',
 
         function($filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
-            IntygProxy, UtkastProxy, Service, ObjectHelper, 
-            commonUtkastProxy) {
+            IntygProxy, UtkastProxy, Service, ObjectHelper,
+            commonUtkastProxy, authorityService, UserModel) {
             'use strict';
 
             /**
@@ -154,5 +154,16 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                         Viewstate.createErrorMessageKey = 'error.failedtocreateintyg';
                     }
                 });
+            };
+
+            $scope.hasPrivilege = function () {
+                if (PatientModel.sekretessmarkering) {
+                    var canHandleSecrecy = authorityService.isAuthorityActive({
+                        authority: UserModel.privileges.HANTERA_SEKRETESSMARKERAD_PATIENT
+                    });
+                    return canHandleSecrecy;
+                } 
+                return true;
+
             };
         }]);
