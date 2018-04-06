@@ -96,6 +96,8 @@ let findErrorMessages = () => element.all(by.repeater('category in categories'))
 
 let findValidationErrorsWithText = text => element.all(by.cssContainingText('div .validation-error', text));
 
+let findValidationWarningsWithText = text => element.all(by.cssContainingText('div .validation-warning', text));
+
 let fyllText = fieldtype => {
     switch (fieldtype) {
         case 'datum':
@@ -174,7 +176,11 @@ Then(/^ska statusmeddelande att obligatoriska uppgifter saknas visas$/, () => ex
 Then(/^ska statusmeddelande att intyget är klart att signera visas$/, () => expect(utkastPage.utkastStatus.getText()).to.eventually.contain('Klart att signera'));
 
 Then(/^ska "(\d+)" valideringsfel visas med texten "([^"]+)"$/, (antal, text) =>
-    expect(findValidationErrorsWithText(text).count()).to.eventually.equal(Number.parseInt(antal, 10))
+    expect(findValidationErrorsWithText(text).count()).to.eventually.equal(antal)
+);
+
+Then(/^ska "(\d+)" varningsmeddelanden? visas med texten "([^"]+)"$/, (antal, text) =>
+    expect(findValidationWarningsWithText(text).count()).to.eventually.equal(antal)
 );
 
 When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg =>
@@ -183,3 +189,98 @@ When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg 
 );
 
 When(/^jag fyller i textfält med felaktiga värden i "([^"]+)"$/, intyg => chainTextFieldActions(intyg));
+
+
+When(/^jag anger slutdatum som är tidigare än startdatum$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+        nedsattMed25: {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        },
+        nedsattMed50: {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        },
+        nedsattMed75: {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        },
+        nedsattMed100: {
+            from: '2017-03-27',
+            tom: '2016-04-01'
+        },
+    })
+);
+
+When(/^jag anger start- och slutdatum för långt bort i tiden$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+        nedsattMed25: {
+            from: '1700-03-27',
+            tom: '2116-04-01'
+        },
+        nedsattMed50: {
+            from: '1700-03-27',
+            tom: '2116-04-01'
+        },
+        nedsattMed75: {
+            from: '1700-03-27',
+            tom: '2116-04-01'
+        },
+        nedsattMed100: {
+            from: '1700-03-27',
+            tom: '2116-04-01'
+        },
+    })
+);
+
+When(/^jag anger överlappande start- och slutdatum$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+        nedsattMed25: {
+            from: '2016-03-27',
+            tom: '2016-09-25'
+        },
+        nedsattMed50: {
+            from: '2016-04-27',
+            tom: '2016-10-25'
+        }
+    })
+);
+
+When(/^jag anger start- och slutdatum med mer än 6 månaders mellanrum$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+        nedsattMed25: {
+            from: '2015-03-27',
+            tom: '2017-09-25'
+        }
+    })
+);
+
+When(/^jag anger startdatum mer än en vecka före dagens datum$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+        nedsattMed25: {
+            from: '2015-03-27',
+            tom: '2017-09-25'
+        }
+    })
+);
+
+When(/^jag anger ogiltiga datum$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+        nedsattMed25: {
+            from: '2016-03-32',
+            tom: '2016-09-32'
+        },
+        nedsattMed50: {
+            from: '2016-03-32',
+            tom: '2016-09-32'
+        },
+        nedsattMed75: {
+            from: '2016-03-32',
+            tom: '2016-09-32'
+        },
+        nedsattMed100: {
+            from: '2016-03-32',
+            tom: '2016-09-32'
+        },
+    })
+);
