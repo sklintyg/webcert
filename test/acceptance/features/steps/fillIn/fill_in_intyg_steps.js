@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,wcTestTools, protractor, browser, testdata, pages ,logger, Promise*/
+/*global intyg,wcTestTools, protractor, browser, testdata, logger, Promise*/
 
 'use strict';
 /*jshint newcap:false */
@@ -377,24 +377,3 @@ Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
     logger.silly(intyg);
     return fillIn(global.intyg);
 });
-
-When(/^jag anger slutdatum som är tidigare än startdatum$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
-        nedsattMed25: {
-            from: '2017-03-27',
-            tom: '2016-04-01'
-        },
-        nedsattMed50: {
-            from: '2017-03-27',
-            tom: '2016-04-01'
-        },
-        nedsattMed75: {
-            from: '2017-03-27',
-            tom: '2016-04-01'
-        },
-        nedsattMed100: {
-            from: '2017-03-27',
-            tom: '2016-04-01'
-        },
-    })
-);
