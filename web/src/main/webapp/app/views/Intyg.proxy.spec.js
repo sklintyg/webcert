@@ -55,7 +55,7 @@ describe('IntygProxy', function() {
         $provide.value('common.dialogService', dialogService);
         $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat']));
         $provide.value('common.User', User);
-        $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare']));
+        $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare']));
         $provide.value('common.messageService', {});
 
     }));

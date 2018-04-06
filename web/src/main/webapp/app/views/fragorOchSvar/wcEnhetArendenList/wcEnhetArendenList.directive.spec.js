@@ -118,7 +118,7 @@ describe('wcEnhetArendenList', function() {
             var featureService = jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]);
             featureService.features = {};
             $provide.value('common.featureService', featureService);
-            $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare']));
+            $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare']));
 
             // To prevent $window.location from reloading the page
             var $window = {};
