@@ -94,6 +94,10 @@ public class NotificationPatientEnricher {
 
         Optional<Personnummer> personnummer = Optional.ofNullable(person.getPersonnummer());
 
+        if (!personnummer.isPresent()) {
+            throw new IllegalArgumentException("Call to buildPatientFromPersonSvar contained a null personnummer.");
+        }
+
         PersonId personId = new PersonId();
         personId.setRoot(
                 SamordningsnummerValidator.isSamordningsNummer(personnummer)
