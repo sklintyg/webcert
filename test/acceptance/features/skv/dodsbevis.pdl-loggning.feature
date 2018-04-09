@@ -97,18 +97,6 @@ Scenario: GE-005 - Makulera Dödsbevis
 		Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 #11
-@fornya @läsa @skriva
-Scenario: GE-005 - Förnya Dödsbevis
-		När jag går in på att skapa ett "Dödsbevis" intyg
-		Och jag fyller i alla nödvändiga fält för intyget
-		Och jag signerar intyget
-		Och jag förnyar intyget
-		Och jag fyller i nödvändig information ( om intygstyp är "Dödsbevis")
-		Och jag signerar intyget
-		Så ska loggaktivitet "Läsa" skickas till loggtjänsten
-		Och ska loggaktivitet "Skriva" skickas till loggtjänsten
-
-#11
 @ersatt @läsa @skriva
 Scenario: GE-005 - Ersätta Dödsbevis
 		När jag går in på att skapa ett "Dödsbevis" intyg
