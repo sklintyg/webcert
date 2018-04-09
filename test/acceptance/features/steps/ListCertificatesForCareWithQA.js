@@ -87,20 +87,20 @@
      //Vänta på att intyget/intygen ska vara tillgänligt i webcert.
      return helpers.largeDelay().then(function() {
          logger.silly(body);
-         return sendListCertificatesForCareWithQA(body).then(function(result) {
-             response = result;
-             //Spara svar för aktuellt intyg i responseIntyg variabel
-             if (response.list && response.list.item) {
-                 response.list.item.forEach(function(element) {
-                     var intygID = element.intyg['intygs-id'].extension;
-                     if (intygID === intyg.id) {
-                         responseIntyg = element;
-                         logger.silly(JSON.stringify(responseIntyg));
-                     }
-                 });
-             }
+         return sendListCertificatesForCareWithQA(body);
+     }).then(function(result) {
+         response = result;
+         //Spara svar för aktuellt intyg i responseIntyg variabel
+         if (response.list && response.list.item) {
+             response.list.item.forEach(function(element) {
+                 var intygID = element.intyg['intygs-id'].extension;
+                 if (intygID === intyg.id) {
+                     responseIntyg = element;
+                     logger.silly(JSON.stringify(responseIntyg));
+                 }
+             });
+         }
 
-         });
      });
 
 

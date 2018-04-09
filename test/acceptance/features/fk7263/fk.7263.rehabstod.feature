@@ -1,6 +1,6 @@
 # language: sv
 
-@rehabstod @fk7263
+@rehabstod @fk7263 @NOTREADY @DEPRICATED @MOVE_TO_SMI
 Egenskap: FK7263-integration med rehabstöd
 
 Bakgrund: Jag befinner mig på Rehabstöds förstasida

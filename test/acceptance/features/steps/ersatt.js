@@ -37,9 +37,10 @@ const {
 
 
 
-var helpers = require('./helpers');
-var intygURL = helpers.intygURL;
-var baseIntygPage = wcTestTools.pages.intyg.base.intyg;
+const helpers = require('./helpers');
+const intygURL = helpers.intygURL;
+const baseIntygPage = wcTestTools.pages.intyg.base.intyg;
+const fragaSvar = wcTestTools.pages.intyg.hogerfaltet.fragaSvar;
 
 /*
  *	Stödfunktioner
@@ -132,8 +133,9 @@ Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)
                 promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.makulera.btn)).to.become(shouldBeDisplayed));
                 break;
             case 'fråga/svar':
-                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.fragaSvar.administrativFraga.menyVal)).to.become(shouldBeDisplayed));
-                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.fragaSvar.komplettering.menyVal)).to.become(shouldBeDisplayed));
+                promiseArr.push(fragaSvar.administrativFraga.menyVal.click().then(function() {
+                    return expect(helpers.elementIsUsable(fragaSvar.administrativFraga.nyfraga.text)).to.become(shouldBeDisplayed);
+                }));
                 break;
             default:
                 throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');

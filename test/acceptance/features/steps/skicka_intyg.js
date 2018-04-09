@@ -82,7 +82,7 @@ Given(/^jag skickar intyget till Försäkringskassan$/, function() {
         return helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
     }).then(function() {
         //Vänta på att requesten processas av back-end.
-        return helpers.mediumDelay();
+        return helpers.pageReloadDelay();
     });
 
     // callback();

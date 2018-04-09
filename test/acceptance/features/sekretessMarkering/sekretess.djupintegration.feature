@@ -2,7 +2,7 @@
 @SEKRETESSMARKERING @SAKERHET @DJUPINTEGRATION
 Egenskap: djupintegration - Sekretessmarkerad patient
 
-@SMI @SIGNERA @F.BE-009 @WAITINGFORFIX @INTYG-5894
+@SMI @SIGNERA @F.BE-009
 Scenario: Vid djupintegration ska SJF flaggan inte ge några extra rättigheter om patienten är sekrettessmarkerad.
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 	Och jag går in på en patient med sekretessmarkering

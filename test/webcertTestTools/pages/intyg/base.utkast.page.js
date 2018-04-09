@@ -26,6 +26,8 @@
 var pageHelpers = require('../pageHelper.util.js');
 var JClass = require('jclass');
 var EC = protractor.ExpectedConditions;
+var hogerfaltet = require('./hogerfaltet');
+
 var BaseUtkast = JClass._extend({
     init: function() {
         this.fmbDialogs = {
@@ -58,40 +60,7 @@ var BaseUtkast = JClass._extend({
             kontakt: element(by.cssContainingText('option', 'Kontakt')),
             sendButton: element(by.id('sendArendeBtn'))
         };
-        this.fragaSvar = {
-            meddelande: function(messageId) {
-                var obj = {};
-                obj.frageText = element(by.id('kompletteringar-arende-fragetext-' + messageId));
-                obj.komplettering = {
-                    hanterad: element(by.id('arende-handled-' + messageId)),
-                    ohanterad: element(by.id('arende-unhandled-' + messageId)),
-                    button: element(by.id('komplettera-intyg'))
-                };
-                obj.administrativFraga = {
-                    svaraMedTxt: function(text) {
-                        return element(by.id('arende-answer-button-' + messageId)).typeKeys(protractor.Key.SPACE).then(function() {
-                            return element(by.id('answerText-' + messageId)).typeKeys(text);
-                        }).then(function() {
-                            return element(by.id('sendAnswerBtn-' + messageId)).typeKeys(protractor.Key.SPACE);
-                        });
-                    }
-                };
-                return obj;
-            },
-            administrativFraga: {
-                menyVal: element(by.id('arende-filter-administrativafragor')),
-                nyfraga: {
-                    text: element(by.id('arendeNewModelText')),
-                    topic: element(by.id('new-question-topic')),
-                    kontakt: element(by.cssContainingText('option', 'Kontakt')),
-                    sendButton: element(by.id('sendArendeBtn'))
-                },
-                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
-            },
-            komplettering: {
-                menyVal: element(by.id('arende-filter-kompletteringsbegaran'))
-            }
-        };
+        this.fragaSvar = hogerfaltet.fragaSvar;
         this.newTextVersionAlert = element(by.id('newTextVersion'));
         this.backBtn = element(by.id('tillbakaButton'));
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
@@ -134,9 +103,6 @@ var BaseUtkast = JClass._extend({
     },
     signeraButtonClick: function() {
         return pageHelpers.moveAndSendKeys(this.signeraButton, protractor.Key.SPACE);
-    },
-    selectQuestionTopic: function(amne) {
-        this.arendeQuestion.topic.element(by.cssContainingText('option', amne)).click();
     },
     getMissingInfoMessagesCount: function() {
         return this.showMissingInfoList.all(by.tagName('a')).then(function(items) {

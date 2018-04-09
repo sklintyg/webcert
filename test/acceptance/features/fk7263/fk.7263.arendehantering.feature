@@ -1,5 +1,5 @@
 # language: sv
-@arendehantering @fk7263
+@arendehantering @fk7263 @NOTREADY @DEPRICATED @MOVE TO SMI
 Egenskap: FK7263 Ärendehantering
 
 Bakgrund: Jag är inloggad och inne på ett skickat intyg

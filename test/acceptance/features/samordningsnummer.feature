@@ -18,13 +18,7 @@ Scenario: Det ska gå att öppna ett signerat SMI-intyg i Mina intyg för en pat
 	Så ska intygets status vara "Intyget är signerat"
 	När jag går till Mina intyg för patienten
 	Så ska intyget finnas i Mina intyg
-
-@createDraft1
-Scenario: Det ska gå att skicka CreateDraft:1 med ett samordningsnummer
-	Givet att jag är inloggad som djupintegrerad läkare
-	Och att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263" med samordningsnummer
-	Så jag går in på intygsutkastet via djupintegrationslänk
-
+	
 @createDraft2
 Scenario: Det ska gå att skicka CreateDraft:2 med ett samordningsnummer
   Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
