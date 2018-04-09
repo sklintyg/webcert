@@ -36,8 +36,9 @@ module.exports = {
         'valjUtkastType': require('./sokSkrivIntyg/sokSkrivValjUtkastType.page.js'),
         'visaIntyg': require('./sokSkrivIntyg/sokSkrivValjIntyg.page.js')
     },
-    fragorOchSvar: require('./fragorOchSvar.js'),
+    fragorOchSvar: require('./fragorOchSvar.js'), //Ärendehanteringsidan
     intyg: {
+        hogerfaltet: require(intygPath + 'hogerfaltet.js'),
         fk: {
             '7263': {
                 utkast: require(intygPath + 'fk7263/fk.7263.utkast.page.js'),

@@ -36,18 +36,19 @@ const {
 } = require('cucumber');
 
 
-var fkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
-var fkLusePage = wcTestTools.pages.intyg.luse.intyg;
-var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
-var baseUtkastPage = wcTestTools.pages.intyg.base.utkast;
-var baseIntygPage = wcTestTools.pages.intyg.base.intyg;
-var helpers = require('./helpers');
-var soap = require('soap');
-var soapMessageBodies = require('./soap');
-var testdataHelper = wcTestTools.helpers.testdata;
-var messageID;
+const fkIntygPage = wcTestTools.pages.intyg.fk['7263'].intyg;
+const fkLusePage = wcTestTools.pages.intyg.luse.intyg;
+const hogerfaltet = wcTestTools.pages.intyg.hogerfaltet;
+const fragaSvar = hogerfaltet.fragaSvar;
+const helpers = require('./helpers');
+const soap = require('soap');
+const soapMessageBodies = require('./soap');
+const testdataHelper = wcTestTools.helpers.testdata;
+const testTools = require('common-testtools');
 
-var testTools = require('common-testtools');
+let messageID;
+
+
 testTools.protractorHelpers.init();
 /*
  *	Stödfunktioner
@@ -55,29 +56,28 @@ testTools.protractorHelpers.init();
  */
 
 function sendQuestionToFK(amne) {
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-    logger.silly('isSMIIntyg : ' + isSMIIntyg);
-
     var testString = testdataHelper.generateTestGuid();
     var fragaText = 'En ' + amne + '-fråga';
 
-    // if (isSMIIntyg) {
-
-    // TODO use baseIntygPage.fragaSvar. instead
-    return baseUtkastPage.fragaSvar.administrativFraga.menyVal.click().then(function() {
-        return baseUtkastPage.fragaSvar.administrativFraga.nyfraga.text.typeKeys(fragaText + ' ' + testString);
+    return fragaSvar.administrativFraga.menyVal.click().then(function() {
+        return fragaSvar.administrativFraga.nyfraga.text.typeKeys(fragaText + ' ' + testString);
     }).then(function() {
-        return baseUtkastPage.selectQuestionTopic(amne);
+        return fragaSvar.selectQuestionTopic(amne);
     }).then(function() {
-        return baseUtkastPage.fragaSvar.administrativFraga.nyfraga.sendButton.typeKeys(protractor.Key.SPACE);
+        return fragaSvar.administrativFraga.nyfraga.sendButton.typeKeys(protractor.Key.SPACE);
     }).then(function() {
-        return lisjpUtkastPage.arendePanel.getAttribute('id');
-    }).then(function(result) {
-        var element = result.split('-');
+        //return lisjpUtkastPage.arendePanel.getAttribute('id');
+        return fragaSvar.getMessageIdFrom.arendePanel(1);
+    }).then(function(fragaId) {
+        /*var element = result.split('-');
         var splitIndex = element[0].length + element[1].length + 2;
         var fragaId = result.substr(splitIndex, result.length);
 
-        logger.debug('Frågans ID: ' + fragaId);
+        logger.debug('Frågans ID: ' + fragaId);*/
+
+        if (!intyg.messages) {
+            global.intyg.messages = [];
+        }
 
         global.intyg.messages.unshift({
             typ: 'Fråga',
@@ -165,18 +165,15 @@ Given(/^ska det inte finnas en knapp med texten "([^"]*)"$/, function(texten) {
 
 Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
     var fragaDeltext;
-    var page;
 
     if (typ === 'intygs') {
         messageID = global.intyg.messages[0].id;
         fragaDeltext = global.intyg.messages[0].testString;
-        page = fkLusePage;
     } else {
         messageID = global.ursprungligtIntyg.messages[0].id;
         fragaDeltext = global.ursprungligtIntyg.messages[0].testString;
-        page = baseUtkastPage;
     }
-    return expect(page.fragaSvar.meddelande(messageID).frageText.getText()).to.eventually.contain(fragaDeltext);
+    return expect(fragaSvar.meddelande(messageID).frageText.getText()).to.eventually.contain(fragaDeltext);
 });
 
 
@@ -254,12 +251,12 @@ Given(/^jag svarar på frågan$/, function() {
 
     return browser.refresh()
         .then(function() {
-            return baseIntygPage.fragaSvar.meddelande(messageID).administrativFraga.svaraMedTxt('Ett svar till FK, på frågan: ' + global.intyg.messages[0].testString);
+            return fragaSvar.meddelande(messageID).administrativFraga.svaraMedTxt('Ett svar till FK, på frågan: ' + global.intyg.messages[0].testString);
         });
 });
 
 Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
-    return expect(baseUtkastPage.fragaSvar.meddelande(messageID).komplettering.hanterad.isPresent()).to.eventually.be.ok;
+    return expect(fragaSvar.meddelande(messageID).komplettering.hanterad.isPresent()).to.eventually.be.ok;
 });
 
 Given(/^ska jag se påminnelsen på intygssidan$/, function() {
@@ -281,14 +278,22 @@ Given(/^ska jag se påminnelsen på intygssidan$/, function() {
         });
 });
 
-Given(/^jag markerar (?:svaret|frågan) från Försäkringskassan som( INTE)? hanterad$/, function() {
-    return browser.refresh()
-        .then(function() {
-            return helpers.fetchMessageIds(intyg.typ);
-        })
-        .then(function() {
-            return fkIntygPage.markMessageAsHandled(intyg.messages[0].id);
-        });
+Given(/^jag markerar (svaret|frågan)? från Försäkringskassan som( INTE)? hanterad$/, function(meddelandeTyp, inte) {
+
+    if (meddelandeTyp === 'svaret') {
+        messageID = global.intyg.messages[1].id;
+    } else {
+        messageID = global.intyg.messages[0].id;
+    }
+    return browser.refresh().then(function() {
+        return helpers.pageReloadDelay();
+    }).then(function() {
+        return fragaSvar.administrativFraga.menyVal.click();
+    }).then(function() {
+        return helpers.smallDelay();
+    }).then(function() {
+        return fragaSvar.meddelande(messageID).administrativFraga.togglaHanterad();
+    });
 });
 
 Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om intyget$/, function(amne, callback) {
@@ -537,7 +542,7 @@ Given(/^ska jag se min fråga under ohanterade frågor$/, function() {
             messageId = global.intyg.messages[k].id;
         }
     }
-    return expect(baseUtkastPage.fragaSvar.meddelande(messageID).komplettering.ohanterad.isPresent()).to.eventually.become(true);
+    return expect(fragaSvar.meddelande(messageID).komplettering.ohanterad.isPresent()).to.eventually.become(true);
 });
 
 Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function(callback) {
@@ -548,7 +553,7 @@ Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, func
 });
 
 Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
-    return expect(baseUtkastPage.fragaSvar.administrativFraga.vidarebefordra.isPresent()).to.eventually.become(true);
+    return expect(fragaSvar.administrativFraga.vidarebefordra.isPresent()).to.eventually.become(true);
 });
 Then(/^ska det synas vem som svarat$/, function() {
     var name = global.user.forNamn + ' ' + global.user.efterNamn;

@@ -1,6 +1,6 @@
 # language: sv
 
-@uthopp @uthoppsläge
+@uthopp @uthoppsläge @NOTREADY @DEPRICATED @MOVE_TO_SMI
 Egenskap: FK7263 - Uthoppsläge
 
 @fråga-uthopp @mailnotifikation @notReady

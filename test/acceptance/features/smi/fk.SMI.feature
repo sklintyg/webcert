@@ -42,7 +42,7 @@ Exempel:
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
 
-@MINAINTYG @KEEPINTYG @INTYGTILLFK @SKICKA @MI-F010 @INTYG-5832 @WAITINGFORFIX
+@MINAINTYG @KEEPINTYG @INTYGTILLFK @SKICKA @MI-F010
 Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
 	När jag går in på ett <intyg> med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan

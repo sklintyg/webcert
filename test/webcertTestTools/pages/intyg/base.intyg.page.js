@@ -30,6 +30,7 @@ testTools.protractorHelpers.init();
 var shuffle = testdataHelper.shuffle;
 var restUtil = require('../../util/rest.util.js');
 var pageHelpers = require('../pageHelper.util.js');
+var hogerfaltet = require('./hogerfaltet');
 
 
 var BaseIntyg = JClass._extend({
@@ -70,10 +71,15 @@ var BaseIntyg = JClass._extend({
 
         this.arendeIntygNotSentYetMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
         this.arendeSentMessage = element(by.id('arende-is-sent-to-fk-message-text'));
-
         this.arendeFilterKompletteringsbegaran = element(by.id('arende-filter-kompletteringsbegaran'));
         this.arendeFilterAdministrativafragor = element(by.id('arende-filter-administrativafragor'));
+        this.arendePanel = element(by.css('arende-panel'));
+        this.arendeText = element(by.id('arendeNewModelText'));
+        this.arendeAmne = element(by.id('new-question-topic'));
+        this.arendeAmneSelected = element(by.id('new-question-topic-selected-item-label'));
+        this.arendeSend = element(by.id('sendArendeBtn'));
 
+        /* Komplettera modaler */
         this.kompletteraIntygButton = element(by.id('komplettera-intyg'));
         this.kanInteKompletteraButton = element(by.id('kan-inte-komplettera'));
         this.kanInteKompletteraModalAnledning1 = element(by.id('komplettering-modal-dialog-anledning-1'));
@@ -85,45 +91,8 @@ var BaseIntyg = JClass._extend({
         this.kompletteringUtkastLink = element(by.id('komplettera-open-utkast'));
         this.uthoppKompletteraLink = element(by.id('arende-komplettering-uthopp-link'));
 
-        this.arendePanel = element(by.css('arende-panel'));
-        this.arendeText = element(by.id('arendeNewModelText'));
-        this.arendeAmne = element(by.id('new-question-topic'));
-        this.arendeAmneSelected = element(by.id('new-question-topic-selected-item-label'));
-        this.arendeSend = element(by.id('sendArendeBtn'));
-        this.fragaSvar = {
-            meddelande: function(messageId) {
-                var obj = {};
-                obj.frageText = element(by.id('kompletteringar-arende-fragetext-' + messageId));
-                obj.komplettering = {
-                    hanterad: element(by.id('arende-handled-' + messageId)),
-                    ohanterad: element(by.id('arende-unhandled-' + messageId)),
-                    button: element(by.id('komplettera-intyg'))
-                };
-                obj.administrativFraga = {
-                    svaraMedTxt: function(text) {
-                        return element(by.id('arende-answer-button-' + messageId)).typeKeys(protractor.Key.SPACE).then(function() {
-                            return element(by.id('answerText-' + messageId)).typeKeys(text);
-                        }).then(function() {
-                            return element(by.id('sendAnswerBtn-' + messageId)).typeKeys(protractor.Key.SPACE);
-                        });
-                    }
-                };
-                return obj;
-            },
-            administrativFraga: {
-                menyVal: element(by.id('arende-filter-administrativafragor')),
-                nyfraga: {
-                    text: element(by.id('arendeNewModelText')),
-                    topic: element(by.id('new-question-topic')),
-                    kontakt: element(by.cssContainingText('option', 'Kontakt')),
-                    sendButton: element(by.id('sendArendeBtn'))
-                },
-                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
-            },
-            komplettering: {
-                menyVal: element(by.id('arende-filter-kompletteringsbegaran'))
-            }
-        };
+        /* Fråga/svar element i högerfältet */
+        this.fragaSvar = hogerfaltet.fragaSvar;
 
         // Statusmeddelanden vid namn/adressändring vid djupintegration
         this.statusNameChanged = element(by.id('intyg-djupintegration-name-changed'));
