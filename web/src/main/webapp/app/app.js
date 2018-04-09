@@ -91,8 +91,8 @@
         });
     }
 
-    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider',
-        function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider) {
+    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider', '$animateProvider',
+        function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider, $animateProvider) {
 
             // Set in boot-app.jsp
             var debugMode = angular.isDefined(WEBCERT_DEBUG_MODE) ? WEBCERT_DEBUG_MODE : true; //jshint ignore:line
@@ -118,6 +118,8 @@
             // Disable comment and css directives
             $compileProvider.commentDirectivesEnabled(false);
             $compileProvider.cssClassDirectivesEnabled(false);
+
+            $animateProvider.classNameFilter(/^(?:(?!ng-animate-disabled).)*$/);
         }]);
 
 /*
