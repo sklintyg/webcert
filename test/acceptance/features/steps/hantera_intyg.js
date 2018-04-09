@@ -36,11 +36,12 @@ const {
 } = require('cucumber');
 
 
-var fkIntygPage = pages.intyg.fk['7263'].intyg;
-var fkUtkastPage = pages.intyg.fk['7263'].utkast;
-var utkastPage = pages.intyg.base.utkast;
-var helpers = require('./helpers.js');
-var moveAndSendKeys = helpers.moveAndSendKeys;
+const fkIntygPage = pages.intyg.fk['7263'].intyg;
+const lisjpIntygPage = pages.intyg.lisjp.intyg;
+const fkUtkastPage = pages.intyg.fk['7263'].utkast;
+const utkastPage = pages.intyg.base.utkast;
+const helpers = require('./helpers.js');
+const moveAndSendKeys = helpers.moveAndSendKeys;
 
 /*
  *	Stödfunktioner
@@ -227,12 +228,11 @@ Given(/^jag raderar utkastet$/, function() {
 
 
 Given(/^jag skriver ut intyget$/, function() {
-    var isFK7263Intyg = helpers.isFK7263Intyg(intyg.typ);
-
-    if (isFK7263Intyg === false) {
+    //Specifika krav på lisjp utskrift se: D3. PDF utskrift
+    if (intyg.typ !== 'Läkarintyg för sjukpenning') {
         return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
     } else {
-        return fkIntygPage.skrivUtFullstandigtIntyg();
+        return lisjpIntygPage.skrivUtFullstandigtIntyg();
     }
 });
 
