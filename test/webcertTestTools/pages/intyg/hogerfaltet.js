@@ -92,7 +92,6 @@ var hogerfalt = WebcertBasePage._extend({
                     return fragaSvar.container.all(by.css('.card')).then(function(elments) {
                         return elments[index].getAttribute('id');
                     }).then(function(domId) {
-                        console.log('domId: ' + domId);
                         var string = domId.split('-');
                         var splitIndex = string[0].length + string[1].length + 2;
                         var fragaId = domId.substr(splitIndex, domId.length);
