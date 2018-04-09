@@ -37,7 +37,6 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.xmldsig.model.SignatureType;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -70,6 +69,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -317,7 +317,7 @@ public class SignaturServiceImpl implements SignaturService {
 
     private SignaturTicket createAndPersistSignature(Utkast utkast, SignaturTicket ticket, String rawSignature, WebCertUser user) {
 
-        validateUniqueIntyg(user, utkast.getIntygsTyp(), utkast.getPatientPersonnummer());
+        validateUniqueIntyg(user, utkast);
 
         PagaendeSignering pagaendeSignering = pagaendeSigneringRepository.findOne(ticket.getPagaendeSigneringId());
         if (pagaendeSignering == null) {
@@ -496,22 +496,59 @@ public class SignaturServiceImpl implements SignaturService {
         }
     }
 
-    private void validateUniqueIntyg(WebCertUser user, String intygsTyp, Personnummer patientPersonnummer) {
-        boolean verified = authoritiesValidator.given(user, intygsTyp)
+    /**
+     * Validates the utkast to be signed for uniqueness in Webcert.
+     * <p>
+     * <p>
+     * If a blocking intyg is found a {@link WebCertServiceException} is thrown with status code
+     * {@link WebCertServiceErrorCodeEnum#INVALID_STATE_INTYG_EXISTS}.
+     *
+     * @param user   the user, used for accessing the features activated for the utkast.
+     * @param utkast the utkast to be signed.
+     */
+    private void validateUniqueIntyg(WebCertUser user, Utkast utkast) {
+        boolean verified = authoritiesValidator.given(user, utkast.getIntygsTyp())
                 .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG)
                 .isVerified();
 
         if (verified) {
-            List<Utkast> intygList = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(
-                    patientPersonnummer.getPersonnummerWithDash(),
-                    ImmutableSet.of(intygsTyp))
+            List<Utkast> intygList = utkastRepository
+                    .findAllByPatientPersonnummerAndIntygsTypIn(
+                            utkast.getPatientPersonnummer().getPersonnummerWithDash(),
+                            ImmutableSet.of(utkast.getIntygsTyp()))
                     .stream()
-                    .filter(u -> u.getSignatur() != null)
+                    .filter(oldUtkast -> isBlocking(utkast, oldUtkast))
                     .collect(Collectors.toList());
             if (!intygList.isEmpty()) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_INTYG_EXISTS,
-                        "Signed intyg of type " + intygsTyp + " already exists.");
+                        "Signed intyg of type " + utkast.getIntygsTyp() + " already exists.");
             }
         }
+    }
+
+    /**
+     * Determines if the oldUtkast is blocking for the current utkast to be signed.
+     *
+     * @param utkast    the uktast to be signed.
+     * @param oldUtkast the old potentially blocking utkast/intyg
+     * @return true if the oldUtkast is infact blocking, false otherwise
+     */
+    private boolean isBlocking(Utkast utkast, Utkast oldUtkast) {
+        // If the utkast is not signed we do not care.
+        if (oldUtkast.getSignatur() == null) {
+            return false;
+        }
+
+        // Revoked intyg is not relevant.
+        if (oldUtkast.getAterkalladDatum() != null) {
+            return false;
+        }
+
+        // Handles ersätta intyg. We do not care which relation is used - this should be handled at the creation of the utkast.
+        if (Objects.equals(utkast.getRelationIntygsId(), oldUtkast.getIntygsId())) {
+            return false;
+        }
+
+        return true;
     }
 }

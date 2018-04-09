@@ -69,6 +69,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -395,16 +396,27 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void serverSignatureSuccessUniqueIntyg() {
+        final String replacedId = "replaced";
+        final String revokedId = "revoked";
 
         Feature f = new Feature();
         f.setIntygstyper(ImmutableList.of(INTYG_TYPE));
         f.setGlobal(true);
         user.getFeatures().put(AuthoritiesConstants.FEATURE_UNIKT_INTYG, f);
 
+        Utkast revoked = createUtkast(revokedId, 1L, INTYG_TYPE, UtkastStatus.SIGNED, "model", null, ENHET_ID, PERSON_ID);
+        revoked.setSignatur(new Signatur());
+        revoked.setAterkalladDatum(LocalDateTime.of(2018, 1, 1, 12, 24));
+
+        Utkast replaced = createUtkast(replacedId, 1L, INTYG_TYPE, UtkastStatus.SIGNED, "model", null, ENHET_ID, PERSON_ID);
+        replaced.setSignatur(new Signatur());
+
+        completedUtkast.setRelationIntygsId(replacedId);
+
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(any(String.class), anySet()))
-                .thenReturn(Collections.emptyList());
+                .thenReturn(ImmutableList.of(revoked, replaced));
 
         SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
 
