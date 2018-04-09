@@ -56,11 +56,11 @@ Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/
     var elm;
 
     if (typ === 'frågan') {
-        elm = 'wc-sekretessmarkering-icon-' + global.intyg.messages[0].id;
+        elm = 'wc-sekretessmarkering-text-' + global.intyg.messages[0].id;
         logger.silly(elm);
     } else if (typ === 'intyget') {
         //Annars kollar vi efter 'icon+intyg' elemenetet
-        elm = 'wc-sekretessmarkering-icon-' + intyg.id;
+        elm = 'wc-sekretessmarkering-text-' + intyg.id;
     }
 
     return expect(element(by.id(elm)).isPresent()).to.eventually.become(true);

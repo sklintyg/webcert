@@ -24,7 +24,7 @@ Scenario: SE-011 - Varningmeddelanden i fråga-svar för sekretessmarkerad perso
 
 	#MO-007
 	Och jag skriver ut intyget
-	Så ska jag varnas om att "OBS! Patienten har en sekretessmarkering" i nytt fönster
+	Så ska jag varnas om att "Patienten har en sekretessmarkering. Hantera utskriften varsamt" i nytt fönster
 
 	När jag skickar intyget till Försäkringskassan
 	Och Försäkringskassan ställer en "OVRIGT" fråga om intyget

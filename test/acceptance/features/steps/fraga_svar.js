@@ -280,10 +280,11 @@ Given(/^ska jag se påminnelsen på intygssidan$/, function() {
 
 Given(/^jag markerar (svaret|frågan)? från Försäkringskassan som( INTE)? hanterad$/, function(meddelandeTyp, inte) {
 
+    let tempMessageID;
     if (meddelandeTyp === 'svaret') {
-        messageID = global.intyg.messages[1].id;
+        tempMessageID = global.intyg.messages[1].id;
     } else {
-        messageID = global.intyg.messages[0].id;
+        tempMessageID = global.intyg.messages[0].id;
     }
     return browser.refresh().then(function() {
         return helpers.pageReloadDelay();
@@ -292,7 +293,7 @@ Given(/^jag markerar (svaret|frågan)? från Försäkringskassan som( INTE)? han
     }).then(function() {
         return helpers.smallDelay();
     }).then(function() {
-        return fragaSvar.meddelande(messageID).administrativFraga.togglaHanterad();
+        return fragaSvar.meddelande(tempMessageID).administrativFraga.togglaHanterad();
     });
 });
 
