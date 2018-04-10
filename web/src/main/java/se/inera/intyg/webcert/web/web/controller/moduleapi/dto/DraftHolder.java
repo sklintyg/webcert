@@ -51,6 +51,7 @@ public class DraftHolder {
     private LocalDateTime created;
 
     private boolean patientResolved = false;
+    private boolean validPatientAddressAquiredFromPU = false;
     private boolean sekretessmarkering = false;
     private boolean avliden = false;
     private boolean patientNameChangedInPU = false;
@@ -166,6 +167,14 @@ public class DraftHolder {
 
     public void setPatientNameChangedInPU(boolean patientNameChangedInPU) {
         this.patientNameChangedInPU = patientNameChangedInPU;
+    }
+
+    public boolean isValidPatientAddressAquiredFromPU() {
+        return validPatientAddressAquiredFromPU;
+    }
+
+    public void setValidPatientAddressAquiredFromPU(boolean validPatientAddressAquiredFromPU) {
+        this.validPatientAddressAquiredFromPU = validPatientAddressAquiredFromPU;
     }
 
     public LocalDateTime getCreated() {
