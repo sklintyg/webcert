@@ -123,6 +123,9 @@ let chainCheckboxActions = intygsTyp => valideringsVal[intygsTyp].checkboxar
 let chainRadiobuttonActions = intygsTyp => () => Object.keys(valideringsVal[intygsTyp].radioknappar)
     .reduce((prev, text) => prev.then(() => radioknappVal(valideringsVal[intygsTyp].radioknappar[text], text)), Promise.resolve());
 
+let chainDropdownActions = intygsTyp => () => Object.keys(valideringsVal[intygsTyp].dropdowns)
+    .reduce((prev, text) => prev.then(() => dropdownVal(valideringsVal[intygsTyp].dropdowns[text], text)), Promise.resolve());
+
 let chainTextFieldActions = intygsTyp => valideringsVal[intygsTyp].text
     .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
 
@@ -188,6 +191,7 @@ Then(/^ska "(\d+)" varningsmeddelanden? visas med texten "([^"]+)"$/, (antal, te
 When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg =>
     chainCheckboxActions(intyg)
     .then(chainRadiobuttonActions(intyg))
+    .then(chainDropdownActions(intyg))
 );
 
 When(/^jag fyller i textfält med felaktiga värden i "([^"]+)"$/, intyg => chainTextFieldActions(intyg));

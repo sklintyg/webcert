@@ -164,17 +164,29 @@ var BaseUtkast = JClass._extend({
         browser.ignoreSynchronization = true;
         logger.info(`Svarar ${val} i frågan ${text}`);
         return element.all(by.cssContainingText('.ue-fraga', text))
-            .all(by.cssContainingText('wc-radio-wrapper', val))
+            .all(by.cssContainingText('.wc-radio', val))
             .all(by.tagName('input')).first().click()
             .then(() => browser.ignoreSynchronization = false);
     },
 
-    checkboxVal: function(text) {
-        logger.info(`Bockar i ${text}`);
+    checkboxVal: function(checkboxText) {
+        logger.info(`Bockar i ${checkboxText}`);
         browser.ignoreSynchronization = true;
         return element.all(by.css('.ue-fraga'))
-            .all(by.cssContainingText('wc-checkbox-wrapper', text))
+            .all(by.cssContainingText('wc-checkbox-wrapper', checkboxText))
             .all(by.tagName('input')).first().click()
+            .then(() => browser.ignoreSynchronization = false);
+    },
+
+    dropdownVal: function(val, text) {
+        browser.ignoreSynchronization = true;
+        logger.info(`Väljer ${val} i dropdowner med text ${text}`);
+        return element.all(by.cssContainingText('.ue-fraga', text))
+            .all(by.tagName('wc-dropdown'))
+            .each(el => el.click() // Klicka på dropdown
+                .then(() => element.all(by.repeater('item in items')) // Ta fram alternativen
+                    .filter(el => el.getText().then(t => t === val)) // Välj den som har samma text som argumentet
+                    .click()))
             .then(() => browser.ignoreSynchronization = false);
     }
 });

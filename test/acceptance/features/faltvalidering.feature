@@ -31,7 +31,6 @@ Exempel:
   | Läkarutlåtande för aktivitetsersättning vid förlängd skolgång     |
   | Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga |
 
-
 Scenariomall: Expanderar intyget så maximalt antal fält blir synliga och kontrollera att olika typer av valideringsfel visas för olika fält i olika intyg.
   Givet att jag är inloggad som läkare
   Och jag går in på testpatienten för "Fältvalidering"
@@ -53,8 +52,8 @@ Scenariomall: Expanderar intyget så maximalt antal fält blir synliga och kontr
   Och ska "<arbetstid>" valideringsfel visas med texten "Arbetstidsförläggning måste fyllas i om period 75%, 50% eller 25% har valts."
 
   När jag fyller i textfält med felaktiga värden i "<intyg>"
-  Och jag klickar på signera-knappen
-  
+  Och jag klickar på signera-knappen 
+
   Så ska alla valideringsmeddelanden finnas med i listan över godkända meddelanden
   Och ska "<synintervall>" valideringsfel visas med texten "Måste ligga i intervallet 0,0 till 2,0."
   Och ska "<år_födelse>" valideringsfel visas med texten "År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än patientens födelseår."
@@ -70,11 +69,13 @@ Scenariomall: Expanderar intyget så maximalt antal fält blir synliga och kontr
 Exempel:
   | intyg                                                             | tomt | ett_alternativ | minst_ett_alternativ | synintervall | år_födelse  | år_1900 | postnummer | datum_format | datum_hypoglykemi  | diagnos | åtgärder | minst_en_rad | underlag | utredning_info | funk_debut | funk_påverkan | datum | arbetstid |
   | Läkarintyg för sjukpenning                                        | 12   | 1              | 0                    | 0            | 0           | 0       | 1          | 12           | 0                  | 1       | 1        | 0            | 0        | 0              | 0          | 0             | 0     | 1         |
-  | Transportstyrelsens läkarintyg, diabetes                          | 11   | 9              | 0                    | 6            | 1           | 1       | 1          | 0            | 1                  | 0       | 0        | 0            | 0        | 0              | 0          | 0             | 1     | 0         |
-  | Transportstyrelsens läkarintyg                                    | 16   | 22             | 1                    | 0            | 0           | 0       | 1          | 0            | 0                  | 0       | 0        | 0            | 0        | 0              | 0          | 0             | 0     | 0         |
+  | Transportstyrelsens läkarintyg, diabetes                          | 10   | 9              | 0                    | 6            | 1           | 1       | 2          | 0            | 1                  | 0       | 0        | 0            | 0        | 0              | 0          | 0             | 1     | 0         |
+  | Transportstyrelsens läkarintyg                                    | 15   | 22             | 1                    | 0            | 0           | 0       | 2          | 0            | 0                  | 0       | 0        | 0            | 0        | 0              | 0          | 0             | 0     | 0         |
   | Läkarutlåtande för sjukersättning                                 | 10   | 0              | 1                    | 0            | 0           | 0       | 1          | 8            | 0                  | 1       | 0        | 1            | 3        | 3              | 0          | 0             | 1     | 0         |
   | Läkarutlåtande för aktivitetsersättning vid förlängd skolgång     | 5    | 0              | 0                    | 0            | 0           | 0       | 1          | 8            | 0                  | 1       | 0        | 1            | 3        | 3              | 1          | 1             | 1     | 0         |
-  | Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga | 10   | 0              | 0                    | 0            | 0           | 0       | 1          | 8            | 0                  | 1       | 0        | 1            | 3        | 3              | 0          | 0             | 1     | 0         |
+  | Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga | 10   | 0              | 1                    | 0            | 0           | 0       | 1          | 8            | 0                  | 1       | 0        | 1            | 3        | 3              | 0          | 0             | 1     | 0         |
+  | Dödsbevis                                                         | 7    | 4              | 0                    | 0            | 0           | 0       | 2          | 2            | 0                  | 0       | 0        | 0            | 0        | 0              | 0          | 0             | 2     | 0         |
+  | Dödsorsaksintyg                                                   | 9    | 3              | 1                    | 0            | 0           | 0       | 2          | 7            | 0                  | 0       | 0        | 0            | 0        | 0              | 0          | 0             | 3     | 0         |
 
 
 
