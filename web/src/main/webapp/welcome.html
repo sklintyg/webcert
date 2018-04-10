@@ -427,10 +427,10 @@
           }
           if (intygTyp) {
               url += '/' + intygTyp;
-          } else {
-            if (method === 'POST') {
-                throw 'When doing login via djupintegration you must provide the \'intygTyp\' parameter';
-            }
+          }
+
+          if (intygTyp && method === 'POST') {
+              throw 'When doing login via djupintegration you should not provide the \'intygTyp\' parameter';
           }
           return url + '/' + intygId;
       }

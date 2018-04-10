@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,15 +82,17 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_PATIENT_POSTORT = "postort";
     public static final String PARAM_REFERENCE = "ref";
     public static final String PARAM_RESPONSIBLE_HOSP_NAME = "responsibleHospName";
+    public static final String INTYG_TYP = "intygTyp";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
 
     private static final String[] GRANTED_ROLES = new String[] {
-            AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN
+            AuthoritiesConstants.ROLE_LAKARE,
+            AuthoritiesConstants.ROLE_TANDLAKARE,
+            AuthoritiesConstants.ROLE_ADMIN
     };
-    private IntegrationService integrationService;
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
@@ -100,6 +102,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @Autowired
     private ReferensService referensService;
+
+    @Autowired
+    @Qualifier("intygIntegrationServiceImpl")
+    private IntegrationService integrationService;
 
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
@@ -128,16 +134,15 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
             @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
-        Map<String, Object> pathParameters = new HashMap<>();
-        pathParameters.put(PARAM_CERT_TYPE, intygTyp);
-        pathParameters.put(PARAM_CERT_ID, intygId);
+        Map<String, Object> pathParameters = ImmutableMap.of(
+                PARAM_CERT_TYPE, intygTyp,
+                PARAM_CERT_ID, intygId);
 
-        // validate the request
         validateRequest(pathParameters);
 
-        IntegrationParameters integrationParameters = getIntegrationParameters(
-                reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
-                postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
+        IntegrationParameters integrationParameters = IntegrationParameters.of(
+                reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
+                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -170,27 +175,25 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
             @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put(PARAM_CERT_ID, intygId);
+        Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
         // validate the request
         validateRequest(params);
 
-        IntegrationParameters integrationParameters = getIntegrationParameters(
-                reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
-                postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
+        IntegrationParameters integrationParameters = IntegrationParameters.of(
+                reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
+                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, null, intygId, enhetId, user);
+        return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
     }
 
     @POST
-    @Path("/{certType}/{certId}")
+    @Path("/{certId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response postRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam(PARAM_CERT_TYPE) String intygTyp,
             @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
             @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
@@ -207,21 +210,18 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
             @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put(PARAM_CERT_TYPE, intygTyp);
-        params.put(PARAM_CERT_ID, intygId);
+        final Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
-        // validate the request
         validateRequest(params);
 
-        IntegrationParameters integrationParameters = getIntegrationParameters(
-                reference, responsibleHospName, alternatePatientSSn, fornamn, efternamn, mellannamn,
-                postadress, postnummer, postort, coherentJournaling, inactiveUnit, deceased, copyOk);
+        IntegrationParameters integrationParameters = IntegrationParameters.of(
+                reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
+                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
+        return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
     }
 
     @GET
@@ -232,12 +232,12 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("intygTyp", intygTyp);
-        params.put(PARAM_CERT_ID, intygId);
-        params.put(PARAM_ENHET_ID, enhetId);
 
-        // validate the request
+        Map<String, Object> params = ImmutableMap.of(
+                INTYG_TYP, intygTyp,
+                PARAM_CERT_ID, intygId,
+                PARAM_ENHET_ID, enhetId);
+
         validateRequest(params);
 
         WebCertUser user = getWebCertUser();
@@ -245,12 +245,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         user.getParameters().getState().setRedirectToEnhetsval(false);
 
         return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
-    }
-
-    @Autowired
-    @Qualifier("intygIntegrationServiceImpl")
-    public void setIntegrationService(IntegrationService integrationService) {
-        this.integrationService = integrationService;
     }
 
     public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
@@ -271,7 +265,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return GRANTED_ORIGIN;
     }
 
-    Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
+    protected Response handleRedirectToIntyg(final UriInfo uriInfo, final String intygId, final String enhetId, final WebCertUser user) {
+        return handleRedirectToIntyg(uriInfo, null, intygId, enhetId, user);
+    }
+
+    protected Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
         try {
             // Call service
             PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
@@ -387,14 +385,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         } catch (UnsupportedEncodingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e);
         }
-    }
-
-    private IntegrationParameters getIntegrationParameters(String reference, String responsibleHospName, String alternatePatientSSn,
-            String fornamn, String efternamn, String mellannamn, String postadress, String postnummer, String postort,
-            boolean coherentJournaling, boolean inactiveUnit, boolean deceased, boolean copyOk) {
-        return new IntegrationParameters(StringUtils.trimToNull(reference),
-                responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
-                coherentJournaling, deceased, inactiveUnit, copyOk);
     }
 
     private WebCertUser getWebCertUser() {

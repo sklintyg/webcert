@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.integration.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
 import se.inera.intyg.webcert.web.web.controller.integration.IntegrationState;
 
 import java.io.Serializable;
@@ -65,6 +66,38 @@ public final class IntegrationParameters implements Serializable {
         this.inactiveUnit = inactiveUnit;
         this.copyOk = copyOk;
     }
+
+    public static IntegrationParameters of(
+            final String reference,
+            final String responsibleHospName,
+            final String alternateSsn,
+            final String fornamn,
+            final String mellannamn,
+            final String efternamn,
+            final String postadress,
+            final String postnummer,
+            final String postort,
+            final boolean sjf,
+            final boolean patientDeceased,
+            final boolean inactiveUnit,
+            final boolean copyOk) {
+
+        return new IntegrationParameters(
+                StringUtils.trimToNull(reference),
+                responsibleHospName,
+                alternateSsn,
+                fornamn,
+                mellannamn,
+                efternamn,
+                postadress,
+                postnummer,
+                postort,
+                sjf,
+                patientDeceased,
+                inactiveUnit,
+                copyOk);
+    }
+
     // CHECKSTYLE:ON ParameterNumber
 
 

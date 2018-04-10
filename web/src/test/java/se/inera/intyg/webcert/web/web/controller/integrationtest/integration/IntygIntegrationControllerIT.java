@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 
+import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.RestAssured;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -84,20 +85,19 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "ts-bas");
-        pathParams.put("intygsId", utkastId);
+        Map<String, String> pathParams = ImmutableMap.of(
+                "intygsId", utkastId);
 
-        Map<String, String> formParams = new HashMap<>();
-        formParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
-        formParams.put("responsibleHospName", "HrDoktor");
-        formParams.put("enhet", "IFV1239877878-1042");
+        Map<String, String> formParams = ImmutableMap.of(
+                "alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER,
+                "responsibleHospName", "HrDoktor",
+                "enhet", "IFV1239877878-1042");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .and().pathParams(pathParams)
                 .and().formParams(formParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
-                .when().post("/visa/intyg/{intygsTyp}/{intygsId}")
+                .when().post("/visa/intyg/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("/ts-bas/edit/" + utkastId + "/"));
     }
 
@@ -128,16 +128,14 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         String intygsId = createSignedIntyg("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "ts-bas");
-        pathParams.put("intygsId", intygsId);
+        Map<String, String> pathParams = ImmutableMap.of("intygsId", intygsId);
 
         changeOriginTo("DJUPINTEGRATION");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .and().pathParams(pathParams)
                 .and().formParameters("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER, "enhet", "IFV1239877878-1042")
-                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsTyp}/{intygsId}").then()
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().post("/visa/intyg/{intygsId}").then()
                 .header(HttpHeaders.LOCATION, endsWith("/intyg/ts-bas/" + intygsId + "/"));
     }
 
@@ -168,16 +166,17 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
-        queryParams.put("responsibleHospName", "HrDoktor");
-        queryParams.put("fornamn", "patientfornamn");
-        queryParams.put("efternamn", "patientefternamn");
-        queryParams.put("mellannamn", "patientmellannamn");
-        queryParams.put("postadress", "patientpostadress");
-        queryParams.put("postnummer", "patientpostnummer");
-        queryParams.put("postort", "patientpostort");
-        queryParams.put("enhet", "IFV1239877878-1042");
+        Map<String, String> queryParams = ImmutableMap.<String, String>builder()
+                .put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER)
+                .put("responsibleHospName", "HrDoktor")
+                .put("fornamn", "patientfornamn")
+                .put("efternamn", "patientefternamn")
+                .put("mellannamn", "patientmellannamn")
+                .put("postadress", "patientpostadress")
+                .put("postnummer", "patientpostnummer")
+                .put("postort", "patientpostort")
+                .put("enhet", "IFV1239877878-1042")
+                .build();
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects()
@@ -203,16 +202,17 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
-        queryParams.put("responsibleHospName", "HrDoktor");
-        queryParams.put("fornamn", "patientfornamn");
-        queryParams.put("efternamn", "patientefternamn");
-        queryParams.put("mellannamn", "patientmellannamn");
-        queryParams.put("postadress", "patientpostadress");
-        queryParams.put("postnummer", "patientpostnummer");
-        queryParams.put("postort", "patientpostort");
-        queryParams.put("enhet", "IFV1239877878-1042");
+        Map<String, String> queryParams = ImmutableMap.<String, String>builder()
+                .put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER)
+                .put("responsibleHospName", "HrDoktor")
+                .put("fornamn", "patientfornamn")
+                .put("efternamn", "patientefternamn")
+                .put("mellannamn", "patientmellannamn")
+                .put("postadress", "patientpostadress")
+                .put("postnummer", "patientpostnummer")
+                .put("postort", "patientpostort")
+                .put("enhet", "IFV1239877878-1042")
+                .build();
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects()
@@ -255,16 +255,17 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("alternatePatientSSn", "19121212-1212");
-        queryParams.put("responsibleHospName", "HrDoktor");
-        queryParams.put("fornamn", "nyaförnamnet");
-        queryParams.put("efternamn", "nyaefternamnet");
-        queryParams.put("mellannamn", "nyamellannamnet");
-        queryParams.put("postadress", "nyvägen 12");
-        queryParams.put("postnummer", "000001");
-        queryParams.put("postort", "sjukort");
-        queryParams.put("enhet", "IFV1239877878-1042");
+        Map<String, String> queryParams = ImmutableMap.<String, String>builder()
+                .put("alternatePatientSSn", "19121212-1212")
+                .put("responsibleHospName", "HrDoktor")
+                .put("fornamn", "nyaförnamnet")
+                .put("efternamn", "nyaefternamnet")
+                .put("mellannamn", "nyamellannamnet")
+                .put("postadress", "nyvägen 12")
+                .put("postnummer", "000001")
+                .put("postort", "sjukort")
+                .put("enhet", "IFV1239877878-1042")
+                .build();
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects()
@@ -313,16 +314,17 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("alternatePatientSSn", "19121212-1212");
-        queryParams.put("responsibleHospName", "HrDoktor");
-        queryParams.put("fornamn", "nyaförnamnet");
-        queryParams.put("efternamn", "nyaefternamnet");
-        queryParams.put("mellannamn", "nyamellannamnet");
-        queryParams.put("postadress", "nyvägen 12");
-        queryParams.put("postnummer", "000001");
-        queryParams.put("postort", "sjukort");
-        queryParams.put("enhet", "IFV1239877878-1042");
+        Map<String, String> queryParams = ImmutableMap.<String, String>builder()
+                .put("alternatePatientSSn", "19121212-1212")
+                .put("responsibleHospName", "HrDoktor")
+                .put("fornamn", "nyaförnamnet")
+                .put("efternamn", "nyaefternamnet")
+                .put("mellannamn", "nyamellannamnet")
+                .put("postadress", "nyvägen 12")
+                .put("postnummer", "000001")
+                .put("postort", "sjukort")
+                .put("enhet", "IFV1239877878-1042")
+                .build();
 
         // Go to deep integration link with other patient info than on current utkast...
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
@@ -378,16 +380,17 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
-        queryParams.put("responsibleHospName", "HrDoktor");
-        queryParams.put("fornamn", "patientfornamn");
-        queryParams.put("efternamn", "patientefternamn");
-        queryParams.put("mellannamn", "patientmellannamn");
-        queryParams.put("postadress", "patientpostadress");
-        queryParams.put("postnummer", "patientpostnummer");
-        queryParams.put("postort", "patientpostort");
-        queryParams.put("enhet", "IFV1239877878-1042");
+        Map<String, String> queryParams = ImmutableMap.<String, String>builder()
+                .put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER)
+                .put("responsibleHospName", "HrDoktor")
+                .put("fornamn", "patientfornamn")
+                .put("efternamn", "patientefternamn")
+                .put("mellannamn", "patientmellannamn")
+                .put("postadress", "patientpostadress")
+                .put("postnummer", "patientpostnummer")
+                .put("postort", "patientpostort")
+                .put("enhet", "IFV1239877878-1042")
+                .build();
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
                 .and().pathParam("intygsId", intygsId)
@@ -449,18 +452,18 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsId", utkastId);
+        Map<String, String> pathParams = ImmutableMap.of("intygsId", utkastId);
 
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
-        queryParams.put("responsibleHospName", "HrDoktor");
-        queryParams.put("fornamn", "nyaförnamnet");
-        queryParams.put("efternamn", "nyaefternamnet");
-        queryParams.put("mellannamn", "nyamellannamnet");
-        queryParams.put("postadress", "nyvägen 12");
-        queryParams.put("postnummer", "000001");
-        queryParams.put("postort", "sjukort");
+        Map<String, String> queryParams = ImmutableMap.<String, String>builder()
+                .put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER)
+                .put("responsibleHospName", "HrDoktor")
+                .put("fornamn", "nyaförnamnet")
+                .put("efternamn", "nyaefternamnet")
+                .put("mellannamn", "nyamellannamnet")
+                .put("postadress", "nyvägen 12")
+                .put("postnummer", "000001")
+                .put("postort", "sjukort")
+                .build();
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects().follow(false)
@@ -480,8 +483,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("inaktivEnhet", "true");
+        Map<String, String> queryParams = ImmutableMap.of("inaktivEnhet", "true");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects()
@@ -510,8 +512,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo(UserOriginType.DJUPINTEGRATION.name());
 
-        Map<String, Object> queryParams = new HashMap<>();
-        queryParams.put(IntygIntegrationController.PARAM_COPY_OK, true);
+        Map<String, Object> queryParams = ImmutableMap.of(IntygIntegrationController.PARAM_COPY_OK, true);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .redirects()
