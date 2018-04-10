@@ -277,14 +277,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + ") for saving answer");
         }
 
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id "
-                    + fragaSvar.getInternReferens().toString() + " has invalid Amne(" + fragaSvar.getAmne()
-                    + ") for saving answer");
+        // Implement Business Rule FS-005, FS-006
+        WebCertUser user = webCertUserService.getUser();
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())
+                && !authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
+                    + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
+                    + ") can only be answered by user that is Lakare");
         }
 
         LocalDateTime now = LocalDateTime.now();
-        WebCertUser user = webCertUserService.getUser();
 
         // Ok, lets save the answer
         fragaSvar.setVardAktorHsaId(user.getHsaId());
@@ -299,6 +301,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         sendFragaSvarToExternalParty(saved);
 
         arendeDraftService.delete(fragaSvar.getIntygsReferens().getIntygsId(), Long.toString(fragaSvar.getInternReferens()));
+
+        // Implement Business Rule FS-045
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
+            closeCompletionsAsHandled(fragaSvar.getIntygsReferens().getIntygsId());
+        }
 
         return saved;
     }
