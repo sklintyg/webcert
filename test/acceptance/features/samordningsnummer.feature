@@ -6,7 +6,7 @@ Egenskap: Samordningsnummer
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 
-@smi @WAITINGFORFIX @INTYG-5811
+@SMI
 Scenario: Det ska gå att öppna ett signerat SMI-intyg i Mina intyg för en patient med samordningsnummer
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient med samordningsnummer
@@ -19,7 +19,7 @@ Scenario: Det ska gå att öppna ett signerat SMI-intyg i Mina intyg för en pat
 	När jag går till Mina intyg för patienten
 	Så ska intyget finnas i Mina intyg
 	
-@createDraft2
+@CREATEDRAFT
 Scenario: Det ska gå att skicka CreateDraft:2 med ett samordningsnummer
   Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
   Och att vårdsystemet skapat ett intygsutkast för "Läkarutlåtande för sjukersättning" med samordningsnummer
