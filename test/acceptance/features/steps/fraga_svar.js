@@ -268,11 +268,7 @@ Given(/^ska jag se påminnelsen på intygssidan$/, function() {
         })
         .then(function() {
             logger.silly('Letar efter påminnelse som innehåller text: ' + fragaText);
-            // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions
             return expect(fragaSvar.container.getText()).to.eventually.contain(fragaText); //
-            /*return panel.getText().then(function(text) {
-                expect(text).to.contain('Ämne: Påminnelse');
-            });*/
         });
 });
 
