@@ -50,6 +50,7 @@ var BaseIntyg = JClass._extend({
         };
         this.intygStatus = element(by.id('intygstatus1'));
         this.patientNamnOchPersonnummer = element(by.id('patientNamnPersonnummer'));
+        this.FdPersonnummer = element(by.css('.old-person-id'));
         this.skicka = {
             knapp: element(by.id('sendBtn')),
             dialogKnapp: element(by.id('button1send-dialog')),

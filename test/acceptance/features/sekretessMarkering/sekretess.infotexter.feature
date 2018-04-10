@@ -12,7 +12,7 @@ Scenario: PS-002 - Varningmeddelanden när man går in på patient
    Så ska det finnas en knapp med texten "Förnya"
    Så ska jag varnas om att "Patienten har en sekretessmarkering"
 
-@SIGNERA @FRÅGASVAR @SMI @SKRIV-UT @MO-007 @SE-011
+@SIGNERA @FRÅGASVAR @SMI @SKRIV-UT @MO-007 @SE-011 @WAITINGFORFIX @INTYG-5986
 Scenario: SE-011 - Varningmeddelanden i fråga-svar för sekretessmarkerad person
 	Så ska jag varnas om att "Patienten har en sekretessmarkering"
 	När jag går in på att skapa ett slumpat SMI-intyg
