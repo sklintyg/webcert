@@ -136,11 +136,11 @@ var DbUtkast = BaseSkvUtkast._extend({
                         return dodsdatumElm.inteSakert.month.options.getByText(dodsdatum.inteSakert.month);
                     }).then(function(monthElm) {
                         return monthElm.click();
-                    }).then(function() {
-                        return moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
                     });
                 }
                 return;
+            }).then(function() {
+                return moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
             });
         }
     },

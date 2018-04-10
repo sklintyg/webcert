@@ -19,8 +19,8 @@
 
 /*global browser,Promise,protractor,logger*/
 'use strict';
-var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
-var helpers = require('../helpers.js');
+const logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
+const helpers = require('../helpers.js');
 
 module.exports = {
     login: function(userObj, url, secondBrowser) {
@@ -115,12 +115,16 @@ module.exports = {
     },
 
     askNewQuestion: function(forkedBrowser) {
-        return forkedBrowser.findElement(by.id('askArendeBtn')).sendKeys(protractor.Key.SPACE).then(function() {
-            return forkedBrowser.findElement(by.id('arendeNewModelText')).sendKeys(helpers.randomTextString()).then(function() {
-                return forkedBrowser.findElement(by.cssContainingText('option', 'Kontakt')).click().then(function() {
-                    return forkedBrowser.findElement(by.id('sendArendeBtn')).sendKeys(protractor.Key.SPACE);
-                });
-            });
+        return forkedBrowser.findElement(by.id('arende-filter-administrativafragor')).click().then(function() {
+            return forkedBrowser.sleep(100000); //TODO kolla varför admin tabben inte öppnas.
+        }).then(function() {
+            return forkedBrowser.findElement(by.id('askArendeBtn')).sendKeys(protractor.Key.SPACE);
+        }).then(function() {
+            return forkedBrowser.findElement(by.id('arendeNewModelText')).sendKeys(helpers.randomTextString());
+        }).then(function() {
+            return forkedBrowser.findElement(by.cssContainingText('option', 'Kontakt')).click();
+        }).then(function() {
+            return forkedBrowser.findElement(by.id('sendArendeBtn')).sendKeys(protractor.Key.SPACE);
         });
     }
 
