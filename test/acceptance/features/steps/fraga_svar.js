@@ -261,20 +261,18 @@ Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
 
 Given(/^ska jag se påminnelsen på intygssidan$/, function() {
     var fragaText = global.intyg.messages[0].testString;
-    var panel = element(by.cssContainingText('.arende-panel', fragaText));
+
     return browser.refresh()
         .then(function() {
-            logger.silly('Letar efter påminnelse som innehåller text: ' + fragaText);
-            return expect(panel.isPresent()).to.eventually.become(true);
-
+            return expect(fragaSvar.container.isPresent()).to.eventually.become(true);
         })
         .then(function() {
+            logger.silly('Letar efter påminnelse som innehåller text: ' + fragaText);
             // chai-as-promised/cucumberjs 1.2 har en bugg där man inte kan använda denna typ av assertions
-            // return expect(panel.getText()).to.eventually.contain('Ämne: Påminnelsee'); //
-            return panel.getText().then(function(text) {
+            return expect(fragaSvar.container.getText()).to.eventually.contain(fragaText); //
+            /*return panel.getText().then(function(text) {
                 expect(text).to.contain('Ämne: Påminnelse');
-            });
-
+            });*/
         });
 });
 

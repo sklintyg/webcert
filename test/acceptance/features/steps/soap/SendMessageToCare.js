@@ -67,7 +67,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, testSt
     var kompletteringar = '';
     var paminnelseMeddelandeId = '';
     if (global.intyg.messages[0].id && amneCode === 'PAMINN') {
-        paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + global.intyg.messages[0].id + '</urn1:paminnelseMeddelande-id>';
+        paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + global.intyg.messages[1].id + '</urn1:paminnelseMeddelande-id>';
     } else if (amneCode === 'KOMPLT') {
 
         kompletteringar = [];
