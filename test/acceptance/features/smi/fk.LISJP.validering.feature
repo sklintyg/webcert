@@ -25,12 +25,12 @@ Scenario: Ogiltiga datum får inte anges
     Och jag klickar på signera-knappen
     Så ska "8" valideringsfel visas med texten "Ogiltigt datum."
 
-@F.VAL-042 @WIP
+@F.VAL-042
 Scenario: Period mer än 6 månader ska varnas för
     När jag anger start- och slutdatum med mer än 6 månaders mellanrum
     Så ska "1" varningsmeddelande visas med texten "Det datum du angett innebär en period på mer än 6 månader. Du bör kontrollera att tidsperioderna är korrekta."
 
-@F.VAL-043 @WIP
+@F.VAL-043
 Scenario: Startdatum en vecka före dagens datum
     När jag anger startdatum mer än en vecka före dagens datum
     Så ska "1" varningsmeddelanden visas med texten "Det startdatum du angett är mer än en vecka före dagens datum. Du bör kontrollera att tidsperioderna är korrekta."
@@ -41,7 +41,7 @@ Scenario: Intyget kan inte signeras om slut är före startdatum
     Och jag klickar på signera-knappen
     Så ska "4" valideringsfel visas med texten "Startdatum får inte vara efter slutdatum."
 
-@F.VAL-046 @WIP
+@F.VAL-046
 Scenario: Undersökningsdatum i framtiden ska ge varning
     När jag anger undersökningsdatum i framtiden
     Så ska "4" varningsmeddelande visas med texten "Observera att du valt ett datum framåt i tiden."

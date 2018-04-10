@@ -36,7 +36,8 @@ module.exports = {
                 'alla synfält',
                 'datum',
                 'postnummer'
-            ]
+            ],
+            dropdowns: {}
         },
         'Transportstyrelsens läkarintyg': {
             radioknappar: {
@@ -54,7 +55,8 @@ module.exports = {
             ],
             text: [
                 'postnummer'
-            ]
+            ],
+            dropdowns: {}
         },
         'Läkarintyg för sjukpenning': {
             radioknappar: {
@@ -71,7 +73,8 @@ module.exports = {
             text: [
                 'postnummer',
                 'datum'
-            ]
+            ],
+            dropdowns: {}
         },
         'Läkarutlåtande för sjukersättning': {
             radioknappar: {
@@ -84,7 +87,8 @@ module.exports = {
             text: [
                 'postnummer',
                 'datum'
-            ]
+            ],
+            dropdowns: {}
         },
         'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång': {
             radioknappar: {
@@ -96,7 +100,8 @@ module.exports = {
             text: [
                 'postnummer',
                 'datum'
-            ]
+            ],
+            dropdowns: {}
         },
         'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga': {
             radioknappar: {
@@ -116,7 +121,36 @@ module.exports = {
             text: [
                 'postnummer',
                 'datum'
-            ]
+            ],
+            dropdowns: {}
+        },
+        'Dödsbevis': {
+            radioknappar: {
+                'Dödsdatum': 'Säkert',
+                'Har den avlidne haft ett implantat som kan explodera vid kremering?': 'Ja',
+                'Har yttre undersökning av kroppen genomförts?': 'Nej, den avlidne undersökt kort före döden'
+            },
+            checkboxar: [],
+            text: [
+                'postnummer',
+                'datum'
+            ],
+            dropdowns: {}
+        },
+        'Dödsorsaksintyg': {
+            radioknappar: {
+                'Dödsdatum': 'Säkert',
+                'Opererad inom 4 veckor före döden?': 'Ja',
+                'Dödsfall i samband med skada/förgiftning?': 'Ja'
+            },
+            checkboxar: [],
+            text: [
+                'postnummer',
+                'datum'
+            ],
+            dropdowns: {
+                'Specificera tillståndet': 'Kronisk'
+            }
         }
     },
 
