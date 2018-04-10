@@ -159,26 +159,20 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         // Businesss logic below should not be here inside a controller.. Should preferably be moved in the future.
         try {
-            try {
-                Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
-                draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
-                        utlatande.getGrundData().getPatient(), resolvedPatient));
-                draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
-                        utlatande.getGrundData().getPatient(), resolvedPatient));
-            } catch (IOException e) {
-                LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygsId);
-            }
+            Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
 
-            if (!completeAddressProvided(resolvedPatient)) {
+            draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
+                    utlatande.getGrundData().getPatient(), resolvedPatient));
+
+            if (completeAddressProvided(resolvedPatient)) {
+                draftHolder.setValidPatientAddressAquiredFromPU(true);
+                    draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
+                            utlatande.getGrundData().getPatient(), resolvedPatient));
+            } else {
                 // Overwrite retrieved address data with saved one.
-                Patient oldPatientData = null;
-                try {
-                    oldPatientData = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel())
-                            .getGrundData()
-                            .getPatient();
-                } catch (IOException e) {
-                    LOG.error("Error while using the module api to convert json to Utlatande for intygsId {}", intygsId);
-                }
+                draftHolder.setValidPatientAddressAquiredFromPU(false);
+                draftHolder.setPatientAddressChangedInPU(false);
+                Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, resolvedPatient);
             }
             // Update the internal model with the resolved patient. This means the draft may be updated
@@ -190,6 +184,9 @@ public class UtkastModuleApiController extends AbstractApiController {
             return Response.ok(draftHolder).build();
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
+        } catch (IOException e) {
+            LOG.error("Error while using the module api to convert json to Utlatande for intygsId {}", intygsId);
+            throw new RuntimeException("Error while using the module api to convert json to Utlatande", e);
         }
     }
 
