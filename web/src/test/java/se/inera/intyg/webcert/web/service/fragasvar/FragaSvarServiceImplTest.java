@@ -543,23 +543,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testAnswerKomplNotPermitted() {
-
-        FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
-        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
-        fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
-
-        SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
-        wsResponse.setResult(ResultOfCallUtil.okResult());
-
-        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
-        when(fragasvarRepositoryMock.findOne(eq(1L))).thenReturn(fragaSvar);
-
-        service.saveSvar(fragaSvar.getInternReferens(), "svarsText");
-
-    }
-
-    @Test(expected = WebCertServiceException.class)
     public void testExceptionThrownWhenIntygIsUnsentToFK() {
 
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
