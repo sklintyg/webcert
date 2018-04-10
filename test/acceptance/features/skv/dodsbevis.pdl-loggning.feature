@@ -1,6 +1,6 @@
 # language: sv
 
-@DB @DODSBEVIS @SKATTEVERKET @SKV @PDL @GE-005 @notReady
+@DB @DODSBEVIS @SKATTEVERKET @SKV @PDL @GE-005
 Egenskap: GE-005 - PDL-loggning för Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -32,7 +32,7 @@ Scenario: GE-005 - Öppna Dödsbevis
 		Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 		
 #3 #8
-@olika-vårdgivare @skriv-ut @utskrift @läsa
+@OLIKA-VÅRDGIVARE @SKRIV-UT @UTSKRIFT @LÄSA
 Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska PDL-loggas
 		Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 		Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
@@ -47,7 +47,11 @@ Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska
 		Och jag skriver ut intyget
 		Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
 		
+		Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+		Och jag går in på intyget via djupintegrationslänk
 		Och jag makulerar intyget
+		Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+		Och jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
 		Och jag skriver ut intyget
 		Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
 

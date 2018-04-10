@@ -101,10 +101,9 @@ function makuleraIntyget() {
             if (helpers.isDBDOIIntyg(intyg.typ)) {
                 return moveAndSendKeys(pages.intyg.skv.db.utkast.makulera.bekrafta, protractor.Key.SPACE);
             }
-            return fkIntygPage.pickMakuleraOrsak();
-        })
-        .then(function() {
-            return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
+            return fkIntygPage.pickMakuleraOrsak().then(function() {
+                return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
+            });
         }).then(function() {
             return helpers.largeDelay(); // Sleep p.g.a. page reload.
         });
