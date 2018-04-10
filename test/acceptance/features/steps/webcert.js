@@ -91,11 +91,6 @@ Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1) {
         .to.eventually.contain(arg1);
 });
 
-Given(/^ska intyget inte finnas i intygsöversikten$/, function(callback) {
-    element(by.id('intygFilterSamtliga')).sendKeys(protractor.Key.SPACE);
-    expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false).and.notify(callback);
-});
-
 Given(/^det finns ett "([^"]*)"$/, function(intygtyp) {
     return element(by.id('prevIntygTable')).getText().then(function(text) {
         if (text.indexOf(intygtyp) >= 0) {
