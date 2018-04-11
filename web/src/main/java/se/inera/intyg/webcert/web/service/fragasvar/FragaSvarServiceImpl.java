@@ -110,7 +110,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT,
             Amne.OVRIGT);
+
     private static final FragaSvarSenasteHandelseDatumComparator SENASTE_HANDELSE_DATUM_COMPARATOR = new FragaSvarSenasteHandelseDatumComparator();
+
     @Value("${sendquestiontofk.logicaladdress}")
     private String sendQuestionToFkLogicalAddress;
     @Value("${sendanswertofk.logicaladdress}")
@@ -277,24 +279,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + ") for saving answer");
         }
 
-        // Implement Business Rule FS-005, FS-006
+
         WebCertUser user = webCertUserService.getUser();
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())
-                && !authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
-                    + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
-                    + ") can only be answered by user that is Lakare");
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id "
+                    + fragaSvar.getInternReferens().toString() + " has invalid Amne(" + fragaSvar.getAmne()
+                    + ") for saving answer");
         }
 
-        LocalDateTime now = LocalDateTime.now();
-
-        // Ok, lets save the answer
-        fragaSvar.setVardAktorHsaId(user.getHsaId());
-        fragaSvar.setVardAktorNamn(user.getNamn());
-        fragaSvar.setSvarsText(svarsText);
-        fragaSvar.setSvarSkickadDatum(now);
-        fragaSvar.setStatus(Status.CLOSED);
-        fragaSvar.setSvarSigneringsDatum(now);
+        createSvar(user, svarsText, fragaSvar);
 
         FragaSvar saved = fragaSvarRepository.save(fragaSvar);
 
@@ -302,12 +295,40 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         arendeDraftService.delete(fragaSvar.getIntygsReferens().getIntygsId(), Long.toString(fragaSvar.getInternReferens()));
 
-        // Implement Business Rule FS-045
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
-            closeCompletionsAsHandled(fragaSvar.getIntygsReferens().getIntygsId());
+        return saved;
+    }
+
+    @Override
+    public List<FragaSvarView> answerKomplettering(final String intygsId, final String svarsText) {
+
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(intygsId), "intygsId may not be null or empty");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(svarsText), "svarsText may not be null or empty");
+
+        final List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygsId);
+
+        final FragaSvar komplFragaSvar = fragaSvarList.stream()
+                .filter(isCorrectAmne(Amne.KOMPLETTERING_AV_LAKARINTYG))
+                .max(SENASTE_HANDELSE_DATUM_COMPARATOR)
+                .orElseThrow(() -> new IllegalArgumentException("No fragasvar of type KOMPLT exist for intyg: " + intygsId));
+
+        WebCertUser user = webCertUserService.getUser();
+
+        if (!authoritiesValidator.given(user).privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
+                    + komplFragaSvar.getInternReferens().toString() + " and amne (" + Amne.KOMPLETTERING_AV_LAKARINTYG
+                    + ") can only be answered by user that is Lakare");
         }
 
-        return saved;
+        createSvar(user, svarsText, komplFragaSvar);
+
+        FragaSvar saved = fragaSvarRepository.save(komplFragaSvar);
+        sendFragaSvarToExternalParty(saved);
+
+        arendeDraftService.delete(komplFragaSvar.getIntygsReferens().getIntygsId(), Long.toString(komplFragaSvar.getInternReferens()));
+
+        closeCompletionsAsHandled(intygsId);
+
+        return getFragaSvar(intygsId);
     }
 
     @Override
@@ -640,6 +661,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Intygstyp '" + intygsTyp
                     + "' stödjer ej fragasvar.");
         }
+    }
+
+    private void createSvar(final WebCertUser user, final String svarsText, final FragaSvar fragasvar) {
+        final LocalDateTime now = LocalDateTime.now();
+        fragasvar.setVardAktorHsaId(user.getHsaId());
+        fragasvar.setVardAktorNamn(user.getNamn());
+        fragasvar.setSvarsText(svarsText);
+        fragasvar.setSvarSkickadDatum(now);
+        fragasvar.setStatus(Status.CLOSED);
+        fragasvar.setSvarSigneringsDatum(now);
     }
 
     private void sendFragaSvarToExternalParty(final FragaSvar fragaSvar) {

@@ -50,6 +50,8 @@ public interface FragaSvarService {
      */
     FragaSvar saveSvar(Long frageSvarId, String svarsText);
 
+    List<FragaSvarView> answerKomplettering(String intygsId, String svarsText);
+
     /**
      * Create a new FragaSvar instance for a certificate and send it to external receiver (FK).
      */
