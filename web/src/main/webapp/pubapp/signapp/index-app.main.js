@@ -226,9 +226,8 @@ angular.module('rhsIndexApp')
         // };
 
 
-        $scope.signeraAvbrytGrp = function(orderRef) {
-            // Här måste vi använda ett testbarhets-API för att låtsas avbryta GRP-signeringen.
-            $http.put('/services/grp-api/cancel/' + $scope.ticketId, null, null).then(
+        $scope.signeraAvbrytGrp = function(transactionId) {
+            $http.put('/services/grp-api/cancel/' + transactionId, null, null).then(
                 function(response) {
                     // Success callback
                     console.log('signeraAvbrytGrp success');
