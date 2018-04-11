@@ -13,8 +13,8 @@
                wc-focus-me="focusPnr"/>
         <button id="skapapersonnummerfortsatt" name="skapapersonnummerfortsatt"
                 class="btn btn-primary" ng-class="{'correct' : pnrForm.pnr.$valid }" type="submit" ng-disabled="viewState.loading">
-
-          <img ng-show="viewState.loading" ng-src="/img/ajax-loader-small-green.gif"/> Fortsätt
+          <i ng-show="viewState.loading" class="icon-wc-ikon-02 animate-spin"></i>
+          <span ng-hide="viewState.loading">Fortsätt</span>
         </button>
       </div>
       <div class="error">
