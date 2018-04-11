@@ -181,22 +181,25 @@ privileges:
   - &p050
     name: *kp050
     desc: Vidarebefordra frågasvar
-    intygstyper: # EJ fk7263
-      - *ki020 # ts-bas
-      - *ki030 # ts-diabetes
-      - *ki040 # lisjp
-      - *ki050 # luse
-      - *ki060 # luae_na
-      - *ki070 # luae_fs
-      - *ki080 # db
-      - *ki090 # doi
+    intygstyper:
     requestOrigins:
-      - *ro010 # NORMAL
-      - *ro030 # UTHOPP
+      - <<: *ro010 # NORMAL
+        intygstyper: # EJ fk7263
+          - *ki020 # ts-bas
+          - *ki030 # ts-diabetes
+          - *ki040 # lisjp
+          - *ki050 # luse
+          - *ki060 # luae_na
+          - *ki070 # luae_fs
+          - *ki080 # db
+          - *ki090 # doi
+      - <<: *ro030 # UTHOPP
+        intygstyper: # Alla intyg
   - &p060
     name: *kp060
     desc: Besvara fråga om komplettering
     intygstyper:
+      - *ki010 # fk7263
       - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
@@ -334,13 +337,20 @@ roles:
           - <<: *ro010 # NORMAL
           - <<: *ro030 # UTHOPP
       - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
-        requestOrigins:
-          - <<: *ro010 # NORMAL
-          - <<: *ro030 # UTHOPP
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p070 # FILTRERA_PA_LAKARE
         requestOrigins:
@@ -410,6 +420,11 @@ roles:
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -658,13 +673,20 @@ roles:
           - <<: *ro010 # NORMAL
           - <<: *ro030 # UTHOPP
       - <<: *p050 # VIDAREBEFORDRA_FRAGASVAR
-        requestOrigins:
-          - <<: *ro010 # NORMAL
-          - <<: *ro030 # UTHOPP
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         requestOrigins:
