@@ -107,7 +107,9 @@ public class ArendeServiceImpl implements ArendeService {
             ArendeAmne.OVRIGT);
 
     private Clock systemClock = Clock.systemDefaultZone();
+
     private Comparator<Arende> byTimestamp = (left, right) -> left.getTimestamp().isBefore(right.getTimestamp()) ? -1 : 1;
+
     @Value("${sendmessagetofk.logicaladdress}")
     private String sendMessageToFKLogicalAddress;
     @Autowired
@@ -273,9 +275,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
-        arendeList
-                .stream()
-                .forEach(this::closeArendeAsHandled);
+        arendeList.forEach(this::closeArendeAsHandled);
 
         allArende.add(saved);
 
