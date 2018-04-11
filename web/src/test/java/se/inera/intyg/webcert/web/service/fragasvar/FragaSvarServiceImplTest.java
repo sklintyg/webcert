@@ -18,9 +18,30 @@
  */
 package se.inera.intyg.webcert.web.service.fragasvar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.MoreCollectors;
+import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,11 +54,14 @@ import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -64,6 +88,7 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -76,6 +101,7 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
@@ -85,18 +111,16 @@ import javax.xml.soap.SOAPFault;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.anySet;
-import static org.mockito.Mockito.*;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -540,6 +564,80 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         assertEquals(Status.CLOSED, result.getStatus());
         assertNotNull(result.getSvarSkickadDatum());
         verify(arendeDraftService).delete(INTYG_ID, Long.toString(1L));
+    }
+
+    @Test
+    public void testAnswerKomplOK() {
+
+        final LocalDateTime date = LocalDateTime.of(2017, 5, 22, 5, 20);
+        final String svarsText = "bra text";
+
+        FragaSvar komplFragaSvar = buildFragaSvar(1L, date, date);
+        komplFragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        komplFragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+
+        FragaSvar ovrigtFragaSvar = buildFragaSvar(2L, date.minusDays(1), date.minusDays(1));
+        ovrigtFragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+
+        FragaSvar savedKompl = komplFragaSvar;
+        savedKompl.setStatus(Status.CLOSED);
+
+        ResultOfCall resultOfCall = new ResultOfCall();
+        resultOfCall.setResultCode(ResultCodeEnum.OK);
+        SendMedicalCertificateAnswerResponseType sendMedicalResponse = new SendMedicalCertificateAnswerResponseType();
+        sendMedicalResponse.setResult(resultOfCall);
+
+        doReturn(createUser())
+                .when(webCertUserService)
+                .getUser();
+
+        doReturn(Lists.newArrayList(komplFragaSvar, ovrigtFragaSvar))
+                .when(fragasvarRepositoryMock)
+                .findByIntygsReferensIntygsId(eq(INTYG_ID));
+
+        doReturn(savedKompl)
+                .when(fragasvarRepositoryMock)
+                .save(komplFragaSvar);
+
+        doReturn(sendMedicalResponse)
+                .when(sendAnswerToFKClientMock)
+                .sendMedicalCertificateAnswer(
+                        any(AttributedURIType.class),
+                        any(SendMedicalCertificateAnswerType.class)
+                );
+
+        final List<FragaSvarView> fragaSvarViews = service.answerKomplettering(INTYG_ID, svarsText);
+
+        assertEquals(2, fragaSvarViews.size());
+
+        FragaSvar komplResult = fragaSvarViews.stream()
+                .map(FragaSvarView::getFragaSvar)
+                .filter(fs -> fs.getAmne() == Amne.KOMPLETTERING_AV_LAKARINTYG)
+                .collect(MoreCollectors.onlyElement());
+
+        FragaSvar otherResult = fragaSvarViews.stream()
+                .map(FragaSvarView::getFragaSvar)
+                .filter(fs -> fs.getAmne() == Amne.OVRIGT)
+                .collect(MoreCollectors.onlyElement());
+
+        assertEquals(Status.CLOSED, komplResult.getStatus());
+        assertEquals(Status.PENDING_INTERNAL_ACTION, otherResult.getStatus());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testAnswerKomplNotPermitted() {
+
+        FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
+        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+
+        SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
+        wsResponse.setResult(ResultOfCallUtil.okResult());
+
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
+        when(fragasvarRepositoryMock.findOne(eq(1L))).thenReturn(fragaSvar);
+
+        service.saveSvar(fragaSvar.getInternReferens(), "svarsText");
     }
 
     @Test(expected = WebCertServiceException.class)

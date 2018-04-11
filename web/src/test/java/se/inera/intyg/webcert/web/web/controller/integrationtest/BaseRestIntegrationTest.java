@@ -302,7 +302,11 @@ public abstract class BaseRestIntegrationTest {
      * @return
      */
     protected int createQuestion(String typ, String intygId, String personnummer) {
-        FragaSvar fs = createTestQuestion(typ, intygId, personnummer);
+        return createQuestion(typ, intygId, personnummer, Amne.ARBETSTIDSFORLAGGNING);
+    }
+
+    protected int createQuestion(final String typ, final String intygId, final String personnummer, final Amne amne) {
+        FragaSvar fs = createTestQuestion(typ, intygId, personnummer, amne);
 
         Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(fs)
@@ -377,10 +381,10 @@ public abstract class BaseRestIntegrationTest {
      *            Social security number of the patient the certificate is made out to
      * @return
      */
-    private FragaSvar createTestQuestion(String typ, String intygId, String personnummer) {
+    private FragaSvar createTestQuestion(String typ, String intygId, String personnummer, Amne amne) {
         LocalDateTime now = LocalDateTime.now();
         FragaSvar fs = new FragaSvar();
-        fs.setAmne(Amne.ARBETSTIDSFORLAGGNING);
+        fs.setAmne(amne);
         fs.setFrageText(DEFAULT_FRAGE_TEXT);
         fs.setIntygsReferens(new IntygsReferens(intygId, typ,
                 Personnummer.createPersonnummer(personnummer).get(), "Api Restman", now));
