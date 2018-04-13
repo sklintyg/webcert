@@ -17,13 +17,13 @@
 
       <h1 class="page-heading1" ng-if="!widgetState.initialQueryWasEmpty">Intyg visas för {{widgetState.valdVardenhet.namn}} </h1>
 
-      <wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading">
+      <wc-spinner label="info.querydraft.inprogress" show-spinner="!widgetState.doneLoading">
 
 
         <wc-utkast-filter filter="filter" on-search="filterDrafts()" ng-show="!widgetState.initialQueryWasEmpty"
                           ng-cloak></wc-utkast-filter>
 
-        <wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery">
+        <wc-spinner label="info.querydraft.inprogress" show-spinner="widgetState.runningQuery">
 
 
           <!-- No results on initial query -->
@@ -57,12 +57,16 @@
           </div>
 
 
-          <div ng-show="showFetchMore()">
-            <button type="button" class="btn btn-default" title="Visa fler utkast." ng-click="fetchMore()"
-                    ng-disabled="widgetState.fetchingMoreInProgress">
-              <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
-            </button>
-          </div>
+          <wc-button
+              ng-if="showFetchMore()"
+              btn-id="fetchMoreDraftsButton"
+              btn-class="btn-default"
+              btn-click="fetchMore()"
+              btn-disabled="widgetState.fetchingMoreInProgress"
+              loading="widgetState.fetchingMoreInProgress"
+              btn-tooltip="Visa fler utkast">
+            Hämta fler träffar
+          </wc-button>
 
         </wc-spinner>
         <!-- spinner end -->

@@ -100,7 +100,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             };
 
             $scope.showFetchMore = function() {
-                return $scope.filter.startFrom + PAGE_SIZE < $scope.widgetState.totalCount;
+                return ($scope.filter.startFrom + PAGE_SIZE < $scope.widgetState.totalCount) || $scope.widgetState.fetchingMoreInProgress;
             };
 
             $scope.fetchMore = function() {
