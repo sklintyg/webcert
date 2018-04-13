@@ -127,25 +127,50 @@ public class IntygDraftsConverter {
         return draft.getStatus().name();
     }
 
-    public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList) {
-
+    public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList, List<ListIntygEntry> webcertIntyg) {
         return intygList.stream()
-                .map(intyg -> convertIntygToListIntygEntry(intyg))
+                .map(intyg -> convertIntygToListIntygEntry(intyg,
+                        webcertIntyg.stream().filter(it ->
+                                it.getIntygId().equals(intyg.getIntygsId().getExtension())).findFirst().orElse(null)))
                 .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
                 .collect(Collectors.toList());
     }
 
-    private ListIntygEntry convertIntygToListIntygEntry(Intyg source) {
-
+    private ListIntygEntry convertIntygToListIntygEntry(Intyg source, ListIntygEntry altSource) {
         ListIntygEntry entry = new ListIntygEntry();
         entry.setIntygId(source.getIntygsId().getExtension());
         entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
         entry.setSource(IntygSource.IT);
-        entry.setStatus(findLatestStatus(source.getStatus()).name());
+
+        if (altSource == null) {
+            entry.setStatus(findLatestStatus(source.getStatus()).name());
+        } else {
+            entry.setStatus(determineMostRelevantStatus(findLatestStatus(source.getStatus()),
+                    CertificateState.valueOf(altSource.getStatus())));
+        }
+
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
         entry.setPatientId(createPnr(source.getPatient().getPersonId().getExtension()));
         return entry;
+    }
+
+    /**
+     * This looks funky, it is because a corner case exists where statuses in Intygstjänsten might not be up
+     * to date with the actual situation because of the asynchronous nature of the connection between IT and WC.
+     * Thus, we need to establish a hierarchy of precedence between statuses depending on their origin.
+     */
+    private String determineMostRelevantStatus(CertificateState itStatus, CertificateState wcStatus) {
+        if (wcStatus == CertificateState.CANCELLED) {
+            return wcStatus.name();
+        }
+        if (itStatus == CertificateState.CANCELLED || itStatus == CertificateState.SENT) {
+            return itStatus.name();
+        }
+        if (wcStatus == CertificateState.SENT) {
+            return wcStatus.name();
+        }
+        return itStatus.name();
     }
 
     private Personnummer createPnr(String personId) {

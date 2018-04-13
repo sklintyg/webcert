@@ -37,6 +37,7 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -83,9 +84,11 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -450,6 +453,71 @@ public class IntygServiceTest {
         assertEquals(enhetsId, argument.getValue().getEnhetsId().get(0).getExtension());
         assertNotNull(argument.getValue().getPersonId().getRoot());
         assertEquals("191212121212", argument.getValue().getPersonId().getExtension());
+    }
+
+    @Test
+    public void testListIntygTakesStatusFromWebcertWhenNecessary() throws IOException {
+        final String enhetsId = "enhet-1";
+
+        listResponse.getIntygsLista().getIntyg().forEach( it -> {
+            it.getStatus().clear();
+
+            switch (it.getIntygsId().getExtension()) {
+                case "1":
+                    se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod kod =
+                            new se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod();
+                    kod.setCode("RECEIV");
+                    kod.setCodeSystem("9871cd17-8755-4ed9-b894-ff3729e775a4");
+                    kod.setDisplayName("RECEIVED");
+
+                    IntygsStatus status1 = new IntygsStatus();
+                    status1.setStatus(kod);
+                    it.getStatus().add(status1);
+                    break;
+                case "2":
+                    se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod kod2 =
+                            new se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod();
+                    kod2.setCode("SENTTO");
+                    kod2.setCodeSystem("9871cd17-8755-4ed9-b894-ff3729e775a4");
+                    kod2.setDisplayName("SENT");
+
+                    IntygsStatus status2 = new IntygsStatus();
+                    status2.setStatus(kod2);
+                    it.getStatus().add(status2);
+                    break;
+            }
+
+        });
+
+        // setup intygstjansten WS mock to return intyg information
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
+                .thenReturn(listResponse);
+
+        Utkast one = getDraft("1");
+        one.setStatus(UtkastStatus.SIGNED);
+        one.setSenastSparadAv(vardpersonReferens);
+        one.setSenastSparadDatum(LocalDateTime.now());
+        one.setSkickadTillMottagare("FK");
+        one.setSkickadTillMottagareDatum(LocalDateTime.now().minusDays(1));
+
+        Utkast two = getDraft("2");
+        two.setSenastSparadAv(vardpersonReferens);
+        two.setStatus(UtkastStatus.SIGNED);
+        two.setSenastSparadDatum(LocalDateTime.now());
+        two.setSkickadTillMottagare("FK");
+        two.setSkickadTillMottagareDatum(LocalDateTime.now().minusDays(1));
+        two.setAterkalladDatum(LocalDateTime.now());
+
+        List<Utkast> drafts = Arrays.asList(one, two);
+
+        when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(any(), any(), any(), any()))
+                .thenReturn(drafts);
+
+        Pair<List<ListIntygEntry>, Boolean> intygItemListResponse = intygService.listIntyg(Collections.singletonList(enhetsId),
+                PERSNR);
+
+        assertEquals("SENT", intygItemListResponse.getLeft().get(0).getStatus());
+        assertEquals("CANCELLED", intygItemListResponse.getLeft().get(1).getStatus());
     }
 
     @SuppressWarnings("unchecked")

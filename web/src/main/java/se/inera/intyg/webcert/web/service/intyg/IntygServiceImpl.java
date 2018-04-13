@@ -284,16 +284,17 @@ public class IntygServiceImpl implements IntygService {
             request.getEnhetsId().add(InternalConverterUtil.getHsaId(id));
         }
 
+        // This is a list of Intyg from webcerts Utkast db
+        final List<ListIntygEntry> webcertCerts = getIntygFromWebcert(enhetId, personnummer);
+
         try {
             ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress, request);
-
             List<ListIntygEntry> fullIntygItemList = intygConverter
-                    .convertIntygToListIntygEntries(response.getIntygsLista().getIntyg());
-
+                    .convertIntygToListIntygEntries(response.getIntygsLista().getIntyg(), webcertCerts);
             intygRelationHelper.decorateIntygListWithRelations(fullIntygItemList);
-
             fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList, sekretessmarkering);
-            addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, enhetId, personnummer);
+            addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, webcertCerts);
+
             return Pair.of(fullIntygItemList, Boolean.FALSE);
 
         } catch (WebServiceException wse) {
@@ -302,11 +303,10 @@ public class IntygServiceImpl implements IntygService {
 
         // If intygstjansten was unavailable, we return whatever certificates we can find and clearly inform
         // the caller that the set of certificates are only those that have been issued by WebCert.
-        List<ListIntygEntry> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
-        for (ListIntygEntry lie : intygItems) {
+        for (ListIntygEntry lie : webcertCerts) {
             lie.setRelations(certificateRelationService.getRelations(lie.getIntygId()));
         }
-        return Pair.of(intygItems, Boolean.TRUE);
+        return Pair.of(webcertCerts, Boolean.TRUE);
     }
 
     private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList,
@@ -327,14 +327,17 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Adds any IntygItems found in Webcert for this patient not present in the list from intygstjansten.
      */
-    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList, List<String> enhetId,
-            Personnummer personnummer) {
-        List<ListIntygEntry> intygItems = buildIntygItemListFromDrafts(enhetId, personnummer);
-        intygItems.removeAll(fullIntygItemList);
-        fullIntygItemList.addAll(intygItems);
+    private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList,
+                                                                 List<ListIntygEntry> webcertIntygItems) {
+        webcertIntygItems.removeAll(fullIntygItemList);
+        fullIntygItemList.addAll(webcertIntygItems);
     }
 
-    private List<ListIntygEntry> buildIntygItemListFromDrafts(List<String> enhetId, Personnummer personnummer) {
+    private List<ListIntygEntry> buildIntygItemListFromDrafts(List<Utkast> drafts) {
+        return IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
+    }
+
+    private List<ListIntygEntry> getIntygFromWebcert(List<String> enhetId, Personnummer personnummer) {
         List<UtkastStatus> statuses = new ArrayList<>();
         statuses.add(UtkastStatus.SIGNED);
 
@@ -343,7 +346,7 @@ public class IntygServiceImpl implements IntygService {
         Set<String> base = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
                 AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
-        // Remove intygstyper that cannot be issued for a sekretessmarkerad patient
+
         Set<String> intygsTyper =
                 (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED)
                         ? filterAllowedForSekretessMarkering(base) : base;
@@ -351,8 +354,7 @@ public class IntygServiceImpl implements IntygService {
         List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer), enhetId,
                 statuses,
                 intygsTyper);
-
-        return IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
+        return buildIntygItemListFromDrafts(drafts);
     }
 
     private Set<String> filterAllowedForSekretessMarkering(Set<String> base) {
