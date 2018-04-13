@@ -18,25 +18,18 @@
  */
 
 
-angular.module('webcert').directive('wcUtkastFilter',
-    [ '$cookies', '$q', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy',
-        function($cookies, $q, UtkastFilterModel, UtkastProxy) {
+angular.module('webcert').directive('wcUtkastFilter', ['webcert.UtkastProxy',
+        function(UtkastProxy) {
             'use strict';
 
             return {
                 restrict: 'E',
-                replace: true,
-                templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastFilter.directive.html',
+                templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastFilter/wcUtkastFilter.directive.html',
                 scope: {
-                    onSearch: '&'
+                    onSearch: '&',
+                    filter: '='
                 },
                 controller: function($scope) {
-
-                    // Default API filter states
-                    var defaultSavedByChoice = {
-                        name: 'Visa alla',
-                        hsaId: undefined
-                    };
 
                     $scope.widgetState = {
                         loadingSavedByList: undefined,
@@ -44,33 +37,46 @@ angular.module('webcert').directive('wcUtkastFilter',
                         searched: false,
                         activeErrorMessageKey: null
                     };
-                    $scope.filter = UtkastFilterModel.build();
 
+                    //Clicked Search
                     $scope.search = function() {
                         $scope.widgetState.searched = true;
-                        $cookies.putObject('unsignedCertFilter', $scope.filter);
-                        $scope.onSearch({filter : $scope.filter});
+                        $scope.onSearch();
                     };
-
+                    //Clicked Återställ
                     $scope.resetFilter = function() {
-                        $cookies.remove('unsignedCertFilter');
                         resetFilterState();
-                        $scope.onSearch({filter : $scope.filter});
+                        $scope.widgetState.searched = false;
+                        $scope.onSearch();
                     };
 
                     function resetFilterState() {
                         $scope.filter.reset();
                     }
 
+                    function convertToSelectOptionList(serverList) {
+                        var options = [];
+                        angular.forEach(serverList, function(item) {
+                            options.push({id: item.hsaId, label: item.name});
+                        });
+                        return options;
+                    }
                     function loadSavedByList() {
 
                         $scope.widgetState.loadingSavedByList = true;
 
                         UtkastProxy.getUtkastSavedByList(function(list) {
                             $scope.widgetState.loadingSavedByList = false;
-                            $scope.widgetState.savedByList = list;
-                            if (list && (list.length > 0)) {
-                                $scope.widgetState.savedByList.unshift(defaultSavedByChoice);
+                            $scope.widgetState.savedByList = list || [];
+                            $scope.widgetState.savedByList.unshift({
+                                    name: 'Visa alla',
+                                    hsaId: undefined
+                            });
+
+                            $scope.filter.savedByOptions = convertToSelectOptionList($scope.widgetState.savedByList);
+                            //if only 1 option avaiable it must be 'Visa alla'
+                            if ($scope.filter.savedByOptions.length === 1) {
+                                $scope.filter.savedBy = undefined;
                             }
                         }, function() {
                             $scope.widgetState.loadingSavedByList = false;
@@ -78,26 +84,16 @@ angular.module('webcert').directive('wcUtkastFilter',
                                 hsaId: undefined,
                                 name: '<Kunde inte hämta lista>'
                             }];
+                            $scope.filter.savedByOptions = convertToSelectOptionList($scope.widgetState.savedByList);
                         });
                     }
 
-                    function loadFilterForm() {
 
-                        resetFilterState();
-
-                        // Use saved choice if cookie has saved a filter
-                        var savedFilter = $cookies.getObject('unsignedCertFilter');
-                        if (savedFilter) {
-                            angular.extend($scope.filter, savedFilter);
-                            $scope.onSearch({filter : $scope.filter});
-                        }
-                    }
 
                     /**
                      *  Load initial data
                      */
                     loadSavedByList();
-                    loadFilterForm();
                 }
             };
         }

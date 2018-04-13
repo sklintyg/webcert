@@ -1,71 +1,72 @@
-<div class="webcert-workarea-page centered-constrained-content container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST">
-  <div class="row" id="unsigned">
+<div id="unsigned-draft-header" class="wc-page-header">
+  <div class="centered-constrained-content">
+    <div class="header-content">
+      <i class="material-icons icon-wc-32 page-header-icon">drafts</i>
+      <div class="page-heading1">Ej signerade utkast</div>
+      <div class="page-heading2">Nedan visas alla ej signerade utkast för den enhet du är inloggad på.</div>
+    </div>
+  </div>
+</div>
+
+<div id="unsigned-draft-body" class="webcert-workarea-page webcert-workarea-vflex-container centered-constrained-content container-fluid" wc-authority
+     feature="HANTERA_INTYGSUTKAST">
+
+  <div class="row">
     <div class="col-md-12">
-      <h1 class="page-title">
-        <span dynamic-label key="dashboard.unsigned.title"></span>
-      </h1>
+
+
+      <h1 class="page-heading1" ng-if="!widgetState.initialQueryWasEmpty">Intyg visas för {{widgetState.valdVardenhet.namn}} </h1>
 
       <wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading">
 
-        <div>
-          <h2 class="col-head less-top-padding">{{widgetState.valdVardenhet.namn}}</h2>
 
-          <div class="webcert-bottom-padding-section">
-                      <span ng-if="!widgetState.filteredYet">Nedan visas alla ej signerade utkast.<br></span>
-            <button type="button" id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
-                    ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed"
-                    ng-switch="widgetState.queryFormCollapsed">
-              <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
-            </button>
-            <wc-utkast-filter on-search="filterDrafts(filter)" ng-show="!widgetState.queryFormCollapsed"></wc-utkast-filter>
+        <wc-utkast-filter filter="filter" on-search="filterDrafts()" ng-show="!widgetState.initialQueryWasEmpty"
+                          ng-cloak></wc-utkast-filter>
+
+        <wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery">
+
+
+          <!-- No results on initial query -->
+          <div id="current-list-noResults-unit" class="no-drafts-icon-box" ng-if="widgetState.initialQueryWasEmpty">
+            <img src="/app/views/ejSigneradeUtkast/ej_signerade_utkast.svg"/><br>
+            <div dynamic-label key="info.nounsigned.intyg.for.unit"></div>
           </div>
 
-          <wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery">
 
-            <div class="arende-table-section">
+          <!-- error message -->
+          <wc-alert-message id="current-list-noResults-error"
+                            ng-if="widgetState.doneLoading && widgetState.activeErrorMessageKey"
+                            alert-severity="danger">
+            <span dynamic-label key="{{widgetState.activeErrorMessageKey}}"></span>
+          </wc-alert-message>
 
-              <!-- No results message for unhandled -->
-              <div id="current-list-noResults-unit"
-                   ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1 && !widgetState.filteredYet">
-                <span dynamic-label key="info.nounsigned.intyg.for.unit"></span>
-              </div>
 
-              <!-- No results message for query -->
-              <div id="current-list-noResults-query" ng-show="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet">
-                <span dynamic-label key="info.query.noresults"></span>
-              </div>
+          <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
+            {{widgetState.currentList.length}} av
+            {{widgetState.totalCount}} träffar
+          </div>
 
-              <!-- error message -->
-              <wc-alert-message id="current-list-noResults-error"
-                   ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" alert-severity="danger">
-                <span dynamic-label key="{{widgetState.activeErrorMessageKey}}"></span>
-              </wc-alert-message>
 
-              <div id="query-count" ng-show="widgetState.totalCount>0">
-                Sökresultat - {{widgetState.totalCount}} träffar
-              </div>
-
-              <!-- unsigned intyg table -->
-              <div class="row" ng-show="widgetState.currentList.length>0" id="unsignedCertTable">
-                <wc-utkast-list utkast-list="widgetState.currentList"></wc-utkast-list>
-              </div>
-              <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
-                träff 1 - {{widgetState.currentList.length}} av
-                {{widgetState.totalCount}}
-              </div>
-              <div ng-show="showFetchMore()">
-                <button type="button" class="btn btn-default" title="Visa fler utkast." ng-click="fetchMore()"
-                        ng-disabled="widgetState.fetchingMoreInProgress">
-                  <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
-                </button>
-              </div>
-
+          <div class="row" id="unsignedCertTable" ng-show="!widgetState.initialQueryWasEmpty">
+            <wc-utkast-list utkast-list="widgetState.currentList"></wc-utkast-list>
+            <!-- No results message for query -->
+            <div id="current-list-noResults-query" class="col-xs-12"
+                 ng-if="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet">
+              Inga resultat att visa.
             </div>
-          </wc-spinner>
-          <!-- spinner end -->
-        </div>
+          </div>
+
+
+          <div ng-show="showFetchMore()">
+            <button type="button" class="btn btn-default" title="Visa fler utkast." ng-click="fetchMore()"
+                    ng-disabled="widgetState.fetchingMoreInProgress">
+              <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
+            </button>
+          </div>
+
+        </wc-spinner>
+        <!-- spinner end -->
       </wc-spinner>
     </div>
-
   </div>
 </div>

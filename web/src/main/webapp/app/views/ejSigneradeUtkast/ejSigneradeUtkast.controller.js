@@ -28,8 +28,8 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             // Constant settings
             var PAGE_SIZE = 10;
 
-            var lastFilter = UtkastFilterModel.build();
-            lastFilter.pageSize = PAGE_SIZE;
+            $scope.filter = UtkastFilterModel.build(PAGE_SIZE);
+
 
             // Exposed page state variables
             $scope.widgetState = {
@@ -46,11 +46,10 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 activeErrorMessageKey: null,
 
                 // Search states
-                queryFormCollapsed: true,
                 filteredYet: false,
+                initialQueryWasEmpty: true,
 
                 // List data
-                startFrom: 0,
                 totalCount: 0,
                 currentList: undefined
             };
@@ -66,6 +65,8 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.widgetState.currentList = data.results;
                 $scope.widgetState.totalCount = data.totalCount;
+                $scope.widgetState.initialQueryWasEmpty = (data.totalCount === 0 && !$scope.widgetState.filteredYet);
+
 
             }, function() {
                 $log.debug('Query Error');
@@ -76,18 +77,16 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             /**
              * Exposed scope functions
              **/
-            $scope.filterDrafts = function(filter) {
-                $log.debug('filterDrafts',filter);
+            $scope.filterDrafts = function() {
+                $log.debug('filterDrafts');
 
-                lastFilter = angular.copy(filter);
-                filter.pageSize = PAGE_SIZE;
-                $scope.widgetState.queryFormCollapsed = false;
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.widgetState.filteredYet = true;
-                $scope.widgetState.startFrom = 0;
+                $scope.widgetState.initialQueryWasEmpty = false;
 
-                var filterQuery = filter.convertToPayload();
-                filterQuery.startFrom = $scope.widgetState.startFrom;
+                $scope.filter.startFrom = 0;
+
+                var filterQuery = $scope.filter.convertToPayload();
                 $scope.widgetState.runningQuery = true;
                 UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
                     $scope.widgetState.runningQuery = false;
@@ -101,15 +100,14 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             };
 
             $scope.showFetchMore = function() {
-                return $scope.widgetState.startFrom + PAGE_SIZE < $scope.widgetState.totalCount;
+                return $scope.filter.startFrom + PAGE_SIZE < $scope.widgetState.totalCount;
             };
 
             $scope.fetchMore = function() {
                 $log.debug('fetchMore');
                 $scope.widgetState.activeErrorMessageKey = null;
-                $scope.widgetState.startFrom += PAGE_SIZE;
-                var filterQuery = lastFilter.convertToPayload();
-                filterQuery.startFrom = $scope.widgetState.startFrom;
+                $scope.filter.startFrom += PAGE_SIZE;
+                var filterQuery = $scope.filter.convertToPayload();
                 $scope.widgetState.fetchingMoreInProgress = true;
 
                 UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {

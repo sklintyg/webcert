@@ -1,0 +1,53 @@
+<div id="advanced-filter-form" class="hflex-container" ng-form="filterForm">
+
+
+  <div class="filter-field" wc-authority="VIDAREBEFORDRA_UTKAST" id="filterFormVidarebefordrad">
+    <label>Vidarebefordrat</label><br>
+    <wc-dropdown id="filter-notified" ng-model="filter.notified" items="filter.notifiedOptions"
+                 use-dynamic-label="false"></wc-dropdown>
+  </div>
+
+  <div class="filter-field">
+    <label>Utkast</label><br>
+    <wc-dropdown id="filter-status" ng-model="filter.status" items="filter.statusOptions"
+                 use-dynamic-label="false"></wc-dropdown>
+  </div>
+
+  <div class="filter-field" wc-authority="FILTRERA_PA_LAKARE" id="filterFormSparatAv">
+    <label>Sparat av</label><br>
+    <wc-dropdown id="filter-notified" ng-model="filter.savedBy" items="filter.savedByOptions"
+                 use-dynamic-label="false"></wc-dropdown>
+  </div>
+
+
+  <div class="filter-field date-group">
+    <label class="offset-label">Sparat datum</label><br>
+    <label class="inline-label">Från</label>
+    <span dom-id="filter-changedate-from" target-model="filter.savedFrom" wc-date-picker-field
+          add-date-parser="strict"></span>
+    <label class="inline-label">till</label>
+    <span dom-id="filter-changedate-to" target-model="filter.savedTo" wc-date-picker-field add-date-parser="strict"
+          wc-date-is-after-validator="filter-changedate-from"></span>
+  </div>
+
+  <!-- buttons -->
+  <div class="filter-field">
+    <label>&nbsp;</label><br>
+    <button type="button" id="uc-filter-btn" class="btn btn-success" ng-click="search()">Sök</button>
+    <button type="button" class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökfilter
+    </button>
+  </div>
+</div>
+
+<wc-alert-message alert-severity="danger" ng-if="filterForm.$invalid && !filterForm.$pristine && widgetState.searched" ng-cloak class="filter-errors">
+  <p ng-show="filterForm['filter-changedate-from'].$error.date">
+    <span dynamic-label key="validation.invalidfromdate"></span>
+  </p>
+  <p ng-show="filterForm['filter-changedate-to'].$error.date">
+    <span dynamic-label key="validation.invalidtodate"></span>
+  </p>
+  <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
+    <span dynamic-label key="validation.invalidtobeforefromdate"></span>
+  </p>
+
+</wc-alert-message>

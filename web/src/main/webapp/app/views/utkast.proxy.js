@@ -49,6 +49,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
 
             /**
              * Load list of all certificates types
+             * Remove when INTYG-6009 is done
              */
             function _getUtkastTypesCachedUnfiltered(onSuccess, onError) {
                 if (cachedIntygTypes !== null) {
@@ -205,7 +206,6 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             // Return public API for the service
             return {
                 createUtkast: _createUtkast,
-                getUtkastTypesCachedUnfiltered: _getUtkastTypesCachedUnfiltered,
                 getUtkastTypesForPatient: _getUtkastTypesForPatient,
                 getUtkastTypes: _getUtkastTypes,
                 getUtkastType: _getUtkastType,

@@ -32,6 +32,9 @@
 // injector
 @import 'partials/fornya-dialog.scss';
 @import 'partials/preference-dialog.scss';
+@import 'views/ejSigneradeUtkast/ejSigneradeUtkast.scss';
+@import 'views/ejSigneradeUtkast/wcUtkastFilter/wcUtkastFilter.directive.scss';
+@import 'views/ejSigneradeUtkast/wcUtkastList/wcUtkastList.directive.scss';
 @import 'views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.scss';
 @import 'views/index/index.scss';
 @import 'views/index/loginMetoder/loginMetoder.directive.scss';

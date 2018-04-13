@@ -1,0 +1,108 @@
+<table class="col-md-12 table table-striped wc-table-striped hidden-xs hidden-sm">
+  <tr>
+
+    <th wc-table-head label-key="th.label.draft-type" help-key="th.help.draft-type"></th>
+    <th wc-table-head label-key="th.label.draft-status" help-key="th.help.draft-status"></th>
+    <th wc-table-head label-key="th.label.draft-saved-date" help-key="th.help.draft-saved-date"></th>
+    <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient"></th>
+    <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by"></th>
+    <th wc-table-head label-key="th.label.draft-forwarded" help-key="th.help.draft-forwarded" class="center"
+        wc-authority="VIDAREBEFORDRA_UTKAST"></th>
+    <th></th>
+
+  </tr>
+  <tr ng-repeat="intyg in utkastList">
+    <td>{{::getTypeName(intyg.intygType)}}</td>
+    <td><span dynamic-label key="intyg.status.{{::intyg.status}}"></span></td>
+    <td class="unbreakable">{{::intyg.lastUpdatedSigned | date:'short'}}</td>
+    <td class="unbreakable">{{::intyg.patientId | PersonIdFormatter}}
+      <wc-sekretess-avliden-ikon uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering"
+                                 uuid="intyg.patientId"></wc-sekretess-avliden-ikon>
+    </td>
+    <td>{{::intyg.updatedSignedBy}}</td>
+    <td class="center" wc-authority="VIDAREBEFORDRA_UTKAST">
+      <i ng-attr-id="vidarebefordrad_{{intyg.intygId}}" ng-if="intyg.vidarebefordrad" class="material-icons checkmark">check</i>
+    </td>
+
+
+    <td class="unbreakable wc-table-striped-last">
+      <button type="button" class="btn btn-primary"
+              title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
+              ng-click="openMailDialog(intyg)" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
+              uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
+              popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300"
+              popover-append-to-body="true">
+        <i class="icon-wc-ikon-reply"></i> Vidarebefordra
+
+      </button>
+
+      <button ng-attr-id="showBtn-{{intyg.intygId}}" type="button" class="btn btn-primary" ng-click="openIntyg(intyg)"
+              uib-popover-html="'Öppnar utkastet.'" popover-trigger="mouseenter" popover-placement="top"
+              popover-popup-delay="300" popover-append-to-body="true">
+        <i class="icon-wc-ikon-19"></i> Öppna
+      </button>
+    </td>
+
+  </tr>
+</table>
+
+
+<!-- tablet pivoted table layout -->
+<div class="visible-xs visible-sm tablet-list">
+  <div class="utkast-list" ng-repeat="intyg in utkastList">
+
+    <div class="row">
+      <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.draft-type"></span></div>
+      <div class="col-xs-8 col-sm-9">{{::getTypeName(intyg.intygType)}}</div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.draft-status"></span></div>
+      <div class="col-xs-8 col-sm-9"><span dynamic-label key="intyg.status.{{::intyg.status}}"></span></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.draft-saved-date"></span></div>
+      <div class="col-xs-8 col-sm-9">{{::intyg.lastUpdatedSigned | date:'short'}}</div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.draft-patient"></span></div>
+      <div class="col-xs-8 col-sm-9">{{::intyg.patientId | PersonIdFormatter}}
+        <wc-sekretess-avliden-ikon uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering"
+                                   uuid="intyg.patientId"></wc-sekretess-avliden-ikon>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.draft-saved-by"></span></div>
+      <div class="col-xs-8 col-sm-9">{{::intyg.updatedSignedBy}}</div>
+    </div>
+
+    <div class="row" wc-authority="VIDAREBEFORDRA_UTKAST">
+      <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.draft-forwarded"></span></div>
+      <div class="col-xs-8 col-sm-9"><i ng-attr-id="vidarebefordrad_{{intyg.intygId}}" ng-if="intyg.vidarebefordrad" class="material-icons checkmark">check</i></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <button type="button" class="btn btn-primary"
+                title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
+                ng-click="openMailDialog(intyg)" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
+                uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
+                popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300"
+                popover-append-to-body="true">
+          <i class="icon-wc-ikon-reply"></i> Vidarebefordra
+
+        </button>
+
+        <button ng-attr-id="showBtn-{{intyg.intygId}}" type="button" class="btn btn-primary" ng-click="openIntyg(intyg)"
+                uib-popover-html="'Öppnar utkastet.'" popover-trigger="mouseenter" popover-placement="top"
+                popover-popup-delay="300" popover-append-to-body="true">
+          <i class="icon-wc-ikon-19"></i> Öppna
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

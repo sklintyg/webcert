@@ -112,26 +112,20 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
         });
 
-        it('should get and fill currentList with 1 entry when unsignedCertFilter is not set', function() {
-            $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=0').respond(200, mockResponse.utkastList);
-            $scope.filterDrafts(emptyFilter);
-            $httpBackend.flush();
-            expect($scope.widgetState.currentList.length).toBe(1);
-        });
 
         it('should get utkast list based on date filter', function() {
             $httpBackend.expectGET('/api/utkast?pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0').respond(200, {results: [], totalCount: 0});
-            var filter = utkastFilterModel.build();
-            filter.savedTo = '2015-01-10';
-            filter.savedFrom = '2015-10-10';
-            $scope.filterDrafts(filter);
+
+            $scope.filter.savedTo = '2015-01-10';
+            $scope.filter.savedFrom = '2015-10-10';
+            $scope.filterDrafts();
             $httpBackend.flush();
             expect($scope.widgetState.currentList.length).toBe(0);
         });
 
         it('should handle error if list could not be fetched from server', function() {
             $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=0').respond(500);
-            $scope.filterDrafts(emptyFilter);
+            $scope.filterDrafts();
             $httpBackend.flush();
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
         });
@@ -142,7 +136,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
             $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=10').respond(200, {results:[]});
             $scope.fetchMore();
             $httpBackend.flush();
-            expect($scope.widgetState.startFrom).toBe(10);
+            expect($scope.filter.startFrom).toBe(10);
             expect($scope.widgetState.activeErrorMessageKey).toBeNull();
         });
 
@@ -150,7 +144,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
             $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=10').respond(500);
             $scope.fetchMore();
             $httpBackend.flush();
-            expect($scope.widgetState.startFrom).toBe(10);
+            expect($scope.filter.startFrom).toBe(10);
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
         });
     });

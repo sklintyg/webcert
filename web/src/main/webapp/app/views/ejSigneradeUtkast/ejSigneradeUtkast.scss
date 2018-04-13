@@ -1,0 +1,52 @@
+#unsigned-draft-header {
+
+  &.wc-page-header {
+    padding: 18px 0 18px 0;
+  }
+  .header-content {
+    padding-left: 40px;
+  }
+
+  .page-header-icon {
+    float: left;
+    margin: 6px 30px 6px 0;
+  }
+
+  .page-heading1 {
+    @extend %wc-typo-02;
+    color: $wc-color-07;
+    padding: 0;
+    margin: 0;
+  }
+
+  .page-heading2 {
+    @extend %wc-typo-07;
+    color: $wc-color-07;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+#unsigned-draft-body {
+  &.webcert-workarea-page {
+    padding-left: 41px;
+  }
+
+  .page-heading1 {
+    @extend %wc-typo-02;
+    color: $wc-color-07;
+    padding: 0;
+    margin: 0;
+  }
+
+  .no-drafts-icon-box {
+
+    text-align: center;
+    padding-top: 25px;
+    width: 536px;
+    img {
+      padding-bottom: 24px;
+    }
+  }
+}

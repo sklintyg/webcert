@@ -36,6 +36,9 @@ describe('wcUtkastListSpec', function() {
             var statService = jasmine.createSpyObj('common.statService', ['refreshStat']);
             $provide.value('common.statService', statService);
 
+            var moduleService = jasmine.createSpyObj('common.moduleService', ['getModuleName']);
+            $provide.value('common.moduleService', moduleService);
+
             $provide.value('PersonIdFormatterFilter', function(){});
 
             utkastNotifyService =

@@ -23,7 +23,6 @@ describe('wcUtkastFilterSpec', function() {
 
     var $scope;
     var $httpBackend;
-    var $cookies;
     var mockFactory;
     var element;
     var utkastFilterModel;
@@ -50,22 +49,20 @@ describe('wcUtkastFilterSpec', function() {
             $provide.value('common.statService', jasmine.createSpyObj('common.statService', [ 'refreshStat' ]));
         }]);
 
-        inject(['$rootScope', '$compile', '$cookies', '$httpBackend', 'webcert.UtkastFilterModel', '$templateCache',
-            function($rootScope, $compile, _$cookies_, _$httpBackend_, _utkastFilterModel_, $templateCache) {
+        inject(['$rootScope', '$compile', '$httpBackend', 'webcert.UtkastFilterModel', '$templateCache',
+            function($rootScope, $compile, _$httpBackend_, _utkastFilterModel_, $templateCache) {
 
                 $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
 
-                $cookies = _$cookies_;
                 $httpBackend = _$httpBackend_;
                 utkastFilterModel = _utkastFilterModel_;
                 emptyFilter = _utkastFilterModel_.build();
 
-                $cookies.remove('unsignedCertFilter');
-
                 var tpl = angular.element(
-                    '<wc-utkast-filter on-search="testFilter(filter)"></wc-utkast-filter>'
+                    '<wc-utkast-filter on-search="testFilter()" filter="filter"></wc-utkast-filter>'
                 );
                 $scope = $rootScope.$new();
+                $scope.filter = emptyFilter;
                 $scope.testFilter = function(filter) {
                 };
                 element = $compile(tpl)($scope);
@@ -91,38 +88,31 @@ describe('wcUtkastFilterSpec', function() {
 
     describe('search button', function() {
 
-        it('should call search function and save cookie', function() {
+        it('should call search function ', function() {
 
             setupHttp(200);
 
             spyOn($scope, 'testFilter');
-            spyOn($cookies, 'putObject');
-
-            var completeYes = element.find('#completeYes')[0];
-            completeYes.click();
+            $scope.filter.status = 'DRAFT_COMPLETE';
+            $scope.$digest();
 
             var button = element.find('#uc-filter-btn')[0];
             button.click();
 
-            var response = utkastFilterModel.build();
-            response.complete = true;
-            expect($cookies.putObject).toHaveBeenCalledWith('unsignedCertFilter',response);
-            expect($scope.testFilter).toHaveBeenCalledWith(response);
+            expect($scope.testFilter).toHaveBeenCalled();
         });
     });
 
     describe('reset filter button', function() {
 
-        it('should reset filter parameters and delete saved cookie', function() {
+        it('should reset filter parameters', function() {
 
             setupHttp(200);
 
             spyOn($scope, 'testFilter');
-            spyOn($cookies, 'remove');
             element.isolateScope().resetFilter();
             $scope.$digest();
-            expect($cookies.remove).toHaveBeenCalledWith('unsignedCertFilter');
-            expect($scope.testFilter).toHaveBeenCalledWith(emptyFilter);
+            expect($scope.testFilter).toHaveBeenCalled();
         });
     });
 });
