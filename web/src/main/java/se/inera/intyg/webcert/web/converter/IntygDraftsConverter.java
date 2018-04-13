@@ -127,21 +127,34 @@ public class IntygDraftsConverter {
         return draft.getStatus().name();
     }
 
-    public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList) {
-
+    public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList, List<ListIntygEntry> webcertIntyg) {
         return intygList.stream()
-                .map(intyg -> convertIntygToListIntygEntry(intyg))
+                .map(intyg -> convertIntygToListIntygEntry(intyg,
+                        webcertIntyg.stream().filter(it ->
+                                it.getIntygId().equals(intyg.getIntygsId().getExtension())).findFirst().orElse(null)))
                 .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
                 .collect(Collectors.toList());
     }
 
-    private ListIntygEntry convertIntygToListIntygEntry(Intyg source) {
-
+    private ListIntygEntry convertIntygToListIntygEntry(Intyg source, ListIntygEntry altSource) {
         ListIntygEntry entry = new ListIntygEntry();
         entry.setIntygId(source.getIntygsId().getExtension());
         entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
         entry.setSource(IntygSource.IT);
-        entry.setStatus(findLatestStatus(source.getStatus()).name());
+
+        if (altSource == null) {
+            entry.setStatus(findLatestStatus(source.getStatus()).name());
+        } else {
+            if (CertificateState.CANCELLED.name().equals(altSource.getStatus())
+                    || CertificateState.SENT.name().equals(altSource.getStatus())) {
+                // Use status from a signed Utkast
+                entry.setStatus(altSource.getStatus());
+            } else {
+                // Uses status from Intygstjansten
+                entry.setStatus(findLatestStatus(source.getStatus()).name());
+            }
+        }
+
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
         entry.setPatientId(createPnr(source.getPatient().getPersonId().getExtension()));
