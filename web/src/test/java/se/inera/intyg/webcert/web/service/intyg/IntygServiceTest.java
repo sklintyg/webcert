@@ -462,15 +462,31 @@ public class IntygServiceTest {
         listResponse.getIntygsLista().getIntyg().forEach( it -> {
             it.getStatus().clear();
 
-            se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod kod =
-                    new se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod();
-            kod.setCode("RECEIV");
-            kod.setCodeSystem("9871cd17-8755-4ed9-b894-ff3729e775a4");
-            kod.setDisplayName("RECEIVED");
+            switch (it.getIntygsId().getExtension()) {
+                case "1":
+                    se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod kod =
+                            new se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod();
+                    kod.setCode("RECEIV");
+                    kod.setCodeSystem("9871cd17-8755-4ed9-b894-ff3729e775a4");
+                    kod.setDisplayName("RECEIVED");
 
-            IntygsStatus status = new IntygsStatus();
-            status.setStatus(kod);
-            it.getStatus().add(status);
+                    IntygsStatus status1 = new IntygsStatus();
+                    status1.setStatus(kod);
+                    it.getStatus().add(status1);
+                    break;
+                case "2":
+                    se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod kod2 =
+                            new se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod();
+                    kod2.setCode("SENTTO");
+                    kod2.setCodeSystem("9871cd17-8755-4ed9-b894-ff3729e775a4");
+                    kod2.setDisplayName("SENT");
+
+                    IntygsStatus status2 = new IntygsStatus();
+                    status2.setStatus(kod2);
+                    it.getStatus().add(status2);
+                    break;
+            }
+
         });
 
         // setup intygstjansten WS mock to return intyg information
