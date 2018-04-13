@@ -21,7 +21,7 @@
 
 
         <wc-utkast-filter filter="filter" on-search="filterDrafts()" ng-show="!widgetState.initialQueryWasEmpty"
-                          ng-cloak></wc-utkast-filter>
+                          class="ng-hide"></wc-utkast-filter>
 
         <wc-spinner label="info.querydraft.inprogress" show-spinner="widgetState.runningQuery">
 
@@ -47,7 +47,7 @@
           </div>
 
 
-          <div class="row" id="unsignedCertTable" ng-show="!widgetState.initialQueryWasEmpty">
+          <div class="row ng-hide" id="unsignedCertTable" ng-show="!widgetState.initialQueryWasEmpty">
             <wc-utkast-list utkast-list="widgetState.currentList"></wc-utkast-list>
             <!-- No results message for query -->
             <div id="current-list-noResults-query" class="col-xs-12"

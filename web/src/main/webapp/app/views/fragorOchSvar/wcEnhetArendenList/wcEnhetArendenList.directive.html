@@ -22,6 +22,7 @@
     <!-- arende table - Frågor och svar-tabell -->
     <div class="row" ng-show="listModel.arendenList.length > 0" id="arendeTable">
       <table class="col-md-12 table table-striped wc-table-striped">
+        <thead>
         <tr>
           <th></th>
           <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
@@ -32,6 +33,8 @@
           <th wc-table-head label-key="th.label.arende-signed-by" help-key="th.help.arende-signed-by"></th>
           <th wc-table-head label-key="th.label.arende-sent-recv-date" help-key="th.help.arende-sent-recv-date"></th>
         </tr>
+        </thead>
+        <tbody>
         <tr ng-repeat="arende in listModel.arendenList">
           <td>
             <button type="button" class="btn btn-secondary" title="Visar intyget och fråga-svar."
@@ -60,6 +63,7 @@
           <td>{{arende.signeratAvNamn}}</td>
           <td class="unbreakable wc-table-striped-last">{{arende.receivedDate | date:'short'}}
           </td>
+        </tbody>
       </table>
     </div>
     <div id="showing-nr-hits" ng-show="listModel.totalCount > 0">Visar

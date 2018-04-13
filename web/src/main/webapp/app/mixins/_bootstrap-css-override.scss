@@ -383,8 +383,6 @@ input.form-control:focus {
  * Table overrides
  * --------------------------------------- */
 %table-common {
-  padding: 2px 0;
-  border: 0;
   vertical-align: middle;
 }
 
@@ -413,15 +411,22 @@ table .table-4ths th {
   width: 25%;
 }
 
-.table-striped tbody > tr:nth-child(odd) {
+.table-striped tbody > tr:nth-of-type(odd) {
   > td {
-    background-color: $table-striped-background-color;
+    background-color: $table-striped-background-color-odd;
   }
   > th {
     background: none;
   }
 }
-
+.table-striped tbody > tr:nth-of-type(even) {
+  > td {
+    background-color: $table-striped-background-color-even;
+  }
+  > th {
+    background: none;
+  }
+}
 /* ---------------------------------------
  * Glyphicon overrides
  * --------------------------------------- */

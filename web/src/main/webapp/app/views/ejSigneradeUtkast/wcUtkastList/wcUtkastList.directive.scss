@@ -4,9 +4,6 @@ wc-utkast-list {
   i.checkmark {
     color: $wc-color-10;
   }
-  .wc-table-striped > tbody > tr > td.wc-table-striped-last {
-    padding-right: 0;
-  }
 
   .tablet-list {
      margin: 0 15px;
@@ -14,6 +11,11 @@ wc-utkast-list {
     .utkast-list {
       display: table;
       width: 100%;
+      border: 1px solid transparent;
+      &:hover {
+        border: 1px solid $wc-color-21;
+      }
+
       .row > div:first-child {
         @extend %wc-typo-06;
         color: $wc-color-19;

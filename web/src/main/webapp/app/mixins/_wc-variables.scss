@@ -55,7 +55,9 @@ $btn-common-hover-text-color: $wc-color-00;
 $dropdown-menu-box-shadow-color: $black_30;
 
 // Tables
-$table-striped-background-color: $wc-color-20;
+$table-striped-background-color-even: $wc-color-20;
+$table-striped-background-color-odd: $wc-color-00;
+$table-striped-border-radius: 4px;
 
 // Nav
 $nav-pills-color: $wc-color-00;
