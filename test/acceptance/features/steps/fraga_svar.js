@@ -78,7 +78,7 @@ function sendQuestionToFK(amne) {
         if (!intyg.messages) {
             global.intyg.messages = [];
         }
-
+        messageID = fragaId;
         global.intyg.messages.unshift({
             typ: 'Fråga',
             amne: helpers.subjectCodes[amne],
@@ -367,13 +367,8 @@ Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
 });
 
 Given(/^jag markerar frågan från vården som hanterad$/, function() {
-    var fragaText;
-    for (var i = 0; i < global.intyg.messages.length; i++) {
-        if (global.intyg.messages[i].typ === 'Fråga') {
-            fragaText = global.intyg.messages[i].text;
-        }
-    }
-    return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).typeKeys(protractor.Key.SPACE);
+    return fragaSvar.meddelande(messageID).administrativFraga.togglaHanterad();
+    //return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).typeKeys(protractor.Key.SPACE);
 });
 
 
