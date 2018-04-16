@@ -179,7 +179,7 @@ module.exports = function(grunt) {
 		//Använder tag expressions
 		//https://github.com/cucumber/cucumber/tree/master/tag-expressions
 		
-		let tags = 'not @waitingForFix and not @notReady and not @NOTREADY and not @WAITINGFORFIX and not @BACKOFFICE';
+		let tags = 'not @waitingForFix and not @notReady and not @NOTREADY and not @WAITINGFORFIX and not @BACKOFFICE and not @LegacyFK7263';
 		
         if (grunt.option('tags')) {
 			tags = grunt.option('tags');
