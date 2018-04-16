@@ -41,7 +41,11 @@ Scenario: GE-005 - Händelser på SMI-intyg utfärdat på annan vårdgivare ska 
 	Och jag skriver ut intyget
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
 	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	Och jag går in på intyget via djupintegrationslänk
 	Och jag makulerar intyget
+	Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	Och jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
 	Och jag skriver ut intyget
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
 
