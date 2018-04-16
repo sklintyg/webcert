@@ -18,6 +18,7 @@ Egenskap: Avliden patient
      Så ska intygets status vara "Intyget är skickat till Försäkringskassan"
 	 Och ska intygets status vara "Intyget är tillgängligt för patienten"
 
+	 
  @svara-på-fråga @smi @integration
  Scenario: Försäkringskassan kan ställa frågor på ett intyg
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
