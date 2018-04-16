@@ -92,7 +92,7 @@ Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) efter att in
 	Och jag makulerar intyget
 	Så ska varningen "Kunde inte makulera intyget" visas om man försöker makulera intyget i andra webbläsarinstansen
 
-@SAMTIDAANVANDARE @SKICKA-MAKULERA
+@SAMTIDAANVANDARE @SKICKA-MAKULERA @NOTREADY
 Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (LISJP)
 		När jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
 		Och jag fyller i alla nödvändiga fält för intyget

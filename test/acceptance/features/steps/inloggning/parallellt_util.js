@@ -116,7 +116,7 @@ module.exports = {
 
     askNewQuestion: function(forkedBrowser) {
         return forkedBrowser.findElement(by.id('arende-filter-administrativafragor')).click().then(function() {
-            return forkedBrowser.sleep(100000); //TODO kolla varför admin tabben inte öppnas.
+            return forkedBrowser.sleep(1000);
         }).then(function() {
             return forkedBrowser.findElement(by.id('askArendeBtn')).sendKeys(protractor.Key.SPACE);
         }).then(function() {
