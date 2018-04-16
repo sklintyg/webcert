@@ -1,5 +1,5 @@
 # language: sv
-@behorighet @uthopp
+@BEHORIGHET @UTHOPP
 Egenskap: Behörigheter för en uthoppsläkare
 
 Bakgrund: Inloggad som uthoppsläkare
@@ -72,10 +72,11 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
    Och jag svarar på frågan
    Så kan jag se mitt svar under hanterade frågor
 
-@nyttIntyg @lisjp
+@FK7263 @KOMPLETTERA
 Scenario: Ska få varning vid svar med nytt intyg
-	När jag går in på en patient
-	Och jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
+	När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
+	Och jag går in på intyget via uthoppslänk
+	Och jag skickar intyget
 	
 	När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
 	Och jag går in på intyget via uthoppslänk
@@ -84,10 +85,11 @@ Scenario: Ska få varning vid svar med nytt intyg
 	När jag klickar på svara knappen, fortfarande i uthoppsläge
 	Och ska kompletteringsdialogen innehålla texten "förnya det befintliga intyget i journalsystemet och komplettera med den nya informationen"
 
-@komplettera @lisjp
+@KOMPLETTERA @FK7263
 Scenario: Ska kunna besvara komplettering med textmeddelande via uthoppslänk
-   När jag går in på en patient
-   Och jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"    
+   När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
+   Och jag går in på intyget via uthoppslänk
+   Och jag skickar intyget
    
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk

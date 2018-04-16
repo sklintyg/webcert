@@ -5,7 +5,7 @@ Egenskap: Behörigheter för en uthoppad vårdadministratör
 
 Bakgrund: Logga in och gå in på en patient
 	Givet att jag är inloggad som uthoppad vårdadministratör
-	Och jag skickar ett "Läkarintyg för sjukpenning" intyg till Intygstjänsten
+	Och jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
 
 @vårdadmin_byte
 Scenario: Kan byta vårdenhet 
