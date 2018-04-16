@@ -41,6 +41,7 @@ let tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 let utkastPage = pages.intyg.base.utkast;
 let checkboxVal = utkastPage.checkboxVal;
 let radioknappVal = utkastPage.radioknappVal;
+let dropdownVal = utkastPage.dropdownVal;
 
 let helpers = require('./helpers');
 let unique = helpers.uniqueItemsInArray;
