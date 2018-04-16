@@ -17,8 +17,9 @@
       <td><span dynamic-label key="intyg.status.{{::intyg.status}}"></span></td>
       <td class="unbreakable">{{::intyg.lastUpdatedSigned | date:'short'}}</td>
       <td class="unbreakable">{{::intyg.patientId | PersonIdFormatter}}
-        <wc-sekretess-avliden-ikon uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering"
-                                   uuid="intyg.patientId"></wc-sekretess-avliden-ikon>
+        <wc-sekretess-avliden-ikon uuid="intyg.intygId"
+                                   sekretessmarkering="intyg.sekretessmarkering"
+                                   avliden="intyg.avliden"></wc-sekretess-avliden-ikon>
       </td>
       <td>{{::intyg.updatedSignedBy}}</td>
       <td class="center" wc-authority="VIDAREBEFORDRA_UTKAST">
@@ -71,8 +72,9 @@
     <div class="row">
       <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.draft-patient"></span></div>
       <div class="col-xs-8 col-sm-9">{{::intyg.patientId | PersonIdFormatter}}
-        <wc-sekretess-avliden-ikon uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering"
-                                   uuid="intyg.patientId"></wc-sekretess-avliden-ikon>
+        <wc-sekretess-avliden-ikon uuid="intyg.intygId"
+                                   sekretessmarkering="intyg.sekretessmarkering"
+                                   avliden="intyg.avliden"></wc-sekretess-avliden-ikon>
       </div>
     </div>
 
