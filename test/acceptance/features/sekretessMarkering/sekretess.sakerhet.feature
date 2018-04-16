@@ -46,22 +46,15 @@ Scenario: Läkare ska kunna makulera intyg med s-markering
 	Så ska det finnas en knapp med texten "Makulera"
 
 	
-@ts @bas @notReady
+@TS @BAS @notReady
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts bas
-	När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
-	#felar på att elementet inte hittas i drop-down listan. TODO testfall ska uppdateras
-	Så ska jag varnas om att "Behörighet saknas"
-	
-	När att vårdsystemet skapat ett intygsutkast för slumpat TS-intyg
-	#detta förväntar vi oss ska fela.
-	Och jag går in på intyget
-	Så ska jag varnas om att "Behörighet saknas"
+	Så ska jag inte ha alternativet att skapa "Transportstyrelsens läkarintyg" intyg
+	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg" utkast
 
-@ts @diabetes @notReady
+@TS @DIABETES @notReady
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts diabetes
-	När jag går in på att skapa ett "Transportstyrelsens, diabetes" intyg
-	#felar på att elementet inte hittas i drop-down listan. TODO testfall ska uppdateras
-	Så ska jag varnas om att "Behörighet saknas"
+	Så ska jag inte ha alternativet att skapa "Transportstyrelsens, diabetes" intyg
+	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens, diabetes" utkast
 	
 @rehabstod @rehabKoordinator
 Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.

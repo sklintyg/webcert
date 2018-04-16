@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, intyg, browser, protractor, Promise, logger */
+/* global pages, browser, protractor, Promise, logger */
 
 'use strict';
 /*jshint newcap:false */
@@ -89,6 +89,10 @@ Given(/^jag går till Sök\/skriv intyg$/, function() {
 Given(/^ska intyget visa varningen "([^"]*)"$/, function(arg1) {
     return expect(pages.intyg.base.intyg.intygStatus.getText())
         .to.eventually.contain(arg1);
+});
+
+Given(/^ska jag inte ha alternativet att skapa "([^"]*)" intyg$/, function(intygsTyp) {
+    return expect(element(by.id('intygType')).getText()).to.eventually.not.contain(intygsTyp);
 });
 
 Given(/^det finns ett "([^"]*)"$/, function(intygtyp) {

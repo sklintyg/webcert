@@ -41,7 +41,7 @@ var soapMessageBodies = require('./soap');
 var helpers = require('./helpers');
 var testvalues = wcTestTools.testdata.values;
 var testdataHelpers = wcTestTools.helpers.testdata;
-
+const path = '/services/create-draft-certificate/v3.0?wsdl';
 
 /*
  *	Stödfunktioner
@@ -87,9 +87,7 @@ function sendCreateDraft(url, body, callback) {
 function createBody(intygstyp, callback) {
     global.intyg.typ = intygstyp;
 
-    var body, path;
-
-    path = '/services/create-draft-certificate/v3.0?wsdl';
+    var body;
     body = soapMessageBodies.CreateDraftCertificateV3(
         global.user,
         intygstyp
@@ -105,6 +103,33 @@ function createBody(intygstyp, callback) {
  *	Test steg
  *
  */
+
+Given(/^ska vårdsystemet inte ha möjlighet att skapa "([^"]*)" utkast$/, function(intygstyp) {
+    let body = soapMessageBodies.CreateDraftCertificateV3(
+        global.user,
+        intygstyp
+    );
+    let url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
+    url = url.replace('https', 'http');
+
+    soap.createClient(url, function(err, client) {
+        logger.info(url);
+        if (err) {
+            logger.error('sendCreateDraft misslyckades' + err);
+            throw (err);
+        } else {
+            client.CreateDraftCertificate(body, function(err, result, resBody) {
+                logger.silly(resBody);
+                if (err) {
+                    throw (err);
+                } else {
+                    return expect(resBody).to.contain('Cannot issue intyg type');
+                }
+            });
+        }
+    });
+
+});
 
 Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
 
