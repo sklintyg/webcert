@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals logger, wcTestTools, intyg*/
+/*globals logger, wcTestTools*/
 
 'use strict';
 /*jshint newcap:false */
@@ -52,19 +52,7 @@ var helpers = require('./helpers');
 
 
 Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/, function(typ) {
-
-    var elm;
-
-    if (typ === 'frågan') {
-        elm = 'wc-sekretessmarkering-text-' + global.intyg.messages[0].id;
-        logger.silly(elm);
-    } else if (typ === 'intyget') {
-        //Annars kollar vi efter 'icon+intyg' elemenetet
-        elm = 'wc-sekretessmarkering-text-' + intyg.id;
-    }
-
-    return expect(element(by.id(elm)).isPresent()).to.eventually.become(true);
-
+    return expect(element(by.css('wc-sekretess-avliden-ikon')).isPresent()).to.eventually.become(true);
 });
 
 Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
