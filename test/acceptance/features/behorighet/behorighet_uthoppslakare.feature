@@ -76,7 +76,7 @@ Scenario: Ska kunna svara på frågor från Försäkringskassan
 Scenario: Ska få varning vid svar med nytt intyg
 	När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
 	Och jag går in på intyget via uthoppslänk
-	Och jag skickar intyget
+	Och jag skickar intyget till Försäkringskassan
 	
 	När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
 	Och jag går in på intyget via uthoppslänk
@@ -89,7 +89,7 @@ Scenario: Ska få varning vid svar med nytt intyg
 Scenario: Ska kunna besvara komplettering med textmeddelande via uthoppslänk
    När jag skickar ett "Läkarintyg FK 7263" intyg till Intygstjänsten
    Och jag går in på intyget via uthoppslänk
-   Och jag skickar intyget
+   Och jag skickar intyget till Försäkringskassan
    
    När Försäkringskassan ställer en "Komplettering_av_lakarintyg" fråga om intyget
    Och jag går in på intyget via uthoppslänk
