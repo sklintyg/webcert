@@ -99,10 +99,12 @@ let findValidationErrorsWithText = text => element.all(by.cssContainingText('div
 
 let findValidationWarningsWithText = text => element.all(by.cssContainingText('div .validation-warning', text));
 
+let fillInDates = date => element.all(by.css('.wc-datepicker-wrapper input')).each(el => el.clear().then(() => el.sendKeys(date)));
+
 let fyllText = fieldtype => {
     switch (fieldtype) {
         case 'datum':
-            return element.all(by.css('.wc-datepicker-wrapper input')).each(el => el.clear().then(() => el.sendKeys('2jfesk')));
+            return fillInDates('2fjesk');
         case 'postnummer':
             return utkastPage.enhetensAdress.postNummer.clear()
                 .then(() => utkastPage.enhetensAdress.postNummer.typeKeys('1111'))
@@ -131,6 +133,10 @@ let chainTextFieldActions = intygsTyp => valideringsVal[intygsTyp].text
     .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
 
 let changeFocus = () => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB);
+
+let currentYear = () => `${new Date().getFullYear()}`;
+
+let currentMonth = () => `0${new Date().getMonth()}`.slice(-2);
 
 
 
@@ -181,7 +187,7 @@ Then(/^ska statusmeddelande att obligatoriska uppgifter saknas visas$/, () => ex
 
 Then(/^ska statusmeddelande att intyget är klart att signera visas$/, () => expect(utkastPage.utkastStatus.getText()).to.eventually.contain('Klart att signera'));
 
-Then(/^ska "(\d+)" valideringsfel visas med texten "([^"]+)"$/, (antal, text) =>
+Then(/^ska "(\d+)" valideringsfel visas med texten "(.+)"$/, (antal, text) =>
     expect(findValidationErrorsWithText(text).count()).to.eventually.equal(antal)
 );
 
@@ -321,3 +327,9 @@ When(/^jag väljer "([^"]+)" i dropdownen "([^"]*)"$/, (val, text) => dropdownVa
 When(/^jag väljer alternativet "([^"]+)" i frågan "([^"]*)"$/, (val, text) => radioknappVal(val, text));
 
 When(/^jag kryssar i "([^"]+)"$/, text => checkboxVal(text));
+
+When(/^jag anger ett tidigare datum för anträffad död$/, () => fillInDates(helpers.getCurrentDate().replace(/^\d{4}/, '2017')));
+
+When(/^jag anger dagens datum som dödsdatum$/, () => dropdownVal(currentYear(), 'År').then(() => dropdownVal(currentMonth(), 'Månad')));
+
+When(/^jag anger ett dödsdatum i framtiden$/, () => fillInDates(helpers.getCurrentDate().replace(/^\d{4}/, '2099')));
