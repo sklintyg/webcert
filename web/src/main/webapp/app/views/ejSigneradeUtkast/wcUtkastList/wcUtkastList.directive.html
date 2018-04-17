@@ -28,7 +28,7 @@
 
 
       <td class="unbreakable">
-        <button type="button" class="btn btn-primary"
+        <button ng-attr-id="vidarebefordraBtn-{{intyg.intygId}}" type="button" class="btn btn-primary"
                 ng-click="openMailDialog(intyg)" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
                 uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
                 popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300"
