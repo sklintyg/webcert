@@ -476,5 +476,8 @@ module.exports = {
     },
     uniqueItemsInArray: function(value, index, self) {
         return self.indexOf(value) === index;
+    },
+    getCurrentDate: function() {
+        return new Date().toISOString().split('T')[0];
     }
 };
