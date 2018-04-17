@@ -19,6 +19,13 @@ Scenario: Sjukskrivningsperiod med överlappande datum får inte anges
     Och jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Sjukskrivningsperiod med överlappande datum har angetts."
 
+@F.VAL-022 
+@F.VAL-025
+Scenario: Minst en sjukskrivningsperiod samt en åtgärd måste väljas.
+    När jag klickar på signera-knappen
+    Så ska "1" valideringsfel visas med texten "Minst en sjukskrivningsperiod måste anges."
+    Så ska "1" valideringsfel visas med texten "Åtgärder måste väljas eller Inte aktuellt."
+
 @F.VAL-031
 Scenario: Ogiltiga datum får inte anges
     När jag anger ogiltiga datum

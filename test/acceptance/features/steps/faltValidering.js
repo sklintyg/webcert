@@ -301,3 +301,23 @@ When(/^jag anger undersökningsdatum i framtiden$/, () =>
         annatBeskrivning: '',
     }).then(changeFocus)
 );
+
+When(/^jag anger undersökningsdatum senare än patientkännedom$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeBaseratPa({
+        minUndersokningAvPatienten: '2017-09-27',
+        personligKannedom: '2017-09-28'
+    })
+);
+
+When(/^jag anger anhörigs beskrivning senare än patientkännedom$/, () =>
+    pages.getUtkastPageByType(intyg.typ).angeBaseratPa({
+        anhorigsBeskrivning: '2017-09-27',
+        personligKannedom: '2017-09-28'
+    })
+);
+
+When(/^jag väljer "([^"]+)" i dropdownen "([^"]*)"$/, (val, text) => dropdownVal(val, text));
+
+When(/^jag väljer alternativet "([^"]+)" i frågan "([^"]*)"$/, (val, text) => radioknappVal(val, text));
+
+When(/^jag kryssar i "([^"]+)"$/, text => checkboxVal(text));
