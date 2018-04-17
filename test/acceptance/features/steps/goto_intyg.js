@@ -54,7 +54,6 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
         createIntygWithStatus(intygstyp, status).then(function() {
 
             //Gå till det nyskapade intyget
-            logger.silly(helpers.intygURL(intygstyp, global.intyg.id));
             helpers.getUrl(helpers.intygURL(intygstyp, global.intyg.id)).then(function() {
                 cb();
             });
