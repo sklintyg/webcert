@@ -31,7 +31,7 @@ Scenario: Signera ett ts-intyg
    Så ska det finnas en knapp för att skriva ut intyget
 
 
-@komplettera @svara @LISJP
+@komplettera @svara @LISJP @FRÅGA-FRÅN-FK
 Scenario: Besvara kompletteringsfråga
    När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    Och Försäkringskassan ställer en "KONTKT" fråga om intyget

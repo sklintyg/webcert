@@ -42,7 +42,7 @@ Scenario: Skapa, Skicka och Makulera FK7263
 	När jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
 
-@lisjp @fragaSvar
+@lisjp @fragaSvar @FRÅGA-FRÅN-FK
 Scenario: Svara och skicka fråga till Försäkringskassan
 	Givet att jag är inloggad som tandläkare
 	När jag går in på en patient
