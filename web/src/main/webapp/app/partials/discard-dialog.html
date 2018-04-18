@@ -4,9 +4,11 @@
         <span dynamic-label key="{{titleId}}"></span>
     </h3>
 </div>
-<div class="modal-body">
+<wc-bottom-fadeout>
+  <div class="modal-body">
     <div ng-bind-html="bodyText"><span ng-if="bodyTextId != undefined" dynamic-label key="{{bodyTextId}}"></span></div>
-</div>
+  </div>
+</wc-bottom-fadeout>
 <div class="modal-footer">
     <button type="button" id="{{button1id}}" class="btn btn-secondary" ng-disabled="!model.acceptprogressdone" ng-click="button1click()">
         <i ng-hide="model.acceptprogressdone" class="icon-wc-ikon-02 animate-spin"></i>

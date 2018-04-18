@@ -5,9 +5,11 @@
           <span dynamic-label key="{{titleId}}"></span>
       </h3>
   </div>
-  <div class="modal-body">
-      <span dynamic-label key="{{bodyText}}"></span>
-  </div>
+  <wc-bottom-fadeout>
+    <div class="modal-body">
+        <span dynamic-label key="{{bodyText}}"></span>
+    </div>
+  </wc-bottom-fadeout>
   <div class="modal-footer">
     <div class="form-inline padding-bottom">
       <wc-checkbox-wrapper>

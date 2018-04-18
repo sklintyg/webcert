@@ -4,9 +4,11 @@
     <span dynamic-label key="modal.title.{{title}}"></span>
   </h3>
 </div>
-<div class="modal-body">
-  {{bodyText}}
-</div>
+<wc-bottom-fadeout>
+  <div class="modal-body">
+    {{bodyText}}
+  </div>
+</wc-bottom-fadeout>
 <div class="modal-footer">
   <button type="button" id="buttonYes" class="btn btn-primary" ng-click="yes()">
     <span dynamic-label key="draft.notifyready.button"></span>

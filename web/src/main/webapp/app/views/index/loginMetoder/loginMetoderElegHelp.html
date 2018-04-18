@@ -1,31 +1,32 @@
-<!DOCTYPE html>
 <div class="modal-header">
   <h3 class="modal-title">E-legitimation</h3>
 </div>
-<div class="modal-body">
-  <h1 class="page-title">Felsökning inloggning med E-legitimation</h1>
-  <p>Med e-legitimation kan du skaffa användarkonto och logga in direkt i Webcert. Du kan använda BankID på kort, mobilt BankID eller Telia e-legitimation.</p>
-  <!-- <h2>Felsökning för problem med inloggning med e-legitimation</h2> -->
-  <h3>Giltighetstid</h3>
-  <p>Giltighetstiden för en e-legitimation är begränsad. Om du får problem med att logga in bör du därför först kontrollera om giltighetstiden har gått ut. Det kan du göra på utgivarens webbplats.</p>
+<wc-bottom-fadeout>
+  <div class="modal-body">
+    <h1 class="page-title">Felsökning inloggning med E-legitimation</h1>
+    <p>Med e-legitimation kan du skaffa användarkonto och logga in direkt i Webcert. Du kan använda BankID på kort, mobilt BankID eller Telia e-legitimation.</p>
+    <!-- <h2>Felsökning för problem med inloggning med e-legitimation</h2> -->
+    <h3>Giltighetstid</h3>
+    <p>Giltighetstiden för en e-legitimation är begränsad. Om du får problem med att logga in bör du därför först kontrollera om giltighetstiden har gått ut. Det kan du göra på utgivarens webbplats.</p>
 
-  <h3>Testa din e-legitimation</h3>
-  <p>Webcert använder CGI:s  eID-tjänst för att verifiera e-legitimationer. På CGI:s webbplats kan du testa att din e-legitimation fungerar:<br/><br/>
-    <span dynamiclink key="testaEleg"></span>
-  <p/>
-  <h3>Tekniska krav</h3>
-  <p>På <a target="_blank" href="https://eid.primeportal.com/EID/Pages/Testa-e-legitimation.aspx">CGI:s webbplats</a> kan du läsa om vilka tekniska krav som utgivaren av din e-legitimation ställer. Du bör också kontrollera att du installerat de senaste uppdateringarna för ditt operativsystem och webbläsare.
-  Observera att Webcert är utvecklat och testat för Internet Explorer 11 och senare versioner. Webcert kan fungera även med andra webbläsare men det finns ökad risk att problem uppstår.</p>
-  <h3>Fortfarande problem?</h3>
-  <p>Om du fortfarande har problem att logga in bör du kontakta <span dynamiclink key="ineraKundserviceFel"></span><br/>
-  <br/>
-    Fördjupad information om e-legitimation hittar du på <span dynamiclink key="elegInformation"></span></p>
-  <h3>Övrigt</h3>
-  <div style="color:#28b4c4;"><b>Vid utloggning – logga ut och stäng webbläsaren</b></div>
-  <div>För att vara riktigt säker på att information om din e-legitimation inte har lagrats temporärt måste du både logga ut och stänga samtliga öppna webbläsarfönster.</div>
-  <div style="color:#28b4c4;padding-top:8px;"><b>Spärra e-legitimation</b></div>
-  <div>Om du förlorat din e-legitimation eller misstänker att den på något sätt missbrukas ska du omedelbart spärra den. Det gör du hos utgivaren.</div>
-</div>
+    <h3>Testa din e-legitimation</h3>
+    <p>Webcert använder CGI:s  eID-tjänst för att verifiera e-legitimationer. På CGI:s webbplats kan du testa att din e-legitimation fungerar:<br/><br/>
+      <span dynamiclink key="testaEleg"></span>
+    <p/>
+    <h3>Tekniska krav</h3>
+    <p>På <a target="_blank" href="https://eid.primeportal.com/EID/Pages/Testa-e-legitimation.aspx">CGI:s webbplats</a> kan du läsa om vilka tekniska krav som utgivaren av din e-legitimation ställer. Du bör också kontrollera att du installerat de senaste uppdateringarna för ditt operativsystem och webbläsare.
+    Observera att Webcert är utvecklat och testat för Internet Explorer 11 och senare versioner. Webcert kan fungera även med andra webbläsare men det finns ökad risk att problem uppstår.</p>
+    <h3>Fortfarande problem?</h3>
+    <p>Om du fortfarande har problem att logga in bör du kontakta <span dynamiclink key="ineraKundserviceFel"></span><br/>
+    <br/>
+      Fördjupad information om e-legitimation hittar du på <span dynamiclink key="elegInformation"></span></p>
+    <h3>Övrigt</h3>
+    <div style="color:#28b4c4;"><b>Vid utloggning – logga ut och stäng webbläsaren</b></div>
+    <div>För att vara riktigt säker på att information om din e-legitimation inte har lagrats temporärt måste du både logga ut och stänga samtliga öppna webbläsarfönster.</div>
+    <div style="color:#28b4c4;padding-top:8px;"><b>Spärra e-legitimation</b></div>
+    <div>Om du förlorat din e-legitimation eller misstänker att den på något sätt missbrukas ska du omedelbart spärra den. Det gör du hos utgivaren.</div>
+  </div>
+</wc-bottom-fadeout>
 <div class="modal-footer">
   <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
 </div>

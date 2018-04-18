@@ -4,15 +4,17 @@
     <span dynamic-label key="{{titleId}}"></span>
   </h3>
 </div>
-<div class="modal-body">
-  <wc-alert-message ng-if="model.ersattningsUtkastFinns"
-                    alert-id="ersattUtkastPaborjat"
-                    alert-severity="info"
-                    alert-message-id="intyg.status.replacement.utkast.exists"></wc-alert-message>
-  <p>
-    <span dynamic-label key="{{bodyText}}"></span>
-  </p>
-</div>
+<wc-bottom-fadeout>
+  <div class="modal-body">
+    <wc-alert-message ng-if="model.ersattningsUtkastFinns"
+                      alert-id="ersattUtkastPaborjat"
+                      alert-severity="info"
+                      alert-message-id="intyg.status.replacement.utkast.exists"></wc-alert-message>
+    <p>
+      <span dynamic-label key="{{bodyText}}"></span>
+    </p>
+  </div>
+</wc-bottom-fadeout>
 <div class="modal-footer">
   <div class="webcert-top-padding-section form-inline">
     <button type="button" id="{{button1id}}" class="btn btn-primary" ng-disabled="!model.acceptprogressdone" ng-click="button1click()"  ng-if="!model.ersattningsUtkastFinns">

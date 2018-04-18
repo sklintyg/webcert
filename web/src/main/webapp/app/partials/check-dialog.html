@@ -4,9 +4,11 @@
 		<span dynamic-label key="{{titleId}}"></span>
 	</h3>
 </div>
-<div class="modal-body">
-	<div ng-bind-html="bodyText" style="padding-bottom: 10px"><span ng-if="bodyTextId != undefined" dynamic-label key="{{bodyTextId}}"></span></div>
-</div>
+<wc-bottom-fadeout>
+  <div class="modal-body">
+    <div ng-bind-html="bodyText" style="padding-bottom: 10px"><span ng-if="bodyTextId != undefined" dynamic-label key="{{bodyTextId}}"></span></div>
+  </div>
+</wc-bottom-fadeout>
 <div class="modal-footer">
   <div class="webcert-top-padding-section form-inline">
     <wc-checkbox-wrapper>

@@ -5,15 +5,17 @@
         <span dynamic-label key="{{titleId}}"></span>
     </h3>
 </div>
-<div class="modal-body">
+<wc-bottom-fadeout>
+  <div class="modal-body">
     <wc-alert-message id="ersattUtkastPaborjat" ng-if="model.patient.sekretessmarkering"
                       alert-severity="sekretess"
                       alert-message-id="common.alert.sekretessmarkering.print">
     </wc-alert-message>
     <p>
-    <span dynamic-label key="{{bodyText}}"></span>
+      <span dynamic-label key="{{bodyText}}"></span>
     </p>
-</div>
+  </div>
+</wc-bottom-fadeout>
 <div class="modal-footer">
     <div class="webcert-top-padding-section form-inline">
         <button type="button" id="{{button1id}}" class="btn btn-primary" ng-click="button1click()">

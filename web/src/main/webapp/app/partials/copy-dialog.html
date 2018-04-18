@@ -4,11 +4,13 @@
 		<span dynamic-label key="{{titleId}}"></span>
 	</h3>
 </div>
-<div class="modal-body">
-  <p>
-    <span dynamic-label key="{{bodyText}}"></span>
-  </p>
-</div>
+<wc-bottom-fadeout>
+  <div class="modal-body">
+    <p>
+      <span dynamic-label key="{{bodyText}}"></span>
+    </p>
+  </div>
+</wc-bottom-fadeout>
 <div class="modal-footer">
   <div class="webcert-top-padding-section form-inline">
     <label id="dontShowAgain" class="checkbox"><input type="checkbox" ng-model="model.dontShowInfo"> Visa inte denna information igen</label>
