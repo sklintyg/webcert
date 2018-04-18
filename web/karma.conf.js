@@ -64,7 +64,6 @@ module.exports = function(config) {
             'src/main/webapp/bower_components/angular-mocks/angular-mocks.js',
 
             // Load these first
-            SRC_DIR + 'app-test.js',
             SRC_DIR + 'utils/*.js',
 
             { pattern: SRC_DIR + '**/app.test.js' },

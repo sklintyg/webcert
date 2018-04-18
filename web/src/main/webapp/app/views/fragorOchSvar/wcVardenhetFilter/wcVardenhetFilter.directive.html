@@ -1,59 +1,66 @@
 <div>
   <div ng-show="vardenhetFilterModel.units.length > 2 && vardenhetFilterModel.units[0].fragaSvar > 0">
-    <h2 class="less-top-padding">Välj vårdenhet eller arbetsplats</h2>
-      <div>
-        <div class="row"
-             id="care-unit-selector-row-{{unit.id}}"
-             ng-repeat="unit in vardenhetFilterModel.units">
-          <!-- Index zero and one should always be shown. These are the 'all' and
-               'current vardenhet' option -->
-          <div class="col-md-12 unit-table"
-               ng-if="$index < 2 || unit.fragaSvar > 0">
-            <button id="select-active-unit-{{unit.id}}"
-                    type="button"
-                    ng-click="selectUnit(unit)"
-                    class="arende-unit"
-                    ng-class="{selected : vardenhetFilterModel.selectedUnit == unit}">
-              <span ng-class="$index < 2 ? 'arende-unit-strong' : 'arende-unit-weak'">{{unit.namn}}</span>
-              <span class="arende-circle"
-                    ng-class="{'arende-circle-active': unit.fragaSvar>0}"
-                    title="{{unit.tooltip}}">{{unit.fragaSvar}}
+    <p class="page-heading2">Välj för vilken/vilka enheter eller arbetsplats du vill se ej hanterade frågor och svar.</p>
+
+    <div class="row">
+      <div class="col-md-5 col-sm-10">
+        <div class="card">
+
+          <!-- enheter lista -->
+          <div
+               id="care-unit-selector-row-{{unit.id}}"
+               ng-repeat="unit in vardenhetFilterModel.units">
+            <!-- Index zero and one should always be shown. These are the 'all' and
+                 'current vardenhet' option -->
+            <div class="unit-table"
+                 ng-if="$index < 2 || unit.fragaSvar > 0">
+              <button id="select-active-unit-{{unit.id}}"
+                      type="button"
+                      ng-click="selectUnit(unit)"
+                      class="arende-unit"
+                      ng-class="{selected : vardenhetFilterModel.selectedUnit == unit}">
+                <span ng-class="$index < 2 ? 'arende-unit-strong' : 'arende-unit-weak'">{{unit.namn}}</span>
+                <span class="arende-circle"
+                      ng-class="{'arende-circle-active': unit.fragaSvar>0}"
+                      title="{{unit.tooltip}}">{{unit.fragaSvar}}
+                  </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- övriga knapp -->
+          <div>
+            <div class="unit-table">
+              <button id="ovriga"
+                      type="button"
+                      ng-click="toggleShowInactive()"
+                      class="arende-unit">
+                <span class="ovrigt-icon" ng-switch="vardenhetFilterModel.showInactive"><i ng-switch-when="false" class="material-icons">expand_more</i>
+                  <i ng-switch-when="true" class="material-icons">expand_less</i></span> Övriga arbetsplatser <span class="arende-circle">0</span>
+              </button>
+            </div>
+          </div>
+          <!-- övriga lista -->
+          <div
+               ng-show="vardenhetFilterModel.showInactive"
+               ng-repeat="unit in vardenhetFilterModel.units">
+            <div class="unit-table"
+                 ng-if="$index > 1 && unit.fragaSvar == 0">
+              <button id="select-active-unit-{{unit.id}}"
+                      type="button"
+                      ng-click="selectUnit(unit)"
+                      class="arende-unit inactive"
+                      ng-class="{selected : vardenhetFilterModel.selectedUnit == unit}">
+                <span>{{unit.namn}}</span>
+                <span class="arende-circle"
+                      title="{{unit.tooltip}}">0
                 </span>
-            </button>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12 unit-table">
-            <button id="ovriga"
-                    type="button"
-                    ng-click="toggleShowInactive()"
-                    class="arende-unit">
-              <strong>
-                <span class="glyphicon"
-                      ng-class="vardenhetFilterModel.showInactive ? 'glyphicon-minus-sign' : 'glyphicon-plus-sign'" >
-                </span> Övriga arbetsplatser <span class="arende-circle">0</span>
-              </strong>
-            </button>
-          </div>
-        </div>
-        <div class="row"
-             ng-show="vardenhetFilterModel.showInactive"
-             ng-repeat="unit in vardenhetFilterModel.units">
-          <div class="col-md-12 unit-table"
-               ng-if="$index > 1 && unit.fragaSvar == 0">
-            <button id="select-active-unit-{{unit.id}}"
-                    type="button"
-                    ng-click="selectUnit(unit)"
-                    class="arende-unit"
-                    ng-class="{selected : vardenhetFilterModel.selectedUnit == unit}">
-              <span>{{unit.namn}}</span>
-              <span class="arende-circle"
-                    title="{{unit.tooltip}}">0
-              </span>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
       </div>
+    </div>
   </div>
   <div ng-show="vardenhetFilterModel.units[0].fragaSvar == 0">
     <span dynamic-label key="info.nounanswered.arende.for.unit"></span>

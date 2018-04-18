@@ -50,10 +50,6 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                         return vardenhetFilterModel.units ? vardenhetFilterModel.units[0].fragaSvar === 0 : true;
                     };
 
-                    $scope.toggleFilter = function(){
-                        enhetArendenFilterModel.viewState.filterFormCollapsed = !enhetArendenFilterModel.viewState.filterFormCollapsed;
-                    };
-
                     function updateArendenList(){
                         $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0});
                     }
@@ -64,34 +60,22 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                     };
 
                     $scope.filterList = function() {
-                        enhetArendenFilterModel.filteredYet = true;
                         updateArendenList();
                     };
 
+                    // Broadcast by vardenhet filter directive on load and selection
+                    $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
+
+                        // If we change enhet then we probably don't want the same filter criterias
+                        if (unit.id !== enhetArendenModel.enhetId) {
+                            enhetArendenFilterModel.reset();
+                        }
+                        enhetArendenModel.enhetId = unit.id;
+
+                        enhetArendenFilterService.initLakareList(unit.id); // Update lakare list for filter form
+                        updateArendenList();
+                    });
                 };
-
-                // Broadcast by statService on poll
-                $scope.$on('statService.stat-update', function(event, message) {
-                    var unitStats = message;
-                    if (!enhetArendenFilterModel.viewState.filteredYet && unitStats.fragaSvarValdEnhet === 0) {
-                        enhetArendenFilterModel.viewState.filterFormCollapsed = false;
-                    }
-                });
-
-                // Broadcast by vardenhet filter directive on load and selection
-                $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
-
-                    // If we change enhet then we probably don't want the same filter criterias
-                    if (unit.id !== enhetArendenModel.enhetId) {
-                        enhetArendenFilterModel.reset();
-                    }
-                    enhetArendenFilterModel.viewState.filteredYet = false; // so proper info message is displayed if no items are found
-                    enhetArendenFilterModel.viewState.filterFormCollapsed = true; // collapse filter form so it isn't in the way
-
-                    enhetArendenModel.enhetId = unit.id;
-
-                    enhetArendenFilterService.initLakareList(unit.id); // Update lakare list for filter form
-                });
 
             }
         };

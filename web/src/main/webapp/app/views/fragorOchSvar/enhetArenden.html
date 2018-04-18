@@ -1,24 +1,18 @@
-<div class="webcert-workarea-page centered-constrained-content container-fluid" wc-authority feature="HANTERA_FRAGOR">
-  <div class="row" id="enhet-arenden">
-    <div class="col-md-12">
-      <h1 class="page-title">
-        <span dynamic-label key="dashboard.unanswered.title"></span>
-      </h1>
-
-      <!-- load animation for entire page -->
-      <wc-spinner label="info.loadingdata" show-spinner="!enhetArendenModel.doneLoading">
-        <wc-vardenhet-filter id="wc-vardenhet-filter"></wc-vardenhet-filter>
-
-        <div ng-if="vardenhetFilterModel.selectedUnit">
-          <h2 class="col-head" ng-class="{'less-top-padding' : vardenhetFilterModel.units.length < 3}">
-            {{vardenhetFilterModel.selectedUnit.namn}}
-          </h2>
-          <wc-enhet-arenden-filter></wc-enhet-arenden-filter>
-
-          <wc-enhet-arenden-list></wc-enhet-arenden-list>
-        </div>
-      </wc-spinner>
-    </div>
-
+<div id="enhet-arenden-header" class="wc-page-header">
+  <div class="centered-constrained-content header-content">
+    <i class="material-icons page-header-icon icon-wc-32">forum</i>
+    <h2 class="page-heading1"><span dynamic-label key="dashboard.unanswered.title"></span></h2>
+    <wc-spinner label="info.loadingdata" show-spinner="!enhetArendenModel.doneLoading">
+      <wc-vardenhet-filter id="wc-vardenhet-filter"></wc-vardenhet-filter>
+    </wc-spinner>
   </div>
+</div>
+
+<div id="enhet-arenden" class="webcert-workarea-page centered-constrained-content container-fluid" wc-authority feature="HANTERA_FRAGOR">
+  <!-- load animation for entire page -->
+  <wc-spinner label="info.loadingdata" show-spinner="!enhetArendenModel.doneLoading">
+    <div ng-if="vardenhetFilterModel.selectedUnit">
+      <wc-enhet-arenden-list></wc-enhet-arenden-list>
+    </div>
+  </wc-spinner>
 </div>

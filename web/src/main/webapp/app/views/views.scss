@@ -24,13 +24,6 @@ Common styles for this view and its child directives
 /*
  used on enhetArenden and ejSigneradeUtkast
 */
-.wc-filter-panel {
-  border-radius: 0 5px 5px 5px;
-  background-color: $wc-color-20;
-  font-size: 12px;
-  max-width: 800px;
-  padding: 10px;
-}
 
 .arende-table-section {
   padding-top: 20px;
@@ -38,18 +31,6 @@ Common styles for this view and its child directives
 
 td.center {
   text-align: center;
-}
-
-/*
-vidarebefordra buttons
-*/
-
-.forward-active {
-  color: white;
-}
-
-.forward-inactive {
-  color: black;
 }
 
 /*

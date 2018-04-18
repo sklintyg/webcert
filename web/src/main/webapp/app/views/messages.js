@@ -23,7 +23,7 @@ angular.module('webcert').constant('webcert.messages', {
         'webcert.header': 'Webcert',
         'webcert.description': 'Välkommen till Webcert.',
         'dashboard.title': 'Mina andra enheter',
-        'dashboard.unanswered.title': 'Frågor och svar',
+        'dashboard.unanswered.title': 'Ej hanterade frågor och svar',
         'dashboard.unsigned.title': 'Ej signerade utkast',
         'dashboard.about.title': 'Om Webcert',
 
@@ -67,7 +67,7 @@ angular.module('webcert').constant('webcert.messages', {
         'info.noreadytosignintygfound': '<strong>Inga klarmarkerade intyg hittades.</strong>',
         'info.loadingintyg': '<strong>Laddar intyg...</strong>',
         'info.loadingdata': '<strong>Uppdaterar lista...</strong>',
-        'info.nounanswered.arende.for.unit': '<strong>Samtliga frågor och svar är hanterade. Det finns inget att åtgärda.</strong>',
+        'info.nounanswered.arende.for.unit': 'Samtliga frågor och svar är hanterade. Det finns inget att åtgärda.',
         'info.nointygfound': '<strong>Inga intyg hittades.</strong>',
         'info.query.noresults': '<strong>Sökningen gav inga resultat.</strong>',
         'info.query.error': '<strong>Sökningen kunde inte utföras.</strong>',
@@ -133,19 +133,21 @@ angular.module('webcert').constant('webcert.messages', {
         'arende.fragestallare.fk': 'Försäkringskassan',
         'arende.fragestallare.wc': 'Vårdenheten',
 
-        'th.label.arende-forwarded': 'Vidarebefordrad',
-        'th.help.arende-forwarded': 'Markera om fråga-svar är vidarebefordrat till den som ska hantera det.',
-        'th.label.arende-action': 'Att åtgärda',
-        'th.help.arende-action': 'Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.',
+        'th.label.arende-action': 'Åtgärd',
+        'th.help.arende-action': 'Åtgärd som krävs för att frågan/svaret ska anses hanterad.',
         'th.label.arende-sender': 'Avsändare',
         'th.help.arende-sender': 'Vem som initierade frågan.',
         'th.label.arende-patient': 'Patient',
-        'th.help.arende-patient': 'Berörd patients personnummer.',
+        'th.help.arende-patient': 'Patientens personnummer.',
         'th.label.arende-signed-by': 'Signerat av',
-        'th.help.arende-signed-by': 'Läkare som har signerat intyget.',
+        'th.help.arende-signed-by': 'Läkare som signerat intyget.',
         'th.label.arende-sent-recv-date': 'Skickat/mottaget',
-        'th.help.arende-sent-recv-date': 'Datum och klockslag för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.'
-
+        'th.help.arende-sent-recv-date': 'Datum och klockslag för senaste händelse.',
+        'th.label.arende-forwarded': 'Vidarebefordrad',
+        'th.help.arende-forwarded': 'Visar om ärendet är vidarebefordrat.',
+        'th.help.forward': 'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.',
+        'th.help.open': 'Öppnar intyget och frågan/svaret.',
+        'th.help.morehits': 'Visa fler frågor/svar.'
     },
     'en': {
         'webcert.header': 'Webcert Application (en)'

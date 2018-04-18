@@ -36,7 +36,7 @@ angular.module('webcert').service('webcert.vardenhetFilterModel', [
                         function(a, b) {
                             return (a.namn > b.namn) - (a.namn < b.namn);
                         }));
-                this.units.unshift({id: this.ALL_ARENDEN, namn: 'Alla frågor och svar'});
+                this.units.unshift({id: this.ALL_ARENDEN, namn: 'Alla enheter'});
 
                 //initial selection, now handles cases when no enhetsId cookie has been set.
                 if (this.units.length > 2 && $cookies.getObject('enhetsId')) {

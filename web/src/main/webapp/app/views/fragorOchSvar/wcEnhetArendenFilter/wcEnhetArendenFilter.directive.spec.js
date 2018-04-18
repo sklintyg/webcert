@@ -77,27 +77,13 @@ describe('wcEnhetArendenFilter', function() {
 
     describe('events', function() {
 
-        it('should show filter form if there are no unhandled arenden, it is the first time searching and statService.stat-update message is received', function() {
-            // We should verify if this is functionality that is needed..
-            enhetArendenFilterModel.viewState.filteredYet = false;
-            enhetArendenFilterModel.viewState.filterFormCollapsed = true;
-            $scope.$broadcast('statService.stat-update', { fragaSvarValdEnhet: 0 });
-
-            expect(enhetArendenFilterModel.viewState.filterFormCollapsed).toBeFalsy();
-        });
-
         it('should update active unit and update lakare list wcVardenhetFilter.unitSelected message is received', function() {
 
             spyOn(enhetArendenFilterModel, 'reset').and.callThrough();
             spyOn(enhetArendenFilterService, 'initLakareList').and.stub();
 
-            enhetArendenFilterModel.viewState.filteredYet = true;
-            enhetArendenFilterModel.viewState.filterFormCollapsed = false;
-
             $scope.$broadcast('wcVardenhetFilter.unitSelected', { id: 'unitId'});
 
-            expect(enhetArendenFilterModel.viewState.filteredYet).toBeFalsy(); // so proper info message is displayed if no items are found
-            expect(enhetArendenFilterModel.viewState.filterFormCollapsed).toBeTruthy(); // collapse filter form so it isn't in the way
             expect(enhetArendenFilterModel.reset).toHaveBeenCalled();
             expect(enhetArendenFilterService.initLakareList).toHaveBeenCalledWith('unitId');
         });

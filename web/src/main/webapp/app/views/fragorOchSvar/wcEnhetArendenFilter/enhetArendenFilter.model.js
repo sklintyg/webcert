@@ -18,65 +18,83 @@
  */
 
 angular.module('webcert').service('webcert.enhetArendenFilterModel', [
-    'webcert.enhetArendenModel',
-    function(enhetArendenModel) {
+    function() {
         'use strict';
 
         // General directive viewstate
         this.viewState = {
-            filteredYet: false,
-            filterFormCollapsed: true,
             loadingLakare: false
         };
+
+        this.vidarebefordradOptions = [
+            {id:'default', label: 'Visa alla'},
+            {id:'true', label: 'Vidarebefordrade'},
+            {id:'false', label: 'Ej vidarebefordrade'}
+        ];
 
         // Status filter choices
         this.statusList = [
             {
                 label: 'Visa alla',
-                value: 'ALLA'
+                id: 'ALLA'
             },
             {
-                label: 'Visa alla ej hanterade',
-                value: 'ALLA_OHANTERADE'
+                label: 'Alla ej hanterade',
+                id: 'ALLA_OHANTERADE'
             },
             {
-                label: 'Markera som hanterad',
-                value: 'MARKERA_SOM_HANTERAD'
+                label: 'Alla hanterade',
+                id: 'HANTERAD'
             },
             {
                 label: 'Komplettera',
-                value: 'KOMPLETTERING_FRAN_VARDEN'
+                id: 'KOMPLETTERING_FRAN_VARDEN'
             },
             {
                 label: 'Svara',
-                value: 'SVAR_FRAN_VARDEN'
+                id: 'SVAR_FRAN_VARDEN'
             },
             {
-                label: 'Invänta svar från Försäkringskassan',
-                value: 'SVAR_FRAN_FK'
+                label: 'Läs inkommet svar',
+                id: 'MARKERA_SOM_HANTERAD'
             },
             {
-                label: 'Inget',
-                value: 'HANTERAD'
+                label: 'Invänta svar',
+                id: 'SVAR_FRAN_FK'
+            }
+        ];
+
+        this.avsandareList = [
+            {
+                label: 'Visa alla',
+                id: 'default'
+            },
+            {
+                label: 'Försäkringskassan',
+                id: 'FK'
+            },
+            {
+                label: 'Vårdenheten',
+                id: 'WC'
             }
         ];
 
         // Läkare filter choices
         this.lakareListEmptyChoice = {
-            hsaId: undefined,
-            name: 'Alla'
+            id: undefined,
+            label: 'Visa alla'
         };
         this.lakareList = [this.lakareListEmptyChoice];
+        var defaultLakareList = angular.copy(this.lakareList);
 
         // Filter form model
         this.filterForm = {};
 
         this.reset = function() {
             var statusList = this.statusList;
-            var lakareList = this.lakareList;
             this.filterForm = {
-                vantarPaSelector: statusList[1],
-                lakareSelector: lakareList[0],
+                vantarPaSelector: statusList[1].id,
+                lakareSelector: defaultLakareList[0].id,
                 questionFrom: 'default',
                 vidarebefordrad: 'default',
                 changedFrom: undefined,

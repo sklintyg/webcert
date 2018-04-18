@@ -20,10 +20,10 @@
 angular.module('webcert').directive('wcEnhetArendenList', [
     '$location', '$log', '$timeout', '$window',
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
-    'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
+    'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel', 'common.messageService', 'webcert.vardenhetFilterModel',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
-        enhetArendenListService, enhetArendenModel, enhetArendenListModel) {
+        enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, vardenhetFilterModel) {
         'use strict';
 
         return {
@@ -35,6 +35,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             controller: function($scope) {
 
                 $scope.listModel = enhetArendenListModel;
+                $scope.vardenhetFilterModel = vardenhetFilterModel;
+
+                $scope.forwardTooltip = messageService.getProperty('th.help.forward');
+                $scope.openTooltip = messageService.getProperty('th.help.open');
+                $scope.moreHitsTooltip = messageService.getProperty('th.help.morehits');
 
                 var vidarebefordraArendeMailModel = null;
 

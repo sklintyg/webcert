@@ -18,12 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.*;
 
 public class Lakare {
 
+    @JsonProperty("id")
     private String hsaId;
 
+    @JsonProperty("label")
     private String name;
 
     public Lakare() {
@@ -35,10 +39,12 @@ public class Lakare {
         this.name = name;
     }
 
+    @JsonProperty("id")
     public String getHsaId() {
         return hsaId;
     }
 
+    @JsonProperty("label")
     public String getName() {
         return name;
     }

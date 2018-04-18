@@ -119,6 +119,7 @@ describe('wcEnhetArendenList', function() {
             featureService.features = {};
             $provide.value('common.featureService', featureService);
             $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare']));
+            $provide.value('common.messageService', jasmine.createSpyObj('common.messageService', ['getProperty']));
 
             // To prevent $window.location from reloading the page
             var $window = {};
@@ -129,8 +130,10 @@ describe('wcEnhetArendenList', function() {
             $provide.value('$window', $window);
         }]);
 
-        inject(['$rootScope', '$compile', '$q', '$location', '$timeout', 'common.ArendeProxy', 'webcert.enhetArendenListModel', 'webcert.enhetArendenListService', '$templateCache',
-            function(_$rootScope_, _$compile_, _$q_, _$location_, _$timeout_, _ArendeProxy_, _enhetArendenListModel_, _enhetArendenListService_, $templateCache) {
+        inject(['$rootScope', '$compile', '$q', '$location', '$timeout', 'common.ArendeProxy', 'webcert.enhetArendenListModel',
+            'webcert.enhetArendenListService', '$templateCache', 'webcert.enhetArendenFilterService',
+            function(_$rootScope_, _$compile_, _$q_, _$location_, _$timeout_, _ArendeProxy_, _enhetArendenListModel_,
+                _enhetArendenListService_, $templateCache, _enhetArendenFilterService_) {
 
                 $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
 
@@ -142,6 +145,8 @@ describe('wcEnhetArendenList', function() {
                 enhetArendenListModel = _enhetArendenListModel_;
                 enhetArendenListService = _enhetArendenListService_;
                 ArendeProxy = _ArendeProxy_;
+
+                spyOn(_enhetArendenFilterService_, 'initLakareList').and.stub();
 
                 $scope = $rootScope.$new();
                 element = $compile('<wc-enhet-arenden-list></wc-enhet-arenden-list>')($scope);
