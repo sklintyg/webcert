@@ -188,6 +188,16 @@ var BaseUtkast = JClass._extend({
                     .filter(el => el.getText().then(t => t === val)) // Välj den som har samma text som argumentet
                     .click()))
             .then(() => browser.ignoreSynchronization = false);
+    },
+
+    fyllTextfalt: function(field, text) {
+        browser.ignoreSynchronization = true;
+        logger.info(`Fyller i ${text} i textfältet ${field}`);
+        return element.all(by.cssContainingText('.ue-fraga', field))
+            .all(by.css('input[type=text]'))
+            .each(el => el.clear()
+                .then(() => el.sendKeys(text)))
+            .then(() => browser.ignoreSynchronization = false);
     }
 });
 

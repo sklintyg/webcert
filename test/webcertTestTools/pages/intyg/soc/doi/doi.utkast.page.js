@@ -215,21 +215,18 @@ var doiUtkast = BaseSocUtkast._extend({
         var utlatandeOmDodsorsakElm = this.utlatandeOmDodsorsak;
         console.log(dodsorsak);
 
-        return moveAndSendKeys(utlatandeOmDodsorsakElm.a.beskrivning, dodsorsak.a.beskrivning).then(function() {
-            return moveAndSendKeys(utlatandeOmDodsorsakElm.a.datum, dodsorsak.a.datum);
+        return Object.keys(dodsorsak).reduce((prev, sektion) => prev.then(() => moveAndSendKeys(utlatandeOmDodsorsakElm[sektion].beskrivning, dodsorsak[sektion].beskrivning).then(function() {
+            return moveAndSendKeys(utlatandeOmDodsorsakElm[sektion].datum, dodsorsak[sektion].datum);
         }).then(function() {
-            browser.ignoreSynchronization = false;
-            return utlatandeOmDodsorsakElm.a.specifikation.dropDown.click().then(function() {
-                //Väntar på drop-down att öppnas
-                return browser.sleep(1000);
-            }).then(function() {
-                return utlatandeOmDodsorsakElm.a.specifikation.options.getByText(dodsorsak.a.tillstandSpec);
-            }).then(function(elm) {
-                return elm.click();
-            }).then(function() {
-                browser.ignoreSynchronization = true;
-            });
-        });
+            return utlatandeOmDodsorsakElm[sektion].specifikation.dropDown.click();
+        }).then(function() {
+            //Väntar på drop-down att öppnas
+            return browser.sleep(1000);
+        }).then(function() {
+            return utlatandeOmDodsorsakElm[sektion].specifikation.options.getByText(dodsorsak[sektion].tillstandSpec);
+        }).then(function(elm) {
+            return elm.click();
+        })), Promise.resolve());
     },
     angeOperation: function angeOperation(operation) {
         var operationElm = this.operation;
