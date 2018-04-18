@@ -36,7 +36,7 @@ Scenario: Besvara kompletteringsfråga
    När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
    Och Försäkringskassan ställer en "KONTKT" fråga om intyget
    Och jag svarar på frågan
-   Så kan jag se mitt svar under hanterade frågor
+   Så kan jag se mitt svar i högerfältet
 
 @komplettera @nytt-intyg @svara @LISJP
 Scenario: Svara med nytt intyg
@@ -48,6 +48,6 @@ Scenario: Svara med nytt intyg
    Så ska jag se kompletteringsfrågan på utkast-sidan
 
    När jag signerar och skickar kompletteringen
-   Och ska intygets status vara "Intyget är signerat"
+   Och ska intygets status vara "Intyget är skickat till Försäkringskassan"
 
   

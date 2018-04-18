@@ -49,6 +49,7 @@ var hogerfalt = WebcertBasePage._extend({
                             return element(by.id('sendAnswerBtn-' + messageId)).typeKeys(protractor.Key.SPACE);
                         });
                     },
+                    hanterad: element(by.id('handleCheck-' + messageId)),
                     togglaHanterad: function() {
                         return element(by.id('handleCheck-' + messageId)).typeKeys(protractor.Key.SPACE);
                     }
@@ -67,7 +68,7 @@ var hogerfalt = WebcertBasePage._extend({
                     },
                     sendButton: element(by.id('sendArendeBtn'))
                 },
-                vidarebefordra: element(by.id('unhandled-vidarebefordraEjHanterad'))
+                vidarebefordra: element(by.id('vidarebefordraEjHanterad'))
             },
             komplettering: {
                 menyVal: element(by.id('arende-filter-kompletteringsbegaran'))

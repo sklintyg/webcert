@@ -20,8 +20,7 @@ Scenario: Skicka fråga till Försäkringskassan
 	Och jag skickar intyget direkt till Försäkringskassan
 	Och jag går in på intyget via uthoppslänk
 	Och jag skickar en fråga med ämnet "Arbetstidsförläggning" till Försäkringskassan
-	Så ska ett info-meddelande visa "Frågan är skickad till Försäkringskassan"
-	Och ska jag se min fråga under ohanterade frågor
+	Och ska jag se min fråga som ohanterad
 
 @byt-flik
 Scenario:Varning när jag lämnar fråga/svar vy

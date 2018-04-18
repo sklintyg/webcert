@@ -247,16 +247,18 @@ Given(/^jag ska kunna svara med textmeddelande/, function() {
 });
 
 Given(/^jag svarar på frågan$/, function() {
-    var messageID = intyg.messages[0].id;
+    messageID = intyg.messages[0].id;
+
+    intyg.messages[0].answer = 'Ett svar till FK, på frågan: ' + global.intyg.messages[0].testString;
 
     return browser.refresh()
         .then(function() {
-            return fragaSvar.meddelande(messageID).administrativFraga.svaraMedTxt('Ett svar till FK, på frågan: ' + global.intyg.messages[0].testString);
+            return fragaSvar.meddelande(messageID).administrativFraga.svaraMedTxt(intyg.messages[0].answer);
         });
 });
 
-Given(/^kan jag se mitt svar under hanterade frågor$/, function() {
-    return expect(fragaSvar.meddelande(messageID).komplettering.hanterad.isPresent()).to.eventually.be.ok;
+Given(/^kan jag se mitt svar i högerfältet$/, function() {
+    return expect(fragaSvar.container.getText()).to.eventually.contain(intyg.messages[0].answer);
 });
 
 Given(/^ska jag se påminnelsen på intygssidan$/, function() {
@@ -524,15 +526,8 @@ Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lak
         });
 });
 
-Given(/^ska jag se min fråga under ohanterade frågor$/, function() {
-    var messageId;
-    logger.silly(global.intyg.messages);
-    for (var k = 0; k < global.intyg.messages.length; k++) {
-        if (global.intyg.messages[k].typ === 'Fråga') {
-            messageId = global.intyg.messages[k].id;
-        }
-    }
-    return expect(fragaSvar.meddelande(messageID).komplettering.ohanterad.isPresent()).to.eventually.become(true);
+Given(/^ska jag se min fråga som ohanterad$/, function() {
+    return expect(fragaSvar.meddelande(messageID).administrativFraga.hanterad.isSelected()).to.eventually.become(false);
 });
 
 Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function(callback) {
@@ -543,7 +538,13 @@ Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, func
 });
 
 Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
-    return expect(fragaSvar.administrativFraga.vidarebefordra.isPresent()).to.eventually.become(true);
+    return browser.refresh().then(function() {
+        return helpers.pageReloadDelay();
+    }).then(function() {
+        return fragaSvar.administrativFraga.menyVal.click();
+    }).then(function() {
+        return expect(fragaSvar.administrativFraga.vidarebefordra.isPresent()).to.eventually.become(true);
+    });
 });
 Then(/^ska det synas vem som svarat$/, function() {
     var name = global.user.forNamn + ' ' + global.user.efterNamn;
