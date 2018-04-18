@@ -16,13 +16,13 @@ Scenario: Ska endast kunna hantera Läkarintyg för sjukpenning
 	När jag går in på patienten
 	#Uppdatera när @LegacyFK7263 försvinner
 	Så ska jag inte se intyg av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
-	Och jag ska endast ha möjlighet att skapa nya "Läkarintyg för sjukpenning" utkast
+	Och jag ska endast se intygstyperna "Läkarintyg FK 7263,Läkarintyg för sjukpenning" i Skapa intyg listan
 
 	När jag går till ej signerade utkast
 	#Uppdatera när @LegacyFK7263 försvinner
 	Så ska jag inte se utkast av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
 
-@lisjp @signera @skicka @makulera @fornya
+@LISJP @SIGNERA @SKICKA @MAKULERA @FORNYA
 Scenario: Skapa, Skicka och Makulera Läkarintyg för sjukpenning
 	Givet att jag är inloggad som tandläkare
 	När jag går in på en patient
