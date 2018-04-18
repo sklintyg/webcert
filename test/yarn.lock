@@ -888,7 +888,7 @@ process-nextick-args@~2.0.0:
   version "2.0.0"
   resolved "https://build-inera.nordicmedtest.se/nexus/repository/npm-all/process-nextick-args/-/process-nextick-args-2.0.0.tgz#a37d732f4271b4ab1ad070d35508e8290788ffaa"
 
-protractor-jasmine2-screenshot-reporter@0.5.0:
+protractor-jasmine2-screenshot-reporter@^0.5.0:
   version "0.5.0"
   resolved "https://build-inera.nordicmedtest.se/nexus/repository/npm-all/protractor-jasmine2-screenshot-reporter/-/protractor-jasmine2-screenshot-reporter-0.5.0.tgz#d7c99f599adbc9d22cf7fc784996e9b63cd6ce41"
   dependencies:

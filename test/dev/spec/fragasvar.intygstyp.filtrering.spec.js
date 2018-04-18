@@ -78,7 +78,7 @@ describe('fragasvar.intygstyp.filtrering', function() {
         it('Klicka på tabben för Fråga/svar', function() {
             element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
             expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('1');
-            expect(element.all(by.css('.wc-table-striped tr td button')).first().getText()).toBe('Visa');
+            expect(element.all(by.css('.wc-table-striped tr td button')).first().getText()).toBe('Vidarebefordra');
         });
 
         it('Byt läkarens roll till TANDLAKARE mha testbarhets-API, klicka på tabben igen', function() {
