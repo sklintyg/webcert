@@ -67,7 +67,7 @@
   border-radius: 4px;
 }
 
-.btn-primary, .btn-secondary, .btn-default, .btn-success {
+.btn-primary, .btn-secondary, .btn-default, .btn-success, .btn-type-8 {
   @extend %btn-common;
 }
 
@@ -81,6 +81,12 @@
   border-color: $wc-color-15;
   background-color: $wc-color-15;
   color: $wc-color-08;
+}
+
+.btn-type-8 {
+  border-color: $wc-color-15;
+  background-color: $wc-color-00;
+  color: $wc-color-07;
 }
 
 .btn-link {
