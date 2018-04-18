@@ -54,13 +54,6 @@ angular.module('webcert').directive('wcUtkastFilter', ['webcert.UtkastProxy',
                         $scope.filter.reset();
                     }
 
-                    function convertToSelectOptionList(serverList) {
-                        var options = [];
-                        angular.forEach(serverList, function(item) {
-                            options.push({id: item.hsaId, label: item.name});
-                        });
-                        return options;
-                    }
                     function loadSavedByList() {
 
                         $scope.widgetState.loadingSavedByList = true;
@@ -69,11 +62,11 @@ angular.module('webcert').directive('wcUtkastFilter', ['webcert.UtkastProxy',
                             $scope.widgetState.loadingSavedByList = false;
                             $scope.widgetState.savedByList = list || [];
                             $scope.widgetState.savedByList.unshift({
-                                    name: 'Visa alla',
-                                    hsaId: undefined
+                                    label: 'Visa alla',
+                                    id: undefined
                             });
 
-                            $scope.filter.savedByOptions = convertToSelectOptionList($scope.widgetState.savedByList);
+                            $scope.filter.savedByOptions = $scope.widgetState.savedByList;
                             //if only 1 option avaiable it must be 'Visa alla'
                             if ($scope.filter.savedByOptions.length === 1) {
                                 $scope.filter.savedBy = undefined;
@@ -81,10 +74,10 @@ angular.module('webcert').directive('wcUtkastFilter', ['webcert.UtkastProxy',
                         }, function() {
                             $scope.widgetState.loadingSavedByList = false;
                             $scope.widgetState.savedByList = [{
-                                hsaId: undefined,
-                                name: '<Kunde inte hämta lista>'
+                                id: undefined,
+                                label: '<Kunde inte hämta lista>'
                             }];
-                            $scope.filter.savedByOptions = convertToSelectOptionList($scope.widgetState.savedByList);
+                            $scope.filter.savedByOptions = $scope.widgetState.savedByList;
                         });
                     }
 
