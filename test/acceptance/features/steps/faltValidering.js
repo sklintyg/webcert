@@ -38,10 +38,12 @@ testTools.protractorHelpers.init();
 
 let tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 let tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
+let doiUtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
 let utkastPage = pages.intyg.base.utkast;
 let checkboxVal = utkastPage.checkboxVal;
 let radioknappVal = utkastPage.radioknappVal;
 let dropdownVal = utkastPage.dropdownVal;
+let fyllTextfalt = utkastPage.fyllTextfalt;
 
 let helpers = require('./helpers');
 let unique = helpers.uniqueItemsInArray;
@@ -333,3 +335,30 @@ When(/^jag anger ett tidigare datum för anträffad död$/, () => fillInDates(he
 When(/^jag anger dagens datum som dödsdatum$/, () => dropdownVal(currentYear(), 'År').then(() => dropdownVal(currentMonth(), 'Månad')));
 
 When(/^jag anger ett dödsdatum i framtiden$/, () => fillInDates(helpers.getCurrentDate().replace(/^\d{4}/, '2099')));
+
+When(/^jag fyller i "(.*)" i fältet "(.*)"$/, (text, field) => fyllTextfalt(field, text));
+
+When(/^jag anger dödsorsaker med datum i stigande ordning$/, () =>
+    doiUtkastPage.angeUtlatandeOmDodsorsak({
+        a: {
+            datum: '2018-03-04',
+            beskrivning: 'abc',
+            tillstandSpec: 'Kronisk'
+        },
+        b: {
+            datum: '2018-03-05',
+            beskrivning: 'abc',
+            tillstandSpec: 'Kronisk'
+        },
+        c: {
+            datum: '2018-03-06',
+            beskrivning: 'abc',
+            tillstandSpec: 'Kronisk'
+        },
+        d: {
+            datum: '2018-03-07',
+            beskrivning: 'abc',
+            tillstandSpec: 'Kronisk'
+        },
+    })
+);
